@@ -2,8 +2,8 @@
 /* function: update_intro_logo_renderable @ 0x419a90 */
 /* selector: update_intro_logo_renderable */
 
-// Exact Windows `cRLogoLetter::AI()`: advances one LogoLetter by applying its velocity to the shared BOD position, fades alpha across the z-window, marks the backing object dirty, and toggles visibility. The stable harness alias `update_logo_row` predates the recovered authored owner.
-void __thiscall update_intro_logo_renderable(LogoLetter *letter)
+// Exact Windows `cRLogoLetter::AI()`: advances one cRLogoLetter by applying its velocity to the shared BOD position, fades alpha across the z-window, marks the backing object dirty, and toggles visibility. The stable harness alias `update_logo_row` predates the recovered authored owner.
+void __thiscall update_intro_logo_renderable(cRLogoLetter *letter)
 {
   uint32_t v1; // eax
   uint32_t list_flags; // eax

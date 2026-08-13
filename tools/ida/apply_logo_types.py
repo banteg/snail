@@ -7,6 +7,7 @@ import ida_funcs
 import ida_kernwin
 import ida_name
 import ida_pro
+import ida_typeinf
 import idc
 
 SCRIPT_ROOT = pathlib.Path(__file__).resolve().parent
@@ -14,30 +15,76 @@ if str(SCRIPT_ROOT) not in sys.path:
     sys.path.insert(0, str(SCRIPT_ROOT))
 
 from game_root_owner import sync_game_root_owner_graph  # noqa: E402
+from type_alias_migration import migrate_equivalent_struct_aliases  # noqa: E402
 
 
 TRUSTED_NAMES = [
     (0x497310, "g_logo_letter_vtable"),
 ]
 
+LOGO_OWNER_TYPE_ALIASES = (
+    ("LogoLetter", "cRLogoLetter", 0x90),
+    ("Logo", "cRLogo", 0x25218),
+)
+
+EXPECTED_OWNER_LAYOUTS = {
+    "BodBase": {
+        "size": 0x38,
+        "members": {
+            0x24: ("object", "Object *"),
+        },
+    },
+    "TransformMatrix": {
+        "size": 0x40,
+        "members": {
+            0x30: ("position", "Vec3"),
+            0x3C: ("position_w", "float"),
+        },
+    },
+    "RenderableBod": {
+        "size": 0x80,
+        "members": {
+            0x00: ("bod", "BodBase"),
+            0x38: ("transform", "TransformMatrix"),
+            0x78: ("render_animation_manager", "AnimManager *"),
+            0x7C: ("frame_number", "int32_t"),
+        },
+    },
+    "cRLogoLetter": {
+        "size": 0x90,
+        "members": {
+            0x00: ("renderable", "RenderableBod"),
+            0x80: ("velocity", "Vec3"),
+            0x8C: ("glyph", "uint8_t"),
+        },
+    },
+    "cRLogo": {
+        "size": 0x25218,
+        "members": {
+            0x18: ("letters", "cRLogoLetter[1024]"),
+            0x24018: ("image_donors", "cRLogoLetter[32]"),
+        },
+    },
+}
+
 TRUSTED_DECLARATIONS = [
     (
         "initialize_intro_logo_renderable",
-        "LogoLetter* __thiscall initialize_intro_logo_renderable(LogoLetter* letter);",
+        "cRLogoLetter* __thiscall initialize_intro_logo_renderable(cRLogoLetter* letter);",
     ),
-    ("open_logo", "int32_t __thiscall open_logo(Logo* logo);"),
+    ("open_logo", "void __thiscall open_logo(cRLogo* logo);"),
     (
         "initialize_intro_screen",
-        "void __thiscall initialize_intro_screen(Logo* logo, char* file_name);",
+        "void __thiscall initialize_intro_screen(cRLogo* logo, char* file_name);",
     ),
     (
         "destroy_intro_screen",
-        "void __thiscall destroy_intro_screen(Logo* logo);",
+        "void __thiscall destroy_intro_screen(cRLogo* logo);",
     ),
-    ("update_intro_screen", "void __thiscall update_intro_screen(Logo* logo);"),
+    ("update_intro_screen", "void __thiscall update_intro_screen(cRLogo* logo);"),
     (
         "update_intro_logo_renderable",
-        "void __thiscall update_intro_logo_renderable(LogoLetter* letter);",
+        "void __thiscall update_intro_logo_renderable(cRLogoLetter* letter);",
     ),
 ]
 
@@ -59,14 +106,87 @@ def _declaration_to_observed_type(selector: str, declaration: str) -> str:
     return _normalize_type_text(unnamed) or ""
 
 
+def _owner_layout_readback() -> dict[str, object]:
+    readback: dict[str, object] = {}
+    failures: list[dict[str, object]] = []
+    for type_name, expected in EXPECTED_OWNER_LAYOUTS.items():
+        type_info = ida_typeinf.tinfo_t()
+        if not type_info.get_named_type(None, type_name, ida_typeinf.BTF_STRUCT):
+            failures.append(
+                {"type": type_name, "reason": "missing_named_struct"}
+            )
+            continue
+        members = ida_typeinf.udt_type_data_t()
+        if not type_info.get_udt_details(members):
+            failures.append(
+                {"type": type_name, "reason": "missing_struct_details"}
+            )
+            continue
+        observed_members = {
+            int(member.offset) // 8: {
+                "name": str(member.name),
+                "type": _normalize_type_text(member.type.dstr()),
+            }
+            for member in members
+        }
+        observed = {
+            "size": type_info.get_size(),
+            "members": {
+                hex(offset): observed_members.get(offset)
+                for offset in expected["members"]
+            },
+        }
+        readback[type_name] = observed
+        if observed["size"] != expected["size"]:
+            failures.append(
+                {
+                    "type": type_name,
+                    "reason": "owner_size_mismatch",
+                    "expected": expected["size"],
+                    "observed": observed["size"],
+                }
+            )
+        for offset, (expected_name, expected_type) in expected["members"].items():
+            expected_member = {
+                "name": expected_name,
+                "type": _normalize_type_text(expected_type),
+            }
+            if observed_members.get(offset) != expected_member:
+                failures.append(
+                    {
+                        "type": type_name,
+                        "offset": hex(offset),
+                        "reason": "owner_member_mismatch",
+                        "expected": expected_member,
+                        "observed": observed_members.get(offset),
+                    }
+                )
+    return {"types": readback, "failures": failures}
+
+
 def _sync_types(header_path: pathlib.Path) -> int:
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
+    type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(LOGO_OWNER_TYPE_ALIASES)
+    )
+    type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in type_alias_migrations
+        if result.get("status") == "failed"
+    ]
+    owner_layout_readback = _owner_layout_readback()
     renamed = 0
     names_unchanged = 0
     applied = 0
     unchanged = 0
     missing = []
-    failed = []
+    failed = [*type_alias_failures, *owner_layout_readback["failures"]]
 
     for address, name in TRUSTED_NAMES:
         if idc.get_name(address) == name:
@@ -111,6 +231,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "parse_errors": parse_errors,
+                "type_alias_migrations": type_alias_migrations,
+                "owner_layout_readback": owner_layout_readback,
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
                 "applied": applied,

@@ -446,7 +446,7 @@ analysis signature that hid formatting owners and values throughout the
 tracked decompiles.
 
 Replay `initialize_intro_screen`'s retained script allocation, exact image/path
-buffers, image and glyph active-list nodes, and final strided LogoLetter
+buffers, image and glyph active-list nodes, and final strided cRLogoLetter
 velocity pass with `uv run python tools/binja/sync_intro_logo_lifetimes.py
 --target SnailMail_unwrapped.exe.bndb`.
 
@@ -524,7 +524,7 @@ subgame-runtime replays share
 component types are present, it composes the contiguous
 `RootBodCatalog +0x44100`, `cRDirectX +0x48e00`, `Backdrop +0x4ec10`,
 `Intro`, `MainMenu`, `StarManager`, `Options`, `Exit`, standalone `BodBase`,
-and `Logo` block through `+0x74618`, followed by the complete
+and `cRLogo` block through `+0x74618`, followed by the complete
 `cRSubGame` (`0x1272838` bytes), `HighScore` at `+0x12e6e50`, the real
 `0x14`-byte gap, `TipManager` at `+0x12e6f58`, and the final four-byte gap into
 the exact `0x12e6ff4` root. Bootstrap databases missing the catalog/loader types

@@ -10,6 +10,8 @@ from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_struct_and_proto_updates,
     apply_symbol_updates,
+    apply_type_renames,
+    current_header_type_equivalence,
     current_struct_size,
     emit_summary,
     types_declare_missing_only,
@@ -20,12 +22,35 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_logo_types.h"
 
 EXPECTED_STRUCT_SIZES = {
-    "LogoLetter": 0x90,
-    "Logo": 0x25218,
+    "cRLogoLetter": 0x90,
+    "cRLogo": 0x25218,
 }
 
+TYPE_RENAMES = (
+    ("LogoLetter", "cRLogoLetter"),
+    ("Logo", "cRLogo"),
+)
+
+LOGO_LETTER_FIELD_UPDATES = (
+    ("0x00", "renderable", "RenderableBod"),
+    ("0x80", "velocity", "Vec3"),
+    ("0x8c", "glyph", "uint8_t"),
+    ("0x8d", "_pad_8d", "uint8_t[3]"),
+)
+
+LOGO_FIELD_UPDATES = (
+    ("0x00", "progress", "float"),
+    ("0x04", "progress_step", "float"),
+    ("0x08", "state", "int32_t"),
+    ("0x0c", "saved_render_flags", "int32_t"),
+    ("0x10", "duration_seconds", "float"),
+    ("0x14", "renderable_count", "int32_t"),
+    ("0x18", "letters", "cRLogoLetter[1024]"),
+    ("0x24018", "image_donors", "cRLogoLetter[32]"),
+)
+
 GAME_ROOT_FIELD_UPDATES = (
-    ("0x4f400", "logo", "Logo"),
+    ("0x4f400", "logo", "cRLogo"),
 )
 
 DATA_SYMBOL_UPDATES = (
@@ -35,18 +60,18 @@ DATA_SYMBOL_UPDATES = (
 PROTO_UPDATES = (
     (
         "initialize_intro_logo_renderable",
-        "LogoLetter* __thiscall initialize_intro_logo_renderable(LogoLetter* letter)",
+        "cRLogoLetter* __thiscall initialize_intro_logo_renderable(cRLogoLetter* letter)",
     ),
-    ("open_logo", "int32_t __thiscall open_logo(Logo* logo)"),
+    ("open_logo", "void __thiscall open_logo(cRLogo* logo)"),
     (
         "initialize_intro_screen",
-        "void __thiscall initialize_intro_screen(Logo* logo, char* file_name)",
+        "void __thiscall initialize_intro_screen(cRLogo* logo, char* file_name)",
     ),
-    ("destroy_intro_screen", "void __thiscall destroy_intro_screen(Logo* logo)"),
-    ("update_intro_screen", "void __thiscall update_intro_screen(Logo* logo)"),
+    ("destroy_intro_screen", "void __thiscall destroy_intro_screen(cRLogo* logo)"),
+    ("update_intro_screen", "void __thiscall update_intro_screen(cRLogo* logo)"),
     (
         "update_intro_logo_renderable",
-        "void __thiscall update_intro_logo_renderable(LogoLetter* letter)",
+        "void __thiscall update_intro_logo_renderable(cRLogoLetter* letter)",
     ),
 )
 
@@ -71,10 +96,24 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
+    type_rename_operations = apply_type_renames(
+        REPO_ROOT,
+        target=args.target,
+        renames=TYPE_RENAMES,
+    )
+    type_equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=args.target,
+        header_path=header_path,
+    )
     mismatched_types = tuple(
         name
         for name, expected_size in EXPECTED_STRUCT_SIZES.items()
-        if current_struct_size(REPO_ROOT, target=args.target, struct_name=name) != expected_size
+        if (
+            current_struct_size(REPO_ROOT, target=args.target, struct_name=name)
+            != expected_size
+            or not type_equivalence.get(name, False)
+        )
     )
     if mismatched_types:
         type_operation = types_declare_missing_only(
@@ -92,17 +131,23 @@ def main() -> int:
         type_operation = {
             "op": "types_declare_missing_only",
             "status": "skipped",
-            "reason": "logo owner sizes already current",
+            "reason": "logo owner layouts already current",
             "header": str(header_path),
             "expected_sizes": EXPECTED_STRUCT_SIZES,
+            "type_equivalence": type_equivalence,
         }
 
     operations: list[dict[str, object]] = [
+        *type_rename_operations,
         type_operation,
         *apply_struct_and_proto_updates(
             REPO_ROOT,
             target=args.target,
-            struct_updates=(("GameRoot", GAME_ROOT_FIELD_UPDATES),),
+            struct_updates=(
+                ("cRLogoLetter", LOGO_LETTER_FIELD_UPDATES),
+                ("cRLogo", LOGO_FIELD_UPDATES),
+                ("GameRoot", GAME_ROOT_FIELD_UPDATES),
+            ),
             proto_updates=PROTO_UPDATES,
         ),
         *apply_symbol_updates(

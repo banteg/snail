@@ -1498,7 +1498,7 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
         '(0x4F388, 0x24, "options", "Options")',
         '(0x4F3AC, 0x1C, "exit_controller", "Exit")',
         '(0x4F3C8, 0x38, "root_bod_4f3c8", "BodBase")',
-        '(0x4F400, 0x25218, "logo", "Logo")',
+        '(0x4F400, 0x25218, "logo", "cRLogo")',
     ):
         assert owner in owner_sync
     assert '(0x12E6E50, 0xF4, "high_score", "HighScore")' in owner_sync
@@ -2560,8 +2560,11 @@ def test_intro_logo_lifetime_replay_keeps_real_owners_and_staged_stride() -> Non
     assert "Vec3 velocity;" in header
     assert "uint8_t stride_tail[0x84];" in header
     assert '"LogoLetterVelocityCursor": 0x90' in source
-    assert '"LogoLetter": 0x90' in source
-    assert '"Logo": 0x25218' in source
+    assert '"cRLogoLetter": 0x90' in source
+    assert '"cRLogo": 0x25218' in source
+    assert '("LogoLetter", "cRLogoLetter")' in source
+    assert '("Logo", "cRLogo")' in source
+    assert "current_header_type_equivalence" in source
     for index, storage, name, variable_type in (
         (128, 66, "loaded_script_bytes", "char*"),
         (261, 72, "script_bytes", "char*"),
@@ -6600,8 +6603,15 @@ def test_matcher_fringe_logo_and_galaxy_owners_preserve_recovered_vocabulary() -
 
     assert "typedef struct cRFringe {" in path_analysis
     assert "typedef struct cRFringeManager {" in path_analysis
-    assert "typedef struct Logo {" in logo_analysis
-    assert "typedef struct LogoLetter {" in logo_analysis
+    assert "typedef struct cRLogo {" in logo_analysis
+    assert "typedef struct cRLogoLetter {" in logo_analysis
+    assert "Object* object;" in logo_analysis
+    assert "AnimManager* render_animation_manager;" in logo_analysis
+    assert "Vec3 position;" in logo_analysis
+    assert "float position_w;" in logo_analysis
+    assert "void* object;" not in logo_analysis
+    assert "typedef struct Logo {" not in logo_analysis
+    assert "typedef struct LogoLetter {" not in logo_analysis
     assert "typedef struct cRGalaxy {" in galaxy_analysis
     assert "typedef struct GalaxyStar {" in galaxy_analysis
 
@@ -14259,7 +14269,7 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
     for owner, sync_source in (
         ('("0x4f2dc", "intro", "Intro")', intro_sync),
         ('("0x4f33c", "star_manager", "StarManager")', star_sync),
-        ('("0x4f400", "logo", "Logo")', logo_sync),
+        ('("0x4f400", "logo", "cRLogo")', logo_sync),
     ):
         assert owner in sync_source
         assert "apply_struct_and_proto_updates" in sync_source
@@ -19491,8 +19501,24 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
         assert prototype in runtime_sync
         assert prototype + ";" in ida_path_sync
     assert "void __thiscall destroy_options_menu(Options* options)" in menu_sync
-    assert "void __thiscall destroy_intro_screen(Logo* logo)" in logo_sync
-    assert "void __thiscall destroy_intro_screen(Logo* logo);" in ida_logo_sync
+    assert "void __thiscall destroy_intro_screen(cRLogo* logo)" in logo_sync
+    assert "void __thiscall destroy_intro_screen(cRLogo* logo);" in ida_logo_sync
+    assert "void __thiscall open_logo(cRLogo* logo)" in logo_sync
+    assert "void __thiscall open_logo(cRLogo* logo);" in ida_logo_sync
+    assert "int32_t __thiscall open_logo" not in logo_sync
+    assert "int32_t __thiscall open_logo" not in ida_logo_sync
+    assert '("LogoLetter", "cRLogoLetter")' in logo_sync
+    assert '("Logo", "cRLogo")' in logo_sync
+    assert "current_header_type_equivalence" in logo_sync
+    assert '("cRLogoLetter", LOGO_LETTER_FIELD_UPDATES)' in logo_sync
+    assert '("cRLogo", LOGO_FIELD_UPDATES)' in logo_sync
+    assert "migrate_equivalent_struct_aliases" in ida_logo_sync
+    assert "EXPECTED_OWNER_LAYOUTS" in ida_logo_sync
+    assert "_owner_layout_readback" in ida_logo_sync
+    assert '0x24: ("object", "Object *")' in ida_logo_sync
+    assert '0x78: ("render_animation_manager", "AnimManager *")' in ida_logo_sync
+    assert '("LogoLetter", "cRLogoLetter", 0x90)' in ida_logo_sync
+    assert '("Logo", "cRLogo", 0x25218)' in ida_logo_sync
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/logo_types.h"' in ida_logo_runner
     assert 'IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/apply_logo_types.py"' in ida_logo_runner
 

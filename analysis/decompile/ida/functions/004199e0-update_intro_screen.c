@@ -2,23 +2,23 @@
 /* function: update_intro_screen @ 0x4199e0 */
 /* selector: update_intro_screen */
 
-// Exact Windows `cRLogo::AI()`: advances the normalized intro or credits crawl, tears down its LogoLetters once scrolling completes, and exits early on skip input.
-void __thiscall update_intro_screen(Logo *logo)
+// Exact Windows `cRLogo::AI()`: advances the normalized intro or credits crawl, tears down its cRLogoLetter children once scrolling completes, and exits early on skip input.
+void __thiscall update_intro_screen(cRLogo *logo)
 {
   int32_t state; // eax
   double v3; // st7
   double v4; // st7
 
-  if ( !g_game_base->fade.state
+  if ( g_game_base->fade.state == 0
     && ((g_game_base->players[0].game_input->input.pressed_buttons & 0x4000) != 0
      || read_pressed_text_input_key_code() == 11) )
   {
-    begin_frontend_fade_out(&g_game_base->fade.state, 0);
+    begin_frontend_fade_out(&g_game_base->fade, nullptr);
   }
   if ( g_game_base->fade.state == 4 )
     destroy_intro_screen(logo);
   state = logo->state;
-  if ( state )
+  if ( state != 0 )
   {
     if ( state == 1 )
     {
@@ -26,7 +26,7 @@ void __thiscall update_intro_screen(Logo *logo)
       logo->progress = v3;
       if ( v3 > 1.0 )
       {
-        begin_frontend_fade_out(&g_game_base->fade.state, 0);
+        begin_frontend_fade_out(&g_game_base->fade, nullptr);
         ++logo->state;
       }
     }

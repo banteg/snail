@@ -2,8 +2,8 @@
 /* function: initialize_intro_screen @ 0x4191e0 */
 /* selector: initialize_intro_screen */
 
-// Void Windows `cRLogo::Init(char*)`: loads SpaceRed plus INTROTEXT.OGG, parses an intro or credits script into the root-owned 1024-entry LogoLetter bank, borrows sequential preloaded image objects, derives each velocity from Duration, and releases the script through void `RShellMemoryFree`.
-void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
+// Void Windows `cRLogo::Init(char*)`: loads SpaceRed plus INTROTEXT.OGG, parses an intro or credits script into the root-owned 1024-entry cRLogoLetter bank, borrows sequential preloaded image objects, derives each velocity from Duration, and releases the script through void `RShellMemoryFree`.
+void __thiscall initialize_intro_screen(cRLogo *logo, char *file_name)
 {
   int32_t v2; // ebx
   int32_t landscape_script_by_name; // eax
@@ -20,7 +20,7 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
   char i; // dl
   _BYTE *v16; // eax
   int32_t renderable_count; // ecx
-  LogoLetter *v18; // eax
+  cRLogoLetter *v18; // eax
   BodNode **p_first; // ecx
   BodNode *first; // edx
   struct BodNode *list_prev; // edx
@@ -39,7 +39,7 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
   double v34; // st7
   int32_t v35; // ecx
   uint32_t list_flags; // eax
-  LogoLetter *v37; // ecx
+  cRLogoLetter *v37; // ecx
   BodNode **v38; // eax
   BodNode *v39; // edx
   struct BodNode *v40; // edx
@@ -216,7 +216,7 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
         p_velocity->z = 0.0;
         p_velocity->y = 0.0;
         p_velocity->x = 0.0;
-        (*(void (__thiscall **)(LogoLetter *))logo->letters[logo->renderable_count].renderable.bod.bod.vtable)(&logo->letters[logo->renderable_count]);
+        (*(void (__thiscall **)(cRLogoLetter *))logo->letters[logo->renderable_count].renderable.bod.bod.vtable)(&logo->letters[logo->renderable_count]);
         v8 = cursor;
         v32 = v59 - v57;
         LODWORD(v60) = LODWORD(v22) + 144;
@@ -308,7 +308,7 @@ void __thiscall initialize_intro_screen(Logo *logo, char *file_name)
             v47->y = 0.0;
             v47->x = 0.0;
             logo->letters[logo->renderable_count].glyph = *v12;
-            (*(void (__thiscall **)(LogoLetter *))logo->letters[logo->renderable_count].renderable.bod.bod.vtable)(&logo->letters[logo->renderable_count]);
+            (*(void (__thiscall **)(cRLogoLetter *))logo->letters[logo->renderable_count].renderable.bod.bod.vtable)(&logo->letters[logo->renderable_count]);
             v48 = font_slot_index_for_char(*v12++);
             v49 = v57 - g_font3d_scales[v48] * 0.80000001;
             ++logo->renderable_count;

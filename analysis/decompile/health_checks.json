@@ -14611,9 +14611,16 @@
       "name": "ida_logo_object_list_borrow",
       "artifact": "analysis/decompile/ida/functions/00419110-open_logo.c",
       "required_substrings": [
+        "void __thiscall open_logo(cRLogo *logo)",
+        "Object **p_object",
+        "p_object = &logo->image_donors[0].renderable.bod.object;",
         "add_object_to_list(&g_object_list)"
       ],
       "forbidden_substrings": [
+        "int32_t __thiscall open_logo",
+        "open_logo(Logo *logo)",
+        "void **p_object",
+        "return result",
         "unk_4B7648",
         "data_4B7648",
         "add_object_to_list((ObjectList *)0x4B7648)"
@@ -16643,10 +16650,11 @@
       "name": "ida_logo_uninit_void_owner",
       "artifact": "analysis/decompile/ida/functions/00419920-destroy_intro_screen.c",
       "required_substrings": [
-        "void __thiscall destroy_intro_screen(Logo *logo)",
+        "void __thiscall destroy_intro_screen(cRLogo *logo)",
         "logo->renderable_count"
       ],
       "forbidden_substrings": [
+        "destroy_intro_screen(Logo *logo)",
         "int __thiscall destroy_intro_screen",
         "return result",
         "unimplemented"
@@ -19861,6 +19869,40 @@
         "arg1",
         "void*** result",
         "return result"
+      ]
+    },
+    {
+      "name": "ida_logo_letter_constructor_owner_abi",
+      "artifact": "analysis/decompile/ida/functions/00408490-initialize_intro_logo_renderable.c",
+      "required_substrings": [
+        "cRLogoLetter *__thiscall initialize_intro_logo_renderable(cRLogoLetter *letter)",
+        "initialize_renderable_bod(&letter->renderable)",
+        "letter->renderable.bod.bod.vtable = g_logo_letter_vtable",
+        "return letter"
+      ],
+      "forbidden_substrings": [
+        "\nLogoLetter *__thiscall",
+        "_DWORD *__thiscall",
+        "g_intro_logo_renderable_vtable",
+        "return this"
+      ]
+    },
+    {
+      "name": "ida_logo_init_monotonic_owner_graph",
+      "artifact": "analysis/decompile/ida/functions/004191e0-initialize_intro_screen.c",
+      "required_substrings": [
+        "void __thiscall initialize_intro_screen(cRLogo *logo, char *file_name)",
+        "cRLogoLetter *v18",
+        "Vec3 *p_position",
+        "Object *object",
+        "logo->letters[logo->renderable_count].renderable.bod.object->vertices"
+      ],
+      "forbidden_substrings": [
+        "initialize_intro_screen(Logo *logo",
+        "\n  LogoLetter *v18",
+        "Vec4 *p_position",
+        "_DWORD *object",
+        "void *object"
       ]
     },
     {

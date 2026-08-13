@@ -28,7 +28,7 @@ _FRONTEND_TYPE_SIZES = {
     "Options": 0x24,
     "Exit": 0x1C,
     "BodBase": 0x38,
-    "Logo": 0x25218,
+    "cRLogo": 0x25218,
 }
 
 _CATALOG_LOADER_TYPE_SIZES = {
@@ -49,7 +49,7 @@ _CANONICAL_FRONTEND = (
     (0x4F388, 0x24, "options", "Options"),
     (0x4F3AC, 0x1C, "exit_controller", "Exit"),
     (0x4F3C8, 0x38, "root_bod_4f3c8", "BodBase"),
-    (0x4F400, 0x25218, "logo", "Logo"),
+    (0x4F400, 0x25218, "logo", "cRLogo"),
 )
 
 _CANONICAL_TAIL = (

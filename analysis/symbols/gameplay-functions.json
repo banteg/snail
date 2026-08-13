@@ -1907,7 +1907,7 @@
         "update_logo_row",
         "cRLogoLetter_AI"
       ],
-      "description": "Exact Windows `cRLogoLetter::AI()`: advances one LogoLetter by applying its velocity to the shared BOD position, fades alpha across the z-window, marks the backing object dirty, and toggles visibility. The stable harness alias `update_logo_row` predates the recovered authored owner."
+      "description": "Exact Windows `cRLogoLetter::AI()`: advances one cRLogoLetter by applying its velocity to the shared BOD position, fades alpha across the z-window, marks the backing object dirty, and toggles visibility. The stable harness alias `update_logo_row` predates the recovered authored owner."
     },
     {
       "address": "0x419b30",

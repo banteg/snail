@@ -16,18 +16,17 @@
 0041915c        do while (i != 1)
 00419175        EnumeratedEntryName names[0x80]
 00419175        enumerate_matching_archive_or_fs_entries("Intro", "*.tga", &__return_addr, &names)
-0041917a        int32_t result = __return_addr
 00419181        int32_t esi_1 = 0
-00419185        if (result s> 0)
+00419185        if (__return_addr s<= 0)
+00419185        return
 00419187        EnumeratedEntryName (* edi)[0x80] = &names
 00419199        char arg_4[0x80]
 00419199        sprintf(&arg_4, "Intro/%s", edi)
-004191af        struct TextureRef* eax_4 = get_or_create_texture_ref(&g_texture_refs, &arg_4, nullptr, 0)
-004191b4        enum TextureRefFlags flags = eax_4->flags
+004191af        cRTexture* eax_5 = get_or_create_texture_ref(&g_texture_refs, &arg_4, nullptr, 0)
+004191b4        enum TextureRefFlags flags = eax_5->flags
 004191b6        edi = &(*edi)[1]
 004191bc        flags:1.b |= 4
 004191bf        esi_1 += 1
-004191c0        eax_4->flags = flags
-004191c2        result = __return_addr
-004191c8        do while (esi_1 s< result)
-004191d2        return result
+004191c0        eax_5->flags = flags
+004191c8        do while (esi_1 s< __return_addr)
+004191d2        return

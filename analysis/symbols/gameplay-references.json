@@ -6192,7 +6192,7 @@
         "off_497310",
         "data_497310"
       ],
-      "description": "Windows LogoLetter callback table installed by initialize_intro_logo_renderable; first entry is the exact `cRLogoLetter::AI()` body retained as `update_intro_logo_renderable`."
+      "description": "Windows cRLogoLetter callback table installed by initialize_intro_logo_renderable; first entry is the exact `cRLogoLetter::AI()` body retained as `update_intro_logo_renderable`."
     },
     {
       "address": "0x497314",

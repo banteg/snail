@@ -1,64 +1,48 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 10,
+  "function_count": 6,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 10,
-  "ida_exported": 10,
+  "bn_exported": 6,
+  "ida_exported": 6,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
   "sync_ida_symbols": true,
   "binja_refreshed": true,
-  "binja_analysis_refreshed": true,
+  "binja_analysis_refreshed": false,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_fringe_object",
-      "address": "0x408650"
+      "name": "initialize_intro_logo_renderable",
+      "address": "0x408490"
     },
     {
-      "name": "build_track_render_caches",
-      "address": "0x433220"
+      "name": "open_logo",
+      "address": "0x419110"
     },
     {
-      "name": "build_track_fringe_objects",
-      "address": "0x434be0"
+      "name": "initialize_intro_screen",
+      "address": "0x4191e0"
     },
     {
-      "name": "populate_runtime_track_cells_from_segments",
-      "address": "0x435eb0"
+      "name": "destroy_intro_screen",
+      "address": "0x419920"
     },
     {
-      "name": "initialize_subgame",
-      "address": "0x4374b0"
+      "name": "update_intro_screen",
+      "address": "0x4199e0"
     },
     {
-      "name": "update_subgame",
-      "address": "0x438b90"
-    },
-    {
-      "name": "refresh_fringe_object_draw_list",
-      "address": "0x439b00"
-    },
-    {
-      "name": "remove_sub_loc",
-      "address": "0x439bc0"
-    },
-    {
-      "name": "initialize_fringe_manager",
-      "address": "0x447090"
-    },
-    {
-      "name": "allocate_fringe_object",
-      "address": "0x4470a0"
+      "name": "update_intro_logo_renderable",
+      "address": "0x419a90"
     }
   ],
-  "health_check_count": 1158,
+  "health_check_count": 1160,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"
