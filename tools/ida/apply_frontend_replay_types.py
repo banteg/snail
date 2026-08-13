@@ -21,6 +21,7 @@ from type_alias_migration import migrate_equivalent_struct_aliases  # noqa: E402
 FRONTEND_REPLAY_OWNER_TYPE_ALIASES = (
     ("Intro", "cRIntro", 0x48),
     ("HighScore", "cRHighScore", 0xF4),
+    ("Time", "cRTime", 0x18),
 )
 
 EXPECTED_OWNER_LAYOUTS = {

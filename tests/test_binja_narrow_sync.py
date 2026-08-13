@@ -15016,6 +15016,123 @@ def test_snail_skin_replay_keeps_authored_owner_layout_and_method_abis() -> None
         assert selector in health_checks
 
 
+def test_time_replay_keeps_authored_owner_layout_and_method_abis() -> None:
+    repo_root = Path(__file__).parents[1]
+    focused_binja_sync = (BINJA_DIR / "sync_time_types.py").read_text(
+        encoding="utf-8"
+    )
+    focused_ida_sync = (IDA_DIR / "apply_time_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runner = (IDA_DIR / "sync_time_types.py").read_text(encoding="utf-8")
+    path_binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    runtime_binja_sync = (
+        BINJA_DIR / "sync_subgame_runtime_types.py"
+    ).read_text(encoding="utf-8")
+    runtime_ida_sync = (
+        IDA_DIR / "apply_subgame_runtime_types.py"
+    ).read_text(encoding="utf-8")
+    high_score_binja_sync = (
+        BINJA_DIR / "sync_high_score_bank_types.py"
+    ).read_text(encoding="utf-8")
+    high_score_ida_sync = (
+        IDA_DIR / "apply_high_score_bank_types.py"
+    ).read_text(encoding="utf-8")
+    frontend_ida_sync = (
+        IDA_DIR / "apply_frontend_replay_types.py"
+    ).read_text(encoding="utf-8")
+    analysis_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in (
+            "time_types.h",
+            "path_template_types.h",
+            "bn_subgame_runtime_types.h",
+            "ida_subgame_runtime_types.h",
+            "bn_high_score_bank_types.h",
+            "ida_high_score_bank_types.h",
+            "frontend_replay_types.h",
+        )
+    )
+    matcher_header = (repo_root / "tools/match/include/game_time.h").read_text(
+        encoding="utf-8"
+    )
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+
+    prototypes = (
+        "void __thiscall zero_timer_counters(cRTime* time)",
+        "void __thiscall advance_timer_counters(cRTime* time, float delta_ticks)",
+        "char* __thiscall format_time_trial_string(TimeTrial* time_trial, cRTime* timer)",
+    )
+    for prototype in prototypes:
+        for source in (
+            focused_binja_sync,
+            focused_ida_sync,
+            path_binja_sync,
+            path_ida_sync,
+            runtime_binja_sync,
+            runtime_ida_sync,
+        ):
+            assert prototype in source
+
+    assert '"cRTime": 0x18' in focused_binja_sync
+    assert 'OWNER_TYPE_RENAMES = (("Time", "cRTime"),)' in focused_binja_sync
+    assert '("cRTime", TIME_FIELD_UPDATES)' in focused_binja_sync
+    assert '("0x2e8", "stopwatch", "cRTime")' in focused_binja_sync
+    assert (
+        '("0x355d98", "active_level_timer", "cRTime")'
+        in focused_binja_sync
+    )
+    for header in analysis_headers:
+        assert "typedef struct cRTime {" in header
+        assert "typedef struct Time {" not in header
+        assert "cRTime_must_be_0x18" in header
+    assert "cRTime timer;" in analysis_headers[1]
+    assert "cRTime stopwatch;" in analysis_headers[1]
+    assert "cRTime active_level_timer;" in analysis_headers[1]
+    assert 'EXPECTED_OWNER_SIZES = {\n    "cRTime": 0x18,' in focused_ida_sync
+    assert '("Time", "cRTime", 0x18)' in focused_ida_sync
+    assert "EXPECTED_OWNER_LAYOUT" in focused_ida_sync
+    assert "EXPECTED_OWNER_EDGES" in focused_ida_sync
+    assert "EXPECTED_NAMED_OWNER_EDGES" in focused_ida_sync
+    assert "owner_layout_readback" in focused_ida_sync
+    assert "TIME_OWNER_TYPE_RENAMES" in path_binja_sync
+    assert "ensure_time_owner_type" in path_binja_sync
+    assert "TIME_OWNER_TYPE_ALIASES" in path_ida_sync
+    assert "time_owner_layout_readback" in path_ida_sync
+    assert '("Time", "cRTime")' in runtime_binja_sync
+    assert '("Time", "cRTime", 0x18)' in runtime_ida_sync
+    assert '("Time", "cRTime")' in high_score_binja_sync
+    assert '("Time", "cRTime", 0x18)' in high_score_ida_sync
+    assert '("Time", "cRTime", 0x18)' in frontend_ida_sync
+    assert "class cRTime" in matcher_header
+    assert "typedef cRTime Time;" in matcher_header
+    assert (
+        'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/time_types.h"'
+        in ida_runner
+    )
+    notes_text = "\n".join(
+        (repo_root / f"tools/match/scratches/{scratch}/NOTES.md").read_text(
+            encoding="utf-8"
+        )
+        for scratch in ("zero_timer_counters", "advance_timer_counters")
+    )
+    for symbol in ("?Zero@cRTime@@QAEXXZ", "?Add@cRTime@@QAEXM@Z"):
+        assert symbol in notes_text
+    for selector in (
+        "zero_timer_counters(cRTime *time)",
+        "advance_timer_counters(cRTime *time, float delta_ticks)",
+        "format_time_trial_string(TimeTrial *time_trial, cRTime *timer)",
+    ):
+        assert selector in health_checks
+
+
 def test_times_up_replay_keeps_authored_owner_layout_and_method_abis() -> None:
     repo_root = Path(__file__).parents[1]
     focused_binja_sync = (BINJA_DIR / "sync_times_up_types.py").read_text(

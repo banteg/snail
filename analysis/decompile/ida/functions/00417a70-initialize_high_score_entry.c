@@ -18,9 +18,9 @@ void __thiscall initialize_high_score_entry(
   record->runtime_build_seed = runtime_build_seed;
   record->replay_sample_count = 0;
   record->score = 0;
-  zero_timer_counters((Time *)&record->score_or_time);
+  zero_timer_counters((cRTime *)&record->score_or_time);
   record->replay_level_index = replay_level_index;
-  record->replay_speed_scalar.bits = replay_speed_scalar_bits;
+  record->replay_speed_scalar_bits = replay_speed_scalar_bits;
   rstrcpy_checked_ascii(record->player_name, g_game_base->players[0].player_name);
   record->high_score_mode_tag = high_score_mode_tag;
   record->route_or_rank_index = route_or_rank_index;

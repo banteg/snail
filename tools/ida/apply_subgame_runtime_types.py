@@ -118,6 +118,7 @@ GALAXY_OWNER_TYPE_ALIASES = (
 )
 
 TIMES_UP_OWNER_TYPE_ALIASES = (("TimesUp", "cRTimesUp", 0x10),)
+TIME_OWNER_TYPE_ALIASES = (("Time", "cRTime", 0x18),)
 
 TIMES_UP_OWNER_EXPECTED_SIZE = 0x10
 TIMES_UP_OWNER_EXPECTED_MEMBERS = (
@@ -321,11 +322,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "zero_timer_counters",
-        "void __thiscall zero_timer_counters(Time* time);",
+        "void __thiscall zero_timer_counters(cRTime* time);",
     ),
     (
         "advance_timer_counters",
-        "void __thiscall advance_timer_counters(Time* time, float delta_ticks);",
+        "void __thiscall advance_timer_counters(cRTime* time, float delta_ticks);",
     ),
     (
         "update_banner",
@@ -591,7 +592,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "format_time_trial_string",
-        "char* __thiscall format_time_trial_string(TimeTrial* time_trial, Time* timer);",
+        "char* __thiscall format_time_trial_string(TimeTrial* time_trial, cRTime* timer);",
     ),
     (
         "initialize_help_screen",
@@ -1985,7 +1986,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
         []
         if parse_errors
         else migrate_equivalent_struct_aliases(
-            (*GALAXY_OWNER_TYPE_ALIASES, *TIMES_UP_OWNER_TYPE_ALIASES)
+            (
+                *GALAXY_OWNER_TYPE_ALIASES,
+                *TIME_OWNER_TYPE_ALIASES,
+                *TIMES_UP_OWNER_TYPE_ALIASES,
+            )
         )
     )
     type_alias_failures = [
@@ -1998,6 +2003,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if result.get("status") == "failed"
     ]
     subgame_owner_size = _named_struct_size("cRSubGame")
+    time_owner_size = _named_struct_size("cRTime")
     parcel_owner_sizes = {
         name: _named_struct_size(name) for name in EXPECTED_PARCEL_OWNER_SIZES
     }
@@ -2035,6 +2041,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "reason": "owner_size_mismatch",
                 "expected": SUBGAME_OWNER_EXPECTED_SIZE,
                 "observed": subgame_owner_size,
+            }
+        )
+    if time_owner_size != 0x18:
+        size_failures.append(
+            {
+                "selector": "cRTime",
+                "reason": "owner_size_mismatch",
+                "expected": 0x18,
+                "observed": time_owner_size,
             }
         )
     help_owner_size = _named_struct_size("Help")
@@ -2523,6 +2538,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "header": str(header_path),
                 "contact_header": str(contact_header_path),
                 "subgame_owner_size": subgame_owner_size,
+                "time_owner_size": time_owner_size,
                 "parcel_owner_sizes": parcel_owner_sizes,
                 "banner_owner_sizes": banner_owner_sizes,
                 "galaxy_owner_sizes": galaxy_owner_sizes,
@@ -2542,6 +2558,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "slug_owner_readback": slug_owner_readback,
                 "type_sizes": {
                     "cRSubGame": _named_struct_size("cRSubGame"),
+                    "cRTime": _named_struct_size("cRTime"),
                     "TimeTrialCourseRecord": _named_struct_size(
                         "TimeTrialCourseRecord"
                     ),

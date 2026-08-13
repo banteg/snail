@@ -163,6 +163,25 @@ ANIM_MANAGER_REANALYSIS_FUNCTIONS = (
     "set_weapon_animation",
 )
 
+TIME_OWNER_SIZES = {
+    "cRTime": 0x18,
+}
+
+TIME_OWNER_TYPE_RENAMES = (("Time", "cRTime"),)
+
+TIME_REANALYSIS_FUNCTIONS = (
+    "zero_timer_counters",
+    "advance_timer_counters",
+    "format_time_trial_string",
+    "initialize_high_score_entry",
+    "update_challenge_setup_screen",
+    "populate_runtime_track_cells_from_segments",
+    "initialize_subgame",
+    "reset_subgame",
+    "update_subgame",
+    "update_subgoldy",
+)
+
 TIMES_UP_OWNER_SIZES = {
     "cRTimesUp": 0x10,
 }
@@ -445,6 +464,15 @@ ANIM_MANAGER_FIELD_UPDATES = (
     ("0x44", "animation_slots", "PresentationAnimationSlot*"),
 )
 
+TIME_FIELD_UPDATES = (
+    ("0x00", "total_seconds", "float"),
+    ("0x04", "minutes", "int32_t"),
+    ("0x08", "seconds", "int32_t"),
+    ("0x0c", "display_hundredths", "int32_t"),
+    ("0x10", "display_thousandths", "int32_t"),
+    ("0x14", "second_fraction", "float"),
+)
+
 INVINCIBLE_FIELD_UPDATES = (
     ("0x00", "body", "RenderableBod"),
     ("0x80", "state", "InvincibleState"),
@@ -691,6 +719,7 @@ REQUIRED_HEADER_STRUCTS = (
     "JetPack",
     "ParcelState",
     "CompletionState",
+    "cRTime",
     "TimesUpState",
     "cRTimesUp",
     "AxisAngle",
@@ -1273,6 +1302,82 @@ def ensure_anim_manager_owner_type(
     return [*operations, type_operation]
 
 
+def verify_time_owner_size(*, target: str) -> dict[str, object]:
+    """Fail closed before applying the cRTime method ABIs."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=TIME_OWNER_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in TIME_OWNER_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"cRTime owner size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "time",
+        "owner_sizes": observed,
+    }
+
+
+def ensure_time_owner_type(
+    *, target: str, header_path: Path
+) -> list[dict[str, object]]:
+    """Retire Time only when its canonical owner graph is exact."""
+    operations = apply_type_renames(
+        REPO_ROOT,
+        target=target,
+        renames=TIME_OWNER_TYPE_RENAMES,
+    )
+    observed_widths = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=TIME_OWNER_SIZES,
+    )
+    type_equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    mismatched_types = tuple(
+        name
+        for name, expected_size in TIME_OWNER_SIZES.items()
+        if (
+            observed_widths.get(name) != expected_size
+            or not type_equivalence.get(name, False)
+        )
+    )
+    if mismatched_types:
+        type_operation = types_declare_missing_only(
+            REPO_ROOT,
+            target=target,
+            header_path=header_path,
+            replace_types=mismatched_types,
+            include_types=TIME_OWNER_SIZES,
+        )
+        type_operation["repaired_types"] = mismatched_types
+        type_operation["expected_sizes"] = {
+            name: TIME_OWNER_SIZES[name] for name in mismatched_types
+        }
+    else:
+        type_operation = {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "cRTime owner layout already matches the header",
+            "header": str(header_path),
+            "expected_sizes": TIME_OWNER_SIZES,
+            "type_equivalence": {
+                name: type_equivalence.get(name, False)
+                for name in TIME_OWNER_SIZES
+            },
+        }
+    return [*operations, type_operation]
+
+
 def ensure_snail_skin_owner_type(
     *, target: str, header_path: Path
 ) -> list[dict[str, object]]:
@@ -1815,7 +1920,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x2dc", "cutscene_pitch_cycle", "float"),
     ("0x2e0", "cutscene_pitch_cycle_step", "float"),
     ("0x2e4", "total_score", "int32_t"),
-    ("0x2e8", "stopwatch", "Time"),
+    ("0x2e8", "stopwatch", "cRTime"),
     ("0x300", "score_tail", "int32_t"),
     ("0x304", "replay_start_cursor", "int32_t"),
     ("0x308", "shooting_tier", "int32_t"),
@@ -3734,7 +3839,7 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x355d24", "golb_vapour_list_head", "BodBase"),
     ("0x355d5c", "unknown_bod_355d5c", "BodBase"),
     ("0x355d94", "active_level_score", "int32_t"),
-    ("0x355d98", "active_level_timer", "Time"),
+    ("0x355d98", "active_level_timer", "cRTime"),
     # The speedup, jetpack, health, slug, lazer, salt, banner, garbage, and
     # ring pools are owned by their newer canonical replay lanes. Do not
     # reinstall the historical presentation-header aliases here.
@@ -5016,6 +5121,18 @@ PROTO_UPDATES = (
     (
         "update_anim_manager",
         "void __thiscall update_anim_manager(cRAnimManager* manager)",
+    ),
+    (
+        "zero_timer_counters",
+        "void __thiscall zero_timer_counters(cRTime* time)",
+    ),
+    (
+        "advance_timer_counters",
+        "void __thiscall advance_timer_counters(cRTime* time, float delta_ticks)",
+    ),
+    (
+        "format_time_trial_string",
+        "char* __thiscall format_time_trial_string(TimeTrial* time_trial, cRTime* timer)",
     ),
     (
         "advance_frame_sequence",
@@ -7052,6 +7169,12 @@ def main() -> int:
             )
         )
         operations.extend(
+            ensure_time_owner_type(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        operations.extend(
             ensure_times_up_owner_type(
                 target=args.target,
                 header_path=header_path,
@@ -7115,6 +7238,7 @@ def main() -> int:
         operations.append(verify_squidge_owner_size(target=args.target))
         operations.append(verify_snail_skin_owner_size(target=args.target))
         operations.append(verify_anim_manager_owner_size(target=args.target))
+        operations.append(verify_time_owner_size(target=args.target))
         operations.append(verify_times_up_owner_size(target=args.target))
         operations.append(verify_warning_owner_size(target=args.target))
         operations.append(verify_tip_owner_sizes(target=args.target))
@@ -7268,6 +7392,7 @@ def main() -> int:
                 ("Snail", SNAIL_FIELD_UPDATES),
                 ("Weapon", WEAPON_FIELD_UPDATES),
                 ("cRAnimManager", ANIM_MANAGER_FIELD_UPDATES),
+                ("cRTime", TIME_FIELD_UPDATES),
                 ("Invincible", INVINCIBLE_FIELD_UPDATES),
                 ("Cameraman", CAMERAMAN_FIELD_UPDATES),
                 ("CutScene", CUT_SCENE_FIELD_UPDATES),
@@ -7320,6 +7445,13 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             identifiers=ANIM_MANAGER_REANALYSIS_FUNCTIONS,
+        )
+    )
+    operations.extend(
+        reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=TIME_REANALYSIS_FUNCTIONS,
         )
     )
     operations.extend(

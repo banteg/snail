@@ -820,14 +820,17 @@ typedef char cRTimesUp_must_be_0x10[
  * `delta_ticks * (1/60)`, rolling seconds into minutes and publishing
  * hundredths / thousandths for the HUD.
  */
-typedef struct Time {
+typedef struct cRTime {
     float total_seconds;
     int32_t minutes;
     int32_t seconds;
     int32_t display_hundredths;
     int32_t display_thousandths;
     float second_fraction;
-} Time;
+} cRTime;
+
+typedef char cRTime_must_be_0x18[
+    (sizeof(cRTime) == 0x18) ? 1 : -1];
 
 /*
  * Voice manager bank. Holds 16 `cRVoiceSet` playlists (Damage, Dying, Enemies,
@@ -2261,7 +2264,7 @@ typedef struct ReplayRunRecord {
 typedef union SubSolutionScoreOrTime {
     float total_seconds;
     int32_t score_buckets[6];
-    Time timer;
+    cRTime timer;
 } SubSolutionScoreOrTime;
 
 typedef union SubSolutionScalar {
@@ -2542,7 +2545,7 @@ typedef struct Player {
     float cutscene_pitch_cycle;
     float cutscene_pitch_cycle_step;
     int32_t total_score;
-    Time stopwatch;
+    cRTime stopwatch;
     int32_t score_tail;
     int32_t replay_start_cursor;
     int32_t shooting_tier;
@@ -2672,7 +2675,7 @@ typedef struct cRSubGame {
     BodBase golb_vapour_list_head;
     BodBase unknown_bod_355d5c;
     int32_t active_level_score;
-    Time active_level_timer;
+    cRTime active_level_timer;
     SubSpeedUp speedup_pickup;
     JetPack jetpack_pickup;
     SubHealth health_pickups[8];
@@ -2950,6 +2953,9 @@ void __thiscall build_snail_world_hotspots(Snail* snail);
 void __thiscall extract_snail_local_hotspots(Snail* snail);
 void __thiscall initialize_anim_manager(cRAnimManager* manager);
 void __thiscall update_anim_manager(cRAnimManager* manager);
+void __thiscall zero_timer_counters(cRTime* time);
+void __thiscall advance_timer_counters(cRTime* time, float delta_ticks);
+char* __thiscall format_time_trial_string(TimeTrial* time_trial, cRTime* timer);
 void __thiscall advance_frame_sequence(Movie* movie);
 void __thiscall update_smtracks(Face* face);
 void __cdecl sample_smtrack_heightmap(

@@ -2,14 +2,13 @@
 /* function: zero_timer_counters @ 0x441b70 */
 /* selector: zero_timer_counters */
 
-int __thiscall sub_441B70(_DWORD *this)
+// Exact void `cRTime::Zero()`: clears all six fields of the authored 0x18-byte time value shared by player, level, and high-score state. iOS and Android preserve the owner and method name.
+void __thiscall zero_timer_counters(cRTime *time)
 {
-  *this = 0;
-  *(this + 1) = 0;
-  *(this + 2) = 0;
-  *(this + 3) = 0;
-  *(this + 4) = 0;
-  *(this + 5) = 0;
-  return 0;
+  time->total_seconds = 0.0;
+  time->minutes = 0;
+  time->seconds = 0;
+  time->display_hundredths = 0;
+  time->display_thousandths = 0;
+  time->second_fraction = 0.0;
 }
-

@@ -1,7 +1,7 @@
 # advance_timer_counters
 
 - Exact match: 100.00%, 38/38 instructions.
-- Uses the same typed six-field authored `Time` layout as `cRTime::Zero` /
+- Uses the same typed six-field authored `cRTime` layout as `cRTime::Zero` /
   `zero_timer_counters`: total seconds, minutes, seconds within the current
   minute, display hundredths, display thousandths, and fractional second.
 - Source shape detail: the exact form increments `seconds` first,
@@ -21,3 +21,4 @@
   bodies return void. Declaring the Windows method as void leaves its 38/38
   codegen exact: the final EAX value is merely the integer conversion stored in
   `display_thousandths`, not a semantic return value.
+  The matching MSVC member identity is `?Add@cRTime@@QAEXM@Z`.

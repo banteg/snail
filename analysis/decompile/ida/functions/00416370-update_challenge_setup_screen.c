@@ -60,7 +60,7 @@ int __thiscall update_challenge_setup_screen(GUI *gui)
           layout_frontend_widget(gui->level_name_widget);
           v6 = format_time_trial_string(
                  &gui->game->time_trial,
-                 (Time *)&gui->game->sub_high_score.time_trial_route_records[gui->game->level_mode_arg].score_or_time);
+                 (cRTime *)&gui->game->sub_high_score.time_trial_route_records[gui->game->level_mode_arg].score_or_time);
           rstrcpy_checked_ascii((char *)&gui->game->bottom_score_widget->text_buffer, v6);
         }
         previous_level_button = gui->previous_level_button;
@@ -79,7 +79,7 @@ int __thiscall update_challenge_setup_screen(GUI *gui)
           layout_frontend_widget(gui->level_name_widget);
           v9 = format_time_trial_string(
                  &gui->game->time_trial,
-                 (Time *)&gui->game->sub_high_score.time_trial_route_records[gui->game->level_mode_arg].score_or_time);
+                 (cRTime *)&gui->game->sub_high_score.time_trial_route_records[gui->game->level_mode_arg].score_or_time);
           rstrcpy_checked_ascii((char *)&gui->game->bottom_score_widget->text_buffer, v9);
         }
         v10 = gui->previous_level_button;

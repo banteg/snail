@@ -128,6 +128,14 @@ Current checked-in example:
     `Snail +0x104` and `Weapon +0x108` embeds, and the borrowed
     `RenderableBod +0x78` backlink, then replays the exact `Init` and `AI`
     receivers plus all live Windows callers.
+- `time_types.h`
+- `uv run python tools/binja/sync_time_types.py`
+- `uv run python tools/ida/sync_time_types.py`
+  - Retires the generic analysis-only `Time` record after exact layout
+    equivalence, verifies the authored 0x18-byte `cRTime`, the
+    `Player +0x2e8` and `cRSubGame +0x355d98` embeds, and the high-score timer
+    union edge, then replays the exact `Zero`, `Add(float)`, and Time Trial
+    formatter receivers plus every live Windows caller.
 - `times_up_types.h`
 - `uv run python tools/binja/sync_times_up_types.py`
 - `uv run python tools/ida/sync_times_up_types.py`

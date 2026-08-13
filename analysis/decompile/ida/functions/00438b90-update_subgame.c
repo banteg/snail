@@ -606,7 +606,7 @@ LABEL_209:
         time_trial_route_cursor = (TimeTrialRouteRecordCursor *)((char *)game + 129728 * game->level_mode_arg);
         if ( time_trial_route_cursor->record.active == 1 )
         {
-          v47 = format_time_trial_string(&game->time_trial, (Time *)&time_trial_route_cursor->record.score_or_time);
+          v47 = format_time_trial_string(&game->time_trial, (cRTime *)&time_trial_route_cursor->record.score_or_time);
           rstrcpy_checked_ascii((char *)&game->bottom_score_widget->text_buffer, v47);
           goto LABEL_214;
         }

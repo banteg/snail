@@ -22781,6 +22781,86 @@
       ]
     },
     {
+      "name": "bn_time_zero_owner",
+      "artifact": "analysis/decompile/binja/functions/00441b70-zero_timer_counters.c",
+      "required_substrings": [
+        "__builtin_memset(time, 0, 0x18)",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "arg1",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_time_zero_owner",
+      "artifact": "analysis/decompile/ida/functions/00441b70-zero_timer_counters.c",
+      "required_substrings": [
+        "void __thiscall zero_timer_counters(cRTime *time)",
+        "time->total_seconds = 0.0;",
+        "time->minutes = 0;",
+        "time->seconds = 0;",
+        "time->display_hundredths = 0;",
+        "time->display_thousandths = 0;",
+        "time->second_fraction = 0.0;"
+      ],
+      "forbidden_substrings": [
+        "zero_timer_counters(Time *time)",
+        "int __thiscall zero_timer_counters",
+        "return result"
+      ]
+    },
+    {
+      "name": "bn_time_add_owner",
+      "artifact": "analysis/decompile/binja/functions/00441b90-advance_timer_counters.c",
+      "required_substrings": [
+        "time->total_seconds",
+        "time->second_fraction",
+        "time->seconds",
+        "time->minutes",
+        "time->display_hundredths",
+        "time->display_thousandths"
+      ],
+      "forbidden_substrings": [
+        "arg1[",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_time_add_owner",
+      "artifact": "analysis/decompile/ida/functions/00441b90-advance_timer_counters.c",
+      "required_substrings": [
+        "void __thiscall advance_timer_counters(cRTime *time, float delta_ticks)",
+        "time->total_seconds",
+        "time->second_fraction",
+        "time->seconds",
+        "time->minutes",
+        "time->display_hundredths",
+        "time->display_thousandths"
+      ],
+      "forbidden_substrings": [
+        "advance_timer_counters(Time *time",
+        "int __thiscall advance_timer_counters",
+        "return result"
+      ]
+    },
+    {
+      "name": "ida_time_trial_formatter_owner",
+      "artifact": "analysis/decompile/ida/functions/00448960-format_time_trial_string.c",
+      "required_substrings": [
+        "char *__thiscall format_time_trial_string(TimeTrial *time_trial, cRTime *timer)",
+        "timer->total_seconds",
+        "timer->minutes",
+        "timer->seconds",
+        "timer->display_thousandths",
+        "timer->display_hundredths"
+      ],
+      "forbidden_substrings": [
+        "format_time_trial_string(TimeTrial *time_trial, Time *timer)",
+        "arg1["
+      ]
+    },
+    {
       "name": "bn_crt_variadic_time_trial_fields",
       "artifact": "analysis/decompile/binja/functions/00448960-format_time_trial_string.c",
       "required_substrings": [

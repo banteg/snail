@@ -107,7 +107,13 @@ The current high-confidence `Player` fields are:
 - `+0x2964`: `cached_camera_target_world`
   - world-space camera anchor consumed by `update_cameraman`
 - `+0x2e4`: `total_score`
-- `+0x2e8`: six-dword `stopwatch`
+- `+0x2e8`: exact 0x18-byte `cRTime stopwatch`
+  - `+0x00`: accumulated total seconds
+  - `+0x04/+0x08`: minutes and seconds within the current minute
+  - `+0x0c/+0x10`: display hundredths and thousandths
+  - `+0x14`: fractional second accumulator
+  - exact Windows `cRTime::Zero()` and `cRTime::Add(float)` are 8/8 and 38/38;
+    iOS and Android preserve both authored identities and the same owner shape
 - `+0x300`: `score_tail`
 - `+0x304`: `replay_start_cursor`
   - `update_click_start` captures `cRSubGame::replay_update_cursor` here
@@ -664,6 +670,10 @@ only as historical decompiler spelling in older evidence.
   - `+0x355c0c`: live salt hazards
   - `+0x355cb4`: tile 29/30 special track bodies
   - the other five constructed group roles remain unknown on Windows
+- `+0x355d94`: `active_level_score`
+- `+0x355d98`: exact inline `cRTime active_level_timer`
+  - reset by `populate_runtime_track_cells_from_segments` and advanced through
+    `cRTime::Add(float)` during the live subgame update lane
 - `+0x355db0`: `speedup_pickup`
   - exact `0xb4`-byte primary `cRSubSpeedUp` singleton; `SubSpeedUp` and
     `TrackSpeedupRuntime` remain compatibility typedefs

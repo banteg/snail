@@ -10,6 +10,7 @@ from _narrow_sync import (
     apply_int_display_updates,
     apply_proto_updates,
     apply_symbol_updates,
+    apply_type_renames,
     apply_user_var_updates,
     current_struct_size,
     emit_summary,
@@ -22,6 +23,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_high_score_bank_types.h"
 
 RECORD_CURSOR_EXPECTED_SIZES = {
+    "cRTime": 0x18,
     "SubSolution": 0x1FAC0,
     "SubHighScore": 0x947648,
     "cRSubGame": 0x1272838,
@@ -419,8 +421,15 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
+    type_rename_operations = apply_type_renames(
+        REPO_ROOT,
+        target=args.target,
+        renames=(("Time", "cRTime"),),
+    )
+
     if args.record_cursor_only:
         operations = [
+            *type_rename_operations,
             require_record_cursor_dependencies(target=args.target),
             *apply_int_display_updates(
                 REPO_ROOT,
@@ -440,7 +449,10 @@ def main() -> int:
             operations=operations,
         )
 
-    operations: list[dict[str, object]] = [types_declare(REPO_ROOT, target=args.target, header_path=header_path)]
+    operations: list[dict[str, object]] = [
+        *type_rename_operations,
+        types_declare(REPO_ROOT, target=args.target, header_path=header_path),
+    ]
     operations.append(require_record_cursor_dependencies(target=args.target))
     operations.extend(apply_symbol_updates(REPO_ROOT, target=args.target, updates=SYMBOL_UPDATES))
     operations.extend(apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES))

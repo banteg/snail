@@ -478,11 +478,11 @@ PROTO_UPDATES = (
     ),
     (
         "zero_timer_counters",
-        "void __thiscall zero_timer_counters(Time* time)",
+        "void __thiscall zero_timer_counters(cRTime* time)",
     ),
     (
         "advance_timer_counters",
-        "void __thiscall advance_timer_counters(Time* time, float delta_ticks)",
+        "void __thiscall advance_timer_counters(cRTime* time, float delta_ticks)",
     ),
     (
         "update_banner",
@@ -608,7 +608,7 @@ PROTO_UPDATES = (
     ),
     (
         "format_time_trial_string",
-        "char* __thiscall format_time_trial_string(TimeTrial* time_trial, Time* timer)",
+        "char* __thiscall format_time_trial_string(TimeTrial* time_trial, cRTime* timer)",
     ),
     (
         "update_subgame_camera",
@@ -810,6 +810,7 @@ def main() -> int:
             ("SubgameRuntime", "cRSubGame"),
             ("GalaxyRouteSlot", "GalaxyStar"),
             ("Galaxy", "cRGalaxy"),
+            ("Time", "cRTime"),
             *TIMES_UP_TYPE_RENAMES,
         ),
     )
@@ -840,6 +841,7 @@ def main() -> int:
                 "cRSubGame",
                 "SubgameRuntime",
                 "SubPause",
+                "cRTime",
                 "TimeTrialCourseRecord",
                 "TimeTrial",
                 "GUI",

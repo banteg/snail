@@ -21,7 +21,7 @@ void __thiscall initialize_subgame(cRSubGame *game)
   FrontendWidget **life_stock_widgets; // esi
   tColour *v16; // eax
   int32_t v17; // eax
-  SubSolutionScoreOrTime *p_score_or_time; // edx
+  ScoreOrTime *p_score_or_time; // edx
   char *v19; // eax
   tColour *v20; // eax
   char *v21; // eax
@@ -32,7 +32,7 @@ void __thiscall initialize_subgame(cRSubGame *game)
   int v26; // edx
   float x; // [esp+0h] [ebp-40h]
   int v28; // [esp+24h] [ebp-1Ch]
-  Time color; // [esp+28h] [ebp-18h] BYREF
+  cRTime color; // [esp+28h] [ebp-18h] BYREF
 
   v1 = 3200;
   p_fringe_front = &game->runtime_cells[0][0].fringe_front;
@@ -90,7 +90,7 @@ LABEL_15:
   qmemcpy(&game->active_level_timer, &postal_records->score_or_time, sizeof(game->active_level_timer));
 LABEL_16:
   if ( game->selected_level_record_persistent != 0 )
-    game->rate_or_level_arg.level_arg_tail = game->selected_level_record->replay_speed_scalar.bits;
+    game->rate_or_level_arg.level_arg_tail = game->selected_level_record->replay_speed_scalar_bits;
   game->subgame_pause_gate = 0;
   game->resume_requested = 0;
   game->pause_fade = 0.0;
@@ -140,7 +140,7 @@ LABEL_16:
     {
       p_score_or_time = &game->sub_high_score.current_result_record.score_or_time;
 LABEL_24:
-      v19 = format_time_trial_string(&game->time_trial, (Time *)p_score_or_time);
+      v19 = format_time_trial_string(&game->time_trial, (cRTime *)p_score_or_time);
       rstrcpy_checked_ascii((char *)&game->top_score_widget->text_buffer, v19);
       goto LABEL_29;
     }
@@ -151,7 +151,7 @@ LABEL_24:
     if ( v17 == 4 )
     {
       zero_timer_counters(&color);
-      p_score_or_time = (SubSolutionScoreOrTime *)&color;
+      p_score_or_time = (ScoreOrTime *)&color;
       goto LABEL_24;
     }
     border_add_text_number(game->top_score_widget, 0);
@@ -246,7 +246,7 @@ LABEL_45:
         }
         return;
       }
-      game->rate_or_level_arg.level_arg_tail = game->selected_level_record->replay_speed_scalar.bits;
+      game->rate_or_level_arg.level_arg_tail = game->selected_level_record->replay_speed_scalar_bits;
     }
     reset_subgame(game);
   }

@@ -18,19 +18,22 @@ typedef struct ScoreBucketBlock {
     int32_t values[6];
 } ScoreBucketBlock;
 
-typedef struct Time {
+typedef struct cRTime {
     float total_seconds;
     int32_t minutes;
     int32_t seconds;
     int32_t display_hundredths;
     int32_t display_thousandths;
     float second_fraction;
-} Time;
+} cRTime;
+
+typedef char cRTime_must_be_0x18[
+    (sizeof(cRTime) == 0x18) ? 1 : -1];
 
 typedef union ScoreOrTime {
     float total_seconds;
     ScoreBucketBlock stats;
-    Time timer;
+    cRTime timer;
 } ScoreOrTime;
 
 typedef union SubSolutionScalar {

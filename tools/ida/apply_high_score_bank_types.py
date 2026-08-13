@@ -10,6 +10,9 @@ import ida_name
 import ida_pro
 import ida_typeinf
 import idc
+from type_alias_migration import migrate_equivalent_struct_aliases
+
+HIGH_SCORE_OWNER_TYPE_ALIASES = (("Time", "cRTime", 0x18),)
 
 
 TRUSTED_DECLARATIONS = [
@@ -91,6 +94,13 @@ def _normalize_type_text(value: str | None) -> str | None:
 def _declaration_to_observed_type(selector: str, declaration: str) -> str:
     unnamed = re.sub(rf"\b{re.escape(selector)}\s*(?=\()", "", declaration, count=1)
     return _normalize_type_text(unnamed) or ""
+
+
+def _named_struct_size(name: str) -> int | None:
+    value = ida_typeinf.tinfo_t()
+    if not value.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
+        return None
+    return value.get_size()
 
 
 def _normalize_struct_pointer_type(value: str) -> str:
@@ -579,13 +589,37 @@ def _sync_mini_delete_source_lvar() -> dict[str, object]:
 
 def _sync_types(header_path: pathlib.Path) -> int:
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
+    type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(HIGH_SCORE_OWNER_TYPE_ALIASES)
+    )
+    type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in type_alias_migrations
+        if result.get("status") == "failed"
+    ]
+    time_owner_size = _named_struct_size("cRTime")
 
     applied = 0
     unchanged = 0
     renamed = 0
     names_unchanged = 0
     missing = []
-    failed = []
+    failed = [*type_alias_failures]
+    if time_owner_size != 0x18:
+        failed.append(
+            {
+                "selector": "cRTime",
+                "reason": "owner_size_mismatch",
+                "expected": 0x18,
+                "observed": time_owner_size,
+            }
+        )
 
     for address, name in TRUSTED_NAMES:
         current_name = idc.get_name(address)
@@ -740,6 +774,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "parse_errors": parse_errors,
+                "type_alias_migrations": type_alias_migrations,
+                "time_owner_size": time_owner_size,
                 "applied": applied,
                 "unchanged": unchanged,
                 "renamed": renamed,

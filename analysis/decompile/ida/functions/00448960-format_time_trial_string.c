@@ -2,17 +2,17 @@
 /* function: format_time_trial_string @ 0x448960 */
 /* selector: format_time_trial_string */
 
-char *__stdcall sub_448960(int a1)
+// Implements `cRTimeTrial::TimeString(cRTime&)`: formats one authored cRTime value into the shared Time Trial HUD buffer. The receiver is the exact 0x330-byte TimeTrial owner embedded at cRSubGame +0xff25e0, although the body does not read receiver fields.
+char *__thiscall format_time_trial_string(TimeTrial *time_trial, cRTime *timer)
 {
-  if ( *(float *)a1 == 0.0 )
+  if ( timer->total_seconds == 0.0 )
   {
-    sprintf(MEMORY[0x751478], asc_4AC5BC);
+    sprintf(g_time_trial_string, asc_4AC5BC);
   }
   else
   {
-    sprintf(MEMORY[0x751478], "%1i:%02i:%03i", *(_DWORD *)(a1 + 4), *(_DWORD *)(a1 + 8), *(_DWORD *)(a1 + 16));
-    sprintf(MEMORY[0x751478], "%1i:%02i:%02i", *(_DWORD *)(a1 + 4), *(_DWORD *)(a1 + 8), *(_DWORD *)(a1 + 12));
+    sprintf(g_time_trial_string, "%1i:%02i:%03i", timer->minutes, timer->seconds, timer->display_thousandths);
+    sprintf(g_time_trial_string, "%1i:%02i:%02i", timer->minutes, timer->seconds, timer->display_hundredths);
   }
-  return MEMORY[0x751478];
+  return g_time_trial_string;
 }
-

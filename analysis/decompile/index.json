@@ -1,52 +1,64 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 7,
+  "function_count": 10,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 7,
-  "ida_exported": 7,
+  "bn_exported": 10,
+  "ida_exported": 10,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
   "sync_ida_symbols": false,
   "binja_refreshed": true,
-  "binja_analysis_refreshed": false,
+  "binja_analysis_refreshed": true,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "render_game_frame",
-      "address": "0x40a490"
+      "name": "update_challenge_setup_screen",
+      "address": "0x416370"
     },
     {
-      "name": "initialize_subgoldy",
-      "address": "0x43a9c0"
+      "name": "initialize_high_score_entry",
+      "address": "0x417a70"
+    },
+    {
+      "name": "populate_runtime_track_cells_from_segments",
+      "address": "0x435eb0"
+    },
+    {
+      "name": "initialize_subgame",
+      "address": "0x4374b0"
+    },
+    {
+      "name": "reset_subgame",
+      "address": "0x437b10"
+    },
+    {
+      "name": "update_subgame",
+      "address": "0x438b90"
     },
     {
       "name": "update_subgoldy",
       "address": "0x43b120"
     },
     {
-      "name": "dispatch_cutscene_animation",
-      "address": "0x444600"
+      "name": "zero_timer_counters",
+      "address": "0x441b70"
     },
     {
-      "name": "set_weapon_animation",
-      "address": "0x4446e0"
+      "name": "advance_timer_counters",
+      "address": "0x441b90"
     },
     {
-      "name": "initialize_anim_manager",
-      "address": "0x4447c0"
-    },
-    {
-      "name": "update_anim_manager",
-      "address": "0x4447d0"
+      "name": "format_time_trial_string",
+      "address": "0x448960"
     }
   ],
-  "health_check_count": 1172,
+  "health_check_count": 1177,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"
