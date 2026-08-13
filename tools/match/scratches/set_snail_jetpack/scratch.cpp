@@ -5,10 +5,9 @@
 
 void cRSnail::SetJetPack(int state)
 {
-    int input_state = state;
-    register int target_state;
+    int target_state;
 
-    switch (input_state) {
+    switch (state) {
     case 0:
         target_state = 0;
         break;
@@ -16,7 +15,7 @@ void cRSnail::SetJetPack(int state)
         target_state = 4;
         break;
     default:
-        target_state = input_state;
+        target_state = state;
         break;
     }
 

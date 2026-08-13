@@ -17,3 +17,15 @@ no behavior or owner is missing.
 The matcher source now uses authored `SetJetPack` and exact VC6 symbol
 `?SetJetPack@cRSnail@@QAEXH@Z`; `set_snail_jetpack` remains only the stable
 scratch and Windows-address identity.
+
+## Direct state mapping cleanup (2026-08-13)
+
+The retained source no longer uses the old `register target_state` hint or a
+redundant `input_state` copy. A recorded 14-form mapping sweep already proves
+that the ordinary `switch (state)` form is byte-identical at **86.18%**,
+61/62 instructions, prefix 0, and eight clean references. The coercive spelling
+therefore carried no matching evidence and obscured the authored state map.
+
+The experiment ledger preserves the complete mapping, local-lifetime, and
+transition results. Their three mutation recipes depended on the removed
+source text and are pruned rather than left as stale runnable inputs.

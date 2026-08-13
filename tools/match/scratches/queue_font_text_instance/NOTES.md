@@ -11,3 +11,9 @@ symbol; the iOS corpus has no retained export. Windows locally proves borrowed
 
 The directory and manifest retain `queue_font_text_instance` as the stable
 matcher identifier.
+
+## Register-hint cleanup (2026-08-13)
+
+Removing the legacy `register` hint from the text source cursor is byte-neutral:
+the focused result remains exact at **100.00%**, 73/73 instructions, with all
+24 references clean. The source now records only the authored cursor lifetime.

@@ -26,3 +26,9 @@ That hard boundary rejects IDA's old next-symbol-derived `char[8512]` guess,
 which swallowed three distant BASS function pointers before the registered
 handle table. The archive/audio replay now guards the exact stale type, narrows
 the cache to `char[256]`, and types the four proven pointer owners it exposed.
+
+## Register-hint cleanup (2026-08-13)
+
+Removing the receiver, source-path, and path-length `register` hints preserves
+the exact **100.00%**, 70/70-instruction result and all 14 clean references.
+The matching source no longer relies on source-level register coercion.

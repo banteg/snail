@@ -16,3 +16,9 @@ Source-shape note:
   both the short-path guard and failed stream creation. Early returns or a
   `goto failed` spelling keep semantics but regress the branch layout; the
   nested success path followed by one final `report_errorf` matches.
+
+## Register-hint cleanup (2026-08-13)
+
+The receiver, source-path, and path-length locals no longer carry legacy
+`register` hints. VC6 emits the same exact body: **100.00%**, 68/68
+instructions, with all 11 references clean.

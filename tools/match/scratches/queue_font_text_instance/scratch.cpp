@@ -32,7 +32,7 @@ void FontPrint(
             ((cFontPrintBuffer*)((char*)g_font_queue + offset))->text_wave_amplitude = text_wave_amplitude;
             ((cFontPrintBuffer*)((char*)g_font_queue + offset))->shadow_enabled = shadow_enabled;
 
-            register char* source = text;
+            char* source = text;
             while (*source != '\0') {
                 if (cursor - g_font_text_buffer > FONT_TEXT_BUFFER_CAPACITY - 2) {
                     *cursor = '\0';

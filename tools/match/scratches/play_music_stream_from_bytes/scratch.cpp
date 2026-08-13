@@ -9,9 +9,9 @@ int report_errorf(char* format, ...);
 int AudioBackend::play_music_stream_from_bytes(
     char* path, char* bytes, int byte_count, char play_mode)
 {
-    register AudioBackend* backend = this;
-    register char* source_path = path;
-    register int path_length = strlen(source_path);
+    AudioBackend* backend = this;
+    char* source_path = path;
+    int path_length = strlen(source_path);
     Rstrcpy(g_cached_music_path, source_path);
 
     if (g_active_music_stream != 0) {
