@@ -3,7 +3,7 @@
 /* selector: update_damage_gauge */
 
 // Advances the player-embedded contact-damage gauge controller at `Player+0x3c4`, smoothing its displayed fill, driving the warning/drain lifecycle, rendering the sprite-backed gauge, and applying state-2 drain. `cRSubGame::subgame_pause_gate` suspends updates; `Player::attachment_exit_pending` and `completion_handoff_active` gate warning startup; grounded state is `Player::transform.position.y == 0.49f`; and drain exits also read `completion_handoff_timer`, `resurrect_progress`, and `presentation.cutscene.state`. Android and iOS preserve this exact owner role as `cRDamageGuage::AI()`.
-void __thiscall update_damage_gauge(DamageGuage *damage_guage)
+void __thiscall update_damage_gauge(cRDamageGuage *damage_guage)
 {
   GameRoot *v2; // ecx
   double v3; // st7

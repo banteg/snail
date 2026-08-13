@@ -139,3 +139,12 @@ force bypass, named invincibility capability, independent draining guards,
 and `+0x0c` evidence boundary are unchanged. `DamageGuage` remains a
 compatibility typedef, and focused matching stays exact at 94/94 instructions
 with all 24 relocatable operands clean.
+
+## 2026-08-13 canonical analysis-owner replay
+
+The live Windows decompiler databases independently agreed on the complete
+0x2c-byte receiver and its `Player +0x3c4` embed before mutation. The narrow
+replay now retires their generic analysis-only `DamageGuage` record, verifies
+the canonical `cRDamageGuage` member graph, and applies the exact
+`Take(float, bool)` ABI. The matcher compatibility typedef remains source-only;
+the exact 94/94 body and all 24 clean operands are unchanged.

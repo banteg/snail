@@ -34,3 +34,11 @@ The matcher now emits the Windows no-argument lifecycle member as
 for shared callers. This deliberately keeps the Windows ABI narrower than the
 iOS `Init(cRSubGoldy*)` variant while preserving the exact 12/12 body and the
 write-only `unresolved_byte_0c` at `+0x0c`.
+
+## 2026-08-13 canonical analysis-owner replay
+
+Live Binary Ninja and IDA both began with the same exact 0x2c-byte generic
+`DamageGuage` record, the same `Player +0x3c4` embed, and the same no-argument
+`thiscall` receiver. The guarded replay now retires that analysis-only name in
+favor of `cRDamageGuage`, verifies every member and the Player embed, and
+reapplies the authored receiver. The matcher remains exact at 12/12.

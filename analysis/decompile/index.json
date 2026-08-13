@@ -1,61 +1,53 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 10,
+  "function_count": 8,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 10,
-  "ida_exported": 10,
+  "bn_exported": 8,
+  "ida_exported": 8,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
   "sync_ida_symbols": false,
   "binja_refreshed": true,
-  "binja_analysis_refreshed": true,
+  "binja_analysis_refreshed": false,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_subgame",
-      "address": "0x4374b0"
+      "name": "build_subgame_level",
+      "address": "0x437eb0"
     },
     {
-      "name": "destroy_subgame",
-      "address": "0x438850"
+      "name": "initialize_subgoldy",
+      "address": "0x43a9c0"
     },
     {
       "name": "update_subgoldy",
       "address": "0x43b120"
     },
     {
+      "name": "calc_subgame_rate",
+      "address": "0x4404d0"
+    },
+    {
+      "name": "initialize_damage_gauge",
+      "address": "0x440fa0"
+    },
+    {
       "name": "update_damage_gauge",
       "address": "0x440fd0"
     },
     {
-      "name": "initialize_warning",
-      "address": "0x446e80"
+      "name": "apply_damage_gauge_delta",
+      "address": "0x4413f0"
     },
     {
-      "name": "uninit_warning",
-      "address": "0x446f10"
-    },
-    {
-      "name": "start_warning",
-      "address": "0x446f30"
-    },
-    {
-      "name": "stop_warning",
-      "address": "0x446f50"
-    },
-    {
-      "name": "stop_warning_sample",
-      "address": "0x446f60"
-    },
-    {
-      "name": "update_warning",
-      "address": "0x446f80"
+      "name": "handle_subgoldy_collisions",
+      "address": "0x444cf0"
     }
   ],
   "health_check_count": 1172,

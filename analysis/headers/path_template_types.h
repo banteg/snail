@@ -1848,7 +1848,7 @@ typedef enum DamageGuageState {
 } DamageGuageState;
 
 /* Authored cRDamageGuage, exact 0x2c contact-damage owner. */
-typedef struct DamageGuage {
+typedef struct cRDamageGuage {
     DamageGuageState state;
     float pulse_progress;
     float pulse_step;
@@ -1862,7 +1862,10 @@ typedef struct DamageGuage {
     float display_fill;
     float hit_flash_progress;
     float hit_flash_step;
-} DamageGuage;
+} cRDamageGuage;
+
+typedef char cRDamageGuage_must_be_0x2c[
+    (sizeof(cRDamageGuage) == 0x2c) ? 1 : -1];
 
 typedef struct JetParticleSlot {
     Sprite* sprite;
@@ -2552,7 +2555,7 @@ typedef struct Player {
     float last_ring_spawn_z;
     int32_t player_slot;
     cRPathFollowGoldy follow_state;
-    DamageGuage damage_gauge;
+    cRDamageGuage damage_gauge;
     ProgressBar progress_bar;
     uint8_t _pad_3f1[0x3];
     cRWarning warning;
@@ -3008,6 +3011,13 @@ void __thiscall dispatch_cutscene_animation(Snail* snail, int32_t animation_id, 
 void __thiscall initialize_cutscene_ai(CutScene* cutscene);
 void __thiscall update_cutscene(CutScene* cutscene);
 void __thiscall update_progress_bar(ProgressBar* progress_bar);
+void __thiscall initialize_damage_gauge(cRDamageGuage* damage_guage);
+void __thiscall update_damage_gauge(cRDamageGuage* damage_guage);
+void __thiscall apply_damage_gauge_delta(
+    cRDamageGuage* damage_guage,
+    float delta,
+    bool force
+);
 void __thiscall initialize_warning(cRWarning* warning);
 void __thiscall uninit_warning(cRWarning* warning);
 void __thiscall start_warning(cRWarning* warning);

@@ -169,12 +169,12 @@ forwards through `RShellSoundStopLooped @ 0x432de0` to the matching backend
 stop edge at `0x449a10`.
 
 There is no hidden warning-channel field or earlier stored handle: the exact
-Windows `Warning` owner is only `0x10` bytes (`state`, `phase`, `phase_step`,
+Windows `cRWarning` owner is only `0x10` bytes (`state`, `phase`, `phase_step`,
 and `border`), and the seven-instruction `StopSample` body contains no store
 between the play return and stop argument. In source terms, sample 50 is
 started and the returned channel is stopped immediately. This is the authored
 Windows implementation, not a decompiler artifact or a request to retain a
-channel in `DamageGuage`.
+channel in `cRDamageGuage`.
 
 Mobile evidence fixes the ownership while documenting the platform split.
 Android `cRDamageGuage::AI()` invokes `cRWarning::StopSample()` on the same
@@ -238,3 +238,13 @@ The three recorded render-local mutation grids still account for the same 16
 recorded variants. Only the method-signature anchor in the hoist grid was
 mechanically updated for the authored owner; no variant was reopened or added,
 and the historical ledger remains untouched.
+
+## 2026-08-13 canonical analysis-owner replay
+
+Both live Windows decompilers independently exposed the same exact 0x2c-byte
+receiver at `Player +0x3c4`; Android and iOS retain the symbolized `AI()` body
+over the same field range. The guarded replay therefore retires the generic
+analysis-only `DamageGuage` type and applies `cRDamageGuage*` to this method.
+This is an ownership and ABI recovery only: the scratch remains honestly
+94.03% at 268/268 instructions, with the documented `alpha` / `mask_height`
+stack-slot allocation residual and all 65 relocatable operands clean.

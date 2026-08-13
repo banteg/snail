@@ -436,6 +436,11 @@ Current practical read:
 
 - `handle_subgoldy_collisions` feeds this controller through `apply_damage_gauge_delta(&player->damage_gauge, delta, force)`
 - `update_subgoldy` ticks it every frame through `update_damage_gauge(&player->damage_gauge)`
+- the paired narrow replay retires the generic analysis-only `DamageGuage`
+  record in both decompilers, verifies the exact `cRDamageGuage` layout and
+  `Player +0x3c4` embed, and applies the authored receiver to `Init`, `AI`, and
+  `Take(float, bool)`; this ownership result does not relabel the documented
+  `AI` render-local stack-slot residual as an exact source match
 - the adjacent authored `cRProgressBar` is an empty one-byte owner at
   `player + 0x3f0`; its exact `AI` ignores `this`, but typed callsites and the
   mobile class names preserve ownership while both decompilers now expose its
@@ -448,7 +453,7 @@ Current practical read:
     wrap into opaque and play sample 50; opaque then advances back into the
     fading/zero-hold half-cycle until `stop_warning` returns it to inactive
   - the paired narrow replay guards this exact owner in both databases: all six
-    lifecycle methods are `void __thiscall(Warning*)`, IDA now renders the
+    lifecycle methods are `void __thiscall(cRWarning*)`, IDA now renders the
     state/phase/border fields directly, and the receiver-free Windows
     `StopSample` body remains a member because the mobile ports retain that edge
 - `cRDamageGuage::Take` ignores unforced positive damage while

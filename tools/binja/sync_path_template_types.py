@@ -83,6 +83,23 @@ NUKE_REANALYSIS_FUNCTIONS = (
     "update_subgoldy",
 )
 
+DAMAGE_GUAGE_OWNER_SIZES = {
+    "cRDamageGuage": 0x2C,
+}
+
+DAMAGE_GUAGE_OWNER_TYPE_RENAMES = (("DamageGuage", "cRDamageGuage"),)
+
+DAMAGE_GUAGE_REANALYSIS_FUNCTIONS = (
+    "initialize_damage_gauge",
+    "update_damage_gauge",
+    "apply_damage_gauge_delta",
+    "build_subgame_level",
+    "initialize_subgoldy",
+    "update_subgoldy",
+    "handle_subgoldy_collisions",
+    "calc_subgame_rate",
+)
+
 WARNING_OWNER_SIZES = {
     "cRWarning": 0x10,
 }
@@ -621,7 +638,7 @@ REQUIRED_HEADER_STRUCTS = (
     "PathPair",
     "cRPathFollowGoldy",
     "DamageGuageState",
-    "DamageGuage",
+    "cRDamageGuage",
     "ProgressBar",
     "WarningState",
     "cRWarning",
@@ -835,6 +852,82 @@ def ensure_nuke_owner_type(
             "type_equivalence": {
                 name: type_equivalence.get(name, False)
                 for name in NUKE_OWNER_SIZES
+            },
+        }
+    return [*operations, type_operation]
+
+
+def verify_damage_guage_owner_size(*, target: str) -> dict[str, object]:
+    """Fail closed before applying the cRDamageGuage lifecycle ABIs."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=DAMAGE_GUAGE_OWNER_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in DAMAGE_GUAGE_OWNER_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"cRDamageGuage owner size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "damage_guage",
+        "owner_sizes": observed,
+    }
+
+
+def ensure_damage_guage_owner_type(
+    *, target: str, header_path: Path
+) -> list[dict[str, object]]:
+    """Retire DamageGuage only when its canonical owner graph is exact."""
+    operations = apply_type_renames(
+        REPO_ROOT,
+        target=target,
+        renames=DAMAGE_GUAGE_OWNER_TYPE_RENAMES,
+    )
+    observed_widths = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=DAMAGE_GUAGE_OWNER_SIZES,
+    )
+    type_equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    mismatched_types = tuple(
+        name
+        for name, expected_size in DAMAGE_GUAGE_OWNER_SIZES.items()
+        if (
+            observed_widths.get(name) != expected_size
+            or not type_equivalence.get(name, False)
+        )
+    )
+    if mismatched_types:
+        type_operation = types_declare_missing_only(
+            REPO_ROOT,
+            target=target,
+            header_path=header_path,
+            replace_types=mismatched_types,
+            include_types=DAMAGE_GUAGE_OWNER_SIZES,
+        )
+        type_operation["repaired_types"] = mismatched_types
+        type_operation["expected_sizes"] = {
+            name: DAMAGE_GUAGE_OWNER_SIZES[name] for name in mismatched_types
+        }
+    else:
+        type_operation = {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "cRDamageGuage owner layout already matches the header",
+            "header": str(header_path),
+            "expected_sizes": DAMAGE_GUAGE_OWNER_SIZES,
+            "type_equivalence": {
+                name: type_equivalence.get(name, False)
+                for name in DAMAGE_GUAGE_OWNER_SIZES
             },
         }
     return [*operations, type_operation]
@@ -1277,7 +1370,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x37c", "last_ring_spawn_z", "float"),
     ("0x380", "player_slot", "int32_t"),
     ("0x384", "follow_state", "cRPathFollowGoldy"),
-    ("0x3c4", "damage_gauge", "DamageGuage"),
+    ("0x3c4", "damage_gauge", "cRDamageGuage"),
     ("0x3f0", "progress_bar", "ProgressBar"),
     ("0x3f4", "warning", "cRWarning"),
     ("0x404", "lives", "int32_t"),
@@ -3274,6 +3367,17 @@ WARNING_FIELD_UPDATES = (
 
 DAMAGE_GUAGE_FIELD_UPDATES = (
     ("0x00", "state", "DamageGuageState"),
+    ("0x04", "pulse_progress", "float"),
+    ("0x08", "pulse_step", "float"),
+    ("0x0c", "unresolved_byte_0c", "uint8_t"),
+    ("0x0d", "_pad_0d", "uint8_t[0x3]"),
+    ("0x10", "warning_transition_progress", "float"),
+    ("0x14", "warning_transition_step", "float"),
+    ("0x18", "skin_hold_ticks", "int32_t"),
+    ("0x1c", "fill", "float"),
+    ("0x20", "display_fill", "float"),
+    ("0x24", "hit_flash_progress", "float"),
+    ("0x28", "hit_flash_step", "float"),
 )
 
 NUKE_FIELD_UPDATES = (
@@ -4564,15 +4668,15 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_damage_gauge",
-        "void __thiscall initialize_damage_gauge(DamageGuage* damage_guage)",
+        "void __thiscall initialize_damage_gauge(cRDamageGuage* damage_guage)",
     ),
     (
         "update_damage_gauge",
-        "void __thiscall update_damage_gauge(DamageGuage* damage_guage)",
+        "void __thiscall update_damage_gauge(cRDamageGuage* damage_guage)",
     ),
     (
         "apply_damage_gauge_delta",
-        "void __thiscall apply_damage_gauge_delta(DamageGuage* damage_guage, float delta, bool force)",
+        "void __thiscall apply_damage_gauge_delta(cRDamageGuage* damage_guage, float delta, bool force)",
     ),
     (
         "update_progress_bar",
@@ -6422,6 +6526,12 @@ def main() -> int:
             )
         )
         operations.extend(
+            ensure_damage_guage_owner_type(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        operations.extend(
             ensure_warning_owner_type(
                 target=args.target,
                 header_path=header_path,
@@ -6474,6 +6584,7 @@ def main() -> int:
         operations.append(verify_bod_core_owner_sizes(target=args.target))
         operations.append(verify_fringe_owner_sizes(target=args.target))
         operations.append(verify_nuke_owner_size(target=args.target))
+        operations.append(verify_damage_guage_owner_size(target=args.target))
         operations.append(verify_warning_owner_size(target=args.target))
         operations.append(verify_tip_owner_sizes(target=args.target))
         operations.append(verify_tutorial_owner_size(target=args.target))
@@ -6592,7 +6703,7 @@ def main() -> int:
                 ("SubSpeedUp", SUB_SPEED_UP_FIELD_UPDATES),
                 ("Banner", BANNER_FIELD_UPDATES),
                 ("cRWarning", WARNING_FIELD_UPDATES),
-                ("DamageGuage", DAMAGE_GUAGE_FIELD_UPDATES),
+                ("cRDamageGuage", DAMAGE_GUAGE_FIELD_UPDATES),
                 ("cRNuke", NUKE_FIELD_UPDATES),
                 ("ClickStart", CLICK_START_FIELD_UPDATES),
                 ("TextureRef", TEXTURE_REF_FIELD_UPDATES),
@@ -6640,6 +6751,13 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             identifiers=NUKE_REANALYSIS_FUNCTIONS,
+        )
+    )
+    operations.extend(
+        reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=DAMAGE_GUAGE_REANALYSIS_FUNCTIONS,
         )
     )
     operations.extend(

@@ -186,8 +186,8 @@ scratch additionally pins:
 ## Struct facts (player block)
 
 Exact embedded children now used here are `cRNuke` +0x150,
-`PlayerRowEventState` +0x1e8, `DamageGuage` +0x3c4, empty `ProgressBar`
-+0x3f0, `Warning` +0x3f4, `Snail` presentation +0x2984, and `Squidge`
+`PlayerRowEventState` +0x1e8, `cRDamageGuage` +0x3c4, empty `ProgressBar`
++0x3f0, `cRWarning` +0x3f4, `Snail` presentation +0x2984, and `Squidge`
 +0x4344. Damage-gauge state is the first field and skin_hold_ticks is +0x18.
 The presentation owns
 (`Object* +0x24`; the lateral/squidge writes are its
@@ -492,7 +492,7 @@ byte. Replaying that true layout improves the focused result from 74.30%
 single audited follow jump-table mismatch. No source scheduling was changed.
 
 2026-07-11 damage-owner recovery: the compact scratch-local gauge view at
-player +0x3c4 is replaced by the shared exact 0x2c-byte `DamageGuage`
+player +0x3c4 is replaced by the shared exact 0x2c-byte `cRDamageGuage`
 owner. Android `cRSubGoldy::AI()` calls `cRDamageGuage::AI()` through that
 embedded object, while the Windows jetpack controller at +0x2750 remains a
 separate neutral composite. Focused Wibo remains 72.51%, 2067/2087

@@ -3,7 +3,7 @@
 /* selector: initialize_damage_gauge */
 
 // Initializes Goldy's contact-damage gauge controller at player +0x3c4. Cross-port iOS v1.9 symbols match this helper to the intentionally misspelled `cRDamageGuage::Init(cRSubGoldy*)` owner.
-void __thiscall initialize_damage_gauge(DamageGuage *damage_guage)
+void __thiscall initialize_damage_gauge(cRDamageGuage *damage_guage)
 {
   damage_guage->pulse_step = 0.020833334;
   damage_guage->fill = 0.0;

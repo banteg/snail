@@ -381,6 +381,50 @@ EXPECTED_NUKE_PLAYER_EMBED = {
     "type": "cRNuke",
 }
 
+DAMAGE_GUAGE_OWNER_MARKERS = (
+    "typedef struct cRDamageGuage {",
+    "} cRDamageGuage;",
+    "cRDamageGuage_must_be_0x2c",
+    "cRDamageGuage damage_gauge;",
+    "void __thiscall initialize_damage_gauge(cRDamageGuage* damage_guage);",
+    "void __thiscall update_damage_gauge(cRDamageGuage* damage_guage);",
+    "void __thiscall apply_damage_gauge_delta(",
+    "cRDamageGuage* damage_guage,",
+)
+
+DAMAGE_GUAGE_OWNER_SIZES = {
+    "cRDamageGuage": 0x2C,
+}
+
+DAMAGE_GUAGE_OWNER_TYPE_ALIASES = (
+    ("DamageGuage", "cRDamageGuage", 0x2C),
+)
+
+EXPECTED_DAMAGE_GUAGE_OWNER_LAYOUT = {
+    "size": 0x2C,
+    "members": {
+        0x00: (0x04, "state", "DamageGuageState"),
+        0x04: (0x04, "pulse_progress", "float"),
+        0x08: (0x04, "pulse_step", "float"),
+        0x0C: (0x01, "unresolved_byte_0c", "uint8_t"),
+        0x0D: (0x03, "_pad_0d", "uint8_t[3]"),
+        0x10: (0x04, "warning_transition_progress", "float"),
+        0x14: (0x04, "warning_transition_step", "float"),
+        0x18: (0x04, "skin_hold_ticks", "int32_t"),
+        0x1C: (0x04, "fill", "float"),
+        0x20: (0x04, "display_fill", "float"),
+        0x24: (0x04, "hit_flash_progress", "float"),
+        0x28: (0x04, "hit_flash_step", "float"),
+    },
+}
+
+EXPECTED_DAMAGE_GUAGE_PLAYER_EMBED = {
+    "offset": "0x3c4",
+    "size": 0x2C,
+    "name": "damage_gauge",
+    "type": "cRDamageGuage",
+}
+
 WARNING_OWNER_MARKERS = (
     "typedef struct cRWarning {",
     "} cRWarning;",
@@ -624,6 +668,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x4408A0,  # advance_blink_random
     0x4408C0,  # initialize_blink_random
     0x440910,  # remove_subgame_bods
+    0x440FA0,  # initialize_damage_gauge
     0x440FD0,  # update_damage_gauge
     0x4413F0,  # apply_damage_gauge_delta
     0x4417D0,  # update_sub_lazer_projectile
@@ -2384,15 +2429,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_damage_gauge",
-        "void __thiscall initialize_damage_gauge(DamageGuage* damage_guage);",
+        "void __thiscall initialize_damage_gauge(cRDamageGuage* damage_guage);",
     ),
     (
         "update_damage_gauge",
-        "void __thiscall update_damage_gauge(DamageGuage* damage_guage);",
+        "void __thiscall update_damage_gauge(cRDamageGuage* damage_guage);",
     ),
     (
         "apply_damage_gauge_delta",
-        "void __thiscall apply_damage_gauge_delta(DamageGuage* damage_guage, float delta, bool force);",
+        "void __thiscall apply_damage_gauge_delta(cRDamageGuage* damage_guage, float delta, bool force);",
     ),
     (
         "get_track_cell_row_index",
@@ -4967,6 +5012,64 @@ def _nuke_owner_layout_readback() -> dict[str, object]:
     }
 
 
+def _damage_guage_owner_layout_readback() -> dict[str, object]:
+    """Verify the complete canonical cRDamageGuage owner and Player embed."""
+    type_name = "cRDamageGuage"
+    expected = EXPECTED_DAMAGE_GUAGE_OWNER_LAYOUT
+    observed_size = _named_struct_size(type_name)
+    observed_members = {
+        hex(offset): _named_struct_member_readback(type_name, offset)
+        for offset in expected["members"]
+    }
+    failures: list[dict[str, object]] = []
+    if observed_size != expected["size"]:
+        failures.append(
+            {
+                "selector": type_name,
+                "owner_group": "damage_guage",
+                "reason": "owner_size_mismatch",
+                "expected": expected["size"],
+                "observed": observed_size,
+            }
+        )
+    for offset, (size, name, type_text) in expected["members"].items():
+        expected_member = {
+            "offset": hex(offset),
+            "size": size,
+            "name": name,
+            "type": _normalize_udt_type(type_text),
+        }
+        observed_member = observed_members[hex(offset)]
+        if observed_member != expected_member:
+            failures.append(
+                {
+                    "selector": f"{type_name}.{name}",
+                    "owner_group": "damage_guage",
+                    "reason": "owner_member_mismatch",
+                    "expected": expected_member,
+                    "observed": observed_member,
+                }
+            )
+    player_embed = _named_struct_member_readback("Player", 0x3C4)
+    if player_embed != EXPECTED_DAMAGE_GUAGE_PLAYER_EMBED:
+        failures.append(
+            {
+                "selector": "Player.damage_gauge",
+                "owner_group": "damage_guage",
+                "reason": "embedded_owner_mismatch",
+                "expected": EXPECTED_DAMAGE_GUAGE_PLAYER_EMBED,
+                "observed": player_embed,
+            }
+        )
+    return {
+        "type": type_name,
+        "size": observed_size,
+        "members": observed_members,
+        "player_embed": player_embed,
+        "failures": failures,
+    }
+
+
 def _warning_owner_layout_readback() -> dict[str, object]:
     """Verify the complete canonical cRWarning owner and Player embed."""
     type_name = "cRWarning"
@@ -5404,6 +5507,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for marker in NUKE_OWNER_MARKERS
         if marker not in header_text
     ]
+    missing_damage_guage_owner_markers = [
+        marker
+        for marker in DAMAGE_GUAGE_OWNER_MARKERS
+        if marker not in header_text
+    ]
     missing_warning_owner_markers = [
         marker
         for marker in WARNING_OWNER_MARKERS
@@ -5452,6 +5560,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or missing_bod_core_owner_markers
         or missing_fringe_owner_markers
         or missing_nuke_owner_markers
+        or missing_damage_guage_owner_markers
         or missing_warning_owner_markers
         or missing_tip_owner_markers
         or missing_tutorial_owner_markers
@@ -5484,6 +5593,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
             marker_failures.append({"reason": "noncanonical_fringe_header"})
         if missing_nuke_owner_markers:
             marker_failures.append({"reason": "noncanonical_nuke_owner_header"})
+        if missing_damage_guage_owner_markers:
+            marker_failures.append(
+                {"reason": "noncanonical_damage_guage_owner_header"}
+            )
         if missing_warning_owner_markers:
             marker_failures.append(
                 {"reason": "noncanonical_warning_owner_header"}
@@ -5532,6 +5645,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "missing_bod_core_owner_markers": missing_bod_core_owner_markers,
                     "missing_fringe_owner_markers": missing_fringe_owner_markers,
                     "missing_nuke_owner_markers": missing_nuke_owner_markers,
+                    "missing_damage_guage_owner_markers": (
+                        missing_damage_guage_owner_markers
+                    ),
                     "missing_warning_owner_markers": (
                         missing_warning_owner_markers
                     ),
@@ -5590,6 +5706,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
             "result": result,
         }
         for result in nuke_owner_type_alias_migrations
+        if result.get("status") == "failed"
+    ]
+    damage_guage_owner_type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(DAMAGE_GUAGE_OWNER_TYPE_ALIASES)
+    )
+    damage_guage_owner_type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "owner_group": "damage_guage",
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in damage_guage_owner_type_alias_migrations
         if result.get("status") == "failed"
     ]
     warning_owner_type_alias_migrations = (
@@ -5675,6 +5806,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
         }
         if parse_errors or nuke_owner_type_alias_failures
         else _nuke_owner_layout_readback()
+    )
+    damage_guage_owner_sizes = {
+        name: _named_struct_size(name)
+        for name in DAMAGE_GUAGE_OWNER_SIZES
+    }
+    damage_guage_owner_layout_readback = (
+        {
+            "type": "cRDamageGuage",
+            "size": None,
+            "members": {},
+            "player_embed": None,
+            "failures": [],
+        }
+        if parse_errors or damage_guage_owner_type_alias_failures
+        else _damage_guage_owner_layout_readback()
     )
     warning_owner_sizes = {
         name: _named_struct_size(name)
@@ -5825,6 +5971,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in NUKE_OWNER_SIZES.items()
         if nuke_owner_sizes[name] != expected_size
     ]
+    damage_guage_owner_size_failures = [
+        {
+            "selector": name,
+            "owner_group": "damage_guage",
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": damage_guage_owner_sizes[name],
+        }
+        for name, expected_size in DAMAGE_GUAGE_OWNER_SIZES.items()
+        if damage_guage_owner_sizes[name] != expected_size
+    ]
     warning_owner_size_failures = [
         {
             "selector": name,
@@ -5878,6 +6035,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         + fringe_owner_size_failures
         + nuke_owner_size_failures
         + nuke_owner_layout_readback["failures"]
+        + damage_guage_owner_size_failures
+        + damage_guage_owner_layout_readback["failures"]
         + warning_owner_size_failures
         + warning_owner_layout_readback["failures"]
         + tip_owner_size_failures
@@ -6001,6 +6160,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         parse_errors
         or fringe_owner_type_alias_failures
         or nuke_owner_type_alias_failures
+        or damage_guage_owner_type_alias_failures
         or warning_owner_type_alias_failures
         or tip_owner_type_alias_failures
         or tutorial_owner_type_alias_failures
@@ -6017,6 +6177,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "nuke_owner_type_alias_migrations": (
                         nuke_owner_type_alias_migrations
+                    ),
+                    "damage_guage_owner_type_alias_migrations": (
+                        damage_guage_owner_type_alias_migrations
                     ),
                     "warning_owner_type_alias_migrations": (
                         warning_owner_type_alias_migrations
@@ -6035,6 +6198,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "fringe_owner_sizes": fringe_owner_sizes,
                     "nuke_owner_sizes": nuke_owner_sizes,
                     "nuke_owner_layout_readback": nuke_owner_layout_readback,
+                    "damage_guage_owner_sizes": damage_guage_owner_sizes,
+                    "damage_guage_owner_layout_readback": (
+                        damage_guage_owner_layout_readback
+                    ),
                     "warning_owner_sizes": warning_owner_sizes,
                     "warning_owner_layout_readback": (
                         warning_owner_layout_readback
@@ -6058,6 +6225,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "failed": (
                         fringe_owner_type_alias_failures
                         + nuke_owner_type_alias_failures
+                        + damage_guage_owner_type_alias_failures
                         + warning_owner_type_alias_failures
                         + tip_owner_type_alias_failures
                         + tutorial_owner_type_alias_failures
@@ -6780,6 +6948,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "nuke_owner_type_alias_migrations": (
                     nuke_owner_type_alias_migrations
                 ),
+                "damage_guage_owner_type_alias_migrations": (
+                    damage_guage_owner_type_alias_migrations
+                ),
                 "warning_owner_type_alias_migrations": (
                     warning_owner_type_alias_migrations
                 ),
@@ -6797,6 +6968,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "fringe_owner_sizes": fringe_owner_sizes,
                 "nuke_owner_sizes": nuke_owner_sizes,
                 "nuke_owner_layout_readback": nuke_owner_layout_readback,
+                "damage_guage_owner_sizes": damage_guage_owner_sizes,
+                "damage_guage_owner_layout_readback": (
+                    damage_guage_owner_layout_readback
+                ),
                 "warning_owner_sizes": warning_owner_sizes,
                 "warning_owner_layout_readback": warning_owner_layout_readback,
                 "tip_owner_sizes": tip_owner_sizes,

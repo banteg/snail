@@ -14542,8 +14542,17 @@ def test_presentation_wobble_view_stays_exact_and_replayable() -> None:
         assert field in scratch
 
 
-def test_damage_guage_state_ownership_stays_aligned() -> None:
+def test_damage_guage_replay_keeps_exact_owner_and_three_member_abis() -> None:
     repo_root = Path(__file__).parents[1]
+    binja_sync = (BINJA_DIR / "sync_damage_guage_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_focused_sync = (IDA_DIR / "apply_damage_guage_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runner = (IDA_DIR / "sync_damage_guage_types.py").read_text(
+        encoding="utf-8"
+    )
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
     )
@@ -14553,14 +14562,36 @@ def test_damage_guage_state_ownership_stays_aligned() -> None:
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
+    focused_header = (HEADER_DIR / "damage_guage_types.h").read_text(
+        encoding="utf-8"
+    )
     matcher_header = (
         repo_root / "tools/match/include/damage_guage.h"
     ).read_text(encoding="utf-8")
 
+    for source in (binja_sync, ida_focused_sync, path_sync, ida_sync):
+        assert (
+            "void __thiscall initialize_damage_gauge(cRDamageGuage* damage_guage)"
+            in source
+        )
+        assert (
+            "void __thiscall update_damage_gauge(cRDamageGuage* damage_guage)"
+            in source
+        )
+        assert (
+            "apply_damage_gauge_delta(cRDamageGuage* damage_guage, "
+            "float delta, bool force)"
+        ) in source
+
+    assert '"cRDamageGuage": 0x2C' in binja_sync
+    assert 'OWNER_TYPE_RENAMES = (("DamageGuage", "cRDamageGuage"),)' in binja_sync
+    assert '"DamageGuageState": 0x04' in binja_sync
+    assert '("cRDamageGuage", DAMAGE_GUAGE_FIELD_UPDATES)' in binja_sync
+    assert '("0x3c4", "damage_gauge", "cRDamageGuage")' in binja_sync
     assert '"DamageGuageState",' in path_sync
     assert '("0x00", "state", "DamageGuageState")' in path_sync
     bool_take = (
-        "apply_damage_gauge_delta(DamageGuage* damage_guage, "
+        "apply_damage_gauge_delta(cRDamageGuage* damage_guage, "
         "float delta, bool force)"
     )
     assert bool_take in path_sync
@@ -14571,10 +14602,34 @@ def test_damage_guage_state_ownership_stays_aligned() -> None:
         "apply_damage_gauge_delta",
     ):
         assert f'"{function_name}"' in ida_sync
-    for header in (analysis_header, matcher_header):
+    for header in (focused_header, analysis_header, matcher_header):
         assert "DAMAGE_GUAGE_STATE_MONITORING = 0" in header
         assert "DAMAGE_GUAGE_STATE_WARNING_TRANSITION = 1" in header
         assert "DAMAGE_GUAGE_STATE_DRAINING = 2" in header
+        assert "cRDamageGuage" in header
+
+    assert "typedef struct cRDamageGuage {" in focused_header
+    assert "typedef struct DamageGuage {" not in focused_header
+    assert "cRDamageGuage_must_be_0x2c" in focused_header
+    assert "typedef struct cRDamageGuage {" in analysis_header
+    assert "typedef struct DamageGuage {" not in analysis_header
+    assert "cRDamageGuage damage_gauge;" in analysis_header
+    assert "cRDamageGuage_must_be_0x2c" in analysis_header
+    assert 'EXPECTED_OWNER_SIZES = {\n    "cRDamageGuage": 0x2C,' in ida_focused_sync
+    assert '("DamageGuage", "cRDamageGuage", 0x2C)' in ida_focused_sync
+    assert "EXPECTED_OWNER_LAYOUT" in ida_focused_sync
+    assert "EXPECTED_PLAYER_EMBED" in ida_focused_sync
+    assert "owner_layout_readback" in ida_focused_sync
+    assert "DAMAGE_GUAGE_OWNER_TYPE_RENAMES" in path_sync
+    assert "ensure_damage_guage_owner_type" in path_sync
+    assert "DAMAGE_GUAGE_OWNER_TYPE_ALIASES" in ida_sync
+    assert "damage_guage_owner_layout_readback" in ida_sync
+    assert "class cRDamageGuage" in matcher_header
+    assert "typedef cRDamageGuage DamageGuage;" in matcher_header
+    assert (
+        'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/damage_guage_types.h"'
+        in ida_runner
+    )
 
     consumers = {
         "initialize_damage_gauge": "DAMAGE_GUAGE_STATE_MONITORING",

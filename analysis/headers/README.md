@@ -91,6 +91,13 @@ Current checked-in example:
   - Retires the generic analysis-only `Warning` record after exact layout
     equivalence, verifies the canonical 0x10-byte `cRWarning` and its
     `Player +0x3f4` embed, then replays all six authored lifecycle receivers.
+- `damage_guage_types.h`
+- `uv run python tools/binja/sync_damage_guage_types.py`
+- `uv run python tools/ida/sync_damage_guage_types.py`
+  - Retires the generic analysis-only `DamageGuage` record after exact layout
+    equivalence, verifies the canonical 0x2c-byte `cRDamageGuage` and its
+    `Player +0x3c4` embed, then replays the authored `Init`, `AI`, and
+    `Take(float, bool)` receivers. The shipped `Guage` spelling is preserved.
 - `click_start_types.h`
 - `uv run python tools/ida/sync_click_start_types.py`
 - `frontend_replay_types.h`

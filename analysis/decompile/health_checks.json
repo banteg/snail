@@ -321,13 +321,14 @@
       "name": "ida_damage_guage_initializer_owner",
       "artifact": "analysis/decompile/ida/functions/00440fa0-initialize_damage_gauge.c",
       "required_substrings": [
-        "void __thiscall initialize_damage_gauge(DamageGuage *damage_guage)",
+        "void __thiscall initialize_damage_gauge(cRDamageGuage *damage_guage)",
         "damage_guage->state = DAMAGE_GUAGE_STATE_MONITORING",
         "damage_guage->unresolved_byte_0c = 0"
       ],
       "forbidden_substrings": [
         "void __thiscall sub_440FA0",
-        "this + 12"
+        "this + 12",
+        "initialize_damage_gauge(DamageGuage *damage_guage)"
       ]
     },
     {
@@ -350,7 +351,7 @@
       "name": "ida_damage_guage_ai_owner",
       "artifact": "analysis/decompile/ida/functions/00440fd0-update_damage_gauge.c",
       "required_substrings": [
-        "void __thiscall update_damage_gauge(DamageGuage *damage_guage)",
+        "void __thiscall update_damage_gauge(cRDamageGuage *damage_guage)",
         "damage_guage->state = DAMAGE_GUAGE_STATE_DRAINING",
         "g_game_base->subgame.player.attachment_exit_pending",
         "g_game_base->subgame.player.completion_handoff_active",
@@ -363,7 +364,8 @@
         "*(float *)(this +",
         "g_player_attachment_exit_pending_offset",
         "g_follow_force_drain_offset",
-        "play_voice_manager((int)g_voice_manager"
+        "play_voice_manager((int)g_voice_manager",
+        "update_damage_gauge(DamageGuage *damage_guage)"
       ]
     },
     {
@@ -386,7 +388,7 @@
       "name": "ida_damage_guage_take_bool_owner",
       "artifact": "analysis/decompile/ida/functions/004413f0-apply_damage_gauge_delta.c",
       "required_substrings": [
-        "void __thiscall apply_damage_gauge_delta(DamageGuage *damage_guage, float delta, bool force)",
+        "void __thiscall apply_damage_gauge_delta(cRDamageGuage *damage_guage, float delta, bool force)",
         "SLOBYTE(g_game_base->subgame.player.shoot_flags) >= 0",
         "damage_guage->state != DAMAGE_GUAGE_STATE_DRAINING",
         "g_game_base->subgame.player.trampoline_bounce_active",
@@ -397,7 +399,8 @@
         "void __thiscall sub_4413F0",
         "float *this",
         "g_invincible_damage_gate_flags_offset",
-        "play_voice_manager((int)g_voice_manager"
+        "play_voice_manager((int)g_voice_manager",
+        "apply_damage_gauge_delta(DamageGuage *damage_guage,"
       ]
     },
     {
