@@ -121,6 +121,7 @@ TIMES_UP_OWNER_TYPE_ALIASES = (("TimesUp", "cRTimesUp", 0x10),)
 TIME_OWNER_TYPE_ALIASES = (("Time", "cRTime", 0x18),)
 TIME_TRIAL_OWNER_TYPE_ALIASES = (("TimeTrial", "cRTimeTrial", 0x330),)
 GUI_OWNER_TYPE_ALIASES = (("GUI", "cRGUI", 0x28),)
+HELP_OWNER_TYPE_ALIASES = (("Help", "cRHelp", 0x04),)
 
 TIMES_UP_OWNER_EXPECTED_SIZE = 0x10
 TIMES_UP_OWNER_EXPECTED_MEMBERS = (
@@ -598,15 +599,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_help_screen",
-        "void __thiscall initialize_help_screen(Help* help);",
+        "void __thiscall initialize_help_screen(cRHelp* help);",
     ),
     (
         "destroy_help_screen",
-        "void __thiscall destroy_help_screen(Help* help);",
+        "void __thiscall destroy_help_screen(cRHelp* help);",
     ),
     (
         "update_help_screen",
-        "void __thiscall update_help_screen(Help* help);",
+        "void __thiscall update_help_screen(cRHelp* help);",
     ),
     (
         "bind_subgame_owner",
@@ -673,7 +674,7 @@ REQUIRED_CANONICAL_OWNER_MARKERS = (
     "TimeTrialCourseRecord course_records[TIME_TRIAL_COURSE_RECORD_COUNT];",
     "cRTimeTrial_must_be_0x330",
     "cRTimeTrial time_trial;",
-    "Help_must_be_0x04",
+    "cRHelp_must_be_0x04",
     "Parcel_must_be_0x8c",
     "Parcel slots[50];",
     "ParcelManager_must_be_0x1b58",
@@ -2035,6 +2036,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 *TIME_OWNER_TYPE_ALIASES,
                 *TIME_TRIAL_OWNER_TYPE_ALIASES,
                 *GUI_OWNER_TYPE_ALIASES,
+                *HELP_OWNER_TYPE_ALIASES,
                 *TIMES_UP_OWNER_TYPE_ALIASES,
             )
         )
@@ -2098,11 +2100,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "observed": time_owner_size,
             }
         )
-    help_owner_size = _named_struct_size("Help")
+    help_owner_size = _named_struct_size("cRHelp")
     if help_owner_size != HELP_OWNER_EXPECTED_SIZE:
         size_failures.append(
             {
-                "selector": "Help",
+                "selector": "cRHelp",
                 "reason": "owner_size_mismatch",
                 "expected": HELP_OWNER_EXPECTED_SIZE,
                 "observed": help_owner_size,
@@ -2616,7 +2618,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "SlugSlotCursor": _named_struct_size("SlugSlotCursor"),
                     "EnemyManager": _named_struct_size("EnemyManager"),
                     "cRGUI": _named_struct_size("cRGUI"),
-                    "Help": _named_struct_size("Help"),
+                    "cRHelp": _named_struct_size("cRHelp"),
                     "cRSplash": _named_struct_size("cRSplash"),
                     "GalaxyStar": _named_struct_size("GalaxyStar"),
                     "cRGalaxy": _named_struct_size("cRGalaxy"),

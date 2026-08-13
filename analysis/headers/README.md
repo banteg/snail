@@ -158,6 +158,13 @@ Current checked-in example:
     equivalence, verifies the authored 0x28-byte `cRGUI` at
     `cRSubGame +0x125ffe0` and the following `cRHelp` boundary, then replays
     the exact void `Init`/`UnInit` and result-bearing `AI` receivers.
+- `help_types.h`
+- `uv run python tools/binja/sync_help_types.py --target SnailMail_unwrapped.exe.bndb`
+- `uv run python tools/ida/sync_help_types.py`
+  - Retires the generic analysis-only `Help` record after exact layout
+    equivalence, verifies the four-byte `cRHelp` embed between `cRGUI` and
+    `cRSplash`, then replays the exact void `Init`, `UnInit`, and `AI`
+    receivers plus their front-end dispatcher.
 - `click_start_types.h`
 - `uv run python tools/ida/sync_click_start_types.py`
 - `frontend_replay_types.h`
@@ -170,8 +177,8 @@ Current checked-in example:
   - Reuses canonical `path_template_types.h` while replaying the narrower
     subgame-helper prototype set, so it cannot replace the recovered runtime
     children with the older sparse compatibility view. This lane also persists
-    the exact canonical cRGUI owner and its void `Init`/`UnInit` versus result-bearing
-    `AI` lifecycle contracts. The same replay owns the canonical `SubRing` /
+    the exact canonical `cRGUI` and `cRHelp` owners and their lifecycle
+    contracts. The same replay owns the canonical `SubRing` /
     `SubRingStar` / `SubRingPool` graph and its six constructor, spawn, and
     update prototypes; the old IDA-only `RingEffectRateSource` shell is retired
     because the backlink borrows the enclosing `cRSubGame` directly.
@@ -592,9 +599,9 @@ templates because it is the single accumulated `cRSubGame` and gameplay
 owner graph. It retires the layout-equivalent generic `Nuke`, `TipData` / `Tip` /
 `TipManager` and `Tutorial` records only after importing and reading back the
 exact mobile-authored `cRNuke`, `cRTipData` / `cRTip` / `cRTipManager`, and
-`cRTutorial` layouts. The front-end lifecycle slice reuses it for exact `Help`,
+`cRTutorial` layouts. The front-end lifecycle slice reuses it for exact `cRHelp`,
 `cROptions`, and `cRLoadingBar` records instead of creating another broad GameRoot
-header. Its narrow trusted declarations now preserve void Help and cROptions teardown
+header. Its narrow trusted declarations now preserve void cRHelp and cROptions teardown
 and the complete void cRLoadingBar lifecycle, while the frame-root lane owns the
 separate exact-sized BorderManager projection and `KillBorders` contract.
 

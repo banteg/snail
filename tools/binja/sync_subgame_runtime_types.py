@@ -123,6 +123,8 @@ TIME_TRIAL_TYPE_RENAMES = (("TimeTrial", "cRTimeTrial"),)
 
 GUI_TYPE_RENAMES = (("GUI", "cRGUI"),)
 
+HELP_TYPE_RENAMES = (("Help", "cRHelp"),)
+
 TIME_TRIAL_FIELD_UPDATES = (
     ("0x00", "course_records", "TimeTrialCourseRecord[0x33]"),
 )
@@ -355,7 +357,7 @@ SUBGAME_FIELD_UPDATES = (
     ("0x125ffd8", "garbage_frequency", "float"),
     ("0x125ffdc", "salt_frequency", "float"),
     ("0x125ffe0", "gui", "cRGUI"),
-    ("0x1260008", "help", "Help"),
+    ("0x1260008", "help", "cRHelp"),
     ("0x126000c", "splash", "cRSplash"),
     ("0x1260020", "galaxy", "cRGalaxy"),
     ("0x1270fc8", "subgame_rebuild_selector", "int32_t"),
@@ -632,15 +634,15 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_help_screen",
-        "void __thiscall initialize_help_screen(Help* help)",
+        "void __thiscall initialize_help_screen(cRHelp* help)",
     ),
     (
         "destroy_help_screen",
-        "void __thiscall destroy_help_screen(Help* help)",
+        "void __thiscall destroy_help_screen(cRHelp* help)",
     ),
     (
         "update_help_screen",
-        "void __thiscall update_help_screen(Help* help)",
+        "void __thiscall update_help_screen(cRHelp* help)",
     ),
 )
 
@@ -829,6 +831,7 @@ def main() -> int:
             ("Time", "cRTime"),
             *TIME_TRIAL_TYPE_RENAMES,
             *GUI_TYPE_RENAMES,
+            *HELP_TYPE_RENAMES,
             *TIMES_UP_TYPE_RENAMES,
         ),
     )
@@ -863,7 +866,7 @@ def main() -> int:
                 "TimeTrialCourseRecord",
                 "cRTimeTrial",
                 "cRGUI",
-                "Help",
+                "cRHelp",
                 "cRSplash",
                 "GalaxyPoint",
                 "GalaxyRouteRecord",
@@ -908,18 +911,18 @@ def main() -> int:
     help_size = current_struct_size(
         REPO_ROOT,
         target=args.target,
-        struct_name="Help",
+        struct_name="cRHelp",
     )
     if help_size != HELP_EXPECTED_SIZE:
         raise RuntimeError(
-            "refusing Help lifecycle replay with owner-size mismatch: "
+            "refusing cRHelp lifecycle replay with owner-size mismatch: "
             f"expected {HELP_EXPECTED_SIZE:#x}, observed {help_size!r}"
         )
     operations.append(
         {
             "op": "owner_size_verify",
             "status": "verified",
-            "owner_sizes": {"Help": help_size},
+            "owner_sizes": {"cRHelp": help_size},
         }
     )
     parcel_sizes = {
@@ -1108,7 +1111,7 @@ def main() -> int:
                 ("cRTimeTrial", TIME_TRIAL_FIELD_UPDATES),
                 ("cRTimesUp", TIMES_UP_FIELD_UPDATES),
                 ("cRGUI", GUI_FIELD_UPDATES),
-                ("Help", HELP_FIELD_UPDATES),
+                ("cRHelp", HELP_FIELD_UPDATES),
                 ("cRSplash", SPLASH_FIELD_UPDATES),
             ),
             # Several legacy analysis aliases are re-inferred during preview.

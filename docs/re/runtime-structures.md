@@ -1277,6 +1277,9 @@ member indiscriminately:
   `cRGUI::Init()`; Binary Ninja applied and read back this prototype, while
   `cRGUI::update_challenge_setup_screen` remains result-bearing `cRGUI::AI()`
   because `update_subgame` consumes its semantic 0/1/3 result
+- embedded four-byte `cRHelp` owns only its Back widget at
+  `cRSubGame +0x1260008`; its exact `Init()`, `UnInit()`, and `AI()` Windows
+  bodies are all void, matching the Android/iOS lifecycle symbols
 - the four `HighScore` methods are the void `cRHighScore::Init(int, int)`,
   `AI()`, `UnInit()`, and `Exit()` lifecycle; Android AI directly tail-branches
   to the other three, and every external Windows caller discards EAX

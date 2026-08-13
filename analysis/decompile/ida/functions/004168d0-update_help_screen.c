@@ -3,7 +3,7 @@
 /* selector: update_help_screen */
 
 // Handles the Help-screen Back action, tears down the shell-font scene, and returns control to the New Game front-end flow via state `2`. Cross-port Android and iOS symbols match this helper to `cRHelp::AI()`.
-void __thiscall update_help_screen(Help *help)
+void __thiscall update_help_screen(cRHelp *help)
 {
   FrontendWidgetFlag widget_flags; // eax
 

@@ -15,46 +15,36 @@ from type_alias_migration import migrate_equivalent_struct_aliases
 
 TRUSTED_DECLARATIONS = (
     (
-        "initialize_challenge_setup_screen",
-        "void __thiscall initialize_challenge_setup_screen(cRGUI* gui);",
+        "initialize_help_screen",
+        "void __thiscall initialize_help_screen(cRHelp* help);",
     ),
     (
-        "destroy_challenge_setup_screen",
-        "void __thiscall destroy_challenge_setup_screen(cRGUI* gui);",
+        "destroy_help_screen",
+        "void __thiscall destroy_help_screen(cRHelp* help);",
     ),
     (
-        "update_challenge_setup_screen",
-        "int __thiscall update_challenge_setup_screen(cRGUI* gui);",
+        "update_help_screen",
+        "void __thiscall update_help_screen(cRHelp* help);",
     ),
 )
 
 REQUIRED_OWNER_MARKERS = (
-    "typedef struct cRGUI {",
-    "cRSubGame* game;",
-    "FrontendWidget* replay_button;",
-    "cRGUI_must_be_0x28",
+    "typedef struct cRHelp {",
+    "FrontendWidget* back_button;",
+    "cRHelp_must_be_0x04",
 )
 
-OWNER_TYPE_ALIASES = (("GUI", "cRGUI", 0x28),)
+OWNER_TYPE_ALIASES = (("Help", "cRHelp", 0x04),)
 
 EXPECTED_OWNER_LAYOUT = {
-    "size": 0x28,
+    "size": 0x04,
     "members": {
-        0x00: (0x04, "game", "cRSubGame *"),
-        0x04: (0x04, "next_level_button", "FrontendWidget *"),
-        0x08: (0x04, "previous_level_button", "FrontendWidget *"),
-        0x0C: (0x04, "level_name_widget", "FrontendWidget *"),
-        0x10: (0x04, "play_button", "FrontendWidget *"),
-        0x14: (0x04, "_pad_14", "uint8_t[4]"),
-        0x18: (0x04, "back_button", "FrontendWidget *"),
-        0x1C: (0x04, "speed_slider", "FrontendWidget *"),
-        0x20: (0x04, "difficulty_slider", "FrontendWidget *"),
-        0x24: (0x04, "replay_button", "FrontendWidget *"),
+        0x00: (0x04, "back_button", "FrontendWidget *"),
     },
 }
 
 EXPECTED_OWNER_EDGES = {
-    "subgame_embed": {
+    "previous_gui": {
         "struct": "cRSubGame",
         "offset": 0x125FFE0,
         "expected": {
@@ -64,7 +54,7 @@ EXPECTED_OWNER_EDGES = {
             "type": "cRGUI",
         },
     },
-    "following_help": {
+    "subgame_embed": {
         "struct": "cRSubGame",
         "offset": 0x1260008,
         "expected": {
@@ -74,15 +64,23 @@ EXPECTED_OWNER_EDGES = {
             "type": "cRHelp",
         },
     },
+    "following_splash": {
+        "struct": "cRSubGame",
+        "offset": 0x126000C,
+        "expected": {
+            "offset": "0x126000c",
+            "size": 0x14,
+            "name": "splash",
+            "type": "cRSplash",
+        },
+    },
 }
 
 DIRTY_FUNCTIONS = (
-    0x40ACF0,  # initialize_game_assets_and_world
-    0x415F50,  # initialize_challenge_setup_screen
-    0x4161F0,  # destroy_challenge_setup_screen
-    0x416370,  # update_challenge_setup_screen
-    0x4374B0,  # initialize_subgame
-    0x438B90,  # update_subgame
+    0x4107D0,  # update_frontend_state_machine
+    0x416800,  # initialize_help_screen
+    0x4168C0,  # destroy_help_screen
+    0x4168D0,  # update_help_screen
 )
 
 
@@ -151,16 +149,16 @@ def _named_struct_member_readback(
 
 
 def _owner_layout_readback() -> dict[str, object]:
-    observed_size = _named_struct_size("cRGUI")
+    observed_size = _named_struct_size("cRHelp")
     observed_members = {
-        hex(offset): _named_struct_member_readback("cRGUI", offset)
+        hex(offset): _named_struct_member_readback("cRHelp", offset)
         for offset in EXPECTED_OWNER_LAYOUT["members"]
     }
     failures: list[dict[str, object]] = []
     if observed_size != EXPECTED_OWNER_LAYOUT["size"]:
         failures.append(
             {
-                "selector": "cRGUI",
+                "selector": "cRHelp",
                 "reason": "owner_size_mismatch",
                 "expected": EXPECTED_OWNER_LAYOUT["size"],
                 "observed": observed_size,
@@ -177,7 +175,7 @@ def _owner_layout_readback() -> dict[str, object]:
         if observed_member != expected_member:
             failures.append(
                 {
-                    "selector": f"cRGUI.{name}",
+                    "selector": f"cRHelp.{name}",
                     "reason": "owner_member_mismatch",
                     "expected": expected_member,
                     "observed": observed_member,
@@ -199,7 +197,7 @@ def _owner_layout_readback() -> dict[str, object]:
             )
 
     return {
-        "type": "cRGUI",
+        "type": "cRHelp",
         "size": observed_size,
         "members": observed_members,
         "edges": edges,
@@ -219,7 +217,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
                     "missing_owner_markers": missing_owner_markers,
-                    "failed": [{"reason": "noncanonical_gui_header"}],
+                    "failed": [{"reason": "noncanonical_help_header"}],
                 },
                 indent=2,
             )
@@ -240,7 +238,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if result.get("status") == "failed"
     ]
     owner_layout_readback = (
-        {"type": "cRGUI", "size": None, "members": {}, "edges": {}, "failures": []}
+        {"type": "cRHelp", "size": None, "members": {}, "edges": {}, "failures": []}
         if parse_errors or owner_type_alias_failures
         else _owner_layout_readback()
     )
@@ -318,7 +316,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
 def main() -> None:
     argv = list(idc.ARGV)
     if len(argv) != 2:
-        print("usage: apply_gui_types.py <header-path>", file=sys.stderr)
+        print("usage: apply_help_types.py <header-path>", file=sys.stderr)
         ida_pro.qexit(2)
         return
 

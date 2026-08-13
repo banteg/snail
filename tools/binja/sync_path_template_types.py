@@ -695,7 +695,7 @@ REQUIRED_HEADER_STRUCTS = (
     "ActiveLandscapeEntry",
     "LandscapeManager",
     "cRGUI",
-    "Help",
+    "cRHelp",
     "cRSplash",
     "GalaxyPoint",
     "cRGalaxy",
@@ -3972,7 +3972,7 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x125ffd8", "garbage_frequency", "float"),
     ("0x125ffdc", "salt_frequency", "float"),
     ("0x125ffe0", "gui", "cRGUI"),
-    ("0x1260008", "help", "Help"),
+    ("0x1260008", "help", "cRHelp"),
     ("0x126000c", "splash", "cRSplash"),
     ("0x1260020", "galaxy", "cRGalaxy"),
     ("0x1270fc8", "subgame_rebuild_selector", "int32_t"),
@@ -5714,6 +5714,7 @@ SUBGAME_BACKPOINTER_STRUCT_UPDATES = (
     ),
     ("SaltOwnerGameStrideCursor", (("0x00", "owner_game", "cRSubGame*"),)),
     ("cRGUI", (("0x00", "game", "cRSubGame*"),)),
+    ("cRHelp", (("0x00", "back_button", "FrontendWidget*"),)),
     ("cRSplash", (("0x00", "game", "cRSubGame*"),)),
     ("cRGalaxy", (("0x10f70", "level_progress_base", "cRSubGame*"),)),
 )
@@ -7230,6 +7231,7 @@ def main() -> int:
                     ("Fringe", "cRFringe"),
                     ("FringeManager", "cRFringeManager"),
                     ("GUI", "cRGUI"),
+                    ("Help", "cRHelp"),
                 ),
             )
         )

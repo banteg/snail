@@ -89,10 +89,10 @@
 00410aaa        goto label_410abc
 00410ad4        case 0x1d
 00410ad4        player->frontend_state = 0x1e
-00410aea        initialize_thanks_for_playing_screen(&g_game_base->subgame.thanks_screen)
-00410afa        update_thanks_for_playing_screen(&g_game_base->subgame.thanks_screen)
+00410aea        initialize_thanks_for_playing_screen(&g_game_base->subgame.splash)
+00410afa        update_thanks_for_playing_screen(&g_game_base->subgame.splash)
 00410afa        case 0x1e
-00410afa        update_thanks_for_playing_screen(&g_game_base->subgame.thanks_screen)
+00410afa        update_thanks_for_playing_screen(&g_game_base->subgame.splash)
 00410b01        case 0x1f
 00410b01        player->frontend_state = 0x20
 00410b13        initialize_help_screen(&g_game_base->subgame.help)

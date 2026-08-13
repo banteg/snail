@@ -349,10 +349,10 @@ typedef struct cRGUI {
 } cRGUI;
 typedef char cRGUI_must_be_0x28[(sizeof(cRGUI) == 0x28) ? 1 : -1];
 
-typedef struct Help {
+typedef struct cRHelp {
     FrontendWidget* back_button;
-} Help;
-typedef char Help_must_be_0x04[(sizeof(Help) == 0x04) ? 1 : -1];
+} cRHelp;
+typedef char cRHelp_must_be_0x04[(sizeof(cRHelp) == 0x04) ? 1 : -1];
 
 typedef struct cRSplash {
     cRSubGame* game;
@@ -513,7 +513,7 @@ typedef struct cRSubGame {
     float garbage_frequency;
     float salt_frequency;
     cRGUI gui;
-    Help help;
+    cRHelp help;
     cRSplash splash;
     cRGalaxy galaxy;
     int32_t subgame_rebuild_selector;

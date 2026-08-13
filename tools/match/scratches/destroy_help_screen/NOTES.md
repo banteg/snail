@@ -3,7 +3,7 @@
 Small Help-screen teardown helper at 0x4168c0. Both BN and IDA decompiles show
 it forwarding to `kill_all_borders` on `GameRoot::border_manager`.
 
-The helper is source-shaped as a `Help` member. The body ignores `this`
+The helper is source-shaped as a `cRHelp` member. The body ignores `this`
 and still compiles to the same tailcall, while the member spelling is required
 by `update_help_screen` so VC6 keeps the owner in `ecx` across the call.
 
@@ -13,7 +13,7 @@ the raw root-offset reconstruction without changing codegen.
 
 2026-07-11 cRHelp ownership: Android names this lifecycle edge
 `cRHelp::UnInit()`. The exact 3/3 Windows body now lives on the shared
-four-byte `Help` owner.
+four-byte `cRHelp` owner.
 
 2026-07-15 return-ownership closure: the sole call at `0x4168e4` immediately
 reloads the game root instead of consuming EAX. Together with the authored
@@ -21,7 +21,7 @@ reloads the game root instead of consuming EAX. Together with the authored
 contract. The corrected declaration remains exact at 3/3 instructions.
 
 2026-07-25 lifecycle replay closure: Init, UnInit, and AI now travel as one
-cross-decompiler `Help*` ABI set. The shared replay reanalyzes all three
+cross-decompiler `cRHelp*` ABI set. The shared replay reanalyzes all three
 functions together and verifies the exact `0x04` owner before applying any
 prototype, preventing this unused-`this` tailcall from drifting back to a free
 helper.
@@ -32,3 +32,9 @@ The scratch now spells the exact member as `cRHelp::UnInit()` and exports
 `?UnInit@cRHelp@@QAEXXZ`. Its sole live Windows caller is the Back-action arm of
 the adjacent `cRHelp::AI()` member. Android independently retains the symbol and
 body. Matching stays exact at 3/3 with both operands clean.
+
+## 2026-08-13 canonical analysis owner
+
+Both decompilers now retire the generic `Help` shell in favor of the authored
+`cRHelp` name. The layout-gated replay keeps the unused receiver honest and
+guards the enclosing subgame boundaries before applying the void ABI.

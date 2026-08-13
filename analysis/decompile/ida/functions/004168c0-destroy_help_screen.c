@@ -3,7 +3,7 @@
 /* selector: destroy_help_screen */
 
 // Void cRHelp::UnInit(): clears the Help-screen shell-font scene before control returns to the owning front-end state. Its sole Windows caller discards EAX, and the exact body tail-calls void KillBorders.
-void __thiscall destroy_help_screen(Help *help)
+void __thiscall destroy_help_screen(cRHelp *help)
 {
   kill_all_borders(&g_game_base->border_manager);
 }

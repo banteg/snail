@@ -13,6 +13,7 @@ typedef unsigned char uint8_t;
 
 typedef struct cRSubGame cRSubGame;
 typedef struct FrontendWidget FrontendWidget;
+typedef struct cRHelp cRHelp;
 
 typedef struct cRGUI {
     cRSubGame* game;

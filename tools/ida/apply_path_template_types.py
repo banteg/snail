@@ -641,6 +641,8 @@ TIME_TRIAL_OWNER_TYPE_ALIASES = (("TimeTrial", "cRTimeTrial", 0x330),)
 
 GUI_OWNER_TYPE_ALIASES = (("GUI", "cRGUI", 0x28),)
 
+HELP_OWNER_TYPE_ALIASES = (("Help", "cRHelp", 0x04),)
+
 EXPECTED_TIME_TRIAL_OWNER_LAYOUTS = {
     "TimeTrialCourseRecord": {
         "size": 0x10,
@@ -2708,15 +2710,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_help_screen",
-        "void __thiscall initialize_help_screen(Help* help);",
+        "void __thiscall initialize_help_screen(cRHelp* help);",
     ),
     (
         "destroy_help_screen",
-        "void __thiscall destroy_help_screen(Help* help);",
+        "void __thiscall destroy_help_screen(cRHelp* help);",
     ),
     (
         "update_help_screen",
-        "void __thiscall update_help_screen(Help* help);",
+        "void __thiscall update_help_screen(cRHelp* help);",
     ),
     (
         "initialize_loading_screen",
@@ -6690,6 +6692,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for result in gui_owner_type_alias_migrations
         if result.get("status") == "failed"
     ]
+    help_owner_type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(HELP_OWNER_TYPE_ALIASES)
+    )
+    help_owner_type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "owner_group": "help",
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in help_owner_type_alias_migrations
+        if result.get("status") == "failed"
+    ]
     times_up_owner_type_alias_migrations = (
         []
         if parse_errors
@@ -7344,6 +7361,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or time_owner_type_alias_failures
         or time_trial_owner_type_alias_failures
         or gui_owner_type_alias_failures
+        or help_owner_type_alias_failures
         or times_up_owner_type_alias_failures
         or warning_owner_type_alias_failures
         or tip_owner_type_alias_failures
@@ -7385,6 +7403,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "gui_owner_type_alias_migrations": (
                         gui_owner_type_alias_migrations
+                    ),
+                    "help_owner_type_alias_migrations": (
+                        help_owner_type_alias_migrations
                     ),
                     "times_up_owner_type_alias_migrations": (
                         times_up_owner_type_alias_migrations
@@ -7467,6 +7488,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                         + time_owner_type_alias_failures
                         + time_trial_owner_type_alias_failures
                         + gui_owner_type_alias_failures
+                        + help_owner_type_alias_failures
                         + times_up_owner_type_alias_failures
                         + warning_owner_type_alias_failures
                         + tip_owner_type_alias_failures
@@ -8213,6 +8235,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 ),
                 "gui_owner_type_alias_migrations": (
                     gui_owner_type_alias_migrations
+                ),
+                "help_owner_type_alias_migrations": (
+                    help_owner_type_alias_migrations
                 ),
                 "times_up_owner_type_alias_migrations": (
                     times_up_owner_type_alias_migrations

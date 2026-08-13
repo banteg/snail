@@ -16556,7 +16556,7 @@
       "name": "ida_initialize_help_screen_landscape_owner",
       "artifact": "analysis/decompile/ida/functions/00416800-initialize_help_screen.c",
       "required_substrings": [
-        "void __thiscall initialize_help_screen(Help *help)",
+        "void __thiscall initialize_help_screen(cRHelp *help)",
         "&g_game_base->subgame.landscape_manager,",
         "subgame.landscape_manager.scripts[landscape_script_by_name]",
         "change_backdrop(&g_game_base->backdrop",
@@ -16588,7 +16588,7 @@
       "name": "ida_help_uninit_void_owner",
       "artifact": "analysis/decompile/ida/functions/004168c0-destroy_help_screen.c",
       "required_substrings": [
-        "void __thiscall destroy_help_screen(Help *help)",
+        "void __thiscall destroy_help_screen(cRHelp *help)",
         "kill_all_borders(&g_game_base->border_manager);"
       ],
       "forbidden_substrings": [
@@ -16618,7 +16618,7 @@
       "name": "ida_help_update_owner",
       "artifact": "analysis/decompile/ida/functions/004168d0-update_help_screen.c",
       "required_substrings": [
-        "void __thiscall update_help_screen(Help *help)",
+        "void __thiscall update_help_screen(cRHelp *help)",
         "help->back_button->widget_flags",
         "destroy_help_screen(help);",
         "g_game_base->players[0].frontend_state = 2;",

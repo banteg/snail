@@ -495,10 +495,10 @@ typedef struct cRGUI {
 typedef char cRGUI_must_be_0x28[(sizeof(cRGUI) == 0x28) ? 1 : -1];
 
 /* Exact four-byte authored cRHelp front-end controller. */
-typedef struct Help {
+typedef struct cRHelp {
     FrontendWidget* back_button;
-} Help;
-typedef char Help_must_be_0x04[(sizeof(Help) == 0x04) ? 1 : -1];
+} cRHelp;
+typedef char cRHelp_must_be_0x04[(sizeof(cRHelp) == 0x04) ? 1 : -1];
 
 /* Exact 0x24-byte authored cROptions front-end controller. */
 typedef struct cROptions {
@@ -2718,7 +2718,7 @@ typedef struct cRSubGame {
     float garbage_frequency;
     float salt_frequency;
     cRGUI gui;
-    Help help;
+    cRHelp help;
     cRSplash splash;
     cRGalaxy galaxy;
     int32_t subgame_rebuild_selector;
@@ -3447,9 +3447,9 @@ int32_t __stdcall d3dx_create_texture_from_file(
     void** texture
 );
 
-void __thiscall initialize_help_screen(Help* help);
-void __thiscall destroy_help_screen(Help* help);
-void __thiscall update_help_screen(Help* help);
+void __thiscall initialize_help_screen(cRHelp* help);
+void __thiscall destroy_help_screen(cRHelp* help);
+void __thiscall update_help_screen(cRHelp* help);
 
 void __thiscall initialize_loading_screen(cRLoadingBar* loading_bar);
 

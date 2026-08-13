@@ -3,7 +3,7 @@
 /* selector: initialize_help_screen */
 
 // Starts MAINMENU.OGG, loads Help.txt into the shared backdrop renderer, and allocates the single Back control. Cross-port Android and iOS symbols match this helper to `cRHelp::Init()`.
-void __thiscall initialize_help_screen(Help *help)
+void __thiscall initialize_help_screen(cRHelp *help)
 {
   int32_t landscape_script_by_name; // eax
   tColour *v3; // eax

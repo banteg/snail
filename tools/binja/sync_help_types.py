@@ -18,55 +18,42 @@ from _narrow_sync import (
 from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/gui_types.h"
+DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/help_types.h"
 
 EXPECTED_STRUCT_SIZES = {
-    "cRGUI": 0x28,
+    "cRHelp": 0x04,
 }
 
-OWNER_TYPE_RENAMES = (("GUI", "cRGUI"),)
+OWNER_TYPE_RENAMES = (("Help", "cRHelp"),)
 
 REANALYSIS_FUNCTIONS = (
-    "initialize_game_assets_and_world",
-    "initialize_challenge_setup_screen",
-    "destroy_challenge_setup_screen",
-    "update_challenge_setup_screen",
-    "initialize_subgame",
-    "update_subgame",
+    "update_frontend_state_machine",
+    "initialize_help_screen",
+    "destroy_help_screen",
+    "update_help_screen",
 )
 
-GUI_FIELD_UPDATES = (
-    ("0x00", "game", "cRSubGame*"),
-    ("0x04", "next_level_button", "FrontendWidget*"),
-    ("0x08", "previous_level_button", "FrontendWidget*"),
-    ("0x0c", "level_name_widget", "FrontendWidget*"),
-    ("0x10", "play_button", "FrontendWidget*"),
-    ("0x14", "_pad_14", "uint8_t[0x4]"),
-    ("0x18", "back_button", "FrontendWidget*"),
-    ("0x1c", "speed_slider", "FrontendWidget*"),
-    ("0x20", "difficulty_slider", "FrontendWidget*"),
-    ("0x24", "replay_button", "FrontendWidget*"),
-)
+HELP_FIELD_UPDATES = (("0x00", "back_button", "FrontendWidget*"),)
 
 PROTO_UPDATES = (
     (
-        "initialize_challenge_setup_screen",
-        "void __thiscall initialize_challenge_setup_screen(cRGUI* gui)",
+        "initialize_help_screen",
+        "void __thiscall initialize_help_screen(cRHelp* help)",
     ),
     (
-        "destroy_challenge_setup_screen",
-        "void __thiscall destroy_challenge_setup_screen(cRGUI* gui)",
+        "destroy_help_screen",
+        "void __thiscall destroy_help_screen(cRHelp* help)",
     ),
     (
-        "update_challenge_setup_screen",
-        "int32_t __thiscall update_challenge_setup_screen(cRGUI* gui)",
+        "update_help_screen",
+        "void __thiscall update_help_screen(cRHelp* help)",
     ),
 )
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Apply the exact Windows cRGUI ownership lane."
+        description="Apply the exact Windows cRHelp ownership lane."
     )
     parser.add_argument(
         "--target", default=DEFAULT_TARGET, help="Binary Ninja target selector."
@@ -122,7 +109,7 @@ def main() -> int:
         type_operation = {
             "op": "types_declare_missing_only",
             "status": "skipped",
-            "reason": "cRGUI owner layout already current",
+            "reason": "cRHelp owner layout already current",
             "header": str(header_path),
             "expected_sizes": EXPECTED_STRUCT_SIZES,
             "type_equivalence": {
@@ -138,12 +125,13 @@ def main() -> int:
                 REPO_ROOT,
                 target=args.target,
                 struct_updates=(
-                    ("cRGUI", GUI_FIELD_UPDATES),
+                    ("cRHelp", HELP_FIELD_UPDATES),
                     (
                         "cRSubGame",
                         (
                             ("0x125ffe0", "gui", "cRGUI"),
                             ("0x1260008", "help", "cRHelp"),
+                            ("0x126000c", "splash", "cRSplash"),
                         ),
                     ),
                 ),

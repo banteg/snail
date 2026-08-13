@@ -18,20 +18,20 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_challenge_setup_screen",
-      "address": "0x415f50"
+      "name": "update_frontend_state_machine",
+      "address": "0x4107d0"
     },
     {
-      "name": "destroy_challenge_setup_screen",
-      "address": "0x4161f0"
+      "name": "initialize_help_screen",
+      "address": "0x416800"
     },
     {
-      "name": "update_challenge_setup_screen",
-      "address": "0x416370"
+      "name": "destroy_help_screen",
+      "address": "0x4168c0"
     },
     {
-      "name": "bind_subgame_owner",
-      "address": "0x433fc0"
+      "name": "update_help_screen",
+      "address": "0x4168d0"
     }
   ],
   "health_check_count": 1177,

@@ -20374,9 +20374,9 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
     assert "BorderRecord* record" in frame_sync
     assert "BorderRecord *record" in ida_frame_sync
     for prototype in (
-        "void __thiscall initialize_help_screen(Help* help)",
-        "void __thiscall destroy_help_screen(Help* help)",
-        "void __thiscall update_help_screen(Help* help)",
+        "void __thiscall initialize_help_screen(cRHelp* help)",
+        "void __thiscall destroy_help_screen(cRHelp* help)",
+        "void __thiscall update_help_screen(cRHelp* help)",
     ):
         assert prototype in runtime_sync
         assert prototype + ";" in ida_path_sync
@@ -20569,7 +20569,7 @@ def test_gui_owner_replays_are_canonical_and_boundary_checked() -> None:
 
     assert '"cRGUI": 0x28' in focused_binja_sync
     assert '("0x125ffe0", "gui", "cRGUI")' in focused_binja_sync
-    assert '("0x1260008", "help", "Help")' in focused_binja_sync
+    assert '("0x1260008", "help", "cRHelp")' in focused_binja_sync
     assert "current_header_type_equivalence" in focused_binja_sync
     assert "types_declare_missing_only" in focused_binja_sync
 
@@ -25257,9 +25257,21 @@ def test_time_trial_replays_inline_course_record_ownership() -> None:
 
 def test_help_lifecycle_owner_replays_cross_decompiler() -> None:
     repo_root = Path(__file__).parents[1]
+    focused_binja_sync = (BINJA_DIR / "sync_help_types.py").read_text(
+        encoding="utf-8"
+    )
+    focused_ida_sync = (IDA_DIR / "apply_help_types.py").read_text(
+        encoding="utf-8"
+    )
+    focused_ida_runner = (IDA_DIR / "sync_help_types.py").read_text(
+        encoding="utf-8"
+    )
     binja_sync = (
         BINJA_DIR / "sync_subgame_runtime_types.py"
     ).read_text(encoding="utf-8")
+    binja_path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
     ida_sync = (
         IDA_DIR / "apply_subgame_runtime_types.py"
     ).read_text(encoding="utf-8")
@@ -25269,13 +25281,16 @@ def test_help_lifecycle_owner_replays_cross_decompiler() -> None:
     path_header = (
         HEADER_DIR / "path_template_types.h"
     ).read_text(encoding="utf-8")
+    focused_header = (HEADER_DIR / "help_types.h").read_text(encoding="utf-8")
 
     prototypes = (
-        "void __thiscall initialize_help_screen(Help* help)",
-        "void __thiscall destroy_help_screen(Help* help)",
-        "void __thiscall update_help_screen(Help* help)",
+        "void __thiscall initialize_help_screen(cRHelp* help)",
+        "void __thiscall destroy_help_screen(cRHelp* help)",
+        "void __thiscall update_help_screen(cRHelp* help)",
     )
     for prototype in prototypes:
+        assert prototype in focused_binja_sync
+        assert prototype + ";" in focused_ida_sync
         assert prototype in binja_sync
         assert prototype + ";" in ida_sync
         assert prototype + ";" in path_sync
@@ -25290,18 +25305,38 @@ def test_help_lifecycle_owner_replays_cross_decompiler() -> None:
         assert selector in binja_sync.split("HELP_REANALYSIS_FUNCTIONS", 1)[1]
         assert selector in ida_sync.split("REANALYSIS_FUNCTIONS", 1)[1]
 
-    assert '("Help", HELP_FIELD_UPDATES)' in binja_sync
+    assert '("Help", "cRHelp")' in focused_binja_sync
+    assert '("Help", "cRHelp", 0x04)' in focused_ida_sync
+    assert '("Help", "cRHelp")' in binja_path_sync
+    assert '("Help", "cRHelp", 0x04)' in path_sync
+    assert '("Help", "cRHelp", 0x04)' in ida_sync
+    assert '("cRHelp", HELP_FIELD_UPDATES)' in binja_sync
     assert '("0x00", "back_button", "FrontendWidget*")' in binja_sync
     assert "HELP_EXPECTED_SIZE = 0x04" in binja_sync
     assert "HELP_OWNER_EXPECTED_SIZE = 0x04" in ida_sync
-    assert "Help_must_be_0x04" in path_header
+    assert "EXPECTED_OWNER_LAYOUT" in focused_ida_sync
+    assert "EXPECTED_OWNER_EDGES" in focused_ida_sync
+    assert '"previous_gui"' in focused_ida_sync
+    assert '"subgame_embed"' in focused_ida_sync
+    assert '"following_splash"' in focused_ida_sync
+    assert '("0x1260008", "help", "cRHelp")' in focused_binja_sync
+    assert '("0x126000c", "splash", "cRSplash")' in focused_binja_sync
+    assert (
+        'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/help_types.h"'
+        in focused_ida_runner
+    )
+    for header in (focused_header, path_header):
+        assert "typedef struct cRHelp" in header
+        assert "typedef struct Help" not in header
+        assert "cRHelp_must_be_0x04" in header
     for header_name in (
         "bn_subgame_runtime_types.h",
         "ida_subgame_runtime_types.h",
     ):
-        assert "Help_must_be_0x04" in (
-            HEADER_DIR / header_name
-        ).read_text(encoding="utf-8")
+        header = (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        assert "typedef struct cRHelp" in header
+        assert "typedef struct Help" not in header
+        assert "cRHelp_must_be_0x04" in header
 
     checks = json.loads(
         (repo_root / "analysis/decompile/health_checks.json").read_text(
@@ -25316,6 +25351,12 @@ def test_help_lifecycle_owner_replays_cross_decompiler() -> None:
         "ida_help_update_owner",
     ):
         assert name in checks_by_name
+    for prototype in (
+        "initialize_help_screen(cRHelp *help)",
+        "destroy_help_screen(cRHelp *help)",
+        "update_help_screen(cRHelp *help)",
+    ):
+        assert prototype in json.dumps(checks)
 
 
 def test_runtime_segment_selection_owner_chain_replays_cross_decompiler() -> None:
