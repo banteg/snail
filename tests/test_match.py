@@ -1,16 +1,21 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import struct
 
 import pytest
 
 from snail.match import (
+    BasicBlock,
+    CfgAlignment,
+    CfgBlockPair,
     ClusterTotals,
     DisassemblyLine,
     IDIOM_CASES_BY_NAME,
     ImageSection,
     LoadedImage,
+    MatchResult,
     MaskedReference,
     ObjectRelocationReference,
     ObjectFunction,
@@ -18,23 +23,33 @@ from snail.match import (
     ReferenceSymbolManifest,
     ScratchConfig,
     ScratchStatus,
+    align_basic_blocks,
     audit_masked_operands,
+    build_basic_blocks,
+    cfg_alignment_payload,
     common_prefix_length,
+    compiler_listing_payload,
     diff_regions,
     disassemble_normalized_function,
     extract_object_function,
     find_type_definitions,
+    generate_compiler_listing,
     load_default_reference_symbol_manifest,
     load_image,
     load_reference_symbol_manifest,
+    load_scratch_config,
     manifest_cluster_totals,
     match_function,
     normalize_function,
     parse_coff_object,
+    parse_compiler_listing_spans,
+    parse_compiler_listing_stack_layout,
+    render_compiler_listing_result,
     render_status_markdown,
     render_status_rows,
     render_status_table,
     resolve_function_extent,
+    stack_frame_diagnostic_payload,
     TypeConsolidationFinding,
     _resolve_image_reference,
     _reference_symbol_for_symbol_name,
@@ -2729,6 +2744,175 @@ def test_diff_regions_reports_localized_mismatch() -> None:
     assert regions[0].changed_candidate_instructions == 1
 
 
+def test_basic_blocks_recover_local_successors_and_fallthrough() -> None:
+    lines = (
+        DisassemblyLine(0x0, 0x401000, "cmp eax, 0x0", 2),
+        DisassemblyLine(0x2, 0x401002, "je L8", 2),
+        DisassemblyLine(0x4, 0x401004, "inc eax", 1),
+        DisassemblyLine(0x5, 0x401005, "jmp La", 3),
+        DisassemblyLine(0x8, 0x401008, "dec eax", 1),
+        DisassemblyLine(0x9, 0x401009, "jmp La", 1),
+        DisassemblyLine(0xA, 0x40100A, "ret", 1),
+    )
+
+    blocks = build_basic_blocks(lines)
+
+    assert [(block.start_offset, block.end_offset) for block in blocks] == [
+        (0x0, 0x4),
+        (0x4, 0x8),
+        (0x8, 0xA),
+        (0xA, 0xB),
+    ]
+    assert blocks[0].successors == (2, 1)
+    assert blocks[0].fallthrough == 1
+    assert blocks[1].successors == (3,)
+    assert blocks[2].successors == (3,)
+    assert blocks[3].successors == ()
+
+
+def test_cfg_alignment_bounds_reordered_exact_anchors() -> None:
+    target = (
+        DisassemblyLine(0, 0x401000, "mov eax, 0x1", 5),
+        DisassemblyLine(5, 0x401005, "ret", 1),
+        DisassemblyLine(6, 0x401006, "inc eax", 1),
+        DisassemblyLine(7, 0x401007, "ret", 1),
+        DisassemblyLine(8, 0x401008, "dec eax", 1),
+        DisassemblyLine(9, 0x401009, "ret", 1),
+    )
+    candidate = (
+        DisassemblyLine(0, 0, "mov eax, 0x1", 5),
+        DisassemblyLine(5, 5, "ret", 1),
+        DisassemblyLine(6, 6, "dec eax", 1),
+        DisassemblyLine(7, 7, "ret", 1),
+        DisassemblyLine(8, 8, "inc eax", 1),
+        DisassemblyLine(9, 9, "ret", 1),
+    )
+    result = MatchResult(
+        ratio=0.8,
+        prefix_instructions=2,
+        target_lines=tuple(line.text for line in target),
+        candidate_lines=tuple(line.text for line in candidate),
+        target_disassembly=target,
+        candidate_disassembly=candidate,
+    )
+
+    alignment = align_basic_blocks(result)
+    payload = cfg_alignment_payload(alignment)
+
+    assert [(pair.target_block, pair.candidate_block) for pair in alignment.pairs] == [
+        (0, 0),
+        (1, 2),
+        (2, 1),
+    ]
+    assert alignment.exact_pairs == 3
+    assert sum(pair.edge_anchor for pair in alignment.pairs) == 1
+    assert payload["summary"] == {
+        "target_blocks": 3,
+        "candidate_blocks": 3,
+        "exact_pairs": 3,
+        "exact_ambiguous_pairs": 0,
+        "similar_pairs": 0,
+        "edge_anchor_pairs": 1,
+        "unmatched_target": 0,
+        "unmatched_candidate": 0,
+        "edge_consistent_pairs": 0,
+        "edge_conflicts": 0,
+        "heuristic_edge_consistent_pairs": 0,
+        "heuristic_edge_conflicts": 0,
+        "edge_unchecked_pairs": 3,
+    }
+
+
+def test_cfg_alignment_does_not_use_predecessors_to_unique_duplicates() -> None:
+    target = (
+        DisassemblyLine(0, 0x401000, "je L8", 2),
+        DisassemblyLine(2, 0x401002, "jmp L8", 2),
+        DisassemblyLine(4, 0x401004, "jmp L8", 4),
+        DisassemblyLine(8, 0x401008, "inc esi", 1),
+        DisassemblyLine(9, 0x401009, "jmp Lc", 3),
+        DisassemblyLine(12, 0x40100C, "je L14", 2),
+        DisassemblyLine(14, 0x40100E, "jmp L14", 6),
+        DisassemblyLine(20, 0x401014, "inc esi", 1),
+        DisassemblyLine(21, 0x401015, "jmp L18", 3),
+        DisassemblyLine(24, 0x401018, "ret", 1),
+    )
+    candidate = (
+        DisassemblyLine(0, 0, "je L8", 2),
+        DisassemblyLine(2, 2, "jmp L14", 2),
+        DisassemblyLine(4, 4, "jmp L14", 4),
+        DisassemblyLine(8, 8, "inc esi", 1),
+        DisassemblyLine(9, 9, "jmp Lc", 3),
+        DisassemblyLine(12, 12, "je L14", 2),
+        DisassemblyLine(14, 14, "jmp L8", 6),
+        DisassemblyLine(20, 20, "inc esi", 1),
+        DisassemblyLine(21, 21, "jmp L18", 3),
+        DisassemblyLine(24, 24, "ret", 1),
+    )
+    result = MatchResult(
+        ratio=0.8,
+        prefix_instructions=1,
+        target_lines=tuple(line.text for line in target),
+        candidate_lines=tuple(line.text for line in candidate),
+        target_disassembly=target,
+        candidate_disassembly=candidate,
+    )
+
+    alignment = align_basic_blocks(result)
+    duplicate_pairs = [
+        pair
+        for pair in alignment.pairs
+        if alignment.target_blocks[pair.target_block].canonical_lines
+        == ("inc esi", "jmp LOCAL")
+    ]
+
+    assert len(duplicate_pairs) == 2
+    assert all(pair.kind == "exact-ambiguous" for pair in duplicate_pairs)
+
+
+def test_cfg_summary_separates_heuristic_edge_conflicts() -> None:
+    block = BasicBlock(
+        index=0,
+        start_instruction=0,
+        end_instruction=1,
+        start_offset=0,
+        end_offset=1,
+        start_address=0,
+        end_address=1,
+        lines=("ret",),
+        successors=(),
+        fallthrough=None,
+    )
+    alignment = CfgAlignment(
+        target_blocks=(block,),
+        candidate_blocks=(block,),
+        pairs=(CfgBlockPair(0, 0, "exact-ambiguous", 1.0, True, False),),
+        unmatched_target=(),
+        unmatched_candidate=(),
+    )
+
+    summary = cfg_alignment_payload(alignment)["summary"]
+
+    assert summary["edge_conflicts"] == 0
+    assert summary["heuristic_edge_conflicts"] == 1
+
+
+def test_stack_frame_diagnostic_reports_one_prologue_delta() -> None:
+    result = MatchResult(
+        ratio=0.5,
+        prefix_instructions=0,
+        target_lines=("sub esp, 0xf4", "push ebx", "ret"),
+        candidate_lines=("sub esp, 0xc4", "push ebx", "ret"),
+    )
+
+    payload = stack_frame_diagnostic_payload(result)
+
+    assert payload is not None
+    assert payload["target_prologue_allocation_bytes"] == 0xF4
+    assert payload["candidate_prologue_allocation_bytes"] == 0xC4
+    assert payload["target_minus_candidate_bytes"] == 0x30
+    assert payload["classification"] == "native-frame-larger"
+
+
 def test_idiom_case_registry_contains_bitfield_probe() -> None:
     case = IDIOM_CASES_BY_NAME["bitfield-stride6-set"]
     assert "completed" in case.source
@@ -4421,6 +4605,79 @@ def test_compile_scratch_removes_stale_object_before_vc6(
 
     assert compile_scratch(config, match_root) == obj_path
     assert obj_path.read_bytes() == b"fresh object"
+
+
+def test_parse_compiler_listing_spans_tracks_source_schedule() -> None:
+    spans = parse_compiler_listing_spans(
+        "; 10   :     int value = input;\r\n"
+        "; 11   :     ++value;\r\n"
+        "  00000\t8b 44 24 04\t mov eax, DWORD PTR _input$[esp-4]\r\n"
+        "  00004\t40\t\t inc eax\r\n"
+        "; 12   :     return value;\r\n"
+        "  00005\tc3\t\t ret 0\r\n",
+    )
+
+    assert spans[0].source_lines == (10, 11)
+    assert spans[0].instruction_offsets == (0, 4)
+    assert spans[1].source_lines == (12,)
+    assert spans[1].instruction_offsets == (5,)
+
+
+def test_parse_compiler_listing_stack_layout_tracks_aliases() -> None:
+    layout = parse_compiler_listing_stack_layout(
+        "_TEXT\tSEGMENT\r\n"
+        "_value$ = -16\r\n"
+        "_alias$42 = -16\r\n"
+        "$T43 = -8\r\n"
+        "_example PROC NEAR\r\n"
+        "; 10 : {\r\n"
+        "  00000\t83 ec 10\t sub esp, 16\r\n",
+        symbol="example",
+    )
+
+    assert layout.prologue_allocation_bytes == 16
+    assert [(symbol.name, symbol.offset, symbol.generated) for symbol in layout.symbols] == [
+        ("_value$", -16, False),
+        ("_alias$42", -16, False),
+        ("$T43", -8, True),
+    ]
+    assert layout.distinct_slots == 2
+    assert layout.reused_slots == 1
+    assert layout.generated_temporaries == 1
+
+
+def test_compiler_listing_proves_object_function_equivalence(tmp_path: Path) -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    match_root = repo_root / "tools" / "match"
+    if not (match_root / "compilers" / "msvc6.5" / "Bin" / "CL.EXE").is_file():
+        pytest.skip("local msvc6.5 compiler is required")
+    if not (match_root / "bin" / "wibo").is_file():
+        pytest.skip("local wibo is required")
+    config = load_scratch_config(match_root / "scratches" / "unhide_border_init")
+    output = tmp_path / "unhide_border_init.cod"
+
+    result = generate_compiler_listing(config, match_root, output=output)
+    payload = compiler_listing_payload(result)
+
+    assert result.listing_path == output.resolve()
+    assert result.metadata_path.is_file()
+    assert result.function == "unhide_border_init"
+    assert result.function_bytes > 0
+    assert result.spans
+    assert payload["object_function_equivalent"] is True
+    assert payload["machine_rows"] > 0
+    assert set(payload["stack_layout"]) == {
+        "prologue_allocation_bytes",
+        "symbol_count",
+        "distinct_slots",
+        "reused_slots",
+        "generated_temporaries",
+    }
+    assert "object_function_equivalent=yes" in render_compiler_listing_result(result)
+    metadata = json.loads(result.metadata_path.read_text(encoding="utf-8"))
+    assert metadata["object_function_equivalent"] is True
+    assert "symbols" in metadata["stack_layout"]
+    assert "does not recover original local names" in metadata["caveat"]
 
 
 def test_format_cl_failure_identifies_diagnostic_free_vc6_ice(tmp_path: Path) -> None:

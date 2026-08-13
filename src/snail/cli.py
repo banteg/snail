@@ -27,12 +27,16 @@ from .match import (
     collect_scratch_statuses,
     collect_triage_rows,
     compile_idiom_case,
+    compiler_listing_payload,
     diff_regions,
     evaluate_source_probe,
+    generate_compiler_listing,
     lint_extern_declarations,
     load_scratch_config,
     manifest_cluster_totals,
+    match_result_payload,
     probe_result_payload,
+    render_compiler_listing_result,
     render_probe_result,
     render_status_markdown,
     render_status_table,
@@ -805,6 +809,75 @@ def build_parser() -> argparse.ArgumentParser:
         "--max-regions",
         type=int,
         help="Maximum number of mismatch regions to print.",
+    )
+
+    match_inspect_parser = match_subparsers.add_parser(
+        "inspect",
+        help="Report structural and stack diagnostics for one scratch.",
+    )
+    match_inspect_parser.add_argument(
+        "directory",
+        type=Path,
+        help="Scratch directory containing scratch.cpp and scratch.conf.",
+    )
+    match_inspect_parser.add_argument(
+        "--match-root",
+        type=Path,
+        default=DEFAULT_MATCH_ROOT,
+        help="Path to the tools/match root.",
+    )
+    match_inspect_parser.add_argument(
+        "--image",
+        type=Path,
+        help="Path to the original image (default: the manifest primary target).",
+    )
+    match_inspect_parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+        help="Path to the tracked gameplay function symbol manifest.",
+    )
+    match_inspect_parser.add_argument(
+        "--region-context",
+        type=int,
+        default=4,
+        help="Instruction context around mismatch regions (default: 4).",
+    )
+    match_inspect_parser.add_argument(
+        "--max-regions",
+        type=int,
+        help="Maximum mismatch regions to report.",
+    )
+    match_inspect_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Print machine-readable diagnostics.",
+    )
+
+    match_listing_parser = match_subparsers.add_parser(
+        "listing",
+        help="Generate a proven-equivalent VC mixed source/assembly listing.",
+    )
+    match_listing_parser.add_argument(
+        "directory",
+        type=Path,
+        help="Scratch directory containing scratch.cpp and scratch.conf.",
+    )
+    match_listing_parser.add_argument(
+        "--match-root",
+        type=Path,
+        default=DEFAULT_MATCH_ROOT,
+        help="Path to the tools/match root.",
+    )
+    match_listing_parser.add_argument(
+        "--output",
+        type=Path,
+        help="Output .cod path (default: the ignored match cache).",
+    )
+    match_listing_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Print machine-readable output metadata.",
     )
 
     match_probe_parser = match_subparsers.add_parser(
@@ -2073,6 +2146,117 @@ def main(argv: Sequence[str] | None = None) -> int:
             if args.paths:
                 for path in finding.paths:
                     print(f"  {path}")
+        return 0
+
+    if args.command == "match" and args.match_command == "listing":
+        try:
+            config = load_scratch_config(args.directory.resolve())
+            result = generate_compiler_listing(
+                config,
+                args.match_root,
+                output=args.output,
+            )
+        except Exception as error:  # noqa: BLE001
+            print(
+                f"listing failed: {str(error).splitlines()[0]}",
+                file=sys.stderr,
+            )
+            return 2
+        if args.json:
+            print(json.dumps(compiler_listing_payload(result), indent=2, sort_keys=True))
+        else:
+            print(render_compiler_listing_result(result))
+        return 0
+
+    if args.command == "match" and args.match_command == "inspect":
+        try:
+            manifest = load_function_symbol_manifest(args.manifest)
+            image_path = args.image or REPO_ROOT / manifest.primary_target
+            result = run_scratch_match(
+                directory=args.directory.resolve(),
+                image_path=image_path,
+                manifest=manifest,
+                match_root=args.match_root,
+            )
+            payload = match_result_payload(
+                result,
+                region_context=args.region_context,
+                max_regions=args.max_regions,
+            )
+        except Exception as error:  # noqa: BLE001
+            print(
+                f"inspection failed: {str(error).splitlines()[0]}",
+                file=sys.stderr,
+            )
+            return 2
+        if args.json:
+            print(json.dumps(payload, indent=2, sort_keys=True))
+            return 0
+
+        print(
+            f"match={result.ratio:.2%} "
+            f"insns={len(result.target_lines)}/{len(result.candidate_lines)} "
+            f"prefix={result.prefix_instructions}/{len(result.target_lines)}"
+        )
+        frame = payload["stack_frame"]
+        if frame is not None:
+            target_frame = frame["target_prologue_allocation_bytes"]
+            candidate_frame = frame["candidate_prologue_allocation_bytes"]
+            delta = frame["target_minus_candidate_bytes"]
+            delta_text = f"{delta:+d}" if delta is not None else "-"
+            print(
+                "frame: prologue-allocation="
+                f"{target_frame if target_frame is not None else '-'}/"
+                f"{candidate_frame if candidate_frame is not None else '-'} "
+                f"delta={delta_text} "
+                f"classification={frame['classification']} diagnostic-only"
+            )
+        cfg = payload["cfg_alignment"]
+        if cfg is not None:
+            summary = cfg["summary"]
+            print(
+                "cfg: "
+                f"blocks={summary['target_blocks']}/{summary['candidate_blocks']} "
+                f"exact={summary['exact_pairs']} "
+                f"ambiguous={summary['exact_ambiguous_pairs']} "
+                f"similar={summary['similar_pairs']} anchors={summary['edge_anchor_pairs']} "
+                f"unmatched={summary['unmatched_target']}/{summary['unmatched_candidate']} "
+                f"edge-conflicts={summary['edge_conflicts']} "
+                f"edge-checked={summary['edge_consistent_pairs'] + summary['edge_conflicts']} "
+                f"heuristic-edge-conflicts={summary['heuristic_edge_conflicts']}"
+            )
+            residual_pairs = sorted(
+                (
+                    pair
+                    for pair in cfg["pairs"]
+                    if not pair["edge_anchor"] or pair["edge_consistent"] is False
+                ),
+                key=lambda pair: (
+                    pair["edge_consistent"] is not False,
+                    pair["kind"] == "exact-ambiguous",
+                    pair["match_ratio"],
+                    pair["target_block"],
+                ),
+            )
+            for pair in residual_pairs[:12]:
+                target_block = pair["target"]
+                candidate_block = pair["candidate"]
+                print(
+                    f"  {pair['kind']} target=b{target_block['index']} "
+                    f"0x{target_block['addresses']['start']:08x} "
+                    f"candidate=b{candidate_block['index']} "
+                    f"+0x{candidate_block['bytes']['start']:x} "
+                    f"match={pair['match_ratio']:.1%} "
+                    f"anchor={pair['edge_anchor']} edges={pair['edge_consistent']}"
+                )
+        for index, region in enumerate(payload["regions"], start=1):
+            target_region = region["target_instructions"]
+            candidate_region = region["candidate_instructions"]
+            print(
+                f"mismatch {index}: target={target_region['start']}:{target_region['end']} "
+                f"candidate={candidate_region['start']}:{candidate_region['end']} "
+                f"match={region['match_ratio']:.1%} delta={region['instruction_delta']:+d}"
+            )
         return 0
 
     if args.command == "match" and args.match_command == "dump":

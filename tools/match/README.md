@@ -96,6 +96,25 @@ Useful analysis helpers:
 - `uv run snail match diff <obj> <function> --regions` prints localized
   mismatch regions before the normal diff, so large functions can be worked by
   block instead of by the whole SequenceMatcher score.
+- `uv run snail match inspect <scratch>` reports the target/candidate prologue
+  allocation once, then aligns conservative basic-block pairs and localized
+  mismatch regions. The frame delta is a diagnostic clue, not a byte count of
+  missing locals: compiler temporaries and stack-slot coloring contribute to
+  the allocation. CFG edges are checked only through a monotonic backbone of
+  unique exact blocks within 5% normalized order distance. Duplicate or
+  displaced exact blocks and similar blocks remain visible as heuristic pairs,
+  but cannot manufacture anchored edge conflicts. `anchors=` is therefore the
+  trusted subset of `exact=`. None of these diagnostics change the canonical
+  instruction match or masked-reference audit.
+- `uv run snail match listing <scratch>` recompiles the selected VC profile
+  with `/FAsc` in isolation and writes its mixed source/assembly listing under
+  the ignored match cache. It refuses to publish unless the extracted function,
+  including relocations, equals the canonical build. The adjacent JSON records
+  object and function hashes, source-line spans, machine offsets, compiler stack
+  aliases, reused slots, and generated temporaries. Those names and lifetimes
+  describe only the reconstructed candidate compilation; they do not recover
+  native local names. Use `--output /tmp/function.cod --json` for an explicit
+  artifact.
 - `uv run snail match probe <scratch> --source <probe.cpp>` compiles a complete
   source overlay without changing the tracked `scratch.cpp`, then reports its
   metric deltas against one baseline compile. This is useful for larger

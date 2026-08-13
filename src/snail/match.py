@@ -16,10 +16,12 @@ import json
 import os
 import re
 import struct
+from collections import Counter
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from threading import Lock
+from typing import Any
 
 import capstone
 
@@ -366,10 +368,69 @@ class DiffRegion:
 
 
 @dataclass(frozen=True, slots=True)
+class BasicBlock:
+    index: int
+    start_instruction: int
+    end_instruction: int
+    start_offset: int
+    end_offset: int
+    start_address: int
+    end_address: int
+    lines: tuple[str, ...]
+    successors: tuple[int, ...]
+    fallthrough: int | None
+
+    @property
+    def canonical_lines(self) -> tuple[str, ...]:
+        return tuple(BRANCH_TARGET_RE.sub("LOCAL", line) for line in self.lines)
+
+    @property
+    def terminator(self) -> str:
+        return self.lines[-1].partition(" ")[0] if self.lines else ""
+
+    @property
+    def instruction_count(self) -> int:
+        return self.end_instruction - self.start_instruction
+
+
+@dataclass(frozen=True, slots=True)
+class CfgBlockPair:
+    target_block: int
+    candidate_block: int
+    kind: str
+    ratio: float
+    structure_match: bool
+    edge_consistent: bool | None = None
+    edge_anchor: bool = False
+
+
+@dataclass(frozen=True, slots=True)
+class CfgAlignment:
+    target_blocks: tuple[BasicBlock, ...]
+    candidate_blocks: tuple[BasicBlock, ...]
+    pairs: tuple[CfgBlockPair, ...]
+    unmatched_target: tuple[int, ...]
+    unmatched_candidate: tuple[int, ...]
+
+    @property
+    def exact_pairs(self) -> int:
+        return sum(pair.kind == "exact" for pair in self.pairs)
+
+    @property
+    def exact_ambiguous_pairs(self) -> int:
+        return sum(pair.kind == "exact-ambiguous" for pair in self.pairs)
+
+    @property
+    def similar_pairs(self) -> int:
+        return sum(pair.kind == "similar" for pair in self.pairs)
+
+
+@dataclass(frozen=True, slots=True)
 class DisassemblyLine:
     offset: int
     address: int
     text: str
+    size: int = 0
     masked_references: tuple[MaskedReference, ...] = ()
 
 
@@ -1552,6 +1613,7 @@ def disassemble_normalized_function(
                 offset=insn_offset,
                 address=insn.address,
                 text=f"{insn.mnemonic} {', '.join(operands)}".strip(),
+                size=insn.size,
                 masked_references=tuple(masked_references),
             )
         )
@@ -2348,6 +2410,406 @@ def common_prefix_length(target_lines: tuple[str, ...], candidate_lines: tuple[s
     return min(len(target_lines), len(candidate_lines))
 
 
+def _local_branch_offsets(line: DisassemblyLine) -> tuple[int, ...]:
+    return tuple(int(match.group(1), 16) for match in BRANCH_TARGET_RE.finditer(line.text))
+
+
+def _block_terminates(line: DisassemblyLine) -> bool:
+    mnemonic = line.text.partition(" ")[0]
+    return mnemonic.startswith(("j", "loop")) or mnemonic in {"ret", "retf", "iret", "int3"}
+
+
+def _has_fallthrough(line: DisassemblyLine) -> bool:
+    mnemonic = line.text.partition(" ")[0]
+    return mnemonic not in {"jmp", "ret", "retf", "iret", "int3"}
+
+
+def build_basic_blocks(lines: tuple[DisassemblyLine, ...]) -> tuple[BasicBlock, ...]:
+    """Recover a bounded intraprocedural block graph from normalized disassembly."""
+
+    if not lines:
+        return ()
+    index_by_offset = {line.offset: index for index, line in enumerate(lines)}
+    leaders = {0}
+    for index, line in enumerate(lines):
+        leaders.update(
+            index_by_offset[offset]
+            for offset in _local_branch_offsets(line)
+            if offset in index_by_offset
+        )
+        if _block_terminates(line) and index + 1 < len(lines):
+            leaders.add(index + 1)
+    starts = sorted(leaders)
+    ranges = [
+        (start, starts[index + 1] if index + 1 < len(starts) else len(lines))
+        for index, start in enumerate(starts)
+    ]
+    block_by_offset = {
+        lines[start].offset: index
+        for index, (start, _end) in enumerate(ranges)
+    }
+    blocks: list[BasicBlock] = []
+    for block_index, (start, end) in enumerate(ranges):
+        first = lines[start]
+        last = lines[end - 1]
+        successor_indices: list[int] = []
+        mnemonic = last.text.partition(" ")[0]
+        if mnemonic.startswith(("j", "loop")):
+            successor_indices.extend(
+                block_by_offset[offset]
+                for offset in _local_branch_offsets(last)
+                if offset in block_by_offset
+            )
+        fallthrough = (
+            block_index + 1
+            if _has_fallthrough(last) and block_index + 1 < len(ranges)
+            else None
+        )
+        if fallthrough is not None:
+            successor_indices.append(fallthrough)
+        blocks.append(
+            BasicBlock(
+                index=block_index,
+                start_instruction=start,
+                end_instruction=end,
+                start_offset=first.offset,
+                end_offset=last.offset + last.size,
+                start_address=first.address,
+                end_address=last.address + last.size,
+                lines=tuple(line.text for line in lines[start:end]),
+                successors=tuple(dict.fromkeys(successor_indices)),
+                fallthrough=fallthrough,
+            ),
+        )
+    return tuple(blocks)
+
+
+def _cfg_predecessor_counts(blocks: tuple[BasicBlock, ...]) -> tuple[int, ...]:
+    counts = [0] * len(blocks)
+    for block in blocks:
+        for successor in block.successors:
+            counts[successor] += 1
+    return tuple(counts)
+
+
+def _cfg_block_shape(block: BasicBlock, predecessor_count: int) -> tuple[str, int, bool, int]:
+    return (
+        block.terminator,
+        len(block.successors),
+        block.fallthrough is not None,
+        predecessor_count,
+    )
+
+
+def _cfg_exact_anchor_shape(block: BasicBlock) -> tuple[str, int, bool]:
+    """Return only stable outgoing shape for unique exact anchor discovery.
+
+    Predecessor counts are intentionally excluded. Repeated loop latches can
+    trade incoming edges as surrounding reconstruction changes; using that
+    count to make otherwise duplicate instruction blocks unique can cross-pair
+    distant loops and manufacture anchored edge conflicts.
+    """
+
+    return (
+        block.terminator,
+        len(block.successors),
+        block.fallthrough is not None,
+    )
+
+
+def _cfg_monotonic_exact_anchor_indices(
+    pairs: list[CfgBlockPair],
+    *,
+    target_count: int,
+    candidate_count: int,
+) -> frozenset[int]:
+    """Select a conservative monotonic backbone from unique exact pairs."""
+
+    exact_indices = sorted(
+        (index for index, pair in enumerate(pairs) if pair.kind == "exact"),
+        key=lambda index: pairs[index].target_block,
+    )
+    if not exact_indices:
+        return frozenset()
+
+    target_denominator = max(1, target_count - 1)
+    candidate_denominator = max(1, candidate_count - 1)
+    max_order_distance = 0.05
+    exact_indices = [
+        index
+        for index in exact_indices
+        if abs(
+            pairs[index].target_block / target_denominator
+            - pairs[index].candidate_block / candidate_denominator,
+        )
+        <= max_order_distance
+    ]
+    if not exact_indices:
+        return frozenset()
+    lengths = [1] * len(exact_indices)
+    local_costs = [
+        abs(
+            pairs[index].target_block / target_denominator
+            - pairs[index].candidate_block / candidate_denominator,
+        )
+        for index in exact_indices
+    ]
+    costs = local_costs.copy()
+    previous: list[int | None] = [None] * len(exact_indices)
+
+    for current, pair_index in enumerate(exact_indices):
+        current_pair = pairs[pair_index]
+        for earlier in range(current):
+            earlier_pair = pairs[exact_indices[earlier]]
+            if earlier_pair.candidate_block >= current_pair.candidate_block:
+                continue
+            proposed_length = lengths[earlier] + 1
+            proposed_cost = costs[earlier] + local_costs[current]
+            if proposed_length > lengths[current] or (
+                proposed_length == lengths[current] and proposed_cost < costs[current]
+            ):
+                lengths[current] = proposed_length
+                costs[current] = proposed_cost
+                previous[current] = earlier
+
+    tail = min(
+        range(len(exact_indices)),
+        key=lambda index: (-lengths[index], costs[index], pairs[exact_indices[index]].target_block),
+    )
+    selected: set[int] = set()
+    while True:
+        selected.add(exact_indices[tail])
+        predecessor = previous[tail]
+        if predecessor is None:
+            break
+        tail = predecessor
+    return frozenset(selected)
+
+
+def align_basic_blocks(result: MatchResult) -> CfgAlignment:
+    """Align exact CFG anchors and conservative similar blocks for diagnostics only."""
+
+    target = build_basic_blocks(result.target_disassembly)
+    candidate = build_basic_blocks(result.candidate_disassembly)
+    target_predecessors = _cfg_predecessor_counts(target)
+    candidate_predecessors = _cfg_predecessor_counts(candidate)
+    unmatched_target = set(range(len(target)))
+    unmatched_candidate = set(range(len(candidate)))
+    pairs: list[CfgBlockPair] = []
+
+    target_fingerprints: dict[tuple[tuple[str, ...], tuple[str, int, bool]], list[int]] = {}
+    candidate_fingerprints: dict[tuple[tuple[str, ...], tuple[str, int, bool]], list[int]] = {}
+    for index, block in enumerate(target):
+        key = block.canonical_lines, _cfg_exact_anchor_shape(block)
+        target_fingerprints.setdefault(key, []).append(index)
+    for index, block in enumerate(candidate):
+        key = block.canonical_lines, _cfg_exact_anchor_shape(block)
+        candidate_fingerprints.setdefault(key, []).append(index)
+    for key in sorted(
+        target_fingerprints.keys() & candidate_fingerprints.keys(),
+        key=lambda value: (value[0], value[1]),
+    ):
+        target_indices = target_fingerprints[key]
+        candidate_indices = candidate_fingerprints[key]
+        if len(target_indices) != 1 or len(candidate_indices) != 1:
+            continue
+        target_index = target_indices[0]
+        candidate_index = candidate_indices[0]
+        pairs.append(
+            CfgBlockPair(
+                target_block=target_index,
+                candidate_block=candidate_index,
+                kind="exact",
+                ratio=1.0,
+                structure_match=True,
+            ),
+        )
+        unmatched_target.remove(target_index)
+        unmatched_candidate.remove(candidate_index)
+
+    similar: list[tuple[float, float, int, int, bool]] = []
+    target_denominator = max(1, len(target) - 1)
+    candidate_denominator = max(1, len(candidate) - 1)
+    for target_index in unmatched_target:
+        target_block = target[target_index]
+        target_shape = _cfg_block_shape(target_block, target_predecessors[target_index])
+        for candidate_index in unmatched_candidate:
+            candidate_block = candidate[candidate_index]
+            candidate_shape = _cfg_block_shape(candidate_block, candidate_predecessors[candidate_index])
+            structure_match = target_shape == candidate_shape
+            if not structure_match:
+                continue
+            ratio = difflib.SequenceMatcher(
+                a=target_block.canonical_lines,
+                b=candidate_block.canonical_lines,
+                autojunk=False,
+            ).ratio()
+            if ratio < 0.55:
+                continue
+            order_distance = abs(
+                target_index / target_denominator - candidate_index / candidate_denominator,
+            )
+            similar.append((ratio, -order_distance, target_index, candidate_index, structure_match))
+    for ratio, _order, target_index, candidate_index, structure_match in sorted(similar, reverse=True):
+        if target_index not in unmatched_target or candidate_index not in unmatched_candidate:
+            continue
+        pairs.append(
+            CfgBlockPair(
+                target_block=target_index,
+                candidate_block=candidate_index,
+                kind="exact-ambiguous" if ratio == 1.0 else "similar",
+                ratio=ratio,
+                structure_match=structure_match,
+            ),
+        )
+        unmatched_target.remove(target_index)
+        unmatched_candidate.remove(candidate_index)
+
+    anchor_indices = _cfg_monotonic_exact_anchor_indices(
+        pairs,
+        target_count=len(target),
+        candidate_count=len(candidate),
+    )
+    anchored_target_to_candidate = {
+        pairs[index].target_block: pairs[index].candidate_block for index in anchor_indices
+    }
+    anchored_candidates = set(anchored_target_to_candidate.values())
+    checked_pairs: list[CfgBlockPair] = []
+    for pair_index, pair in enumerate(pairs):
+        target_successors = {
+            anchored_target_to_candidate[successor]
+            for successor in target[pair.target_block].successors
+            if successor in anchored_target_to_candidate
+        }
+        candidate_successors = {
+            successor
+            for successor in candidate[pair.candidate_block].successors
+            if successor in anchored_candidates
+        }
+        edge_consistent = (
+            target_successors == candidate_successors
+            if target_successors or candidate_successors
+            else None
+        )
+        checked_pairs.append(
+            replace(
+                pair,
+                edge_consistent=edge_consistent,
+                edge_anchor=pair_index in anchor_indices,
+            ),
+        )
+
+    return CfgAlignment(
+        target_blocks=target,
+        candidate_blocks=candidate,
+        pairs=tuple(sorted(checked_pairs, key=lambda pair: pair.target_block)),
+        unmatched_target=tuple(sorted(unmatched_target)),
+        unmatched_candidate=tuple(sorted(unmatched_candidate)),
+    )
+
+
+def _basic_block_payload(block: BasicBlock) -> dict[str, Any]:
+    return {
+        "index": block.index,
+        "instructions": {
+            "start": block.start_instruction,
+            "end": block.end_instruction,
+            "count": block.instruction_count,
+        },
+        "bytes": {"start": block.start_offset, "end": block.end_offset},
+        "addresses": {"start": block.start_address, "end": block.end_address},
+        "terminator": block.terminator,
+        "successors": list(block.successors),
+        "fallthrough": block.fallthrough,
+        "lines": list(block.lines),
+    }
+
+
+def _basic_block_location_payload(block: BasicBlock) -> dict[str, Any]:
+    return {
+        "index": block.index,
+        "instructions": {
+            "start": block.start_instruction,
+            "end": block.end_instruction,
+            "count": block.instruction_count,
+        },
+        "bytes": {"start": block.start_offset, "end": block.end_offset},
+        "addresses": {"start": block.start_address, "end": block.end_address},
+        "terminator": block.terminator,
+        "successors": list(block.successors),
+    }
+
+
+def cfg_alignment_payload(alignment: CfgAlignment) -> dict[str, Any]:
+    edge_consistent = sum(
+        pair.edge_anchor and pair.edge_consistent is True
+        for pair in alignment.pairs
+    )
+    edge_conflicts = sum(
+        pair.edge_anchor and pair.edge_consistent is False
+        for pair in alignment.pairs
+    )
+    heuristic_edge_consistent = sum(
+        not pair.edge_anchor and pair.edge_consistent is True
+        for pair in alignment.pairs
+    )
+    heuristic_edge_conflicts = sum(
+        not pair.edge_anchor and pair.edge_consistent is False
+        for pair in alignment.pairs
+    )
+    edge_unchecked = sum(pair.edge_consistent is None for pair in alignment.pairs)
+    return {
+        "method": (
+            "diagnostic-only: unique exact normalized block contents and outgoing shape, "
+            "followed by greedy structurally identical pairs with at least 55% instruction "
+            "similarity; edges are checked only against a monotonic backbone of unique exact "
+            "pairs within 5% normalized order distance; predecessor counts never make "
+            "duplicate blocks unique"
+        ),
+        "summary": {
+            "target_blocks": len(alignment.target_blocks),
+            "candidate_blocks": len(alignment.candidate_blocks),
+            "exact_pairs": alignment.exact_pairs,
+            "exact_ambiguous_pairs": alignment.exact_ambiguous_pairs,
+            "similar_pairs": alignment.similar_pairs,
+            "edge_anchor_pairs": sum(pair.edge_anchor for pair in alignment.pairs),
+            "unmatched_target": len(alignment.unmatched_target),
+            "unmatched_candidate": len(alignment.unmatched_candidate),
+            "edge_consistent_pairs": edge_consistent,
+            "edge_conflicts": edge_conflicts,
+            "heuristic_edge_consistent_pairs": heuristic_edge_consistent,
+            "heuristic_edge_conflicts": heuristic_edge_conflicts,
+            "edge_unchecked_pairs": edge_unchecked,
+        },
+        "pairs": [
+            {
+                "target_block": pair.target_block,
+                "candidate_block": pair.candidate_block,
+                "kind": pair.kind,
+                "match_ratio": pair.ratio,
+                "structure_match": pair.structure_match,
+                "edge_anchor": pair.edge_anchor,
+                "edge_consistent": pair.edge_consistent,
+                "target": _basic_block_location_payload(
+                    alignment.target_blocks[pair.target_block],
+                ),
+                "candidate": _basic_block_location_payload(
+                    alignment.candidate_blocks[pair.candidate_block],
+                ),
+            }
+            for pair in alignment.pairs
+        ],
+        "unmatched_target": [
+            _basic_block_payload(alignment.target_blocks[index])
+            for index in alignment.unmatched_target
+        ],
+        "unmatched_candidate": [
+            _basic_block_payload(alignment.candidate_blocks[index])
+            for index in alignment.unmatched_candidate
+        ],
+    }
+
+
 def diff_regions(
     result: MatchResult,
     *,
@@ -2435,6 +2897,98 @@ def diff_regions(
             )
         )
     return regions
+
+
+def diff_region_payload(region: DiffRegion) -> dict[str, Any]:
+    return {
+        "target_instructions": {
+            "start": region.target_start,
+            "end": region.target_end,
+            "changed": region.changed_target_instructions,
+        },
+        "candidate_instructions": {
+            "start": region.candidate_start,
+            "end": region.candidate_end,
+            "changed": region.changed_candidate_instructions,
+        },
+        "match_ratio": region.ratio,
+        "prefix_instructions": region.prefix_instructions,
+        "instruction_delta": region.instruction_delta,
+        "target_lines": list(region.target_lines),
+        "candidate_lines": list(region.candidate_lines),
+    }
+
+
+_PROLOGUE_STACK_ALLOCATION_RE = re.compile(r"^sub esp, (0x[0-9a-f]+|\d+)$")
+
+
+def _prologue_stack_allocation(lines: tuple[str, ...]) -> int | None:
+    for line in lines[:16]:
+        if match := _PROLOGUE_STACK_ALLOCATION_RE.match(line):
+            return int(match.group(1), 0)
+    return None
+
+
+def stack_frame_diagnostic_payload(result: MatchResult) -> dict[str, Any] | None:
+    """Compare explicit prologue allocation without multiplying it into local claims."""
+
+    target = _prologue_stack_allocation(result.target_lines)
+    candidate = _prologue_stack_allocation(result.candidate_lines)
+    if target is None and candidate is None:
+        return None
+    delta = target - candidate if target is not None and candidate is not None else None
+    if delta is None:
+        classification = "incomparable-prologue"
+    elif delta > 0:
+        classification = "native-frame-larger"
+    elif delta < 0:
+        classification = "candidate-frame-larger"
+    else:
+        classification = "same-prologue-allocation"
+    return {
+        "target_prologue_allocation_bytes": target,
+        "candidate_prologue_allocation_bytes": candidate,
+        "target_minus_candidate_bytes": delta,
+        "classification": classification,
+        "caveat": (
+            "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot "
+            "coloring; its delta does not imply missing source locals byte-for-byte."
+        ),
+    }
+
+
+def match_result_payload(
+    result: MatchResult,
+    *,
+    region_context: int = 4,
+    max_regions: int | None = None,
+) -> dict[str, Any]:
+    regions = (
+        diff_regions(result, context=region_context, max_regions=max_regions)
+        if result.ratio != 1.0
+        else []
+    )
+    cfg = (
+        align_basic_blocks(result)
+        if result.target_disassembly or result.candidate_disassembly
+        else None
+    )
+    return {
+        "exact": result.ratio == 1.0 and result.masked_operand_audit.problem_count == 0,
+        "match_ratio": result.ratio,
+        "prefix_instructions": result.prefix_instructions,
+        "target_instructions": len(result.target_lines),
+        "candidate_instructions": len(result.candidate_lines),
+        "masked_references": {
+            "ok": result.masked_operand_audit.ok_count,
+            "unresolved": result.masked_operand_audit.unresolved_count,
+            "mismatch": result.masked_operand_audit.mismatch_count,
+            "unaudited": result.masked_operand_audit.unaudited_count,
+        },
+        "stack_frame": stack_frame_diagnostic_payload(result),
+        "regions": [diff_region_payload(region) for region in regions],
+        "cfg_alignment": cfg_alignment_payload(cfg) if cfg is not None else None,
+    }
 
 
 def resolve_function_extent(
@@ -2666,6 +3220,56 @@ class TriageRow:
         if self.best_status is None or self.state == "match":
             return ()
         return self.best_status.config.residuals
+
+
+@dataclass(frozen=True, slots=True)
+class CompilerListingSpan:
+    source_lines: tuple[int, ...]
+    instruction_offsets: tuple[int, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class CompilerListingStackSymbol:
+    name: str
+    offset: int
+    generated: bool
+
+
+@dataclass(frozen=True, slots=True)
+class CompilerListingStackLayout:
+    prologue_allocation_bytes: int | None
+    symbols: tuple[CompilerListingStackSymbol, ...]
+
+    @property
+    def distinct_slots(self) -> int:
+        return len({symbol.offset for symbol in self.symbols})
+
+    @property
+    def reused_slots(self) -> int:
+        counts = Counter(symbol.offset for symbol in self.symbols)
+        return sum(count > 1 for count in counts.values())
+
+    @property
+    def generated_temporaries(self) -> int:
+        return sum(symbol.generated for symbol in self.symbols)
+
+
+@dataclass(frozen=True, slots=True)
+class CompilerListingResult:
+    listing_path: Path
+    metadata_path: Path
+    scratch: Path
+    function: str
+    compiler: str
+    cflags: str
+    canonical_object: Path
+    canonical_object_sha256: str
+    diagnostic_object_sha256: str
+    function_sha256: str
+    function_bytes: int
+    relocations: int
+    spans: tuple[CompilerListingSpan, ...]
+    stack_layout: CompilerListingStackLayout
 
 
 
@@ -3080,6 +3684,335 @@ def compile_scratch(
         obj_path, config, match_root, include_resolver=include_resolver
     )
     return obj_path
+
+
+def _write_text_atomic(path: Path, text: str) -> None:
+    import tempfile
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        encoding="utf-8",
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+        delete=False,
+    ) as handle:
+        handle.write(text)
+        temp_path = Path(handle.name)
+    try:
+        os.replace(temp_path, path)
+    finally:
+        temp_path.unlink(missing_ok=True)
+
+
+def _write_bytes_atomic(path: Path, data: bytes) -> None:
+    import tempfile
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(
+        mode="wb",
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+        delete=False,
+    ) as handle:
+        handle.write(data)
+        temp_path = Path(handle.name)
+    try:
+        os.replace(temp_path, path)
+    finally:
+        temp_path.unlink(missing_ok=True)
+
+
+_COMPILER_LISTING_SOURCE_RE = re.compile(r"^;\s*(\d+)\s+:")
+_COMPILER_LISTING_INSTRUCTION_RE = re.compile(r"^\s*([0-9A-Fa-f]{5,8})\t")
+_COMPILER_LISTING_PROC_RE = re.compile(r"^(\S+)\s+PROC\b")
+_COMPILER_LISTING_STACK_SYMBOL_RE = re.compile(r"^(\S+)\s*=\s*(-\d+)\s*$")
+_COMPILER_LISTING_STACK_ALLOCATION_RE = re.compile(
+    r"\bsub\s+esp,\s+(\d+|0[0-9A-Fa-f]+H)\b",
+    re.IGNORECASE,
+)
+
+
+def parse_compiler_listing_spans(text: str) -> tuple[CompilerListingSpan, ...]:
+    source_lines: list[int] = []
+    instruction_offsets: list[int] = []
+    spans: list[CompilerListingSpan] = []
+
+    def flush() -> None:
+        if instruction_offsets:
+            spans.append(
+                CompilerListingSpan(
+                    source_lines=tuple(dict.fromkeys(source_lines)),
+                    instruction_offsets=tuple(instruction_offsets),
+                ),
+            )
+            instruction_offsets.clear()
+            source_lines.clear()
+
+    for line in text.splitlines():
+        if source_match := _COMPILER_LISTING_SOURCE_RE.match(line):
+            if instruction_offsets:
+                flush()
+            source_lines.append(int(source_match.group(1)))
+            continue
+        if instruction_match := _COMPILER_LISTING_INSTRUCTION_RE.match(line):
+            instruction_offsets.append(int(instruction_match.group(1), 16))
+    flush()
+    return tuple(spans)
+
+
+def parse_compiler_listing_stack_layout(
+    text: str,
+    *,
+    symbol: str,
+) -> CompilerListingStackLayout:
+    """Recover candidate stack aliases without claiming native variable names."""
+
+    lines = text.splitlines()
+    accepted_symbols = {symbol, symbol.removeprefix("_")}
+    accepted_symbols |= {f"_{value}" for value in accepted_symbols}
+    proc_index: int | None = None
+    for index, line in enumerate(lines):
+        match = _COMPILER_LISTING_PROC_RE.match(line)
+        if match and match.group(1) in accepted_symbols:
+            proc_index = index
+            break
+    if proc_index is None:
+        return CompilerListingStackLayout(None, ())
+
+    segment_index = max(
+        (
+            index
+            for index, line in enumerate(lines[:proc_index])
+            if line.rstrip().endswith("SEGMENT")
+        ),
+        default=proc_index,
+    )
+    symbols = tuple(
+        CompilerListingStackSymbol(
+            name=match.group(1),
+            offset=int(match.group(2)),
+            generated=match.group(1).startswith("$T"),
+        )
+        for line in lines[segment_index + 1 : proc_index]
+        if (match := _COMPILER_LISTING_STACK_SYMBOL_RE.match(line))
+    )
+
+    allocation: int | None = None
+    for line in lines[proc_index + 1 : proc_index + 41]:
+        if match := _COMPILER_LISTING_STACK_ALLOCATION_RE.search(line):
+            token = match.group(1)
+            allocation = int(token[:-1], 16) if token.upper().endswith("H") else int(token)
+            break
+    return CompilerListingStackLayout(allocation, symbols)
+
+
+def generate_compiler_listing(
+    config: ScratchConfig,
+    match_root: Path = DEFAULT_MATCH_ROOT,
+    *,
+    output: Path | None = None,
+) -> CompilerListingResult:
+    """Generate a VC mixed listing and prove its function object is unchanged."""
+
+    import shlex
+    import subprocess
+    import tempfile
+
+    match_root = match_root.resolve()
+    source = config.directory / "scratch.cpp"
+    validate_scratch_source(source)
+    source_data = source.read_bytes()
+    canonical_path = compile_scratch(config, match_root)
+    canonical_object_data = canonical_path.read_bytes()
+    reference_manifest = load_default_reference_symbol_manifest()
+    canonical_function = extract_object_function(
+        parse_coff_object(canonical_object_data),
+        config.symbol or config.function,
+        reference_manifest=reference_manifest,
+    )
+    source_sha256 = hashlib.sha256(source_data).hexdigest()
+    profile_sha256 = hashlib.sha256(
+        json.dumps(
+            {"compiler": config.compiler, "cflags": config.cflags},
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode(),
+    ).hexdigest()
+    if output is None:
+        output = (
+            match_root
+            / ".cache"
+            / "listings"
+            / config.directory.name
+            / f"{profile_sha256[:16]}-{source_sha256[:12]}"
+            / "scratch.cod"
+        )
+    output = output.resolve()
+    metadata_path = output.with_suffix(".json")
+
+    with tempfile.TemporaryDirectory(
+        prefix=f"snail-listing-{config.directory.name}-",
+    ) as temp_name:
+        temp = Path(temp_name)
+        temp_source = temp / "scratch.cpp"
+        temp_object = temp / "scratch.obj"
+        temp_listing = temp / "listing.cod"
+        temp_source.write_bytes(source_data)
+        completed = subprocess.run(
+            [
+                str(match_root / "cl.sh"),
+                "/c",
+                *shlex.split(config.cflags),
+                "/FAsc",
+                f"/Fa{temp_listing.name}",
+                temp_source.name,
+            ],
+            cwd=temp,
+            env={**os.environ, "MSVC_VER": config.compiler},
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if completed.returncode != 0 or not temp_object.is_file() or not temp_listing.is_file():
+            raise RuntimeError(
+                _format_cl_failure(
+                    returncode=completed.returncode,
+                    stdout=completed.stdout,
+                    stderr=completed.stderr,
+                    obj_path=temp_object,
+                    source_name=temp_source.name,
+                    context="compiler listing",
+                ),
+            )
+        diagnostic_object_data = temp_object.read_bytes()
+        diagnostic_function = extract_object_function(
+            parse_coff_object(diagnostic_object_data),
+            config.symbol or config.function,
+            reference_manifest=reference_manifest,
+        )
+        if diagnostic_function != canonical_function:
+            raise ValueError(
+                "listing compile changed the extracted object function; "
+                "refusing misleading diagnostics",
+            )
+        listing_data = temp_listing.read_bytes()
+
+    listing_text = listing_data.decode("latin1")
+    spans = parse_compiler_listing_spans(listing_text)
+    stack_layout = parse_compiler_listing_stack_layout(
+        listing_text,
+        symbol=config.symbol or config.function,
+    )
+    _write_bytes_atomic(output, listing_data)
+    payload = {
+        "schema": 1,
+        "kind": "snail-compiler-listing",
+        "scratch": str(config.directory.resolve()),
+        "function": config.function,
+        "source": "scratch.cpp",
+        "source_sha256": source_sha256,
+        "compiler": config.compiler,
+        "cflags": config.cflags,
+        "listing_flags": ["/FAsc"],
+        "listing_sha256": hashlib.sha256(listing_data).hexdigest(),
+        "canonical_object": str(canonical_path.resolve()),
+        "canonical_object_sha256": hashlib.sha256(canonical_object_data).hexdigest(),
+        "diagnostic_object_sha256": hashlib.sha256(diagnostic_object_data).hexdigest(),
+        "object_function_equivalent": True,
+        "function_sha256": hashlib.sha256(canonical_function.data).hexdigest(),
+        "function_bytes": len(canonical_function.data),
+        "relocations": len(canonical_function.relocation_references),
+        "spans": [
+            {
+                "source_lines": list(span.source_lines),
+                "instruction_offsets": list(span.instruction_offsets),
+            }
+            for span in spans
+        ],
+        "stack_layout": {
+            "prologue_allocation_bytes": stack_layout.prologue_allocation_bytes,
+            "symbol_count": len(stack_layout.symbols),
+            "distinct_slots": stack_layout.distinct_slots,
+            "reused_slots": stack_layout.reused_slots,
+            "generated_temporaries": stack_layout.generated_temporaries,
+            "symbols": [
+                {
+                    "name": symbol.name,
+                    "offset": symbol.offset,
+                    "generated": symbol.generated,
+                }
+                for symbol in stack_layout.symbols
+            ],
+        },
+        "caveat": (
+            "Source-line scheduling comes from the reconstructed source and selected compiler; "
+            "stack symbols and aliases describe only that candidate compilation. This does not "
+            "recover original local names or prove native variable lifetimes."
+        ),
+    }
+    _write_text_atomic(metadata_path, json.dumps(payload, indent=2, sort_keys=True) + "\n")
+    return CompilerListingResult(
+        listing_path=output,
+        metadata_path=metadata_path,
+        scratch=config.directory,
+        function=config.function,
+        compiler=config.compiler,
+        cflags=config.cflags,
+        canonical_object=canonical_path,
+        canonical_object_sha256=hashlib.sha256(canonical_object_data).hexdigest(),
+        diagnostic_object_sha256=hashlib.sha256(diagnostic_object_data).hexdigest(),
+        function_sha256=hashlib.sha256(canonical_function.data).hexdigest(),
+        function_bytes=len(canonical_function.data),
+        relocations=len(canonical_function.relocation_references),
+        spans=spans,
+        stack_layout=stack_layout,
+    )
+
+
+def compiler_listing_payload(result: CompilerListingResult) -> dict[str, Any]:
+    return {
+        "listing": str(result.listing_path),
+        "metadata": str(result.metadata_path),
+        "scratch": str(result.scratch),
+        "function": result.function,
+        "compiler": result.compiler,
+        "cflags": result.cflags,
+        "canonical_object": str(result.canonical_object),
+        "canonical_object_sha256": result.canonical_object_sha256,
+        "diagnostic_object_sha256": result.diagnostic_object_sha256,
+        "object_function_equivalent": True,
+        "function_sha256": result.function_sha256,
+        "function_bytes": result.function_bytes,
+        "relocations": result.relocations,
+        "source_spans": len(result.spans),
+        "machine_rows": sum(len(span.instruction_offsets) for span in result.spans),
+        "stack_layout": {
+            "prologue_allocation_bytes": result.stack_layout.prologue_allocation_bytes,
+            "symbol_count": len(result.stack_layout.symbols),
+            "distinct_slots": result.stack_layout.distinct_slots,
+            "reused_slots": result.stack_layout.reused_slots,
+            "generated_temporaries": result.stack_layout.generated_temporaries,
+        },
+    }
+
+
+def render_compiler_listing_result(result: CompilerListingResult) -> str:
+    payload = compiler_listing_payload(result)
+    return (
+        f"listing={payload['listing']} metadata={payload['metadata']}\n"
+        f"function={result.function} compiler={result.compiler} cflags={result.cflags}\n"
+        f"object_function_equivalent=yes bytes={result.function_bytes} "
+        f"relocations={result.relocations} source_spans={payload['source_spans']} "
+        f"machine_rows={payload['machine_rows']}\n"
+        f"stack-allocation={result.stack_layout.prologue_allocation_bytes} "
+        f"symbols={len(result.stack_layout.symbols)} "
+        f"slots={result.stack_layout.distinct_slots} "
+        f"reused-slots={result.stack_layout.reused_slots} "
+        f"generated-temporaries={result.stack_layout.generated_temporaries}"
+    )
 
 
 def run_scratch_match(
