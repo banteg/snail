@@ -15,10 +15,11 @@ sample, decrements `segment_count`, and uses the final allocated sample directly
 for the mesh row. The scratch models that allocation shape, the raised starting
 plateau, the cosine descent, the flat tail, deltas, mesh, and finalization.
 
-The retained scratch now matches 82.46% at exact 610/610 candidate/target
+The retained scratch now matches 84.75% at exact 610/610 candidate/target
 instructions, with a 148-instruction exact prefix and masked operands at 35
-ok, 0 unresolved, 0 mismatch, 0 unaudited. The candidate frame now agrees with
-the target at 0x44; later mesh/face owner allocation remains open.
+ok, 0 unresolved, 0 mismatch, 0 unaudited. The candidate frame agrees with
+the target at 0x44, and the mesh setup now snapshots both native banks before
+using a separate row/sample induction; later face allocation remains open.
 
 2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
 Forcing those helpers inline moves focused Wibo from 10.90% (124/610
@@ -449,3 +450,25 @@ The retained frontier is **82.46%**, **610/610** instructions, prefix
 **148/610**, and 35 clean references. Because multiple allegedly exhausted
 source owners produced material current-state gains, the scratch metadata is
 corrected to `incomplete` with `analysis,compiler` residuals.
+
+## 2026-08-13 live mesh row ownership
+
+The reopened Windows database confirms the native mesh setup at
+`0x4269b1`: it snapshots `object->vertices` and `object->facequads`, initializes
+the logical row to zero, and advances a separate primary-sample byte cursor by
+`0xa8` after each row. The old scratch instead carried an explicit
+`sample_offset` alongside `row`; in the current allocation state VC6 spilled
+that cursor and retained a mesh bank in `EBX`.
+
+Deriving the row sample directly as `&primary_samples[row]` lets VC6 recover
+the native `EBX += 0xa8` induction while keeping the authored `Object*`, vertex
+bank, and facequad bank snapshots explicit. Focused matching rises from
+**82.46%** to **84.75%**, with exact **610/610** instruction count, the
+**148/610** prefix, and all 35 references preserved.
+
+Two higher-score shapes remain rejected as tradeoffs. Reading vertices back
+through the mesh object reaches 85.81% but contradicts the live bank snapshot
+and leaves the candidate one instruction short. Testing the curve's physical
+sample displacement reproduces the native `cmp edi, 0x348`, but currently
+disturbs the preheader and also loses an instruction. Those observations are
+useful combination leads, not retained source yet.

@@ -18,20 +18,20 @@ static __forceinline void build_direct_strip_mesh(Path* path, char* texture)
     path->strip_mesh->RequestFaceQuads(
         2 * path->width_cells * path->segment_count);
 
-    Vector3* vertices = path->strip_mesh->vertices;
-    cRFaceQuad* facequads = path->strip_mesh->facequads;
+    Object* mesh = path->strip_mesh;
+    Vector3* vertices = mesh->vertices;
+    cRFaceQuad* facequads = mesh->facequads;
     int row;
     int column;
 
     row = 0;
     if (path->segment_count >= 0) {
-        int sample_offset = 0;
         do {
             column = 0;
             if (path->width_cells >= 0) {
                 do {
-                    PathTemplateSample* sample = (PathTemplateSample*)(
-                        (char*)path->primary_samples + sample_offset);
+                    PathTemplateSample* sample =
+                        &path->primary_samples[row];
                     float lateral =
                         (float)column - (float)path->width_cells * 0.5f;
                     Vector3* vertex =
@@ -47,7 +47,6 @@ static __forceinline void build_direct_strip_mesh(Path* path, char* texture)
                 } while (column <= path->width_cells);
             }
             ++row;
-            sample_offset += sizeof(PathTemplateSample);
         } while (row <= path->segment_count);
     }
 
