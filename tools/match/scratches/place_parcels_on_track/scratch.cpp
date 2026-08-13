@@ -154,64 +154,66 @@ void cRSubGame::PlaceParcels()
                       level_definition.level_display_name);
 
     int placed = 0;
-    if (set_or_target > 0 && set_entry_count > 0) {
-        do {
-            int picked = (int)RAND((float)set_entry_count, "P1");
-            placed += g_parcel_set_buckets[picked].candidate_count;
-            for (int spot = 0;
-                 spot < g_parcel_set_buckets[picked].candidate_count;
-                 ++spot) {
-                int absolute_row =
-                    g_parcel_set_buckets[picked].candidates[spot].row
-                    + level_definition
-                          .segment_slots[g_parcel_set_buckets[picked]
-                                             .segment_index]
-                          .row_base;
-                if (runtime_rows[absolute_row].flags
-                    & SUBROW_FLAG_PARCEL_SPAWN_REQUESTED)
-                    report_errorf("Duplicate Parcel Request in %s.",
-                                  level_definition.level_display_name);
-                runtime_rows[absolute_row].flags |=
-                    SUBROW_FLAG_PARCEL_CANDIDATE
-                    | SUBROW_FLAG_PARCEL_SPAWN_REQUESTED;
-                runtime_rows[absolute_row].parcel_spawn_position =
-                    g_parcel_set_buckets[picked].candidates[spot].position;
-                runtime_rows[absolute_row].parcel_spawn_position.z =
-                    (float)absolute_row
-                    + runtime_rows[absolute_row].parcel_spawn_position.z + 0.5f;
-                runtime_rows[absolute_row].parcel_spawn_position.y =
-                    runtime_rows[absolute_row].parcel_spawn_position.y + 1.0f;
-                if (runtime_rows[absolute_row].flags & SUBROW_FLAG_MIRRORED)
-                    runtime_rows[absolute_row].parcel_spawn_position.x =
-                        runtime_rows[absolute_row].parcel_spawn_position.x * -1.0f;
-            }
-            int placed_segment =
-                g_parcel_set_buckets[picked].segment_index;
-            for (int scan = 0; scan < set_entry_count; ++scan) {
-                if (g_parcel_set_buckets[scan].segment_index == placed_segment) {
-                    for (int move = scan; move < set_entry_count - 1; ++move) {
-                        for (int copy = 0;
-                             copy
-                             < g_parcel_set_buckets[move + 1].candidate_count;
-                             ++copy)
-                            g_parcel_set_buckets[move].candidates[copy] =
-                                g_parcel_set_buckets[move + 1].candidates[copy];
-                        g_parcel_set_buckets[move].candidate_count =
-                            g_parcel_set_buckets[move + 1].candidate_count;
-                        g_parcel_set_buckets[move].segment_index =
-                            g_parcel_set_buckets[move + 1].segment_index;
-                        g_parcel_set_buckets[move].set_id =
-                            g_parcel_set_buckets[move + 1].set_id;
-                    }
-                    --set_entry_count;
-                    --scan;
+    while (placed < set_or_target && set_entry_count > 0) {
+        int picked = (int)RAND((float)set_entry_count, "P1");
+        placed += g_parcel_set_buckets[picked].candidate_count;
+        for (int spot = 0;
+             spot < g_parcel_set_buckets[picked].candidate_count;
+             ++spot) {
+            int absolute_row =
+                g_parcel_set_buckets[picked].candidates[spot].row
+                + level_definition
+                      .segment_slots[g_parcel_set_buckets[picked]
+                                         .segment_index]
+                      .row_base;
+            if (runtime_rows[absolute_row].flags
+                & SUBROW_FLAG_PARCEL_SPAWN_REQUESTED)
+                report_errorf("Duplicate Parcel Request in %s.",
+                              level_definition.level_display_name);
+            runtime_rows[absolute_row].flags |=
+                SUBROW_FLAG_PARCEL_CANDIDATE
+                | SUBROW_FLAG_PARCEL_SPAWN_REQUESTED;
+            runtime_rows[absolute_row].parcel_spawn_position =
+                g_parcel_set_buckets[picked].candidates[spot].position;
+            runtime_rows[absolute_row].parcel_spawn_position.z =
+                (float)absolute_row
+                + runtime_rows[absolute_row].parcel_spawn_position.z + 0.5f;
+            runtime_rows[absolute_row].parcel_spawn_position.y =
+                runtime_rows[absolute_row].parcel_spawn_position.y + 1.0f;
+            if (runtime_rows[absolute_row].flags & SUBROW_FLAG_MIRRORED)
+                runtime_rows[absolute_row].parcel_spawn_position.x =
+                    runtime_rows[absolute_row].parcel_spawn_position.x * -1.0f;
+        }
+        int placed_segment =
+            g_parcel_set_buckets[picked].segment_index;
+        for (int scan = 0; scan < set_entry_count; ++scan) {
+            if (g_parcel_set_buckets[scan].segment_index == placed_segment) {
+                for (int move = scan; move < set_entry_count - 1; ++move) {
+                    for (int copy = 0;
+                         copy
+                         < g_parcel_set_buckets[move + 1].candidate_count;
+                         ++copy)
+                        g_parcel_set_buckets[move].candidates[copy] =
+                            g_parcel_set_buckets[move + 1].candidates[copy];
+                    g_parcel_set_buckets[move].candidate_count =
+                        g_parcel_set_buckets[move + 1].candidate_count;
+                    g_parcel_set_buckets[move].segment_index =
+                        g_parcel_set_buckets[move + 1].segment_index;
+                    g_parcel_set_buckets[move].set_id =
+                        g_parcel_set_buckets[move + 1].set_id;
                 }
+                --set_entry_count;
+                --scan;
             }
-        } while (placed < set_or_target);
+        }
     }
 
-    if (placed < level_definition.parcel_count && zero_entry_count > 0) {
-        do {
+    int last_zero_entry;
+    if (placed < level_definition.parcel_count) {
+        last_zero_entry = zero_entry_count - 1;
+        while (placed < level_definition.parcel_count) {
+            if (zero_entry_count <= 0)
+                break;
             int picked = (int)RAND((float)zero_entry_count, "P2");
             placed += g_zero_parcel_buckets[picked].candidate_count;
             int absolute_row =
@@ -236,7 +238,7 @@ void cRSubGame::PlaceParcels()
             if (runtime_rows[absolute_row].flags & SUBROW_FLAG_MIRRORED)
                 runtime_rows[absolute_row].parcel_spawn_position.x =
                     runtime_rows[absolute_row].parcel_spawn_position.x * -1.0f;
-            for (int move = picked; move < zero_entry_count - 1; ++move) {
+            for (int move = picked; move < last_zero_entry; ++move) {
                 g_zero_parcel_buckets[move].candidates[0] =
                     g_zero_parcel_buckets[move + 1].candidates[0];
                 g_zero_parcel_buckets[move].candidate_count =
@@ -246,7 +248,8 @@ void cRSubGame::PlaceParcels()
                 g_zero_parcel_buckets[move].set_id = 0;
             }
             --zero_entry_count;
-        } while (placed < level_definition.parcel_count);
+            --last_zero_entry;
+        }
     }
 
     if (placed != level_definition.parcel_count) {

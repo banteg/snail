@@ -545,17 +545,18 @@ those independent field writes improves 43.91% to 44.06% before the larger
 lifetime recovery. Both mobile ports confirm the same moved metadata, although
 their compiler schedules differ.
 
-Finally, Windows enters each nonempty candidate bank once and uses only the
-placement quota on the loop back edge. The Android and iOS ports add
-bank-exhaustion guards on their back edges, but the Windows disassembly is
-unambiguous: positive sets precheck `set_entry_count`, digit-0 entries precheck
-`zero_entry_count`, and both then use `do`/`while` quota loops. Recovering those
-Windows control shapes improves 68.64% to 84.69% and then 87.77%.
+An earlier reading treated the Windows bank-count tests as one-shot prechecks
+and the claim passes as quota-only `do`/`while` loops. That interpretation was
+incomplete: the addressed back edges were rechecked in August and both return
+through their bank-exhaustion tests. The Android and iOS bodies independently
+retain the same safety property. The one-shot source shape was useful for
+recovering the broad block layout at this stage, but was not behaviorally
+complete.
 
-The accepted candidate is 637/639 instructions with the exact `0x214` frame,
-7-instruction prefix, and all 98 masked operands clean: zero unresolved, zero
-mismatched, and zero unaudited. The residual is stack-slot coloring plus the
-already-documented final projection evaluation order. No volatile barrier,
+At this stage the candidate was 637/639 instructions with the exact `0x214`
+frame, 7-instruction prefix, and all 98 masked operands clean: zero unresolved,
+zero mismatched, and zero unaudited. The residual is stack-slot coloring plus
+the already-documented final projection evaluation order. No volatile barrier,
 synthetic dependency, stack padding, or register forcing is present.
 
 ## 2026-08-12 recovery classification
@@ -591,6 +592,25 @@ borrowed `Path*` improves. This corrects the earlier claim that no further
 ownership lifetime remained. The residual is still compiler scheduling and
 stack coloring, but the retained change is an ordinary semantic borrow with no
 volatile barrier, dummy dependency, register coercion, or reference tradeoff.
+
+## Recovered bank-exhaustion back edges (2026-08-13)
+
+Fresh addressed Windows readback resolves the stale control-flow
+classification above. At `0x443f66`, the positive-set loop jumps back to
+`0x443d34`, which tests the current `set_entry_count` before another `P1`
+draw. At `0x440ff`, the digit-0 loop jumps back to `0x443f83`, which tests the
+current `zero_entry_count` before another `P2` draw. These are live guards, not
+entry-only validation. Android's verified body expresses the same two loops as
+quota-and-bank-count conditions.
+
+The source now keeps both count tests on their loop paths. The digit-0 pass
+also retains `last_zero_entry = zero_entry_count - 1` across compaction and
+decrements it with the pool count; that is the lifetime exposed by Windows'
+`esp+0x1c` slot and by both mobile pool cursors. This removes the scratch-only
+possibility of drawing from an exhausted bank and improves focused Wibo from
+88.09% to 88.71%, still 637/639 instructions with the 7-instruction exact
+prefix and all 98 masked references clean. No register forcing, dummy
+dependency, or platform-specific behavior was introduced.
 
 ## Bounded receiver/segment stack coloring (2026-07-30)
 
