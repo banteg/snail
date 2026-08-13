@@ -7,6 +7,7 @@ import ida_funcs
 import ida_hexrays
 import ida_name
 import ida_pro
+import ida_typeinf
 import idc
 
 SCRIPT_ROOT = pathlib.Path(__file__).resolve().parent
@@ -14,6 +15,28 @@ if str(SCRIPT_ROOT) not in sys.path:
     sys.path.insert(0, str(SCRIPT_ROOT))
 
 from game_root_owner import sync_game_root_owner_graph  # noqa: E402
+from type_alias_migration import migrate_equivalent_struct_aliases  # noqa: E402
+
+
+INTRO_OWNER_TYPE_ALIASES = (("Intro", "cRIntro", 0x48),)
+
+EXPECTED_INTRO_OWNER_LAYOUT = {
+    "size": 0x48,
+    "members": {
+        0x00: ("replay_attract_bank_cursor", "int32_t"),
+        0x04: ("hide_for_replay_latch", "uint8_t"),
+        0x08: ("attract_reset_progress", "float"),
+        0x0C: ("attract_reset_step", "float"),
+        0x10: ("replay_probe_progress", "float"),
+        0x14: ("replay_probe_step", "float"),
+        0x30: ("postal_button", "FrontendWidget *"),
+        0x34: ("time_trial_button", "FrontendWidget *"),
+        0x38: ("challenge_button", "FrontendWidget *"),
+        0x3C: ("tutorial_button", "FrontendWidget *"),
+        0x40: ("help_button", "FrontendWidget *"),
+        0x44: ("back_button", "FrontendWidget *"),
+    },
+}
 
 
 TRUSTED_NAMES = [
@@ -72,11 +95,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_new_game_menu",
-        "void __thiscall initialize_new_game_menu(Intro* intro);",
+        "void __thiscall initialize_new_game_menu(cRIntro* intro);",
     ),
     (
         "update_new_game_menu",
-        "void __thiscall update_new_game_menu(Intro* intro);",
+        "void __thiscall update_new_game_menu(cRIntro* intro);",
     ),
 ]
 
@@ -125,6 +148,75 @@ def _normalize_type_text(value: str | None) -> str | None:
 def _declaration_to_observed_type(selector: str, declaration: str) -> str:
     unnamed = re.sub(rf"\b{re.escape(selector)}\s*(?=\()", "", declaration, count=1)
     return _normalize_type_text(unnamed) or ""
+
+
+def _named_struct_size(name: str) -> int | None:
+    value = ida_typeinf.tinfo_t()
+    if not value.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
+        return None
+    return value.get_size()
+
+
+def _intro_owner_layout_readback() -> dict[str, object]:
+    type_name = "cRIntro"
+    type_info = ida_typeinf.tinfo_t()
+    if not type_info.get_named_type(None, type_name, ida_typeinf.BTF_STRUCT):
+        return {
+            "type": type_name,
+            "observed": None,
+            "failures": [{"type": type_name, "reason": "missing_named_struct"}],
+        }
+
+    members = ida_typeinf.udt_type_data_t()
+    if not type_info.get_udt_details(members):
+        return {
+            "type": type_name,
+            "observed": None,
+            "failures": [{"type": type_name, "reason": "missing_struct_details"}],
+        }
+
+    observed_members = {
+        int(member.offset) // 8: {
+            "name": str(member.name),
+            "type": _normalize_type_text(member.type.dstr()),
+        }
+        for member in members
+    }
+    observed = {
+        "size": type_info.get_size(),
+        "members": {
+            hex(offset): observed_members.get(offset)
+            for offset in EXPECTED_INTRO_OWNER_LAYOUT["members"]
+        },
+    }
+    failures: list[dict[str, object]] = []
+    if observed["size"] != EXPECTED_INTRO_OWNER_LAYOUT["size"]:
+        failures.append(
+            {
+                "type": type_name,
+                "reason": "owner_size_mismatch",
+                "expected": EXPECTED_INTRO_OWNER_LAYOUT["size"],
+                "observed": observed["size"],
+            }
+        )
+    for offset, (expected_name, expected_type) in EXPECTED_INTRO_OWNER_LAYOUT[
+        "members"
+    ].items():
+        expected_member = {
+            "name": expected_name,
+            "type": _normalize_type_text(expected_type),
+        }
+        if observed_members.get(offset) != expected_member:
+            failures.append(
+                {
+                    "type": type_name,
+                    "offset": hex(offset),
+                    "reason": "owner_member_mismatch",
+                    "expected": expected_member,
+                    "observed": observed_members.get(offset),
+                }
+            )
+    return {"type": type_name, "observed": observed, "failures": failures}
 
 
 def _normalize_root_offset_operands(
@@ -290,12 +382,75 @@ def _sync_high_score_lifecycle_owner_graph() -> dict[str, object]:
 def _sync_types(header_path: pathlib.Path) -> int:
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
 
+    type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(INTRO_OWNER_TYPE_ALIASES)
+    )
+    type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in type_alias_migrations
+        if result.get("status") == "failed"
+    ]
+    intro_owner_layout_readback = (
+        {"type": "cRIntro", "observed": None, "failures": []}
+        if parse_errors or type_alias_failures
+        else _intro_owner_layout_readback()
+    )
+    intro_owner_size = _named_struct_size("cRIntro")
+
     applied = 0
     unchanged = 0
     renamed = 0
     names_unchanged = 0
     missing = []
-    failed = []
+    failed = [
+        *type_alias_failures,
+        *intro_owner_layout_readback["failures"],
+    ]
+    if intro_owner_size != EXPECTED_INTRO_OWNER_LAYOUT["size"]:
+        failed.append(
+            {
+                "selector": "cRIntro",
+                "reason": "owner_size_mismatch",
+                "expected": EXPECTED_INTRO_OWNER_LAYOUT["size"],
+                "observed": intro_owner_size,
+            }
+        )
+
+    if parse_errors or failed:
+        print(
+            json.dumps(
+                {
+                    "database": idc.get_idb_path(),
+                    "header": str(header_path),
+                    "parse_errors": parse_errors,
+                    "type_alias_migrations": type_alias_migrations,
+                    "intro_owner_size": intro_owner_size,
+                    "intro_owner_layout_readback": intro_owner_layout_readback,
+                    "applied": applied,
+                    "unchanged": unchanged,
+                    "renamed": renamed,
+                    "names_unchanged": names_unchanged,
+                    "game_root_owner_graph": {
+                        "status": "skipped",
+                        "reason": "owner_preflight_failed",
+                    },
+                    "high_score_lifecycle_owner_graph": {
+                        "status": "skipped",
+                        "reason": "owner_preflight_failed",
+                    },
+                    "missing": missing,
+                    "failed": failed,
+                },
+                indent=2,
+            )
+        )
+        return 1
 
     for address, name in TRUSTED_NAMES:
         current_name = idc.get_name(address)
@@ -376,6 +531,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "parse_errors": parse_errors,
+                "type_alias_migrations": type_alias_migrations,
+                "intro_owner_size": intro_owner_size,
+                "intro_owner_layout_readback": intro_owner_layout_readback,
                 "applied": applied,
                 "unchanged": unchanged,
                 "renamed": renamed,

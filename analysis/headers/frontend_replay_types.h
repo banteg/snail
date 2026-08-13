@@ -205,7 +205,7 @@ typedef struct HighScore {
 } HighScore;
 
 /* Exact 0x48-byte Windows cRIntro owner; mobile has one additional widget. */
-typedef struct Intro {
+typedef struct cRIntro {
     int32_t replay_attract_bank_cursor;
     uint8_t hide_for_replay_latch;
     uint8_t _pad_05[0x08 - 0x05];
@@ -220,8 +220,7 @@ typedef struct Intro {
     FrontendWidget* tutorial_button;
     FrontendWidget* help_button;
     FrontendWidget* back_button;
-} Intro;
-typedef Intro NewGameMenu;
+} cRIntro;
 
 #define SUB_SOLUTION_STRIDE 0x1fac0
 #define SUB_SOLUTION_PLAYER_NAME_SIZE 0x14

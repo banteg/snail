@@ -2,8 +2,8 @@
 /* function: initialize_new_game_menu @ 0x417bc0 */
 /* selector: initialize_new_game_menu */
 
-// Exact Windows `cRIntro::Init()`: builds the New Game mode submenu with Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back after reloading the shared menu backdrop and shell-font scene. The root-owned 0x48-byte Intro at `data_4df904 + 0x4f2dc` retains its replay-attract controller across initialization.
-void __thiscall initialize_new_game_menu(Intro *intro)
+// Exact Windows `cRIntro::Init()`: builds the New Game mode submenu with Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back after reloading the shared menu backdrop and shell-font scene. The root-owned 0x48-byte cRIntro at `data_4df904 + 0x4f2dc` retains its replay-attract controller across initialization.
+void __thiscall initialize_new_game_menu(cRIntro *intro)
 {
   int32_t landscape_script_by_name; // eax
   tColour *v3; // eax
@@ -44,7 +44,7 @@ void __thiscall initialize_new_game_menu(Intro *intro)
   v8 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
   initialize_frontend_widget(intro->back_button, 0x14u, g_back_text, 20, 20.0, 350.0, v8, 2, 0.0);
   stack_widget_below(intro->back_button, intro->challenge_button);
-  if ( !g_runtime_config.new_game_tutorial_started )
+  if ( g_runtime_config.new_game_tutorial_started == 0 )
   {
     intro->postal_button->widget_flags |= 0x8000u;
     intro->time_trial_button->widget_flags |= 0x8000u;

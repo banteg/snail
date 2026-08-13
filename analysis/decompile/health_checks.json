@@ -5512,7 +5512,7 @@
       "name": "ida_initialize_new_game_menu_root_ownership",
       "artifact": "analysis/decompile/ida/functions/00417bc0-initialize_new_game_menu.c",
       "required_substrings": [
-        "void __thiscall initialize_new_game_menu(Intro *intro)",
+        "void __thiscall initialize_new_game_menu(cRIntro *intro)",
         "&g_game_base->subgame.landscape_manager,",
         "subgame.landscape_manager.scripts[landscape_script_by_name]",
         "intro->tutorial_button = allocate_border",
@@ -5524,13 +5524,16 @@
         "0x106c7bc",
         "struct NewGameMenu",
         "__offset("
+      ],
+      "forbidden_regexes": [
+        "\\bIntro \\*intro"
       ]
     },
     {
       "name": "bn_update_new_game_menu_intro_ownership",
       "artifact": "analysis/decompile/binja/functions/00417eb0-update_new_game_menu.c",
       "required_substrings": [
-        "struct Intro* intro_1 = intro",
+        "struct cRIntro* intro_1 = intro",
         "intro->hide_for_replay_latch",
         "intro->time_trial_button",
         "g_game_base->subgame.selected_level_record",
@@ -5539,6 +5542,7 @@
       ],
       "forbidden_substrings": [
         "struct NewGameMenu",
+        "struct Intro",
         "menu->",
         "data_4df904 +",
         "__offset(",
@@ -5549,7 +5553,7 @@
       "name": "ida_update_new_game_menu_intro_ownership",
       "artifact": "analysis/decompile/ida/functions/00417eb0-update_new_game_menu.c",
       "required_substrings": [
-        "void __thiscall update_new_game_menu(Intro *intro)",
+        "void __thiscall update_new_game_menu(cRIntro *intro)",
         "intro->hide_for_replay_latch",
         "intro->time_trial_button",
         "g_game_base->subgame.selected_level_record",
@@ -5562,6 +5566,10 @@
         "g_parcel_set_buckets[1431]",
         "(SubSolution *)",
         "__offset("
+      ],
+      "forbidden_regexes": [
+        "\\bIntro \\*intro",
+        "\\(MainMenu \\*\\)intro"
       ]
     },
     {

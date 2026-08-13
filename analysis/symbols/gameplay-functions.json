@@ -1795,7 +1795,7 @@
       "aliases": [
         "cRIntro_Init"
       ],
-      "description": "Exact Windows `cRIntro::Init()`: builds the New Game mode submenu with Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back after reloading the shared menu backdrop and shell-font scene. The root-owned 0x48-byte Intro at `data_4df904 + 0x4f2dc` retains its replay-attract controller across initialization."
+      "description": "Exact Windows `cRIntro::Init()`: builds the New Game mode submenu with Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back after reloading the shared menu backdrop and shell-font scene. The root-owned 0x48-byte cRIntro at `data_4df904 + 0x4f2dc` retains its replay-attract controller across initialization."
     },
     {
       "address": "0x417eb0",
@@ -1803,7 +1803,7 @@
       "aliases": [
         "cRIntro_AI"
       ],
-      "description": "Exact Windows `cRIntro::AI()`: dispatches Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back through the shared front-end state machine, then drives the Intro-owned replay-attract lane. It rotates cursor `0..4`, probes replay banks `0/1/3`, gives up after 1000 attempts, and seeds the replay-launch handoff with return state `2`."
+      "description": "Exact Windows `cRIntro::AI()`: dispatches Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back through the shared front-end state machine, then drives the cRIntro-owned replay-attract lane. It rotates cursor `0..4`, probes replay banks `0/1/3`, gives up after 1000 attempts, and seeds the replay-launch handoff with return state `2`."
     },
     {
       "address": "0x4182e0",
@@ -1917,7 +1917,7 @@
         "cRMainMenu_UnInit",
         "cRIntro_UnInit"
       ],
-      "description": "Exact body shared by linker-folded `cRMainMenu::UnInit()` and `cRIntro::UnInit()`: both clear the global border and game-sprite scene. Windows callers pass the distinct embedded owners, while Android retains separate byte-identical authored methods. The stable `destroy_new_game_menu` alias preserves the folded Intro call surface."
+      "description": "Exact body shared by linker-folded `cRMainMenu::UnInit()` and `cRIntro::UnInit()`: both clear the global border and game-sprite scene. Windows callers pass the distinct embedded owners, while Android retains separate byte-identical authored methods. The stable `destroy_new_game_menu` alias preserves the folded cRIntro call surface."
     },
     {
       "address": "0x419b50",

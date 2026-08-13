@@ -3,35 +3,40 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_struct_and_proto_updates,
-    current_struct_size,
+    apply_type_renames,
+    current_header_type_equivalence,
+    current_type_widths,
     emit_summary,
     types_declare_missing_only,
 )
+from _target import DEFAULT_TARGET
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_intro_types.h"
 
 EXPECTED_STRUCT_SIZES = {
-    "Intro": 0x48,
+    "cRIntro": 0x48,
 }
 
-GAME_ROOT_FIELD_UPDATES = (
-    ("0x4f2dc", "intro", "Intro"),
-)
+GAME_ROOT_FIELD_UPDATES = (("0x4f2dc", "intro", "cRIntro"),)
+
+TYPE_RENAMES = (("Intro", "cRIntro"),)
 
 PROTO_UPDATES = (
     (
         "initialize_new_game_menu",
-        "void __thiscall initialize_new_game_menu(Intro* intro)",
+        "void __thiscall initialize_new_game_menu(cRIntro* intro)",
     ),
-    ("update_new_game_menu", "void __thiscall update_new_game_menu(Intro* intro)"),
+    (
+        "update_new_game_menu",
+        "void __thiscall update_new_game_menu(cRIntro* intro)",
+    ),
 )
 
 
@@ -39,7 +44,9 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Apply the narrow cRIntro ownership slice to Binary Ninja."
     )
-    parser.add_argument("--target", default=DEFAULT_TARGET, help="Binary Ninja target selector.")
+    parser.add_argument(
+        "--target", default=DEFAULT_TARGET, help="Binary Ninja target selector."
+    )
     parser.add_argument(
         "--header",
         type=Path,
@@ -55,10 +62,28 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
+    type_rename_operations = apply_type_renames(
+        REPO_ROOT,
+        target=args.target,
+        renames=TYPE_RENAMES,
+    )
+    observed_widths = current_type_widths(
+        REPO_ROOT,
+        target=args.target,
+        type_names=EXPECTED_STRUCT_SIZES,
+    )
+    type_equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=args.target,
+        header_path=header_path,
+    )
     mismatched_types = tuple(
         name
         for name, expected_size in EXPECTED_STRUCT_SIZES.items()
-        if current_struct_size(REPO_ROOT, target=args.target, struct_name=name) != expected_size
+        if (
+            observed_widths.get(name) != expected_size
+            or not type_equivalence.get(name, False)
+        )
     )
     if mismatched_types:
         type_operation = types_declare_missing_only(
@@ -79,9 +104,11 @@ def main() -> int:
             "reason": "intro owner size already current",
             "header": str(header_path),
             "expected_sizes": EXPECTED_STRUCT_SIZES,
+            "type_equivalence": type_equivalence,
         }
 
     operations: list[dict[str, object]] = [
+        *type_rename_operations,
         type_operation,
         *apply_struct_and_proto_updates(
             REPO_ROOT,

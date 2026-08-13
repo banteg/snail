@@ -89,6 +89,8 @@ Current checked-in example:
 - `uv run python tools/ida/sync_click_start_types.py`
 - `frontend_replay_types.h`
 - `uv run python tools/ida/sync_frontend_replay_types.py`
+  - Migrates the exact 0x48-byte front-end owner from the stale generic
+    `Intro` record to canonical `cRIntro` before replaying its Init/AI ABIs.
 - `ida_high_score_bank_types.h`
 - `uv run python tools/ida/sync_high_score_bank_types.py`
 - `uv run python tools/ida/sync_subgame_runtime_types.py`
@@ -529,7 +531,7 @@ subgame-runtime replays share
 `tools/ida/game_root_owner.py` for the recovered root graph. Once its exact
 component types are present, it composes the contiguous
 `RootBodCatalog +0x44100`, `cRDirectX +0x48e00`, `cRBackdrop +0x4ec10`,
-`Intro`, `cRMainMenu`, `cRStarManager`, `cROptions`, `cRExit`, standalone `BodBase`,
+`cRIntro`, `cRMainMenu`, `cRStarManager`, `cROptions`, `cRExit`, standalone `BodBase`,
 and `cRLogo` block through `+0x74618`, followed by the complete
 `cRSubGame` (`0x1272838` bytes), `HighScore` at `+0x12e6e50`, the real
 `0x14`-byte gap, `TipManager` at `+0x12e6f58`, and the final four-byte gap into

@@ -22,7 +22,7 @@ _TAIL_TYPE_SIZES = {
 
 _FRONTEND_TYPE_SIZES = {
     "cRBackdrop": 0x6CC,
-    "Intro": 0x48,
+    "cRIntro": 0x48,
     "cRMainMenu": 0x18,
     "cRStarManager": 0x4C,
     "cROptions": 0x24,
@@ -43,7 +43,7 @@ _CANONICAL_CATALOG_LOADER = (
 
 _CANONICAL_FRONTEND = (
     (0x4EC10, 0x6CC, "backdrop", "cRBackdrop"),
-    (0x4F2DC, 0x48, "intro", "Intro"),
+    (0x4F2DC, 0x48, "intro", "cRIntro"),
     (0x4F324, 0x18, "main_menu", "cRMainMenu"),
     (0x4F33C, 0x4C, "star_manager", "cRStarManager"),
     (0x4F388, 0x24, "options", "cROptions"),

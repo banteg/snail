@@ -7,7 +7,7 @@ typedef int int32_t;
 typedef struct FrontendWidget FrontendWidget;
 
 /* Exact Windows cRIntro owner at GameRoot +0x4f2dc. */
-typedef struct Intro {
+typedef struct cRIntro {
     int32_t replay_attract_bank_cursor;
     uint8_t hide_for_replay_latch;
     uint8_t _pad_05[0x3];
@@ -22,10 +22,9 @@ typedef struct Intro {
     FrontendWidget* tutorial_button;
     FrontendWidget* help_button;
     FrontendWidget* back_button;
-} Intro;
-typedef Intro NewGameMenu;
+} cRIntro;
 
-void __thiscall initialize_new_game_menu(Intro* intro);
-void __thiscall update_new_game_menu(Intro* intro);
+void __thiscall initialize_new_game_menu(cRIntro* intro);
+void __thiscall update_new_game_menu(cRIntro* intro);
 
 #endif

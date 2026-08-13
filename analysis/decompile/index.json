@@ -18,16 +18,16 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "destroy_completion_screen",
-      "address": "0x406060"
+      "name": "initialize_new_game_menu",
+      "address": "0x417bc0"
     },
     {
-      "name": "initialize_exit_prompt",
-      "address": "0x4060d0"
+      "name": "update_new_game_menu",
+      "address": "0x417eb0"
     },
     {
-      "name": "update_completion_screen",
-      "address": "0x4067e0"
+      "name": "destroy_main_menu",
+      "address": "0x419b30"
     }
   ],
   "health_check_count": 1171,

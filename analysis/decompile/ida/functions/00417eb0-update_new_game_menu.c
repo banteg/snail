@@ -2,8 +2,8 @@
 /* function: update_new_game_menu @ 0x417eb0 */
 /* selector: update_new_game_menu */
 
-// Exact Windows `cRIntro::AI()`: dispatches Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back through the shared front-end state machine, then drives the Intro-owned replay-attract lane. It rotates cursor `0..4`, probes replay banks `0/1/3`, gives up after 1000 attempts, and seeds the replay-launch handoff with return state `2`.
-void __thiscall update_new_game_menu(Intro *intro)
+// Exact Windows `cRIntro::AI()`: dispatches Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back through the shared front-end state machine, then drives the cRIntro-owned replay-attract lane. It rotates cursor `0..4`, probes replay banks `0/1/3`, gives up after 1000 attempts, and seeds the replay-launch handoff with return state `2`.
+void __thiscall update_new_game_menu(cRIntro *intro)
 {
   uint8_t hide_for_replay_latch; // al
   FrontendWidget *postal_button; // ecx
@@ -25,7 +25,8 @@ void __thiscall update_new_game_menu(Intro *intro)
   SubSolution *v19; // eax
   int32_t v20; // eax
 
-  if ( read_pressed_text_input_key_code() || (g_game_base->players[0].game_input->input.pressed_buttons & 0x4000) != 0 )
+  if ( read_pressed_text_input_key_code() != 0
+    || (g_game_base->players[0].game_input->input.pressed_buttons & 0x4000) != 0 )
   {
     hide_for_replay_latch = intro->hide_for_replay_latch;
     intro->replay_probe_progress = 0.0;
@@ -47,7 +48,7 @@ void __thiscall update_new_game_menu(Intro *intro)
   {
     LOBYTE(widget_flags) = widget_flags & 0xDF;
     postal_button->widget_flags = widget_flags;
-    destroy_main_menu((MainMenu *)intro);
+    destroy_main_menu((cRMainMenu *)intro);
     g_game_base->players[0].frontend_state = 10;
     g_game_base->players[0].redispatch_requested = 1;
     g_game_base->subgame.level_mode = 0;
@@ -61,7 +62,7 @@ void __thiscall update_new_game_menu(Intro *intro)
     {
       LOBYTE(v6) = v6 & 0xDF;
       time_trial_button->widget_flags = v6;
-      destroy_main_menu((MainMenu *)intro);
+      destroy_main_menu((cRMainMenu *)intro);
       g_game_base->players[0].frontend_state = 10;
       g_game_base->players[0].redispatch_requested = 1;
       g_game_base->subgame.level_mode = 4;
@@ -74,7 +75,7 @@ void __thiscall update_new_game_menu(Intro *intro)
       {
         LOBYTE(v8) = v8 & 0xDF;
         tutorial_button->widget_flags = v8;
-        destroy_main_menu((MainMenu *)intro);
+        destroy_main_menu((cRMainMenu *)intro);
         g_game_base->players[0].frontend_state = 10;
         g_game_base->players[0].redispatch_requested = 1;
         g_game_base->subgame.level_mode = 7;
@@ -89,7 +90,7 @@ void __thiscall update_new_game_menu(Intro *intro)
         {
           LOBYTE(v10) = v10 & 0xDF;
           challenge_button->widget_flags = v10;
-          destroy_main_menu((MainMenu *)intro);
+          destroy_main_menu((cRMainMenu *)intro);
           g_game_base->players[0].frontend_state = 10;
           g_game_base->players[0].redispatch_requested = 1;
           g_game_base->subgame.level_mode = 1;
@@ -102,7 +103,7 @@ void __thiscall update_new_game_menu(Intro *intro)
           {
             LOBYTE(v12) = v12 & 0xDF;
             back_button->widget_flags = v12;
-            destroy_main_menu((MainMenu *)intro);
+            destroy_main_menu((cRMainMenu *)intro);
             g_game_base->players[0].frontend_state = 4;
             g_game_base->players[0].redispatch_requested = 1;
           }
@@ -114,7 +115,7 @@ void __thiscall update_new_game_menu(Intro *intro)
             {
               LOBYTE(v14) = v14 & 0xDF;
               help_button->widget_flags = v14;
-              destroy_main_menu((MainMenu *)intro);
+              destroy_main_menu((cRMainMenu *)intro);
               g_game_base->players[0].frontend_state = 31;
               g_game_base->players[0].redispatch_requested = 1;
             }
@@ -129,7 +130,7 @@ void __thiscall update_new_game_menu(Intro *intro)
             while ( 1 )
             {
               ++v16;
-              if ( intro->replay_attract_bank_cursor )
+              if ( intro->replay_attract_bank_cursor != 0 )
               {
                 if ( intro->replay_attract_bank_cursor == 1 )
                 {
@@ -166,7 +167,7 @@ void __thiscall update_new_game_menu(Intro *intro)
               intro->replay_attract_bank_cursor = v20;
               if ( v20 == 5 )
                 intro->replay_attract_bank_cursor = 0;
-              if ( g_game_base->subgame.selected_level_record )
+              if ( g_game_base->subgame.selected_level_record != nullptr )
                 break;
               if ( v16 >= 1000 )
                 goto LABEL_32;
@@ -186,7 +187,7 @@ LABEL_32:
             g_game_base->subgame.selected_level_record_persistent = 1;
             intro->attract_reset_progress = 0.0;
             intro->attract_reset_step = 0.00027777778;
-            destroy_main_menu((MainMenu *)intro);
+            destroy_main_menu((cRMainMenu *)intro);
           }
         }
       }

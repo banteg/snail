@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_new_game_menu @ 0x417eb0 */
 
-00417eb0        struct Intro* intro_1 = intro
+00417eb0        struct cRIntro* intro_1 = intro
 00417ed6        int16_t x87control
 00417ed6        if (read_pressed_text_input_key_code().b != 0 || ((g_game_base->players[0].game_input->input.pressed_buttons).w:1.b & 0x40) != 0)
 00417edd        bool cond:1_1 = intro->hide_for_replay_latch != 1

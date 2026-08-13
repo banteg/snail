@@ -1492,7 +1492,7 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
         assert owner in owner_sync
     for owner in (
         '(0x4EC10, 0x6CC, "backdrop", "cRBackdrop")',
-        '(0x4F2DC, 0x48, "intro", "Intro")',
+        '(0x4F2DC, 0x48, "intro", "cRIntro")',
         '(0x4F324, 0x18, "main_menu", "cRMainMenu")',
         '(0x4F33C, 0x4C, "star_manager", "cRStarManager")',
         '(0x4F388, 0x24, "options", "cROptions")',
@@ -3693,6 +3693,42 @@ def test_frontend_menu_sync_owns_the_contiguous_root_block() -> None:
     assert "typedef struct Options" not in header
     assert "typedef struct cRExit" in header
     assert "typedef struct Exit" not in header
+
+
+def test_intro_sync_promotes_the_canonical_crintro_owner() -> None:
+    source = (BINJA_DIR / "sync_intro_types.py").read_text(encoding="utf-8")
+    binja_header = (HEADER_DIR / "bn_intro_types.h").read_text(encoding="utf-8")
+    ida_header = (HEADER_DIR / "frontend_replay_types.h").read_text(
+        encoding="utf-8"
+    )
+    ida_source = (IDA_DIR / "apply_frontend_replay_types.py").read_text(
+        encoding="utf-8"
+    )
+    root_source = (IDA_DIR / "game_root_owner.py").read_text(encoding="utf-8")
+
+    assert 'TYPE_RENAMES = (("Intro", "cRIntro"),)' in source
+    assert '"cRIntro": 0x48' in source
+    assert '("0x4f2dc", "intro", "cRIntro")' in source
+    assert "current_header_type_equivalence" in source
+    assert "current_type_widths" in source
+    for header in (binja_header, ida_header):
+        assert "typedef struct cRIntro" in header
+        assert "typedef struct Intro" not in header
+        assert "typedef cRIntro NewGameMenu" not in header
+    for prototype in (
+        "void __thiscall initialize_new_game_menu(cRIntro* intro)",
+        "void __thiscall update_new_game_menu(cRIntro* intro)",
+    ):
+        assert prototype in source
+        assert prototype + ";" in ida_source
+    assert "migrate_equivalent_struct_aliases" in ida_source
+    assert '("Intro", "cRIntro", 0x48)' in ida_source
+    assert "EXPECTED_INTRO_OWNER_LAYOUT" in ida_source
+    assert "intro_owner_layout_readback" in ida_source
+    assert '(0x4F2DC, 0x48, "intro", "cRIntro")' in root_source
+    assert "void __thiscall destroy_main_menu(cRMainMenu* menu);" in (
+        IDA_DIR / "apply_frontend_menu_types.py"
+    ).read_text(encoding="utf-8")
 
 
 def test_broad_type_declaration_rejects_complete_to_forward_regression(monkeypatch) -> None:
@@ -14314,7 +14350,7 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
     )
     assert "apply_struct_and_proto_updates" in root_catalog_sync
     for owner, sync_source in (
-        ('("0x4f2dc", "intro", "Intro")', intro_sync),
+        ('("0x4f2dc", "intro", "cRIntro")', intro_sync),
         ('("0x4f33c", "star_manager", "cRStarManager")', star_sync),
         ('("0x4f400", "logo", "cRLogo")', logo_sync),
     ):
