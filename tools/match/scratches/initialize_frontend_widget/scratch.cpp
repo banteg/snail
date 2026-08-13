@@ -21,22 +21,6 @@ void cRBorder::Init(
 {
     char* self = (char*)this;
     cRBorder* head;
-    tColour tmp0;
-    tColour tmp1;
-    tColour tmp2;
-    tColour tmp3;
-    tColour tmp4;
-    tColour tmp5;
-    tColour tmp6;
-    tColour tmp7;
-    tColour tmp8;
-    tColour tmp9;
-    tColour tmp10;
-    tColour tmp11;
-    tColour tmp12;
-    tColour tmp13;
-    tColour tmp14;
-    tColour tmp15;
 
     this->widget_type = widget_type;
     border_texture_id = 5;
@@ -73,10 +57,10 @@ void cRBorder::Init(
         idle_padding = 9.0f;
         hot_padding = 13.0f;
         stack_gap = 26.0f;
-        idle_text_color = *tmp1.Set(1.0f, 0.52156866f, 0.0f, 0.69999999f);
-        hot_text_color = *tmp0.Set(1.0f, 1.0f, 1.0f, 1.0f);
-        idle_fill_color = *tmp2.Set(0.32941177f, 0.22352941f, 0.50196081f, 0.69999999f);
-        hot_fill_color = *tmp3.Set(0.60784316f, 0.30980393f, 0.69411767f, 1.0f);
+        idle_text_color = *tColour().Set(1.0f, 0.52156866f, 0.0f, 0.69999999f);
+        hot_text_color = *tColour().Set(1.0f, 1.0f, 1.0f, 1.0f);
+        idle_fill_color = *tColour().Set(0.32941177f, 0.22352941f, 0.50196081f, 0.69999999f);
+        hot_fill_color = *tColour().Set(0.60784316f, 0.30980393f, 0.69411767f, 1.0f);
         break;
     case 22:
         render_inset_base = 20.0f;
@@ -86,10 +70,10 @@ void cRBorder::Init(
         hot_padding = 3.0f;
         stack_gap = 2.0f;
         render_inset_dynamic = 1;
-        idle_text_color = *tmp4.Set(1.0f, 0.52156866f, 0.0f, 0.69999999f);
-        hot_text_color = *tmp5.Set(1.0f, 1.0f, 1.0f, 1.0f);
-        idle_fill_color = *tmp6.Set(0.32941177f, 0.22352941f, 0.50196081f, 0.69999999f);
-        hot_fill_color = *tmp7.Set(0.60784316f, 0.30980393f, 0.69411767f, 1.0f);
+        idle_text_color = *tColour().Set(1.0f, 0.52156866f, 0.0f, 0.69999999f);
+        hot_text_color = *tColour().Set(1.0f, 1.0f, 1.0f, 1.0f);
+        idle_fill_color = *tColour().Set(0.32941177f, 0.22352941f, 0.50196081f, 0.69999999f);
+        hot_fill_color = *tColour().Set(0.60784316f, 0.30980393f, 0.69411767f, 1.0f);
         break;
     case 23:
         font_id = 0;
@@ -98,10 +82,10 @@ void cRBorder::Init(
         hot_padding = 7.0f;
         stack_gap = 2.0f;
         render_inset_base = 20.0f;
-        idle_text_color = *tmp8.Set(1.0f, 0.52156866f, 0.0f, 0.69999999f);
-        hot_text_color = *tmp9.Set(1.0f, 1.0f, 1.0f, 1.0f);
-        idle_fill_color = *tmp10.Set(0.32941177f, 0.22352941f, 0.50196081f, 0.69999999f);
-        hot_fill_color = *tmp11.Set(0.60784316f, 0.30980393f, 0.69411767f, 1.0f);
+        idle_text_color = *tColour().Set(1.0f, 0.52156866f, 0.0f, 0.69999999f);
+        hot_text_color = *tColour().Set(1.0f, 1.0f, 1.0f, 1.0f);
+        idle_fill_color = *tColour().Set(0.32941177f, 0.22352941f, 0.50196081f, 0.69999999f);
+        hot_fill_color = *tColour().Set(0.60784316f, 0.30980393f, 0.69411767f, 1.0f);
         break;
     case 21:
         font_id = 0;
@@ -109,10 +93,10 @@ void cRBorder::Init(
         idle_padding = 9.0f;
         hot_padding = 13.0f;
         stack_gap = 26.0f;
-        idle_text_color = *tmp12.Set(1.0f, 0.52156866f, 0.0f, 0.69999999f);
-        hot_text_color = *tmp13.Set(1.0f, 1.0f, 1.0f, 1.0f);
-        idle_fill_color = *tmp14.Set(0.32941177f, 0.22352941f, 0.50196081f, 0.69999999f);
-        hot_fill_color = *tmp15.Set(0.60784316f, 0.30980393f, 0.69411767f, 1.0f);
+        idle_text_color = *tColour().Set(1.0f, 0.52156866f, 0.0f, 0.69999999f);
+        hot_text_color = *tColour().Set(1.0f, 1.0f, 1.0f, 1.0f);
+        idle_fill_color = *tColour().Set(0.32941177f, 0.22352941f, 0.50196081f, 0.69999999f);
+        hot_fill_color = *tColour().Set(0.60784316f, 0.30980393f, 0.69411767f, 1.0f);
         break;
     default:
         report_errorf("Unknown Border Style Requested");
@@ -156,7 +140,7 @@ void cRBorder::Init(
             42,
             g_game->border_manager.justify_centre + 458.0f,
             slider_y,
-            tmp0.Set(1.0f, 1.0f, 1.0f, 1.0f),
+            tColour().Set(1.0f, 1.0f, 1.0f, 1.0f),
             0.0f,
             4);
         slider_more_widget->SpriteExtend(44, 43, 45, 1);
@@ -172,7 +156,7 @@ void cRBorder::Init(
             38,
             g_game->border_manager.justify_centre + 118.0f,
             slider_y,
-            tmp0.Set(1.0f, 1.0f, 1.0f, 1.0f),
+            tColour().Set(1.0f, 1.0f, 1.0f, 1.0f),
             0.0f,
             4);
         slider_less_widget->SpriteExtend(40, 39, 41, 0);
@@ -184,7 +168,7 @@ void cRBorder::Init(
             21,
             0.0f,
             layout_anchor_y + 40.0f,
-            tmp0.Set(1.0f, 1.0f, 1.0f, 1.0f),
+            tColour().Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             0.0f);
     }
