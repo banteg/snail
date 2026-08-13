@@ -186,14 +186,20 @@ typedef struct StarManagerEntry {
     float alpha_scale;
 } StarManagerEntry;
 
-typedef struct StarManager {
+typedef char StarManagerEntry_must_be_0x2c[
+    (sizeof(StarManagerEntry) == 0x2c) ? 1 : -1];
+
+typedef struct cRStarManager {
     BodBase bod;
     int32_t state;
     StarManagerEntry* entries;
     int32_t count;
     float fade;
     float fade_step;
-} StarManager;
+} cRStarManager;
+
+typedef char cRStarManager_must_be_0x4c[
+    (sizeof(cRStarManager) == 0x4c) ? 1 : -1];
 
 /*
  * Stable Windows analysis names remain the selectors, while the prototypes
@@ -234,6 +240,15 @@ cRTexture* __thiscall get_or_create_texture_ref(
     int32_t flags);
 TgaImageView* __thiscall get_sprite_tga(
     cRSpriteManager* manager, int32_t texture_id);
+void __thiscall destroy_star_field(cRStarManager* manager);
+void __thiscall open_star_field(
+    cRStarManager* manager, int32_t star_count);
+void __thiscall initialize_star_field(cRStarManager* manager);
+void __thiscall hide_star_field(cRStarManager* manager);
+void __thiscall unhide_star_field(cRStarManager* manager);
+void __thiscall update_star_field(cRStarManager* manager);
+void __thiscall update_star_positions(
+    cRStarManager* manager, float fade_alpha);
 
 extern cRTextures g_texture_refs;
 

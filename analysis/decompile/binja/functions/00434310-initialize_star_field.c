@@ -20,18 +20,17 @@
 004343a7        *(&manager->entries->alpha_scale + edi_1) = fconvert.s((float.t(next_math_random_value()) - fconvert.t(16384f)) * fconvert.t(6.10351572e-06f) + fconvert.t(0.400000006f))
 0043437c        manager->entries->alpha_scale = 0.400000006f
 004343ab        struct GameRoot* game_base_1 = g_game_base
-004343f4        float var_54_1 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(game_base_1->overlay_0.bod.transform.basis_forward.y) * fconvert.t(50f))) + fconvert.t(game_base_1->overlay_0.bod.transform.position.y))
-00434405        struct Vec3* entry_position = &manager->entries->position + edi_1
-0043440d        float var_50_1 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(game_base_1->overlay_0.bod.transform.basis_forward.z) * fconvert.t(50f))) + fconvert.t(game_base_1->overlay_0.bod.transform.position.z))
-00434411        entry_position->x = fconvert.s(fconvert.t(game_base_1->overlay_0.bod.transform.basis_forward.x) * fconvert.t(50f) + fconvert.t(game_base_1->overlay_0.bod.transform.position.x))
-00434417        entry_position->y = var_54_1
-0043441a        entry_position->z = var_50_1
+0043441a        *(&manager->entries->position + edi_1) = struct Vec3 {
+    .x = fconvert.s(fconvert.t(game_base_1->overlay_0.bod.transform.basis_forward.x) * fconvert.t(50f) + fconvert.t(game_base_1->overlay_0.bod.transform.position.x))
+    .y = fconvert.s(fconvert.t(fconvert.s(fconvert.t(game_base_1->overlay_0.bod.transform.basis_forward.y) * fconvert.t(50f))) + fconvert.t(game_base_1->overlay_0.bod.transform.position.y))
+    .z = fconvert.s(fconvert.t(fconvert.s(fconvert.t(game_base_1->overlay_0.bod.transform.basis_forward.z) * fconvert.t(50f))) + fconvert.t(game_base_1->overlay_0.bod.transform.position.z))
+}
 00434436        float var_5c_1 = fconvert.s((float.t(next_math_random_value()) - fconvert.t(16384f)) * fconvert.t(6.10351562e-05f))
-0043443a        int32_t eax_9 = next_math_random_value()
-0043444e        struct Vec3* entry_velocity = &manager->entries->velocity + edi_1
-0043446e        entry_velocity->x = fconvert.s((float.t(eax_9) - fconvert.t(16384f)) * fconvert.t(6.10351562e-05f))
-00434474        entry_velocity->y = var_5c_1
-00434477        entry_velocity->z = 0f
+00434477        *(&manager->entries->velocity + edi_1) = struct Vec3 {
+    .x = fconvert.s((float.t(next_math_random_value()) - fconvert.t(16384f)) * fconvert.t(6.10351562e-05f))
+    .y = var_5c_1
+    .z = 0f
+}
 00434481        normalize_vector(&manager->entries->velocity + edi_1)
 00434488        int32_t eax_12 = next_math_random_value()
 00434498        struct Vec3* scaled_velocity = &manager->entries->velocity + edi_1
@@ -49,7 +48,7 @@
 00434565        motion_entry->position.x = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(x87_r7_27 * fconvert.t(motion_entry->velocity.x))) / x87_r6_13)) + fconvert.t(motion_entry->position.x))
 00434567        motion_entry->position.y = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(x87_r7_27 * fconvert.t(motion_entry->velocity.y))) / x87_r6_13)) + fconvert.t(motion_entry->position.y))
 00434572        motion_entry->position.z = fconvert.s(x87_r7_27 * fconvert.t(motion_entry->velocity.z) / x87_r6_13 + fconvert.t(motion_entry->position.z))
-00434578        struct Sprite* sprite = *(&manager->entries->sprite + edi_1)
+00434578        cRSprite* sprite = *(&manager->entries->sprite + edi_1)
 00434585        sprite->flags |= SPRITE_FLAG_ORIENT_TO_MOTION | SPRITE_FLAG_THROTTLE_FACING_REFRESH
 0043458f        (*(&manager->entries->sprite + edi_1))->progress = 0f
 00434599        (*(&manager->entries->sprite + edi_1))->progress_step = 0f
@@ -62,7 +61,7 @@
 004345c6        sprite_color->b = eax_19->b
 004345cc        sprite_color->a = eax_19->a
 004345d6        (*(&manager->entries->sprite + edi_1))->size_start = 0.800000012f
-004345e0        struct Sprite* size_sprite = *(&manager->entries->sprite + edi_1)
+004345e0        cRSprite* size_sprite = *(&manager->entries->sprite + edi_1)
 004345e7        size_sprite->size_end = size_sprite->size_start
 004345ea        struct StarManagerEntry* entries_1 = manager->entries
 00434603        (edi_1 + entries_1)->sprite->corner_scale = fconvert.s((fconvert.t(*(&entries_1->speed + edi_1)) + fconvert.t(1f)) * fconvert.t(4f))

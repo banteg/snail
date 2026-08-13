@@ -12,6 +12,8 @@ from _narrow_sync import (
     apply_symbol_updates,
     apply_struct_and_proto_updates,
     apply_user_var_updates,
+    apply_type_renames,
+    current_header_type_equivalence,
     current_struct_size,
     current_type_alias_targets,
     current_type_widths,
@@ -43,7 +45,11 @@ DATA_VAR_UPDATES = (
 )
 
 GAME_ROOT_FIELD_UPDATES = (
-    ("0x4f33c", "star_manager", "StarManager"),
+    ("0x4f33c", "star_manager", "cRStarManager"),
+)
+
+TYPE_RENAMES = (
+    ("StarManager", "cRStarManager"),
 )
 
 BOD_BASE_FIELD_UPDATES = (
@@ -61,7 +67,7 @@ EXPECTED_STRUCT_SIZES = {
     "Sprite": 0xB4,
     "SpriteManager": 0x83D7C,
     "StarManagerEntry": 0x2C,
-    "StarManager": 0x4C,
+    "cRStarManager": 0x4C,
 }
 
 EXPECTED_FLAG_TYPE_WIDTHS = {
@@ -207,21 +213,33 @@ PROTO_UPDATES = (
         "get_sprite_tga",
         "TgaImageView* __thiscall get_sprite_tga(cRSpriteManager* manager, int32_t texture_id)",
     ),
-    ("destroy_star_field", "void __thiscall destroy_star_field(StarManager* manager)"),
+    (
+        "destroy_star_field",
+        "void __thiscall destroy_star_field(cRStarManager* manager)",
+    ),
     (
         "open_star_field",
-        "void __thiscall open_star_field(StarManager* manager, int32_t star_count)",
+        "void __thiscall open_star_field(cRStarManager* manager, int32_t star_count)",
     ),
     (
         "initialize_star_field",
-        "void __thiscall initialize_star_field(StarManager* manager)",
+        "void __thiscall initialize_star_field(cRStarManager* manager)",
     ),
-    ("hide_star_field", "void __thiscall hide_star_field(StarManager* manager)"),
-    ("unhide_star_field", "void __thiscall unhide_star_field(StarManager* manager)"),
-    ("update_star_field", "void __thiscall update_star_field(StarManager* manager)"),
+    (
+        "hide_star_field",
+        "void __thiscall hide_star_field(cRStarManager* manager)",
+    ),
+    (
+        "unhide_star_field",
+        "void __thiscall unhide_star_field(cRStarManager* manager)",
+    ),
+    (
+        "update_star_field",
+        "void __thiscall update_star_field(cRStarManager* manager)",
+    ),
     (
         "update_star_positions",
-        "void __thiscall update_star_positions(StarManager* manager, float fade_alpha)",
+        "void __thiscall update_star_positions(cRStarManager* manager, float fade_alpha)",
     ),
 )
 
@@ -296,10 +314,27 @@ def main() -> int:
             f"observed {matrix_size!r}"
         )
 
+    type_rename_operations = apply_type_renames(
+        REPO_ROOT,
+        target=args.target,
+        renames=TYPE_RENAMES,
+    )
+    type_equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=args.target,
+        header_path=header_path,
+    )
     mismatched_types = tuple(
         name
         for name, expected_size in EXPECTED_STRUCT_SIZES.items()
-        if current_struct_size(REPO_ROOT, target=args.target, struct_name=name) != expected_size
+        if (
+            current_struct_size(REPO_ROOT, target=args.target, struct_name=name)
+            != expected_size
+            or (
+                name == "cRStarManager"
+                and not type_equivalence.get(name, False)
+            )
+        )
     )
     flag_type_widths = current_type_widths(
         REPO_ROOT,
@@ -318,6 +353,7 @@ def main() -> int:
             target=args.target,
             header_path=header_path,
             replace_types=(*mismatched_types, *missing_flag_types),
+            include_types=EXPECTED_STRUCT_SIZES,
         )
         type_operation["repaired_types"] = mismatched_types
         type_operation["declared_flag_types"] = missing_flag_types
@@ -332,6 +368,7 @@ def main() -> int:
             "header": str(header_path),
             "expected_sizes": EXPECTED_STRUCT_SIZES,
             "expected_flag_type_widths": EXPECTED_FLAG_TYPE_WIDTHS,
+            "type_equivalence": type_equivalence,
         }
 
     current_authored_aliases = current_type_alias_targets(
@@ -369,12 +406,13 @@ def main() -> int:
         ("Sprite", SPRITE_FIELD_UPDATES),
         ("SpriteManager", SPRITE_MANAGER_FIELD_UPDATES),
         ("StarManagerEntry", STAR_MANAGER_ENTRY_FIELD_UPDATES),
-        ("StarManager", STAR_MANAGER_FIELD_UPDATES),
+        ("cRStarManager", STAR_MANAGER_FIELD_UPDATES),
         ("GameRoot", GAME_ROOT_FIELD_UPDATES),
     )
     operations: list[dict[str, object]] = [
         object_type_operation,
         matrix_type_operation,
+        *type_rename_operations,
         type_operation,
         authored_alias_operation,
         *apply_symbol_updates(

@@ -18,6 +18,51 @@ if str(SCRIPT_ROOT) not in sys.path:
     sys.path.insert(0, str(SCRIPT_ROOT))
 
 from game_root_owner import sync_game_root_owner_graph  # noqa: E402
+from type_alias_migration import migrate_equivalent_struct_aliases  # noqa: E402
+
+
+STAR_MANAGER_OWNER_TYPE_ALIASES = (
+    ("StarManager", "cRStarManager", 0x4C),
+)
+
+EXPECTED_OWNER_LAYOUTS = {
+    "BodBase": {
+        "size": 0x38,
+        "members": {
+            0x24: ("object", "Object *"),
+            0x28: ("color", "tColour"),
+        },
+    },
+    "Sprite": {
+        "size": 0xB4,
+        "members": {
+            0x04: ("flags", "SpriteFlag"),
+            0x2C: ("color", "tColour"),
+            0x48: ("position", "Vec3"),
+            0x54: ("velocity", "Vec3"),
+        },
+    },
+    "StarManagerEntry": {
+        "size": 0x2C,
+        "members": {
+            0x04: ("position", "Vec3"),
+            0x10: ("velocity", "Vec3"),
+            0x1C: ("sprite", "cRSprite *"),
+            0x24: ("travel_distance", "float"),
+        },
+    },
+    "cRStarManager": {
+        "size": 0x4C,
+        "members": {
+            0x00: ("bod", "BodBase"),
+            0x38: ("state", "int32_t"),
+            0x3C: ("entries", "StarManagerEntry *"),
+            0x40: ("count", "int32_t"),
+            0x44: ("fade", "float"),
+            0x48: ("fade_step", "float"),
+        },
+    },
+}
 
 
 TRUSTED_NAMES = [
@@ -97,31 +142,31 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "destroy_star_field",
-        "void __thiscall destroy_star_field(StarManager *manager);",
+        "void __thiscall destroy_star_field(cRStarManager *manager);",
     ),
     (
         "open_star_field",
-        "void __thiscall open_star_field(StarManager *manager, int32_t star_count);",
+        "void __thiscall open_star_field(cRStarManager *manager, int32_t star_count);",
     ),
     (
         "initialize_star_field",
-        "void __thiscall initialize_star_field(StarManager *manager);",
+        "void __thiscall initialize_star_field(cRStarManager *manager);",
     ),
     (
         "hide_star_field",
-        "void __thiscall hide_star_field(StarManager *manager);",
+        "void __thiscall hide_star_field(cRStarManager *manager);",
     ),
     (
         "unhide_star_field",
-        "void __thiscall unhide_star_field(StarManager *manager);",
+        "void __thiscall unhide_star_field(cRStarManager *manager);",
     ),
     (
         "update_star_field",
-        "void __thiscall update_star_field(StarManager *manager);",
+        "void __thiscall update_star_field(cRStarManager *manager);",
     ),
     (
         "update_star_positions",
-        "void __thiscall update_star_positions(StarManager *manager, float fade_alpha);",
+        "void __thiscall update_star_positions(cRStarManager *manager, float fade_alpha);",
     ),
 ]
 
@@ -148,7 +193,9 @@ REQUIRED_OWNER_MARKERS = (
     "struct Sprite {",
     "float facing_refresh_progress;",
     "typedef struct StarManagerEntry {",
-    "typedef struct StarManager {",
+    "typedef struct cRStarManager {",
+    "void __thiscall destroy_star_field(cRStarManager* manager);",
+    "void __thiscall update_star_positions(",
 )
 
 FORBIDDEN_DESTRUCTIVE_DECLARATIONS = (
@@ -165,7 +212,7 @@ EXPECTED_OWNER_SIZES = {
     "Sprite": 0xB4,
     "SpriteManager": 0x83D7C,
     "StarManagerEntry": 0x2C,
-    "StarManager": 0x4C,
+    "cRStarManager": 0x4C,
 }
 
 EXPECTED_AUTHORED_ALIAS_SIZES = {
@@ -230,6 +277,60 @@ def _named_type_size(name: str) -> int | None:
     if not value.get_named_type(None, name):
         return None
     return value.get_size()
+
+
+def _owner_layout_readback() -> dict[str, object]:
+    readback: dict[str, object] = {}
+    failures: list[dict[str, object]] = []
+    for type_name, expected in EXPECTED_OWNER_LAYOUTS.items():
+        type_info = ida_typeinf.tinfo_t()
+        if not type_info.get_named_type(None, type_name, ida_typeinf.BTF_STRUCT):
+            failures.append({"type": type_name, "reason": "missing_named_struct"})
+            continue
+        members = ida_typeinf.udt_type_data_t()
+        if not type_info.get_udt_details(members):
+            failures.append({"type": type_name, "reason": "missing_struct_details"})
+            continue
+        observed_members = {
+            int(member.offset) // 8: {
+                "name": str(member.name),
+                "type": _normalize_type_text(member.type.dstr()),
+            }
+            for member in members
+        }
+        observed = {
+            "size": type_info.get_size(),
+            "members": {
+                hex(offset): observed_members.get(offset)
+                for offset in expected["members"]
+            },
+        }
+        readback[type_name] = observed
+        if observed["size"] != expected["size"]:
+            failures.append(
+                {
+                    "type": type_name,
+                    "reason": "owner_size_mismatch",
+                    "expected": expected["size"],
+                    "observed": observed["size"],
+                }
+            )
+        for offset, (expected_name, expected_type) in expected["members"].items():
+            expected_member = {
+                "name": expected_name,
+                "type": _normalize_type_text(expected_type),
+            }
+            if observed_members.get(offset) != expected_member:
+                failures.append(
+                    {
+                        "type": type_name,
+                        "offset": hex(offset),
+                        "reason": "owner_member_mismatch",
+                        "expected": expected_member,
+                        "observed": observed_members.get(offset),
+                    }
+                )
+    return {"types": readback, "failures": failures}
 
 
 def _sync_initialize_color_lvar() -> dict[str, object]:
@@ -302,7 +403,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                             "reason": "noncanonical_star_manager_header",
                             "detail": (
                                 "refusing to replace shared IDA types with a sparse "
-                                "or forward-only StarManager compatibility header"
+                                "or forward-only star-manager compatibility header"
                             ),
                         }
                     ],
@@ -336,6 +437,25 @@ def _sync_types(header_path: pathlib.Path) -> int:
     # Sprite is shared by several narrow ownership lanes. Replace any earlier
     # partial declaration so this full 0xb4-byte owner remains authoritative.
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE | idc.PT_REPLACE)
+    type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(STAR_MANAGER_OWNER_TYPE_ALIASES)
+    )
+    type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in type_alias_migrations
+        if result.get("status") == "failed"
+    ]
+    owner_layout_readback = (
+        {"types": {}, "failures": []}
+        if parse_errors or type_alias_failures
+        else _owner_layout_readback()
+    )
     owner_sizes = {
         name: _named_struct_size(name) for name in EXPECTED_OWNER_SIZES
     }
@@ -371,7 +491,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for result in dependency_parse_results
         if result["parse_errors"] != 0
     ]
-    if parse_errors or size_failures or alias_size_failures or dependency_failures:
+    if (
+        parse_errors
+        or dependency_failures
+        or type_alias_failures
+        or size_failures
+        or alias_size_failures
+        or owner_layout_readback["failures"]
+    ):
         print(
             json.dumps(
                 {
@@ -380,12 +507,16 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "dependency_headers": dependency_parse_results,
                     "parse_errors": parse_errors,
                     "applied": 0,
+                    "type_alias_migrations": type_alias_migrations,
                     "owner_sizes": owner_sizes,
                     "authored_alias_sizes": authored_alias_sizes,
+                    "owner_layout_readback": owner_layout_readback,
                     "failed": [
                         *dependency_failures,
+                        *type_alias_failures,
                         *size_failures,
                         *alias_size_failures,
+                        *owner_layout_readback["failures"],
                     ],
                 },
                 indent=2,
@@ -498,12 +629,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "header": str(header_path),
                 "dependency_headers": dependency_parse_results,
                 "parse_errors": parse_errors,
+                "type_alias_migrations": type_alias_migrations,
                 "applied": applied,
                 "unchanged": unchanged,
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
                 "owner_sizes": owner_sizes,
                 "authored_alias_sizes": authored_alias_sizes,
+                "owner_layout_readback": owner_layout_readback,
                 "color_lvar": color_lvar,
                 "game_root_owner_graph": game_root_owner_graph,
                 "reanalysis_functions": reanalysis_functions,

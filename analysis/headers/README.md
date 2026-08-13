@@ -504,8 +504,9 @@ layouts while adding the star-manager types. The replay also records the void
 `Init`, `UnInit`, `Hide`, and `UnHide` lifecycle ABI proven by their callers;
 the count values left in EAX are loop-control residue rather than results. Its
 IDA import refuses forward-only shared declarations and verifies the exact
-`Sprite`, `StarManagerEntry`, and `StarManager` sizes before changing any
-prototype.
+`Sprite`, `StarManagerEntry`, and canonical `cRStarManager` layouts before
+changing any prototype. Both database lanes retire the stale generic
+`StarManager` owner only after proving its complete `0x4c` layout equivalent.
 
 The canonical IDA `path_template_types.h` lane remains useful beyond path
 templates because it is the single accumulated `cRSubGame` and gameplay
@@ -524,7 +525,7 @@ subgame-runtime replays share
 `tools/ida/game_root_owner.py` for the recovered root graph. Once its exact
 component types are present, it composes the contiguous
 `RootBodCatalog +0x44100`, `cRDirectX +0x48e00`, `cRBackdrop +0x4ec10`,
-`Intro`, `MainMenu`, `StarManager`, `Options`, `Exit`, standalone `BodBase`,
+`Intro`, `MainMenu`, `cRStarManager`, `Options`, `Exit`, standalone `BodBase`,
 and `cRLogo` block through `+0x74618`, followed by the complete
 `cRSubGame` (`0x1272838` bytes), `HighScore` at `+0x12e6e50`, the real
 `0x14`-byte gap, `TipManager` at `+0x12e6f58`, and the final four-byte gap into

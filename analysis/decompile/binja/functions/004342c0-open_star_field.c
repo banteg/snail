@@ -5,7 +5,7 @@
 
 004342dc        manager->entries = allocate_tracked_memory(star_count * 0x2c, "StarField")
 004342df        manager->count = star_count
-004342ec        if ((data_4df934 & 4) == 0)
+004342ec        if ((g_runtime_config.render_flags.b & 4) == 0)
 00434301        manager->state = 0
 0043430a        return
 004342f0        manager->state = 1

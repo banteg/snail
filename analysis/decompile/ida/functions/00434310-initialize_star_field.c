@@ -3,7 +3,7 @@
 /* selector: initialize_star_field */
 
 // Builds the live star-field streak sprites: allocates one sprite per entry, seeds camera-relative positions, randomizes direction and speed, tints them pale blue-white, and primes the per-streak length or fade fields. Both direct Windows callers ignore a result and its inherited callback target is the void `cRStarManager::AI()`, proving this lifecycle member is void. Cross-port Android and iOS symbols match this member to `cRStarManager::Init()`.
-void __thiscall initialize_star_field(StarManager *manager)
+void __thiscall initialize_star_field(cRStarManager *manager)
 {
   int32_t v2; // edi
   int v3; // ebx
@@ -22,8 +22,8 @@ void __thiscall initialize_star_field(StarManager *manager)
   float *v16; // eax
   double speed; // st6
   double v18; // st7
-  Sprite *sprite; // eax
-  Sprite *v20; // eax
+  cRSprite *sprite; // eax
+  cRSprite *v20; // eax
   StarManagerEntry *v21; // eax
   Vec3 *v22; // edx
   Vec3 *v23; // eax
@@ -53,7 +53,7 @@ void __thiscall initialize_star_field(StarManager *manager)
     do
     {
       ++v2;
-      manager->entries[v3++].sprite = (Sprite *)allocate_sprite(g_sprite_manager, 2, 32, -1, -1);
+      manager->entries[v3++].sprite = allocate_sprite(&g_sprite_manager, 2, 32, -1, -1);
     }
     while ( v2 < manager->count );
   }
@@ -66,7 +66,7 @@ void __thiscall initialize_star_field(StarManager *manager)
     {
       v6 = v5;
       manager->entries[v5].active = 1;
-      if ( v5 )
+      if ( v5 != 0 )
         manager->entries[v6].alpha_scale = ((double)next_math_random_value() - 16384.0) * 0.0000061035157 + 0.40000001;
       else
         manager->entries->alpha_scale = 0.40000001;
@@ -140,5 +140,5 @@ void __thiscall initialize_star_field(StarManager *manager)
     }
     while ( v5 < manager->count );
   }
-  (*(void (__thiscall **)(StarManager *))manager->bod.bod.vtable)(manager);
+  (*(void (__thiscall **)(cRStarManager *))manager->bod.bod.vtable)(manager);
 }

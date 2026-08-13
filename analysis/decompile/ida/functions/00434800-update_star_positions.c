@@ -3,27 +3,24 @@
 /* selector: update_star_positions */
 
 // Advances each star-field streak along its cached direction, resets wrapped entries against the current camera origin, and scales the visible sprite trail by both per-streak speed and the controller fade factor. Cross-port Android and iOS symbols match this member to `cRStarManager::UpdateStars(float)`.
-void __thiscall update_star_positions(StarManager *manager, float fade_alpha)
+void __thiscall update_star_positions(cRStarManager *manager, float fade_alpha)
 {
   int32_t v2; // edi
   int v3; // edx
   float *p_travel_distance; // esi
-  Vec3 *p_position; // eax
-  StarManagerEntry *v6; // eax
+  StarManagerEntry *v5; // eax
   Vec3 *p_velocity; // esi
-  Vec3 *v8; // eax
-  StarManagerEntry *v9; // eax
-  double v10; // st7
-  double v11; // st6
+  Vec3 *v7; // eax
+  StarManagerEntry *v8; // eax
+  double v9; // st7
+  double v10; // st6
   float *p_x; // eax
-  StarManagerEntry *v13; // eax
-  float v14; // [esp+4h] [ebp-24h]
-  float v15; // [esp+8h] [ebp-20h]
-  float v16; // [esp+Ch] [ebp-1Ch]
-  float v17; // [esp+14h] [ebp-14h]
-  float v18; // [esp+18h] [ebp-10h]
-  float v19; // [esp+20h] [ebp-8h]
-  float v20; // [esp+24h] [ebp-4h]
+  StarManagerEntry *v12; // eax
+  float v13; // [esp+14h] [ebp-14h]
+  float v14; // [esp+18h] [ebp-10h]
+  float v15; // [esp+20h] [ebp-8h]
+  float v16; // [esp+24h] [ebp-4h]
+  Vec3 v17; // 0:^C.12
 
   v2 = 0;
   if ( manager->count > 0 )
@@ -37,37 +34,34 @@ void __thiscall update_star_positions(StarManager *manager, float fade_alpha)
       {
         *p_travel_distance = 0.0;
         manager->entries[v3].sprite->facing_refresh_progress = 0.0;
-        v17 = g_game_base->overlay_0.bod.transform.basis_forward.y * 50.0;
-        v18 = g_game_base->overlay_0.bod.transform.basis_forward.z * 50.0;
-        v14 = g_game_base->overlay_0.bod.transform.basis_forward.x * 50.0
-            + g_game_base->overlay_0.bod.transform.position.x;
-        v15 = v17 + g_game_base->overlay_0.bod.transform.position.y;
-        v16 = v18 + g_game_base->overlay_0.bod.transform.position.z;
-        p_position = &manager->entries[v3].sprite->position;
-        p_position->x = v14;
-        p_position->y = v15;
-        p_position->z = v16;
-        v6 = &manager->entries[v3];
-        p_velocity = &v6->velocity;
-        v8 = &v6->sprite->velocity;
-        v8->x = p_velocity->x;
-        v8->y = p_velocity->y;
-        v8->z = p_velocity->z;
-        v9 = &manager->entries[v3];
-        v10 = v9->velocity.x * 10.0;
-        v19 = v9->velocity.y * 10.0;
-        v11 = v9->velocity.z * 10.0;
-        p_x = &v9->sprite->position.x;
-        v20 = v11;
-        *p_x = v10 + *p_x;
-        p_x[1] = v19 + p_x[1];
-        p_x[2] = v20 + p_x[2];
+        v13 = g_game_base->overlay_0.bod.transform.basis_forward.y * 50.0;
+        v14 = g_game_base->overlay_0.bod.transform.basis_forward.z * 50.0;
+        v17.x = g_game_base->overlay_0.bod.transform.basis_forward.x * 50.0
+              + g_game_base->overlay_0.bod.transform.position.x;
+        v17.y = v13 + g_game_base->overlay_0.bod.transform.position.y;
+        v17.z = v14 + g_game_base->overlay_0.bod.transform.position.z;
+        manager->entries[v3].sprite->position = v17;
+        v5 = &manager->entries[v3];
+        p_velocity = &v5->velocity;
+        v7 = &v5->sprite->velocity;
+        v7->x = p_velocity->x;
+        v7->y = p_velocity->y;
+        v7->z = p_velocity->z;
+        v8 = &manager->entries[v3];
+        v9 = v8->velocity.x * 10.0;
+        v15 = v8->velocity.y * 10.0;
+        v10 = v8->velocity.z * 10.0;
+        p_x = &v8->sprite->position.x;
+        v16 = v10;
+        *p_x = v9 + *p_x;
+        p_x[1] = v15 + p_x[1];
+        p_x[2] = v16 + p_x[2];
         manager->entries[v3].travel_distance = manager->entries[v3].speed * 10.0 + manager->entries[v3].travel_distance;
       }
-      v13 = &manager->entries[v3];
+      v12 = &manager->entries[v3];
       ++v2;
       ++v3;
-      v13->sprite->color.a = (v13->travel_distance - 2.0) * v13->alpha_scale * 0.011428571 * fade_alpha;
+      v12->sprite->color.a = (v12->travel_distance - 2.0) * v12->alpha_scale * 0.011428571 * fade_alpha;
     }
     while ( v2 < manager->count );
   }

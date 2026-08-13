@@ -23,7 +23,7 @@ EXPECTED_TYPE_WIDTHS = {
     "tColour": 0x10,
     "Sprite": 0xB4,
     "StarManagerEntry": 0x2C,
-    "StarManager": 0x4C,
+    "cRStarManager": 0x4C,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -54,12 +54,12 @@ EXPECTED_STRUCT_FIELDS = {
     "StarManagerEntry": {
         0x04: ("position", "Vec3"),
         0x10: ("velocity", "Vec3"),
-        0x1C: ("sprite", "Sprite*"),
+        0x1C: ("sprite", "cRSprite*"),
         0x20: ("speed", "float"),
         0x24: ("travel_distance", "float"),
         0x28: ("alpha_scale", "float"),
     },
-    "StarManager": {
+    "cRStarManager": {
         0x3C: ("entries", "StarManagerEntry*"),
         0x40: ("count", "int32_t"),
         0x44: ("fade", "float"),
@@ -111,7 +111,7 @@ STAR_FIELD_USER_VAR_UPDATES = (
         616,
         66,
         "sprite",
-        "Sprite*",
+        "cRSprite*",
     ),
     (
         "initialize_star_field",
@@ -119,7 +119,7 @@ STAR_FIELD_USER_VAR_UPDATES = (
         635,
         68,
         "progress_sprite",
-        "Sprite*",
+        "cRSprite*",
     ),
     (
         "initialize_star_field",
@@ -127,7 +127,7 @@ STAR_FIELD_USER_VAR_UPDATES = (
         645,
         67,
         "progress_step_sprite",
-        "Sprite*",
+        "cRSprite*",
     ),
     (
         "initialize_star_field",
@@ -135,7 +135,7 @@ STAR_FIELD_USER_VAR_UPDATES = (
         659,
         66,
         "gravity_sprite",
-        "Sprite*",
+        "cRSprite*",
     ),
     (
         "initialize_star_field",
@@ -143,7 +143,7 @@ STAR_FIELD_USER_VAR_UPDATES = (
         674,
         68,
         "color_sprite",
-        "Sprite*",
+        "cRSprite*",
     ),
     (
         "initialize_star_field",
@@ -159,7 +159,7 @@ STAR_FIELD_USER_VAR_UPDATES = (
         720,
         66,
         "size_sprite",
-        "Sprite*",
+        "cRSprite*",
     ),
     (
         "initialize_star_field",
@@ -167,7 +167,7 @@ STAR_FIELD_USER_VAR_UPDATES = (
         706,
         68,
         "size_start_sprite",
-        "Sprite*",
+        "cRSprite*",
     ),
     (
         "initialize_star_field",
@@ -183,7 +183,7 @@ STAR_FIELD_USER_VAR_UPDATES = (
         752,
         66,
         "corner_scale_sprite",
-        "Sprite*",
+        "cRSprite*",
     ),
     (
         "initialize_star_field",
@@ -223,7 +223,7 @@ STAR_FIELD_USER_VAR_UPDATES = (
         826,
         66,
         "facing_refresh_sprite",
-        "Sprite*",
+        "cRSprite*",
     ),
     (
         "update_star_positions",
@@ -247,7 +247,7 @@ STAR_FIELD_USER_VAR_UPDATES = (
         72,
         66,
         "respawn_sprite",
-        "Sprite*",
+        "cRSprite*",
     ),
     (
         "update_star_positions",

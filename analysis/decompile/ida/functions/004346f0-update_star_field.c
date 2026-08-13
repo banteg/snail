@@ -3,7 +3,7 @@
 /* selector: update_star_field */
 
 // Runs the four-state star-field controller, fading the streak sprites in or out around the global star-pass flag and dispatching the per-frame camera-relative position update. Cross-port Android and iOS symbols match this exact member to `cRStarManager::AI()`.
-void __thiscall update_star_field(StarManager *manager)
+void __thiscall update_star_field(cRStarManager *manager)
 {
   double v2; // st7
   double v3; // st7

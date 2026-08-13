@@ -3,7 +3,7 @@
 /* selector: destroy_star_field */
 
 // Destroys the live star-field sprite pool, tears down its per-entry records, and returns the controller to state 0. This is a void lifecycle edge; its sole Windows caller discards the incidental count left in EAX. Cross-port Android symbols match this exact member to `cRStarManager::UnInit()`.
-void __thiscall destroy_star_field(StarManager *manager)
+void __thiscall destroy_star_field(cRStarManager *manager)
 {
   int32_t v2; // ebx
   int v3; // edi
@@ -19,7 +19,7 @@ void __thiscall destroy_star_field(StarManager *manager)
     do
     {
       manager->entries[v3].active = 0;
-      kill_sprite((int)manager->entries[v3].sprite);
+      kill_sprite(manager->entries[v3].sprite);
       ++v2;
       ++v3;
     }

@@ -1494,7 +1494,7 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
         '(0x4EC10, 0x6CC, "backdrop", "cRBackdrop")',
         '(0x4F2DC, 0x48, "intro", "Intro")',
         '(0x4F324, 0x18, "main_menu", "MainMenu")',
-        '(0x4F33C, 0x4C, "star_manager", "StarManager")',
+        '(0x4F33C, 0x4C, "star_manager", "cRStarManager")',
         '(0x4F388, 0x24, "options", "Options")',
         '(0x4F3AC, 0x1C, "exit_controller", "Exit")',
         '(0x4F3C8, 0x38, "root_bod_4f3c8", "BodBase")',
@@ -3396,6 +3396,9 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "apply_user_var_updates" in source
     assert "current_type_alias_targets" in source
     assert "EXPECTED_AUTHORED_TYPE_ALIASES" in source
+    assert "apply_type_renames" in source
+    assert '("StarManager", "cRStarManager")' in source
+    assert "current_header_type_equivalence" in source
     assert "types_declare(" not in source
     for declaration, ida_declaration in (
         (
@@ -3498,8 +3501,8 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
         "hide_star_field",
         "unhide_star_field",
     ):
-        assert f"void __thiscall {function_name}(StarManager* manager)" in source
-        assert f"void __thiscall {function_name}(StarManager *manager);" in ida_source
+        assert f"void __thiscall {function_name}(cRStarManager* manager)" in source
+        assert f"void __thiscall {function_name}(cRStarManager *manager);" in ida_source
     assert "class cRStarManager" in matcher_header
     assert "typedef cRStarManager StarManager;" in matcher_header
     for method_name in ("UnInit", "Init", "Hide", "UnHide"):
@@ -3513,6 +3516,10 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "owner_size_mismatch" in ida_source
     assert "EXPECTED_AUTHORED_ALIAS_SIZES" in ida_source
     assert "authored_alias_size_mismatch" in ida_source
+    assert "migrate_equivalent_struct_aliases" in ida_source
+    assert '("StarManager", "cRStarManager", 0x4C)' in ida_source
+    assert "EXPECTED_OWNER_LAYOUTS" in ida_source
+    assert "owner_layout_readback" in ida_source
     assert "struct TransformMatrix;" in star_analysis_header
     assert "typedef struct Object Object;" in star_analysis_header
     assert "Object* object;" in star_analysis_header
@@ -3523,6 +3530,10 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "typedef struct TgaImageView {" in star_analysis_header
     assert "uint8_t pixels[1];" in star_analysis_header
     assert "TgaImageView* __thiscall get_sprite_tga(" in star_analysis_header
+    assert "typedef struct cRStarManager {" in star_analysis_header
+    assert "typedef struct StarManager {" not in star_analysis_header
+    assert "void __thiscall destroy_star_field(cRStarManager* manager);" in star_analysis_header
+    assert "cRStarManager* manager, float fade_alpha" in star_analysis_header
     for alias in (
         "typedef TextureRef cRTexture;",
         "typedef TextureRefList cRTextures;",
@@ -3551,7 +3562,7 @@ def test_star_field_lifetime_replay_stays_guarded() -> None:
         ("tColour", "0x10"),
         ("Sprite", "0xB4"),
         ("StarManagerEntry", "0x2C"),
-        ("StarManager", "0x4C"),
+        ("cRStarManager", "0x4C"),
     ):
         assert f'"{owner_name}": {expected_size}' in replay
 
@@ -3561,9 +3572,9 @@ def test_star_field_lifetime_replay_stays_guarded() -> None:
         ("Sprite", "0x04", "flags", "SpriteFlag"),
         ("Sprite", "0x48", "position", "Vec3"),
         ("Sprite", "0x54", "velocity", "Vec3"),
-        ("StarManagerEntry", "0x1C", "sprite", "Sprite*"),
+        ("StarManagerEntry", "0x1C", "sprite", "cRSprite*"),
         ("StarManagerEntry", "0x24", "travel_distance", "float"),
-        ("StarManager", "0x3C", "entries", "StarManagerEntry*"),
+        ("cRStarManager", "0x3C", "entries", "StarManagerEntry*"),
     ):
         assert f'"{struct_name}": {{' in replay
         assert f'{offset}: ("{field_name}", "{field_type}")' in replay
@@ -3573,21 +3584,21 @@ def test_star_field_lifetime_replay_stays_guarded() -> None:
         (318, 68, "entry_velocity", "Vec3*"),
         (392, 66, "scaled_velocity", "Vec3*"),
         (507, 66, "motion_entry", "StarManagerEntry*"),
-        (616, 66, "sprite", "Sprite*"),
-        (635, 68, "progress_sprite", "Sprite*"),
-        (645, 67, "progress_step_sprite", "Sprite*"),
-        (659, 66, "gravity_sprite", "Sprite*"),
-        (674, 68, "color_sprite", "Sprite*"),
+        (616, 66, "sprite", "cRSprite*"),
+        (635, 68, "progress_sprite", "cRSprite*"),
+        (645, 67, "progress_step_sprite", "cRSprite*"),
+        (659, 66, "gravity_sprite", "cRSprite*"),
+        (674, 68, "color_sprite", "cRSprite*"),
         (680, 68, "sprite_color", "tColour*"),
-        (720, 66, "size_sprite", "Sprite*"),
-        (706, 68, "size_start_sprite", "Sprite*"),
+        (720, 66, "size_sprite", "cRSprite*"),
+        (706, 68, "size_start_sprite", "cRSprite*"),
         (743, 66, "corner_entry", "StarManagerEntry*"),
-        (752, 66, "corner_scale_sprite", "Sprite*"),
+        (752, 66, "corner_scale_sprite", "cRSprite*"),
         (764, 66, "velocity_entry", "StarManagerEntry*"),
         (773, 66, "sprite_velocity", "Vec3*"),
         (795, 66, "position_entry", "StarManagerEntry*"),
         (803, 68, "sprite_position", "Vec3*"),
-        (826, 66, "facing_refresh_sprite", "Sprite*"),
+        (826, 66, "facing_refresh_sprite", "cRSprite*"),
     ):
         expected = (
             '        "initialize_star_field",\n'
@@ -3602,7 +3613,7 @@ def test_star_field_lifetime_replay_stays_guarded() -> None:
     for index, storage, name, variable_type in (
         (24, 66, "distance_entry", "StarManagerEntry*"),
         (48, 72, "travel_distance", "float*"),
-        (72, 66, "respawn_sprite", "Sprite*"),
+        (72, 66, "respawn_sprite", "cRSprite*"),
         (184, 66, "respawn_position", "Vec3*"),
         (206, 66, "velocity_entry", "StarManagerEntry*"),
         (214, 66, "sprite_velocity", "Vec3*"),
@@ -14277,7 +14288,7 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
     assert "apply_struct_and_proto_updates" in root_catalog_sync
     for owner, sync_source in (
         ('("0x4f2dc", "intro", "Intro")', intro_sync),
-        ('("0x4f33c", "star_manager", "StarManager")', star_sync),
+        ('("0x4f33c", "star_manager", "cRStarManager")', star_sync),
         ('("0x4f400", "logo", "cRLogo")', logo_sync),
     ):
         assert owner in sync_source

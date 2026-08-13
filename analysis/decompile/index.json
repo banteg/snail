@@ -1,16 +1,16 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 9,
+  "function_count": 7,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 9,
-  "ida_exported": 9,
+  "bn_exported": 7,
+  "ida_exported": 7,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": true,
+  "sync_ida_symbols": false,
   "binja_refreshed": true,
   "binja_analysis_refreshed": false,
   "ida_refreshed": true,
@@ -18,43 +18,35 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "set_backdrop_zoom",
-      "address": "0x410c30"
+      "name": "destroy_star_field",
+      "address": "0x434270"
     },
     {
-      "name": "set_backdrop_distort",
-      "address": "0x410c40"
+      "name": "open_star_field",
+      "address": "0x4342c0"
     },
     {
-      "name": "change_backdrop",
-      "address": "0x410d50"
+      "name": "initialize_star_field",
+      "address": "0x434310"
     },
     {
-      "name": "change_backdrop_real",
-      "address": "0x410dc0"
+      "name": "hide_star_field",
+      "address": "0x434670"
     },
     {
-      "name": "initialize_backdrop",
-      "address": "0x410e20"
+      "name": "unhide_star_field",
+      "address": "0x4346b0"
     },
     {
-      "name": "set_backdrop_texture_target",
-      "address": "0x410f40"
+      "name": "update_star_field",
+      "address": "0x4346f0"
     },
     {
-      "name": "draw_split_backdrop",
-      "address": "0x410f90"
-    },
-    {
-      "name": "render_backdrop",
-      "address": "0x411040"
-    },
-    {
-      "name": "update_backdrop",
-      "address": "0x4112f0"
+      "name": "update_star_positions",
+      "address": "0x434800"
     }
   ],
-  "health_check_count": 1166,
+  "health_check_count": 1168,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"
