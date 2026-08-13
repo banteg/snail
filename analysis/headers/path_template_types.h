@@ -2237,7 +2237,7 @@ typedef enum CompletionState {
     COMPLETION_STATE_EMPTY_DELIVERY_DELAY = 6,
 } CompletionState;
 
-typedef struct Completion {
+typedef struct cRCompletion {
     FrontendWidget* title_widget;
     FrontendWidget* delivered_count_widget;
     FrontendWidget* bonus_summary_widget;
@@ -2257,7 +2257,10 @@ typedef struct Completion {
     float bonus_blink_step;
     int32_t bonus_score;
     int32_t display_token;
-} Completion;
+} cRCompletion;
+
+typedef char cRCompletion_must_be_0x50[
+    (sizeof(cRCompletion) == 0x50) ? 1 : -1];
 
 typedef struct ReplayRunRecord {
     int16_t lateral_x;
@@ -2728,7 +2731,7 @@ typedef struct cRSubGame {
     float next_slug_voice_trigger_z;
     float slug_voice_trigger_spacing_z;
     EnemyManager enemy_manager;
-    Completion completion;
+    cRCompletion completion;
     cRTimesUp times_up;
 } cRSubGame;
 
@@ -2995,13 +2998,13 @@ void __thiscall initialize_tutorial(cRTutorial* tutorial);
 void __thiscall uninit_tutorial(cRTutorial* tutorial);
 void __thiscall update_tutorial(cRTutorial* tutorial);
 void __thiscall update_barrier_ai(BarrierActor* barrier);
-void __thiscall flush_row_event_display(Completion* completion);
+void __thiscall flush_row_event_display(cRCompletion* completion);
 void __thiscall initialize_completion_screen(
-    Completion* completion,
+    cRCompletion* completion,
     int32_t delivered_count,
     uint8_t perfect_delivery);
-void __thiscall update_row_event_display(Completion* completion);
-void __thiscall register_parcel_delivery(Completion* completion);
+void __thiscall update_row_event_display(cRCompletion* completion);
+void __thiscall register_parcel_delivery(cRCompletion* completion);
 void __thiscall initialize_cameraman(Cameraman* cameraman);
 void __thiscall update_cameraman(Cameraman* cameraman);
 void __thiscall health_collect_particles(Player* player, SubHealth* pickup);

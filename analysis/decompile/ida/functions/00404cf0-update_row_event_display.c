@@ -2,8 +2,8 @@
 /* function: update_row_event_display @ 0x404cf0 */
 /* selector: update_row_event_display */
 
-// Exact Windows `Completion::update_row_event_display`/`cRCompletion::AI()` state machine: stages parcel sprites, drives score and widget transitions, and hands off to the completion phase. Modeling it as the authored member makes all 213 instructions exact; Android and iOS retain the same owner.
-void __thiscall update_row_event_display(Completion *completion)
+// Exact Windows `cRCompletion::AI()` state machine: stages parcel sprites, drives score and widget transitions, and hands off to the completion phase. Modeling it as the authored member makes all 213 instructions exact; Android and iOS retain the same owner.
+void __thiscall update_row_event_display(cRCompletion *completion)
 {
   FrontendWidget *delivered_count_widget; // ecx
   double v3; // st7

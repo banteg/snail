@@ -22538,7 +22538,9 @@
       "name": "ida_completion_initializer_owner_graph",
       "artifact": "analysis/decompile/ida/functions/00404920-initialize_completion_screen.c",
       "required_substrings": [
-        "void __thiscall initialize_completion_screen(Completion *completion, int32_t delivered_count, uint8_t perfect_delivery)",
+        "void __thiscall initialize_completion_screen(",
+        "cRCompletion *completion,",
+        "uint8_t perfect_delivery)",
         "SubSolution *selected_level_record",
         "g_runtime_config.challenge_speed_percent",
         "g_completion_bonus_difficulty_table",
@@ -22589,7 +22591,7 @@
       "name": "ida_completion_ai_widget_owner_graph",
       "artifact": "analysis/decompile/ida/functions/00404cf0-update_row_event_display.c",
       "required_substrings": [
-        "void __thiscall update_row_event_display(Completion *completion)",
+        "void __thiscall update_row_event_display(cRCompletion *completion)",
         "completion->title_widget",
         "completion->delivered_count_widget",
         "completion->bonus_summary_widget",
@@ -22719,7 +22721,7 @@
       "name": "ida_completion_teardown_widget_owner_graph",
       "artifact": "analysis/decompile/ida/functions/00404830-flush_row_event_display.c",
       "required_substrings": [
-        "void __thiscall flush_row_event_display(Completion *completion)",
+        "void __thiscall flush_row_event_display(cRCompletion *completion)",
         "completion->title_widget",
         "completion->delivered_count_widget",
         "completion->bonus_icon_widget",

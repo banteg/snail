@@ -743,6 +743,7 @@ REQUIRED_HEADER_STRUCTS = (
     "JetPack",
     "ParcelState",
     "CompletionState",
+    "cRCompletion",
     "cRTime",
     "TimesUpState",
     "cRTimesUp",
@@ -7233,6 +7234,7 @@ def main() -> int:
                     ("GUI", "cRGUI"),
                     ("Help", "cRHelp"),
                     ("ClickStart", "cRClickStart"),
+                    ("Completion", "cRCompletion"),
                 ),
             )
         )

@@ -3,19 +3,18 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from runner import DEFAULT_IDA_DB_PATH, REPO_ROOT, find_ida_binary, run_ida_script
 
-
-DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
+DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/completion_types.h"
 IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/apply_completion_screen_types.py"
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Apply recovered completion-screen structs and trusted prototypes to an IDA database."
+        description="Apply the exact Windows cRCompletion ownership lane to IDA."
     )
     parser.add_argument(
         "--ida-bin",
@@ -31,7 +30,7 @@ def parse_args() -> argparse.Namespace:
         "--header",
         type=Path,
         default=DEFAULT_HEADER_PATH,
-        help="Path to the canonical aggregate IDA ownership header.",
+        help="Path to the checked-in cRCompletion type header.",
     )
     return parser.parse_args()
 
@@ -45,7 +44,7 @@ def main() -> int:
     if not db_path.is_file():
         raise FileNotFoundError(f"IDA database not found: {db_path}")
     if not header_path.is_file():
-        raise FileNotFoundError(f"completion-screen type header not found: {header_path}")
+        raise FileNotFoundError(f"cRCompletion type header not found: {header_path}")
     if not IDAPYTHON_SCRIPT_PATH.is_file():
         raise FileNotFoundError(f"IDAPython sync script not found: {IDAPYTHON_SCRIPT_PATH}")
 

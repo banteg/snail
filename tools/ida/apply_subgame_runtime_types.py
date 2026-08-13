@@ -21,6 +21,7 @@ from type_alias_migration import migrate_equivalent_struct_aliases
 
 HELP_OWNER_EXPECTED_SIZE = 0x04
 CLICK_START_OWNER_EXPECTED_SIZE = 0xAC
+COMPLETION_OWNER_EXPECTED_SIZE = 0x50
 SUBGAME_OWNER_EXPECTED_SIZE = 0x1272838
 
 TRUSTED_NAMES = (
@@ -124,6 +125,7 @@ TIME_TRIAL_OWNER_TYPE_ALIASES = (("TimeTrial", "cRTimeTrial", 0x330),)
 GUI_OWNER_TYPE_ALIASES = (("GUI", "cRGUI", 0x28),)
 HELP_OWNER_TYPE_ALIASES = (("Help", "cRHelp", 0x04),)
 CLICK_START_OWNER_TYPE_ALIASES = (("ClickStart", "cRClickStart", 0xAC),)
+COMPLETION_OWNER_TYPE_ALIASES = (("Completion", "cRCompletion", 0x50),)
 
 TIMES_UP_OWNER_EXPECTED_SIZE = 0x10
 TIMES_UP_OWNER_EXPECTED_MEMBERS = (
@@ -678,6 +680,8 @@ REQUIRED_CANONICAL_OWNER_MARKERS = (
     "cRTimeTrial time_trial;",
     "cRHelp_must_be_0x04",
     "cRClickStart_must_be_0xac",
+    "cRCompletion_must_be_0x50",
+    "cRCompletion completion;",
     "Parcel_must_be_0x8c",
     "Parcel slots[50];",
     "ParcelManager_must_be_0x1b58",
@@ -2041,6 +2045,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 *GUI_OWNER_TYPE_ALIASES,
                 *HELP_OWNER_TYPE_ALIASES,
                 *CLICK_START_OWNER_TYPE_ALIASES,
+                *COMPLETION_OWNER_TYPE_ALIASES,
                 *TIMES_UP_OWNER_TYPE_ALIASES,
             )
         )
@@ -2122,6 +2127,16 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "reason": "owner_size_mismatch",
                 "expected": CLICK_START_OWNER_EXPECTED_SIZE,
                 "observed": click_start_owner_size,
+            }
+        )
+    completion_owner_size = _named_struct_size("cRCompletion")
+    if completion_owner_size != COMPLETION_OWNER_EXPECTED_SIZE:
+        size_failures.append(
+            {
+                "selector": "cRCompletion",
+                "reason": "owner_size_mismatch",
+                "expected": COMPLETION_OWNER_EXPECTED_SIZE,
+                "observed": completion_owner_size,
             }
         )
     size_failures.extend(
@@ -2634,12 +2649,12 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "cRGUI": _named_struct_size("cRGUI"),
                     "cRHelp": _named_struct_size("cRHelp"),
                     "cRClickStart": _named_struct_size("cRClickStart"),
+                    "cRCompletion": _named_struct_size("cRCompletion"),
                     "cRSplash": _named_struct_size("cRSplash"),
                     "GalaxyStar": _named_struct_size("GalaxyStar"),
                     "cRGalaxy": _named_struct_size("cRGalaxy"),
                     "Parcel": _named_struct_size("Parcel"),
                     "ParcelManager": _named_struct_size("ParcelManager"),
-                    "Completion": _named_struct_size("Completion"),
                     "cRTimesUp": _named_struct_size("cRTimesUp"),
                     "SubLazer": _named_struct_size("SubLazer"),
                     "SubLazerManager": _named_struct_size("SubLazerManager"),

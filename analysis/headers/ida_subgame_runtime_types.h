@@ -107,7 +107,7 @@ typedef enum CompletionState {
 } CompletionState;
 
 /* Exact 0x50-byte Windows cRCompletion embedded in cRSubGame. */
-typedef struct Completion {
+typedef struct cRCompletion {
     FrontendWidget* title_widget;
     FrontendWidget* delivered_count_widget;
     FrontendWidget* bonus_summary_widget;
@@ -127,7 +127,10 @@ typedef struct Completion {
     float bonus_blink_step;
     int32_t bonus_score;
     int32_t display_token;
-} Completion;
+} cRCompletion;
+
+typedef char cRCompletion_must_be_0x50[
+    (sizeof(cRCompletion) == 0x50) ? 1 : -1];
 
 typedef enum TimesUpState {
     TIMES_UP_STATE_INACTIVE = 0,
@@ -520,7 +523,7 @@ typedef struct cRSubGame {
     float next_slug_voice_trigger_z;
     float slug_voice_trigger_spacing_z;
     EnemyManager enemy_manager;
-    Completion completion;
+    cRCompletion completion;
     cRTimesUp times_up;
 } cRSubGame;
 

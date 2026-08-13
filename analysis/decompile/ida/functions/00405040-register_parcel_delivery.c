@@ -2,8 +2,8 @@
 /* function: register_parcel_delivery @ 0x405040 */
 /* selector: register_parcel_delivery */
 
-// Exact Windows `Completion::register_parcel_delivery`: records one delivered parcel, awards the per-parcel score event, and dispatches the final bonus. Android and iOS retain this member as `cRCompletion::RegisterParcel()`.
-void __thiscall register_parcel_delivery(Completion *completion)
+// Exact Windows `cRCompletion::RegisterParcel()`: records one delivered parcel, awards the per-parcel score event, and dispatches the final bonus. Android and iOS retain the same member.
+void __thiscall register_parcel_delivery(cRCompletion *completion)
 {
   if ( completion->delivered_parcel_count != completion->parcel_target_count )
   {

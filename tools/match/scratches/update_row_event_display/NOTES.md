@@ -236,5 +236,13 @@ The matcher now emits the exact 213/213 state machine as `cRCompletion::AI()`
 and binds the VC6 decorated symbol `?AI@cRCompletion@@QAEXXZ`. The stable
 `update_row_event_display` key remains the target-address identity, while the
 candidate now carries the authored owner already retained by Android and iOS
-as `_ZN12cRCompletion2AIEv`. The receiver spelling and compatibility typedef
-are codegen-neutral; all 38 masked operands remain clean.
+as `_ZN12cRCompletion2AIEv`. The matcher compatibility typedef is
+codegen-neutral; all 38 masked operands remain clean.
+
+## 2026-08-13 canonical analysis owner
+
+Live Binary Ninja and IDA now expose this ABI as
+`void __thiscall update_row_event_display(cRCompletion*)` and retire the
+generic analysis type. The exact 0x50-byte owner is embedded at
+`cRSubGame +0x12727d8` and ends at the `cRTimesUp` boundary `+0x1272828`.
+Focused Windows matching remains exact at 213/213 with all 38 operands clean.

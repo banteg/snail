@@ -2,8 +2,11 @@
 /* function: initialize_completion_screen @ 0x404920 */
 /* selector: initialize_completion_screen */
 
-// Builds the Delivery Complete phase of the embedded 0x50-byte `Completion`, reusing the same storage that drives the parcel display. It seeds package-count and bonus widgets and lays out the continue prompt. Android and iOS retain `cRCompletion::Init(int, bool)`.
-void __thiscall initialize_completion_screen(Completion *completion, int32_t delivered_count, uint8_t perfect_delivery)
+// Windows `cRCompletion::Init(int, unsigned char)` builds the Delivery Complete phase of the embedded 0x50-byte owner, reusing the same storage that drives the parcel display. It seeds package-count and bonus widgets and lays out the continue prompt; Android and iOS retain the member with a compact bool formal.
+void __thiscall initialize_completion_screen(
+        cRCompletion *completion,
+        int32_t delivered_count,
+        uint8_t perfect_delivery)
 {
   int32_t level_mode; // ecx
   SubSolution *selected_level_record; // ecx

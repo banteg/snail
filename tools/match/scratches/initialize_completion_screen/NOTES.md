@@ -1,7 +1,7 @@
 # initialize_completion_screen
 
 Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
-`cRCompletion::Init(int, bool)` bodies and the live Windows Completion method
+`cRCompletion::Init(int, bool)` bodies and the live Windows `cRCompletion` method
 establish the complete five-widget result flow, bonus tables, replay/live
 difficulty sources, score publication, state transition, and fast-forward
 latch. All 46 references are clean; the remaining delta is the equivalent
@@ -37,9 +37,9 @@ focused result stays codegen-neutral at 64.10%.
 
 2026-07-11 cRCompletion closure: this method, exact `flush_row_event_display`,
 exact `register_parcel_delivery`, and exact `update_row_event_display` all act
-on `cRSubGame::completion +0x12727d8`. The `Completion` union names both
+on `cRSubGame::completion +0x12727d8`. The `cRCompletion` union names both
 the parcel-display and final-result phases without duplicating storage;
-`sizeof(Completion) == 0x50` matches the native ledger and ends exactly at
+`sizeof(cRCompletion) == 0x50` matches the native ledger and ends exactly at
 `TimesUp`. The focused initializer remains honestly at 64.10%, 268/278, with
 all 34 operands clean.
 
@@ -63,7 +63,7 @@ all 34 operands clean.
 
 2026-07-13 cross-tool owner routing:
 
-- Binary Ninja and IDA now carry `Completion` and the adjacent `TimesUp`
+- Binary Ninja and IDA now carry `cRCompletion` and the adjacent `cRTimesUp`
   directly in their canonical `cRSubGame` headers. The `0x50`-byte
   completion owner at `+0x12727d8` ends exactly where the `0x10`-byte times-up
   owner begins at `+0x1272828`.
@@ -117,7 +117,7 @@ is still the documented register allocation.
 
 ## 2026-07-14 five-widget role closure
 
-Construction fixes every pointer in the shared `Completion` owner:
+Construction fixes every pointer in the shared `cRCompletion` owner:
 `title_widget`, `delivered_count_widget`, `bonus_summary_widget`,
 `bonus_icon_widget`, and `continue_widget`. The former generic aliases are no
 longer needed by AI or teardown. Removing them preserves the initializer at
@@ -141,7 +141,7 @@ with all 44 operands clean.
   because its intentionally sparse Player prefix regressed already-recovered
   presentation fields; this is concrete evidence that the aggregate header is
   still useful rather than campaign clutter.
-- The aggregate `Completion` now types all five UI handles as borrowed
+- The aggregate `cRCompletion` now types all five UI handles as borrowed
   `FrontendWidget*` values. IDA consequently recovers the sprite shadow,
   text-buffer, and widget calls without `void*` casts. The initializer's exact
   stack local at definition `0x404a5f`, stack offset `48`, is replayed as the
@@ -204,7 +204,7 @@ closed.
 ## 2026-08-09 completion fast-forward producer closure
 
 The final byte store at `0x404cca` is the sole arm of the Windows completion
-fast-forward latch: it writes `1` to `Completion +0x18` after entering
+fast-forward latch: it writes `1` to `cRCompletion +0x18` after entering
 `COMPLETION_STATE_STAGING_PARCELS`. Exact `cRCompletion::AI` later clears the
 same byte at `0x404e2e`, and `cRSubGoldy::AI` is its only read at `0x43c89e`.
 That consumer pairs the latch with the primary player's current-frame
@@ -228,3 +228,14 @@ but does not replace the one-byte Windows ABI. Android and iOS independently
 retain `_ZN12cRCompletion4InitEib`. The 61 recorded challenge/color variants
 remain historical evidence; the only residual is still the bounded
 difficulty/speed register allocation.
+
+## 2026-08-13 canonical analysis owner
+
+Live Binary Ninja and IDA now agree on the authored `cRCompletion` receiver,
+its exact 0x50-byte layout, and every field at `+0x00..+0x4c`. The enclosing
+`cRSubGame` edges also read back exactly: `EnemyManager` ends at
+`+0x12727d8`, `cRCompletion` occupies `+0x12727d8..+0x1272828`, and
+`cRTimesUp` begins at `+0x1272828`. The generic analysis type is retired; the
+matcher-only typedef remains codegen-neutral. The honest initializer result is
+still 92.81%, 278/278 instructions, prefix 23/278, with all 46 references
+clean.

@@ -2,8 +2,8 @@
 /* function: flush_row_event_display @ 0x404830 */
 /* selector: flush_row_event_display */
 
-// Exact Windows `Completion::flush_row_event_display` teardown for the embedded 0x50-byte `cRCompletion`: pays any remaining parcel awards, destroys its five widgets, restores the display token, and clears state. Android and iOS retain this member as `cRCompletion::UnInit()`.
-void __thiscall flush_row_event_display(Completion *completion)
+// Exact Windows `cRCompletion::UnInit()` teardown for the embedded 0x50-byte owner: pays any remaining parcel awards, destroys its five widgets, restores the display token, and clears state. Android and iOS retain the same member.
+void __thiscall flush_row_event_display(cRCompletion *completion)
 {
   int32_t delivered_parcel_count; // eax
   int32_t parcel_target_count; // ecx

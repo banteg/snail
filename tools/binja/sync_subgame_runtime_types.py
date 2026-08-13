@@ -125,6 +125,8 @@ GUI_TYPE_RENAMES = (("GUI", "cRGUI"),)
 
 HELP_TYPE_RENAMES = (("Help", "cRHelp"),)
 
+COMPLETION_TYPE_RENAMES = (("Completion", "cRCompletion"),)
+
 TIME_TRIAL_FIELD_UPDATES = (
     ("0x00", "course_records", "TimeTrialCourseRecord[0x33]"),
 )
@@ -364,7 +366,7 @@ SUBGAME_FIELD_UPDATES = (
     ("0x1270fcc", "next_slug_voice_trigger_z", "float"),
     ("0x1270fd0", "slug_voice_trigger_spacing_z", "float"),
     ("0x1270fd4", "enemy_manager", "EnemyManager"),
-    ("0x12727d8", "completion", "Completion"),
+    ("0x12727d8", "completion", "cRCompletion"),
     ("0x1272828", "times_up", "cRTimesUp"),
 )
 
@@ -586,19 +588,19 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_completion_screen",
-        "void __thiscall initialize_completion_screen(Completion* completion, int32_t delivered_count, uint8_t perfect_delivery)",
+        "void __thiscall initialize_completion_screen(cRCompletion* completion, int32_t delivered_count, uint8_t perfect_delivery)",
     ),
     (
         "flush_row_event_display",
-        "void __thiscall flush_row_event_display(Completion* completion)",
+        "void __thiscall flush_row_event_display(cRCompletion* completion)",
     ),
     (
         "update_row_event_display",
-        "void __thiscall update_row_event_display(Completion* completion)",
+        "void __thiscall update_row_event_display(cRCompletion* completion)",
     ),
     (
         "register_parcel_delivery",
-        "void __thiscall register_parcel_delivery(Completion* completion)",
+        "void __thiscall register_parcel_delivery(cRCompletion* completion)",
     ),
     (
         "update_times_up",
@@ -832,6 +834,7 @@ def main() -> int:
             *TIME_TRIAL_TYPE_RENAMES,
             *GUI_TYPE_RENAMES,
             *HELP_TYPE_RENAMES,
+            *COMPLETION_TYPE_RENAMES,
             *TIMES_UP_TYPE_RENAMES,
         ),
     )
@@ -886,7 +889,7 @@ def main() -> int:
                 "Parcel",
                 "ParcelManager",
                 "CompletionState",
-                "Completion",
+                "cRCompletion",
                 "TimesUpState",
                 "cRTimesUp",
             ),
@@ -1106,7 +1109,7 @@ def main() -> int:
                     SUB_LAZER_STARTUP_CURSOR_FIELD_UPDATES,
                 ),
                 ("SaltOwnerGameStrideCursor", SALT_STARTUP_CURSOR_FIELD_UPDATES),
-                ("Completion", COMPLETION_FIELD_UPDATES),
+                ("cRCompletion", COMPLETION_FIELD_UPDATES),
                 ("Parcel", PARCEL_FIELD_UPDATES),
                 ("cRTimeTrial", TIME_TRIAL_FIELD_UPDATES),
                 ("cRTimesUp", TIMES_UP_FIELD_UPDATES),

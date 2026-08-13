@@ -645,6 +645,8 @@ HELP_OWNER_TYPE_ALIASES = (("Help", "cRHelp", 0x04),)
 
 CLICK_START_OWNER_TYPE_ALIASES = (("ClickStart", "cRClickStart", 0xAC),)
 
+COMPLETION_OWNER_TYPE_ALIASES = (("Completion", "cRCompletion", 0x50),)
+
 EXPECTED_TIME_TRIAL_OWNER_LAYOUTS = {
     "TimeTrialCourseRecord": {
         "size": 0x10,
@@ -6724,6 +6726,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for result in click_start_owner_type_alias_migrations
         if result.get("status") == "failed"
     ]
+    completion_owner_type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(COMPLETION_OWNER_TYPE_ALIASES)
+    )
+    completion_owner_type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "owner_group": "completion",
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in completion_owner_type_alias_migrations
+        if result.get("status") == "failed"
+    ]
     times_up_owner_type_alias_migrations = (
         []
         if parse_errors
@@ -7380,6 +7397,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or gui_owner_type_alias_failures
         or help_owner_type_alias_failures
         or click_start_owner_type_alias_failures
+        or completion_owner_type_alias_failures
         or times_up_owner_type_alias_failures
         or warning_owner_type_alias_failures
         or tip_owner_type_alias_failures
@@ -7427,6 +7445,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "click_start_owner_type_alias_migrations": (
                         click_start_owner_type_alias_migrations
+                    ),
+                    "completion_owner_type_alias_migrations": (
+                        completion_owner_type_alias_migrations
                     ),
                     "times_up_owner_type_alias_migrations": (
                         times_up_owner_type_alias_migrations
@@ -7511,6 +7532,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                         + gui_owner_type_alias_failures
                         + help_owner_type_alias_failures
                         + click_start_owner_type_alias_failures
+                        + completion_owner_type_alias_failures
                         + times_up_owner_type_alias_failures
                         + warning_owner_type_alias_failures
                         + tip_owner_type_alias_failures
@@ -8263,6 +8285,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 ),
                 "click_start_owner_type_alias_migrations": (
                     click_start_owner_type_alias_migrations
+                ),
+                "completion_owner_type_alias_migrations": (
+                    completion_owner_type_alias_migrations
                 ),
                 "times_up_owner_type_alias_migrations": (
                     times_up_owner_type_alias_migrations

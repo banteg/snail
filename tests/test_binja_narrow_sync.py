@@ -12162,6 +12162,10 @@ def test_completion_state_ownership_stays_aligned() -> None:
     assert '"CompletionState",' in runtime_sync
     assert '("0x14", "state", "CompletionState")' in runtime_sync
     assert '"CompletionState",' in path_sync
+    for header in analysis_headers:
+        assert "typedef struct cRCompletion" in header
+        assert "typedef struct Completion" not in header
+        assert "cRCompletion_must_be_0x50" in header
     for header in (*analysis_headers, matcher_header):
         assert "COMPLETION_STATE_INACTIVE = 0" in header
         assert "COMPLETION_STATE_STAGING_PARCELS = 1" in header
@@ -12221,6 +12225,9 @@ def test_completion_state_ownership_stays_aligned() -> None:
 
 
 def test_completion_replay_uses_the_canonical_subgame_owner() -> None:
+    binja_focused_sync = (BINJA_DIR / "sync_completion_types.py").read_text(
+        encoding="utf-8"
+    )
     binja_runtime_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
         encoding="utf-8"
     )
@@ -12230,14 +12237,28 @@ def test_completion_replay_uses_the_canonical_subgame_owner() -> None:
     ida_runner = (IDA_DIR / "sync_completion_screen_types.py").read_text(
         encoding="utf-8"
     )
+    ida_subgame_apply = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
+    focused_header = (HEADER_DIR / "completion_types.h").read_text(
+        encoding="utf-8"
+    )
 
     assert not (HEADER_DIR / "completion_screen_types.h").exists()
-    assert "path_template_types.h" in ida_runner
-    assert "completion_screen_types.h" not in ida_runner
+    assert "completion_types.h" in ida_runner
+    assert "path_template_types.h" not in ida_runner
     assert "sync_game_root_owner_graph(require=True)" in ida_apply
-    assert '"Completion": 0x50' in ida_apply
+    assert '"cRCompletion": 0x50' in ida_apply
     assert '"SubSolution": 0x1FAC0' in ida_apply
     assert '"cRSubGame": 0x1272838' in ida_apply
+    assert '("Completion", "cRCompletion")' in binja_focused_sync
+    assert '("Completion", "cRCompletion", 0x50)' in ida_apply
+    assert '("0x12727d8", "completion", "cRCompletion")' in binja_focused_sync
+    assert '"previous_enemy_manager"' in ida_apply
+    assert '"subgame_embed"' in ida_apply
+    assert '"following_times_up"' in ida_apply
+    assert "cRCompletion_must_be_0x50" in focused_header
+    assert '("Completion", "cRCompletion", 0x50)' in ida_subgame_apply
     assert "ida_hexrays.mark_cfunc_dirty(address, True)" in ida_apply
     assert "idc.save_database(idc.get_idb_path(), 0)" in ida_apply
     assert "INITIALIZER_COLOR_DEFINITION_ADDRESS = 0x404A5F" in ida_apply
@@ -12252,6 +12273,7 @@ def test_completion_replay_uses_the_canonical_subgame_owner() -> None:
     )
     for method in completion_methods:
         assert method in ida_apply
+        assert method in binja_focused_sync
         assert method in binja_runtime_sync
 
     for unrelated_exit_method in (

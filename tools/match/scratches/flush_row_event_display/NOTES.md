@@ -59,7 +59,16 @@ unchanged.
 
 The matcher now emits this exact 67/67 teardown as
 `cRCompletion::UnInit()` and binds the VC6 decorated symbol
-`?UnInit@cRCompletion@@QAEXXZ`. `Completion` remains a compatibility typedef
-for analysis and caller migration. Android and iOS independently retain
+`?UnInit@cRCompletion@@QAEXXZ`. `Completion` remains a matcher-only
+compatibility typedef. Android and iOS independently retain
 `_ZN12cRCompletion6UnInitEv` on the same authored lifecycle owner; the Windows
 five-widget teardown and 0x50-byte layout remain the local ABI boundary.
+
+## 2026-08-13 canonical analysis owner
+
+Live Binary Ninja and IDA now retire the generic analysis shell and expose the
+receiver as the exact 0x50-byte `cRCompletion`. The enclosing `cRSubGame`
+readback places it at `+0x12727d8`, immediately after the 0x1804-byte
+`EnemyManager` and immediately before `cRTimesUp` at `+0x1272828`. This is an
+analysis-fidelity change only; the matcher remains exact at 67/67 with all 19
+operands clean.

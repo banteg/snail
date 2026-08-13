@@ -1320,8 +1320,10 @@ Current practical read:
 
 ## Row Event Display Controller
 
-The inline controller at `game + 0x12727d8` is the exact `Completion` /
-cross-port `cRCompletion` owner.
+The inline controller at `game + 0x12727d8` is the exact cross-port
+`cRCompletion` owner. The generic analysis-only `Completion` shell is retired
+in both decompilers; the matcher keeps its compatibility typedef for shared
+source consumers.
 
 High-confidence current fields:
 

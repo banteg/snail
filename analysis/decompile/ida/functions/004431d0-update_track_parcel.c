@@ -2,7 +2,7 @@
 /* function: update_track_parcel @ 0x4431d0 */
 /* selector: update_track_parcel */
 
-// Runs one live `Parcel` through bobbing, homing, and final delivery-arc states, consuming the owned `Completion::widget_world` vector before registering delivery and tearing down its sprite. The exact Windows constructor table at 0x497364 points directly here, while Android and iOS retain `cRParcel::AI()`.
+// Exact `cRParcel::AI()` callback: runs one live slot through bobbing, homing, and final delivery-arc states, consumes the owned cRCompletion::widget_world vector, registers delivery, and tears down its sprite. The exact Windows constructor table at 0x497364 points directly here, while Android and iOS retain the same authored member.
 void __thiscall update_track_parcel(Parcel *parcel)
 {
   cRSubGame *owner_subgame; // ecx

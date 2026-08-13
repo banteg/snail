@@ -43,6 +43,13 @@ The matcher now emits this exact 36/36 helper as
 `cRCompletion::RegisterParcel()` and binds the VC6 decorated symbol
 `?RegisterParcel@cRCompletion@@QAEXXZ`. Android and iOS independently retain
 `_ZN12cRCompletion14RegisterParcelEv` on the same lifecycle owner. The
-`Completion` compatibility typedef preserves analysis consumers while the
-candidate surface adopts the authored name; all 10 masked operands remain
-clean.
+`Completion` compatibility typedef remains matcher-only while the candidate
+surface adopts the authored name; all 10 masked operands remain clean.
+
+## 2026-08-13 canonical analysis owner
+
+Live Binary Ninja and IDA now expose this ABI as
+`void __thiscall register_parcel_delivery(cRCompletion*)`. Both tools verify
+the exact 0x50-byte owner at `cRSubGame +0x12727d8`, bounded by
+`EnemyManager` and `cRTimesUp`; the generic analysis shell is retired.
+Matching remains exact at 36/36 with all 10 operands clean.
