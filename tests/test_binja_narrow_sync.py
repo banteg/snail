@@ -1493,7 +1493,7 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     for owner in (
         '(0x4EC10, 0x6CC, "backdrop", "cRBackdrop")',
         '(0x4F2DC, 0x48, "intro", "Intro")',
-        '(0x4F324, 0x18, "main_menu", "MainMenu")',
+        '(0x4F324, 0x18, "main_menu", "cRMainMenu")',
         '(0x4F33C, 0x4C, "star_manager", "cRStarManager")',
         '(0x4F388, 0x24, "options", "Options")',
         '(0x4F3AC, 0x1C, "exit_controller", "Exit")',
@@ -1708,9 +1708,13 @@ def test_ida_frontend_owner_lanes_replay_the_shared_root_graph() -> None:
         encoding="utf-8"
     )
 
-    assert '"MainMenu": 0x18' in menu_apply
+    assert '"cRMainMenu": 0x18' in menu_apply
     assert '"Options": 0x24' in menu_apply
     assert '"Exit": 0x1C' in menu_apply
+    assert "migrate_equivalent_struct_aliases" in menu_apply
+    assert '("MainMenu", "cRMainMenu", 0x18)' in menu_apply
+    assert "EXPECTED_OWNER_LAYOUTS" in menu_apply
+    assert "owner_layout_readback" in menu_apply
     assert 'analysis/headers/bn_frontend_menu_types.h' in menu_sync
     assert "EXPECTED_BOD_BASE_SIZE = 0x38" in backdrop_apply
     assert "EXPECTED_BACKDROP_DISTORT_CELL_SIZE = 0x18" in backdrop_apply
@@ -3649,31 +3653,35 @@ def test_frontend_menu_sync_owns_the_contiguous_root_block() -> None:
     header = (HEADER_DIR / "bn_frontend_menu_types.h").read_text(encoding="utf-8")
 
     for owner in (
-        '("0x4f324", "main_menu", "MainMenu")',
+        '("0x4f324", "main_menu", "cRMainMenu")',
         '("0x4f388", "options", "Options")',
         '("0x4f3ac", "exit_controller", "Exit")',
         '("0x4f3c8", "root_bod_4f3c8", "BodBase")',
     ):
         assert owner in source
     for expected_size in (
-        '"MainMenu": 0x18',
+        '"cRMainMenu": 0x18',
         '"Options": 0x24',
         '"Exit": 0x1C',
     ):
         assert expected_size in source
     for prototype in (
-        "void __thiscall initialize_main_menu(MainMenu* menu)",
+        "void __thiscall initialize_main_menu(cRMainMenu* menu)",
         "void __thiscall update_options_menu(Options* options)",
         "void __thiscall initialize_exit_prompt(Exit* exit_controller)",
     ):
         assert prototype in source
     assert "apply_struct_and_proto_updates" in source
+    assert "apply_type_renames" in source
+    assert '("MainMenu", "cRMainMenu")' in source
+    assert "current_header_type_equivalence" in source
     assert "types_declare_missing_only" in source
     assert 'BOD_BASE_EXPECTED_SIZE = 0x38' in source
     assert 'observed_widths.get("BodBase") != BOD_BASE_EXPECTED_SIZE' in source
     assert "types_declare(" not in source
     assert "typedef struct FrontendWidget FrontendWidget;" in header
-    assert "typedef struct MainMenu" in header
+    assert "typedef struct cRMainMenu" in header
+    assert "typedef struct MainMenu" not in header
     assert "typedef struct Options" in header
     assert "typedef struct Exit" in header
 

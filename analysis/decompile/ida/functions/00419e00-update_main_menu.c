@@ -3,7 +3,7 @@
 /* selector: update_main_menu */
 
 // Handles main-menu selection, front-end screen transitions, and the tutorial launch handoff. Cross-port Android and iOS symbols match this helper to `cRMainMenu::AI()`.
-void __thiscall update_main_menu(MainMenu *menu)
+void __thiscall update_main_menu(cRMainMenu *menu)
 {
   FrontendWidgetFlag widget_flags; // eax
   FrontendWidget *credits_widget; // edx

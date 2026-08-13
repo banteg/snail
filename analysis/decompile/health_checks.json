@@ -5567,7 +5567,7 @@
       "name": "ida_initialize_main_menu_root_ownership",
       "artifact": "analysis/decompile/ida/functions/00419b50-initialize_main_menu.c",
       "required_substrings": [
-        "void __thiscall initialize_main_menu(MainMenu *menu)",
+        "void __thiscall initialize_main_menu(cRMainMenu *menu)",
         "&g_game_base->subgame.landscape_manager,",
         "subgame.landscape_manager.scripts[landscape_script_by_name]",
         "g_game_base->render_skip_count = 2",
@@ -5577,6 +5577,9 @@
         "unknown_000000",
         "0x106c7bc",
         "__offset("
+      ],
+      "forbidden_regexes": [
+        "\\bMainMenu \\*menu"
       ]
     },
     {
@@ -5619,6 +5622,31 @@
         "unimplemented",
         "__asm",
         "_ET1"
+      ]
+    },
+    {
+      "name": "ida_destroy_main_menu_owner",
+      "artifact": "analysis/decompile/ida/functions/00419b30-destroy_main_menu.c",
+      "required_substrings": [
+        "void __thiscall destroy_main_menu(cRMainMenu *menu)",
+        "kill_all_borders(&g_game_base->border_manager)",
+        "kill_game_sprites(&g_sprite_manager)"
+      ],
+      "forbidden_regexes": [
+        "\\bMainMenu \\*menu"
+      ]
+    },
+    {
+      "name": "ida_update_main_menu_owner",
+      "artifact": "analysis/decompile/ida/functions/00419e00-update_main_menu.c",
+      "required_substrings": [
+        "void __thiscall update_main_menu(cRMainMenu *menu)",
+        "menu->new_game_widget",
+        "menu->exit_widget",
+        "destroy_main_menu(menu)"
+      ],
+      "forbidden_regexes": [
+        "\\bMainMenu \\*menu"
       ]
     },
     {

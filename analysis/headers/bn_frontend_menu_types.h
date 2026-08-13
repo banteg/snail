@@ -7,14 +7,14 @@ typedef int int32_t;
 typedef struct FrontendWidget FrontendWidget;
 
 /* Exact Windows cRMainMenu owner at GameRoot +0x4f324. */
-typedef struct MainMenu {
+typedef struct cRMainMenu {
     FrontendWidget* new_game_widget;
     FrontendWidget* high_scores_widget;
     FrontendWidget* options_widget;
     FrontendWidget* credits_widget;
     uint8_t _pad_10[0x4];
     FrontendWidget* exit_widget;
-} MainMenu;
+} cRMainMenu;
 
 /* Exact Windows cROptions owner at GameRoot +0x4f388. */
 typedef struct Options {

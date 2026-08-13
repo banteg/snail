@@ -3,23 +3,24 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_struct_and_proto_updates,
+    apply_type_renames,
+    current_header_type_equivalence,
     current_type_widths,
     emit_summary,
     types_declare_missing_only,
 )
-
+from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_frontend_menu_types.h"
 
 EXPECTED_STRUCT_SIZES = {
-    "MainMenu": 0x18,
+    "cRMainMenu": 0x18,
     "Options": 0x24,
     "Exit": 0x1C,
 }
@@ -27,11 +28,13 @@ EXPECTED_STRUCT_SIZES = {
 BOD_BASE_EXPECTED_SIZE = 0x38
 
 GAME_ROOT_FIELD_UPDATES = (
-    ("0x4f324", "main_menu", "MainMenu"),
+    ("0x4f324", "main_menu", "cRMainMenu"),
     ("0x4f388", "options", "Options"),
     ("0x4f3ac", "exit_controller", "Exit"),
     ("0x4f3c8", "root_bod_4f3c8", "BodBase"),
 )
+
+TYPE_RENAMES = (("MainMenu", "cRMainMenu"),)
 
 MAIN_MENU_FIELD_UPDATES = (
     ("0x00", "new_game_widget", "FrontendWidget*"),
@@ -61,9 +64,9 @@ EXIT_FIELD_UPDATES = (
 )
 
 PROTO_UPDATES = (
-    ("destroy_main_menu", "void __thiscall destroy_main_menu(MainMenu* menu)"),
-    ("initialize_main_menu", "void __thiscall initialize_main_menu(MainMenu* menu)"),
-    ("update_main_menu", "void __thiscall update_main_menu(MainMenu* menu)"),
+    ("destroy_main_menu", "void __thiscall destroy_main_menu(cRMainMenu* menu)"),
+    ("initialize_main_menu", "void __thiscall initialize_main_menu(cRMainMenu* menu)"),
+    ("update_main_menu", "void __thiscall update_main_menu(cRMainMenu* menu)"),
     (
         "initialize_options_menu",
         "void __thiscall initialize_options_menu(Options* options)",
@@ -96,7 +99,9 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Apply the contiguous cRMainMenu/cROptions/cRExit ownership slice."
     )
-    parser.add_argument("--target", default=DEFAULT_TARGET, help="Binary Ninja target selector.")
+    parser.add_argument(
+        "--target", default=DEFAULT_TARGET, help="Binary Ninja target selector."
+    )
     parser.add_argument(
         "--header",
         type=Path,
@@ -112,6 +117,11 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
+    type_rename_operations = apply_type_renames(
+        REPO_ROOT,
+        target=args.target,
+        renames=TYPE_RENAMES,
+    )
     observed_widths = current_type_widths(
         REPO_ROOT,
         target=args.target,
@@ -123,10 +133,18 @@ def main() -> int:
             f"BodBase width is {observed_widths.get('BodBase')!r}, "
             f"expected {BOD_BASE_EXPECTED_SIZE:#x}"
         )
+    type_equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=args.target,
+        header_path=header_path,
+    )
     mismatched_types = tuple(
         name
         for name, expected_size in EXPECTED_STRUCT_SIZES.items()
-        if observed_widths.get(name) != expected_size
+        if (
+            observed_widths.get(name) != expected_size
+            or (name == "cRMainMenu" and not type_equivalence.get(name, False))
+        )
     )
     if mismatched_types:
         type_operation = types_declare_missing_only(
@@ -144,18 +162,20 @@ def main() -> int:
         type_operation = {
             "op": "types_declare_missing_only",
             "status": "skipped",
-            "reason": "front-end menu owner sizes already current",
+            "reason": "front-end menu owner layouts already current",
             "header": str(header_path),
             "expected_sizes": EXPECTED_STRUCT_SIZES,
+            "type_equivalence": type_equivalence,
         }
 
     struct_updates = (
-        ("MainMenu", MAIN_MENU_FIELD_UPDATES),
+        ("cRMainMenu", MAIN_MENU_FIELD_UPDATES),
         ("Options", OPTIONS_FIELD_UPDATES),
         ("Exit", EXIT_FIELD_UPDATES),
         ("GameRoot", GAME_ROOT_FIELD_UPDATES),
     )
     operations: list[dict[str, object]] = [
+        *type_rename_operations,
         type_operation,
         *apply_struct_and_proto_updates(
             REPO_ROOT,

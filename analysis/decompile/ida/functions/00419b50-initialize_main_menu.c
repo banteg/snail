@@ -3,7 +3,7 @@
 /* selector: initialize_main_menu */
 
 // Starts MAINMENU.OGG, loads Menubg.txt into the shared backdrop renderer, seeds the front-end state to menu mode, and allocates the New Game, High Scores, Options, Credits, and Exit widgets. Cross-port Android and iOS symbols match this helper to `cRMainMenu::Init()`.
-void __thiscall initialize_main_menu(MainMenu *menu)
+void __thiscall initialize_main_menu(cRMainMenu *menu)
 {
   int32_t landscape_script_by_name; // eax
   tColour *v3; // eax

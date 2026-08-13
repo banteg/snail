@@ -143,9 +143,10 @@ intentional.
 - `bn_frontend_menu_types.h`
 - `uv run python tools/binja/sync_frontend_menu_types.py`
 - `uv run python tools/ida/sync_frontend_menu_types.py`
-  - Replays the exact MainMenu, Options, and Exit owners plus the adjacent
+  - Replays the exact `cRMainMenu`, Options, and Exit owners plus the adjacent
     standalone 0x38-byte root BodBase without redefining FrontendWidget. The
-    same narrow header now feeds both databases.
+    same narrow header feeds both databases and retires the older analysis-only
+    `MainMenu` record after exact layout-equivalence checks.
 - `bn_loading_bar_types.h`
 - `uv run python tools/binja/sync_loading_bar_types.py`
   - Width-gates the exact 0x0c-byte global cRLoadingBar owner, names its
@@ -525,7 +526,7 @@ subgame-runtime replays share
 `tools/ida/game_root_owner.py` for the recovered root graph. Once its exact
 component types are present, it composes the contiguous
 `RootBodCatalog +0x44100`, `cRDirectX +0x48e00`, `cRBackdrop +0x4ec10`,
-`Intro`, `MainMenu`, `cRStarManager`, `Options`, `Exit`, standalone `BodBase`,
+`Intro`, `cRMainMenu`, `cRStarManager`, `Options`, `Exit`, standalone `BodBase`,
 and `cRLogo` block through `+0x74618`, followed by the complete
 `cRSubGame` (`0x1272838` bytes), `HighScore` at `+0x12e6e50`, the real
 `0x14`-byte gap, `TipManager` at `+0x12e6f58`, and the final four-byte gap into
