@@ -4,7 +4,7 @@ import hashlib
 import json
 import re
 from collections import Counter
-from collections.abc import Collection
+from collections.abc import Collection, Mapping
 from dataclasses import replace
 from pathlib import Path
 from typing import Any, cast
@@ -14,9 +14,12 @@ from . import match_mutation
 
 EXPERIMENT_FILE = "experiments.jsonl"
 EXPERIMENT_SCHEMA = 1
+MUTATION_ERROR_AUDIT_KIND = "mutation-error-audit"
+MUTATION_ERROR_AUDIT_CLASSIFICATION = "invalid-mutation-plan"
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 EXPERIMENT_SORTS = frozenset(
     {
+        "errors",
         "records",
         "repeats",
         "scratch",
@@ -290,6 +293,199 @@ def _recorded_function(record: dict[str, Any]) -> tuple[str | None, str | None]:
     )
 
 
+def _valid_epoch(value: object) -> bool:
+    return isinstance(value, str) and SHA256_RE.fullmatch(value) is not None
+
+
+def mutation_error_evidence(
+    record: dict[str, Any],
+) -> tuple[dict[str, Any], ...]:
+    results = record.get("results")
+    if _experiment_kind(record) != "mutation-sweep" or not isinstance(
+        results,
+        list,
+    ):
+        return ()
+    evidence: list[dict[str, Any]] = []
+    for result_index, result in enumerate(results, start=1):
+        if not isinstance(result, dict):
+            continue
+        status = result.get("status")
+        if not isinstance(status, dict) or status.get("state") != "error":
+            continue
+        evidence.append(
+            {
+                "result": result_index,
+                "label": result.get("label"),
+                "source_sha256": result.get("source_sha256"),
+                "error": status.get("error"),
+            }
+        )
+    return tuple(evidence)
+
+
+def mutation_error_evidence_sha256(record: dict[str, Any]) -> str:
+    return hashlib.sha256(
+        json.dumps(
+            mutation_error_evidence(record),
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode()
+    ).hexdigest()
+
+
+def build_mutation_error_audit(
+    path: Path,
+    *,
+    target_record: int,
+    current_epoch: str,
+    reason: str,
+    recorded_at: str,
+) -> dict[str, Any]:
+    records, errors = load_experiment_log(path)
+    if errors:
+        raise ValueError(errors[0])
+    if target_record < 1 or target_record > len(records):
+        raise ValueError(f"{path}: target record {target_record} does not exist")
+    target = records[target_record - 1]
+    if _experiment_kind(target) != "mutation-sweep":
+        raise ValueError(f"{path}:{target_record}: target is not a mutation sweep")
+    evidence = mutation_error_evidence(target)
+    if not evidence:
+        raise ValueError(f"{path}:{target_record}: target has no errored variants")
+    if target.get("baseline_epoch") != current_epoch:
+        raise ValueError(
+            f"{path}:{target_record}: target does not belong to the current "
+            "baseline epoch"
+        )
+    if not reason.strip():
+        raise ValueError("mutation error audit requires a reason")
+    if any(
+        _experiment_kind(record) == MUTATION_ERROR_AUDIT_KIND
+        and record.get("target_record") == target_record
+        for record in records
+    ):
+        raise ValueError(
+            f"{path}:{target_record}: mutation errors are already audited"
+        )
+    return {
+        "schema": EXPERIMENT_SCHEMA,
+        "kind": MUTATION_ERROR_AUDIT_KIND,
+        "recorded_at": recorded_at,
+        "baseline_epoch": current_epoch,
+        "target_record": target_record,
+        "classification": MUTATION_ERROR_AUDIT_CLASSIFICATION,
+        "errored_variants": len(evidence),
+        "error_evidence_sha256": mutation_error_evidence_sha256(target),
+        "reason": reason.strip(),
+    }
+
+
+def _validated_mutation_error_audits(
+    records: list[dict[str, Any]],
+    *,
+    path: Path,
+    errors: list[str],
+) -> dict[int, dict[str, Any]]:
+    audits: dict[int, dict[str, Any]] = {}
+    for record_index, record in enumerate(records, start=1):
+        if _experiment_kind(record) != MUTATION_ERROR_AUDIT_KIND:
+            continue
+        context = f"{path}:{record_index}"
+        target_index = _non_negative_int(record.get("target_record"))
+        if (
+            target_index is None
+            or target_index < 1
+            or target_index >= record_index
+        ):
+            errors.append(
+                f"{context}: mutation error audit requires an earlier "
+                "target_record"
+            )
+            continue
+        target = records[target_index - 1]
+        if _experiment_kind(target) != "mutation-sweep":
+            errors.append(
+                f"{context}: audited target {target_index} is not a mutation sweep"
+            )
+            continue
+        evidence = mutation_error_evidence(target)
+        if not evidence:
+            errors.append(
+                f"{context}: audited target {target_index} has no errored variants"
+            )
+            continue
+        if record.get("classification") != MUTATION_ERROR_AUDIT_CLASSIFICATION:
+            errors.append(f"{context}: unsupported mutation error classification")
+            continue
+        if not isinstance(record.get("reason"), str) or not str(
+            record["reason"]
+        ).strip():
+            errors.append(f"{context}: mutation error audit requires a reason")
+            continue
+        if record.get("baseline_epoch") != target.get("baseline_epoch"):
+            errors.append(
+                f"{context}: mutation error audit epoch differs from its target"
+            )
+            continue
+        if record.get("error_evidence_sha256") != mutation_error_evidence_sha256(
+            target
+        ):
+            errors.append(
+                f"{context}: mutation error evidence digest differs from its target"
+            )
+            continue
+        if record.get("errored_variants") != len(evidence):
+            errors.append(
+                f"{context}: audited errored_variants differs from its target"
+            )
+            continue
+        if target_index in audits:
+            errors.append(
+                f"{context}: duplicate audit for target record {target_index}"
+            )
+            continue
+        audits[target_index] = record
+    return audits
+
+
+def _non_improving_sweep_inconclusive_reasons(
+    record: dict[str, Any],
+    *,
+    declared_variants: int | None,
+    result_count: int,
+    errored_variants: int,
+    require_coverage: bool,
+) -> tuple[str, ...]:
+    reasons: list[str] = []
+    if errored_variants:
+        reasons.append("variant-errors")
+    possible = _non_negative_int(record.get("possible_variants"))
+    never_evaluated = _non_negative_int(
+        record.get("combinations_never_evaluated")
+    )
+    truncated = record.get("truncated")
+    stop_reason = record.get("stop_reason")
+    has_coverage = (
+        possible is not None
+        and never_evaluated is not None
+        and isinstance(truncated, bool)
+    )
+    if not has_coverage:
+        if require_coverage:
+            reasons.append("coverage-unrecorded")
+        return tuple(reasons)
+    if (
+        truncated
+        or declared_variants != possible
+        or result_count != possible
+        or never_evaluated
+        or stop_reason is not None
+    ):
+        reasons.append("incomplete-coverage")
+    return tuple(dict.fromkeys(reasons))
+
+
 def _recorded_dependency_profile(
     path: Path,
     record: dict[str, Any],
@@ -314,23 +510,39 @@ def summarize_experiment_log(
     path: Path,
     *,
     match_root: Path,
+    current_epoch: str | None = None,
+    classify_epochs: bool = False,
 ) -> tuple[dict[str, Any], list[str]]:
     records, errors = load_experiment_log(path)
+    mutation_error_audits = _validated_mutation_error_audits(
+        records,
+        path=path,
+        errors=errors,
+    )
     kinds: Counter[str] = Counter()
+    current_kinds: Counter[str] = Counter()
     mutation_improvements: list[bool] = []
     spec_shas: Counter[str] = Counter()
     variant_keys: Counter[tuple[str, str, str, str]] = Counter()
+    strict_errors: list[str] = []
     latest_recorded_at: str | None = None
     function: str | None = None
     image: str | None = None
+    current_records = 0
+    historical_records = 0
+    unversioned_records = 0
     evaluated_variants = 0
     improving_variants = 0
     neutral_variants = 0
     degrading_variants = 0
+    errored_variants = 0
     tradeoff_variants = 0
     improving_sweeps = 0
     improving_probes = 0
     exact_winners = 0
+    current_inconclusive_sweeps = 0
+    current_errored_variants = 0
+    audited_errored_variants = 0
     dependency_receipts: Counter[str] = Counter()
     dependency_cache: dict[tuple[str, str], str] = {}
 
@@ -341,6 +553,21 @@ def summarize_experiment_log(
             errors.append(f"{context}: unsupported experiment schema {schema!r}")
         kind = _experiment_kind(record)
         kinds[kind] += 1
+        baseline_epoch = record.get("baseline_epoch")
+        if baseline_epoch is None:
+            unversioned_records += 1
+        elif not _valid_epoch(baseline_epoch):
+            errors.append(
+                f"{context}: baseline_epoch must be a lowercase SHA-256 digest"
+            )
+        is_current = not classify_epochs or (
+            current_epoch is not None and baseline_epoch == current_epoch
+        )
+        if is_current:
+            current_records += 1
+            current_kinds[kind] += 1
+        else:
+            historical_records += 1
         recorded_at = record.get("recorded_at")
         if isinstance(recorded_at, str) and (
             latest_recorded_at is None or recorded_at > latest_recorded_at
@@ -351,39 +578,44 @@ def summarize_experiment_log(
         image = recorded_image or image
 
         recorded_dependency_sha: str | None = None
-        if "dependency_sha256" not in record:
-            dependency_receipts["historical"] += 1
-        else:
-            raw_dependency_sha = record.get("dependency_sha256")
-            if not isinstance(raw_dependency_sha, str) or not SHA256_RE.fullmatch(
-                raw_dependency_sha
-            ):
-                errors.append(
-                    f"{context}: dependency_sha256 must be a lowercase SHA-256 digest"
-                )
-                dependency_receipts["invalid"] += 1
+        if kind in {"mutation-sweep", "probe"}:
+            if "dependency_sha256" not in record:
+                dependency_receipts["historical"] += 1
             else:
-                recorded_dependency_sha = raw_dependency_sha
-                try:
-                    profile = _recorded_dependency_profile(path, record)
-                    cache_key = (profile.compiler, profile.cflags)
-                    current_dependency_sha = dependency_cache.get(cache_key)
-                    if current_dependency_sha is None:
-                        current_dependency_sha = matchlib.scratch_dependency_sha256(
-                            profile,
-                            match_root,
-                        )
-                        dependency_cache[cache_key] = current_dependency_sha
-                except (OSError, TypeError, ValueError) as error:
+                raw_dependency_sha = record.get("dependency_sha256")
+                if not isinstance(
+                    raw_dependency_sha,
+                    str,
+                ) or not SHA256_RE.fullmatch(raw_dependency_sha):
                     errors.append(
-                        f"{context}: cannot verify dependency_sha256: {error}"
+                        f"{context}: dependency_sha256 must be a lowercase "
+                        "SHA-256 digest"
                     )
                     dependency_receipts["invalid"] += 1
                 else:
-                    if recorded_dependency_sha == current_dependency_sha:
-                        dependency_receipts["current"] += 1
+                    recorded_dependency_sha = raw_dependency_sha
+                    try:
+                        profile = _recorded_dependency_profile(path, record)
+                        cache_key = (profile.compiler, profile.cflags)
+                        current_dependency_sha = dependency_cache.get(cache_key)
+                        if current_dependency_sha is None:
+                            current_dependency_sha = (
+                                matchlib.scratch_dependency_sha256(
+                                    profile,
+                                    match_root,
+                                )
+                            )
+                            dependency_cache[cache_key] = current_dependency_sha
+                    except (OSError, TypeError, ValueError) as error:
+                        errors.append(
+                            f"{context}: cannot verify dependency_sha256: {error}"
+                        )
+                        dependency_receipts["invalid"] += 1
                     else:
-                        dependency_receipts["stale"] += 1
+                        if recorded_dependency_sha == current_dependency_sha:
+                            dependency_receipts["current"] += 1
+                        else:
+                            dependency_receipts["stale"] += 1
 
         if kind == "mutation-sweep":
             results = record.get("results")
@@ -429,6 +661,7 @@ def summarize_experiment_log(
             baseline_status = (
                 cast(dict[str, Any], baseline) if isinstance(baseline, dict) else None
             )
+            record_errored_variants = 0
             for result_index, result in enumerate(results, start=1):
                 if not isinstance(result, dict):
                     errors.append(f"{context}: result {result_index} must be an object")
@@ -442,6 +675,13 @@ def summarize_experiment_log(
                     )
                 else:
                     variant_keys[key] += 1
+                status = typed_result.get("status")
+                variant_errored = (
+                    isinstance(status, dict) and status.get("state") == "error"
+                )
+                if variant_errored:
+                    errored_variants += 1
+                    record_errored_variants += 1
                 delta = typed_result.get("delta")
                 fuzzy_delta = (
                     _number(delta.get("fuzzy_weighted_bytes"))
@@ -452,15 +692,54 @@ def summarize_experiment_log(
                     errors.append(
                         f"{context}: result {result_index} requires a fuzzy byte delta"
                     )
+                elif variant_errored:
+                    pass
                 elif fuzzy_delta > 0:
                     improving_variants += 1
                 elif fuzzy_delta == 0:
                     neutral_variants += 1
                 else:
                     degrading_variants += 1
-                tradeoff_variants += bool(
-                    _inferred_tradeoffs(typed_result, baseline_status)
-                )
+                if not variant_errored:
+                    tradeoff_variants += bool(
+                        _inferred_tradeoffs(typed_result, baseline_status)
+                    )
+            if is_current:
+                errors_audited = record_index in mutation_error_audits
+                if errors_audited:
+                    audited_errored_variants += record_errored_variants
+                else:
+                    current_errored_variants += record_errored_variants
+                if best_improves:
+                    inconclusive_reasons = (
+                        ("variant-errors",)
+                        if record_errored_variants
+                        else ()
+                    )
+                else:
+                    inconclusive_reasons = (
+                        _non_improving_sweep_inconclusive_reasons(
+                            record,
+                            declared_variants=declared,
+                            result_count=len(results),
+                            errored_variants=record_errored_variants,
+                            require_coverage=classify_epochs,
+                        )
+                    )
+                if inconclusive_reasons:
+                    current_inconclusive_sweeps += 1
+                if record_errored_variants and not errors_audited:
+                    strict_errors.append(
+                        f"{context}: current mutation sweep has "
+                        f"{record_errored_variants} errored variants"
+                    )
+                if (
+                    isinstance(baseline_status, dict)
+                    and baseline_status.get("state") == "error"
+                ):
+                    strict_errors.append(
+                        f"{context}: current mutation baseline is an error"
+                    )
         elif kind == "probe":
             delta = record.get("delta")
             fuzzy_delta = (
@@ -469,6 +748,17 @@ def summarize_experiment_log(
                 else None
             )
             improving_probes += fuzzy_delta is not None and fuzzy_delta > 0
+            if is_current:
+                baseline = record.get("baseline")
+                probe = record.get("probe")
+                if isinstance(baseline, dict) and baseline.get("state") == "error":
+                    strict_errors.append(
+                        f"{context}: current probe baseline is an error"
+                    )
+                if isinstance(probe, dict) and probe.get("state") == "error":
+                    strict_errors.append(
+                        f"{context}: current probe result is an error"
+                    )
 
     repeated_variants = sum(count - 1 for count in variant_keys.values())
     repeated_spec_runs = sum(count - 1 for count in spec_shas.values())
@@ -479,6 +769,14 @@ def summarize_experiment_log(
         flags.append("repeated-specs")
     if tradeoff_variants:
         flags.append("metric-tradeoffs")
+    if errored_variants:
+        flags.append("variant-errors")
+    if audited_errored_variants:
+        flags.append("audited-plan-errors")
+    if current_inconclusive_sweeps:
+        flags.append("inconclusive-sweeps")
+    if classify_epochs and records and not current_records:
+        flags.append("historical-only")
     if dependency_receipts["stale"]:
         flags.append("stale-dependencies")
     if errors:
@@ -489,8 +787,13 @@ def summarize_experiment_log(
             "scratch": _relative_scratch(path, match_root),
             "function": function,
             "image": image,
+            "current_epoch": current_epoch if classify_epochs else None,
             "records": len(records),
+            "current_records": current_records,
+            "historical_records": historical_records,
+            "unversioned_records": unversioned_records,
             "kinds": dict(sorted(kinds.items())),
+            "current_kinds": dict(sorted(current_kinds.items())),
             "mutation_sweeps": kinds["mutation-sweep"],
             "probes": kinds["probe"],
             "evaluated_variants": evaluated_variants,
@@ -499,11 +802,16 @@ def summarize_experiment_log(
             "improving_variants": improving_variants,
             "neutral_variants": neutral_variants,
             "degrading_variants": degrading_variants,
+            "errored_variants": errored_variants,
             "tradeoff_variants": tradeoff_variants,
             "improving_sweeps": improving_sweeps,
             "improving_probes": improving_probes,
             "exact_winners": exact_winners,
             "no_improvement_sweeps": (len(mutation_improvements) - improving_sweeps),
+            "current_inconclusive_sweeps": current_inconclusive_sweeps,
+            "current_errored_variants": current_errored_variants,
+            "audited_errored_variants": audited_errored_variants,
+            "mutation_error_audits": len(mutation_error_audits),
             "unique_specs": len(spec_shas),
             "repeated_spec_runs": repeated_spec_runs,
             "latest_recorded_at": latest_recorded_at,
@@ -513,8 +821,9 @@ def summarize_experiment_log(
             },
             "flags": flags,
             "errors": len(errors),
+            "strict_errors": len(strict_errors),
         },
-        errors,
+        [*errors, *strict_errors],
     )
 
 
@@ -528,6 +837,7 @@ def sort_experiment_rows(
     if sort_by == "scratch":
         return sorted(rows, key=lambda row: str(row["scratch"]))
     fields = {
+        "errors": ("errored_variants", "evaluated_variants"),
         "records": ("records", "evaluated_variants"),
         "repeats": ("repeated_variants", "repeated_spec_runs"),
         "variants": ("evaluated_variants", "records"),
@@ -547,17 +857,27 @@ def summarize_experiments(
     *,
     scratches: Collection[str] = (),
     sort_by: str = "variants",
+    current_epochs: Mapping[Path, str] | None = None,
 ) -> dict[str, Any]:
     paths = find_experiment_logs(match_root, scratches)
     rows: list[dict[str, Any]] = []
     errors: list[str] = []
+    strict_errors: list[str] = []
     for path in paths:
-        row, row_errors = summarize_experiment_log(
+        row, row_issues = summarize_experiment_log(
             path,
             match_root=match_root,
+            current_epoch=(
+                current_epochs.get(path.parent.resolve())
+                if current_epochs is not None
+                else None
+            ),
+            classify_epochs=current_epochs is not None,
         )
         rows.append(row)
-        errors.extend(row_errors)
+        structural_count = int(row["errors"])
+        errors.extend(row_issues[:structural_count])
+        strict_errors.extend(row_issues[structural_count:])
     rows = sort_experiment_rows(rows, sort_by=sort_by)
     kinds: Counter[str] = Counter()
     for row in rows:
@@ -569,6 +889,13 @@ def summarize_experiments(
         "summary": {
             "files": len(paths),
             "records": sum(int(row["records"]) for row in rows),
+            "current_records": sum(int(row["current_records"]) for row in rows),
+            "historical_records": sum(
+                int(row["historical_records"]) for row in rows
+            ),
+            "unversioned_records": sum(
+                int(row["unversioned_records"]) for row in rows
+            ),
             "kinds": dict(sorted(kinds.items())),
             "evaluated_variants": sum(int(row["evaluated_variants"]) for row in rows),
             "unique_variants": sum(int(row["unique_variants"]) for row in rows),
@@ -576,17 +903,32 @@ def summarize_experiments(
             "improving_variants": sum(int(row["improving_variants"]) for row in rows),
             "neutral_variants": sum(int(row["neutral_variants"]) for row in rows),
             "degrading_variants": sum(int(row["degrading_variants"]) for row in rows),
+            "errored_variants": sum(int(row["errored_variants"]) for row in rows),
             "tradeoff_variants": sum(int(row["tradeoff_variants"]) for row in rows),
             "improving_sweeps": sum(int(row["improving_sweeps"]) for row in rows),
             "improving_probes": sum(int(row["improving_probes"]) for row in rows),
             "exact_winners": sum(int(row["exact_winners"]) for row in rows),
+            "current_inconclusive_sweeps": sum(
+                int(row["current_inconclusive_sweeps"]) for row in rows
+            ),
+            "current_errored_variants": sum(
+                int(row["current_errored_variants"]) for row in rows
+            ),
+            "audited_errored_variants": sum(
+                int(row["audited_errored_variants"]) for row in rows
+            ),
+            "mutation_error_audits": sum(
+                int(row["mutation_error_audits"]) for row in rows
+            ),
             "dependency_receipts": {
                 state: sum(int(row["dependency_receipts"][state]) for row in rows)
                 for state in ("historical", "current", "stale", "invalid")
             },
             "errors": len(errors),
+            "strict_errors": len(strict_errors),
         },
         "errors": errors,
+        "strict_errors": strict_errors,
         "rows": rows,
     }
 
@@ -595,11 +937,11 @@ def render_experiment_summary(payload: dict[str, Any]) -> str:
     rows: list[tuple[str, ...]] = [
         (
             "scratch",
-            "logs",
+            "current/all",
             "sweeps",
             "probes",
             "variants",
-            "better/same/worse",
+            "better/same/worse/error",
             "repeats",
             "wins",
             "exact",
@@ -611,14 +953,15 @@ def render_experiment_summary(payload: dict[str, Any]) -> str:
         rows.append(
             (
                 str(row["scratch"]).removeprefix("scratches/"),
-                str(row["records"]),
+                f"{row['current_records']}/{row['records']}",
                 str(row["mutation_sweeps"]),
                 str(row["probes"]),
                 str(row["evaluated_variants"]),
                 (
                     f"{row['improving_variants']}/"
                     f"{row['neutral_variants']}/"
-                    f"{row['degrading_variants']}"
+                    f"{row['degrading_variants']}/"
+                    f"{row['errored_variants']}"
                 ),
                 str(row["repeated_variants"]),
                 str(row["improving_sweeps"]),
@@ -640,23 +983,29 @@ def render_experiment_summary(payload: dict[str, Any]) -> str:
     summary = payload["summary"]
     lines.append(
         f"\nfiles={summary['files']} records={summary['records']} "
+        f"current/historical/unversioned={summary['current_records']}/"
+        f"{summary['historical_records']}/{summary['unversioned_records']} "
         f"kinds="
         + "/".join(f"{kind}:{count}" for kind, count in summary["kinds"].items())
         + f"; variants={summary['evaluated_variants']} "
         f"unique={summary['unique_variants']} "
         f"repeats={summary['repeated_variants']} "
-        f"better/same/worse={summary['improving_variants']}/"
+        f"better/same/worse/error={summary['improving_variants']}/"
         f"{summary['neutral_variants']}/"
-        f"{summary['degrading_variants']} "
+        f"{summary['degrading_variants']}/"
+        f"{summary['errored_variants']} "
         f"tradeoffs={summary['tradeoff_variants']} "
         f"sweep-wins={summary['improving_sweeps']} "
         f"exact={summary['exact_winners']} "
+        f"inconclusive={summary['current_inconclusive_sweeps']} "
+        f"audited-plan-errors={summary['mutation_error_audits']}/"
+        f"{summary['audited_errored_variants']} "
         f"deps-h/c/s/i="
         + "/".join(
             str(summary["dependency_receipts"][state])
             for state in ("historical", "current", "stale", "invalid")
         )
         + " "
-        f"errors={summary['errors']}"
+        f"errors={summary['errors']} strict-errors={summary['strict_errors']}"
     )
     return "\n".join(lines)

@@ -133,6 +133,10 @@ def test_probe_cli_records_the_complete_result(
         "snail.cli.scratch_dependency_sha256",
         lambda *args, **kwargs: "d" * 64,
     )
+    monkeypatch.setattr(
+        "snail.cli.scratch_experiment_epoch",
+        lambda *args, **kwargs: "e" * 64,
+    )
 
     exit_code = main(
         [
@@ -158,4 +162,5 @@ def test_probe_cli_records_the_complete_result(
     assert record["kind"] == "probe"
     assert record["source_sha256"] == "probe-sha"
     assert record["dependency_sha256"] == "d" * 64
+    assert record["baseline_epoch"] == "e" * 64
     assert tracked_source.read_text(encoding="utf-8") == "baseline source\n"

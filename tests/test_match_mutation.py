@@ -571,6 +571,10 @@ def test_mutate_cli_writes_only_an_improving_winner(
         return "d" * 64
 
     monkeypatch.setattr("snail.cli.scratch_dependency_sha256", fake_dependency_sha)
+    monkeypatch.setattr(
+        "snail.cli.scratch_experiment_epoch",
+        lambda *args, **kwargs: "e" * 64,
+    )
     output = tmp_path / "winner.cpp"
     match_root = tmp_path / "match-root"
 
@@ -629,6 +633,7 @@ def test_mutate_cli_writes_only_an_improving_winner(
     assert recorded["schema"] == 1
     assert recorded["kind"] == "mutation-sweep"
     assert recorded["dependency_sha256"] == "d" * 64
+    assert recorded["baseline_epoch"] == "e" * 64
     assert recorded["spec_sha256"] == sweep.spec.sha256
     assert recorded["winner"]["label"] == variant.label
     assert len(recorded["results"]) == 2

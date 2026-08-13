@@ -46,6 +46,8 @@ from .match import (
     run_match_dump,
     run_scratch_match,
     scratch_dependency_sha256,
+    scratch_experiment_epoch,
+    scratch_experiment_epochs,
     sort_triage_rows,
     triage_row_payload,
     triage_summary_payload,
@@ -1055,6 +1057,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="Path to the tools/match root.",
     )
     match_experiments_parser.add_argument(
+        "--image",
+        type=Path,
+        help="Path to the original image (default: the manifest primary target).",
+    )
+    match_experiments_parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+        help="Path to the tracked gameplay function symbol manifest.",
+    )
+    match_experiments_parser.add_argument(
         "--scratch",
         action="append",
         default=[],
@@ -1085,12 +1098,61 @@ def build_parser() -> argparse.ArgumentParser:
         help="Exit non-zero when any log record is malformed.",
     )
     match_experiments_parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Also reject current-baseline probe or mutation evaluation errors.",
+    )
+    match_experiments_parser.add_argument(
         "--check-specs",
         action="store_true",
         help=(
             "Check unreceipted mutation specs against their current scratch; "
             "recorded spec digests are historical."
         ),
+    )
+
+    match_experiment_audit_parser = match_subparsers.add_parser(
+        "experiment-audit",
+        help="Audit reviewed invalid-plan errors in a mutation sweep.",
+    )
+    match_experiment_audit_parser.add_argument(
+        "directory",
+        type=Path,
+        help="Scratch directory containing experiments.jsonl.",
+    )
+    match_experiment_audit_parser.add_argument(
+        "--record",
+        action="append",
+        type=_positive_int,
+        required=True,
+        help="One-based mutation-sweep record to audit; repeat as needed.",
+    )
+    match_experiment_audit_parser.add_argument(
+        "--reason",
+        required=True,
+        help="Why the compile failures came from an invalid mutation plan.",
+    )
+    match_experiment_audit_parser.add_argument(
+        "--match-root",
+        type=Path,
+        default=DEFAULT_MATCH_ROOT,
+        help="Path to the tools/match root.",
+    )
+    match_experiment_audit_parser.add_argument(
+        "--image",
+        type=Path,
+        help="Path to the original image (default: the manifest primary target).",
+    )
+    match_experiment_audit_parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+        help="Path to the tracked gameplay function symbol manifest.",
+    )
+    match_experiment_audit_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Print appended audit records as JSON.",
     )
 
     match_diff_parser = match_subparsers.add_parser(
@@ -1633,6 +1695,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             statuses,
             mobile_crosswalk=load_json(args.crosswalk),
             port_relevant_only=args.scope == "port",
+            manifest_path=args.manifest,
         )
 
         states = _parse_csv(args.state)
@@ -1734,6 +1797,16 @@ def main(argv: Sequence[str] | None = None) -> int:
                 if args.record
                 else None
             )
+            baseline_epoch = (
+                scratch_experiment_epoch(
+                    result.baseline.config,
+                    args.match_root,
+                    image_path=image_path,
+                    manifest_path=args.manifest,
+                )
+                if args.record
+                else None
+            )
         except Exception as error:  # noqa: BLE001
             print(
                 f"probe failed: {str(error).splitlines()[0]}",
@@ -1750,6 +1823,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "kind": "probe",
                 "recorded_at": datetime.now(UTC).isoformat(),
                 "dependency_sha256": dependency_sha256,
+                "baseline_epoch": baseline_epoch,
                 **payload,
             }
             with record_path.open("a", encoding="utf-8") as handle:
@@ -1819,6 +1893,16 @@ def main(argv: Sequence[str] | None = None) -> int:
                 if args.record
                 else None
             )
+            baseline_epoch = (
+                scratch_experiment_epoch(
+                    sweep.baseline.config,
+                    args.match_root,
+                    image_path=image_path,
+                    manifest_path=args.manifest,
+                )
+                if args.record
+                else None
+            )
         except Exception as error:  # noqa: BLE001
             print(
                 f"mutation sweep failed: {str(error).splitlines()[0]}",
@@ -1845,6 +1929,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "recorded_at": datetime.now(UTC).isoformat(),
                 "best_source_written_to": written_to,
                 "dependency_sha256": dependency_sha256,
+                "baseline_epoch": baseline_epoch,
                 **match_mutation.mutation_sweep_payload(sweep),
             }
             with record_path.open("a", encoding="utf-8") as handle:
@@ -1891,12 +1976,71 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         return 0
 
+    if args.command == "match" and args.match_command == "experiment-audit":
+        try:
+            if len(args.record) != len(set(args.record)):
+                raise ValueError("--record values must be unique")
+            config = load_scratch_config(args.directory.resolve())
+            path = config.directory / match_experiments.EXPERIMENT_FILE
+            current_epoch = scratch_experiment_epoch(
+                config,
+                args.match_root,
+                image_path=args.image,
+                manifest_path=args.manifest,
+            )
+            recorded_at = datetime.now(UTC).isoformat()
+            records = [
+                match_experiments.build_mutation_error_audit(
+                    path,
+                    target_record=target_record,
+                    current_epoch=current_epoch,
+                    reason=args.reason,
+                    recorded_at=recorded_at,
+                )
+                for target_record in args.record
+            ]
+            with path.open("a", encoding="utf-8") as handle:
+                for record in records:
+                    handle.write(
+                        json.dumps(
+                            record,
+                            separators=(",", ":"),
+                            sort_keys=True,
+                        )
+                        + "\n"
+                    )
+        except (OSError, TypeError, ValueError) as error:
+            print(
+                f"experiment audit failed: {str(error).splitlines()[0]}",
+                file=sys.stderr,
+            )
+            return 2
+        if args.json:
+            print(json.dumps(records, indent=2, sort_keys=True))
+        else:
+            targets = ",".join(str(record["target_record"]) for record in records)
+            print(
+                f"audited={path} records={targets} "
+                "classification=invalid-mutation-plan"
+            )
+        return 0
+
     if args.command == "match" and args.match_command == "experiments":
         try:
+            experiment_paths = match_experiments.find_experiment_logs(
+                args.match_root,
+                args.scratch,
+            )
             payload = match_experiments.summarize_experiments(
                 args.match_root,
                 scratches=args.scratch,
                 sort_by=args.sort,
+                current_epochs=scratch_experiment_epochs(
+                    args.match_root,
+                    directories=[path.parent for path in experiment_paths],
+                    image_path=args.image,
+                    manifest_path=args.manifest,
+                ),
             )
             mutation_specs = (
                 match_experiments.audit_mutation_specs(
@@ -1925,6 +2069,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(match_experiments.render_experiment_summary(payload))
             for error in payload["errors"]:
                 print(str(error), file=sys.stderr)
+            for error in payload["strict_errors"]:
+                print(str(error), file=sys.stderr)
             if mutation_specs is not None:
                 print(
                     "mutation-specs "
@@ -1936,7 +2082,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 )
                 for error in mutation_specs["errors"]:
                     print(str(error), file=sys.stderr)
-        if args.check and payload["errors"]:
+        if (args.check or args.strict) and payload["errors"]:
+            return 1
+        if args.strict and payload["strict_errors"]:
             return 1
         if mutation_specs is not None and mutation_specs["errors"]:
             return 1
@@ -1965,6 +2113,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     type_findings=type_findings,
                     manifest=manifest,
                     image_path=image_path,
+                    manifest_path=args.manifest,
                 ),
                 encoding="utf-8",
             )

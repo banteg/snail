@@ -17,8 +17,10 @@ import os
 import re
 import struct
 from collections import Counter
+from collections.abc import Collection
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from dataclasses import dataclass, field, replace
+from functools import cache
 from pathlib import Path
 from threading import Lock
 from typing import Any
@@ -3165,11 +3167,19 @@ def scratch_recovery(status: ScratchStatus) -> str:
 @dataclass(frozen=True, slots=True)
 class TriageExperimentEvidence:
     records: int = 0
+    current_records: int = 0
+    historical_records: int = 0
+    unversioned_records: int = 0
     mutation_sweeps: int = 0
     probes: int = 0
     evaluated_variants: int = 0
     unique_variants: int = 0
     unique_specs: int = 0
+    current_inconclusive_sweeps: int = 0
+    current_errored_variants: int = 0
+    audited_errored_variants: int = 0
+    mutation_error_audits: int = 0
+    strict_errors: int = 0
     flags: tuple[str, ...] = ()
     errors: int = 0
 
@@ -3220,6 +3230,26 @@ class TriageRow:
         if self.best_status is None or self.state == "match":
             return ()
         return self.best_status.config.residuals
+
+
+@dataclass(frozen=True, slots=True)
+class ResidualFrontierRow:
+    status: ScratchStatus
+    experiments: TriageExperimentEvidence = TriageExperimentEvidence()
+
+    @property
+    def evidence_state(self) -> str:
+        if not self.experiments.current_records:
+            return (
+                "historical-only"
+                if self.experiments.records
+                else "unexplored"
+            )
+        if self.experiments.strict_errors:
+            return "current-error"
+        if self.experiments.current_inconclusive_sweeps:
+            return "current-inconclusive"
+        return "current-active"
 
 
 @dataclass(frozen=True, slots=True)
@@ -3551,6 +3581,117 @@ def scratch_dependency_sha256(
     }
     encoded = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode()
     return hashlib.sha256(encoded).hexdigest()
+
+
+def _experiment_epoch_path_label(path: Path, match_root: Path) -> str:
+    resolved = path.resolve()
+    if resolved.is_relative_to(match_root):
+        return f"match/{resolved.relative_to(match_root).as_posix()}"
+    if resolved.is_relative_to(REPO_ROOT):
+        return f"repo/{resolved.relative_to(REPO_ROOT).as_posix()}"
+    return f"external/{resolved.name}"
+
+
+@cache
+def _experiment_epoch_file_sha256(
+    path: str,
+    mtime_ns: int,
+    size: int,
+) -> str:
+    del mtime_ns, size
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def scratch_experiment_epoch(
+    config: ScratchConfig,
+    match_root: Path = DEFAULT_MATCH_ROOT,
+    *,
+    image_path: Path | None = None,
+    manifest_path: Path = DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+) -> str:
+    """Hash the canonical inputs that determine one experiment baseline."""
+
+    match_root = match_root.resolve()
+    manifest_path = manifest_path.resolve()
+    if image_path is None:
+        manifest = load_function_symbol_manifest(manifest_path)
+        image_path = REPO_ROOT / manifest.primary_target
+    profile = {
+        "cflags": config.cflags,
+        "compiler": config.compiler,
+        "end_va": config.end_va,
+        "function": config.function,
+        "symbol": config.symbol,
+        "version": 1,
+    }
+    digest = hashlib.sha256(b"snail-scratch-experiment-epoch-v1\0")
+    digest.update(
+        json.dumps(profile, separators=(",", ":"), sort_keys=True).encode()
+    )
+    dependencies = {
+        path.resolve()
+        for path in _scratch_build_dependencies(config, match_root)
+    }
+    dependencies.update(
+        {
+            image_path.resolve(),
+            manifest_path,
+            DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH.resolve(),
+        }
+    )
+    for path in sorted(
+        dependencies,
+        key=lambda value: (
+            _experiment_epoch_path_label(value, match_root),
+            str(value),
+        ),
+    ):
+        digest.update(b"\0path\0")
+        digest.update(_experiment_epoch_path_label(path, match_root).encode())
+        try:
+            stat = path.stat()
+        except OSError:
+            digest.update(b"\0missing")
+        else:
+            digest.update(b"\0sha256\0")
+            digest.update(
+                _experiment_epoch_file_sha256(
+                    str(path),
+                    stat.st_mtime_ns,
+                    stat.st_size,
+                ).encode()
+            )
+    return digest.hexdigest()
+
+
+def scratch_experiment_epochs(
+    match_root: Path = DEFAULT_MATCH_ROOT,
+    *,
+    directories: Collection[Path] | None = None,
+    image_path: Path | None = None,
+    manifest_path: Path = DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+) -> dict[Path, str]:
+    """Return canonical experiment epochs keyed by resolved scratch directory."""
+
+    match_root = match_root.resolve()
+    selected = (
+        {directory.resolve() for directory in directories}
+        if directories is not None
+        else None
+    )
+    epochs: dict[Path, str] = {}
+    for conf_path in sorted(match_root.glob("scratches/*/scratch.conf")):
+        directory = conf_path.parent.resolve()
+        if selected is not None and directory not in selected:
+            continue
+        config = load_scratch_config(directory)
+        epochs[directory] = scratch_experiment_epoch(
+            config,
+            match_root,
+            image_path=image_path,
+            manifest_path=manifest_path,
+        )
+    return epochs
 
 
 def _scratch_object_is_current(
@@ -5241,6 +5382,9 @@ def _triage_status_rank(status: ScratchStatus) -> tuple[int, float, int, int, in
 
 def triage_experiment_evidence(
     status: ScratchStatus | None,
+    *,
+    image_path: Path | None = None,
+    manifest_path: Path = DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
 ) -> TriageExperimentEvidence:
     if status is None:
         return TriageExperimentEvidence()
@@ -5250,19 +5394,37 @@ def triage_experiment_evidence(
 
     from . import match_experiments
 
-    row, errors = match_experiments.summarize_experiment_log(
+    match_root = status.config.directory.parent.parent
+    row, issues = match_experiments.summarize_experiment_log(
         path,
-        match_root=status.config.directory.parent.parent,
+        match_root=match_root,
+        current_epoch=scratch_experiment_epoch(
+            status.config,
+            match_root,
+            image_path=image_path,
+            manifest_path=manifest_path,
+        ),
+        classify_epochs=True,
     )
     return TriageExperimentEvidence(
         records=int(row["records"]),
+        current_records=int(row.get("current_records", 0)),
+        historical_records=int(row.get("historical_records", 0)),
+        unversioned_records=int(row.get("unversioned_records", 0)),
         mutation_sweeps=int(row["mutation_sweeps"]),
         probes=int(row["probes"]),
         evaluated_variants=int(row["evaluated_variants"]),
         unique_variants=int(row["unique_variants"]),
         unique_specs=int(row["unique_specs"]),
+        current_inconclusive_sweeps=int(
+            row.get("current_inconclusive_sweeps", 0)
+        ),
+        current_errored_variants=int(row.get("current_errored_variants", 0)),
+        audited_errored_variants=int(row.get("audited_errored_variants", 0)),
+        mutation_error_audits=int(row.get("mutation_error_audits", 0)),
+        strict_errors=int(row.get("strict_errors", 0)),
         flags=tuple(str(flag) for flag in row["flags"]),
-        errors=len(errors),
+        errors=int(row.get("errors", len(issues))),
     )
 
 
@@ -5314,6 +5476,7 @@ def collect_triage_rows(
     *,
     mobile_crosswalk: dict | None = None,
     port_relevant_only: bool = True,
+    manifest_path: Path = DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
 ) -> list[TriageRow]:
     """Join scratch, experiment, and mobile evidence by native address."""
 
@@ -5384,7 +5547,11 @@ def collect_triage_rows(
                 ),
                 scratch_count=len(function_statuses),
                 best_status=best_status,
-                experiments=triage_experiment_evidence(best_status),
+                experiments=triage_experiment_evidence(
+                    best_status,
+                    image_path=image_path,
+                    manifest_path=manifest_path,
+                ),
                 mobile=_triage_mobile_evidence(
                     function.name,
                     entries_by_name,
@@ -5472,11 +5639,25 @@ def triage_row_payload(row: TriageRow) -> dict:
         "residuals": list(row.residuals),
         "experiments": {
             "records": row.experiments.records,
+            "current_records": row.experiments.current_records,
+            "historical_records": row.experiments.historical_records,
+            "unversioned_records": row.experiments.unversioned_records,
             "mutation_sweeps": row.experiments.mutation_sweeps,
             "probes": row.experiments.probes,
             "evaluated_variants": row.experiments.evaluated_variants,
             "unique_variants": row.experiments.unique_variants,
             "unique_specs": row.experiments.unique_specs,
+            "current_inconclusive_sweeps": (
+                row.experiments.current_inconclusive_sweeps
+            ),
+            "current_errored_variants": (
+                row.experiments.current_errored_variants
+            ),
+            "audited_errored_variants": (
+                row.experiments.audited_errored_variants
+            ),
+            "mutation_error_audits": row.experiments.mutation_error_audits,
+            "strict_errors": row.experiments.strict_errors,
             "flags": list(row.experiments.flags),
             "errors": row.experiments.errors,
         },
@@ -5497,6 +5678,207 @@ def triage_row_payload(row: TriageRow) -> dict:
             else None
         ),
     }
+
+
+def collect_residual_frontier_rows(
+    statuses: Collection[ScratchStatus],
+    *,
+    manifest: FunctionSymbolManifest | None = None,
+    image_path: Path | None = None,
+    manifest_path: Path = DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+) -> list[ResidualFrontierRow]:
+    """Select one best port-relevant non-exact scratch per native target."""
+
+    port_addresses = (
+        {
+            function.address
+            for function in manifest.functions
+            if function.is_port_relevant
+        }
+        if manifest is not None
+        else None
+    )
+    best_by_target: dict[int | str, ScratchStatus] = {}
+    for status in statuses:
+        if (
+            port_addresses is not None
+            and status.address
+            and status.address not in port_addresses
+        ):
+            continue
+        target: int | str = status.address or status.config.function
+        best = best_by_target.get(target)
+        if best is None or _triage_status_rank(status) > _triage_status_rank(best):
+            best_by_target[target] = status
+
+    rows = [
+        ResidualFrontierRow(
+            status=status,
+            experiments=triage_experiment_evidence(
+                status,
+                image_path=image_path,
+                manifest_path=manifest_path,
+            ),
+        )
+        for status in best_by_target.values()
+        if status.state in {"audit", "wip"}
+    ]
+    return sorted(
+        rows,
+        key=lambda row: (
+            -row.status.fuzzy_gap_bytes,
+            -row.status.target_size,
+            row.status.address,
+            row.status.config.function,
+        ),
+    )
+
+
+def residual_frontier_summary_payload(
+    rows: Collection[ResidualFrontierRow],
+) -> dict[str, Any]:
+    ordered = sorted(
+        rows,
+        key=lambda row: row.status.fuzzy_gap_bytes,
+        reverse=True,
+    )
+    total_gap = sum(row.status.fuzzy_gap_bytes for row in ordered)
+
+    def grouped(field: str) -> dict[str, dict[str, float | int]]:
+        labels: dict[str, list[ResidualFrontierRow]] = {}
+        for row in ordered:
+            if field == "evidence":
+                values = (row.evidence_state,)
+            elif field == "recovery":
+                values = (scratch_recovery(row.status),)
+            else:
+                values = row.status.config.residuals or ("unspecified",)
+            for value in values:
+                labels.setdefault(value, []).append(row)
+        return {
+            label: {
+                "functions": len(group_rows),
+                "fuzzy_gap_bytes": sum(
+                    row.status.fuzzy_gap_bytes for row in group_rows
+                ),
+            }
+            for label, group_rows in sorted(labels.items())
+        }
+
+    def top_share(limit: int) -> float:
+        if not total_gap:
+            return 0.0
+        return (
+            sum(row.status.fuzzy_gap_bytes for row in ordered[:limit])
+            / total_gap
+        )
+
+    return {
+        "functions": len(ordered),
+        "fuzzy_gap_bytes": total_gap,
+        "top_5_gap_share": top_share(5),
+        "top_10_gap_share": top_share(10),
+        "evidence": grouped("evidence"),
+        "recovery": grouped("recovery"),
+        "residuals": grouped("residuals"),
+    }
+
+
+def render_residual_frontier_markdown(
+    rows: Collection[ResidualFrontierRow],
+) -> list[str]:
+    if not rows:
+        return []
+    ordered = sorted(
+        rows,
+        key=lambda row: (
+            -row.status.fuzzy_gap_bytes,
+            -row.status.target_size,
+            row.status.address,
+        ),
+    )
+    summary = residual_frontier_summary_payload(ordered)
+    evidence = summary["evidence"]
+
+    def evidence_metric(label: str, key: str) -> float | int:
+        metrics = evidence.get(label, {})
+        return metrics.get(key, 0)
+
+    current_labels = (
+        "current-active",
+        "current-error",
+        "current-inconclusive",
+    )
+    current_functions = sum(
+        int(evidence_metric(label, "functions")) for label in current_labels
+    )
+    current_gap = sum(
+        float(evidence_metric(label, "fuzzy_gap_bytes"))
+        for label in current_labels
+    )
+    historical_functions = int(
+        evidence_metric("historical-only", "functions")
+    )
+    historical_gap = float(
+        evidence_metric("historical-only", "fuzzy_gap_bytes")
+    )
+    unexplored_functions = int(evidence_metric("unexplored", "functions"))
+    unexplored_gap = float(
+        evidence_metric("unexplored", "fuzzy_gap_bytes")
+    )
+
+    lines = [
+        "## Residual frontier",
+        "",
+        (
+            f"**{summary['functions']}** non-exact scratch-backed functions hold "
+            f"**{summary['fuzzy_gap_bytes']:.0f} fuzzy-gap bytes**. The top 5 "
+            f"hold **{summary['top_5_gap_share']:.1%}** of that gap; the top 10 "
+            f"hold **{summary['top_10_gap_share']:.1%}**."
+        ),
+        "",
+        (
+            f"Current-baseline experiments cover **{current_functions} functions / "
+            f"{current_gap:.0f} gap bytes**; **{historical_functions} / "
+            f"{historical_gap:.0f}** are historical-only; **{unexplored_functions} / "
+            f"{unexplored_gap:.0f}** have no recorded experiments."
+        ),
+        "",
+        (
+            "Evidence labels are baseline-epoch aware. `historical-only` means "
+            "the recorded search belongs to older source, build, target, or "
+            "reference inputs; it must not suppress fresh analysis. Experiment "
+            "counts never label a lane stalled or exhausted. Recovery and residual "
+            "labels remain manual source assessments, not stopping rules."
+        ),
+        "",
+        (
+            "| rank | function | fuzzy gap | recovery | residual | evidence | "
+            "current/all | flags |"
+        ),
+        "|---:|---|---:|---|---|---|---:|---|",
+    ]
+    for rank, row in enumerate(ordered, start=1):
+        status = row.status
+        experiments = row.experiments
+        lines.append(
+            "| "
+            + " | ".join(
+                (
+                    str(rank),
+                    status.config.function,
+                    f"{status.fuzzy_gap_bytes:.0f}",
+                    scratch_recovery(status),
+                    ",".join(status.config.residuals) or "unspecified",
+                    row.evidence_state,
+                    f"{experiments.current_records}/{experiments.records}",
+                    ",".join(experiments.flags) or "-",
+                )
+            )
+            + " |"
+        )
+    lines.append("")
+    return lines
 
 
 def _triage_mobile_text(evidence: TriageMobileEvidence) -> str:
@@ -5572,8 +5954,11 @@ def render_triage_rows(
                 ",".join(row.residuals) or "-",
                 _triage_mobile_text(row.mobile),
                 row.mobile.source_object or "-",
-                (f"{row.experiments.records}/"
-                f"{row.experiments.unique_variants}"),
+                (
+                    f"{row.experiments.current_records}/"
+                    f"{row.experiments.records}/"
+                    f"{row.experiments.unique_variants}"
+                ),
                 ",".join(row.experiments.flags) or "-",
             )
         )
@@ -6175,6 +6560,7 @@ def render_status_markdown(
     manifest: FunctionSymbolManifest | None = None,
     image_path: Path | None = None,
     image: LoadedImage | None = None,
+    manifest_path: Path = DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
 ) -> str:
     lines = [
         "# Matching Status",
@@ -6211,6 +6597,16 @@ def render_status_markdown(
                 "are excluded from port-relevant totals.",
             ]
         )
+    frontier_lines = render_residual_frontier_markdown(
+        collect_residual_frontier_rows(
+            statuses,
+            manifest=manifest,
+            image_path=image_path,
+            manifest_path=manifest_path,
+        )
+    )
+    if frontier_lines:
+        lines.extend(["", *frontier_lines])
     rendered_rows = render_status_rows(statuses, manifest=manifest, image_path=image_path, image=image)
     for title, section_rows in _section_status_rows(rendered_rows):
         lines.extend(

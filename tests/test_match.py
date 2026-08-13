@@ -21,14 +21,17 @@ from snail.match import (
     ObjectFunction,
     ReferenceSymbol,
     ReferenceSymbolManifest,
+    ResidualFrontierRow,
     ScratchConfig,
     ScratchStatus,
+    TriageExperimentEvidence,
     align_basic_blocks,
     audit_masked_operands,
     build_basic_blocks,
     cfg_alignment_payload,
     common_prefix_length,
     compiler_listing_payload,
+    collect_residual_frontier_rows,
     diff_regions,
     disassemble_normalized_function,
     extract_object_function,
@@ -45,10 +48,13 @@ from snail.match import (
     parse_compiler_listing_spans,
     parse_compiler_listing_stack_layout,
     render_compiler_listing_result,
+    render_residual_frontier_markdown,
     render_status_markdown,
     render_status_rows,
     render_status_table,
     resolve_function_extent,
+    residual_frontier_summary_payload,
+    scratch_experiment_epoch,
     stack_frame_diagnostic_payload,
     TypeConsolidationFinding,
     _resolve_image_reference,
@@ -3304,6 +3310,158 @@ def test_render_status_rows_include_missing_manifest_functions() -> None:
         "| ⬜ | missing | 0x1002 | 2 | 0/2 | 0.00% | 0/2 | - |  | core |"
         in markdown
     )
+
+
+def test_residual_frontier_separates_current_history_without_stopping_labels(
+    tmp_path: Path,
+) -> None:
+    def status(
+        function: str,
+        address: int,
+        target_size: int,
+        ratio: float,
+        *,
+        port_scope: str = "core",
+    ) -> ScratchStatus:
+        return ScratchStatus(
+            config=ScratchConfig(
+                directory=tmp_path / function,
+                function=function,
+                compiler="msvc6.5",
+                cflags="/O2 /G5 /W3",
+                end_va=None,
+                symbol=None,
+                recovery="semantic-complete",
+                residuals=("compiler",),
+            ),
+            address=address,
+            target_size=target_size,
+            ratio=ratio,
+            prefix_instructions=0,
+            target_instructions=10,
+            candidate_instructions=10,
+            error=None,
+        )
+
+    current = status("current", 0x1000, 1000, 0.5)
+    historical = status("historical", 0x2000, 500, 0.5)
+    unexplored = status("unexplored", 0x3000, 100, 0.5)
+    platform = status("platform", 0x4000, 800, 0.5)
+    rows = [
+        ResidualFrontierRow(
+            current,
+            TriageExperimentEvidence(records=4, current_records=3),
+        ),
+        ResidualFrontierRow(
+            historical,
+            TriageExperimentEvidence(
+                records=9,
+                historical_records=9,
+                unversioned_records=9,
+                flags=("historical-only",),
+            ),
+        ),
+        ResidualFrontierRow(unexplored),
+    ]
+
+    assert rows[0].evidence_state == "current-active"
+    assert rows[1].evidence_state == "historical-only"
+    assert rows[2].evidence_state == "unexplored"
+    summary = residual_frontier_summary_payload(rows)
+    assert summary["fuzzy_gap_bytes"] == 800
+    assert summary["evidence"]["current-active"] == {
+        "functions": 1,
+        "fuzzy_gap_bytes": 500,
+    }
+    markdown = "\n".join(render_residual_frontier_markdown(rows))
+    assert "Current-baseline experiments cover **1 functions / 500 gap bytes**" in markdown
+    assert "**1 / 250** are historical-only" in markdown
+    assert "**1 / 50** have no recorded experiments" in markdown
+    assert "Experiment counts never label a lane stalled or exhausted" in markdown
+    assert "current-stalled" not in markdown
+
+    manifest = FunctionSymbolManifest(
+        name="test",
+        primary_target="test.exe",
+        reference_target="test.exe",
+        image_base=0x1000,
+        unwrapped_sha256="0" * 64,
+        source_database=None,
+        functions=(
+            FunctionSymbol(address=0x1000, name="current"),
+            FunctionSymbol(address=0x2000, name="historical"),
+            FunctionSymbol(address=0x3000, name="unexplored"),
+            FunctionSymbol(
+                address=0x4000,
+                name="platform",
+                port_scope="replaceable-platform",
+            ),
+        ),
+    )
+    collected = collect_residual_frontier_rows(
+        [current, historical, unexplored, platform],
+        manifest=manifest,
+    )
+    assert [row.status.config.function for row in collected] == [
+        "current",
+        "historical",
+        "unexplored",
+    ]
+
+
+def test_scratch_experiment_epoch_tracks_baseline_inputs(tmp_path: Path) -> None:
+    match_root = tmp_path / "match"
+    scratch = match_root / "scratches" / "foo"
+    scratch.mkdir(parents=True)
+    source = scratch / "scratch.cpp"
+    source.write_text("int foo() { return 1; }\n", encoding="utf-8")
+    (scratch / "scratch.conf").write_text(
+        "FUNCTION=foo COMPILER=msvc6.5 CFLAGS=/O2\n",
+        encoding="utf-8",
+    )
+    image = tmp_path / "target.exe"
+    image.write_bytes(b"target-a")
+    manifest_path = tmp_path / "functions.json"
+    manifest_path.write_text("manifest-a\n", encoding="utf-8")
+    config = load_scratch_config(scratch)
+
+    baseline = scratch_experiment_epoch(
+        config,
+        match_root,
+        image_path=image,
+        manifest_path=manifest_path,
+    )
+    source.write_text("int foo() { return 2; }\n", encoding="utf-8")
+    source_epoch = scratch_experiment_epoch(
+        config,
+        match_root,
+        image_path=image,
+        manifest_path=manifest_path,
+    )
+    source.write_text("int foo() { return 1; }\n", encoding="utf-8")
+    image.write_bytes(b"target-b")
+    image_epoch = scratch_experiment_epoch(
+        config,
+        match_root,
+        image_path=image,
+        manifest_path=manifest_path,
+    )
+    image.write_bytes(b"target-a")
+    manifest_path.write_text("manifest-b\n", encoding="utf-8")
+    manifest_epoch = scratch_experiment_epoch(
+        config,
+        match_root,
+        image_path=image,
+        manifest_path=manifest_path,
+    )
+
+    assert len({baseline, source_epoch, image_epoch, manifest_epoch}) == 4
+    assert all(len(epoch) == 64 for epoch in (
+        baseline,
+        source_epoch,
+        image_epoch,
+        manifest_epoch,
+    ))
 
 
 def test_non_portable_scopes_stay_visible_but_do_not_affect_port_totals(

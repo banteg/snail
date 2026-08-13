@@ -159,17 +159,23 @@ Useful analysis helpers:
   `--max-changes` for interactions and `--max-variants` or `--time-budget` to
   bound the search. Every variant compiles in an isolated temporary directory
   and is ranked by proof state, canonical score, reference debt, exact prefix,
-  and instruction-count shape. `--record` appends the full sweep to the
-  scratch's `experiments.jsonl`; `--write-best` writes only an improving
-  winner and refuses to overwrite the tracked `scratch.cpp`.
+  and instruction-count shape. `--record` appends the full sweep and its
+  canonical baseline epoch to the scratch's `experiments.jsonl`. The epoch
+  hashes the source/build inputs, target image, and curated symbol/reference
+  manifests so older experiments stay useful without masquerading as current
+  evidence. `--write-best` writes only an improving winner and refuses to
+  overwrite the tracked `scratch.cpp`.
 - `uv run snail match experiments` summarizes the append-only
   `experiments.jsonl` ledgers created by recorded probes and mutation sweeps.
   It reports improving/neutral/degrading variants, repeated source/compiler
-  combinations and specs, metric tradeoffs, and exact winners. Experiment
+  combinations and specs, metric tradeoffs, and exact winners. Current,
+  historical, and legacy unversioned records are reported separately;
+  incomplete or errored current sweeps are explicitly inconclusive. Experiment
   counts never close or reclassify a scratch. Repeat `--scratch <name>` to
   restrict the report, or run
-  `uv run snail match experiments --check --check-specs` for repository-wide
-  validation. `--check` rejects malformed ledger records. `--check-specs`
+  `uv run snail match experiments --check --strict --check-specs` for
+  repository-wide validation. `--check` rejects malformed ledger records;
+  `--strict` also rejects current-baseline evaluation errors. `--check-specs`
   treats a mutation plan whose exact current digest already appears in that
   scratch's ledger as historical, while an unreceipted current digest is an
   active input whose schema and exact `find` anchors must still resolve against
@@ -179,6 +185,19 @@ Useful analysis helpers:
   Do not label a lane `stalled`, `exhausted`, or `frozen` from an experiment
   count. Record the tested forms and technical residual instead; rewrite old
   stopping claims when encountered.
+
+  If manual review proves that compile failures came from an invalid mutation
+  plan, append a digest-bound audit rather than deleting or rewriting history:
+
+  ```sh
+  uv run snail match experiment-audit tools/match/scratches/example \
+    --record 12 --reason "replacement referenced an undeclared local"
+  ```
+
+  The errors remain visible and the sweep remains inconclusive, but the audited
+  plan error no longer fails `experiments --strict`. Do not use this for
+  compiler, environment, or unexplained evaluation failures; repair and rerun
+  those instead.
 - `snail match diff` also prints a masked-operand audit. Normalized `ADDR`
   operands still keep linker noise out of the score, but the audit compares
   target resolved references (function names, imports, strings, or raw image
