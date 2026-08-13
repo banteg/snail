@@ -707,10 +707,10 @@
 004370ea        if (game->level_mode != 3 || ((game->runtime_flags).w:1.b & 4) != 0)
 004370ec        runtime_cell_anchor->cell.anchor_position.y = -3f
 004370fa        runtime_cell_anchor->cell.anchor_position.z = cell_anchor_z
-00437100        struct Fringe** fringe_slot = &runtime_cell_anchor->cell.fringe_front
+00437100        struct cRFringe** fringe_slot = &runtime_cell_anchor->cell.fringe_front
 00437104        int32_t remaining_fringe_slots = 4
 00437135        int32_t k
-00437109        struct Fringe* fringe_object
+00437109        struct cRFringe* fringe_object
 00437109        fringe_object.b = *fringe_slot
 00437109        fringe_object:1.b = *(fringe_slot + 1)
 00437109        fringe_object:2.b = *(fringe_slot + 2)
@@ -721,7 +721,7 @@
     .y = 0f
     .x = 0
 }
-0043711a        struct Fringe* fringe_object_reloaded
+0043711a        struct cRFringe* fringe_object_reloaded
 0043711a        fringe_object_reloaded.b = *fringe_slot
 0043711a        fringe_object_reloaded:1.b = *(fringe_slot + 1)
 0043711a        fringe_object_reloaded:2.b = *(fringe_slot + 2)

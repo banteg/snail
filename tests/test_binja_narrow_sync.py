@@ -78,7 +78,7 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
     assert '"GalaxyStar": 0x2A0' in runtime_sync
     assert '"cRGalaxy": 0x10FA8' in runtime_sync
     assert '("Galaxy", "cRGalaxy")' in runtime_sync
-    assert 'renames=(("Galaxy", "cRGalaxy"),)' in path_sync
+    assert '("Galaxy", "cRGalaxy")' in path_sync
     assert '("0x1260020", "galaxy", "cRGalaxy")' in path_sync
     assert "GALAXY_ROUTE_CURSOR_USER_VAR_UPDATES" in runtime_sync
     assert (
@@ -4409,7 +4409,7 @@ def test_runtime_pool_constructor_replay_preserves_nested_owners() -> None:
         "RenderableBod* __thiscall initialize_noop_renderable_bod(RenderableBod* body)",
         "cRSubGame* __thiscall initialize_runtime_pools_and_path_template_bank(cRSubGame* game)",
         "SubRow* __thiscall initialize_track_row_runtime(SubRow* row)",
-        "Fringe* __thiscall initialize_fringe_object(Fringe* fringe)",
+        "cRFringe* __thiscall initialize_fringe_object(cRFringe* fringe)",
         "Object* __thiscall initialize_object_constructor_thunk(Object* object)",
     )
     for declaration in declarations:
@@ -6598,8 +6598,8 @@ def test_matcher_fringe_logo_and_galaxy_owners_preserve_recovered_vocabulary() -
     assert "typedef cRGalaxy Galaxy;" in galaxy_matcher
     assert "typedef cRGalaxyStar GalaxyStar;" in galaxy_matcher
 
-    assert "typedef struct Fringe {" in path_analysis
-    assert "typedef struct FringeManager {" in path_analysis
+    assert "typedef struct cRFringe {" in path_analysis
+    assert "typedef struct cRFringeManager {" in path_analysis
     assert "typedef struct Logo {" in logo_analysis
     assert "typedef struct LogoLetter {" in logo_analysis
     assert "typedef struct cRGalaxy {" in galaxy_analysis
@@ -7404,8 +7404,8 @@ def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
 
     assert '("0x24", "object", "Object*")' in path_sync
     assert '("BodBase", BOD_BASE_FIELD_UPDATES)' in path_sync
-    assert '("Fringe", FRINGE_FIELD_UPDATES)' in path_sync
-    assert '("FringeManager", FRINGE_MANAGER_FIELD_UPDATES)' in path_sync
+    assert '("cRFringe", FRINGE_FIELD_UPDATES)' in path_sync
+    assert '("cRFringeManager", FRINGE_MANAGER_FIELD_UPDATES)' in path_sync
     assert "Object* object;" in path_header
     assert "int SetObject(Object* object);" in matcher_header
     renderable_constructor = (
@@ -7547,20 +7547,20 @@ def test_fringe_replay_owns_authored_pool_and_callback_abi() -> None:
     assert '"--fringe-only"' in path_sync
     assert "verify_fringe_owner_sizes" in path_sync
     assert "POPULATE_FRINGE_USER_VAR_UPDATES" in path_sync
-    assert '"Fringe": 0x38' in path_sync
-    assert '"FringeManager": 0x5FB44' in path_sync
-    assert '"Fringe": 0x38' in ida_sync
-    assert '"FringeManager": 0x5FB44' in ida_sync
-    assert "Fringe_must_be_0x38" in path_header
-    assert "FringeManager_must_be_0x5fb44" in path_header
-    assert "Fringe objects[7000];" in path_header
-    assert "Fringe[7000]" in path_sync
+    assert '"cRFringe": 0x38' in path_sync
+    assert '"cRFringeManager": 0x5FB44' in path_sync
+    assert '"cRFringe": 0x38' in ida_sync
+    assert '"cRFringeManager": 0x5FB44' in ida_sync
+    assert "cRFringe_must_be_0x38" in path_header
+    assert "cRFringeManager_must_be_0x5fb44" in path_header
+    assert "cRFringe objects[7000];" in path_header
+    assert "cRFringe[7000]" in path_sync
 
     declarations = (
-        "Fringe* __thiscall initialize_fringe_object(Fringe* fringe)",
-        "void __thiscall refresh_fringe_object_draw_list(Fringe* fringe)",
-        "void __thiscall initialize_fringe_manager(FringeManager* manager)",
-        "Fringe* __thiscall allocate_fringe_object(FringeManager* manager)",
+        "cRFringe* __thiscall initialize_fringe_object(cRFringe* fringe)",
+        "void __thiscall refresh_fringe_object_draw_list(cRFringe* fringe)",
+        "void __thiscall initialize_fringe_manager(cRFringeManager* manager)",
+        "cRFringe* __thiscall allocate_fringe_object(cRFringeManager* manager)",
     )
     for declaration in declarations:
         assert declaration in path_sync
@@ -7568,8 +7568,8 @@ def test_fringe_replay_owns_authored_pool_and_callback_abi() -> None:
         assert declaration + ";" in normalized_header
 
     for field_name in ("fringe_front", "fringe_right", "fringe_left", "fringe_back"):
-        assert f'"{field_name}", "Fringe*"' in path_sync
-        assert f"Fringe* {field_name};" in path_header
+        assert f'"{field_name}", "cRFringe*"' in path_sync
+        assert f"cRFringe* {field_name};" in path_header
 
     for address in ("0x408650", "0x434BE0", "0x439B00", "0x447090", "0x4470A0"):
         assert address in ida_sync
@@ -7579,6 +7579,13 @@ def test_fringe_replay_owns_authored_pool_and_callback_abi() -> None:
     assert "class cRFringeManager" in fringe_header
     assert "typedef cRFringeManager FringeManager;" in fringe_header
     assert "cRFringe objects[7000];" in fringe_header
+    assert '("Fringe", "cRFringe")' in path_sync
+    assert '("FringeManager", "cRFringeManager")' in path_sync
+    assert "migrate_equivalent_struct_aliases" in ida_sync
+    assert '("Fringe", "cRFringe", 0x38)' in ida_sync
+    assert '("FringeManager", "cRFringeManager", 0x5FB44)' in ida_sync
+    assert "typedef struct Fringe {" not in path_header
+    assert "typedef struct FringeManager {" not in path_header
     assert "FringeObject" not in fringe_fwd
     for canonical_text in (path_sync, ida_sync, path_header):
         assert "FringeObject" not in canonical_text
@@ -9816,10 +9823,10 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         ("runtime_row_anchor", "RuntimeRowStrideAnchor*"),
         ("runtime_cell_anchor", "RuntimeCellStrideAnchor*"),
         ("stamped_row", "SubRow*"),
-        ("fringe_slot", "Fringe**"),
+        ("fringe_slot", "cRFringe**"),
         ("remaining_fringe_slots", "int32_t"),
-        ("fringe_object", "Fringe*"),
-        ("fringe_object_reloaded", "Fringe*"),
+        ("fringe_object", "cRFringe*"),
+        ("fringe_object_reloaded", "cRFringe*"),
         ("fringe_position", "Vec3*"),
     ):
         assert f'"{name}"' in binja_source
@@ -9873,11 +9880,11 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     for selector, declaration in (
         (
             "initialize_fringe_manager",
-            "void __thiscall initialize_fringe_manager(FringeManager* manager)",
+            "void __thiscall initialize_fringe_manager(cRFringeManager* manager)",
         ),
         (
             "allocate_fringe_object",
-            "Fringe* __thiscall allocate_fringe_object(FringeManager* manager)",
+            "cRFringe* __thiscall allocate_fringe_object(cRFringeManager* manager)",
         ),
     ):
         assert f'"{selector}"' in binja_source
@@ -10044,9 +10051,9 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     ):
         assert definition_address in ida_path_sync
     for name, declaration in (
-        ("fringe_slot", "Fringe **fringe_slot;"),
+        ("fringe_slot", "cRFringe **fringe_slot;"),
         ("remaining_fringe_slots", "int32_t remaining_fringe_slots;"),
-        ("fringe_object", "Fringe *fringe_object;"),
+        ("fringe_object", "cRFringe *fringe_object;"),
         ("fringe_position", "Vec3 *fringe_position;"),
     ):
         assert f'"{name}"' in ida_path_sync
@@ -10080,10 +10087,10 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         ("row", "SubRow *row;"),
         ("cell", "cRSubLoc *cell;"),
         ("row_cursor", "SubRow *row_cursor;"),
-        ("fringe_front_new", "Fringe *fringe_front_new;"),
-        ("fringe_right_new", "Fringe *fringe_right_new;"),
-        ("fringe_left_new", "Fringe *fringe_left_new;"),
-        ("fringe_back_new", "Fringe *fringe_back_new;"),
+        ("fringe_front_new", "cRFringe *fringe_front_new;"),
+        ("fringe_right_new", "cRFringe *fringe_right_new;"),
+        ("fringe_left_new", "cRFringe *fringe_left_new;"),
+        ("fringe_back_new", "cRFringe *fringe_back_new;"),
     ):
         assert f'"{name}"' in ida_path_sync
         assert f'"{declaration}"' in ida_path_sync
@@ -16093,7 +16100,7 @@ def test_track_cache_builder_lifetime_replay_stays_guarded() -> None:
 
     for owner_name, expected_size in (
         ("Vec3", "0x0C"),
-        ("Fringe", "0x38"),
+        ("cRFringe", "0x38"),
         ("cRSubLoc", "0x54"),
         ("TextureRef", "0xA4"),
         ("ObjectFaceQuad", "0x30"),
@@ -16128,14 +16135,14 @@ def test_track_cache_builder_lifetime_replay_stays_guarded() -> None:
             240,
             68,
             "fringe_object",
-            "Fringe*",
+            "cRFringe*",
         ),
         (
             "RegisterVariableSourceType",
             305,
             67,
             "fringe_texture_source",
-            "Fringe*",
+            "cRFringe*",
         ),
         (
             "RegisterVariableSourceType",
@@ -17996,8 +18003,8 @@ def test_track_fringe_builder_lifetime_replay_stays_guarded() -> None:
     for owner_name, expected_size in (
         ("SubRow", "0xF4"),
         ("cRSubLoc", "0x54"),
-        ("Fringe", "0x38"),
-        ("FringeManager", "0x5FB44"),
+        ("cRFringe", "0x38"),
+        ("cRFringeManager", "0x5FB44"),
         ("RootTrackFringeBodCatalog", "0x3F00"),
         ("RootBodCatalog", "0x4D00"),
         ("cRSubGame", "0x1272838"),
@@ -18005,13 +18012,13 @@ def test_track_fringe_builder_lifetime_replay_stays_guarded() -> None:
         assert f'"{owner_name}": {expected_size}' in replay
 
     for struct_name, offset, field_name, field_type in (
-        ("cRSubLoc", "0x44", "fringe_front", "Fringe*"),
-        ("cRSubLoc", "0x48", "fringe_right", "Fringe*"),
-        ("cRSubLoc", "0x4C", "fringe_left", "Fringe*"),
-        ("cRSubLoc", "0x50", "fringe_back", "Fringe*"),
-        ("Fringe", "0x00", "bod", "BodBase"),
-        ("FringeManager", "0x00", "objects", "Fringe[7000]"),
-        ("FringeManager", "0x5FB40", "count", "int32_t"),
+        ("cRSubLoc", "0x44", "fringe_front", "cRFringe*"),
+        ("cRSubLoc", "0x48", "fringe_right", "cRFringe*"),
+        ("cRSubLoc", "0x4C", "fringe_left", "cRFringe*"),
+        ("cRSubLoc", "0x50", "fringe_back", "cRFringe*"),
+        ("cRFringe", "0x00", "bod", "BodBase"),
+        ("cRFringeManager", "0x00", "objects", "cRFringe[7000]"),
+        ("cRFringeManager", "0x5FB40", "count", "int32_t"),
         (
             "RootTrackFringeBodCatalog",
             "0x00",
@@ -18028,7 +18035,7 @@ def test_track_fringe_builder_lifetime_replay_stays_guarded() -> None:
             "cRSubGame",
             "0x35BBBC",
             "fringe_manager",
-            "FringeManager",
+            "cRFringeManager",
         ),
         (
             "cRSubGame",
@@ -18075,7 +18082,7 @@ def test_track_fringe_builder_lifetime_replay_stays_guarded() -> None:
             "front_edge_variant_b",
             "int32_t",
         ),
-        ("RegisterVariableSourceType", 355, 66, "front_fringe", "Fringe*"),
+        ("RegisterVariableSourceType", 355, 66, "front_fringe", "cRFringe*"),
         ("StackVariableSourceType", 0, -64, "front_color", "tColour"),
         (
             "RegisterVariableSourceType",
@@ -18084,7 +18091,7 @@ def test_track_fringe_builder_lifetime_replay_stays_guarded() -> None:
             "right_edge_variant_b",
             "int32_t",
         ),
-        ("RegisterVariableSourceType", 615, 66, "right_fringe", "Fringe*"),
+        ("RegisterVariableSourceType", 615, 66, "right_fringe", "cRFringe*"),
         ("StackVariableSourceType", 0, -48, "right_color", "tColour"),
         (
             "RegisterVariableSourceType",
@@ -18093,7 +18100,7 @@ def test_track_fringe_builder_lifetime_replay_stays_guarded() -> None:
             "left_edge_variant_b",
             "int32_t",
         ),
-        ("RegisterVariableSourceType", 875, 66, "left_fringe", "Fringe*"),
+        ("RegisterVariableSourceType", 875, 66, "left_fringe", "cRFringe*"),
         ("StackVariableSourceType", 0, -32, "left_color", "tColour"),
         (
             "RegisterVariableSourceType",
@@ -18102,7 +18109,7 @@ def test_track_fringe_builder_lifetime_replay_stays_guarded() -> None:
             "back_edge_variant_b",
             "int32_t",
         ),
-        ("RegisterVariableSourceType", 1135, 66, "back_fringe", "Fringe*"),
+        ("RegisterVariableSourceType", 1135, 66, "back_fringe", "cRFringe*"),
         ("StackVariableSourceType", 0, -16, "back_color", "tColour"),
     ):
         expected = (
@@ -18669,7 +18676,7 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
         ("BodNode", "0x10"),
         ("Vec3", "0x0C"),
         ("tColour", "0x10"),
-        ("Fringe", "0x38"),
+        ("cRFringe", "0x38"),
         ("SubSegment", "0x4220"),
         ("SubTracks", "0x1A5978"),
         ("cRSubLoc", "0x54"),
@@ -18687,12 +18694,12 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
         ("cRSubLoc", "0x28", "color", "tColour"),
         ("cRSubLoc", "0x3D", "open_edge_mask", "uint8_t"),
         ("cRSubLoc", "0x40", "lane_and_flags", "uint32_t"),
-        ("cRSubLoc", "0x44", "fringe_front", "Fringe*"),
+        ("cRSubLoc", "0x44", "fringe_front", "cRFringe*"),
         (
             "TrackRowCellFringeFrontStrideCursor",
             "0x00",
             "fringe_front",
-            "Fringe*",
+            "cRFringe*",
         ),
         ("SubRow", "0x90", "parcel_spawn_position", "Vec3"),
         ("SubRow", "0xA4", "primary_attachment_cell", "cRSubLoc*"),
@@ -18939,7 +18946,7 @@ def test_runtime_grid_clear_field_cursors_are_borrowed_and_fail_closed() -> None
 
     for marker in (
         "uint32_t lane_and_flags;",
-        "Fringe* fringe_front;",
+        "cRFringe* fringe_front;",
         "float parcel_spawn_y;",
         "BodBase attachment_body;",
         "SubSegment* source_segment;",
@@ -19046,7 +19053,7 @@ def test_runtime_grid_clear_field_cursors_are_borrowed_and_fail_closed() -> None
     ):
         assert any(marker in required for required in bn_health["required_substrings"])
     for old_shape in (
-        "struct Fringe** row_fringe_front_cursor",
+        "struct cRFringe** row_fringe_front_cursor",
         "int32_t* parcel_spawn_y_cursor",
         "uint32_t* lane_and_flags_cursor",
         "lane_and_flags_cursor = &lane_and_flags_cursor[0x15]",
@@ -19067,7 +19074,7 @@ def test_runtime_grid_clear_field_cursors_are_borrowed_and_fail_closed() -> None
     ):
         assert any(marker in required for required in ida_health["required_substrings"])
     for old_shape in (
-        "Fringe **row_fringe_front_cursor;",
+        "cRFringe **row_fringe_front_cursor;",
         "int32_t *parcel_spawn_y_cursor;",
         "uint32_t *lane_and_flags_cursor;",
         "lane_and_flags_cursor += 21",
@@ -19262,7 +19269,7 @@ def test_update_subgame_fringe_lifetime_replay_stays_guarded() -> None:
     for owner_name, expected_size in (
         ("BodNode", "0x10"),
         ("BodBase", "0x38"),
-        ("Fringe", "0x38"),
+        ("cRFringe", "0x38"),
         ("tColour", "0x10"),
         ("cRSubLoc", "0x54"),
         ("cRSubGame", "0x1272838"),
@@ -19274,11 +19281,11 @@ def test_update_subgame_fringe_lifetime_replay_stays_guarded() -> None:
         ("BodNode", "0x0C", "list_next", "BodNode*"),
         ("BodBase", "0x00", "bod", "BodNode"),
         ("BodBase", "0x28", "color", "tColour"),
-        ("Fringe", "0x00", "bod", "BodBase"),
+        ("cRFringe", "0x00", "bod", "BodBase"),
         ("tColour", "0x00", "r", "float"),
         ("tColour", "0x0C", "a", "float"),
-        ("cRSubLoc", "0x44", "fringe_front", "Fringe*"),
-        ("cRSubLoc", "0x50", "fringe_back", "Fringe*"),
+        ("cRSubLoc", "0x44", "fringe_front", "cRFringe*"),
+        ("cRSubLoc", "0x50", "fringe_back", "cRFringe*"),
         (
             "cRSubGame",
             "0x355B64",
@@ -19297,12 +19304,12 @@ def test_update_subgame_fringe_lifetime_replay_stays_guarded() -> None:
 
     for source_type, index, storage, name, variable_type in (
         ("StackVariableSourceType", 1730, -56, "fringe_slots_remaining", "uint32_t"),
-        ("RegisterVariableSourceType", 1738, 69, "fringe_slot_cursor", "Fringe**"),
-        ("RegisterVariableSourceType", 1738, 66, "current_fringe", "Fringe*"),
+        ("RegisterVariableSourceType", 1738, 69, "fringe_slot_cursor", "cRFringe**"),
+        ("RegisterVariableSourceType", 1738, 66, "current_fringe", "cRFringe*"),
         ("RegisterVariableSourceType", 1785, 67, "fringe_list_next", "BodNode*"),
         ("RegisterVariableSourceType", 1795, 67, "fringe_list_flags", "uint32_t"),
         ("RegisterVariableSourceType", 1821, 66, "skirt_color", "tColour*"),
-        ("RegisterVariableSourceType", 1826, 68, "reloaded_fringe", "Fringe*"),
+        ("RegisterVariableSourceType", 1826, 68, "reloaded_fringe", "cRFringe*"),
         ("RegisterVariableSourceType", 1830, 68, "fringe_color", "tColour*"),
     ):
         expected = (

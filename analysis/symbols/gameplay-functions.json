@@ -3202,7 +3202,7 @@
       "aliases": [
         "FringeEdgeTrack"
       ],
-      "description": "Windows `void cRSubGame::FringeEdgeTrack()`: allocates directional `Fringe` objects around runtime cRSubLoc cells for the post-build renderer, borrowing them from the embedded 7000-entry cRFringeManager pool at `data_4df904 + 0x3d01d4`. Android and iOS preserve the owner, method name, and void contract."
+      "description": "Windows `void cRSubGame::FringeEdgeTrack()`: allocates directional `cRFringe` objects around runtime cRSubLoc cells for the post-build renderer, borrowing them from the embedded 7000-entry cRFringeManager pool at `data_4df904 + 0x3d01d4`. Android and iOS preserve the owner, method name, and void contract."
     },
     {
       "address": "0x435180",

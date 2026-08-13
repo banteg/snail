@@ -21,7 +21,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 EXPECTED_TYPE_WIDTHS = {
     "BodNode": 0x10,
     "BodBase": 0x38,
-    "Fringe": 0x38,
+    "cRFringe": 0x38,
     "tColour": 0x10,
     "cRSubLoc": 0x54,
     "cRSubGame": 0x1272838,
@@ -37,7 +37,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x00: ("bod", "BodNode"),
         0x28: ("color", "tColour"),
     },
-    "Fringe": {
+    "cRFringe": {
         0x00: ("bod", "BodBase"),
     },
     "tColour": {
@@ -47,10 +47,10 @@ EXPECTED_STRUCT_FIELDS = {
         0x0C: ("a", "float"),
     },
     "cRSubLoc": {
-        0x44: ("fringe_front", "Fringe*"),
-        0x48: ("fringe_right", "Fringe*"),
-        0x4C: ("fringe_left", "Fringe*"),
-        0x50: ("fringe_back", "Fringe*"),
+        0x44: ("fringe_front", "cRFringe*"),
+        0x48: ("fringe_right", "cRFringe*"),
+        0x4C: ("fringe_left", "cRFringe*"),
+        0x50: ("fringe_back", "cRFringe*"),
     },
     "cRSubGame": {
         0x355B64: ("fringe_attachment_list_head", "BodBase"),
@@ -58,8 +58,8 @@ EXPECTED_STRUCT_FIELDS = {
     },
 }
 
-# update_subgame scans the four directional Fringe pointers embedded in each
-# cRSubLoc. The cell owns the pointer slots, while FringeManager retains the
+# update_subgame scans the four directional cRFringe pointers embedded in each
+# cRSubLoc. The cell owns the pointer slots, while cRFringeManager retains the
 # backing objects. Each non-null object is borrowed into the runtime attachment
 # list and then reloaded after get_track_skirt_color before its BodBase colour is
 # copied. Keep that explicit reload: the matching scratch proves it is part of
@@ -79,7 +79,7 @@ UPDATE_SUBGAME_FRINGE_USER_VAR_UPDATES = (
         1738,
         69,
         "fringe_slot_cursor",
-        "Fringe**",
+        "cRFringe**",
     ),
     (
         "update_subgame",
@@ -87,7 +87,7 @@ UPDATE_SUBGAME_FRINGE_USER_VAR_UPDATES = (
         1738,
         66,
         "current_fringe",
-        "Fringe*",
+        "cRFringe*",
     ),
     (
         "update_subgame",
@@ -119,7 +119,7 @@ UPDATE_SUBGAME_FRINGE_USER_VAR_UPDATES = (
         1826,
         68,
         "reloaded_fringe",
-        "Fringe*",
+        "cRFringe*",
     ),
     (
         "update_subgame",
@@ -135,7 +135,7 @@ UPDATE_SUBGAME_FRINGE_USER_VAR_UPDATES = (
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay only the directional Fringe slot, attachment-list, and "
+            "Replay only the directional cRFringe slot, attachment-list, and "
             "colour-copy lifetimes in update_subgame."
         )
     )
@@ -148,7 +148,7 @@ def parse_args() -> argparse.Namespace:
         "--header",
         type=Path,
         default=DEFAULT_HEADER_PATH,
-        help="Header documenting the canonical runtime-cell and Fringe owners.",
+        help="Header documenting the canonical runtime-cell and cRFringe owners.",
     )
     return parser.parse_args()
 
@@ -183,7 +183,7 @@ def verify_owner_layouts(target: str) -> dict[str, object]:
                 )
     if mismatches:
         raise RuntimeError(
-            "canonical update-subgame Fringe ownership layout is not current:\n"
+            "canonical update-subgame cRFringe ownership layout is not current:\n"
             + "\n".join(mismatches)
         )
     return {

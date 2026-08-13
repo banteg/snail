@@ -64,8 +64,8 @@ FRINGE_SYMBOL_UPDATES = (
 )
 
 FRINGE_OWNER_SIZES = {
-    "Fringe": 0x38,
-    "FringeManager": 0x5FB44,
+    "cRFringe": 0x38,
+    "cRFringeManager": 0x5FB44,
 }
 
 NUKE_OWNER_SIZES = {
@@ -539,8 +539,8 @@ REQUIRED_HEADER_STRUCTS = (
     "Quaternion",
     "RenderableBod",
     "TrackRenderCacheSlot",
-    "Fringe",
-    "FringeManager",
+    "cRFringe",
+    "cRFringeManager",
     "cRSMTracks",
     "Movie",
     "Face",
@@ -692,7 +692,7 @@ def verify_bod_core_owner_sizes(*, target: str) -> dict[str, object]:
 
 
 def verify_fringe_owner_sizes(*, target: str) -> dict[str, object]:
-    """Fail closed before applying method ABIs to incompatible Fringe owners."""
+    """Fail closed before applying method ABIs to incompatible cRFringe owners."""
     observed = current_type_widths(
         REPO_ROOT,
         target=target,
@@ -704,7 +704,7 @@ def verify_fringe_owner_sizes(*, target: str) -> dict[str, object]:
         if observed.get(name) != expected
     }
     if failures:
-        raise RuntimeError(f"Fringe owner size mismatch: {failures}")
+        raise RuntimeError(f"cRFringe owner size mismatch: {failures}")
     return {
         "op": "owner_size_verify",
         "status": "verified",
@@ -2471,7 +2471,7 @@ POPULATE_RUNTIME_USER_VAR_UPDATES = (
         4697,
         67,
         "fringe_slot",
-        "Fringe**",
+        "cRFringe**",
     ),
     (
         "populate_runtime_track_cells_from_segments",
@@ -2487,7 +2487,7 @@ POPULATE_RUNTIME_USER_VAR_UPDATES = (
         4697,
         66,
         "fringe_object",
-        "Fringe*",
+        "cRFringe*",
     ),
     (
         "populate_runtime_track_cells_from_segments",
@@ -2495,7 +2495,7 @@ POPULATE_RUNTIME_USER_VAR_UPDATES = (
         4714,
         66,
         "fringe_object_reloaded",
-        "Fringe*",
+        "cRFringe*",
     ),
     (
         "populate_runtime_track_cells_from_segments",
@@ -2869,7 +2869,7 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x35bb90", "lives_icon_widget", "FrontendWidget*"),
     ("0x35bb94", "lives_text_widget", "FrontendWidget*"),
     ("0x35bb98", "life_stock_widgets", "FrontendWidget*[0x9]"),
-    ("0x35bbbc", "fringe_manager", "FringeManager"),
+    ("0x35bbbc", "fringe_manager", "cRFringeManager"),
     ("0x3bb700", "blink_random_index", "int32_t"),
     ("0x3bb704", "blink_random_samples", "float[0x18]"),
     ("0x3bb764", "player", "Player"),
@@ -3012,7 +3012,7 @@ FRINGE_FIELD_UPDATES = (
 )
 
 FRINGE_MANAGER_FIELD_UPDATES = (
-    ("0x00000", "objects", "Fringe[7000]"),
+    ("0x00000", "objects", "cRFringe[7000]"),
     ("0x5fb40", "count", "int32_t"),
 )
 
@@ -3027,10 +3027,10 @@ SUB_LOC_FIELD_UPDATES = (
     ("0x3c", "tile_id", "SubLocTileId"),
     ("0x3d", "open_edge_mask", "uint8_t"),
     ("0x40", "lane_and_flags", "uint32_t"),
-    ("0x44", "fringe_front", "Fringe*"),
-    ("0x48", "fringe_right", "Fringe*"),
-    ("0x4c", "fringe_left", "Fringe*"),
-    ("0x50", "fringe_back", "Fringe*"),
+    ("0x44", "fringe_front", "cRFringe*"),
+    ("0x48", "fringe_right", "cRFringe*"),
+    ("0x4c", "fringe_left", "cRFringe*"),
+    ("0x50", "fringe_back", "cRFringe*"),
 )
 
 ROW_MODEL_FIELD_UPDATES = (
@@ -3719,19 +3719,19 @@ BOD_CORE_PROTO_UPDATES = (
 FRINGE_PROTO_UPDATES = (
     (
         "initialize_fringe_object",
-        "Fringe* __thiscall initialize_fringe_object(Fringe* fringe)",
+        "cRFringe* __thiscall initialize_fringe_object(cRFringe* fringe)",
     ),
     (
         "refresh_fringe_object_draw_list",
-        "void __thiscall refresh_fringe_object_draw_list(Fringe* fringe)",
+        "void __thiscall refresh_fringe_object_draw_list(cRFringe* fringe)",
     ),
     (
         "initialize_fringe_manager",
-        "void __thiscall initialize_fringe_manager(FringeManager* manager)",
+        "void __thiscall initialize_fringe_manager(cRFringeManager* manager)",
     ),
     (
         "allocate_fringe_object",
-        "Fringe* __thiscall allocate_fringe_object(FringeManager* manager)",
+        "cRFringe* __thiscall allocate_fringe_object(cRFringeManager* manager)",
     ),
 )
 
@@ -5073,7 +5073,7 @@ def parse_args() -> argparse.Namespace:
         "--fringe-only",
         action="store_true",
         help=(
-            "Replay only the authored Fringe/FringeManager layouts, borrowed "
+            "Replay only the authored cRFringe/cRFringeManager layouts, borrowed "
             "cell pointers, and lifecycle method ABIs."
         ),
     )
@@ -5522,6 +5522,16 @@ def main() -> int:
         )
 
     if args.fringe_only:
+        operations.extend(
+            apply_type_renames(
+                REPO_ROOT,
+                target=args.target,
+                renames=(
+                    ("Fringe", "cRFringe"),
+                    ("FringeManager", "cRFringeManager"),
+                ),
+            )
+        )
         operations.append(
             types_declare_if_missing(
                 REPO_ROOT,
@@ -5548,8 +5558,8 @@ def main() -> int:
                 REPO_ROOT,
                 target=args.target,
                 struct_updates=(
-                    ("Fringe", FRINGE_FIELD_UPDATES),
-                    ("FringeManager", FRINGE_MANAGER_FIELD_UPDATES),
+                    ("cRFringe", FRINGE_FIELD_UPDATES),
+                    ("cRFringeManager", FRINGE_MANAGER_FIELD_UPDATES),
                     ("cRSubLoc", SUB_LOC_FIELD_UPDATES),
                 ),
                 proto_updates=FRINGE_PROTO_UPDATES,
@@ -6034,7 +6044,11 @@ def main() -> int:
             apply_type_renames(
                 REPO_ROOT,
                 target=args.target,
-                renames=(("Galaxy", "cRGalaxy"),),
+                renames=(
+                    ("Galaxy", "cRGalaxy"),
+                    ("Fringe", "cRFringe"),
+                    ("FringeManager", "cRFringeManager"),
+                ),
             )
         )
         operations.append(
@@ -6192,8 +6206,8 @@ def main() -> int:
                 ("TextureRef", TEXTURE_REF_FIELD_UPDATES),
                 ("SnailVisual", SNAIL_VISUAL_FIELD_UPDATES),
                 ("BodBase", BOD_BASE_FIELD_UPDATES),
-                ("Fringe", FRINGE_FIELD_UPDATES),
-                ("FringeManager", FRINGE_MANAGER_FIELD_UPDATES),
+                ("cRFringe", FRINGE_FIELD_UPDATES),
+                ("cRFringeManager", FRINGE_MANAGER_FIELD_UPDATES),
                 ("cRSubLoc", SUB_LOC_FIELD_UPDATES),
                 ("RowModel", ROW_MODEL_FIELD_UPDATES),
                 ("SubRow", SUB_ROW_FIELD_UPDATES),

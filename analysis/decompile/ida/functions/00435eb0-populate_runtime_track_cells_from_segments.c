@@ -101,9 +101,9 @@ void __thiscall populate_runtime_track_cells_from_segments(cRSubGame *game)
   tColour *track_skirt_color; // eax
   uint32_t v96; // eax
   SubLocTileId v97; // al
-  Fringe **fringe_slot; // ecx
+  cRFringe **fringe_slot; // ecx
   int32_t remaining_fringe_slots; // edx
-  Fringe *fringe_object; // eax
+  cRFringe *fringe_object; // eax
   Vec3 *fringe_position; // eax
   bool v102; // cc
   float upper_bound; // [esp+0h] [ebp-5Ch]

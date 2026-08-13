@@ -2,7 +2,7 @@
 /* function: update_subgame @ 0x438b90 */
 /* selector: update_subgame */
 
-// Runs the main gameplay subgame state machine, including the continuation-controlled galaxy or challenge-setup handoff, replay-backed level start or restart, pause and quit flow, HUD timing, camera updates, active gameplay tick, and forward runtime-row scan for pickups plus authored or ambient garbage/salt hazards. Generated garbage/salt spawns are suppressed while the live `Player::click_start.state` lane at +0x120 equals 2. Its eight ring-speed loads resolve exactly to `cRSubGame::runtime_rows[row].ring_speed` (`+0x5ccac8 + row * 0xf4 + 0xe8`); Android and iOS independently pass the corresponding current-row scalar to `cRSubGame::AddRing`. Cross-port symbols match this helper to `cRSubGame::AI()`.
+// Runs the main gameplay subgame state machine, including the continuation-controlled galaxy or challenge-setup handoff, replay-backed level start or restart, pause and quit flow, HUD timing, camera updates, active gameplay tick, and forward runtime-row scan for pickups plus authored or ambient garbage/salt hazards. Generated garbage/salt spawns are suppressed while the live `cRSubGoldy::click_start.state` lane at +0x120 equals 2. Its eight ring-speed loads resolve exactly to `cRSubGame::runtime_rows[row].ring_speed` (`+0x5ccac8 + row * 0xf4 + 0xe8`); Android and iOS independently pass the corresponding current-row scalar to `cRSubGame::AddRing`. Cross-port symbols match this helper to `cRSubGame::AI()`.
 void __thiscall update_subgame(cRSubGame *game)
 {
   int32_t subgame_rebuild_selector; // eax
@@ -35,7 +35,7 @@ void __thiscall update_subgame(cRSubGame *game)
   BodBase *p_attachment_body; // eax
   struct BodNode *v30; // ecx
   uint32_t v31; // ecx
-  Fringe **p_fringe_front; // ebx
+  cRFringe **p_fringe_front; // ebx
   struct BodNode *v33; // eax
   struct BodNode *v34; // ecx
   uint32_t v35; // ecx
@@ -171,7 +171,7 @@ LABEL_25:
       {
         game->subgame_pause_gate = 0;
         game->resume_requested = 0;
-        set_sprite_manager_paused(&g_sprite_manager, 0);
+        set_sprite_manager_paused(&g_sprite_manager, false);
       }
       if ( game->selected_level_record_active != 0
         && game->pause_fade == 0.0
@@ -196,7 +196,7 @@ LABEL_25:
       {
         game->subgame_pause_gate = 1;
         game->subgame_state = 3;
-        set_sprite_manager_paused(&g_sprite_manager, 1u);
+        set_sprite_manager_paused(&g_sprite_manager, true);
         if ( game->player.click_start.state == CLICK_START_STATE_WAITING_FOR_START )
           hide_border_init(game->player.click_start.prompt);
         return;

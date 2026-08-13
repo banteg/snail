@@ -24,7 +24,7 @@ _FRINGE_REPAIR_TYPE_NAMES = {
     "cRSubGame*": "struct cRSubGame*",
     "SubRow*": "struct SubRow*",
     "cRSubLoc*": "struct cRSubLoc*",
-    "Fringe*": "struct Fringe*",
+    "cRFringe*": "struct cRFringe*",
     "tColour": "struct tColour",
 }
 

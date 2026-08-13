@@ -12,50 +12,50 @@
   "has_mismatches": false,
   "sync_ida_symbols": true,
   "binja_refreshed": true,
-  "binja_analysis_refreshed": false,
+  "binja_analysis_refreshed": true,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "load_galaxy_layout",
-      "address": "0x4088e0"
+      "name": "initialize_fringe_object",
+      "address": "0x408650"
     },
     {
-      "name": "destroy_galaxy",
-      "address": "0x408c10"
+      "name": "build_track_render_caches",
+      "address": "0x433220"
     },
     {
-      "name": "initialize_galaxy",
-      "address": "0x408cf0"
+      "name": "build_track_fringe_objects",
+      "address": "0x434be0"
     },
     {
-      "name": "update_galaxy",
-      "address": "0x4092f0"
+      "name": "populate_runtime_track_cells_from_segments",
+      "address": "0x435eb0"
     },
     {
-      "name": "draw_galaxy_line",
-      "address": "0x409b00"
+      "name": "initialize_subgame",
+      "address": "0x4374b0"
     },
     {
-      "name": "update_galaxy_route_record",
-      "address": "0x409bd0"
+      "name": "update_subgame",
+      "address": "0x438b90"
     },
     {
-      "name": "close_galaxy_route",
-      "address": "0x409bf0"
+      "name": "refresh_fringe_object_draw_list",
+      "address": "0x439b00"
     },
     {
-      "name": "open_galaxy_route",
-      "address": "0x409c50"
+      "name": "remove_sub_loc",
+      "address": "0x439bc0"
     },
     {
-      "name": "galaxy_border_bound",
-      "address": "0x40a0c0"
+      "name": "initialize_fringe_manager",
+      "address": "0x447090"
     },
     {
-      "name": "spawn_slug_hazard",
-      "address": "0x43dc80"
+      "name": "allocate_fringe_object",
+      "address": "0x4470a0"
     }
   ],
   "health_check_count": 1158,

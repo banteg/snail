@@ -52,7 +52,7 @@
 00433305        int32_t var_44_1 = 4
 0043338b        bool cond:2_1
 0043330d        struct cRSubGame* owner_subgame = manager->owner_subgame
-00433310        struct Fringe* fringe_object = *(owner_subgame + fringe_byte_offset)
+00433310        struct cRFringe* fringe_object = *(owner_subgame + fringe_byte_offset)
 00433315        if (fringe_object != 0)
 00433349        append_track_cache_object(manager, row_index, fringe_object->bod.object, &owner_subgame->runtime_cells[0][0].anchor_position + cell_byte_offset, manager->shared_vertex_buffers[4], &vertex_count_5, manager->shared_index_buffers[4], &index_count_4, manager->max_vertex_counts[4], manager->max_index_counts[4], manager->skirt_color_bgra, 0)
 00433373        *(&manager->slots[0][4].bod.object)[cache_row_index * 0x4b]->group_texture_refs = (*(manager->owner_subgame + fringe_byte_offset))->bod.object->facequads->texture_ref

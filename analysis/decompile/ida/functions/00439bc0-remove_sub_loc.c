@@ -19,9 +19,9 @@ void __thiscall remove_sub_loc(cRSubLoc *cell)
   BodList *v13; // ecx
   struct BodNode *v14; // eax
   struct BodNode *v15; // eax
-  Fringe **p_fringe_front; // esi
+  cRFringe **p_fringe_front; // esi
   int i; // edi
-  Fringe *v18; // eax
+  cRFringe *v18; // eax
   BodList *v19; // edx
   uint32_t v20; // ecx
   struct BodNode *v21; // ecx

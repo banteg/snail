@@ -55,10 +55,10 @@
 00434d2e        eax_10.b = neg.b(eax_10.b)
 00434d35        front_edge_variant_b = neg.d(sbb.d(eax_10, eax_10, temp2_1 != 0)) + 1
 00434d1c        front_edge_variant_b = 0
-00434d43        struct Fringe* front_fringe = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
+00434d43        struct cRFringe* front_fringe = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
 00434d4b        cell->fringe_front = front_fringe
 00434d70        set_bod_object(front_fringe, g_game_base->root_bod_catalog.fringe_catalog.entries[0][0][0][(edge_variant_a + fringe_family * 0xc) * 3 + front_edge_variant_b].object)
-00434d75        struct Fringe* fringe_front = cell->fringe_front
+00434d75        struct cRFringe* fringe_front = cell->fringe_front
 00434d81        fringe_front->bod.bod.list_flags |= 0x20
 00434d89        struct Vec3* eax_15 = &cell->fringe_front->bod.position
 00434d8c        eax_15->x = cell->anchor_position.x
@@ -89,10 +89,10 @@
 00434e32        eax_25.b = neg.b(eax_25.b)
 00434e39        right_edge_variant_b = neg.d(sbb.d(eax_25, eax_25, temp4_1 != 0)) + 1
 00434e20        right_edge_variant_b = 0
-00434e47        struct Fringe* right_fringe = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
+00434e47        struct cRFringe* right_fringe = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
 00434e4f        cell->fringe_right = right_fringe
 00434e74        set_bod_object(right_fringe, g_game_base->root_bod_catalog.fringe_catalog.entries[0][1][0][(edge_variant_a + fringe_family * 0xc) * 3 + right_edge_variant_b].object)
-00434e79        struct Fringe* fringe_right = cell->fringe_right
+00434e79        struct cRFringe* fringe_right = cell->fringe_right
 00434e85        fringe_right->bod.bod.list_flags |= 0x20
 00434e8d        struct Vec3* eax_30 = &cell->fringe_right->bod.position
 00434e90        eax_30->x = cell->anchor_position.x
@@ -123,10 +123,10 @@
 00434f36        eax_40.b = neg.b(eax_40.b)
 00434f3d        left_edge_variant_b = neg.d(sbb.d(eax_40, eax_40, temp6_1 != 0)) + 1
 00434f24        left_edge_variant_b = 0
-00434f4b        struct Fringe* left_fringe = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
+00434f4b        struct cRFringe* left_fringe = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
 00434f53        cell->fringe_left = left_fringe
 00434f78        set_bod_object(left_fringe, g_game_base->root_bod_catalog.fringe_catalog.entries[0][2][0][(edge_variant_a + fringe_family * 0xc) * 3 + left_edge_variant_b].object)
-00434f7d        struct Fringe* fringe_left = cell->fringe_left
+00434f7d        struct cRFringe* fringe_left = cell->fringe_left
 00434f89        fringe_left->bod.bod.list_flags |= 0x20
 00434f91        struct Vec3* eax_45 = &cell->fringe_left->bod.position
 00434f94        eax_45->x = cell->anchor_position.x
@@ -157,10 +157,10 @@
 0043503a        eax_55.b = neg.b(eax_55.b)
 00435041        back_edge_variant_b = neg.d(sbb.d(eax_55, eax_55, temp8_1 != 0)) + 1
 00435028        back_edge_variant_b = 0
-0043504f        struct Fringe* back_fringe = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
+0043504f        struct cRFringe* back_fringe = allocate_fringe_object(&g_game_base->subgame.fringe_manager)
 00435057        cell->fringe_back = back_fringe
 0043507c        set_bod_object(back_fringe, g_game_base->root_bod_catalog.fringe_catalog.entries[0][3][0][(edge_variant_a + fringe_family * 0xc) * 3 + back_edge_variant_b].object)
-00435081        struct Fringe* fringe_back = cell->fringe_back
+00435081        struct cRFringe* fringe_back = cell->fringe_back
 0043508d        fringe_back->bod.bod.list_flags |= 0x20
 00435095        struct Vec3* eax_60 = &cell->fringe_back->bod.position
 00435098        eax_60->x = cell->anchor_position.x
@@ -177,16 +177,16 @@
 004350db        edx_32->a = eax_61->a
 004350ec        row = row_cursor
 004350f3        if ((row->flags.b & 4) != 0)
-004350f5        struct Fringe* fringe_front_1 = cell->fringe_front
+004350f5        struct cRFringe* fringe_front_1 = cell->fringe_front
 004350ff        if (fringe_front_1 != 0)
 00435101        fringe_front_1->bod.bod.list_flags &= 0xffffffdf
-00435104        struct Fringe* fringe_back_1 = cell->fringe_back
+00435104        struct cRFringe* fringe_back_1 = cell->fringe_back
 00435109        if (fringe_back_1 != 0)
 0043510b        fringe_back_1->bod.bod.list_flags &= 0xffffffdf
-0043510e        struct Fringe* fringe_right_1 = cell->fringe_right
+0043510e        struct cRFringe* fringe_right_1 = cell->fringe_right
 00435113        if (fringe_right_1 != 0)
 00435115        fringe_right_1->bod.bod.list_flags &= 0xffffffdf
-00435118        struct Fringe* fringe_left_1 = cell->fringe_left
+00435118        struct cRFringe* fringe_left_1 = cell->fringe_left
 0043511d        if (fringe_left_1 != 0)
 0043511f        fringe_left_1->bod.bod.list_flags &= 0xffffffdf
 00435126        cell = &cell[1]

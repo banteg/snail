@@ -21,7 +21,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 EXPECTED_TYPE_WIDTHS = {
     "Vec3": 0x0C,
     "BodBase": 0x38,
-    "Fringe": 0x38,
+    "cRFringe": 0x38,
     "cRSubLoc": 0x54,
     "TextureRef": 0xA4,
     "ObjectFaceQuad": 0x30,
@@ -39,15 +39,15 @@ EXPECTED_STRUCT_FIELDS = {
         0x10: ("position", "Vec3"),
         0x24: ("object", "Object*"),
     },
-    "Fringe": {
+    "cRFringe": {
         0x00: ("bod", "BodBase"),
     },
     "cRSubLoc": {
         0x10: ("anchor_position", "Vec3"),
         0x24: ("object", "Object*"),
         0x40: ("lane_and_flags", "uint32_t"),
-        0x44: ("fringe_front", "Fringe*"),
-        0x50: ("fringe_back", "Fringe*"),
+        0x44: ("fringe_front", "cRFringe*"),
+        0x50: ("fringe_back", "cRFringe*"),
     },
     "ObjectFaceQuad": {
         0x0C: ("texture_ref", "TextureRef*"),
@@ -85,7 +85,7 @@ EXPECTED_STRUCT_FIELDS = {
 
 # The builder intentionally retains byte-offset induction variables while it
 # traverses the 3200-by-8 runtime-cell slab. Later lifetimes are narrower
-# borrows: one Fringe, the selected source/destination Objects and face banks,
+# borrows: one cRFringe, the selected source/destination Objects and face banks,
 # the typed staging/locked D3D streams, and Object** cursors over the five
 # family slots. The final scan reuses the same registers for a separate family
 # and cache-row reduction.
@@ -128,7 +128,7 @@ TRACK_CACHE_BUILDER_USER_VAR_UPDATES = (
         240,
         68,
         "fringe_object",
-        "Fringe*",
+        "cRFringe*",
     ),
     (
         "build_track_render_caches",
@@ -136,7 +136,7 @@ TRACK_CACHE_BUILDER_USER_VAR_UPDATES = (
         305,
         67,
         "fringe_texture_source",
-        "Fringe*",
+        "cRFringe*",
     ),
     (
         "build_track_render_caches",

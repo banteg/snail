@@ -233,10 +233,10 @@
 00439161        runtime_cell_anchor->cell.bod.list_flags |= 0x200
 0043913e        report_errorf("List ADDafter")
 0043924a        (*runtime_cell_anchor->cell.bod.vtable)()
-0043924c        struct Fringe** fringe_slot_cursor = &runtime_cell_anchor->cell.fringe_front
+0043924c        struct cRFringe** fringe_slot_cursor = &runtime_cell_anchor->cell.fringe_front
 00439252        uint32_t fringe_slots_remaining = 4
 004392d9        bool cond:8_1
-0043925a        struct Fringe* current_fringe = *fringe_slot_cursor
+0043925a        struct cRFringe* current_fringe = *fringe_slot_cursor
 0043925e        if (current_fringe != 0)
 0043926c        if (((current_fringe->bod.bod.list_flags).w:1.b & 2) == 0)
 0043927d        current_fringe->bod.bod.list_prev = &game->fringe_attachment_list_head

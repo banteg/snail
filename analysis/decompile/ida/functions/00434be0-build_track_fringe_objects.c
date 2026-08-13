@@ -2,7 +2,7 @@
 /* function: build_track_fringe_objects @ 0x434be0 */
 /* selector: build_track_fringe_objects */
 
-// Windows `void cRSubGame::FringeEdgeTrack()`: allocates directional `Fringe` objects around runtime cRSubLoc cells for the post-build renderer, borrowing them from the embedded 7000-entry cRFringeManager pool at `data_4df904 + 0x3d01d4`. Android and iOS preserve the owner, method name, and void contract.
+// Windows `void cRSubGame::FringeEdgeTrack()`: allocates directional `cRFringe` objects around runtime cRSubLoc cells for the post-build renderer, borrowing them from the embedded 7000-entry cRFringeManager pool at `data_4df904 + 0x3d01d4`. Android and iOS preserve the owner, method name, and void contract.
 void __thiscall build_track_fringe_objects(cRSubGame *game)
 {
   cRSubGame *v1; // ebp
@@ -13,17 +13,17 @@ void __thiscall build_track_fringe_objects(cRSubGame *game)
   int v6; // edi
   SubLocTileId tile_id; // al
   int v8; // ebp
-  Fringe *fringe_front_new; // eax
+  cRFringe *fringe_front_new; // eax
   int v10; // ebp
-  Fringe *fringe_right_new; // eax
+  cRFringe *fringe_right_new; // eax
   int v12; // ebp
-  Fringe *fringe_left_new; // eax
+  cRFringe *fringe_left_new; // eax
   int v14; // ebp
-  Fringe *fringe_back_new; // eax
-  Fringe *fringe_front; // eax
-  Fringe *fringe_back; // eax
-  Fringe *fringe_right; // eax
-  Fringe *fringe_left; // eax
+  cRFringe *fringe_back_new; // eax
+  cRFringe *fringe_front; // eax
+  cRFringe *fringe_back; // eax
+  cRFringe *fringe_right; // eax
+  cRFringe *fringe_left; // eax
   bool v20; // cc
   int i; // [esp+Ch] [ebp-4Ch]
   int v23; // [esp+10h] [ebp-48h]

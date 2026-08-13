@@ -40,10 +40,10 @@
 00439cc0        ecx_8->free_top = cell
 00439cc3        cell->bod.list_flags &= 0xfffffdff
 00439c8e        report_errorf("List remove NEXTBOD")
-00439cc6        struct Fringe** esi_1 = &cell->fringe_front
+00439cc6        struct cRFringe** esi_1 = &cell->fringe_front
 00439cc9        int32_t i_1 = 4
 00439d45        int32_t i
-00439cce        struct Fringe* fringe_front = (esi_1 - 0x44)->fringe_front
+00439cce        struct cRFringe* fringe_front = (esi_1 - 0x44)->fringe_front
 00439cda        if (fringe_front != 0 && ((fringe_front->bod.bod.list_flags).w:1.b & 2) != 0)
 00439ce2        struct BodList* edx_6 = &g_game_base->active_bod_list
 00439ce8        uint16_t list_flags_1 = (fringe_front->bod.bod.list_flags).w

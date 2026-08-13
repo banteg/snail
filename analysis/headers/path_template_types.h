@@ -141,10 +141,10 @@ typedef char RenderableBod_must_be_0x80[
 typedef RenderableBod cRBodPos;
 
 /* Authored cRFringe BOD stored inline by the shared fringe manager. */
-typedef struct Fringe {
+typedef struct cRFringe {
     BodBase bod;
-} Fringe;
-typedef char Fringe_must_be_0x38[(sizeof(Fringe) == 0x38) ? 1 : -1];
+} cRFringe;
+typedef char cRFringe_must_be_0x38[(sizeof(cRFringe) == 0x38) ? 1 : -1];
 
 typedef struct Player Player;
 typedef struct SubSegment SubSegment;
@@ -1208,12 +1208,12 @@ typedef struct SlugVoiceManager {
     float step;
 } SlugVoiceManager;
 
-typedef struct FringeManager {
-    Fringe objects[7000];
+typedef struct cRFringeManager {
+    cRFringe objects[7000];
     int32_t count;
-} FringeManager;
-typedef char FringeManager_must_be_0x5fb44[
-    (sizeof(FringeManager) == 0x5fb44) ? 1 : -1
+} cRFringeManager;
+typedef char cRFringeManager_must_be_0x5fb44[
+    (sizeof(cRFringeManager) == 0x5fb44) ? 1 : -1
 ];
 
 enum {
@@ -1433,10 +1433,10 @@ typedef struct cRSubLoc {
     uint8_t open_edge_mask;
     uint8_t _pad_3e[0x2];
     uint32_t lane_and_flags;
-    Fringe* fringe_front;
-    Fringe* fringe_right;
-    Fringe* fringe_left;
-    Fringe* fringe_back;
+    cRFringe* fringe_front;
+    cRFringe* fringe_right;
+    cRFringe* fringe_left;
+    cRFringe* fringe_back;
 } cRSubLoc;
 typedef char cRSubLoc_must_be_0x54[
     (sizeof(cRSubLoc) == 0x54) ? 1 : -1
@@ -1448,7 +1448,7 @@ typedef char cRSubLoc_must_be_0x54[
  * cRSubLoc::fringe_front and advances by the complete 0x54-byte cell
  * stride. Binary Ninja's offset-pointer view exposes fields accessed behind
  * lane_and_flags; the field-first fallback preserves the same physical cursor
- * in IDA. Neither view owns a cell or any borrowed Fringe.
+ * in IDA. Neither view owns a cell or any borrowed cRFringe.
  */
 #ifdef BN_TYPE_PARSER
 typedef struct __ptr_offset(0x40)
@@ -1458,10 +1458,10 @@ typedef struct __ptr_offset(0x40)
 #else
 typedef struct TrackRowCellLaneAndFlagsStrideCursor {
     uint32_t lane_and_flags;
-    Fringe* fringe_front;
-    Fringe* fringe_right;
-    Fringe* fringe_left;
-    Fringe* fringe_back;
+    cRFringe* fringe_front;
+    cRFringe* fringe_right;
+    cRFringe* fringe_left;
+    cRFringe* fringe_back;
     uint8_t _stride_tail[0x40];
 } TrackRowCellLaneAndFlagsStrideCursor;
 #endif
@@ -1470,10 +1470,10 @@ typedef char TrackRowCellLaneAndFlagsStrideCursor_must_be_0x54[
 ];
 
 typedef struct TrackRowCellFringeFrontStrideCursor {
-    Fringe* fringe_front;
-    Fringe* fringe_right;
-    Fringe* fringe_left;
-    Fringe* fringe_back;
+    cRFringe* fringe_front;
+    cRFringe* fringe_right;
+    cRFringe* fringe_left;
+    cRFringe* fringe_back;
     uint8_t _stride_tail[0x44];
 } TrackRowCellFringeFrontStrideCursor;
 typedef char TrackRowCellFringeFrontStrideCursor_must_be_0x54[
@@ -2655,7 +2655,7 @@ typedef struct cRSubGame {
     FrontendWidget* lives_icon_widget;
     FrontendWidget* lives_text_widget;
     FrontendWidget* life_stock_widgets[9];
-    FringeManager fringe_manager;
+    cRFringeManager fringe_manager;
     int32_t blink_random_index;
     float blink_random_samples[24];
     Player player;
@@ -2840,10 +2840,10 @@ cRSubGame* __thiscall initialize_runtime_pools_and_path_template_bank(
     cRSubGame* game
 );
 SubRow* __thiscall initialize_track_row_runtime(SubRow* row);
-Fringe* __thiscall initialize_fringe_object(Fringe* fringe);
-void __thiscall refresh_fringe_object_draw_list(Fringe* fringe);
-void __thiscall initialize_fringe_manager(FringeManager* manager);
-Fringe* __thiscall allocate_fringe_object(FringeManager* manager);
+cRFringe* __thiscall initialize_fringe_object(cRFringe* fringe);
+void __thiscall refresh_fringe_object_draw_list(cRFringe* fringe);
+void __thiscall initialize_fringe_manager(cRFringeManager* manager);
+cRFringe* __thiscall allocate_fringe_object(cRFringeManager* manager);
 ClickStart* __thiscall initialize_click_start_controller_runtime(ClickStart* click_start);
 void __thiscall initialize_click_start(ClickStart* click_start, Player* player);
 void __thiscall update_click_start(ClickStart* click_start);

@@ -21,8 +21,8 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 EXPECTED_TYPE_WIDTHS = {
     "SubRow": 0xF4,
     "cRSubLoc": 0x54,
-    "Fringe": 0x38,
-    "FringeManager": 0x5FB44,
+    "cRFringe": 0x38,
+    "cRFringeManager": 0x5FB44,
     "RootTrackFringeBodCatalog": 0x3F00,
     "RootBodCatalog": 0x4D00,
     "cRSubGame": 0x1272838,
@@ -36,16 +36,16 @@ EXPECTED_STRUCT_FIELDS = {
         0x10: ("anchor_position", "Vec3"),
         0x3C: ("tile_id", "SubLocTileId"),
         0x3D: ("open_edge_mask", "uint8_t"),
-        0x44: ("fringe_front", "Fringe*"),
-        0x48: ("fringe_right", "Fringe*"),
-        0x4C: ("fringe_left", "Fringe*"),
-        0x50: ("fringe_back", "Fringe*"),
+        0x44: ("fringe_front", "cRFringe*"),
+        0x48: ("fringe_right", "cRFringe*"),
+        0x4C: ("fringe_left", "cRFringe*"),
+        0x50: ("fringe_back", "cRFringe*"),
     },
-    "Fringe": {
+    "cRFringe": {
         0x00: ("bod", "BodBase"),
     },
-    "FringeManager": {
-        0x00: ("objects", "Fringe[7000]"),
+    "cRFringeManager": {
+        0x00: ("objects", "cRFringe[7000]"),
         0x5FB40: ("count", "int32_t"),
     },
     "RootTrackFringeBodCatalog": {
@@ -56,7 +56,7 @@ EXPECTED_STRUCT_FIELDS = {
     },
     "cRSubGame": {
         0x54: ("runtime_row_count", "int32_t"),
-        0x35BBBC: ("fringe_manager", "FringeManager"),
+        0x35BBBC: ("fringe_manager", "cRFringeManager"),
         0x3BFAC8: ("runtime_cells", "cRSubLoc[3200][8]"),
         0x5CCAC8: ("runtime_rows", "SubRow[3200]"),
     },
@@ -64,7 +64,7 @@ EXPECTED_STRUCT_FIELDS = {
 
 # MakeFringe preserves the cRSubGame receiver across helper calls, walks
 # the separately owned row and cell slabs, selects one object from the root
-# fringe-BOD catalog, and borrows each emitted Fringe from the embedded pool.
+# fringe-BOD catalog, and borrows each emitted cRFringe from the embedded pool.
 # Keep those ownership domains distinct; the per-direction integers are only
 # catalog selectors, and cRSubLoc stores non-owning handles to the results.
 TRACK_FRINGE_BUILDER_USER_VAR_UPDATES = (
@@ -154,7 +154,7 @@ TRACK_FRINGE_BUILDER_USER_VAR_UPDATES = (
         355,
         66,
         "front_fringe",
-        "Fringe*",
+        "cRFringe*",
     ),
     (
         "build_track_fringe_objects",
@@ -178,7 +178,7 @@ TRACK_FRINGE_BUILDER_USER_VAR_UPDATES = (
         615,
         66,
         "right_fringe",
-        "Fringe*",
+        "cRFringe*",
     ),
     (
         "build_track_fringe_objects",
@@ -202,7 +202,7 @@ TRACK_FRINGE_BUILDER_USER_VAR_UPDATES = (
         875,
         66,
         "left_fringe",
-        "Fringe*",
+        "cRFringe*",
     ),
     (
         "build_track_fringe_objects",
@@ -226,7 +226,7 @@ TRACK_FRINGE_BUILDER_USER_VAR_UPDATES = (
         1135,
         66,
         "back_fringe",
-        "Fringe*",
+        "cRFringe*",
     ),
     (
         "build_track_fringe_objects",
@@ -242,7 +242,7 @@ TRACK_FRINGE_BUILDER_USER_VAR_UPDATES = (
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay only the row/cell, catalog-selector, and borrowed Fringe "
+            "Replay only the row/cell, catalog-selector, and borrowed cRFringe "
             "lifetimes in build_track_fringe_objects."
         )
     )

@@ -15,7 +15,8 @@ SCRIPT_ROOT = pathlib.Path(__file__).resolve().parent
 if str(SCRIPT_ROOT) not in sys.path:
     sys.path.insert(0, str(SCRIPT_ROOT))
 
-from game_root_owner import sync_game_root_owner_graph  # noqa: E402
+from game_root_owner import sync_game_root_owner_graph
+from type_alias_migration import migrate_equivalent_struct_aliases
 
 REPLAY_START_CURSOR_FIELD_SPECS = (
     ("Player", 0x4364, 0x304, ("startup_track_index", "replay_start_cursor")),
@@ -319,19 +320,24 @@ BOD_CORE_OWNER_SIZES = {
 }
 
 FRINGE_OWNER_MARKERS = (
-    "Fringe_must_be_0x38",
-    "FringeManager_must_be_0x5fb44",
-    "Fringe objects[7000];",
-    "Fringe* __thiscall initialize_fringe_object(Fringe* fringe);",
-    "void __thiscall refresh_fringe_object_draw_list(Fringe* fringe);",
-    "void __thiscall initialize_fringe_manager(FringeManager* manager);",
-    "Fringe* __thiscall allocate_fringe_object(FringeManager* manager);",
+    "cRFringe_must_be_0x38",
+    "cRFringeManager_must_be_0x5fb44",
+    "cRFringe objects[7000];",
+    "cRFringe* __thiscall initialize_fringe_object(cRFringe* fringe);",
+    "void __thiscall refresh_fringe_object_draw_list(cRFringe* fringe);",
+    "void __thiscall initialize_fringe_manager(cRFringeManager* manager);",
+    "cRFringe* __thiscall allocate_fringe_object(cRFringeManager* manager);",
 )
 
 FRINGE_OWNER_SIZES = {
-    "Fringe": 0x38,
-    "FringeManager": 0x5FB44,
+    "cRFringe": 0x38,
+    "cRFringeManager": 0x5FB44,
 }
+
+FRINGE_OWNER_TYPE_ALIASES = (
+    ("Fringe", "cRFringe", 0x38),
+    ("FringeManager", "cRFringeManager", 0x5FB44),
+)
 
 TRACK_RENDER_CACHE_OWNER_SIZES = {
     "TrackRenderCacheSlot": 0x3C,
@@ -598,7 +604,7 @@ RUNTIME_GRID_CLEAR_CURSOR_HEADER_MARKERS = (
     "typedef struct TrackRowCellLaneAndFlagsStrideCursor {",
     "uint32_t lane_and_flags;",
     "typedef struct TrackRowCellFringeFrontStrideCursor {",
-    "Fringe* fringe_front;",
+    "cRFringe* fringe_front;",
     "typedef struct SubRowParcelSpawnYStrideCursor {",
     "float parcel_spawn_y;",
     "BodBase attachment_body;",
@@ -745,7 +751,7 @@ POPULATE_RUNTIME_LVAR_SPECS = (
     ),
     (
         "fringe_slot",
-        "Fringe **fringe_slot;",
+        "cRFringe **fringe_slot;",
         0x437101,
         None,
     ),
@@ -757,7 +763,7 @@ POPULATE_RUNTIME_LVAR_SPECS = (
     ),
     (
         "fringe_object",
-        "Fringe *fringe_object;",
+        "cRFringe *fringe_object;",
         0x43710A,
         None,
     ),
@@ -1257,10 +1263,10 @@ FRINGE_RUNTIME_LVAR_SPECS = (
     ("row", "SubRow *row;", 0x434C0D, None),
     ("cell", "cRSubLoc *cell;", 0x434C15, None),
     ("row_cursor", "SubRow *row_cursor;", 0x434C1B, 40),
-    ("fringe_front_new", "Fringe *fringe_front_new;", 0x434D44, None),
-    ("fringe_right_new", "Fringe *fringe_right_new;", 0x434E48, None),
-    ("fringe_left_new", "Fringe *fringe_left_new;", 0x434F4C, None),
-    ("fringe_back_new", "Fringe *fringe_back_new;", 0x435050, None),
+    ("fringe_front_new", "cRFringe *fringe_front_new;", 0x434D44, None),
+    ("fringe_right_new", "cRFringe *fringe_right_new;", 0x434E48, None),
+    ("fringe_left_new", "cRFringe *fringe_left_new;", 0x434F4C, None),
+    ("fringe_back_new", "cRFringe *fringe_back_new;", 0x435050, None),
 )
 
 FRINGE_MESH_LVAR_SPECS = {
@@ -2061,11 +2067,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_fringe_object",
-        "Fringe* __thiscall initialize_fringe_object(Fringe* fringe);",
+        "cRFringe* __thiscall initialize_fringe_object(cRFringe* fringe);",
     ),
     (
         "refresh_fringe_object_draw_list",
-        "void __thiscall refresh_fringe_object_draw_list(Fringe* fringe);",
+        "void __thiscall refresh_fringe_object_draw_list(cRFringe* fringe);",
     ),
     (
         "initialize_object_constructor_thunk",
@@ -2101,11 +2107,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_fringe_manager",
-        "void __thiscall initialize_fringe_manager(FringeManager* manager);",
+        "void __thiscall initialize_fringe_manager(cRFringeManager* manager);",
     ),
     (
         "allocate_fringe_object",
-        "Fringe* __thiscall allocate_fringe_object(FringeManager* manager);",
+        "cRFringe* __thiscall allocate_fringe_object(cRFringeManager* manager);",
     ),
     (
         "initialize_golb_shot",
@@ -5116,6 +5122,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
         return 1
 
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
+    fringe_owner_type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(FRINGE_OWNER_TYPE_ALIASES)
+    )
+    fringe_owner_type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "owner_group": "fringe",
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in fringe_owner_type_alias_migrations
+        if result.get("status") == "failed"
+    ]
     subgame_owner_sizes = {
         name: _named_struct_size(name)
         for name in SUBGAME_OWNER_SIZES
@@ -5376,13 +5397,16 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "observed": observed,
                 }
             )
-    if parse_errors or owner_size_failures:
+    if parse_errors or fringe_owner_type_alias_failures or owner_size_failures:
         print(
             json.dumps(
                 {
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
                     "parse_errors": parse_errors,
+                    "fringe_owner_type_alias_migrations": (
+                        fringe_owner_type_alias_migrations
+                    ),
                     "subgame_owner_sizes": subgame_owner_sizes,
                     "sub_loc_owner_sizes": sub_loc_owner_sizes,
                     "path_owner_sizes": path_owner_sizes,
@@ -5399,7 +5423,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "fringe_face_pair_cursor_size": fringe_face_pair_cursor_size,
                     "track_row_cell_tile_owner": track_row_cell_tile_owner,
                     "player_shoot_members": player_shoot_members,
-                    "failed": owner_size_failures,
+                    "failed": (
+                        fringe_owner_type_alias_failures + owner_size_failures
+                    ),
                 },
                 indent=2,
             )
@@ -6111,6 +6137,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "parse_errors": parse_errors,
+                "fringe_owner_type_alias_migrations": (
+                    fringe_owner_type_alias_migrations
+                ),
                 "subgame_owner_sizes": subgame_owner_sizes,
                 "sub_loc_owner_sizes": sub_loc_owner_sizes,
                 "path_owner_sizes": path_owner_sizes,

@@ -2,8 +2,8 @@
 /* function: refresh_fringe_object_draw_list @ 0x439b00 */
 /* selector: refresh_fringe_object_draw_list */
 
-// Windows cRFringe callback: copies the current track skirt tint into one authored Fringe and, once its world-z falls behind the live fringe threshold, unlinks it from the active list and requeues it onto the shared draw-list bucket. The constructor table points directly here; Android preserves `cRFringe::AI()` but implements it as a no-op.
-void __thiscall refresh_fringe_object_draw_list(Fringe *fringe)
+// Windows cRFringe::AI callback: copies the current track skirt tint into one authored cRFringe and, once its world-z falls behind the live fringe threshold, unlinks it from the active list and requeues it onto the shared draw-list bucket. The constructor table points directly here; Android preserves the authored member but implements it as a no-op.
+void __thiscall refresh_fringe_object_draw_list(cRFringe *fringe)
 {
   tColour *track_skirt_color; // eax
   double z; // st7
@@ -30,10 +30,10 @@ void __thiscall refresh_fringe_object_draw_list(Fringe *fringe)
       else
       {
         list_next = fringe->bod.bod.list_next;
-        if ( list_next )
+        if ( list_next != nullptr )
           list_next->list_prev = fringe->bod.bod.list_prev;
         list_prev = fringe->bod.bod.list_prev;
-        if ( list_prev )
+        if ( list_prev != nullptr )
           list_prev->list_next = fringe->bod.bod.list_next;
         else
           p_active_bod_list->first = fringe->bod.bod.list_next;
