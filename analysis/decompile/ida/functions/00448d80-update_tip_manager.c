@@ -3,19 +3,16 @@
 /* selector: update_tip_manager */
 
 // Exact `cRTipManager::AI()` member that advances each active inline Tip.
-void __thiscall update_tip_manager(TipManager *manager)
+void __thiscall update_tip_manager(cRTipManager *manager)
 {
-  Tip *tips; // esi
-  int v2; // edi
+  cRTip *tips; // esi
+  int i; // edi
 
   tips = manager->tips;
-  v2 = 3;
-  do
+  for ( i = 3; i != 0; --i )
   {
     if ( tips->active == 1 )
       update_tip(tips);
     ++tips;
-    --v2;
   }
-  while ( v2 );
 }

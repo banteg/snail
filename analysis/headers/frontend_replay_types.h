@@ -183,7 +183,7 @@ typedef struct FrontendWidget {
 typedef struct SubSolution SubSolution;
 
 /* Authored cRHighScore. Windows proves storage through +0xf4; the final class
-   boundary before the following TipManager remains open by 0x14 bytes. */
+   boundary before the following cRTipManager remains open by 0x14 bytes. */
 typedef struct cRHighScore {
     int32_t field_00;
     int32_t mode;

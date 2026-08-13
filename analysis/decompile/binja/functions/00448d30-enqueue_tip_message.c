@@ -4,7 +4,7 @@
 /* function: enqueue_tip_message @ 0x448d30 */
 
 00448d31        int32_t i = 0
-00448d33        struct Tip* tip = &manager->tips
+00448d33        struct cRTip* tip = &manager->tips
 00448d39        if (tip->active == 0)
 00448d6a        initialize_tip(&manager->tips[i], definition, hide_disable_button)
 00448d72        return &manager->tips[i]

@@ -2,7 +2,7 @@
 #define BN_HIGH_SCORE_SCREEN_TYPES_H
 
 /* Authored cRHighScore front-end controller. The following 0x14 root bytes
-   remain unassigned before the exact TipManager boundary. */
+   remain unassigned before the exact cRTipManager boundary. */
 typedef struct cRHighScore {
     int32_t field_00;
     int32_t mode;

@@ -73,10 +73,16 @@ NUKE_OWNER_SIZES = {
 }
 
 TIP_OWNER_SIZES = {
-    "TipData": 0x14,
-    "Tip": 0x20,
-    "TipManager": 0x98,
+    "cRTipData": 0x14,
+    "cRTip": 0x20,
+    "cRTipManager": 0x98,
 }
+
+TIP_OWNER_TYPE_RENAMES = (
+    ("TipData", "cRTipData"),
+    ("Tip", "cRTip"),
+    ("TipManager", "cRTipManager"),
+)
 
 AUTHORED_ROW_CURSOR_SIZES = {
     "AuthoredSegmentRow": 0x38,
@@ -603,9 +609,9 @@ REQUIRED_HEADER_STRUCTS = (
     "JetParticleSlot",
     "SubHoverState",
     "SubHover",
-    "TipData",
-    "Tip",
-    "TipManager",
+    "cRTipData",
+    "cRTip",
+    "cRTipManager",
     "Tutorial",
 )
 
@@ -755,6 +761,60 @@ def verify_tip_owner_sizes(*, target: str) -> dict[str, object]:
         "owner_group": "tip",
         "owner_sizes": observed,
     }
+
+
+def ensure_tip_owner_types(
+    *, target: str, header_path: Path
+) -> list[dict[str, object]]:
+    """Retire compatibility names only when the canonical owner graph is exact."""
+    operations = apply_type_renames(
+        REPO_ROOT,
+        target=target,
+        renames=TIP_OWNER_TYPE_RENAMES,
+    )
+    observed_widths = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=TIP_OWNER_SIZES,
+    )
+    type_equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    mismatched_types = tuple(
+        name
+        for name, expected_size in TIP_OWNER_SIZES.items()
+        if (
+            observed_widths.get(name) != expected_size
+            or not type_equivalence.get(name, False)
+        )
+    )
+    if mismatched_types:
+        type_operation = types_declare_missing_only(
+            REPO_ROOT,
+            target=target,
+            header_path=header_path,
+            replace_types=mismatched_types,
+            include_types=TIP_OWNER_SIZES,
+        )
+        type_operation["repaired_types"] = mismatched_types
+        type_operation["expected_sizes"] = {
+            name: TIP_OWNER_SIZES[name] for name in mismatched_types
+        }
+    else:
+        type_operation = {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "cRTip owner layouts already match the header",
+            "header": str(header_path),
+            "expected_sizes": TIP_OWNER_SIZES,
+            "type_equivalence": {
+                name: type_equivalence.get(name, False)
+                for name in TIP_OWNER_SIZES
+            },
+        }
+    return [*operations, type_operation]
 
 
 def verify_authored_row_cursor_sizes(*, target: str) -> dict[str, object]:
@@ -1270,9 +1330,10 @@ NUKE_USER_VAR_UPDATES = (
     ),
 )
 
-# TipManager owns three adjacent 0x20-byte Tip records. BN otherwise promotes
-# each native cursor register to Tip (*)[3] and invents a subtraction back to
-# the manager before every access. Preserve the exact borrowed Tip* walks.
+# cRTipManager owns three adjacent 0x20-byte cRTip records. BN otherwise
+# promotes each native cursor register to cRTip (*)[3] and invents a
+# subtraction back to the manager before every access. Preserve the exact
+# borrowed cRTip* walks.
 TIP_MANAGER_USER_VAR_UPDATES = (
     (
         "initialize_tip_manager",
@@ -1280,7 +1341,7 @@ TIP_MANAGER_USER_VAR_UPDATES = (
         8,
         66,
         "tip",
-        "Tip*",
+        "cRTip*",
     ),
     (
         "uninit_tips",
@@ -1288,7 +1349,7 @@ TIP_MANAGER_USER_VAR_UPDATES = (
         2,
         72,
         "tip",
-        "Tip*",
+        "cRTip*",
     ),
     (
         "enqueue_tip_message",
@@ -1296,7 +1357,7 @@ TIP_MANAGER_USER_VAR_UPDATES = (
         3,
         68,
         "tip",
-        "Tip*",
+        "cRTip*",
     ),
     (
         "update_tip_manager",
@@ -1304,7 +1365,7 @@ TIP_MANAGER_USER_VAR_UPDATES = (
         2,
         72,
         "tip",
-        "Tip*",
+        "cRTip*",
     ),
 )
 
@@ -2903,12 +2964,12 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
 
 # The frame-renderer bootstrap uses a renderer-local list view at +0x5a8 and
 # leaves the post-subgame root tail opaque. Gameplay proves that the root list
-# stores BodNode links, and this replay lane owns TipManager, so promote both
+# stores BodNode links, and this replay lane owns cRTipManager, so promote both
 # canonical owners after importing their authoritative types.
 GAME_ROOT_FIELD_UPDATES = (
     ("0x5a8", "active_bod_list", "BodList"),
     ("0x74618", "subgame", "cRSubGame"),
-    ("0x12e6f58", "tip_manager", "TipManager"),
+    ("0x12e6f58", "tip_manager", "cRTipManager"),
 )
 
 VAPOUR_FIELD_UPDATES = (
@@ -3136,7 +3197,7 @@ TIP_DATA_FIELD_UPDATES = (
 TIP_FIELD_UPDATES = (
     ("0x00", "active", "int32_t"),
     ("0x04", "previous_outer_owner", "int32_t"),
-    ("0x08", "definition", "TipData*"),
+    ("0x08", "definition", "cRTipData*"),
     ("0x0c", "widget_main", "FrontendWidget*"),
     ("0x10", "widget_ok", "FrontendWidget*"),
     ("0x14", "widget_disable", "FrontendWidget*"),
@@ -3146,7 +3207,7 @@ TIP_FIELD_UPDATES = (
 
 TIP_MANAGER_FIELD_UPDATES = (
     ("0x00", "bod", "BodBase"),
-    ("0x38", "tips", "Tip[0x3]"),
+    ("0x38", "tips", "cRTip[0x3]"),
 )
 
 TUTORIAL_FIELD_UPDATES = (
@@ -3177,7 +3238,7 @@ DATA_VAR_UPDATES = (
     *BOD_CORE_DATA_VAR_UPDATES,
     *FRINGE_DATA_VAR_UPDATES,
     *TRACK_RENDER_CACHE_DATA_VAR_UPDATES,
-    ("0x4ac5c8", "TipData"),
+    ("0x4ac5c8", "cRTipData"),
     ("0x643190", "float"),
     ("0x643194", "float"),
 )
@@ -3808,28 +3869,28 @@ NUKE_PROTO_UPDATES = (
 TIP_PROTO_UPDATES = (
     (
         "kill_tip_widgets",
-        "void __thiscall kill_tip_widgets(Tip* tip)",
+        "void __thiscall kill_tip_widgets(cRTip* tip)",
     ),
     (
         "initialize_tip",
-        "void __thiscall initialize_tip(Tip* tip, TipData* definition, int32_t hide_disable_button)",
+        "void __thiscall initialize_tip(cRTip* tip, cRTipData* definition, int32_t hide_disable_button)",
     ),
-    ("update_tip", "void __thiscall update_tip(Tip* tip)"),
+    ("update_tip", "void __thiscall update_tip(cRTip* tip)"),
     (
         "initialize_tip_manager",
-        "void __thiscall initialize_tip_manager(TipManager* manager)",
+        "void __thiscall initialize_tip_manager(cRTipManager* manager)",
     ),
     (
         "uninit_tips",
-        "void __thiscall uninit_tips(TipManager* manager)",
+        "void __thiscall uninit_tips(cRTipManager* manager)",
     ),
     (
         "enqueue_tip_message",
-        "Tip* __thiscall enqueue_tip_message(TipManager* manager, TipData* definition, int32_t hide_disable_button)",
+        "cRTip* __thiscall enqueue_tip_message(cRTipManager* manager, cRTipData* definition, int32_t hide_disable_button)",
     ),
     (
         "update_tip_manager",
-        "void __thiscall update_tip_manager(TipManager* manager)",
+        "void __thiscall update_tip_manager(cRTipManager* manager)",
     ),
 )
 
@@ -5986,7 +6047,13 @@ def main() -> int:
                 REPO_ROOT,
                 target=args.target,
                 header_path=header_path,
-                required_structs=("FrontendWidget", *TIP_OWNER_SIZES),
+                required_structs=("FrontendWidget", "BodBase"),
+            )
+        )
+        operations.extend(
+            ensure_tip_owner_types(
+                target=args.target,
+                header_path=header_path,
             )
         )
         operations.append(verify_tip_owner_sizes(target=args.target))
@@ -6011,9 +6078,9 @@ def main() -> int:
                 REPO_ROOT,
                 target=args.target,
                 struct_updates=(
-                    ("TipData", TIP_DATA_FIELD_UPDATES),
-                    ("Tip", TIP_FIELD_UPDATES),
-                    ("TipManager", TIP_MANAGER_FIELD_UPDATES),
+                    ("cRTipData", TIP_DATA_FIELD_UPDATES),
+                    ("cRTip", TIP_FIELD_UPDATES),
+                    ("cRTipManager", TIP_MANAGER_FIELD_UPDATES),
                 ),
                 proto_updates=TIP_PROTO_UPDATES,
             )
@@ -6022,7 +6089,7 @@ def main() -> int:
             apply_data_var_updates(
                 REPO_ROOT,
                 target=args.target,
-                updates=(("0x4ac5c8", "TipData"),),
+                updates=(("0x4ac5c8", "cRTipData"),),
             )
         )
         operations.extend(
@@ -6049,6 +6116,12 @@ def main() -> int:
                     ("Fringe", "cRFringe"),
                     ("FringeManager", "cRFringeManager"),
                 ),
+            )
+        )
+        operations.extend(
+            ensure_tip_owner_types(
+                target=args.target,
+                header_path=header_path,
             )
         )
         operations.append(
@@ -6085,6 +6158,7 @@ def main() -> int:
         )
         operations.append(verify_bod_core_owner_sizes(target=args.target))
         operations.append(verify_fringe_owner_sizes(target=args.target))
+        operations.append(verify_tip_owner_sizes(target=args.target))
         operations.append(
             ensure_path_analysis_views(
                 target=args.target,
@@ -6220,9 +6294,9 @@ def main() -> int:
                 ),
                 ("JetParticleSlot", JET_PARTICLE_SLOT_FIELD_UPDATES),
                 ("SubHover", SUB_HOVER_FIELD_UPDATES),
-                ("TipData", TIP_DATA_FIELD_UPDATES),
-                ("Tip", TIP_FIELD_UPDATES),
-                ("TipManager", TIP_MANAGER_FIELD_UPDATES),
+                ("cRTipData", TIP_DATA_FIELD_UPDATES),
+                ("cRTip", TIP_FIELD_UPDATES),
+                ("cRTipManager", TIP_MANAGER_FIELD_UPDATES),
                 ("Tutorial", TUTORIAL_FIELD_UPDATES),
                 ("Player", PLAYER_FIELD_UPDATES),
                 (

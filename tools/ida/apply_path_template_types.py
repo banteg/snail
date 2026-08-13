@@ -196,7 +196,7 @@ TRUSTED_DATA_DECLARATIONS = [
     (0x4974FC, "g_bod_base_vtable", "void *g_bod_base_vtable;"),
     (0x497500, "g_renderable_bod_vtable", "void *g_renderable_bod_vtable;"),
     (0x50331C, "g_bod_base_init_count", "int32_t g_bod_base_init_count;"),
-    (0x4AC5C8, "g_default_tip_message", "TipData g_default_tip_message;"),
+    (0x4AC5C8, "g_default_tip_message", "cRTipData g_default_tip_message;"),
     (
         0x503280,
         "g_loading_bar_on_texture",
@@ -338,6 +338,60 @@ FRINGE_OWNER_TYPE_ALIASES = (
     ("Fringe", "cRFringe", 0x38),
     ("FringeManager", "cRFringeManager", 0x5FB44),
 )
+
+TIP_OWNER_MARKERS = (
+    "cRTipData_must_be_0x14",
+    "cRTip_must_be_0x20",
+    "cRTipManager_must_be_0x98",
+    "cRTipData* definition;",
+    "cRTip tips[3];",
+    "cRTip* __thiscall enqueue_tip_message(cRTipManager* manager, cRTipData* definition, int32_t hide_disable_button);",
+)
+
+TIP_OWNER_SIZES = {
+    "cRTipData": 0x14,
+    "cRTip": 0x20,
+    "cRTipManager": 0x98,
+}
+
+TIP_OWNER_TYPE_ALIASES = (
+    ("TipData", "cRTipData", 0x14),
+    ("Tip", "cRTip", 0x20),
+    ("TipManager", "cRTipManager", 0x98),
+)
+
+EXPECTED_TIP_OWNER_LAYOUTS = {
+    "cRTipData": {
+        "size": 0x14,
+        "members": {
+            0x00: (0x04, "flags", "uint32_t"),
+            0x04: (0x04, "anchor_x", "float"),
+            0x08: (0x04, "layout_y", "float"),
+            0x0C: (0x04, "dismiss_seconds", "float"),
+            0x10: (0x04, "text", "char *"),
+        },
+    },
+    "cRTip": {
+        "size": 0x20,
+        "members": {
+            0x00: (0x04, "active", "int32_t"),
+            0x04: (0x04, "previous_outer_owner", "int32_t"),
+            0x08: (0x04, "definition", "cRTipData *"),
+            0x0C: (0x04, "widget_main", "FrontendWidget *"),
+            0x10: (0x04, "widget_ok", "FrontendWidget *"),
+            0x14: (0x04, "widget_disable", "FrontendWidget *"),
+            0x18: (0x04, "dismiss_progress", "float"),
+            0x1C: (0x04, "dismiss_step", "float"),
+        },
+    },
+    "cRTipManager": {
+        "size": 0x98,
+        "members": {
+            0x00: (0x38, "bod", "BodBase"),
+            0x38: (0x60, "tips", "cRTip[3]"),
+        },
+    },
+}
 
 TRACK_RENDER_CACHE_OWNER_SIZES = {
     "TrackRenderCacheSlot": 0x3C,
@@ -1701,7 +1755,7 @@ PLAYER_STATE_GATE_OFFSET_OPERANDS = (
 # tutorial feature mask into runtime_flags. IDA can promote both immediate
 # operands to address expressions because their values also land inside the
 # image, which blocks the typed GameRoot/cRSubGame folds. UnInit has the
-# same collision for the root-owned TipManager displacement. Keep the global
+# same collision for the root-owned cRTipManager displacement. Keep the global
 # symbols and normalize only these three proven instruction operands.
 TUTORIAL_NUMERIC_OPERANDS = (
     (0x448DAB, 1, 0x74618),  # GameRoot::subgame
@@ -2619,31 +2673,31 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "kill_tip_widgets",
-        "void __thiscall kill_tip_widgets(Tip* tip);",
+        "void __thiscall kill_tip_widgets(cRTip* tip);",
     ),
     (
         "initialize_tip",
-        "void __thiscall initialize_tip(Tip* tip, TipData* definition, int32_t hide_disable_button);",
+        "void __thiscall initialize_tip(cRTip* tip, cRTipData* definition, int32_t hide_disable_button);",
     ),
     (
         "update_tip",
-        "void __thiscall update_tip(Tip* tip);",
+        "void __thiscall update_tip(cRTip* tip);",
     ),
     (
         "initialize_tip_manager",
-        "void __thiscall initialize_tip_manager(TipManager* manager);",
+        "void __thiscall initialize_tip_manager(cRTipManager* manager);",
     ),
     (
         "uninit_tips",
-        "void __thiscall uninit_tips(TipManager* manager);",
+        "void __thiscall uninit_tips(cRTipManager* manager);",
     ),
     (
         "enqueue_tip_message",
-        "Tip* __thiscall enqueue_tip_message(TipManager* manager, TipData* definition, int32_t hide_disable_button);",
+        "cRTip* __thiscall enqueue_tip_message(cRTipManager* manager, cRTipData* definition, int32_t hide_disable_button);",
     ),
     (
         "update_tip_manager",
-        "void __thiscall update_tip_manager(TipManager* manager);",
+        "void __thiscall update_tip_manager(cRTipManager* manager);",
     ),
     (
         "initialize_tutorial",
@@ -4720,6 +4774,51 @@ def _normalize_udt_type(value: str) -> str:
     return re.sub(r"\b(?:struct|class|union)\s+", "", normalized)
 
 
+def _tip_owner_layout_readback() -> dict[str, object]:
+    """Verify every canonical tutorial owner before applying its method ABIs."""
+    readback: dict[str, object] = {}
+    failures: list[dict[str, object]] = []
+    for type_name, expected in EXPECTED_TIP_OWNER_LAYOUTS.items():
+        observed_size = _named_struct_size(type_name)
+        observed_members = {
+            hex(offset): _named_struct_member_readback(type_name, offset)
+            for offset in expected["members"]
+        }
+        readback[type_name] = {
+            "size": observed_size,
+            "members": observed_members,
+        }
+        if observed_size != expected["size"]:
+            failures.append(
+                {
+                    "selector": type_name,
+                    "owner_group": "tip",
+                    "reason": "owner_size_mismatch",
+                    "expected": expected["size"],
+                    "observed": observed_size,
+                }
+            )
+        for offset, (size, name, type_text) in expected["members"].items():
+            expected_member = {
+                "offset": hex(offset),
+                "size": size,
+                "name": name,
+                "type": _normalize_udt_type(type_text),
+            }
+            observed_member = observed_members[hex(offset)]
+            if observed_member != expected_member:
+                failures.append(
+                    {
+                        "selector": f"{type_name}.{name}",
+                        "owner_group": "tip",
+                        "reason": "owner_member_mismatch",
+                        "expected": expected_member,
+                        "observed": observed_member,
+                    }
+                )
+    return {"types": readback, "failures": failures}
+
+
 def _golb_shot_prefix_snapshot(owner: ida_typeinf.tinfo_t) -> list[dict[str, object]] | None:
     udt = ida_typeinf.udt_type_data_t()
     if not owner.get_udt_details(udt):
@@ -5003,6 +5102,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for marker in FRINGE_OWNER_MARKERS
         if marker not in header_text
     ]
+    missing_tip_owner_markers = [
+        marker
+        for marker in TIP_OWNER_MARKERS
+        if marker not in header_text
+    ]
     missing_track_render_cache_owner_markers = [
         marker
         for marker in TRACK_RENDER_CACHE_OWNER_MARKERS
@@ -5035,6 +5139,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or missing_path_manager_owner_markers
         or missing_bod_core_owner_markers
         or missing_fringe_owner_markers
+        or missing_tip_owner_markers
         or missing_track_render_cache_owner_markers
         or missing_sub_lazer_asset_cursor_markers
         or missing_salt_asset_cursor_markers
@@ -5062,6 +5167,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
             marker_failures.append({"reason": "noncanonical_bod_core_header"})
         if missing_fringe_owner_markers:
             marker_failures.append({"reason": "noncanonical_fringe_header"})
+        if missing_tip_owner_markers:
+            marker_failures.append({"reason": "noncanonical_tip_owner_header"})
         if missing_track_render_cache_owner_markers:
             marker_failures.append(
                 {"reason": "noncanonical_track_render_cache_header"}
@@ -5099,6 +5206,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "missing_bod_core_owner_markers": missing_bod_core_owner_markers,
                     "missing_fringe_owner_markers": missing_fringe_owner_markers,
+                    "missing_tip_owner_markers": missing_tip_owner_markers,
                     "missing_track_render_cache_owner_markers": (
                         missing_track_render_cache_owner_markers
                     ),
@@ -5137,6 +5245,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for result in fringe_owner_type_alias_migrations
         if result.get("status") == "failed"
     ]
+    tip_owner_type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(TIP_OWNER_TYPE_ALIASES)
+    )
+    tip_owner_type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "owner_group": "tip",
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in tip_owner_type_alias_migrations
+        if result.get("status") == "failed"
+    ]
     subgame_owner_sizes = {
         name: _named_struct_size(name)
         for name in SUBGAME_OWNER_SIZES
@@ -5161,6 +5284,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
         name: _named_struct_size(name)
         for name in FRINGE_OWNER_SIZES
     }
+    tip_owner_sizes = {
+        name: _named_struct_size(name)
+        for name in TIP_OWNER_SIZES
+    }
+    tip_owner_layout_readback = (
+        {"types": {}, "failures": []}
+        if parse_errors or tip_owner_type_alias_failures
+        else _tip_owner_layout_readback()
+    )
     track_render_cache_owner_sizes = {
         name: _named_struct_size(name)
         for name in TRACK_RENDER_CACHE_OWNER_SIZES
@@ -5266,6 +5398,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in FRINGE_OWNER_SIZES.items()
         if fringe_owner_sizes[name] != expected_size
     ]
+    tip_owner_size_failures = [
+        {
+            "selector": name,
+            "owner_group": "tip",
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": tip_owner_sizes[name],
+        }
+        for name, expected_size in TIP_OWNER_SIZES.items()
+        if tip_owner_sizes[name] != expected_size
+    ]
     track_render_cache_owner_size_failures = [
         {
             "selector": name,
@@ -5284,6 +5427,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         + path_manager_owner_size_failures
         + bod_core_owner_size_failures
         + fringe_owner_size_failures
+        + tip_owner_size_failures
+        + tip_owner_layout_readback["failures"]
         + track_render_cache_owner_size_failures
     )
     if golb_shot_asset_cursor_size != GOLB_SHOT_ASSET_CURSOR_EXPECTED_SIZE:
@@ -5397,7 +5542,12 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "observed": observed,
                 }
             )
-    if parse_errors or fringe_owner_type_alias_failures or owner_size_failures:
+    if (
+        parse_errors
+        or fringe_owner_type_alias_failures
+        or tip_owner_type_alias_failures
+        or owner_size_failures
+    ):
         print(
             json.dumps(
                 {
@@ -5407,12 +5557,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "fringe_owner_type_alias_migrations": (
                         fringe_owner_type_alias_migrations
                     ),
+                    "tip_owner_type_alias_migrations": (
+                        tip_owner_type_alias_migrations
+                    ),
                     "subgame_owner_sizes": subgame_owner_sizes,
                     "sub_loc_owner_sizes": sub_loc_owner_sizes,
                     "path_owner_sizes": path_owner_sizes,
                     "path_manager_owner_sizes": path_manager_owner_sizes,
                     "bod_core_owner_sizes": bod_core_owner_sizes,
                     "fringe_owner_sizes": fringe_owner_sizes,
+                    "tip_owner_sizes": tip_owner_sizes,
+                    "tip_owner_layout_readback": tip_owner_layout_readback,
                     "track_render_cache_owner_sizes": track_render_cache_owner_sizes,
                     "golb_shot_asset_cursor_size": golb_shot_asset_cursor_size,
                     "sub_lazer_asset_cursor_size": sub_lazer_asset_cursor_size,
@@ -5424,7 +5579,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "track_row_cell_tile_owner": track_row_cell_tile_owner,
                     "player_shoot_members": player_shoot_members,
                     "failed": (
-                        fringe_owner_type_alias_failures + owner_size_failures
+                        fringe_owner_type_alias_failures
+                        + tip_owner_type_alias_failures
+                        + owner_size_failures
                     ),
                 },
                 indent=2,
@@ -6140,12 +6297,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "fringe_owner_type_alias_migrations": (
                     fringe_owner_type_alias_migrations
                 ),
+                "tip_owner_type_alias_migrations": (
+                    tip_owner_type_alias_migrations
+                ),
                 "subgame_owner_sizes": subgame_owner_sizes,
                 "sub_loc_owner_sizes": sub_loc_owner_sizes,
                 "path_owner_sizes": path_owner_sizes,
                 "path_manager_owner_sizes": path_manager_owner_sizes,
                 "bod_core_owner_sizes": bod_core_owner_sizes,
                 "fringe_owner_sizes": fringe_owner_sizes,
+                "tip_owner_sizes": tip_owner_sizes,
+                "tip_owner_layout_readback": tip_owner_layout_readback,
                 "track_render_cache_owner_sizes": track_render_cache_owner_sizes,
                 "golb_shot_asset_cursor_size": golb_shot_asset_cursor_size,
                 "sub_lazer_asset_cursor_size": sub_lazer_asset_cursor_size,

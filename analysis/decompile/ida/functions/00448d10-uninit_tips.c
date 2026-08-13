@@ -3,19 +3,16 @@
 /* selector: uninit_tips */
 
 // Exact `cRTipManager::UnInitTips()` member that tears down widgets for each active inline Tip.
-void __thiscall uninit_tips(TipManager *manager)
+void __thiscall uninit_tips(cRTipManager *manager)
 {
-  Tip *tips; // esi
-  int v2; // edi
+  cRTip *tips; // esi
+  int i; // edi
 
   tips = manager->tips;
-  v2 = 3;
-  do
+  for ( i = 3; i != 0; --i )
   {
     if ( tips->active == 1 )
       kill_tip_widgets(tips);
     ++tips;
-    --v2;
   }
-  while ( v2 );
 }

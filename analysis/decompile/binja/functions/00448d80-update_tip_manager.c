@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_tip_manager @ 0x448d80 */
 
-00448d82        struct Tip* tip = &manager->tips
+00448d82        struct cRTip* tip = &manager->tips
 00448d85        int32_t i_1 = 3
 00448d9a        int32_t i
 00448d8d        if (tip->active == 1)

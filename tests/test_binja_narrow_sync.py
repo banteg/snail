@@ -1460,7 +1460,7 @@ def test_frontend_tail_syncs_promote_proved_game_root_owners() -> None:
         encoding="utf-8"
     )
 
-    assert '("0x12e6f58", "tip_manager", "TipManager")' in path_sync
+    assert '("0x12e6f58", "tip_manager", "cRTipManager")' in path_sync
     assert '("GameRoot", GAME_ROOT_FIELD_UPDATES)' in path_sync
     assert '("0x12e6e50", "high_score", "cRHighScore")' in high_score_sync
     assert 'struct_name="GameRoot"' in high_score_sync
@@ -1502,7 +1502,7 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     ):
         assert owner in owner_sync
     assert '(0x12E6E50, 0xF4, "high_score", "cRHighScore")' in owner_sync
-    assert '(0x12E6F58, 0x98, "tip_manager", "TipManager")' in owner_sync
+    assert '(0x12E6F58, 0x98, "tip_manager", "cRTipManager")' in owner_sync
     assert "GAME_ROOT_GLOBAL_ADDRESS = 0x4DF904" in owner_sync
     assert "GAME_ROOT_ACTIVE_BOD_LIST_OFFSET = 0x5A8" in owner_sync
     assert "def _sync_active_bod_list_member" in owner_sync
@@ -14660,8 +14660,16 @@ def test_tip_manager_lifecycle_replay_keeps_exact_owner_graph() -> None:
     )
 
     for header in (analysis_header, matcher_header):
-        assert "TipData* definition" in header
-        assert "Tip tips[" in header
+        assert "cRTipData* definition" in header
+        assert "cRTip tips[" in header
+
+    for owner in ("cRTipData", "cRTip", "cRTipManager"):
+        assert f"typedef struct {owner}" in analysis_header
+    assert "typedef struct TipData" not in analysis_header
+    assert "typedef struct Tip {" not in analysis_header
+    assert "typedef struct TipManager" not in analysis_header
+    assert "TipMessageDefinition" not in analysis_header
+    assert "TipSlot" not in analysis_header
 
     assert "FrontendWidget* widget_main" in analysis_header
     assert "FrontendWidget* widget_ok" in analysis_header
@@ -14672,9 +14680,15 @@ def test_tip_manager_lifecycle_replay_keeps_exact_owner_graph() -> None:
 
     for marker in (
         '"--tip-only"',
-        '"TipData": 0x14',
-        '"Tip": 0x20',
-        '"TipManager": 0x98',
+        '"cRTipData": 0x14',
+        '"cRTip": 0x20',
+        '"cRTipManager": 0x98',
+        '("TipData", "cRTipData")',
+        '("Tip", "cRTip")',
+        '("TipManager", "cRTipManager")',
+        "ensure_tip_owner_types",
+        "current_header_type_equivalence",
+        "types_declare_missing_only",
         "TIP_DATA_FIELD_UPDATES",
         "TIP_FIELD_UPDATES",
         "TIP_MANAGER_FIELD_UPDATES",
@@ -14686,18 +14700,29 @@ def test_tip_manager_lifecycle_replay_keeps_exact_owner_graph() -> None:
         assert marker in path_sync
 
     prototypes = (
-        "void __thiscall kill_tip_widgets(Tip* tip)",
-        "void __thiscall initialize_tip(Tip* tip, TipData* definition, int32_t hide_disable_button)",
-        "void __thiscall update_tip(Tip* tip)",
-        "void __thiscall initialize_tip_manager(TipManager* manager)",
-        "void __thiscall uninit_tips(TipManager* manager)",
-        "Tip* __thiscall enqueue_tip_message(TipManager* manager, TipData* definition, int32_t hide_disable_button)",
-        "void __thiscall update_tip_manager(TipManager* manager)",
+        "void __thiscall kill_tip_widgets(cRTip* tip)",
+        "void __thiscall initialize_tip(cRTip* tip, cRTipData* definition, int32_t hide_disable_button)",
+        "void __thiscall update_tip(cRTip* tip)",
+        "void __thiscall initialize_tip_manager(cRTipManager* manager)",
+        "void __thiscall uninit_tips(cRTipManager* manager)",
+        "cRTip* __thiscall enqueue_tip_message(cRTipManager* manager, cRTipData* definition, int32_t hide_disable_button)",
+        "void __thiscall update_tip_manager(cRTipManager* manager)",
     )
     for prototype in prototypes:
         assert prototype in path_sync
         assert prototype + ";" in ida_sync
         assert prototype + ";" in analysis_header
+
+    for marker in (
+        '("TipData", "cRTipData", 0x14)',
+        '("Tip", "cRTip", 0x20)',
+        '("TipManager", "cRTipManager", 0x98)',
+        "TIP_OWNER_MARKERS",
+        "TIP_OWNER_SIZES",
+        "EXPECTED_TIP_OWNER_LAYOUTS",
+        "tip_owner_layout_readback",
+    ):
+        assert marker in ida_sync
 
     for address in (
         "0x4489E0",
@@ -14731,7 +14756,7 @@ def test_tutorial_lifecycle_replay_keeps_runtime_and_tip_manager_owners() -> Non
         assert "cRSubGame* game" in header
     for header in (analysis_header, matcher_subgame):
         assert "runtime_flags" in header
-    assert '(0x12E6F58, 0x98, "tip_manager", "TipManager")' in ida_root_owner
+    assert '(0x12E6F58, 0x98, "tip_manager", "cRTipManager")' in ida_root_owner
 
     for marker in (
         "TUTORIAL_NUMERIC_OPERANDS",

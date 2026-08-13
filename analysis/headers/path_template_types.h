@@ -2126,29 +2126,29 @@ typedef struct ClickStart {
     uint8_t _pad_a9[0x3];
 } ClickStart;
 
-typedef struct TipData {
+/* Authored tutorial-message owner family recovered from cRTipData, cRTip,
+ * and cRTipManager mobile symbols and the exact Windows storage graph. */
+typedef struct cRTipData {
     uint32_t flags;
     float anchor_x;
     float layout_y;
     float dismiss_seconds;
     char* text;
-} TipData;
-typedef TipData TipMessageDefinition;
+} cRTipData;
 
-typedef struct Tip {
+typedef struct cRTip {
     int32_t active;
     int32_t previous_outer_owner;
-    TipData* definition;
+    cRTipData* definition;
     FrontendWidget* widget_main;
     FrontendWidget* widget_ok;
     FrontendWidget* widget_disable;
     float dismiss_progress;
     float dismiss_step;
-} Tip;
-typedef Tip TipSlot;
+} cRTip;
 
 /* Authored root cRHighScore owner. The proved 0xf4-byte widget bank is
- * followed by a separate 0x14-byte root gap before TipManager. */
+ * followed by a separate 0x14-byte root gap before cRTipManager. */
 typedef struct cRHighScore {
     int32_t field_00;
     int32_t mode;
@@ -2169,14 +2169,20 @@ typedef struct cRHighScore {
     FrontendWidget* replay_row_widgets[10];
 } cRHighScore;
 
-typedef struct TipManager {
+typedef struct cRTipManager {
     BodBase bod;
-    Tip tips[3];
-} TipManager;
+    cRTip tips[3];
+} cRTipManager;
+
+typedef char cRTipData_must_be_0x14[
+    (sizeof(cRTipData) == 0x14) ? 1 : -1];
+typedef char cRTip_must_be_0x20[(sizeof(cRTip) == 0x20) ? 1 : -1];
+typedef char cRTipManager_must_be_0x98[
+    (sizeof(cRTipManager) == 0x98) ? 1 : -1];
 
 typedef struct PlayerRowEventState {
     int32_t id;
-    TipData tip_definition;
+    cRTipData tip_definition;
 } PlayerRowEventState;
 
 typedef struct Tutorial {
@@ -2936,13 +2942,13 @@ void __thiscall update_snail_skin_transition(SnailSkin* snail_skin);
 void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds);
 void __thiscall store_color4f(tColour* color, float r, float g, float b, float a);
 tColourSmall* __thiscall pack_color_rgba_u8(tColourSmall* out, tColour* color);
-void __thiscall kill_tip_widgets(Tip* tip);
-void __thiscall initialize_tip(Tip* tip, TipData* definition, int32_t hide_disable_button);
-void __thiscall update_tip(Tip* tip);
-void __thiscall initialize_tip_manager(TipManager* manager);
-void __thiscall uninit_tips(TipManager* manager);
-Tip* __thiscall enqueue_tip_message(TipManager* manager, TipData* definition, int32_t hide_disable_button);
-void __thiscall update_tip_manager(TipManager* manager);
+void __thiscall kill_tip_widgets(cRTip* tip);
+void __thiscall initialize_tip(cRTip* tip, cRTipData* definition, int32_t hide_disable_button);
+void __thiscall update_tip(cRTip* tip);
+void __thiscall initialize_tip_manager(cRTipManager* manager);
+void __thiscall uninit_tips(cRTipManager* manager);
+cRTip* __thiscall enqueue_tip_message(cRTipManager* manager, cRTipData* definition, int32_t hide_disable_button);
+void __thiscall update_tip_manager(cRTipManager* manager);
 void __thiscall initialize_tutorial(Tutorial* tutorial);
 void __thiscall uninit_tutorial(Tutorial* tutorial);
 void __thiscall update_tutorial(Tutorial* tutorial);

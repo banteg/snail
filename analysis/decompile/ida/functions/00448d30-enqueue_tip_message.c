@@ -3,14 +3,14 @@
 /* selector: enqueue_tip_message */
 
 // Exact `cRTipManager::TipNew(cRTipData*, ...)` member: selects one of the three inline Tips, initializes it from authored TipData, returns the selected Tip, and warns if all three are active.
-Tip *__thiscall enqueue_tip_message(TipManager *manager, TipData *definition, int32_t hide_disable_button)
+cRTip *__thiscall enqueue_tip_message(cRTipManager *manager, cRTipData *definition, int32_t hide_disable_button)
 {
   int v3; // eax
-  Tip *i; // edx
-  Tip *v6; // esi
+  cRTip *i; // edx
+  cRTip *v6; // esi
 
   v3 = 0;
-  for ( i = manager->tips; i->active; ++i )
+  for ( i = manager->tips; i->active != 0; ++i )
   {
     if ( ++v3 >= 3 )
     {

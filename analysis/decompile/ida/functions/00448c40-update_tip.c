@@ -3,7 +3,7 @@
 /* selector: update_tip */
 
 // Exact `cRTip::AI()` member: runs one Tip, handling hide or show state, button-click consumption, timed expiry, and the final teardown or frontend-state restore path.
-void __thiscall update_tip(Tip *tip)
+void __thiscall update_tip(cRTip *tip)
 {
   FrontendWidget *widget_main; // ecx
   FrontendWidget *widget_ok; // ecx
@@ -11,7 +11,7 @@ void __thiscall update_tip(Tip *tip)
   double v5; // st7
 
   widget_main = tip->widget_main;
-  if ( g_game_base->subgame.subgame_pause_gate )
+  if ( g_game_base->subgame.subgame_pause_gate != 0 )
   {
     hide_border_init(widget_main);
   }
@@ -19,9 +19,8 @@ void __thiscall update_tip(Tip *tip)
   {
     unhide_border_init(widget_main);
     widget_ok = tip->widget_ok;
-    if ( widget_ok && (widget_flags = widget_ok->widget_flags, (widget_flags & 0x20) != 0)
-      || (widget_ok = tip->widget_disable) != nullptr
-      && (widget_flags = widget_ok->widget_flags, (widget_flags & 0x20) != 0) )
+    if ( widget_ok != nullptr && ((widget_flags = widget_ok->widget_flags) & 0x20) != 0
+      || (widget_ok = tip->widget_disable) != nullptr && ((widget_flags = widget_ok->widget_flags) & 0x20) != 0 )
     {
       LOBYTE(widget_flags) = widget_flags & 0xDF;
       widget_ok->widget_flags = widget_flags;

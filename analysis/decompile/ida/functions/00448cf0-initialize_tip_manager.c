@@ -3,18 +3,15 @@
 /* selector: initialize_tip_manager */
 
 // Exact `cRTipManager::Init()` member that clears the three inline Tips at TipManager +0x38.
-void __thiscall initialize_tip_manager(TipManager *manager)
+void __thiscall initialize_tip_manager(cRTipManager *manager)
 {
-  Tip *tips; // eax
-  int v2; // ecx
+  cRTip *tips; // eax
+  int i; // ecx
 
   tips = manager->tips;
-  v2 = 3;
-  do
+  for ( i = 3; i != 0; --i )
   {
     tips->active = 0;
     ++tips;
-    --v2;
   }
-  while ( v2 );
 }

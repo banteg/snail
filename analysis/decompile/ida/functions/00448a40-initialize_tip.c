@@ -3,16 +3,16 @@
 /* selector: initialize_tip */
 
 // Implements `cRTip::Init(cRTipData*, ...)`: builds one Tip-owned main border widget, optional OK or Disable buttons, and the timed auto-dismiss rate for transient tips. The Windows hide-disable-button formal is a 32-bit int even though mobile ports spell it bool or signed char.
-void __thiscall initialize_tip(Tip *tip, TipData *definition, int32_t hide_disable_button)
+void __thiscall initialize_tip(cRTip *tip, cRTipData *definition, int32_t hide_disable_button)
 {
-  TipData *v4; // edi
+  cRTipData *v4; // edi
   tColour *v5; // eax
-  TipData *v6; // eax
+  cRTipData *v6; // eax
   tColour *v7; // eax
   tColour *v8; // eax
   tColour *v9; // eax
   FrontendWidget *widget_main; // ecx
-  TipData *v11; // ecx
+  cRTipData *v11; // ecx
   int32_t v12; // [esp-8h] [ebp-24h]
   float v13; // [esp-4h] [ebp-20h]
   float anchor_x; // [esp+0h] [ebp-1Ch]
