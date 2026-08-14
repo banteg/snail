@@ -256,15 +256,17 @@ spill, join, scope, or matrix-lifetime variants was reopened.
 
 Fresh diagnostics against the reopened Windows database align all 30 target
 and candidate basic blocks and the complete 0xe8-byte frame. The only native
-instructions without candidate counterparts are still the mode-0 completion
-argument's byte spill and enclosing-word reload; there is no missing state arm,
-completion call, or control-flow edge behind the 503/505 result.
+instructions without candidate counterparts were the mode-0 completion
+argument's byte spill and enclosing-word reload; there was no missing state
+arm, completion call, or control-flow edge behind the 503/505 result.
 
-Android and iOS both pass the collected-parcel count and perfect-delivery
-comparison directly to `cRCompletion::Init`. The Windows source now preserves
-that authored call shape instead of introducing `delivered_count` and
-`perfect_delivery` locals. VC6 emits the same 97.62% candidate with all 58
-references clean, so this is a tradeoff-free source recovery independent of
-the historical experiment count. Four mutation plans anchored to those retired
-synthetic locals were removed; their measured results remain in the historical
-ledger, but the runnable plan set now describes the current source.
+That spill is an actual source lifetime. Declaring `perfect_delivery` as a
+`bool` and publishing true or false through the comparison's two arms produces
+the native byte store, full-word reload, and completion-call argument exactly.
+A direct expression, initialized local, split assignment, signed or unsigned
+byte, and integer owners all remain at the prior frontier; the explicit
+boolean branch is the sole exact form in the recorded 12-variant sweep.
+
+This keeps the recovered completion decision as a named value rather than a
+register-shaped dependency. Focused matching is exactly 100.00% (`505/505`,
+prefix 505) with all 58 references clean.

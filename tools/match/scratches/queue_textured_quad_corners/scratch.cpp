@@ -34,27 +34,26 @@ int OSDPrintUV(
             return report_errorf("Font print buffer overflow Increase RFONT_PRINT_MAX in font.h");
 
         int offset = index * sizeof(cFontPrintBuffer);
-        cFontPrintBuffer* entry = (cFontPrintBuffer*)((char*)g_font_queue + offset);
-        entry->flags = flags | 2;
-        entry->texture_id = texture_id;
-        entry->color = *color;
-        entry->x0 = x0;
-        entry->y0 = y0;
-        entry->x1 = x1;
-        entry->y1 = y1;
-        entry->x2 = x2;
-        entry->y2 = y2;
-        entry->x3 = x3;
-        entry->y3 = y3;
+        g_font_queue[index].flags = flags | 2;
+        g_font_queue[index].texture_id = texture_id;
+        g_font_queue[index].color = *color;
+        g_font_queue[index].x0 = x0;
+        g_font_queue[index].y0 = y0;
+        g_font_queue[index].x1 = x1;
+        g_font_queue[index].y1 = y1;
+        g_font_queue[index].x2 = x2;
+        g_font_queue[index].y2 = y2;
+        g_font_queue[index].x3 = x3;
+        g_font_queue[index].y3 = y3;
+        g_font_queue[index].width = 0.0f;
+        g_font_queue[index].height = 0.0f;
+        g_font_queue[index].u0 = u0;
+        g_font_queue[index].v0 = v0;
+        g_font_queue[index].u1 = u1;
+        g_font_queue[index].v1 = v1;
+        g_font_queue[index].blend_mode = blend_mode;
+        g_font_queue[index].rotation = rotation;
         g_font_queue_count = index + 1;
-        entry->width = 0.0f;
-        entry->height = 0.0f;
-        entry->u0 = u0;
-        entry->v0 = v0;
-        entry->u1 = u1;
-        entry->v1 = v1;
-        entry->blend_mode = blend_mode;
-        entry->rotation = rotation;
         return offset;
     }
 }

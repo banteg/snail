@@ -10,7 +10,6 @@ void FontMake3D(short font_id)
     int index = 0;
 
     if (g_font_sheets[font].slot_count > 0) {
-        float* scale_out = g_font3d_scales;
         do {
             BodBase* bod = &g_font3d_bods[index];
             Object*& object = bod->object;
@@ -49,9 +48,8 @@ void FontMake3D(short font_id)
 
             object->blend_mode = 1;
             object->flags |= OBJECT_FLAG_REFRESH_TINT_EACH_DRAW;
-            *scale_out = scale;
+            g_font3d_scales[index] = scale;
             ++index;
-            ++scale_out;
         } while (index < g_font_sheets[font].slot_count);
     }
 

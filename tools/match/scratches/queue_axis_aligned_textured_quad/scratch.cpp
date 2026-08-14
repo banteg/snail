@@ -21,25 +21,20 @@ int OSDPrint(
         if (width != 0.0f) {
             if (height != 0.0f) {
                 int offset = index * sizeof(cFontPrintBuffer);
-                cFontPrintBuffer* entry = (cFontPrintBuffer*)((char*)g_font_queue + offset);
-                entry->flags = flags | 2;
-                entry->texture_id = texture_id;
-                entry->color = *color;
-                entry->x0 = x;
-                entry->y0 = y;
-                entry->width = width;
-                entry->height = height;
-                float& stored_u0 = entry->u0;
-                float& stored_v0 = entry->v0;
-                float& stored_u1 = entry->u1;
-                float& stored_v1 = entry->v1;
-                stored_u0 = 0.0f;
-                stored_v0 = 0.0f;
-                stored_u1 = 1.0f;
-                stored_v1 = 1.0f;
-                entry->blend_mode = blend_mode;
+                g_font_queue[index].flags = flags | 2;
+                g_font_queue[index].texture_id = texture_id;
+                g_font_queue[index].color = *color;
+                g_font_queue[index].x0 = x;
+                g_font_queue[index].y0 = y;
+                g_font_queue[index].width = width;
+                g_font_queue[index].height = height;
+                g_font_queue[index].u0 = 0.0f;
+                g_font_queue[index].v0 = 0.0f;
+                g_font_queue[index].u1 = 1.0f;
+                g_font_queue[index].v1 = 1.0f;
+                g_font_queue[index].blend_mode = blend_mode;
                 g_font_queue_count = index + 1;
-                entry->rotation = 0.0f;
+                g_font_queue[index].rotation = 0.0f;
                 return offset;
             }
         }

@@ -26,20 +26,19 @@ int OSDPrintUV(
         if (width != 0.0f) {
             if (height != 0.0f) {
                 int offset = index * sizeof(cFontPrintBuffer);
-                cFontPrintBuffer* entry = (cFontPrintBuffer*)((char*)g_font_queue + offset);
-                entry->flags = flags | 2;
-                entry->texture_id = texture_id;
-                entry->color = *color;
-                entry->x0 = x;
-                entry->y0 = y;
-                entry->width = width;
-                entry->height = height;
-                entry->u0 = u0;
-                entry->v0 = v0;
-                entry->u1 = u1;
-                entry->v1 = v1;
-                entry->blend_mode = blend_mode;
-                entry->rotation = rotation;
+                g_font_queue[index].flags = flags | 2;
+                g_font_queue[index].texture_id = texture_id;
+                g_font_queue[index].color = *color;
+                g_font_queue[index].x0 = x;
+                g_font_queue[index].y0 = y;
+                g_font_queue[index].width = width;
+                g_font_queue[index].height = height;
+                g_font_queue[index].u0 = u0;
+                g_font_queue[index].v0 = v0;
+                g_font_queue[index].u1 = u1;
+                g_font_queue[index].v1 = v1;
+                g_font_queue[index].blend_mode = blend_mode;
+                g_font_queue[index].rotation = rotation;
                 g_font_queue_count = index + 1;
                 return offset;
             }

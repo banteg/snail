@@ -175,11 +175,15 @@ void cRCutScene::AI()
 
         GameRoot* game = g_game;
         if (game->subgame.level_mode == 0) {
-            game->subgame.completion.Init(
-                player->parcels_collected,
-                player->parcels_collected
+            bool perfect_delivery;
+            if (player->parcels_collected
                     == *(int*)((char*)g_game
-                        + LEVEL_PARCEL_COUNT_FROM_GAME_ROOT));
+                        + LEVEL_PARCEL_COUNT_FROM_GAME_ROOT))
+                perfect_delivery = true;
+            else
+                perfect_delivery = false;
+            game->subgame.completion.Init(
+                player->parcels_collected, perfect_delivery);
         } else if (game->subgame.level_mode == 1) {
             game->subgame.completion.Init(player->parcels_collected, 1);
         }
