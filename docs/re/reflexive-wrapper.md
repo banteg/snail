@@ -71,3 +71,18 @@ For current work:
 - reverse gameplay, rendering, pathing, and content loading against [`SnailMail_unwrapped.exe`](../../artifacts/bin/SnailMail_unwrapped.exe)
 - use [`SnailMail.RWG`](../../artifacts/bin/SnailMail.RWG) only when you need to confirm wrapper provenance or reproduce the original decryption flow
 - ignore [`SnailMail.exe`](../../artifacts/bin/SnailMail.exe) unless the task is specifically about the Reflexive wrapper
+
+## External Publisher Packages
+
+Five publisher packages reviewed on 2026-08-14 are intentionally outside the
+project scope. The two ZIPs carry the same RealArcade-branded game payload, the
+Nickelodeon/Big Fish executable is ActiveMARK-protected, and the two Reflexive
+installers either duplicate the retained installer or change only channel
+metadata. None provides additional symbols, a distinct compiler lineage, or a
+second native matching target worth maintaining.
+
+The RealArcade-derived executable was useful only as a bounded source-revision
+control. Its three material differences are recorded beside the canonical
+`update_galaxy`, `initialize_loading_screen`, and
+`register_font_texture_sheet` scratches. Do not import the publisher packages,
+archives, or protected executable into the matching corpus.

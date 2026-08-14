@@ -302,3 +302,19 @@ ten renamed internal call relocations report as expected operand mismatches;
 registering the exact owner-qualified aliases restores the established 55
 clean operands. The three receipted mutation plans and experiments ledger are
 intentionally byte-identical and remain historical rather than active work.
+
+## 2026-08-14 RealArcade revision boundary
+
+The recovered 2004-11-10 RealArcade-derived executable maps this function at
+the same address. Through the next function boundary, the earlier body decodes
+to 569 instructions and the 2004-12-04 canonical target to 579. The sole
+replacement block is the replay handoff: the earlier body proceeds directly to
+`selected_level_record_active = 1`, while the canonical body first writes
+`selected_index` to the enclosing subgame's level argument and calls
+`cRSubTracks::Load(level_mode, level_mode_arg)`.
+
+This independently confirms the current source placement of the replay load
+and proves it is a later source revision, not compiler scheduling. The rest of
+the function remains structurally identical modulo relocated addresses, so the
+older build does not offer an alternate allocation shape for the documented
+canonical residual.

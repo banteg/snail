@@ -33,3 +33,24 @@ chooses the inverse roles for the recovered source.
 
 The directory and manifest retain `register_font_texture_sheet` as the stable
 matcher identifier.
+
+## 2026-08-14 runtime-to-prebuilt atlas revision
+
+The recovered RealArcade-derived build contains the predecessor of this
+routine. It allocates two TGA buffers labelled `Font Tga0` and `Font Tga1`,
+copies the source header into both, halves their widths, and carries a complete
+per-pixel split loop before scanning glyph markers. The canonical build removes
+that runtime image construction and instead derives `...0.tga`/`...1.tga`
+paths for two archive-backed texture registrations.
+
+The paired archives make the source change exact: the earlier DAT lacks only
+`FONT-MENU-HOVER0.TGA` and `FONT-MENU-HOVER1.TGA`, while the canonical files are
+pixel-exact crops of the shared 2048x64 atlas at x=0 and x=`0x3c0`. This
+independently validates the current split-page ownership, filename derivation,
+and `split_x = 0x3c0`; it does not change the canonical compiler-allocation
+residual.
+
+Two predecessor immediates are not trusted source constants. The redistributed
+EXE tests width `0x5001` and its otherwise unreachable copy path uses x=`0x384`,
+both inconsistent with the extracted 0x800-wide source and exact canonical
+x=`0x3c0` crop. Keep them as a post-link-integrity warning, not a mutation lead.

@@ -23,3 +23,17 @@ The three linked D3DX 8 texture wrappers have independently verified
 `__stdcall` cleanup: `d3dx_create_texture_from_file_in_memory_ex` returns with
 `0x3c`, `d3dx_create_texture_from_file_ex` with `0x38`, and
 `d3dx_create_texture_from_file` with `0x0c`.
+
+## 2026-08-14 distribution-budget control
+
+The recovered RealArcade-derived executable and canonical initializer both
+decode to 263 instructions through the next function boundary. Their sole
+non-relocation difference is the first store: loading budget `0x4fe` rather
+than canonical `0x4fc`.
+The earlier DAT has 601 entries and a runtime font-atlas splitting path; the
+canonical DAT has 603 entries and two prebuilt split font textures.
+
+This makes the budget a distribution/content constant and confirms that the
+remaining saved-register mismatch is not missing loading-screen behavior. The
+older build supplies no alternative source shape worth replaying against the
+canonical target.
