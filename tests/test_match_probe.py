@@ -53,30 +53,32 @@ def test_source_probe_compares_one_baseline_and_overlay(
     tmp_path: Path,
 ) -> None:
     config = _config(tmp_path)
+    (tmp_path / "scratch.cpp").write_text(
+        "baseline source\n",
+        encoding="utf-8",
+    )
     calls: list[tuple[str, ScratchConfig]] = []
-
-    def fake_baseline(
-        profile: ScratchConfig,
-        *_args,
-        **_kwargs,
-    ) -> ScratchStatus:
-        calls.append(("baseline", profile))
-        return _status(profile, 0.5, prefix=2)
 
     def fake_overlay(
         profile: ScratchConfig,
         source_text: str,
         **_kwargs,
     ) -> ScratchStatus:
+        if source_text == "baseline source\n":
+            calls.append(("baseline", profile))
+            return _status(
+                replace(profile, directory=Path("/tmp/baseline-shadow")),
+                0.5,
+                prefix=2,
+            )
         assert source_text == "alternate source\n"
         calls.append(("probe", profile))
         return _status(
-            replace(profile, directory=Path("/tmp/shadow")),
+            replace(profile, directory=Path("/tmp/probe-shadow")),
             0.75,
             prefix=4,
         )
 
-    monkeypatch.setattr("snail.match.evaluate_scratch", fake_baseline)
     monkeypatch.setattr(
         "snail.match.evaluate_source_overlay",
         fake_overlay,

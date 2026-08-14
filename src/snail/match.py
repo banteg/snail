@@ -347,6 +347,10 @@ class DiffRegion:
     target_end: int
     candidate_start: int
     candidate_end: int
+    changed_target_start: int
+    changed_target_end: int
+    changed_candidate_start: int
+    changed_candidate_end: int
     changed_target_instructions: int
     changed_candidate_instructions: int
     ratio: float
@@ -2890,6 +2894,10 @@ def diff_regions(
                 target_end=target_end,
                 candidate_start=candidate_start,
                 candidate_end=candidate_end,
+                changed_target_start=group["a0"],
+                changed_target_end=group["a1"],
+                changed_candidate_start=group["b0"],
+                changed_candidate_end=group["b1"],
                 changed_target_instructions=group["changed_a"],
                 changed_candidate_instructions=group["changed_b"],
                 ratio=local_ratio,
@@ -2906,11 +2914,15 @@ def diff_region_payload(region: DiffRegion) -> dict[str, Any]:
         "target_instructions": {
             "start": region.target_start,
             "end": region.target_end,
+            "changed_start": region.changed_target_start,
+            "changed_end": region.changed_target_end,
             "changed": region.changed_target_instructions,
         },
         "candidate_instructions": {
             "start": region.candidate_start,
             "end": region.candidate_end,
+            "changed_start": region.changed_candidate_start,
+            "changed_end": region.changed_candidate_end,
             "changed": region.changed_candidate_instructions,
         },
         "match_ratio": region.ratio,
@@ -2964,6 +2976,7 @@ def match_result_payload(
     *,
     region_context: int = 4,
     max_regions: int | None = None,
+    listing_spans: tuple[CompilerListingSpan, ...] | None = None,
 ) -> dict[str, Any]:
     regions = (
         diff_regions(result, context=region_context, max_regions=max_regions)
@@ -2975,6 +2988,43 @@ def match_result_payload(
         if result.target_disassembly or result.candidate_disassembly
         else None
     )
+    region_payloads = [diff_region_payload(region) for region in regions]
+    if listing_spans is not None and result.candidate_disassembly:
+        for region, payload in zip(regions, region_payloads, strict=True):
+            candidate_lines = result.candidate_disassembly[
+                region.changed_candidate_start : region.changed_candidate_end
+            ]
+            candidate_offsets = {line.offset for line in candidate_lines}
+            matching_spans = tuple(
+                span
+                for span in listing_spans
+                if candidate_offsets.intersection(span.instruction_offsets)
+            )
+            if not candidate_lines or not matching_spans:
+                payload["candidate_source"] = None
+                continue
+            payload["candidate_source"] = {
+                "source": "scratch.cpp",
+                "lines": sorted(
+                    {
+                        line
+                        for span in matching_spans
+                        for line in span.source_lines
+                    }
+                ),
+                "instruction_offsets": sorted(
+                    candidate_offsets.intersection(
+                        offset
+                        for span in matching_spans
+                        for offset in span.instruction_offsets
+                    )
+                ),
+                "byte_range": {
+                    "start": candidate_lines[0].offset,
+                    "end": candidate_lines[-1].offset + candidate_lines[-1].size,
+                },
+            }
+
     return {
         "exact": result.ratio == 1.0 and result.masked_operand_audit.problem_count == 0,
         "match_ratio": result.ratio,
@@ -2988,8 +3038,14 @@ def match_result_payload(
             "unaudited": result.masked_operand_audit.unaudited_count,
         },
         "stack_frame": stack_frame_diagnostic_payload(result),
-        "regions": [diff_region_payload(region) for region in regions],
+        "regions": region_payloads,
         "cfg_alignment": cfg_alignment_payload(cfg) if cfg is not None else None,
+        "candidate_source_caveat": (
+            "Source-line scheduling describes only the reconstructed candidate compilation; "
+            "it does not recover native local names or prove native variable lifetimes."
+            if listing_spans is not None
+            else None
+        ),
     }
 
 
@@ -4296,9 +4352,13 @@ def evaluate_source_probe(
         compiler=compiler or config.compiler,
         cflags=cflags or config.cflags,
     )
-    baseline = evaluate_scratch(
+    baseline_source = (config.directory / "scratch.cpp").read_text(
+        encoding="utf-8",
+    )
+    baseline = evaluate_source_overlay(
         baseline_config,
-        match_root,
+        baseline_source,
+        match_root=match_root,
         image_path=image_path,
         manifest=manifest,
     )

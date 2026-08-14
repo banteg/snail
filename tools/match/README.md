@@ -126,7 +126,10 @@ Useful analysis helpers:
   allocation once, then aligns conservative basic-block pairs and localized
   mismatch regions. The frame delta is a diagnostic clue, not a byte count of
   missing locals: compiler temporaries and stack-slot coloring contribute to
-  the allocation. CFG edges are checked only through a monotonic backbone of
+  the allocation. Add `--source-lines` to generate a proven-equivalent compiler
+  listing and attach the candidate `scratch.cpp` lines scheduled in each
+  mismatch's changed instruction span. Those lines describe only candidate scheduling; they do not
+  recover native local names or lifetimes. CFG edges are checked only through a monotonic backbone of
   unique exact blocks within 5% normalized order distance. Duplicate or
   displaced exact blocks and similar blocks remain visible as heuristic pairs,
   but cannot manufacture anchored edge conflicts. `anchors=` is therefore the

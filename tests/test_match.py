@@ -11,6 +11,7 @@ from snail.match import (
     CfgAlignment,
     CfgBlockPair,
     ClusterTotals,
+    CompilerListingSpan,
     DisassemblyLine,
     IDIOM_CASES_BY_NAME,
     ImageSection,
@@ -42,6 +43,7 @@ from snail.match import (
     load_reference_symbol_manifest,
     load_scratch_config,
     manifest_cluster_totals,
+    match_result_payload,
     match_function,
     normalize_function,
     parse_coff_object,
@@ -2917,6 +2919,35 @@ def test_stack_frame_diagnostic_reports_one_prologue_delta() -> None:
     assert payload["candidate_prologue_allocation_bytes"] == 0xC4
     assert payload["target_minus_candidate_bytes"] == 0x30
     assert payload["classification"] == "native-frame-larger"
+
+
+def test_match_result_payload_maps_listing_source_lines_to_mismatch_region() -> None:
+    result = MatchResult(
+        ratio=2 / 3,
+        prefix_instructions=1,
+        target_lines=("push ebp", "mov eax, ecx", "ret"),
+        candidate_lines=("push ebp", "mov edx, ecx", "ret"),
+        candidate_disassembly=(
+            DisassemblyLine(0, 0, "push ebp", size=1),
+            DisassemblyLine(1, 1, "mov edx, ecx", size=2),
+            DisassemblyLine(3, 3, "ret", size=1),
+        ),
+    )
+    spans = (
+        CompilerListingSpan((10,), (0,)),
+        CompilerListingSpan((11, 12), (1,)),
+        CompilerListingSpan((13,), (3,)),
+    )
+
+    payload = match_result_payload(result, region_context=0, listing_spans=spans)
+
+    assert payload["regions"][0]["candidate_source"] == {
+        "source": "scratch.cpp",
+        "lines": [11, 12],
+        "instruction_offsets": [1],
+        "byte_range": {"start": 1, "end": 3},
+    }
+    assert "reconstructed candidate" in payload["candidate_source_caveat"]
 
 
 def test_idiom_case_registry_contains_bitfield_probe() -> None:

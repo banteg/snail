@@ -23,11 +23,11 @@
     },
     {
       "name": "color-after-travel",
-      "find": "                (float)next_math_random_value() * 0.0000305175781f * 35.0f;\n\n            entries[index].position =",
+      "find": "                (float)gRMathRand2() * 0.0000305175781f * 35.0f;\n\n            entries[index].position =",
       "replacements": [
         {
           "name": "early-color",
-          "text": "                (float)next_math_random_value() * 0.0000305175781f * 35.0f;\n\n            tColour early_color;\n            entries[index].position ="
+          "text": "                (float)gRMathRand2() * 0.0000305175781f * 35.0f;\n\n            tColour early_color;\n            entries[index].position ="
         }
       ]
     },

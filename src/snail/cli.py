@@ -851,6 +851,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Maximum mismatch regions to report.",
     )
     match_inspect_parser.add_argument(
+        "--source-lines",
+        action="store_true",
+        help=(
+            "Generate a proven-equivalent compiler listing and attach candidate "
+            "scratch.cpp lines to mismatch regions."
+        ),
+    )
+    match_inspect_parser.add_argument(
         "--json",
         action="store_true",
         help="Print machine-readable diagnostics.",
@@ -2327,10 +2335,15 @@ def main(argv: Sequence[str] | None = None) -> int:
                 manifest=manifest,
                 match_root=args.match_root,
             )
+            listing = None
+            if args.source_lines:
+                config = load_scratch_config(args.directory.resolve())
+                listing = generate_compiler_listing(config, args.match_root)
             payload = match_result_payload(
                 result,
                 region_context=args.region_context,
                 max_regions=args.max_regions,
+                listing_spans=listing.spans if listing is not None else None,
             )
         except Exception as error:  # noqa: BLE001
             print(
@@ -2406,6 +2419,14 @@ def main(argv: Sequence[str] | None = None) -> int:
                 f"candidate={candidate_region['start']}:{candidate_region['end']} "
                 f"match={region['match_ratio']:.1%} delta={region['instruction_delta']:+d}"
             )
+            candidate_source = region.get("candidate_source")
+            if candidate_source is not None:
+                source_lines = ",".join(str(line) for line in candidate_source["lines"])
+                byte_range = candidate_source["byte_range"]
+                print(
+                    f"  source={candidate_source['source']}:{source_lines} "
+                    f"candidate-bytes=+0x{byte_range['start']:x}:+0x{byte_range['end']:x}"
+                )
         return 0
 
     if args.command == "match" and args.match_command == "dump":
