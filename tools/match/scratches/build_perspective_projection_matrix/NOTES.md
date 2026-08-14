@@ -29,6 +29,7 @@ source-shape debt rather than closed with inline assembly.
 2026-07-03 provenance identification: this is `D3DXMatrixPerspectiveFovRH`
 from the D3DX8 static library (cot(fov/2) y-scale, `m22 = zf/(zn-zf)`,
 `m23 = -1`, `m32 = zn*zf/(zn-zf)` are the RH variant exactly). The native
-`fsincos` scheduling is VC7 build-9178 codegen that msvc6.5 cannot emit; per
-the toolchain rule this is link-the-original-lib territory, and the scratch is
-a semantic reference only.
+`fsincos` scheduling differs from the standard VC6 reproduction, but that
+single codegen idiom does not recover a compiler-build-to-object mapping from
+the aggregate Rich header. This remains link-the-original-library territory,
+and the scratch is a semantic reference only.

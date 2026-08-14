@@ -5972,19 +5972,19 @@
       "address": "0x44fd90",
       "name": "initialize_translation_matrix",
       "port_scope": "third-party",
-      "description": "DirectX 8 SDK `D3DXMatrixTranslation` static-library body built with VC7 build 9178. Retained as a semantic and extent reference for game callsites, but excluded from port-relevant matching totals."
+      "description": "DirectX 8 SDK `D3DXMatrixTranslation` static-library body, identified independently from its exact interface and matrix semantics. Its compiler-build-to-object mapping is not recovered from the aggregate Rich header. Retained as a semantic and extent reference for game callsites, but excluded from port-relevant matching totals."
     },
     {
       "address": "0x450314",
       "name": "build_perspective_projection_matrix",
       "port_scope": "third-party",
-      "description": "DirectX 8 SDK `D3DXMatrixPerspectiveFovRH` static-library body built with VC7 build 9178. Retained as a semantic and extent reference for `render_camera` and toon-outline callsites, but excluded from port-relevant matching totals."
+      "description": "DirectX 8 SDK `D3DXMatrixPerspectiveFovRH` static-library body, identified independently from its exact interface and projection semantics. Its compiler-build-to-object mapping is not recovered from the aggregate Rich header. Retained as a semantic and extent reference for `render_camera` and toon-outline callsites, but excluded from port-relevant matching totals."
     },
     {
       "address": "0x451ad9",
       "name": "build_camera_view_matrix",
       "port_scope": "third-party",
-      "description": "DirectX 8 SDK `D3DXMatrixLookAtRH` static-library body built with VC7 build 9178. Retained as a semantic and extent reference for `render_camera`, but excluded from port-relevant matching totals."
+      "description": "DirectX 8 SDK `D3DXMatrixLookAtRH` static-library body, identified independently from its exact interface, right-handed view semantics, and D3DX vector-normalize call. Its compiler-build-to-object mapping is not recovered from the aggregate Rich header. Retained as a semantic and extent reference for `render_camera`, but excluded from port-relevant matching totals."
     }
   ],
   "source_database": "artifacts/binary_ninja/SnailMail.RWG.bndb"

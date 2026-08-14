@@ -2,7 +2,7 @@
 /* function: build_perspective_projection_matrix @ 0x450314 */
 /* selector: build_perspective_projection_matrix */
 
-// DirectX 8 SDK `D3DXMatrixPerspectiveFovRH` static-library body built with VC7 build 9178. Retained as a semantic and extent reference for `render_camera` and toon-outline callsites, but excluded from authored gameplay matching totals.
+// DirectX 8 SDK `D3DXMatrixPerspectiveFovRH` static-library body, identified independently from its exact interface and projection semantics. Its compiler-build-to-object mapping is not recovered from the aggregate Rich header. Retained as a semantic and extent reference for `render_camera` and toon-outline callsites, but excluded from authored gameplay matching totals.
 TransformMatrix *__stdcall build_perspective_projection_matrix(
         TransformMatrix *matrix,
         float vertical_fov_radians,

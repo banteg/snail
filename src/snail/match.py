@@ -6257,8 +6257,8 @@ STATUS_SECTION_ORDER = (
     "Excluded: Replaceable Platform",
     "Excluded: Third-party",
 )
-# build column stays empty unless a scratch deviates from the project-wide
-# toolchain assumption (msvc6.5 /O2 /G5 /W3 for all game code)
+# Build column stays empty unless a scratch deviates from the project-standard
+# reproduction baseline (the msvc6.5 nickname for SP5-style VC6, /O2 /G5 /W3).
 STATUS_HEADER = (
     "",
     "function",

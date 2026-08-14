@@ -2,7 +2,7 @@
 /* function: build_camera_view_matrix @ 0x451ad9 */
 /* selector: build_camera_view_matrix */
 
-// DirectX 8 SDK `D3DXMatrixLookAtRH` static-library body built with VC7 build 9178. Retained as a semantic and extent reference for `render_camera`, but excluded from authored gameplay matching totals.
+// DirectX 8 SDK `D3DXMatrixLookAtRH` static-library body, identified independently from its exact interface, right-handed view semantics, and D3DX vector-normalize call. Its compiler-build-to-object mapping is not recovered from the aggregate Rich header. Retained as a semantic and extent reference for `render_camera`, but excluded from authored gameplay matching totals.
 TransformMatrix *__stdcall build_camera_view_matrix(
         TransformMatrix *matrix,
         const Vec3 *eye,

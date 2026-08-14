@@ -9,28 +9,54 @@ reading cannot settle.
 
 ## Toolchain provenance
 
-The Rich header of the unwrapped exe (see `snail inspect`) pins the original
-build environment:
+The canonical image has a checksum-valid Rich header. Run
+`uv run snail inspect artifacts/bin/SnailMail_unwrapped.exe` for its ordered
+numeric records, XOR key, checksum result, PE fields, sections, directories,
+and imports. The durable interpretation is deliberately narrower than the old
+one:
 
-- game C/C++ objects: VC6 cl 12.00 builds 8168 (RTM), 8447 (service-pack era),
-  8966 (Processor Pack); linked with link 6.0 on 2004-12-04
-- statically linked VC6 CRT (MASM 6.13/6.14 + C objects)
-- third-party objects built with VC7 build 9178: the D3DX8 static library from
-  the DirectX 8.x SDK (plus zlib 1.2.1 / libpng 1.2.x) — link the original
-  libs, never decompile these
-- no RTTI, 25 C++ EH functions
+- product IDs 10/11 record ordinary VC6 C/C++ contributions from build
+  families 8168, 8447, and 8966; 8966 is the normal SP5 backend/object family,
+  not the Processor Pack;
+- product IDs 28/29 record a C++-dominated VC7.0-family build-9178 population,
+  while product ID 96 records one VC7.1-family build-4035 contribution;
+- MASM 6.13/6.14, alias-object, resource, old-linker/library, and import-library
+  contributions are present, but their owning libraries are not encoded;
+- no standard Processor Pack C/C++ rows (product IDs 48/49, build 9044) appear;
+  this is aggregate provenance evidence against Processor Pack inputs; and
+- the PE optional header reports linker version 6.0 and its unauthenticated
+  timestamp field decodes to 2004-12-04 22:38:32 UTC. The current image has no
+  debug-directory entry; that does not prove that no PDB, MAP, or DBG existed.
 
-**Project assumption: all game code compiles with `msvc6.5 /O2 /G5 /W3`.**
-Established empirically — 147+ functions across every subsystem match at 100%
-with exactly this configuration and nothing has required another one.
+Rich records aggregate the `@comp.id` values of included objects and static
+library members. They do not map builds to addresses, identify authored game
+translation units, name the final linker build, or prove that MASM objects are
+CRT and build-9178 objects are D3DX8/zlib/libpng. The three D3DX8 matrix bodies
+and the libpng 1.2.5 boundary remain independently identified by their
+interfaces, implementation semantics, call relationships, and library API
+fingerprints; their exact compiler-build-to-object mapping remains unknown.
+
+The project-standard reproduction baseline is `msvc6.5 /O2 /G5 /W3`.
+`msvc6.5` is a project nickname for a historically coherent SP5-style VC6
+component set: the 12.00.8804 driver invokes C++ frontend 8964 and ordinary
+backend 8966. Hundreds of exact functions make it a strong empirical baseline,
+not proof that every original game translation unit used one component set.
 `scratch.conf` therefore only needs `FUNCTION` (plus `END`/`SYMBOL` when the
 extent or symbol needs overriding). `RECOVERY` and `RESIDUAL` record reviewed
 non-exact recovery state without affecting compilation. `COMPILER`/`CFLAGS`
 overrides still work but are for experiments only, and the STATUS build column
 stays empty unless a scratch deviates.
-When a function refuses to match, change the source shape,
-not the flags — every flag-looking pattern so far (dual-slot float temps,
-tail duplication, register pinning) turned out to be a source idiom.
+When a function refuses to match, pursue native-backed source shape before
+flags. An alternate profile needs independent provenance, ABI, or language
+evidence; a better fuzzy score is not compiler provenance.
+
+Reference basis: the [Microsoft PE/COFF specification](https://learn.microsoft.com/en-us/windows/win32/debug/pe-format),
+the [Rich-header object aggregation study](https://www.virusbulletin.com/virusbulletin/2020/01/vb2019-paper-rich-headers-leveraging-mysterious-artifact-pe-format/),
+the community-maintained [component/build table](https://github.com/dishather/richprint/blob/master/comp_id.txt),
+Microsoft's archived [VC6 SP3 component inventory](https://helparchive.huntertur.net/document/104797),
+and the contemporary [VC6 optimization guide](https://www.cs.cmu.edu/~rbd/doc/optcode.htm).
+Product names and servicing mappings from community Rich tables are evidence,
+not an official Microsoft Rich-header specification.
 
 ## Setup
 
@@ -329,8 +355,10 @@ and is worth less than an honest 60%:
 
 1. **No inline assembly.** `__asm`, `_asm`, `__declspec(naked)` — rejected
    mechanically by the harness (`validate_scratch_source`).
-2. **No flag shopping.** The toolchain is fixed (`msvc6.5 /O2 /G5 /W3`).
-   When a function refuses to match, change the source shape, not the flags.
+2. **No score-driven flag shopping.** Use the project-standard reproduction
+   baseline (`msvc6.5 /O2 /G5 /W3`). An override needs independent native or
+   provenance evidence; a better score alone is not evidence of the original
+   toolchain.
 3. **No normalizer gaming.** Don't invent extern symbols or other dummy
    relocation sources to turn a constant you can't explain into a masked
    `ADDR`; a symbol in a scratch must correspond to a real native global or

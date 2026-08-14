@@ -3086,15 +3086,16 @@ def test_mobile_gameplay_controllers_recover_authored_owners() -> None:
         scratch_root
         / "handle_subgoldy_collisions/shared-pickup-vector-mutations.json"
     ).exists()
-    for spec_name in (
+    retired_cutscene_specs = (
         "completion-init-join-mutations.json",
         "perfect-delivery-default-mutations.json",
         "perfect-delivery-publication-mutations.json",
-    ):
-        spec = (scratch_root / "update_cutscene" / spec_name).read_text(
-            encoding="utf-8"
-        )
-        assert "completion.Init" in spec
+        "perfect-delivery-scope-mutations.json",
+    )
+    for spec_name in retired_cutscene_specs:
+        assert not (scratch_root / "update_cutscene" / spec_name).exists()
+    for spec_path in (scratch_root / "update_cutscene").glob("*-mutations.json"):
+        spec = spec_path.read_text(encoding="utf-8")
         assert "initialize_completion_screen" not in spec
 
 

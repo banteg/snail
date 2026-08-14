@@ -1,5 +1,6 @@
 #!/bin/sh
-# Run VC6 cl.exe under wibo. Compiler selected via MSVC_VER (default msvc6.5).
+# Run a preserved VC6 bundle under Wibo. MSVC_VER defaults to the project's
+# msvc6.5 nickname for its SP5-style frontend/backend combination.
 # Usage: cl.sh [cl args...]
 set -eu
 

@@ -185,9 +185,9 @@ instructions, 98.99% score, 79-instruction prefix, and mismatch at candidate
 offset `0xc7`: the saved-row load still precedes the independent cell-cursor
 load.
 
-The three noncanonical probes are recorded in `experiments.jsonl`. This rules
-out the known VC6 service-pack and Processor Pack variants as the source of the
-tie-breaking difference. Combined with the recorded ordinary source shapes
-and exact cross-port behavior above, the scratch is now explicitly classified
-`RECOVERY=semantic-complete` with `RESIDUAL=compiler`; further source mutation
-would be byte coercion without a new semantic hypothesis.
+The three noncanonical probes are recorded in `experiments.jsonl`. For this
+source form, those four preserved profiles do not discriminate the tie-breaking
+difference; that is not a per-function original-toolchain attribution.
+Combined with the recorded ordinary source shapes and exact cross-port behavior
+above, the scratch is explicitly classified `RECOVERY=semantic-complete` with
+`RESIDUAL=compiler`; further source mutation needs a new semantic hypothesis.

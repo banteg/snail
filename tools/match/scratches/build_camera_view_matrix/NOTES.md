@@ -29,5 +29,6 @@ D3DX8 static library (`forward = normalize(eye - at)` is the RH convention,
 and the normalizations go through the real `D3DXVec3Normalize` import thunk at
 `0x44ebc1`). Together with `D3DXMatrixTranslation @ 0x44fd90` and
 `D3DXMatrixPerspectiveFovRH @ 0x450314`, all three late matrix helpers are
-VC7-built library objects; the scratch stays semantic-only per the
-link-the-original-libs rule.
+D3DX8 library bodies. The executable's C++-dominated build-9178 Rich population
+is compatible with that provenance but does not map a compiler build to these
+addresses. The scratch stays semantic-only per the third-party boundary.

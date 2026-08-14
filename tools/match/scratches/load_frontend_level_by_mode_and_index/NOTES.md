@@ -87,10 +87,10 @@ as proof would hide that real layout difference.
 Three recorded mutation sweeps bound the remaining formatting tail. The
 standard `sprintf(char*, const char*, ...)` declaration and its explicit
 `__cdecl`/C-linkage forms are byte-neutral; the correct const-qualified
-prototype is retained. The installed MSVC 6.5 processor-pack and 6.6 profiles
-emit the same bytes, and MSVC 6.0 reaches the same result once given that
-standard prototype, so the residual is not explained by the adjacent compiler
-profiles.
+prototype is retained. The project's SP5 Processor Pack and SP6-style profiles
+emit the same bytes, and the RTM-style profile reaches the same result once
+given that standard prototype. For this source form, those preserved profiles
+do not discriminate the residual.
 
 All five alternate orders of the three plain-path cases retain the same fuzzy
 score but worsen reference alignment. Across 19 predicate and index-lifetime
