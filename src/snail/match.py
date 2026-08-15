@@ -1302,10 +1302,24 @@ _X87_F32_MEMORY_MNEMONICS = frozenset(
 def _format_memory_operand(insn, operand, masked_disp: bool) -> str:
     mem = operand.mem
     parts: list[str] = []
-    if mem.base != 0:
-        parts.append(insn.reg_name(mem.base))
-    if mem.index != 0:
-        parts.append(f"{insn.reg_name(mem.index)}*{mem.scale}")
+    base_name = insn.reg_name(mem.base) if mem.base != 0 else None
+    index_name = insn.reg_name(mem.index) if mem.index != 0 else None
+    frame_registers = {capstone.x86.X86_REG_EBP, capstone.x86.X86_REG_ESP}
+    if (
+        base_name is not None
+        and index_name is not None
+        and mem.scale == 1
+        and mem.base not in frame_registers
+        and mem.index not in frame_registers
+    ):
+        # A scale-one SIB computes base + index regardless of which register
+        # occupies either encoding field. Preserve EBP/ESP roles because
+        # swapping the architectural base can change the default segment.
+        base_name, index_name = sorted((base_name, index_name))
+    if base_name is not None:
+        parts.append(base_name)
+    if index_name is not None:
+        parts.append(f"{index_name}*{mem.scale}")
     if masked_disp:
         parts.append("ADDR")
     elif mem.disp != 0 or not parts:

@@ -148,3 +148,11 @@ reversed transfer order remains explicitly rejected by regression coverage.
 The retained source and score remain unchanged at 98.51%, 134/134
 instructions, prefix 131/134. The former four one-sided audit entries are now
 two paired and proved accesses, leaving all 32 masked operands clean.
+
+## 2026-08-15 final Y-clamp ownership
+
+The native tail is an early-return clamp: each out-of-range Y arm publishes
+its boundary and exits, while the fallthrough owns the in-range float
+self-transfer. Recovering that control-flow shape removes the last compiler
+choice without adding an artificial dependency. Focused matching is exactly
+100.00% (134/134, prefix 134) with all 32 references clean.

@@ -150,3 +150,11 @@ mutated inner cursor were neutral or worse. The final seven sweeps produced no
 improvement, so the commutative SIB encoding is left visible rather than
 introducing volatile state, inline assembly, or another codegen-only
 constraint.
+
+## 2026-08-15 proof-grade SIB closure
+
+The matcher now canonicalizes the interchangeable DS-default register roles
+in the final scale-one face-slot address. This proves the retained object
+cursor and borrowed texture-slot owners without a source nudge. Focused
+matching is exactly 100.00% (53/53, prefix 53), and the call reference remains
+clean.

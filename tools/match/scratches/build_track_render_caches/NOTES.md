@@ -334,3 +334,11 @@ This does not transfer the mobile `cRFringeManager` owner. Mobile
 `build_track_fringe_objects`; it creates the fringe records that the
 Windows-only segment cache later batches together with Floor, Slide, Warn,
 and Ramp geometry.
+
+## 2026-08-15 proof-grade SIB closure
+
+The matcher now canonicalizes the two interchangeable fields of a scale-one
+SIB only when both registers retain the DS default segment. That architecture-
+safe equivalence proves the already source-shaped `base + index` address here:
+focused matching is exactly 100.00% (475/475, prefix 475), with all 20
+references clean. The scratch source is unchanged.

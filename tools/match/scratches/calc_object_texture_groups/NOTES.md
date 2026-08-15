@@ -184,3 +184,11 @@ Native and candidate differ only in the scale-1 SIB base/index encoding for
 the active texture reload. Both mobile ports corroborate the reload and field
 owner, so further work needs compiler provenance rather than another pointer,
 field, bank, or offset spelling.
+
+## 2026-08-15 proof-grade SIB closure
+
+The matcher now treats the two DS-default register roles in this scale-one SIB
+as the same `base + index` address. That closes the sole encoding-only delta
+without changing the mobile-backed object/face ownership or scratch source.
+Focused matching is exactly 100.00% (55/55, prefix 55), with its one reference
+clean.

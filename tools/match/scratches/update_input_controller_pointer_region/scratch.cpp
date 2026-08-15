@@ -74,13 +74,14 @@ void update_input_controller_pointer_region(
     }
     input_controller_slot(slot).authored_x = clamped_x;
 
-    float clamped_y;
     if (input_controller_slot(slot).authored_y < 1.0f) {
-        clamped_y = 1.0f;
-    } else if (input_controller_slot(slot).authored_y > 472.0f) {
-        clamped_y = 472.0f;
-    } else {
-        clamped_y = input_controller_slot(slot).authored_y;
+        input_controller_slot(slot).authored_y = 1.0f;
+        return;
     }
+    if (input_controller_slot(slot).authored_y > 472.0f) {
+        input_controller_slot(slot).authored_y = 472.0f;
+        return;
+    }
+    float clamped_y = input_controller_slot(slot).authored_y;
     input_controller_slot(slot).authored_y = clamped_y;
 }

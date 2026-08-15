@@ -220,6 +220,25 @@ def test_normalize_masks_candidate_immediates_in_image_range() -> None:
     assert unmasked[0] == "push 0x400802"
 
 
+def test_normalize_canonicalizes_commutative_scale_one_sib() -> None:
+    # Both encodings load from eax + ecx + 0xc; only the SIB field roles differ.
+    eax_base = bytes.fromhex("8b44080cc3")
+    ecx_base = bytes.fromhex("8b44010cc3")
+
+    assert normalize_function(eax_base) == normalize_function(ecx_base)
+    assert normalize_function(eax_base)[0] == "mov eax, dword [eax+ecx*1+0xc]"
+
+
+def test_normalize_preserves_scale_one_sib_default_segment_difference() -> None:
+    # EBP as a base defaults to SS; EBP as an index under EAX defaults to DS.
+    ebp_base = bytes.fromhex("8b44050cc3")
+    eax_base = bytes.fromhex("8b44280cc3")
+
+    assert normalize_function(ebp_base) != normalize_function(eax_base)
+    assert normalize_function(ebp_base)[0] == "mov eax, dword [ebp+eax*1+0xc]"
+    assert normalize_function(eax_base)[0] == "mov eax, dword [eax+ebp*1+0xc]"
+
+
 def test_normalize_labels_intra_function_branches() -> None:
     # jz +2 (to the ret); xor eax, eax; ret
     code = bytes.fromhex("7402") + bytes.fromhex("31c0") + bytes.fromhex("c3")

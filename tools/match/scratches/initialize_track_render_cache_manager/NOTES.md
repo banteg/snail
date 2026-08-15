@@ -188,3 +188,10 @@ byte-identical, and 4 regress. Those tested forms leave this lane at **99.18%**
 in the scale-1 SIB base/index
 encoding of `slot_base + i`; further work would require compiler provenance,
 not another equivalent owner, declaration, or loop spelling.
+
+## 2026-08-15 proof-grade SIB closure
+
+The matcher now canonicalizes the interchangeable DS-default register fields
+of that scale-one SIB. The manager-relative slot owner and loop remain exactly
+as recovered; only the equivalent x86 encoding is normalized. Focused matching
+is exactly 100.00% (122/122, prefix 122), with all 18 references clean.

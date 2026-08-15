@@ -349,6 +349,12 @@ source-shape, toolchain, and masked-reference debt. Recovery metadata is a
 manual evidence-review result, never an inference from experiment count, and
 must not be used as a stopping rule for a non-exact scratch.
 
+Normalized memory operands canonicalize scale-one SIB encodings when both
+registers use the DS default segment. In that bounded case, x86 computes the
+same `base + index` address whichever register occupies the SIB base field.
+Other EBP/ESP forms stay distinct because exchanging the architectural base
+can change the default segment; non-unit scales stay distinct as well.
+
 ## No fakematching
 
 A match is only useful if the scratch is plausible original source whose

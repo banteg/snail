@@ -8,4 +8,5 @@ tools/match/bin/wibo
 tools/match/bin/wibo-*
 tools/match/gpt-pro-tooling/
 tools/match/idioms/build/
+tools/match/.cache/
 tools/match/scratches/*/build/
