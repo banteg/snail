@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "search-owner",
+      "find": "    int i = 0;\n    int count = g_object_grouped_vertex_cursor;\n    if (count > 0) {\n        char* cursor = (char*)&g_object_grouped_vertex_scratch[0].y;\n        int source_vertex_only = object->flags & OBJECT_FLAG_DYNAMIC_VERTICES;\n        do {\n            if (source_vertex_only != 0) {\n                if (*(int*)(cursor + 0x14) == vertex_index &&\n                    *(float*)(cursor + 0x0c) == u &&\n                    *(float*)(cursor + 0x10) == 1.0f - v) {\n                    return i;\n                }\n            } else if (*(float*)(cursor - 0x04) == position.x &&\n                *(float*)cursor == position.y &&\n                *(float*)(cursor + 0x04) == position.z &&\n                *(float*)(cursor + 0x0c) == u &&\n                *(float*)(cursor + 0x10) == 1.0f - v) {\n                return i;\n            }\n            ++i;\n            cursor += sizeof(ObjectGroupedVertex);\n        } while (i < count);\n    }\n\n",
+      "replacements": [
+        {
+          "name": "direct-flags-True-count-True",
+          "text": "    int i = 0;\n    if (g_object_grouped_vertex_cursor > 0) {\n        do {\n            if ((object->flags & OBJECT_FLAG_DYNAMIC_VERTICES) != 0) {\n                if (g_object_grouped_vertex_scratch[i].source_vertex == vertex_index &&\n                    g_object_grouped_vertex_scratch[i].u == u &&\n                    g_object_grouped_vertex_scratch[i].v == 1.0f - v) {\n                    return i;\n                }\n            } else if (g_object_grouped_vertex_scratch[i].x == position.x &&\n                g_object_grouped_vertex_scratch[i].y == position.y &&\n                g_object_grouped_vertex_scratch[i].z == position.z &&\n                g_object_grouped_vertex_scratch[i].u == u &&\n                g_object_grouped_vertex_scratch[i].v == 1.0f - v) {\n                return i;\n            }\n            ++i;\n        } while (i < g_object_grouped_vertex_cursor);\n    }\n\n"
+        },
+        {
+          "name": "direct-flags-True-count-False",
+          "text": "    int i = 0;\n    int count = g_object_grouped_vertex_cursor;\n    if (count > 0) {\n        do {\n            if ((object->flags & OBJECT_FLAG_DYNAMIC_VERTICES) != 0) {\n                if (g_object_grouped_vertex_scratch[i].source_vertex == vertex_index &&\n                    g_object_grouped_vertex_scratch[i].u == u &&\n                    g_object_grouped_vertex_scratch[i].v == 1.0f - v) {\n                    return i;\n                }\n            } else if (g_object_grouped_vertex_scratch[i].x == position.x &&\n                g_object_grouped_vertex_scratch[i].y == position.y &&\n                g_object_grouped_vertex_scratch[i].z == position.z &&\n                g_object_grouped_vertex_scratch[i].u == u &&\n                g_object_grouped_vertex_scratch[i].v == 1.0f - v) {\n                return i;\n            }\n            ++i;\n        } while (i < count);\n    }\n\n"
+        },
+        {
+          "name": "direct-flags-False-count-True",
+          "text": "    int i = 0;\n    if (g_object_grouped_vertex_cursor > 0) {\n        int source_vertex_only = object->flags & OBJECT_FLAG_DYNAMIC_VERTICES;\n        do {\n            if (source_vertex_only != 0) {\n                if (g_object_grouped_vertex_scratch[i].source_vertex == vertex_index &&\n                    g_object_grouped_vertex_scratch[i].u == u &&\n                    g_object_grouped_vertex_scratch[i].v == 1.0f - v) {\n                    return i;\n                }\n            } else if (g_object_grouped_vertex_scratch[i].x == position.x &&\n                g_object_grouped_vertex_scratch[i].y == position.y &&\n                g_object_grouped_vertex_scratch[i].z == position.z &&\n                g_object_grouped_vertex_scratch[i].u == u &&\n                g_object_grouped_vertex_scratch[i].v == 1.0f - v) {\n                return i;\n            }\n            ++i;\n        } while (i < g_object_grouped_vertex_cursor);\n    }\n\n"
+        },
+        {
+          "name": "direct-flags-False-count-False",
+          "text": "    int i = 0;\n    int count = g_object_grouped_vertex_cursor;\n    if (count > 0) {\n        int source_vertex_only = object->flags & OBJECT_FLAG_DYNAMIC_VERTICES;\n        do {\n            if (source_vertex_only != 0) {\n                if (g_object_grouped_vertex_scratch[i].source_vertex == vertex_index &&\n                    g_object_grouped_vertex_scratch[i].u == u &&\n                    g_object_grouped_vertex_scratch[i].v == 1.0f - v) {\n                    return i;\n                }\n            } else if (g_object_grouped_vertex_scratch[i].x == position.x &&\n                g_object_grouped_vertex_scratch[i].y == position.y &&\n                g_object_grouped_vertex_scratch[i].z == position.z &&\n                g_object_grouped_vertex_scratch[i].u == u &&\n                g_object_grouped_vertex_scratch[i].v == 1.0f - v) {\n                return i;\n            }\n            ++i;\n        } while (i < count);\n    }\n\n"
+        }
+      ]
+    }
+  ]
+}

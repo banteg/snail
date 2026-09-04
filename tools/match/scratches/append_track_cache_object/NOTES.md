@@ -116,6 +116,9 @@ The ledger contains 16 unique variants: 0 improve, 12 are byte-identical, and
 4 regress. The tested forms leave this lane at
 **98.80%** (`167/167`, prefix 155, all six references clean). Native loads
 `max_indices` into `edx` before loading `*index_count` into `eax`; VC6 loads
-the count first and carries the same limit in `ecx`. Further work needs
-compiler provenance, not another branch, local, width, pointer, or
-register-directed spelling.
+the count first and carries the same limit in `ecx`. These tested local forms did not resolve the difference. Whole-function
+source lifetimes and compiler provenance remain separate hypotheses.
+
+## 2026-09-05 whole-loop source probes
+
+Six recorded whole-loop probes test copy construction, per-face versus outer position lifetime, and structured for/while face traversal. The copy-lifetime changes regress and the structured loops are neutral at 98.80%, with all six references clean. The capacity-tail lifetime remains open; these probes do not establish a compiler-provenance requirement.

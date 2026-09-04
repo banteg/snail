@@ -1,5 +1,8 @@
 # get_or_append_object_texture_group_vertex
 
+Current result: **100.00%**, 127/127 instructions, all 18 references clean.
+This supersedes the historical residual assessments below.
+
 Relationship-first scratch for the private grouped-vertex append helper at
 `0x413bb0`.
 
@@ -197,3 +200,18 @@ Three search-exit forms (shared label, loop break with append-on-miss, and post-
 
 The recorded specifications and experiment receipts preserve these negative
 results. They do not establish source exhaustion or compiler provenance.
+
+## 2026-09-05 exact indexed search and loop recovery
+
+A normal for loop over the grouped-vertex bank, testing the object's dynamic
+flag directly, reproduces every native instruction and all 18 references.
+The scratch no longer invents an interior y-field cursor or retains the flag
+snapshot. Typed indexing alone was neutral at 83.14%; pairing it with the
+structured loop changes VC6's return-block placement and removes the extra
+back-edge instruction, reaching 100%. Retaining the flag snapshot in the same
+for loop regresses, showing why isolated return-placement probes missed this
+source interaction. Either a direct or cached global count remains exact;
+the direct form is retained.
+
+The global bank and its existing field layout remain correct. This is source
+control and borrow recovery, with no compiler or reference-audit changes.

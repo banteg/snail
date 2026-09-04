@@ -16,27 +16,20 @@ int get_or_append_object_texture_group_vertex(
     Vector3 position = object->vertices[vertex_index];
 
     int i = 0;
-    int count = g_object_grouped_vertex_cursor;
-    if (count > 0) {
-        char* cursor = (char*)&g_object_grouped_vertex_scratch[0].y;
-        int source_vertex_only = object->flags & OBJECT_FLAG_DYNAMIC_VERTICES;
-        do {
-            if (source_vertex_only != 0) {
-                if (*(int*)(cursor + 0x14) == vertex_index &&
-                    *(float*)(cursor + 0x0c) == u &&
-                    *(float*)(cursor + 0x10) == 1.0f - v) {
-                    return i;
-                }
-            } else if (*(float*)(cursor - 0x04) == position.x &&
-                *(float*)cursor == position.y &&
-                *(float*)(cursor + 0x04) == position.z &&
-                *(float*)(cursor + 0x0c) == u &&
-                *(float*)(cursor + 0x10) == 1.0f - v) {
+    for (; i < g_object_grouped_vertex_cursor; ++i) {
+        if ((object->flags & OBJECT_FLAG_DYNAMIC_VERTICES) != 0) {
+            if (g_object_grouped_vertex_scratch[i].source_vertex == vertex_index &&
+                g_object_grouped_vertex_scratch[i].u == u &&
+                g_object_grouped_vertex_scratch[i].v == 1.0f - v) {
                 return i;
             }
-            ++i;
-            cursor += sizeof(ObjectGroupedVertex);
-        } while (i < count);
+        } else if (g_object_grouped_vertex_scratch[i].x == position.x &&
+            g_object_grouped_vertex_scratch[i].y == position.y &&
+            g_object_grouped_vertex_scratch[i].z == position.z &&
+            g_object_grouped_vertex_scratch[i].u == u &&
+            g_object_grouped_vertex_scratch[i].v == 1.0f - v) {
+            return i;
+        }
     }
 
     g_object_grouped_vertex_scratch[i].x = position.x;

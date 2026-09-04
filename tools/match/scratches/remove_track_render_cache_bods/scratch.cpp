@@ -7,21 +7,11 @@ int report_errorf(char* format, ...);
 
 void SegmentCache::remove_track_render_cache_bods()
 {
-    BodNode** next_ref =
-        &slots[0][TRACK_RENDER_CACHE_FLOOR].list_next;
-    int rows = sizeof(slots) / sizeof(slots[0]);
-
-    do {
-        int count = sizeof(slots[0]) / sizeof(slots[0][0]);
-        do {
-            BodNode* node = BOD_NODE_FROM_NEXT_LINK(next_ref);
-            if ((node->list_flags & BOD_FLAG_LINKED) != 0) {
-                BodList* list = &g_game->active_bod_list;
-                list->remove_bod(node);
+    for (int row = 0; row < TRACK_RENDER_CACHE_ROW_COUNT; ++row) {
+        for (int family = 0; family < TRACK_RENDER_CACHE_FAMILY_COUNT; ++family) {
+            if ((slots[row][family].list_flags & BOD_FLAG_LINKED) != 0) {
+                g_game->active_bod_list.remove_bod(&slots[row][family]);
             }
-            next_ref += sizeof(TrackRenderCacheSlot) / sizeof(*next_ref);
-            count--;
-        } while (count);
-        rows--;
-    } while (rows);
+        }
+    }
 }

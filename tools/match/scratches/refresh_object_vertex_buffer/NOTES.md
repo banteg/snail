@@ -187,3 +187,7 @@ three surrounding functions are independently mapped to `GL.o` in both mobile
 ports. The helper therefore belongs to Windows `GL.o` even though Direct3D's
 lock-and-copy path has no standalone OpenGL counterpart; its mapping correctly
 remains unverified rather than being forced onto `G0RenderObject`.
+
+## 2026-09-05 whole-loop source probes
+
+Twenty-four paired copy-loop probes test the native float-pointer constructor, named vector copies, source borrows, and scalar field stores in both branches. None improves the 90.58% baseline. The two source-address preparation differences remain visible, with four clean references; no local or type workaround is retained.

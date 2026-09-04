@@ -1,5 +1,8 @@
 # remove_track_render_cache_bods @ 0x433f20
 
+Current result: **100.00%**, 58/58 instructions, all five references clean.
+The exact result below supersedes the historical residual assessments.
+
 First typed scratch for clearing the track-render-cache BOD slots.
 
 The helper walks `0x8f` cache rows with five `TrackRenderCacheSlot` entries per
@@ -231,3 +234,18 @@ The ledger now contains 11 sweeps and 358 unique variants. The tested forms
 leave the remaining ESI/EBX cursor and full-width `0x200` mask allocation at
 the proof-clean **71.79%** frontier. No
 synthetic dependency, volatile qualifier, or register-shaped local is retained.
+
+## 2026-09-05 exact typed slot-array traversal
+
+Two ordinary increasing loops over `slots[row][family]`, using the shared row
+and family counts, reproduce all 58 target instructions and all five references.
+The guard reads the actual slot's `list_flags`, and the removal call takes that
+same slot directly. This replaces the interior `list_next` walk and
+`BOD_NODE_FROM_NEXT_LINK` reconstruction. The container layout was already
+correct; the artificial cursor and retained node borrow obscured the source.
+
+A local `BodNode*` with otherwise identical indexed loops regresses to 63.06%;
+the direct expression is what lets VC6 retain the single native cursor and
+full-width linked masks. The recorded pair supersedes previous local cursor,
+mask, and counter campaigns without changing the shared remove_bod body,
+compiler options, or normalization.

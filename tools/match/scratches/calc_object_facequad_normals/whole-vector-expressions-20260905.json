@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "cross-inputs",
+      "find": "            Vector3* base_a = &vertices[CURRENT_FACE->vertex_0];\n            Vector3* base_b = &vertices[CURRENT_FACE->vertex_1];\n            Vector3 lhs_value;\n            lhs_value.x = base_b->x - base_a->x;\n            lhs_value.y = base_b->y - base_a->y;\n            lhs_value.z = base_b->z - base_a->z;\n            Vector3 lhs = lhs_value;\n\n            base_a = &vertices[CURRENT_FACE->vertex_0];\n            Vector3* base_c = &vertices[CURRENT_FACE->vertex_2];\n            Vector3 rhs_value;\n            rhs_value.x = base_c->x - base_a->x;\n            rhs_value.y = base_c->y - base_a->y;\n            rhs_value.z = base_c->z - base_a->z;\n            Vector3 rhs = rhs_value;\n\n            Vector3 normal_a;\n            normal_a.cross_vectors(&lhs, &rhs);\n            normal_a.Normalize();\n\n            *(Vector3*)((char*)facequad_normals + normal_offset) = normal_a;\n\n            Vector3 normal_b;\n            if ((CURRENT_FACE->flags & OBJECT_FACEQUAD_FLAG_TRIANGLE) == 0) {\n                base_a = &vertices[CURRENT_FACE->vertex_0];\n                Vector3* base_d = &vertices[CURRENT_FACE->vertex_2];\n                Vector3 quad_lhs_value;\n                quad_lhs_value.x = base_d->x - base_a->x;\n                quad_lhs_value.y = base_d->y - base_a->y;\n                quad_lhs_value.z = base_d->z - base_a->z;\n                lhs = quad_lhs_value;\n\n                base_a = &vertices[CURRENT_FACE->vertex_0];\n                Vector3* base_e = &vertices[CURRENT_FACE->vertex_3];\n                Vector3 quad_rhs_value;\n                quad_rhs_value.x = base_e->x - base_a->x;\n                quad_rhs_value.y = base_e->y - base_a->y;\n                quad_rhs_value.z = base_e->z - base_a->z;\n                rhs = quad_rhs_value;\n\n",
+      "replacements": [
+        {
+          "name": "direct-vector-differences",
+          "text": "            Vector3 lhs = vertices[CURRENT_FACE->vertex_1] - vertices[CURRENT_FACE->vertex_0];\n            Vector3 rhs = vertices[CURRENT_FACE->vertex_2] - vertices[CURRENT_FACE->vertex_0];\n\n            Vector3 normal_a;\n            normal_a.cross_vectors(&lhs, &rhs);\n            normal_a.Normalize();\n\n            *(Vector3*)((char*)facequad_normals + normal_offset) = normal_a;\n\n            Vector3 normal_b;\n            if ((CURRENT_FACE->flags & OBJECT_FACEQUAD_FLAG_TRIANGLE) == 0) {\n                lhs = vertices[CURRENT_FACE->vertex_2] - vertices[CURRENT_FACE->vertex_0];\n                rhs = vertices[CURRENT_FACE->vertex_3] - vertices[CURRENT_FACE->vertex_0];\n\n"
+        }
+      ]
+    },
+    {
+      "name": "normal-accumulation",
+      "find": "#define ACCUM_VERTEX_NORMAL(index_value, normal_value) \\\n    do { \\\n        Vector3* normal_slot = &vertex_normals[(index_value)]; \\\n        normal_slot->x += (normal_value).x; \\\n        normal_slot->y += (normal_value).y; \\\n        normal_slot->z += (normal_value).z; \\\n    } while (0)\n\n",
+      "replacements": [
+        {
+          "name": "vector-add-assign",
+          "text": "#define ACCUM_VERTEX_NORMAL(index_value, normal_value) \\\n    vertex_normals[(index_value)] += (normal_value)\n\n"
+        }
+      ]
+    },
+    {
+      "name": "inverted-normal",
+      "find": "            Vector3* inverted = (Vector3*)((char*)vertex_normals + vertex_offset);\n            vertex_offset += sizeof(Vector3);\n            Vector3 inverted_value;\n            inverted_value.x = inverted->x * -1.0f;\n            inverted_value.y = inverted->y * -1.0f;\n            inverted_value.z = inverted->z * -1.0f;\n            *inverted = inverted_value;\n",
+      "replacements": [
+        {
+          "name": "vector-multiply",
+          "text": "            Vector3* inverted = (Vector3*)((char*)vertex_normals + vertex_offset);\n            vertex_offset += sizeof(Vector3);\n            *inverted = *inverted * -1.0f;\n"
+        },
+        {
+          "name": "inplace-multiply",
+          "text": "            Vector3* inverted = (Vector3*)((char*)vertex_normals + vertex_offset);\n            vertex_offset += sizeof(Vector3);\n            *inverted *= -1.0f;\n"
+        }
+      ]
+    }
+  ]
+}

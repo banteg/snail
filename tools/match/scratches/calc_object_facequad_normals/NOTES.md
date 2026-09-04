@@ -1,5 +1,8 @@
 # calc_object_facequad_normals
 
+Current result: **100.00%**, 437/437 instructions, all 22 references clean.
+The result below supersedes historical tally/compiler residual claims.
+
 Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
 `cRObject::CalcFaceQuadNormals` bodies and the live Windows `Object` method
 establish the complete face-pair construction, weighted vertex accumulation,
@@ -164,3 +167,22 @@ references. It also introduces new tail address/scheduling differences and is
 not promoted. Adding a copied tally gives 439/437 at 94.29% and again changes
 the earlier stack allocation. The canonical 97.47% source stays unchanged;
 these coupled effects do not close the final divisor/owner hypothesis.
+
+## 2026-09-05 exact vector expressions and average-loop recovery
+
+All four cross-product inputs now use vector subtraction. The average loop
+indexes the normal/tally arrays and snapshots each tally as a float, restoring
+the native single x87 divisor load. This combination reaches 98.51%; neither
+the scalarized inversion nor its retained Vector3 pointer provides the final
+source lifetime. Writing `vertex_normals[index] = vertex_normals[index] * -1.0f`
+then closes the entire function, 437/437 instructions and 22 clean operands.
+A staged vector result is equally exact. Vector += accumulation also remains
+exact and replaces the manually expanded three-lane macro body.
+
+This removes the old const-reference tally compromise and manual byte cursor
+from the vertex phase. The reference was semantically plausible for separate
+allocations but did not describe the native value snapshot. It was not a
+compiler limitation. The face-phase byte strides remain: a complete indexed
+face/normal-output rewrite regresses to 97.94%, recorded separately, without
+implying that future source combinations are excluded. No shared type, build
+flag, or reference normalization changed.

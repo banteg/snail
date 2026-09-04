@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "owned-slot-grid",
+      "find": "    BodNode** next_ref =\n        &slots[0][TRACK_RENDER_CACHE_FLOOR].list_next;\n    int rows = sizeof(slots) / sizeof(slots[0]);\n\n    do {\n        int count = sizeof(slots[0]) / sizeof(slots[0][0]);\n        do {\n            BodNode* node = BOD_NODE_FROM_NEXT_LINK(next_ref);\n            if ((node->list_flags & BOD_FLAG_LINKED) != 0) {\n                BodList* list = &g_game->active_bod_list;\n                list->remove_bod(node);\n            }\n            next_ref += sizeof(TrackRenderCacheSlot) / sizeof(*next_ref);\n            count--;\n        } while (count);\n        rows--;\n    } while (rows);",
+      "replacements": [
+        {
+          "name": "borrowed-node",
+          "text": "    for (int row = 0; row < TRACK_RENDER_CACHE_ROW_COUNT; ++row) {\n        for (int family = 0; family < TRACK_RENDER_CACHE_FAMILY_COUNT; ++family) {\n            BodNode* node = &slots[row][family];\n            if ((node->list_flags & BOD_FLAG_LINKED) != 0) {\n                g_game->active_bod_list.remove_bod(node);\n            }\n        }\n    }"
+        },
+        {
+          "name": "direct-slots",
+          "text": "    for (int row = 0; row < TRACK_RENDER_CACHE_ROW_COUNT; ++row) {\n        for (int family = 0; family < TRACK_RENDER_CACHE_FAMILY_COUNT; ++family) {\n            if ((slots[row][family].list_flags & BOD_FLAG_LINKED) != 0) {\n                g_game->active_bod_list.remove_bod(&slots[row][family]);\n            }\n        }\n    }"
+        }
+      ]
+    }
+  ]
+}

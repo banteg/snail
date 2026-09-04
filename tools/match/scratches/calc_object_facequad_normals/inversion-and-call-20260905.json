@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "normal-inversion",
+      "find": "            Vector3* inverted = &vertex_normals[index];\n            Vector3 inverted_value;\n            inverted_value.x = inverted->x * -1.0f;\n            inverted_value.y = inverted->y * -1.0f;\n            inverted_value.z = inverted->z * -1.0f;\n            *inverted = inverted_value;\n",
+      "replacements": [
+        {
+          "name": "direct-multiply",
+          "text": "            vertex_normals[index] = vertex_normals[index] * -1.0f;\n"
+        },
+        {
+          "name": "borrow-multiply",
+          "text": "            Vector3* inverted = &vertex_normals[index];\n            *inverted = *inverted * -1.0f;\n"
+        },
+        {
+          "name": "staged-multiply",
+          "text": "            Vector3 inverted_value = vertex_normals[index] * -1.0f;\n            vertex_normals[index] = inverted_value;\n"
+        },
+        {
+          "name": "inplace-multiply",
+          "text": "            vertex_normals[index] *= -1.0f;\n"
+        }
+      ]
+    },
+    {
+      "name": "normal-call",
+      "find": "            (&vertex_normals[index])->Normalize();",
+      "replacements": [
+        {
+          "name": "direct-member",
+          "text": "            vertex_normals[index].Normalize();"
+        }
+      ]
+    }
+  ]
+}

@@ -10,12 +10,7 @@ void free_tracked_memory(void* pointer);
 int report_errorf(char* format, ...);
 
 #define ACCUM_VERTEX_NORMAL(index_value, normal_value) \
-    do { \
-        Vector3* normal_slot = &vertex_normals[(index_value)]; \
-        normal_slot->x += (normal_value).x; \
-        normal_slot->y += (normal_value).y; \
-        normal_slot->z += (normal_value).z; \
-    } while (0)
+    vertex_normals[(index_value)] += (normal_value)
 
 #define ACCUM_NORMAL_TALLY(index_value, weight_value) \
     normal_tally[(index_value)] += (weight_value)
@@ -36,21 +31,8 @@ void cRObject::CalcFaceQuadNormals()
     if (facequad_count > 0) {
         normal_offset = 0;
         do {
-            Vector3* base_a = &vertices[CURRENT_FACE->vertex_0];
-            Vector3* base_b = &vertices[CURRENT_FACE->vertex_1];
-            Vector3 lhs_value;
-            lhs_value.x = base_b->x - base_a->x;
-            lhs_value.y = base_b->y - base_a->y;
-            lhs_value.z = base_b->z - base_a->z;
-            Vector3 lhs = lhs_value;
-
-            base_a = &vertices[CURRENT_FACE->vertex_0];
-            Vector3* base_c = &vertices[CURRENT_FACE->vertex_2];
-            Vector3 rhs_value;
-            rhs_value.x = base_c->x - base_a->x;
-            rhs_value.y = base_c->y - base_a->y;
-            rhs_value.z = base_c->z - base_a->z;
-            Vector3 rhs = rhs_value;
+            Vector3 lhs = vertices[CURRENT_FACE->vertex_1] - vertices[CURRENT_FACE->vertex_0];
+            Vector3 rhs = vertices[CURRENT_FACE->vertex_2] - vertices[CURRENT_FACE->vertex_0];
 
             Vector3 normal_a;
             normal_a.cross_vectors(&lhs, &rhs);
@@ -60,21 +42,8 @@ void cRObject::CalcFaceQuadNormals()
 
             Vector3 normal_b;
             if ((CURRENT_FACE->flags & OBJECT_FACEQUAD_FLAG_TRIANGLE) == 0) {
-                base_a = &vertices[CURRENT_FACE->vertex_0];
-                Vector3* base_d = &vertices[CURRENT_FACE->vertex_2];
-                Vector3 quad_lhs_value;
-                quad_lhs_value.x = base_d->x - base_a->x;
-                quad_lhs_value.y = base_d->y - base_a->y;
-                quad_lhs_value.z = base_d->z - base_a->z;
-                lhs = quad_lhs_value;
-
-                base_a = &vertices[CURRENT_FACE->vertex_0];
-                Vector3* base_e = &vertices[CURRENT_FACE->vertex_3];
-                Vector3 quad_rhs_value;
-                quad_rhs_value.x = base_e->x - base_a->x;
-                quad_rhs_value.y = base_e->y - base_a->y;
-                quad_rhs_value.z = base_e->z - base_a->z;
-                rhs = quad_rhs_value;
+                lhs = vertices[CURRENT_FACE->vertex_2] - vertices[CURRENT_FACE->vertex_0];
+                rhs = vertices[CURRENT_FACE->vertex_3] - vertices[CURRENT_FACE->vertex_0];
 
                 normal_b.cross_vectors(&lhs, &rhs);
                 normal_b.Normalize();
@@ -116,29 +85,19 @@ void cRObject::CalcFaceQuadNormals()
         } while (index < facequad_count);
     }
 
-    int vertex_offset = 0;
     index = 0;
-    float* tally_cursor;
     if (vertex_count > 0) {
-        tally_cursor = normal_tally;
         do {
-            const float& tally = *tally_cursor;
+            float tally = normal_tally[index];
             {
-                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);
+                Vector3* normal = &vertex_normals[index];
                 normal->x = normal->x / tally;
                 normal->y = normal->y / tally;
                 normal->z = normal->z / tally;
             }
-            ((Vector3*)((char*)vertex_normals + vertex_offset))->Normalize();
-            ++tally_cursor;
+            vertex_normals[index].Normalize();
 
-            Vector3* inverted = (Vector3*)((char*)vertex_normals + vertex_offset);
-            vertex_offset += sizeof(Vector3);
-            Vector3 inverted_value;
-            inverted_value.x = inverted->x * -1.0f;
-            inverted_value.y = inverted->y * -1.0f;
-            inverted_value.z = inverted->z * -1.0f;
-            *inverted = inverted_value;
+            vertex_normals[index] = vertex_normals[index] * -1.0f;
             ++index;
         } while (index < vertex_count);
     }
