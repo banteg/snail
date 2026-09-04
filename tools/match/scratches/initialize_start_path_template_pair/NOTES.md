@@ -498,3 +498,18 @@ branch orientation and conflicts with the family-wide authored `if` shape, so
 it is rejected as a score-only rewrite. `if (!face_index)` and `do`/`while`
 spellings are byte-identical to the retained form. The native counter boundary
 is retained; the branch-local scale remains an explicit analysis residual.
+
+## 2026-09-04 current-source curve-index probes
+
+Replacing only `curve_index != 0` with `i > 5` gives 87.03%, 608/610
+instructions, prefix 145, and 35 clean references. `curve_index > 0` gives
+87.36% with the same counts and reference audit. Neither replaces the canonical
+87.94% source. These are two isolated experiments, not source-space closure.
+
+The physical-index overlay does not actually reproduce native's
+`cmp edi, 0x348`: it compares a saved logical value with 5. Its earlier guard
+also loses a load and its integer-to-float temporary changes stack home. The
+native induction relationship remains a hypothesis to recover through coupled
+index/lifetime changes, not evidence of an irreducible compiler difference.
+The branch at the canonical prefix boundary only differs in destination byte
+offset; do not mistake that offset shift for the first changed computation.

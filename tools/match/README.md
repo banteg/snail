@@ -355,6 +355,51 @@ same `base + index` address whichever register occupies the SIB base field.
 Other EBP/ESP forms stay distinct because exchanging the architectural base
 can change the default segment; non-unit scales stay distinct as well.
 
+## Resuming a partial
+
+Start with `status --check`, `experiments --check --strict --check-specs`, and
+`triage --state wip --sort fuzzy-gap`. The function-count headline is not byte
+coverage; aggregate related builders before spending another session on tiny
+near matches. Use `inspect --source-lines` and the actual instruction diff to
+identify a particular owner, branch, or expression to recover.
+
+`historical-only` includes legacy experiments with no recorded baseline
+identity. It does not prove that their source changed or that their search is
+irrelevant. Conversely, a neutral result on one source does not establish a
+compiler limitation on a later source: inlining and register allocation couple
+otherwise distant expressions. Retest a selected rejected hypothesis when a
+relevant owner or helper changes; do not replay the entire old mutation grid.
+
+Keep whole-function source hypotheses available alongside local mutations.
+Decompiler byte cursors, flattened tail recursion, and integer casts for float
+copies are candidates to investigate, not recovered original source by
+default. Preserve native behavior and references and compare the full diff.
+A score, prefix, or instruction-count change is a diagnostic; none independently
+proves or disproves an authored source shape.
+In particular, a changed branch destination offset can move the first mismatch
+earlier even when the first changed computation is much later in the function.
+Do not change the exact-match standard to make these partials disappear.
+
+When a globally degrading variant makes a native region exact, preserve its
+source as a diagnostic seed outside `scratch.cpp`. Check whether the remaining
+diff is consistent register or stack-slot recoloring, then cross the relevant
+counter, cursor, expression, and scope changes. For repeated patterns, test the
+same recovery across all homologous regions; for up to five binary sites, test
+all non-empty combinations rather than only single-site mutations. Record the
+fixed assumptions and untested interactions before making a negative claim.
+This is the lesson of Crimson's `grim_state_init` recovery: a 64.71% probe
+exposed exchanged stack homes, and coordinated changes across five atlas loops
+produced exact matches (sibling commit `a416f82aa`).
+
+Non-exact port-relevant scratches have been reset to `RESIDUAL=analysis`
+(plus `references` where applicable). This supersedes older compiler-only or
+exhaustion claims in their notes without deleting the underlying observations.
+`RECOVERY=semantic-complete` remains a reviewed claim about represented
+behavior, not original source identity or completion of matching. A compiler
+attribution needs affirmative evidence that distinguishes it from untested
+source shapes; repeated failures, equal instruction counts, and similar
+semantics do not provide that evidence.
+
 ## No fakematching
 
 A match is only useful if the scratch is plausible original source whose

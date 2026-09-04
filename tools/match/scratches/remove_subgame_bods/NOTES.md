@@ -377,3 +377,28 @@ allocation and propagates through equivalent intrusive-list unlink scheduling.
 It does not identify an unrepresented owner or behavior. This classification
 rests on the native and cross-port evidence above; the historical experiment
 count neither establishes nor limits completeness.
+
+## 2026-09-04 typed-owner diagnostic seed
+
+The compiler attribution is withdrawn. Replacing the row and health/garbage/
+slug/ring link-field cursors with typed owner pointers gives 49.85%, 502/501
+instructions, and all 70 references clean. Combining those owners with the
+native eight-cell countdown gives 50.25%, the same instruction/reference
+counts, and 141/141 basic blocks. Neither is promoted to `scratch.cpp`.
+
+The second overlay is preserved in `probe_typed_owners_countdown.cpp`. Its
+opening cell loop now has the native countdown shape with EBX and EDI exchanged.
+Pool accesses move from link-relative negative offsets to owner-relative
+positive offsets, explaining another systematic component of the low score.
+This is a diagnostic seed, not a failed semantic hypothesis or a new match.
+The remaining diff has not been reduced to a single register permutation.
+
+Next separate row ownership, inner countdown, and individual pool ownership
+into independent axes, then test their interactions. The existing declaration-
+order sweeps held the link-field representation fixed and do not cover that
+product. Reproduce the saved overlay with:
+
+```sh
+uv run snail match probe tools/match/scratches/remove_subgame_bods \
+  --source tools/match/scratches/remove_subgame_bods/probe_typed_owners_countdown.cpp
+```
