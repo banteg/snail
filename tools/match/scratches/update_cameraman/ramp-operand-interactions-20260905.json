@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "ramp-operands",
+      "find": "    cRSubGoldy* ramp_player = player;\n    float first_rows = (float)game->first_block_row_count;\n    if (first_rows > ramp_player->cached_camera_target_world.z) {\n        float ramp = ramp_player->cached_camera_target_world.z / first_rows * 1.4f - 0.40000001f;\n        if (ramp < 0.0f)\n            ramp = 0.0f;\n        else if (ramp > 1.0f)\n            ramp = 1.0f;\n        float inverse_ramp = 1.0f - ramp;\n        float lifted = inverse_ramp * 1.15f\n            * ramp_player->cached_camera_target_world.y\n            + desired_matrix.position.y;\n        desired_matrix.position.y = lifted;\n        desired_matrix.position.y =\n            (ramp * 0.34999999f)\n                * ramp_player->cached_camera_target_world.y\n            + lifted;\n        desired_matrix.RotLocalX(inverse_ramp * 0.87249994f);\n    } else {\n        desired_matrix.position.y =\n            ramp_player->cached_camera_target_world.y * 0.34999999f + desired_matrix.position.y;\n    }\n\n",
+      "replacements": [
+        {
+          "name": "inline-position-first",
+          "text": "    cRSubGoldy* ramp_player = player;\n    if (ramp_player->cached_camera_target_world.z < (float)game->first_block_row_count) {\n        float ramp = ramp_player->cached_camera_target_world.z / (float)game->first_block_row_count * 1.4f - 0.40000001f;\n        if (ramp < 0.0f)\n            ramp = 0.0f;\n        else if (ramp > 1.0f)\n            ramp = 1.0f;\n        float inverse_ramp = 1.0f - ramp;\n        float lifted = inverse_ramp * 1.15f\n            * ramp_player->cached_camera_target_world.y\n            + desired_matrix.position.y;\n        desired_matrix.position.y = lifted;\n        desired_matrix.position.y =\n            (ramp * 0.34999999f)\n                * ramp_player->cached_camera_target_world.y\n            + lifted;\n        desired_matrix.RotLocalX(inverse_ramp * 0.87249994f);\n    } else {\n        desired_matrix.position.y =\n            ramp_player->cached_camera_target_world.y * 0.34999999f + desired_matrix.position.y;\n    }\n\n"
+        },
+        {
+          "name": "all-inline",
+          "text": "    if (player->cached_camera_target_world.z < (float)game->first_block_row_count) {\n        float ramp = player->cached_camera_target_world.z / (float)game->first_block_row_count * 1.4f - 0.40000001f;\n        if (ramp < 0.0f)\n            ramp = 0.0f;\n        else if (ramp > 1.0f)\n            ramp = 1.0f;\n        float inverse_ramp = 1.0f - ramp;\n        float lifted = inverse_ramp * 1.15f\n            * player->cached_camera_target_world.y\n            + desired_matrix.position.y;\n        desired_matrix.position.y = lifted;\n        desired_matrix.position.y =\n            (ramp * 0.34999999f)\n                * player->cached_camera_target_world.y\n            + lifted;\n        desired_matrix.RotLocalX(inverse_ramp * 0.87249994f);\n    } else {\n        desired_matrix.position.y =\n            player->cached_camera_target_world.y * 0.34999999f + desired_matrix.position.y;\n    }\n\n"
+        },
+        {
+          "name": "cold-first",
+          "text": "    cRSubGoldy* ramp_player = player;\n    float first_rows = (float)game->first_block_row_count;\n    if (!(first_rows > ramp_player->cached_camera_target_world.z)) {\n        desired_matrix.position.y =\n            ramp_player->cached_camera_target_world.y * 0.34999999f + desired_matrix.position.y;\n    } else {\n        float ramp = ramp_player->cached_camera_target_world.z / first_rows * 1.4f - 0.40000001f;\n        if (ramp < 0.0f)\n            ramp = 0.0f;\n        else if (ramp > 1.0f)\n            ramp = 1.0f;\n        float inverse_ramp = 1.0f - ramp;\n        float lifted = inverse_ramp * 1.15f\n            * ramp_player->cached_camera_target_world.y\n            + desired_matrix.position.y;\n        desired_matrix.position.y = lifted;\n        desired_matrix.position.y =\n            (ramp * 0.34999999f)\n                * ramp_player->cached_camera_target_world.y\n            + lifted;\n        desired_matrix.RotLocalX(inverse_ramp * 0.87249994f);\n    }\n\n"
+        }
+      ]
+    }
+  ]
+}

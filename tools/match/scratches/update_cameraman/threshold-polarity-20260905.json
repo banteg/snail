@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "comparison-order",
+      "find": "if (first_rows > ramp_player->cached_camera_target_world.z)",
+      "replacements": [
+        {
+          "name": "position-first",
+          "text": "if (ramp_player->cached_camera_target_world.z < first_rows)"
+        }
+      ]
+    }
+  ]
+}

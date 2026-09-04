@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "threshold-value",
+      "find": "float first_rows = (float)game->first_block_row_count;",
+      "replacements": [
+        {
+          "name": "double",
+          "text": "double first_rows = (double)game->first_block_row_count;"
+        },
+        {
+          "name": "const-double",
+          "text": "const double first_rows = game->first_block_row_count;"
+        },
+        {
+          "name": "plain-float",
+          "text": "float first_rows = game->first_block_row_count;"
+        }
+      ]
+    }
+  ]
+}

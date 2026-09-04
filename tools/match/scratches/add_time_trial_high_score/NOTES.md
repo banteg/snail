@@ -1,3 +1,7 @@
+Current recovery: **exact**, 49/49 instructions over 143 native bytes,
+with 1 masked references and no audit debt. The September 5 recovery below
+supersedes the historical source-shape and compiler-residual claims.
+
 # add_time_trial_high_score
 
 `add_time_trial_high_score` @ 0x4178b0 records the just-finished Time Trial
@@ -159,3 +163,15 @@ bool)`. The live Windows caller proves the wider explicit
 now `AddTimeTrial` with exact VC6 relocation
 `?AddTimeTrial@cRSubHighScore@@QAEXPAVcRSubSolution@@HE@Z`; the honest 49/49
 semantic-complete compiler residual is unchanged.
+
+## 2026-09-05 direct route-array access
+
+Using `time_trial_route_records[route_index]` for the two time comparisons,
+record assignment, and rank write recovers the complete native body. The
+previous byte-offset/offsetof transcription gave the compiler a different
+address-expression tree and left the parent-plus-index base unfused.
+
+The direct typed array lets VC6 derive that base and preserve its native
+lifetime through `rep movsd`. The single recorded probe is exact at 49/49
+instructions, with its one reference clean. No struct, input mutation,
+replacement condition, ABI, or compiler setting changed.

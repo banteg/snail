@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "record-owners",
+      "find": "// mini_delete_high_score_entry @ 0x417af0 (thiscall, ret 0x4)\n\n#include \"sub_high_score.h\"\n\nvoid cRSubHighScore::MiniDelete(int rank)\n{\n    if (rank < SUB_HIGH_SCORE_TOP_TEN_COUNT) {\n        int row = rank;\n        int offset = row * SUB_SOLUTION_STRIDE;\n        char* source_cursor = (char*)mini_delete_source_records + offset;\n        do {\n            SubSolution* destination =\n                (SubSolution*)((char*)active_record_bank + offset);\n            source_cursor += SUB_SOLUTION_STRIDE;\n            SubSolution* source =\n                (SubSolution*)(source_cursor - SUB_SOLUTION_STRIDE);\n            offset += SUB_SOLUTION_STRIDE;\n            *destination = *source;\n            ((SubSolution*)((char*)active_record_bank + offset\n                - SUB_SOLUTION_STRIDE))\n                ->route_or_rank_index = row;\n            ++row;\n        } while (offset < SUB_SOLUTION_STRIDE * SUB_HIGH_SCORE_TOP_TEN_COUNT);\n    }\n}\n",
+      "replacements": [
+        {
+          "name": "direct-arrays",
+          "text": "// mini_delete_high_score_entry @ 0x417af0 (thiscall, ret 0x4)\n\n#include \"sub_high_score.h\"\n\nvoid cRSubHighScore::MiniDelete(int rank)\n{\n    for (int row = rank; row < SUB_HIGH_SCORE_TOP_TEN_COUNT; ++row) {\n        active_record_bank[row] = survival_records[row + 1];\n        active_record_bank[row].route_or_rank_index = row;\n    }\n}\n"
+        },
+        {
+          "name": "alias-array",
+          "text": "// mini_delete_high_score_entry @ 0x417af0 (thiscall, ret 0x4)\n\n#include \"sub_high_score.h\"\n\nvoid cRSubHighScore::MiniDelete(int rank)\n{\n    for (int row = rank; row < SUB_HIGH_SCORE_TOP_TEN_COUNT; ++row) {\n        active_record_bank[row] = mini_delete_source_records[row];\n        active_record_bank[row].route_or_rank_index = row;\n    }\n}\n"
+        }
+      ]
+    }
+  ]
+}

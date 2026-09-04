@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "ramp-inputs",
+      "find": "    cRSubGoldy* ramp_player = player;\n    float first_rows = (float)game->first_block_row_count;",
+      "replacements": [
+        {
+          "name": "int-rows",
+          "text": "    cRSubGoldy* ramp_player = player;\n    int first_rows = game->first_block_row_count;"
+        },
+        {
+          "name": "rows-first",
+          "text": "    float first_rows = (float)game->first_block_row_count;\n    cRSubGoldy* ramp_player = player;"
+        },
+        {
+          "name": "borrow-game",
+          "text": "    cRSubGame* ramp_game = game;\n    cRSubGoldy* ramp_player = player;\n    float first_rows = (float)ramp_game->first_block_row_count;"
+        },
+        {
+          "name": "borrow-count",
+          "text": "    const int& row_count = game->first_block_row_count;\n    cRSubGoldy* ramp_player = player;\n    float first_rows = (float)row_count;"
+        },
+        {
+          "name": "reload-initial-player",
+          "text": "    p = player;\n    cRSubGoldy* ramp_player = p;\n    float first_rows = (float)game->first_block_row_count;"
+        }
+      ]
+    },
+    {
+      "name": "initial-player",
+      "find": "    cRSubGoldy* p = player;\n    force_camera_update = 0;",
+      "replacements": [
+        {
+          "name": "flag-first",
+          "text": "    force_camera_update = 0;\n    cRSubGoldy* p = player;"
+        }
+      ]
+    }
+  ]
+}

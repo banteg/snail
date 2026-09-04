@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "roll-grouping",
+      "find": "    cRSubGoldy* lean_player = player;\n    float lean_roll = (0.5f - Cos(lean_player->lane_lean_progress * 3.1415927f) * 0.5f)\n        * lean_player->lane_lean_amplitude * 6.2831855f;\n    float steer_roll = lean_player->cached_camera_target_world.x * -8.0f;\n    steer_roll = steer_roll * 0.017449999f;\n    desired_matrix.RotLocalZ(lean_roll + steer_roll * 0.17f);\n",
+      "replacements": [
+        {
+          "name": "group-inner",
+          "text": "    desired_matrix.RotLocalZ(\n        (0.5f - Cos(player->lane_lean_progress * 3.1415927f) * 0.5f)\n            * player->lane_lean_amplitude * 6.2831855f\n        + (player->cached_camera_target_world.x * -8.0f) * 0.017449999f * 0.17f);\n"
+        },
+        {
+          "name": "group-both",
+          "text": "    desired_matrix.RotLocalZ(\n        (0.5f - Cos(player->lane_lean_progress * 3.1415927f) * 0.5f)\n            * player->lane_lean_amplitude * 6.2831855f\n        + ((player->cached_camera_target_world.x * -8.0f) * 0.017449999f) * 0.17f);\n"
+        },
+        {
+          "name": "float-inner",
+          "text": "    desired_matrix.RotLocalZ(\n        (0.5f - Cos(player->lane_lean_progress * 3.1415927f) * 0.5f)\n            * player->lane_lean_amplitude * 6.2831855f\n        + (float)(player->cached_camera_target_world.x * -8.0f) * 0.017449999f * 0.17f);\n"
+        },
+        {
+          "name": "float-both",
+          "text": "    desired_matrix.RotLocalZ(\n        (0.5f - Cos(player->lane_lean_progress * 3.1415927f) * 0.5f)\n            * player->lane_lean_amplitude * 6.2831855f\n        + (float)((float)(player->cached_camera_target_world.x * -8.0f) * 0.017449999f) * 0.17f);\n"
+        }
+      ]
+    }
+  ]
+}

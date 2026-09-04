@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "ramp-expression",
+      "find": "    cRSubGoldy* ramp_player = player;\n    float first_rows = (float)game->first_block_row_count;\n    if (first_rows > ramp_player->cached_camera_target_world.z) {\n        float ramp = ramp_player->cached_camera_target_world.z / first_rows * 1.4f - 0.40000001f;\n        if (ramp < 0.0f)\n            ramp = 0.0f;\n        else if (ramp > 1.0f)\n            ramp = 1.0f;\n        float inverse_ramp = 1.0f - ramp;\n        float lifted = inverse_ramp * 1.15f\n            * ramp_player->cached_camera_target_world.y\n            + desired_matrix.position.y;\n        desired_matrix.position.y = lifted;\n        desired_matrix.position.y =\n            (ramp * 0.34999999f)\n                * ramp_player->cached_camera_target_world.y\n            + lifted;\n        desired_matrix.RotLocalX(inverse_ramp * 0.87249994f);\n    } else {\n        desired_matrix.position.y =\n            ramp_player->cached_camera_target_world.y * 0.34999999f + desired_matrix.position.y;\n    }\n\n",
+      "replacements": [
+        {
+          "name": "scope-ramp",
+          "text": "    {\n    cRSubGoldy* ramp_player = player;\n    float first_rows = (float)game->first_block_row_count;\n    if (first_rows > ramp_player->cached_camera_target_world.z) {\n        float ramp = ramp_player->cached_camera_target_world.z / first_rows * 1.4f - 0.40000001f;\n        if (ramp < 0.0f)\n            ramp = 0.0f;\n        else if (ramp > 1.0f)\n            ramp = 1.0f;\n        float inverse_ramp = 1.0f - ramp;\n        float lifted = inverse_ramp * 1.15f\n            * ramp_player->cached_camera_target_world.y\n            + desired_matrix.position.y;\n        desired_matrix.position.y = lifted;\n        desired_matrix.position.y =\n            (ramp * 0.34999999f)\n                * ramp_player->cached_camera_target_world.y\n            + lifted;\n        desired_matrix.RotLocalX(inverse_ramp * 0.87249994f);\n    } else {\n        desired_matrix.position.y =\n            ramp_player->cached_camera_target_world.y * 0.34999999f + desired_matrix.position.y;\n    }\n\n    }\n\n"
+        },
+        {
+          "name": "inline-first-rows",
+          "text": "    cRSubGoldy* ramp_player = player;\n    if ((float)game->first_block_row_count > ramp_player->cached_camera_target_world.z) {\n        float ramp = ramp_player->cached_camera_target_world.z / (float)game->first_block_row_count * 1.4f - 0.40000001f;\n        if (ramp < 0.0f)\n            ramp = 0.0f;\n        else if (ramp > 1.0f)\n            ramp = 1.0f;\n        float inverse_ramp = 1.0f - ramp;\n        float lifted = inverse_ramp * 1.15f\n            * ramp_player->cached_camera_target_world.y\n            + desired_matrix.position.y;\n        desired_matrix.position.y = lifted;\n        desired_matrix.position.y =\n            (ramp * 0.34999999f)\n                * ramp_player->cached_camera_target_world.y\n            + lifted;\n        desired_matrix.RotLocalX(inverse_ramp * 0.87249994f);\n    } else {\n        desired_matrix.position.y =\n            ramp_player->cached_camera_target_world.y * 0.34999999f + desired_matrix.position.y;\n    }\n\n"
+        },
+        {
+          "name": "inline-inverse",
+          "text": "    cRSubGoldy* ramp_player = player;\n    float first_rows = (float)game->first_block_row_count;\n    if (first_rows > ramp_player->cached_camera_target_world.z) {\n        float ramp = ramp_player->cached_camera_target_world.z / first_rows * 1.4f - 0.40000001f;\n        if (ramp < 0.0f)\n            ramp = 0.0f;\n        else if (ramp > 1.0f)\n            ramp = 1.0f;\n        float lifted = (1.0f - ramp) * 1.15f\n            * ramp_player->cached_camera_target_world.y\n            + desired_matrix.position.y;\n        desired_matrix.position.y = lifted;\n        desired_matrix.position.y =\n            (ramp * 0.34999999f)\n                * ramp_player->cached_camera_target_world.y\n            + lifted;\n        desired_matrix.RotLocalX((1.0f - ramp) * 0.87249994f);\n    } else {\n        desired_matrix.position.y =\n            ramp_player->cached_camera_target_world.y * 0.34999999f + desired_matrix.position.y;\n    }\n\n"
+        },
+        {
+          "name": "inplace-lift",
+          "text": "    cRSubGoldy* ramp_player = player;\n    float first_rows = (float)game->first_block_row_count;\n    if (first_rows > ramp_player->cached_camera_target_world.z) {\n        float ramp = ramp_player->cached_camera_target_world.z / first_rows * 1.4f - 0.40000001f;\n        if (ramp < 0.0f)\n            ramp = 0.0f;\n        else if (ramp > 1.0f)\n            ramp = 1.0f;\n        float inverse_ramp = 1.0f - ramp;\n        desired_matrix.position.y = inverse_ramp * 1.15f\n            * ramp_player->cached_camera_target_world.y\n            + desired_matrix.position.y;\n        desired_matrix.position.y =\n            (ramp * 0.34999999f)\n                * ramp_player->cached_camera_target_world.y\n            + desired_matrix.position.y;\n        desired_matrix.RotLocalX(inverse_ramp * 0.87249994f);\n    } else {\n        desired_matrix.position.y =\n            ramp_player->cached_camera_target_world.y * 0.34999999f + desired_matrix.position.y;\n    }\n\n"
+        },
+        {
+          "name": "combined-lift",
+          "text": "    cRSubGoldy* ramp_player = player;\n    float first_rows = (float)game->first_block_row_count;\n    if (first_rows > ramp_player->cached_camera_target_world.z) {\n        float ramp = ramp_player->cached_camera_target_world.z / first_rows * 1.4f - 0.40000001f;\n        if (ramp < 0.0f)\n            ramp = 0.0f;\n        else if (ramp > 1.0f)\n            ramp = 1.0f;\n        float inverse_ramp = 1.0f - ramp;\n        float lifted = inverse_ramp * 1.15f\n            * ramp_player->cached_camera_target_world.y\n            + desired_matrix.position.y;\n        desired_matrix.position.y =\n            (ramp * 0.34999999f)\n                * ramp_player->cached_camera_target_world.y\n            + lifted;\n        desired_matrix.RotLocalX(inverse_ramp * 0.87249994f);\n    } else {\n        desired_matrix.position.y =\n            ramp_player->cached_camera_target_world.y * 0.34999999f + desired_matrix.position.y;\n    }\n\n"
+        }
+      ]
+    },
+    {
+      "name": "interpolation-input",
+      "find": "    cRSubGame* rate_game = game;\n",
+      "replacements": [
+        {
+          "name": "direct",
+          "text": "",
+          "requires": [
+            "interpolation-rate/direct"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "interpolation-rate",
+      "find": "rate_game->subgame_rate * 0.30000001f",
+      "replacements": [
+        {
+          "name": "direct",
+          "text": "game->subgame_rate * 0.30000001f",
+          "requires": [
+            "interpolation-input/direct"
+          ]
+        }
+      ]
+    }
+  ]
+}

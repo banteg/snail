@@ -14,13 +14,12 @@ extern char g_worm_fov_report_format[];
 void cRCameraman::AI()
 {
     TransformMatrix transform;
-    cRSubGoldy* p = player;
     force_camera_update = 0;
     desired_matrix = *transform.initialize_matrix_from_values(
         1.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 0.94600099f, 0.32416201f, 0.0f,
         0.0f, -0.32416201f, 0.94600099f, 0.0f,
-        p->cached_camera_target_world.x * 0.40000001f, 1.8f, -0.5f, 1.0f);
+        player->cached_camera_target_world.x * 0.40000001f, 1.8f, -0.5f, 1.0f);
     desired_matrix.Orthoganalize();
 
     cRSubGoldy* ramp_player = player;
@@ -99,12 +98,10 @@ void cRCameraman::AI()
         pitch = 1.2214999f;
     desired_matrix.RotLocalX(pitch);
 
-    cRSubGoldy* lean_player = player;
-    float lean_roll = (0.5f - Cos(lean_player->lane_lean_progress * 3.1415927f) * 0.5f)
-        * lean_player->lane_lean_amplitude * 6.2831855f;
-    float steer_roll = lean_player->cached_camera_target_world.x * -8.0f;
-    steer_roll = steer_roll * 0.017449999f;
-    desired_matrix.RotLocalZ(lean_roll + steer_roll * 0.17f);
+    desired_matrix.RotLocalZ(
+        (0.5f - Cos(player->lane_lean_progress * 3.1415927f) * 0.5f)
+            * player->lane_lean_amplitude * 6.2831855f
+        + ((player->cached_camera_target_world.x * -8.0f) * 0.017449999f) * 0.17f);
 
     if (player->follow_state.active == 1) {
         set_matrix_identity(&transform);

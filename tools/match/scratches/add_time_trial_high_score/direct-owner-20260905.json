@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "record-owner",
+      "find": "// add_time_trial_high_score @ 0x4178b0 (thiscall, ret 0xc)\n\n#include \"sub_high_score.h\"\n#include <stddef.h>\n\nvoid cRSubHighScore::AddTimeTrial(\n    cRSubSolution* record,\n    int route_index,\n    unsigned char route_active)\n{\n    record->high_score_mode_tag = 2;\n    record->route_or_rank_index = route_index;\n    record->replay_cursor = 0;\n    if (!route_active) {\n        record->total_seconds = 0.0f;\n    }\n\n    current_result_record = *record;\n\n    if (route_active) {\n        int route_offset = route_index * SUB_SOLUTION_STRIDE;\n        if (record->total_seconds\n                < *(float*)((char*)this + route_offset\n                    + offsetof(SubHighScore, time_trial_route_records)\n                    + offsetof(SubSolution, total_seconds))\n            || *(float*)((char*)this + route_offset\n                    + offsetof(SubHighScore, time_trial_route_records)\n                    + offsetof(SubSolution, total_seconds))\n                == 0.0f) {\n            SubSolution* route_record =\n                (SubSolution*)((char*)this + route_offset\n                    + offsetof(SubHighScore, time_trial_route_records));\n            *route_record = *record;\n            route_record->route_or_rank_index = route_index;\n        }\n    }\n}\n",
+      "replacements": [
+        {
+          "name": "direct-array",
+          "text": "// add_time_trial_high_score @ 0x4178b0 (thiscall, ret 0xc)\n\n#include \"sub_high_score.h\"\n#include <stddef.h>\n\nvoid cRSubHighScore::AddTimeTrial(\n    cRSubSolution* record,\n    int route_index,\n    unsigned char route_active)\n{\n    record->high_score_mode_tag = 2;\n    record->route_or_rank_index = route_index;\n    record->replay_cursor = 0;\n    if (!route_active) {\n        record->total_seconds = 0.0f;\n    }\n\n    current_result_record = *record;\n\n    if (route_active) {\n        if (record->total_seconds < time_trial_route_records[route_index].total_seconds\n            || time_trial_route_records[route_index].total_seconds == 0.0f) {\n            time_trial_route_records[route_index] = *record;\n            time_trial_route_records[route_index].route_or_rank_index = route_index;\n        }\n    }\n}\n"
+        }
+      ]
+    }
+  ]
+}

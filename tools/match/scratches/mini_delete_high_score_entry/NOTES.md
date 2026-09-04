@@ -1,3 +1,7 @@
+Current recovery: **exact**, 33/33 instructions over 92 native bytes,
+with 0 masked references and no audit debt. The September 5 recovery below
+supersedes the historical source-shape and compiler-residual claims.
+
 # mini_delete_high_score_entry
 
 Deletes a canceled pending top-ten entry by shifting later records over its
@@ -135,3 +139,17 @@ single live Windows cancel-path call close the authored name and ABI. The
 source is now `MiniDelete` with exact VC6 relocation
 `?MiniDelete@cRSubHighScore@@QAEXH@Z`; the honest 33/33 semantic-complete
 compiler residual remains visible.
+
+## 2026-09-05 direct record-array loop
+
+The simple typed loop copies `survival_records[row + 1]` into
+`active_record_bank[row]` and updates that destination's rank. VC6 derives the
+native source displacement, byte-stride loop, pre-copy source increment, and
+`rep movsd` itself. This replaces the manually advanced byte cursor and
+compensating subtraction that had prevented a full match.
+
+Both the direct survival array and the compatibility source-window array
+compile exactly in the recorded two-variant probe. The canonical source uses
+the actual survival array; it needs no separate source-owner view. The
+0x947648-byte parent layout, record stride, and borrowed active bank are
+unchanged. All 33 instructions now match, with no masked references.
