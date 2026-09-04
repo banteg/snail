@@ -33,3 +33,12 @@ Snapshotting both coordinates as float locals before publishing them reaches
 92.09% with the same instruction and reference counts. That isolated score does
 not establish a compiler limitation or rule out a coordinated owner change.
 The three labels in `experiments.jsonl` record the current-baseline probes.
+
+## 2026-09-04 source-expression diagnostics
+
+Three `coordinate-source-owner-mutations.json` probes against `94f05adb8`
+remove explicit coordinate-pointer owners, replace all coordinate bit-copy
+casts with float copies (including the sprite branch), or combine both.
+Direct fields reach 97.74%; the float-copy forms give 61.02-63.28%, all at
+177 instructions. No source is retained. These whole-function variants differ
+from the earlier hit-copy-only neutral probe and do not invalidate it.

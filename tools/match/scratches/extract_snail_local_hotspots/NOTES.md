@@ -20,3 +20,11 @@ whole-image provenance check finds the target's redundant six-instruction
 vector self-copy nowhere else. The remaining copy and one error-call register
 choice are bounded VC6 residue; explicit self-assignment and aggregate operator
 forms regress and are not retained.
+
+## 2026-09-04 source-expression diagnostics
+
+Four `hotspot-expression-mutations.json` probes against `94f05adb8` test
+ordinary value addition in both operand orders, a named destination reference,
+and a component constructor. They give 52.29% (79 instructions) or 30.97%
+(81 instructions), without recovering the native redundant copy. No source
+change is retained; the 91.55% baseline remains open.

@@ -135,3 +135,13 @@ candidate both contain 186 instructions and all 23 references are clean.
 The 92.47% residual is solely physical placement of equivalent diagonal-test
 continuations. It does not leave a tie rule, formula, field, or owner
 unresolved; prior sweep counts are descriptive only.
+
+## 2026-09-04 source-expression diagnostics
+
+Eight `arithmetic-lifetime-mutations.json` probes against `94f05adb8` share
+the radicand/root owners, including a single reused scalar, at two scopes.
+They give 91.40-92.47% and do not repair dispatch placement. Four complete
+structured trees with duplicated arithmetic leaves give 303 instructions
+rather than native's 186; VC6 does not merge those whole bodies here. These
+`structured-dominant-bodies-mutations.json` probes are not promoted. The
+canonical 92.47% source and its exact arithmetic bodies remain unchanged.

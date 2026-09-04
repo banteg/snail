@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lhs",
+      "find": "            Vector3 lhs_value;\n            lhs_value.x = base_b->x - base_a->x;\n            lhs_value.y = base_b->y - base_a->y;\n            lhs_value.z = base_b->z - base_a->z;\n            Vector3 lhs = lhs_value;",
+      "replacements": [
+        {
+          "name": "subtraction-expression",
+          "text": "            Vector3 lhs = *base_b - *base_a;"
+        }
+      ]
+    },
+    {
+      "name": "rhs",
+      "find": "            Vector3 rhs_value;\n            rhs_value.x = base_c->x - base_a->x;\n            rhs_value.y = base_c->y - base_a->y;\n            rhs_value.z = base_c->z - base_a->z;\n            Vector3 rhs = rhs_value;",
+      "replacements": [
+        {
+          "name": "subtraction-expression",
+          "text": "            Vector3 rhs = *base_c - *base_a;"
+        }
+      ]
+    },
+    {
+      "name": "quad-lhs",
+      "find": "                Vector3 quad_lhs_value;\n                quad_lhs_value.x = base_d->x - base_a->x;\n                quad_lhs_value.y = base_d->y - base_a->y;\n                quad_lhs_value.z = base_d->z - base_a->z;\n                lhs = quad_lhs_value;",
+      "replacements": [
+        {
+          "name": "subtraction-expression",
+          "text": "                lhs = *base_d - *base_a;"
+        }
+      ]
+    },
+    {
+      "name": "quad-rhs",
+      "find": "                Vector3 quad_rhs_value;\n                quad_rhs_value.x = base_e->x - base_a->x;\n                quad_rhs_value.y = base_e->y - base_a->y;\n                quad_rhs_value.z = base_e->z - base_a->z;\n                rhs = quad_rhs_value;",
+      "replacements": [
+        {
+          "name": "subtraction-expression",
+          "text": "                rhs = *base_e - *base_a;"
+        }
+      ]
+    },
+    {
+      "name": "tally-value",
+      "find": "            const float& tally = *tally_cursor;",
+      "replacements": [
+        {
+          "name": "copy",
+          "text": "            float tally = *tally_cursor;"
+        }
+      ]
+    }
+  ]
+}

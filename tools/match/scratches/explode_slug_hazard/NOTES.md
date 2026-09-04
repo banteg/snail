@@ -166,3 +166,11 @@ with all 32 masked operands clean. Android/iOS range provenance supports the
 current random-vector semantics, but no mobile-backed owner or component
 spelling recovers that Windows VC6 x87 schedule. Do not force it with
 `volatile`, a dummy dependency, or a fake alias.
+
+## 2026-09-04 source-expression diagnostics
+
+Nine `velocity-expression-mutations.json` alternatives against `94f05adb8`
+separate the RNG-derived components and cross owner acquisition with direct
+or named vector scaling. They give 81.91-82.31% with 146 or 147 instructions.
+They do not reconcile the owner load and x87 product schedule, and the
+canonical 97.61% source is unchanged.

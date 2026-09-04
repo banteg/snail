@@ -153,3 +153,14 @@ forms also preserve the repeated scale-one SIB base/index reversal. Five
 consecutive post-win sweeps found no better source shape, so both residuals
 remain explicit without volatile state, inline assembly, or a speculative
 shared vector operator.
+
+## 2026-09-04 source-expression diagnostics
+
+All 31 combinations in `edge-expression-tally-interaction-mutations.json`
+against `94f05adb8` test four subtraction-expression recoveries together with
+a copied final tally. Replacing both quad edges changes the tail while keeping
+the first 382 instructions: 435/437 instructions at 97.48%, with 22 clean
+references. It also introduces new tail address/scheduling differences and is
+not promoted. Adding a copied tally gives 439/437 at 94.29% and again changes
+the earlier stack allocation. The canonical 97.47% source stays unchanged;
+these coupled effects do not close the final divisor/owner hypothesis.

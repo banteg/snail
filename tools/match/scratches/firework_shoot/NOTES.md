@@ -36,3 +36,12 @@ spellings are byte-identical to the accepted form, while component-wise copying
 regresses sharply. The remaining five-instruction tail drift begins where VC6
 chooses when to advance the sprite base while the last x87 multiply is live;
 no artificial storage or register constraint is justified.
+
+## 2026-09-04 source-expression diagnostics
+
+Two recorded products against `94f05adb8` test position/count lifetimes
+(8 alternatives) and velocity temporary/count interaction (5 alternatives).
+Direct position assignment and direct velocity construction can preserve the
+95.15% baseline; moving the decrement to the loop condition gives 94.17%.
+The float-pointer position constructor changes allocation more broadly. No
+source is promoted; the specifications preserve the tested source forms.

@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "position-count-lifetime",
+      "find": "        --remaining;\n        Vector3* out_position = &sprite->position;\n        *out_position = *position;\n    } while (remaining != 0);\n}\n",
+      "replacements": [
+        {
+          "name": "count0-position1",
+          "text": "        --remaining;\n        sprite->position = *position;\n    } while (remaining != 0);\n}\n"
+        },
+        {
+          "name": "count0-position2",
+          "text": "        --remaining;\n        sprite->position = Vector3(&position->x);\n    } while (remaining != 0);\n}\n"
+        },
+        {
+          "name": "count1-position0",
+          "text": "        Vector3* out_position = &sprite->position;\n        *out_position = *position;\n    } while (--remaining != 0);\n}\n"
+        },
+        {
+          "name": "count1-position1",
+          "text": "        sprite->position = *position;\n    } while (--remaining != 0);\n}\n"
+        },
+        {
+          "name": "count1-position2",
+          "text": "        sprite->position = Vector3(&position->x);\n    } while (--remaining != 0);\n}\n"
+        },
+        {
+          "name": "count2-position0",
+          "text": "        Vector3* out_position = &sprite->position;\n        *out_position = *position;\n        --remaining;\n    } while (remaining != 0);\n}\n"
+        },
+        {
+          "name": "count2-position1",
+          "text": "        sprite->position = *position;\n        --remaining;\n    } while (remaining != 0);\n}\n"
+        },
+        {
+          "name": "count2-position2",
+          "text": "        sprite->position = Vector3(&position->x);\n        --remaining;\n    } while (remaining != 0);\n}\n"
+        }
+      ]
+    }
+  ]
+}

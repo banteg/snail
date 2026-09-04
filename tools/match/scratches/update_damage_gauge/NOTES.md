@@ -1,4 +1,10 @@
-# Dossier — gates decoded via the campaign layout work (2026-06-12)
+# cRDamageGuage::AI @ 0x440fd0
+
+Current recovery: **exact**, 268/268 instructions over the native 1,043-byte
+body, with all 65 masked references clean. The September 4 entry below
+supersedes the historical render-local stack-allocation claims.
+
+## Gates decoded via the campaign layout work (2026-06-12)
 
 update_damage_gauge @ 0x440fd0. The former root-offset window is now fully
 owned by `GameRoot::subgame` and its embedded `Player`:
@@ -248,3 +254,40 @@ analysis-only `DamageGuage` type and applies `cRDamageGuage*` to this method.
 This is an ownership and ABI recovery only: the scratch remains honestly
 94.03% at 268/268 instructions, with the documented `alpha` / `mask_height`
 stack-slot allocation residual and all 65 relocatable operands clean.
+
+## 2026-09-04 full match: grouped flash expression updates alpha
+
+The recovered render expression is:
+
+```cpp
+alpha = alpha - ((Sin(pulse_progress * 6.2831855f) + 1.0f) * 0.5f)
+    * alpha * 0.5f;
+```
+
+The draw call consumes `alpha` directly. This replaces the separately named
+`flash_pulse` and `flash_alpha` intermediates and raises **94.03% to 100.00%**:
+**268/268** instructions, **268/268** prefix, **65** clean masked references,
+and the native **0x18-byte** frame. No shared type, ABI, compiler setting,
+reference, or matcher normalization changed. The canonical rebuild and exact
+reference audit confirm the result.
+
+Two source changes interact. Inlining the ungrouped pulse alone gives 93.08%;
+assigning the original staged result back to `alpha` alone gives 92.71%.
+Together they give 98.69% and recover the native alpha/mask stack homes,
+but VC6 folds the two half factors to a quarter: 267/268 instructions and
+three unaudited reference uses. Parenthesizing the pulse calculation preserves
+both native half multiplies and completes the match. The parentheses are an
+ordinary expression grouping, not a compiler flag or a synthetic dependency.
+
+The 15-variant `alpha-expression-lifetime-mutations.json` product against
+`94f05adb8` crosses pulse inlining, alpha reuse, and reuse of alpha for either
+or both preceding progress temporaries. Reusing those earlier temporaries is
+unnecessary and is not retained. The nine `flash-expression-mutations.json`
+alternatives then test grouping, operand order, casts, division, and compound
+assignment. Five are exact; the retained grouped pulse requires no casts or
+extra locals. The remaining four preserve references but differ in schedule.
+
+The earlier render-local grids only moved declarations and scopes inside the
+staged-expression model. The complete expression determines the stack reuse
+that those local-only probes failed to recover. No compiler limitation follows
+from those earlier negative tests.

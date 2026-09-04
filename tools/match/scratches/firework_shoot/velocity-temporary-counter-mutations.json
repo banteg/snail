@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "velocity-temporary-counter",
+      "find": "        Vector3 velocity(\n            ((float)gRMathRand2() - 16384.0f)\n                * 0.0000610351562f * 0.2f,\n            ((float)gRMathRand2() - 16384.0f)\n                    * 0.0000610351562f * 0.3f\n                + 0.100000001f,\n            ((float)gRMathRand2() - 16384.0f)\n                * 0.0000610351562f * 0.2f);\n\n        sprite->depth_offset = 0.0f;\n        sprite->velocity = velocity;\n        --remaining;\n        Vector3* out_position = &sprite->position;\n        *out_position = *position;\n    } while (remaining != 0);\n}\n",
+      "replacements": [
+        {
+          "name": "expression0-counter1",
+          "text": "        Vector3 velocity(\n            ((float)gRMathRand2() - 16384.0f)\n                * 0.0000610351562f * 0.2f,\n            ((float)gRMathRand2() - 16384.0f)\n                    * 0.0000610351562f * 0.3f\n                + 0.100000001f,\n            ((float)gRMathRand2() - 16384.0f)\n                * 0.0000610351562f * 0.2f);\n\n        sprite->depth_offset = 0.0f;\n        sprite->velocity = velocity;\n        Vector3* out_position = &sprite->position;\n        *out_position = *position;\n    } while (--remaining != 0);\n}\n"
+        },
+        {
+          "name": "expression1-counter0",
+          "text": "        sprite->velocity = Vector3(\n            ((float)gRMathRand2() - 16384.0f)\n                * 0.0000610351562f * 0.2f,\n            ((float)gRMathRand2() - 16384.0f)\n                    * 0.0000610351562f * 0.3f\n                + 0.100000001f,\n            ((float)gRMathRand2() - 16384.0f)\n                * 0.0000610351562f * 0.2f);\n\n        sprite->depth_offset = 0.0f;\n        --remaining;\n        Vector3* out_position = &sprite->position;\n        *out_position = *position;\n    } while (remaining != 0);\n}\n"
+        },
+        {
+          "name": "expression1-counter1",
+          "text": "        sprite->velocity = Vector3(\n            ((float)gRMathRand2() - 16384.0f)\n                * 0.0000610351562f * 0.2f,\n            ((float)gRMathRand2() - 16384.0f)\n                    * 0.0000610351562f * 0.3f\n                + 0.100000001f,\n            ((float)gRMathRand2() - 16384.0f)\n                * 0.0000610351562f * 0.2f);\n\n        sprite->depth_offset = 0.0f;\n        Vector3* out_position = &sprite->position;\n        *out_position = *position;\n    } while (--remaining != 0);\n}\n"
+        },
+        {
+          "name": "expression2-counter0",
+          "text": "        Vector3 velocity;\n        velocity = Vector3(\n            ((float)gRMathRand2() - 16384.0f)\n                * 0.0000610351562f * 0.2f,\n            ((float)gRMathRand2() - 16384.0f)\n                    * 0.0000610351562f * 0.3f\n                + 0.100000001f,\n            ((float)gRMathRand2() - 16384.0f)\n                * 0.0000610351562f * 0.2f);\n\n        sprite->depth_offset = 0.0f;\n        sprite->velocity = velocity;\n        --remaining;\n        Vector3* out_position = &sprite->position;\n        *out_position = *position;\n    } while (remaining != 0);\n}\n"
+        },
+        {
+          "name": "expression2-counter1",
+          "text": "        Vector3 velocity;\n        velocity = Vector3(\n            ((float)gRMathRand2() - 16384.0f)\n                * 0.0000610351562f * 0.2f,\n            ((float)gRMathRand2() - 16384.0f)\n                    * 0.0000610351562f * 0.3f\n                + 0.100000001f,\n            ((float)gRMathRand2() - 16384.0f)\n                * 0.0000610351562f * 0.2f);\n\n        sprite->depth_offset = 0.0f;\n        sprite->velocity = velocity;\n        Vector3* out_position = &sprite->position;\n        *out_position = *position;\n    } while (--remaining != 0);\n}\n"
+        }
+      ]
+    }
+  ]
+}

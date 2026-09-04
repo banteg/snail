@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "hotspot-expression",
+      "find": "        hotspot_z[-2] += vertex->x;\n        hotspot_z[-1] += vertex->y;\n        *hotspot_z += vertex->z;",
+      "replacements": [
+        {
+          "name": "add-value",
+          "text": "        *(Vector3*)(hotspot_z - 2) = *(Vector3*)(hotspot_z - 2) + *vertex;"
+        },
+        {
+          "name": "reversed-add-value",
+          "text": "        *(Vector3*)(hotspot_z - 2) = *vertex + *(Vector3*)(hotspot_z - 2);"
+        },
+        {
+          "name": "named-add-value",
+          "text": "        {\n            Vector3& hotspot = *(Vector3*)(hotspot_z - 2);\n            hotspot = hotspot + *vertex;\n        }"
+        },
+        {
+          "name": "constructor-value",
+          "text": "        *(Vector3*)(hotspot_z - 2) = Vector3(\n            hotspot_z[-2] + vertex->x, hotspot_z[-1] + vertex->y, *hotspot_z + vertex->z);"
+        }
+      ]
+    }
+  ]
+}

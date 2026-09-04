@@ -128,8 +128,7 @@ render:
         else
             alpha = 1.0f;
 
-        float flash_pulse = (Sin(pulse_progress * 6.2831855f) + 1.0f) * 0.5f;
-        float flash_alpha = alpha - flash_pulse * alpha * 0.5f;
+        alpha = alpha - ((Sin(pulse_progress * 6.2831855f) + 1.0f) * 0.5f) * alpha * 0.5f;
         OSDPrintUV(
             91,
             560.0f,
@@ -137,7 +136,7 @@ render:
             64.0f,
             396.0f,
             0x1000000,
-            color.Set(1.0f, 1.0f, 1.0f, flash_alpha),
+            color.Set(1.0f, 1.0f, 1.0f, alpha),
             0.0f,
             0.0f,
             1.0f,

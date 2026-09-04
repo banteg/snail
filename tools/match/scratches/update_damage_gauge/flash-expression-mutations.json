@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "flash-expression",
+      "find": "        float flash_pulse = (Sin(pulse_progress * 6.2831855f) + 1.0f) * 0.5f;\n        float flash_alpha = alpha - flash_pulse * alpha * 0.5f;\n        OSDPrintUV(\n            91,\n            560.0f,\n            70.0f,\n            64.0f,\n            396.0f,\n            0x1000000,\n            color.Set(1.0f, 1.0f, 1.0f, flash_alpha),\n            0.0f,\n            0.0f,\n            1.0f,\n            0.7734375f,\n            3,\n            0);",
+      "replacements": [
+        {
+          "name": "grouped-pulse",
+          "text": "        alpha = alpha - ((Sin(pulse_progress * 6.2831855f) + 1.0f) * 0.5f) * alpha * 0.5f;\n        OSDPrintUV(\n            91,\n            560.0f,\n            70.0f,\n            64.0f,\n            396.0f,\n            0x1000000,\n            color.Set(1.0f, 1.0f, 1.0f, alpha),\n            0.0f,\n            0.0f,\n            1.0f,\n            0.7734375f,\n            3,\n            0);"
+        },
+        {
+          "name": "grouped-half-alpha",
+          "text": "        alpha = alpha - ((Sin(pulse_progress * 6.2831855f) + 1.0f) * 0.5f) * (alpha * 0.5f);\n        OSDPrintUV(\n            91,\n            560.0f,\n            70.0f,\n            64.0f,\n            396.0f,\n            0x1000000,\n            color.Set(1.0f, 1.0f, 1.0f, alpha),\n            0.0f,\n            0.0f,\n            1.0f,\n            0.7734375f,\n            3,\n            0);"
+        },
+        {
+          "name": "alpha-first",
+          "text": "        alpha = alpha - alpha * ((Sin(pulse_progress * 6.2831855f) + 1.0f) * 0.5f) * 0.5f;\n        OSDPrintUV(\n            91,\n            560.0f,\n            70.0f,\n            64.0f,\n            396.0f,\n            0x1000000,\n            color.Set(1.0f, 1.0f, 1.0f, alpha),\n            0.0f,\n            0.0f,\n            1.0f,\n            0.7734375f,\n            3,\n            0);"
+        },
+        {
+          "name": "cast-pulse",
+          "text": "        alpha = alpha - (float)((Sin(pulse_progress * 6.2831855f) + 1.0f) * 0.5f) * alpha * 0.5f;\n        OSDPrintUV(\n            91,\n            560.0f,\n            70.0f,\n            64.0f,\n            396.0f,\n            0x1000000,\n            color.Set(1.0f, 1.0f, 1.0f, alpha),\n            0.0f,\n            0.0f,\n            1.0f,\n            0.7734375f,\n            3,\n            0);"
+        },
+        {
+          "name": "cast-pulse-product",
+          "text": "        alpha = alpha - (float)((Sin(pulse_progress * 6.2831855f) + 1.0f) * 0.5f * alpha) * 0.5f;\n        OSDPrintUV(\n            91,\n            560.0f,\n            70.0f,\n            64.0f,\n            396.0f,\n            0x1000000,\n            color.Set(1.0f, 1.0f, 1.0f, alpha),\n            0.0f,\n            0.0f,\n            1.0f,\n            0.7734375f,\n            3,\n            0);"
+        },
+        {
+          "name": "half-alpha-first",
+          "text": "        alpha = alpha - (alpha * 0.5f) * ((Sin(pulse_progress * 6.2831855f) + 1.0f) * 0.5f);\n        OSDPrintUV(\n            91,\n            560.0f,\n            70.0f,\n            64.0f,\n            396.0f,\n            0x1000000,\n            color.Set(1.0f, 1.0f, 1.0f, alpha),\n            0.0f,\n            0.0f,\n            1.0f,\n            0.7734375f,\n            3,\n            0);"
+        },
+        {
+          "name": "divide-pulse",
+          "text": "        alpha = alpha - ((Sin(pulse_progress * 6.2831855f) + 1.0f) / 2.0f) * alpha * 0.5f;\n        OSDPrintUV(\n            91,\n            560.0f,\n            70.0f,\n            64.0f,\n            396.0f,\n            0x1000000,\n            color.Set(1.0f, 1.0f, 1.0f, alpha),\n            0.0f,\n            0.0f,\n            1.0f,\n            0.7734375f,\n            3,\n            0);"
+        },
+        {
+          "name": "divide-product",
+          "text": "        alpha = alpha - ((Sin(pulse_progress * 6.2831855f) + 1.0f) * 0.5f * alpha) / 2.0f;\n        OSDPrintUV(\n            91,\n            560.0f,\n            70.0f,\n            64.0f,\n            396.0f,\n            0x1000000,\n            color.Set(1.0f, 1.0f, 1.0f, alpha),\n            0.0f,\n            0.0f,\n            1.0f,\n            0.7734375f,\n            3,\n            0);"
+        },
+        {
+          "name": "compound-grouped",
+          "text": "        alpha -= ((Sin(pulse_progress * 6.2831855f) + 1.0f) * 0.5f) * alpha * 0.5f;\n        OSDPrintUV(\n            91,\n            560.0f,\n            70.0f,\n            64.0f,\n            396.0f,\n            0x1000000,\n            color.Set(1.0f, 1.0f, 1.0f, alpha),\n            0.0f,\n            0.0f,\n            1.0f,\n            0.7734375f,\n            3,\n            0);"
+        }
+      ]
+    }
+  ]
+}
