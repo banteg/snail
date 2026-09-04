@@ -17,17 +17,10 @@ void cRSubHover::AI()
 {
     int zero = 0;
 
-    int live_state = state;
-    live_state -= zero;
-    if (!live_state)
+    switch (state) {
+    case SUB_HOVER_STATE_INACTIVE:
         return;
-    switch (live_state) {
     case SUB_HOVER_STATE_ACTIVE:
-        break;
-    default:
-        return;
-    }
-
     {
         float next_progress = progress + progress_step;
         progress = next_progress;
@@ -35,7 +28,7 @@ void cRSubHover::AI()
         cRSubGame* live_game = game;
         cRSubGoldy* live_player = player;
         if (next_progress > 1.0f
-            || (float)(live_game->completion_row_start - 5) < live_player->transform.position.z) {
+            || live_player->transform.position.z > (float)(live_game->completion_row_start - 5)) {
             goto finish_hover;
         }
 
@@ -69,6 +62,8 @@ void cRSubHover::AI()
         Hover(player->transform.position, progress);
         return;
     }
+    }
+    return;
 
 finish_hover:
     End();

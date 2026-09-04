@@ -1,3 +1,7 @@
+Current recovery: **exact**, 131/131 instructions over 490 native bytes, with
+all 34 masked references clean. The September 5 recovery supersedes earlier
+state-dispatch and completion-owner residual claims.
+
 # update_jetpack_gauge @ 0x43a390
 
 Source-shaped partial scratch for the jetpack countdown/warning controller.
@@ -165,3 +169,22 @@ The remaining 94.66% delta is one equivalent `sub`/`cmp` flag source and a
 rotation of the game, player, and threshold registers. It leaves no lifecycle
 state, field, or owner unresolved, and experiment history does not limit the
 classification.
+
+## 2026-09-05 expression lifetime probe
+
+A six-form whole-body state-dispatch probe recovers the native opening subtraction when the active body remains inside the switch. This improves to 95.42%; the completion-owner register rotation remains under investigation.
+
+## 2026-09-05 whole-switch and comparison source recovery
+
+Keeping the active body inside the state switch reproduces native's opening
+`sub; je; dec; jne` sequence, improving 94.66% to 95.42%. The previous source
+split dispatch from its body and compiled the subtraction as a comparison.
+
+Within that switch, `player_z > (float)(completion_row_start - 5)` recovers
+the EDX/ECX/EAX completion-check lifetimes and reaches 100%. The native integer
+subtraction, x87 comparison, both exit conditions, and all references remain
+unchanged. No state, owner, ABI, or compiler assumption needed changing.
+
+The ledgers preserve six whole-body switch forms, nineteen completion/wobble
+expression interactions, and two threshold forms. The double-conversion
+alternative regressed; the final source retains the original float conversion.

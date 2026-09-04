@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "threshold-value",
+      "find": "(float)(live_game->completion_row_start - 5) < live_player->transform.position.z",
+      "replacements": [
+        {
+          "name": "double",
+          "text": "(double)(live_game->completion_row_start - 5) < live_player->transform.position.z"
+        },
+        {
+          "name": "commuted",
+          "text": "live_player->transform.position.z > (float)(live_game->completion_row_start - 5)"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "completion-inputs",
+      "find": "        cRSubGame* live_game = game;\n        cRSubGoldy* live_player = player;\n        if (next_progress > 1.0f\n            || (float)(live_game->completion_row_start - 5) < live_player->transform.position.z) {\n",
+      "replacements": [
+        {
+          "name": "direct",
+          "text": "        if (next_progress > 1.0f\n            || (float)(game->completion_row_start - 5) < player->transform.position.z) {\n"
+        },
+        {
+          "name": "player-first",
+          "text": "        cRSubGoldy* live_player = player;\n        cRSubGame* live_game = game;\n        if (next_progress > 1.0f\n            || (float)(live_game->completion_row_start - 5) < live_player->transform.position.z) {\n"
+        },
+        {
+          "name": "threshold-value",
+          "text": "        int end_row = game->completion_row_start - 5;\n        if (next_progress > 1.0f\n            || (float)end_row < player->transform.position.z) {\n"
+        },
+        {
+          "name": "position-reference",
+          "text": "        float& player_z = player->transform.position.z;\n        if (next_progress > 1.0f\n            || (float)(game->completion_row_start - 5) < player_z) {\n"
+        }
+      ]
+    },
+    {
+      "name": "wobble-expression",
+      "find": "        float wobble_y_sine = Sin(progress * 37.699112f);\n        int intensity_bits = *(int*)&warning_intensity;\n        wobble_alpha = 0.0f;\n        *(int*)&warning_intensity_latch = intensity_bits;\n        wobble_y = (wobble_y_sine * 0.25f + 1.0f) * warning_intensity;\n",
+      "replacements": [
+        {
+          "name": "float-latch",
+          "text": "        float wobble_y_sine = Sin(progress * 37.699112f);\n        wobble_alpha = 0.0f;\n        warning_intensity_latch = warning_intensity;\n        wobble_y = (wobble_y_sine * 0.25f + 1.0f) * warning_intensity;\n"
+        },
+        {
+          "name": "inline-sine",
+          "text": "        wobble_alpha = 0.0f;\n        warning_intensity_latch = warning_intensity;\n        wobble_y = (Sin(progress * 37.699112f) * 0.25f + 1.0f) * warning_intensity;\n"
+        },
+        {
+          "name": "result-before-latch",
+          "text": "        wobble_y = (Sin(progress * 37.699112f) * 0.25f + 1.0f) * warning_intensity;\n        wobble_alpha = 0.0f;\n        warning_intensity_latch = warning_intensity;\n"
+        }
+      ]
+    }
+  ]
+}
