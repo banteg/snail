@@ -174,3 +174,10 @@ separate the RNG-derived components and cross owner acquisition with direct
 or named vector scaling. They give 81.91-82.31% with 146 or 147 instructions.
 They do not reconcile the owner load and x87 product schedule, and the
 canonical 97.61% source is unchanged.
+
+## 2026-09-05 bounded source-expression probes
+
+Fifty-nine combinations of vector scaling, final position composition, and vector scope do not improve the 97.61% baseline. No partial or tradeoff was promoted.
+
+The recorded specifications and experiment receipts preserve these negative
+results. They do not establish source exhaustion or compiler provenance.

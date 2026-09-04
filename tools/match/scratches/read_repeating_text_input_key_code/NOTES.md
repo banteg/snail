@@ -174,3 +174,10 @@ The 44 recorded source forms and independent Android/iOS control-flow
 confirmation leave no semantic ambiguity. This scratch is classified
 `RECOVERY=semantic-complete` with `RESIDUAL=compiler`; the remaining fold-call
 schedule is not forced with an artificial dependency.
+
+## 2026-09-05 bounded source-expression probes
+
+Nine whole-function key-value lifetime forms test one result variable, a wider repeat code, and declaration order. A single char or unsigned-char result is byte-neutral; none improves the 99.32% baseline.
+
+The recorded specifications and experiment receipts preserve these negative
+results. They do not establish source exhaustion or compiler provenance.

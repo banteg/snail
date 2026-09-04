@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "x-clamp",
+      "find": "            if (x < 0) {\n                x = 0;\n            } else if (x > width - 1) {\n                x = width - 1;\n            }",
+      "replacements": [
+        {
+          "name": "commuted",
+          "text": "            if (x < 0) {\n                x = 0;\n            } else if (width - 1 < x) {\n                x = width - 1;\n            }"
+        },
+        {
+          "name": "ternary",
+          "text": "            x = x < 0 ? 0 : (x > width - 1 ? width - 1 : x);"
+        },
+        {
+          "name": "named-limit",
+          "text": "            int max_x = width - 1;\n            if (x < 0) {\n                x = 0;\n            } else if (x > max_x) {\n                x = max_x;\n            }"
+        },
+        {
+          "name": "separate-tests",
+          "text": "            if (x < 0) {\n                x = 0;\n            }\n            if (x > width - 1) {\n                x = width - 1;\n            }"
+        }
+      ]
+    },
+    {
+      "name": "y-clamp",
+      "find": "            if (y < 0) {\n                y = 0;\n            } else if (y > height - 1) {\n                y = height - 1;\n            }",
+      "replacements": [
+        {
+          "name": "commuted",
+          "text": "            if (y < 0) {\n                y = 0;\n            } else if (height - 1 < y) {\n                y = height - 1;\n            }"
+        },
+        {
+          "name": "ternary",
+          "text": "            y = y < 0 ? 0 : (y > height - 1 ? height - 1 : y);"
+        },
+        {
+          "name": "named-limit",
+          "text": "            int max_y = height - 1;\n            if (y < 0) {\n                y = 0;\n            } else if (y > max_y) {\n                y = max_y;\n            }"
+        },
+        {
+          "name": "separate-tests",
+          "text": "            if (y < 0) {\n                y = 0;\n            }\n            if (y > height - 1) {\n                y = height - 1;\n            }"
+        }
+      ]
+    }
+  ]
+}

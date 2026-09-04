@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "absolute-step-1",
+      "find": "            float step;\n            if (active_animation->progress_step < 0.0f)\n                step = -active_animation->progress_step;\n            else\n                step = active_animation->progress_step;",
+      "replacements": [
+        {
+          "name": "ternary",
+          "text": "            float step = active_animation->progress_step < 0.0f ? -active_animation->progress_step : active_animation->progress_step;"
+        },
+        {
+          "name": "in-place",
+          "text": "            float step = active_animation->progress_step;\n            if (step < 0.0f)\n                step = -step;"
+        }
+      ],
+      "occurrence": 1
+    },
+    {
+      "name": "absolute-step-2",
+      "find": "            float step;\n            if (active_animation->progress_step < 0.0f)\n                step = -active_animation->progress_step;\n            else\n                step = active_animation->progress_step;",
+      "replacements": [
+        {
+          "name": "ternary",
+          "text": "            float step = active_animation->progress_step < 0.0f ? -active_animation->progress_step : active_animation->progress_step;"
+        },
+        {
+          "name": "in-place",
+          "text": "            float step = active_animation->progress_step;\n            if (step < 0.0f)\n                step = -step;"
+        }
+      ],
+      "occurrence": 2
+    },
+    {
+      "name": "queue-expression",
+      "find": "    anim_manager.queued_animations[anim_manager.queue_count] = animation_id;\n    ++anim_manager.queue_count;",
+      "replacements": [
+        {
+          "name": "postincrement",
+          "text": "    anim_manager.queued_animations[anim_manager.queue_count++] = animation_id;"
+        }
+      ]
+    }
+  ]
+}

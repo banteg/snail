@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "allocation",
+      "find": "            cRSprite* sprite = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            *slots = sprite;\n            sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;\n\n",
+      "replacements": [
+        {
+          "name": "stored-compound",
+          "text": "            *slots = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            cRSprite* sprite = *slots;\n            sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;\n\n"
+        },
+        {
+          "name": "stored-named",
+          "text": "            *slots = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            cRSprite* sprite = *slots;\n            unsigned int flags = sprite->flags;\n            flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            sprite->flags = flags;\n            slots++;\n\n"
+        },
+        {
+          "name": "stored-expanded",
+          "text": "            *slots = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            cRSprite* sprite = *slots;\n            sprite->flags = sprite->flags | SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;\n\n"
+        },
+        {
+          "name": "ref-compound",
+          "text": "            cRSprite*& sprite = *slots;\n            sprite = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;\n\n"
+        },
+        {
+          "name": "ref-named",
+          "text": "            cRSprite*& sprite = *slots;\n            sprite = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            unsigned int flags = sprite->flags;\n            flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            sprite->flags = flags;\n            slots++;\n\n"
+        },
+        {
+          "name": "ref-expanded",
+          "text": "            cRSprite*& sprite = *slots;\n            sprite = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            sprite->flags = sprite->flags | SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;\n\n"
+        },
+        {
+          "name": "local-named",
+          "text": "            cRSprite* sprite = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            *slots = sprite;\n            unsigned int flags = sprite->flags;\n            flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            sprite->flags = flags;\n            slots++;\n\n"
+        },
+        {
+          "name": "local-expanded",
+          "text": "            cRSprite* sprite = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            *slots = sprite;\n            sprite->flags = sprite->flags | SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;\n\n"
+        }
+      ]
+    },
+    {
+      "name": "size-local",
+      "find": "        int count = NUKE_SPRITE_SLOT_COUNT;",
+      "replacements": [
+        {
+          "name": "size-before-count",
+          "text": "        float size = 3.0f;\n        int count = NUKE_SPRITE_SLOT_COUNT;",
+          "requires": [
+            "size-start/use-size",
+            "size-end/use-size"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "size-start",
+      "find": "->size_start = 3.0f;",
+      "replacements": [
+        {
+          "name": "use-size",
+          "text": "->size_start = size;",
+          "requires": [
+            "size-local/size-before-count",
+            "size-end/use-size"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "size-end",
+      "find": "->size_end = 3.0f;",
+      "replacements": [
+        {
+          "name": "use-size",
+          "text": "->size_end = size;",
+          "requires": [
+            "size-local/size-before-count",
+            "size-start/use-size"
+          ]
+        }
+      ]
+    }
+  ]
+}

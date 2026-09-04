@@ -18,3 +18,10 @@ slot publication rotates equivalent registers.
 The matcher source now uses authored `SetAnimation` and exact VC6 symbol
 `?SetAnimation@cRSnail@@QAEXH_NH@Z`; `dispatch_cutscene_animation` remains only
 the stable scratch and Windows-address identity.
+
+## 2026-09-05 bounded source-expression probes
+
+Seventeen combinations of absolute-step expressions and post-incremented queue insertion do not improve the 94.55% baseline. The queue-store register pair remains unresolved.
+
+The recorded specifications and experiment receipts preserve these negative
+results. They do not establish source exhaustion or compiler provenance.

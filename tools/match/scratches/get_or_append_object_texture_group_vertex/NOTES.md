@@ -190,3 +190,10 @@ The 128/127-instruction difference is the one cold found-return block jump
 visible in both Windows decompilers. It does not hide another owner or behavior
 path. Recovery is `semantic-complete` with compiler residue; the prior sweep
 count is not part of this decision.
+
+## 2026-09-05 bounded source-expression probes
+
+Three search-exit forms (shared label, loop break with append-on-miss, and post-loop found return) do not improve the 83.14% baseline. The shared label is byte-neutral; the other two alter more control flow.
+
+The recorded specifications and experiment receipts preserve these negative
+results. They do not establish source exhaustion or compiler provenance.

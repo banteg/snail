@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "position-lifetime",
+      "find": "            entries[index].position =\n                entries[index].velocity * entries[index].travel_distance /\n                    entries[index].speed +\n                entries[index].position;",
+      "replacements": [
+        {
+          "name": "add-assign",
+          "text": "            entries[index].position +=\n                entries[index].velocity * entries[index].travel_distance /\n                    entries[index].speed;"
+        },
+        {
+          "name": "parent-first",
+          "text": "            entries[index].position =\n                entries[index].position + entries[index].velocity * entries[index].travel_distance /\n                    entries[index].speed;"
+        },
+        {
+          "name": "named-offset",
+          "text": "            Vector3 offset = entries[index].velocity * entries[index].travel_distance / entries[index].speed;\n            entries[index].position = offset + entries[index].position;"
+        }
+      ]
+    },
+    {
+      "name": "colour-lifetime",
+      "find": "            tColour color;\n",
+      "replacements": [
+        {
+          "name": "function-local",
+          "text": "",
+          "requires": [
+            "colour-declaration/function-local"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "colour-declaration",
+      "find": "    int i = 0;",
+      "replacements": [
+        {
+          "name": "function-local",
+          "text": "    tColour color;\n    int i = 0;",
+          "requires": [
+            "colour-lifetime/function-local"
+          ]
+        }
+      ]
+    }
+  ]
+}

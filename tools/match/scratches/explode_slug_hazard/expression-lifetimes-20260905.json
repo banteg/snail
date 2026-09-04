@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "velocity-scale",
+      "find": "        sprite->velocity = random_velocity * speed;",
+      "replacements": [
+        {
+          "name": "inplace",
+          "text": "        random_velocity *= speed;\n        sprite->velocity = random_velocity;"
+        },
+        {
+          "name": "chained-inplace",
+          "text": "        sprite->velocity = random_velocity *= speed;"
+        },
+        {
+          "name": "constructor",
+          "text": "        sprite->velocity = Vector3(random_velocity.x * speed, random_velocity.y * speed, random_velocity.z * speed);"
+        },
+        {
+          "name": "named-product",
+          "text": "        Vector3 scaled_velocity = random_velocity * speed;\n        sprite->velocity = scaled_velocity;"
+        },
+        {
+          "name": "copy-inplace",
+          "text": "        Vector3 scaled_velocity = random_velocity;\n        scaled_velocity *= speed;\n        sprite->velocity = scaled_velocity;"
+        }
+      ]
+    },
+    {
+      "name": "position-composition",
+      "find": "        Vector3 position_offset;\n        position_offset.x = position_scale * velocity->x;\n        position_offset.y = position_scale * velocity->y;\n        position_offset.z = position_scale * velocity->z;\n        Vector3 staged_position;\n        staged_position.x = position_offset.x + transform.position.x;\n        staged_position.y = position_offset.y + transform.position.y;\n        staged_position.z = position_offset.z + transform.position.z;\n        sprite->position = staged_position;\n",
+      "replacements": [
+        {
+          "name": "vector-composition",
+          "text": "        sprite->position = *velocity * position_scale + transform.position;\n"
+        },
+        {
+          "name": "parent-first",
+          "text": "        sprite->position = transform.position + *velocity * position_scale;\n"
+        },
+        {
+          "name": "named-offset",
+          "text": "        Vector3 position_offset = *velocity * position_scale;\n        sprite->position = position_offset + transform.position;\n"
+        },
+        {
+          "name": "named-position",
+          "text": "        Vector3 staged_position = *velocity * position_scale + transform.position;\n        sprite->position = staged_position;\n"
+        }
+      ]
+    },
+    {
+      "name": "velocity-owner-scope",
+      "find": "    int count = 70;\n    do {",
+      "replacements": [
+        {
+          "name": "shared-vector",
+          "text": "    Vector3 random_velocity;\n    int count = 70;\n    do {",
+          "requires": [
+            "inner-vector-declaration/remove-inner"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "inner-vector-declaration",
+      "find": "        Vector3 random_velocity;\n",
+      "replacements": [
+        {
+          "name": "remove-inner",
+          "text": "",
+          "requires": [
+            "velocity-owner-scope/shared-vector"
+          ]
+        }
+      ]
+    }
+  ]
+}

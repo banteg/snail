@@ -155,3 +155,10 @@ seven references are clean.
 The two extra candidate instructions materialize the phase spill through
 integer copies instead of native's x87 `fst`/`fstp` pair. That is compiler
 temporary scheduling, not a missing cell field, gate, render path, or owner.
+
+## 2026-09-05 bounded source-expression probes
+
+Twelve complete floating phase/publication/consumer forms, including float and double locals, regress from 89.71%. None recovers the native spill and cell stores together; no source was promoted.
+
+The recorded specifications and experiment receipts preserve these negative
+results. They do not establish source exhaustion or compiler provenance.

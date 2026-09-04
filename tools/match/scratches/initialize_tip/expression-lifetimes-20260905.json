@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "main-borrow",
+      "find": "    FrontendWidget*& main_widget = widget_main;\n    main_widget = g_game->border_manager.GetBorder();",
+      "replacements": [
+        {
+          "name": "direct-slot",
+          "text": "    widget_main = g_game->border_manager.GetBorder();\n    FrontendWidget* main_widget = widget_main;"
+        }
+      ]
+    },
+    {
+      "name": "definition-flags",
+      "find": "    int live_flags = live_definition->flags;",
+      "replacements": [
+        {
+          "name": "reload",
+          "text": "",
+          "requires": [
+            "flag-use-1/reload",
+            "flag-use-2/reload"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "flag-use-1",
+      "find": "live_flags & 2",
+      "replacements": [
+        {
+          "name": "reload",
+          "text": "live_definition->flags & 2",
+          "requires": [
+            "definition-flags/reload",
+            "flag-use-2/reload"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "flag-use-2",
+      "find": "live_flags & 1",
+      "replacements": [
+        {
+          "name": "reload",
+          "text": "live_definition->flags & 1",
+          "requires": [
+            "definition-flags/reload",
+            "flag-use-1/reload"
+          ]
+        }
+      ]
+    }
+  ]
+}

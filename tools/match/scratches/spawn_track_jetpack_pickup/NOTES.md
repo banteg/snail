@@ -251,3 +251,10 @@ The three extra candidate instructions are confined to materializing wall tile
 14 twice instead of keeping it once in `cl`; the later bob-tail difference is
 equivalent floating-point scheduling. Neither hides a field, branch, or owner.
 The completion judgment follows the native/mobile contract.
+
+## 2026-09-05 bounded source-expression probes
+
+Four independent lane-test/constant forms and a direct typed view of the singleton pickup leave the 87.29% baseline unchanged. The wall-test control and constant lifetime still differ; these results do not close the lane.
+
+The recorded specifications and experiment receipts preserve these negative
+results. They do not establish source exhaustion or compiler provenance.

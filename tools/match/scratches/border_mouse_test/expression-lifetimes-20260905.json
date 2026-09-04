@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "pixel-owner",
+      "find": "            int row = width;\n            row *= y;\n            int pixel_index = row + x + 6;\n\n            if (*((unsigned char*)mask + pixel_index * 3) == 0)\n",
+      "replacements": [
+        {
+          "name": "payload",
+          "text": "            if (mask->pixels[3 * (width * y + x)] == 0)\n"
+        },
+        {
+          "name": "payload-commuted",
+          "text": "            if (mask->pixels[3 * (y * width + x)] == 0)\n"
+        },
+        {
+          "name": "row-address",
+          "text": "            if (*((unsigned char*)mask + 18 + (width * y + x) * 3) == 0)\n"
+        },
+        {
+          "name": "column-plus-row",
+          "text": "            if (mask->pixels[x * 3 + width * y * 3] == 0)\n"
+        }
+      ]
+    },
+    {
+      "name": "width-type",
+      "find": "int width = mask->width;",
+      "replacements": [
+        {
+          "name": "ushort",
+          "text": "unsigned short width = mask->width;"
+        }
+      ]
+    },
+    {
+      "name": "height-type",
+      "find": "int height = mask->height;",
+      "replacements": [
+        {
+          "name": "ushort",
+          "text": "unsigned short height = mask->height;"
+        }
+      ]
+    }
+  ]
+}

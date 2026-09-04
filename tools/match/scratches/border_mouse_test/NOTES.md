@@ -18,3 +18,10 @@ recorded natural source forms leave that isolated choice unchanged or regress.
 The matcher source now uses the authored `MouseTest` method and exact VC6 symbol
 `?MouseTest@cRBorder@@QAEEXZ`; `border_mouse_test` remains only the stable
 scratch and Windows-address identity.
+
+## 2026-09-05 bounded source-expression probes
+
+Nineteen pixel-payload/dimension-width combinations and twenty-four clamp-expression combinations do not improve the 98.29% baseline. Direct payload access can be byte-neutral; the dead-register choice for the final row product remains unresolved.
+
+The recorded specifications and experiment receipts preserve these negative
+results. They do not establish source exhaustion or compiler provenance.

@@ -161,3 +161,10 @@ the matcher owner spelling.
 ledger already preserves the explored widget-lifetime lane and its retained
 member-reference winner, while the plan's anchor no longer matches the current
 authored `cRTip` source.
+
+## 2026-09-05 bounded source-expression probes
+
+Three direct-widget and definition-flag reload combinations regress from 84.42%. No source change is retained.
+
+The recorded specifications and experiment receipts preserve these negative
+results. They do not establish source exhaustion or compiler provenance.

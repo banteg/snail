@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "size-publication",
+      "find": "            (*(slots - 1))->size_start = 3.0f;\n            (*(slots - 1))->size_end = 3.0f;",
+      "replacements": [
+        {
+          "name": "chain-start",
+          "text": "            (*(slots - 1))->size_start = (*(slots - 1))->size_end = 3.0f;"
+        },
+        {
+          "name": "chain-end",
+          "text": "            (*(slots - 1))->size_end = (*(slots - 1))->size_start = 3.0f;"
+        },
+        {
+          "name": "copy-size",
+          "text": "            (*(slots - 1))->size_start = 3.0f;\n            (*(slots - 1))->size_end = (*(slots - 1))->size_start;"
+        }
+      ]
+    },
+    {
+      "name": "position-zero",
+      "find": "            Vector3* position = &(*(slots - 1))->position;\n            position->z = 0.0f;\n            position->y = 0.0f;\n            position->x = 0.0f;",
+      "replacements": [
+        {
+          "name": "chain",
+          "text": "            Vector3* position = &(*(slots - 1))->position;\n            position->x = position->y = position->z = 0.0f;"
+        },
+        {
+          "name": "temporary",
+          "text": "            (*(slots - 1))->position = Vector3(0.0f, 0.0f, 0.0f);"
+        }
+      ]
+    },
+    {
+      "name": "velocity-zero",
+      "find": "            Vector3* velocity = &(*(slots - 1))->velocity;\n            velocity->z = 0.0f;\n            velocity->y = 0.0f;\n            velocity->x = 0.0f;",
+      "replacements": [
+        {
+          "name": "chain",
+          "text": "            Vector3* velocity = &(*(slots - 1))->velocity;\n            velocity->x = velocity->y = velocity->z = 0.0f;"
+        },
+        {
+          "name": "temporary",
+          "text": "            (*(slots - 1))->velocity = Vector3(0.0f, 0.0f, 0.0f);"
+        }
+      ]
+    }
+  ]
+}

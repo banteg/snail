@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "wall-gate-lifetime",
+      "find": "    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    if (lane == 3 && cell[-1].tile_id == SUBLOC_TILE_WALL2\n        && cell[2].tile_id == SUBLOC_TILE_WALL2) {\n        live_position->x = live_position->x + 0.5f;\n    } else if (lane == 4 && cell[-2].tile_id == SUBLOC_TILE_WALL2\n        && cell[1].tile_id == SUBLOC_TILE_WALL2) {\n        live_position->x = live_position->x - 0.5f;\n    }\n\n",
+      "replacements": [
+        {
+          "name": "enum-independent",
+          "text": "    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    if (lane == 3 && cell[-1].tile_id == SUBLOC_TILE_WALL2\n        && cell[2].tile_id == SUBLOC_TILE_WALL2) {\n        live_position->x = live_position->x + 0.5f;\n    }\n    if (lane == 4 && cell[-2].tile_id == SUBLOC_TILE_WALL2\n        && cell[1].tile_id == SUBLOC_TILE_WALL2) {\n        live_position->x = live_position->x - 0.5f;\n    }\n\n"
+        },
+        {
+          "name": "local-independent",
+          "text": "    int wall_tile = SUBLOC_TILE_WALL2;\n    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    if (lane == 3 && cell[-1].tile_id == wall_tile\n        && cell[2].tile_id == wall_tile) {\n        live_position->x = live_position->x + 0.5f;\n    }\n    if (lane == 4 && cell[-2].tile_id == wall_tile\n        && cell[1].tile_id == wall_tile) {\n        live_position->x = live_position->x - 0.5f;\n    }\n\n"
+        },
+        {
+          "name": "char-independent",
+          "text": "    char wall_tile = SUBLOC_TILE_WALL2;\n    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    if (lane == 3 && cell[-1].tile_id == wall_tile\n        && cell[2].tile_id == wall_tile) {\n        live_position->x = live_position->x + 0.5f;\n    }\n    if (lane == 4 && cell[-2].tile_id == wall_tile\n        && cell[1].tile_id == wall_tile) {\n        live_position->x = live_position->x - 0.5f;\n    }\n\n"
+        },
+        {
+          "name": "reversed-independent",
+          "text": "    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    if (lane == 3 && SUBLOC_TILE_WALL2 == cell[-1].tile_id\n        && SUBLOC_TILE_WALL2 == cell[2].tile_id) {\n        live_position->x = live_position->x + 0.5f;\n    }\n    if (lane == 4 && SUBLOC_TILE_WALL2 == cell[-2].tile_id\n        && SUBLOC_TILE_WALL2 == cell[1].tile_id) {\n        live_position->x = live_position->x - 0.5f;\n    }\n\n"
+        }
+      ]
+    }
+  ]
+}

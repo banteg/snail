@@ -167,3 +167,11 @@ layouts now agree on canonical `cRNuke`. The guarded replays retire generic
 lifecycle ABIs to `cRNuke*`. This is an ownership improvement only: the honest
 initializer remains 93.75%, 64/64 instructions, prefix 30/64, with five clean
 operands and the same bounded four-instruction scheduling residual.
+
+## 2026-09-05 expression lifetime probe
+
+Seventeen allocation-handle/flag-expression and shared-size lifetime combinations leave the baseline unchanged or worse; none was promoted.
+
+A further 35 size-publication and vector-zero expression combinations also
+leave the 93.75% baseline unchanged or worse. No source is promoted; the
+remaining scheduling mismatch stays open.

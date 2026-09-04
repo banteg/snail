@@ -182,3 +182,10 @@ the body remains at **97.57%**, 247/247, prefix 126, with all 26 references
 clean. All seven mutation specs and the nine-record experiment ledger remain
 byte-identical. Those records bound the tested source shapes, not future
 native-backed hypotheses; their count does not close the lane.
+
+## 2026-09-05 bounded source-expression probes
+
+Seven vector-position and colour-scope combinations do not improve the 97.57% baseline. Named offsets and a shared colour local can be byte-neutral; the remaining call-argument/store scheduling is unresolved.
+
+The recorded specifications and experiment receipts preserve these negative
+results. They do not establish source exhaustion or compiler provenance.

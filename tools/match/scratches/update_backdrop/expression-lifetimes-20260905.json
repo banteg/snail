@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "phase-value-lifetime",
+      "find": "            phase = cell->phase_step;\n            phase += cell->phase;\n            phase_bits = *(int*)&phase;\n            *(int*)&cell->phase = phase_bits;\n            phase = *(float*)&phase_bits;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }\n\n            float& current_x = cell->current_x_offset;\n            current_x = Sin(cell->phase) * cell->x_offset;\n            cell->current_y_offset = Cos(cell->phase) * cell->y_offset;\n",
+      "replacements": [
+        {
+          "name": "float-split-cell",
+          "text": "            float next_phase = cell->phase_step + cell->phase;\n            cell->phase = next_phase;\n            if (next_phase > 6.28318548f) {\n                cell->phase = next_phase - 6.28318548f;\n            }\n\n            float& current_x = cell->current_x_offset;\n            current_x = Sin(cell->phase) * cell->x_offset;\n            cell->current_y_offset = Cos(cell->phase) * cell->y_offset;\n"
+        },
+        {
+          "name": "float-split-local",
+          "text": "            float next_phase = cell->phase_step + cell->phase;\n            cell->phase = next_phase;\n            if (next_phase > 6.28318548f) {\n                cell->phase = next_phase - 6.28318548f;\n                next_phase = cell->phase;\n            }\n\n            float& current_x = cell->current_x_offset;\n            current_x = Sin(next_phase) * cell->x_offset;\n            cell->current_y_offset = Cos(next_phase) * cell->y_offset;\n"
+        },
+        {
+          "name": "float-chain-cell",
+          "text": "            float next_phase = cell->phase = cell->phase_step + cell->phase;\n            if (next_phase > 6.28318548f) {\n                cell->phase = next_phase - 6.28318548f;\n            }\n\n            float& current_x = cell->current_x_offset;\n            current_x = Sin(cell->phase) * cell->x_offset;\n            cell->current_y_offset = Cos(cell->phase) * cell->y_offset;\n"
+        },
+        {
+          "name": "float-chain-local",
+          "text": "            float next_phase = cell->phase = cell->phase_step + cell->phase;\n            if (next_phase > 6.28318548f) {\n                cell->phase = next_phase - 6.28318548f;\n                next_phase = cell->phase;\n            }\n\n            float& current_x = cell->current_x_offset;\n            current_x = Sin(next_phase) * cell->x_offset;\n            cell->current_y_offset = Cos(next_phase) * cell->y_offset;\n"
+        },
+        {
+          "name": "float-compound-cell",
+          "text": "            float next_phase = cell->phase += cell->phase_step;\n            if (next_phase > 6.28318548f) {\n                cell->phase = next_phase - 6.28318548f;\n            }\n\n            float& current_x = cell->current_x_offset;\n            current_x = Sin(cell->phase) * cell->x_offset;\n            cell->current_y_offset = Cos(cell->phase) * cell->y_offset;\n"
+        },
+        {
+          "name": "float-compound-local",
+          "text": "            float next_phase = cell->phase += cell->phase_step;\n            if (next_phase > 6.28318548f) {\n                cell->phase = next_phase - 6.28318548f;\n                next_phase = cell->phase;\n            }\n\n            float& current_x = cell->current_x_offset;\n            current_x = Sin(next_phase) * cell->x_offset;\n            cell->current_y_offset = Cos(next_phase) * cell->y_offset;\n"
+        },
+        {
+          "name": "double-split-cell",
+          "text": "            double next_phase = cell->phase_step + cell->phase;\n            cell->phase = next_phase;\n            if (next_phase > 6.28318548f) {\n                cell->phase = next_phase - 6.28318548f;\n            }\n\n            float& current_x = cell->current_x_offset;\n            current_x = Sin(cell->phase) * cell->x_offset;\n            cell->current_y_offset = Cos(cell->phase) * cell->y_offset;\n"
+        },
+        {
+          "name": "double-split-local",
+          "text": "            double next_phase = cell->phase_step + cell->phase;\n            cell->phase = next_phase;\n            if (next_phase > 6.28318548f) {\n                cell->phase = next_phase - 6.28318548f;\n                next_phase = cell->phase;\n            }\n\n            float& current_x = cell->current_x_offset;\n            current_x = Sin(next_phase) * cell->x_offset;\n            cell->current_y_offset = Cos(next_phase) * cell->y_offset;\n"
+        },
+        {
+          "name": "double-chain-cell",
+          "text": "            double next_phase = cell->phase = cell->phase_step + cell->phase;\n            if (next_phase > 6.28318548f) {\n                cell->phase = next_phase - 6.28318548f;\n            }\n\n            float& current_x = cell->current_x_offset;\n            current_x = Sin(cell->phase) * cell->x_offset;\n            cell->current_y_offset = Cos(cell->phase) * cell->y_offset;\n"
+        },
+        {
+          "name": "double-chain-local",
+          "text": "            double next_phase = cell->phase = cell->phase_step + cell->phase;\n            if (next_phase > 6.28318548f) {\n                cell->phase = next_phase - 6.28318548f;\n                next_phase = cell->phase;\n            }\n\n            float& current_x = cell->current_x_offset;\n            current_x = Sin(next_phase) * cell->x_offset;\n            cell->current_y_offset = Cos(next_phase) * cell->y_offset;\n"
+        },
+        {
+          "name": "double-compound-cell",
+          "text": "            double next_phase = cell->phase += cell->phase_step;\n            if (next_phase > 6.28318548f) {\n                cell->phase = next_phase - 6.28318548f;\n            }\n\n            float& current_x = cell->current_x_offset;\n            current_x = Sin(cell->phase) * cell->x_offset;\n            cell->current_y_offset = Cos(cell->phase) * cell->y_offset;\n"
+        },
+        {
+          "name": "double-compound-local",
+          "text": "            double next_phase = cell->phase += cell->phase_step;\n            if (next_phase > 6.28318548f) {\n                cell->phase = next_phase - 6.28318548f;\n                next_phase = cell->phase;\n            }\n\n            float& current_x = cell->current_x_offset;\n            current_x = Sin(next_phase) * cell->x_offset;\n            cell->current_y_offset = Cos(next_phase) * cell->y_offset;\n"
+        }
+      ]
+    }
+  ]
+}
