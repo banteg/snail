@@ -2,15 +2,15 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**565/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **116144/294937** bytes (**39.38%**) are proof-grade, and overall fuzzy is **86.46%**.
+**566/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **116585/294937** bytes (**39.53%**) are proof-grade, and overall fuzzy is **86.46%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
 ## Residual frontier
 
-**97** non-exact scratch-backed functions hold **34619 fuzzy-gap bytes**. The top 5 hold **26.4%** of that gap; the top 10 hold **38.4%**.
+**96** non-exact scratch-backed functions hold **34616 fuzzy-gap bytes**. The top 5 hold **26.4%** of that gap; the top 10 hold **38.4%**.
 
-Current-baseline experiments cover **19 functions / 1203 gap bytes**; **78 / 33416** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **20 functions / 1266 gap bytes**; **76 / 33350** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -72,7 +72,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 54 | place_challenge_parcels_on_track | 115 | semantic-complete | analysis,references | historical-only | 0/6 | historical-only |
 | 55 | update_frontend_widget_interaction | 112 | semantic-complete | analysis,references | historical-only | 0/11 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only |
 | 56 | add_object_edge | 104 | semantic-complete | analysis,references | historical-only | 0/9 | variant-errors,historical-only |
-| 57 | update_cameraman | 91 | semantic-complete | analysis | current-active | 2/11 | repeated-variants,metric-tradeoffs,stale-dependencies |
+| 57 | update_cameraman | 91 | semantic-complete | analysis | current-active | 2/12 | repeated-variants,metric-tradeoffs,stale-dependencies |
 | 58 | load_galaxy_layout | 87 | semantic-complete | analysis | historical-only | 0/14 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 59 | calc_object_edges | 85 | semantic-complete | analysis | historical-only | 0/6 | repeated-specs,historical-only |
 | 60 | initialize_tip | 80 | semantic-complete | analysis | current-active | 1/5 | - |
@@ -80,7 +80,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 62 | build_track_fringe_supertramp_mesh | 76 | semantic-complete | analysis | historical-only | 0/3 | historical-only |
 | 63 | sample_smtrack_heightmap | 75 | semantic-complete | analysis | historical-only | 0/3 | historical-only |
 | 64 | get_or_append_object_texture_group_vertex | 69 | semantic-complete | analysis | current-active | 1/4 | - |
-| 65 | spawn_track_jetpack_pickup | 62 | semantic-complete | analysis | historical-only | 0/4 | repeated-variants,metric-tradeoffs,historical-only |
+| 65 | spawn_track_jetpack_pickup | 62 | semantic-complete | analysis | current-active | 1/5 | repeated-variants,metric-tradeoffs |
 | 66 | spawn_golb_impact_sprite | 58 | semantic-complete | analysis | historical-only | 0/4 | repeated-variants,repeated-specs,historical-only |
 | 67 | promote_track_tiles_to_fringe_variants | 47 | semantic-complete | analysis | historical-only | 0/4 | variant-errors,historical-only |
 | 68 | remove_track_render_cache_bods | 44 | semantic-complete | analysis | historical-only | 0/11 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only |
@@ -106,16 +106,15 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 88 | set_weapon_animation | 12 | semantic-complete | analysis | current-active | 1/5 | metric-tradeoffs |
 | 89 | mini_delete_high_score_entry | 11 | semantic-complete | analysis | historical-only | 0/5 | historical-only,stale-dependencies |
 | 90 | read_repeating_text_input_key_code | 9 | semantic-complete | analysis | current-active | 1/7 | stale-dependencies |
-| 91 | border_mouse_test | 7 | semantic-complete | analysis | current-active | 1/4 | variant-errors |
+| 91 | border_mouse_test | 7 | semantic-complete | analysis | current-active | 2/5 | variant-errors |
 | 92 | switch_track_mirror | 7 | semantic-complete | analysis | historical-only | 0/3 | historical-only |
 | 93 | append_track_cache_object | 5 | semantic-complete | analysis | historical-only | 0/3 | historical-only |
 | 94 | render_backdrop | 5 | semantic-complete | analysis | current-active | 5/14 | repeated-variants,metric-tradeoffs,variant-errors |
 | 95 | layout_frontend_widget | 4 | semantic-complete | analysis | current-active | 6/9 | variant-errors |
-| 96 | spawn_track_health_pickup | 4 | semantic-complete | analysis | historical-only | 0/5 | historical-only |
-| 97 | mark_track_warning_zones | 3 | semantic-complete | analysis | historical-only | 0/6 | historical-only,stale-dependencies |
+| 96 | mark_track_warning_zones | 3 | semantic-complete | analysis | historical-only | 0/6 | historical-only,stale-dependencies |
 
 
-## Proof Grade (565)
+## Proof Grade (566)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -444,6 +443,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ✅ | get_track_runtime_cell_at_world_z | 0x43d480 | 73 | 23/23 | 100.00% | 23/23 | 3 ok |  | core |
 | ✅ | sample_track_floor_height_at_position | 0x43d4d0 | 197 | 63/63 | 100.00% | 63/63 | 8 ok |  | core |
 | ✅ | spawn_garbage_smoke_particle | 0x43d5a0 | 280 | 76/76 | 100.00% | 76/76 | 9 ok |  | core |
+| ✅ | spawn_track_health_pickup | 0x43d6c0 | 441 | 122/122 | 100.00% | 122/122 | 7 ok |  | core |
 | ✅ | spawn_track_speedup | 0x43d880 | 3 | 1/1 | 100.00% | 1/1 | - |  | core |
 | ✅ | spawn_track_garbage_hazard | 0x43da80 | 505 | 143/143 | 100.00% | 143/143 | 16 ok |  | core |
 | ✅ | spawn_slug_hazard | 0x43dc80 | 642 | 160/160 | 100.00% | 160/160 | 18 ok |  | core |
@@ -685,7 +685,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  | boundary |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 
-## Near Match (95-99.99%) (13)
+## Near Match (95-99.99%) (12)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -699,7 +699,6 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | append_track_cache_object | 0x433960 | 454 | 167/167 | 98.80% | 155/167 | 6 ok |  | core |
 | 🚧 | initialize_star_field | 0x434310 | 861 | 247/247 | 97.57% | 126/247 | 26 ok |  | core |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 99/99 | 98.99% | 79/99 | - |  | core |
-| 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 122/122 | 99.18% | 16/122 | 7 ok |  | core |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 146/147 | 97.61% | 79/147 | 32 ok |  | core |
 | 🚧 | firework_shoot | 0x441dd0 | 390 | 103/103 | 95.15% | 78/103 | 21 ok |  | core |
 

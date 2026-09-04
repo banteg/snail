@@ -1,3 +1,7 @@
+Current recovery: **exact**, 122/122 instructions over 441 native bytes, with
+all seven masked references clean. The September 5 entry supersedes the
+shifted-owner and scheduling claims below.
+
 # spawn_track_health_pickup @ 0x43d6c0
 
 Live source map for `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`.
@@ -317,3 +321,24 @@ schedule was not retried. The obsolete `free-slot-loop-mutations.json` input was
 its accepted bounded-loop winner is already preserved in the append-only
 experiment receipt, while its pre-winner search anchor no longer matches the
 current source.
+
+## 2026-09-05 direct inline-array ownership
+
+The source now uses `health_pickups[slot_index]` throughout. This removes the
+shifted `cRSubGame*` cursor, `DWORD*` alias, and opaque final index expression
+(`slot_index + 30156`, followed by word-stride arithmetic). The final write
+is simply `health_pickups[slot_index].bob_phase_step = 0.012820513f`.
+
+This complete typed-owner rewrite fixes the earlier slot-offset/cell-load
+scheduling swap and matches the whole body. The existing shared struct layout
+was correct; the supposedly optimizer-sensitive shifted-parent view was not
+needed to express the original allocation. The bounded eight-slot scan,
+inline actor ownership, list insertion, and separately allocated sprite remain
+represented by the same native instructions and seven clean references.
+
+The recorded direct-array probe is exact without compiler, ABI, reference,
+or normalization changes. Removing its now-unused DWORD typedef is byte-neutral.
+
+The three obsolete `cell-lifetime`, `slot-offset`, and `slot-owner` mutation
+plans depended on the removed shifted-parent source. They are retired; their
+historical experiment receipts remain unchanged in the ledger.

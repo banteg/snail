@@ -7,15 +7,12 @@
 #include "track_attachment_types.h"
 #include "track_health_pickup.h"
 
-typedef unsigned int DWORD;
-
 
 int report_errorf(char* format, ...);
 
 void cRSubGame::AddHealth(cRSubLoc* cell, cRSubGoldy* player)
 {
     int slot_index = 0;
-    DWORD* game_words = (DWORD*)this;
     cRSubHealth* scan = health_pickups;
     while (slot_index < 8
         && scan->state != TRACK_PICKUP_STATE_INACTIVE) {
@@ -25,44 +22,39 @@ void cRSubGame::AddHealth(cRSubLoc* cell, cRSubGoldy* player)
             return;
     }
 
-    DWORD* slot_base =
-        game_words + sizeof(cRSubHealth) / sizeof(DWORD) * slot_index;
-    cRSubGame* slot = (cRSubGame*)slot_base;
-    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;
-    slot->health_pickups[0].owner = player;
+    health_pickups[slot_index].state = TRACK_PICKUP_STATE_ACTIVE;
+    health_pickups[slot_index].owner = player;
 
     Vector3 staged_position =
         cell->position + Vector3(0.0f, 0.60000002f, 0.0f);
-    Vector3* live_position = &slot->health_pickups[0].position;
+    Vector3* live_position = &health_pickups[slot_index].position;
     *live_position = staged_position;
 
-    BodNode* node = &slot->health_pickups[0];
+    BodNode* node = &health_pickups[slot_index];
     g_game->active_bod_list.add_bod(node);
 
     // The cRSubGame slot owns the inline cRSubHealth actor and its BOD/lifecycle.
     // SpriteManager owns the visual; the slot retains a borrowed pointer.
     cRSprite* pickup_sprite =
         g_sprite_manager.New(player->player_slot, 57, -1, -1);
-    slot->health_pickups[0].sprite = pickup_sprite;
+    health_pickups[slot_index].sprite = pickup_sprite;
     unsigned int flags = pickup_sprite->flags;
     flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
     pickup_sprite->flags = flags;
-    slot->health_pickups[0].sprite->gravity_step = 0.0f;
-    slot->health_pickups[0].sprite->progress = 0.0f;
-    slot->health_pickups[0].sprite->progress_step = 0.0f;
-    slot->health_pickups[0].sprite->size_start = 0.60000002f;
-    slot->health_pickups[0].sprite->size_end = 0.60000002f;
+    health_pickups[slot_index].sprite->gravity_step = 0.0f;
+    health_pickups[slot_index].sprite->progress = 0.0f;
+    health_pickups[slot_index].sprite->progress_step = 0.0f;
+    health_pickups[slot_index].sprite->size_start = 0.60000002f;
+    health_pickups[slot_index].sprite->size_end = 0.60000002f;
 
-    slot->health_pickups[0].sprite->position = *live_position;
-    slot->health_pickups[0].source_cell = cell;
-    float* bob_phase = &slot->health_pickups[0].bob_phase;
+    health_pickups[slot_index].sprite->position = *live_position;
+    health_pickups[slot_index].source_cell = cell;
+    float* bob_phase = &health_pickups[slot_index].bob_phase;
     *bob_phase = 0.0f;
-    if (((int)slot->health_pickups[0].position.z & 1) != 0)
+    if (((int)health_pickups[slot_index].position.z & 1) != 0)
         *bob_phase = 0.0f;
     else
         *bob_phase = 0.5f;
 
-    int step_index = slot_index + 30156;
-    int result = 7 * step_index;
-    game_words[step_index + (result << 2)] = 0x3c520d21;
+    health_pickups[slot_index].bob_phase_step = 0.012820513f;
 }
