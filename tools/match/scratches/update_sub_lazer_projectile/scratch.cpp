@@ -51,7 +51,7 @@ void cRSubLazer::AI()
                 || transform.position.y >= 7.0f) {
                 if ((cell->flags & SUBROW_FLAG_PRIMARY_ATTACHMENT) != 0
                     && cell->primary_attachment_cell->attachment_template_record->SearchPos(
-                        Vector3(velocity.x + live_position->x, velocity.y + live_position->y, velocity.z + live_position->z),
+                        velocity + *live_position,
                         velocity * 1.05f,
                         cell->primary_attachment_cell)) {
                     debug_report_stub(g_lazer_path_kill_format);
@@ -60,7 +60,7 @@ void cRSubLazer::AI()
                 }
                 if ((cell->flags & SUBROW_FLAG_SECONDARY_ATTACHMENT) != 0
                     && cell->secondary_attachment_cell->attachment_template_record->SearchPos(
-                        Vector3(velocity.x + live_position->x, velocity.y + live_position->y, velocity.z + live_position->z),
+                        velocity + *live_position,
                         velocity * 1.05f,
                         cell->secondary_attachment_cell)) {
                     debug_report_stub(g_lazer_path2_kill_format);

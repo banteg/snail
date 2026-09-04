@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "integration",
+      "find": "        float& position_y = live_position->y;\n        float& position_z = live_position->z;\n        float& position_x = live_position->x;\n        position_x = velocity.x + position_x;\n        position_y = velocity.y + position_y;\n        position_z = velocity.z + position_z;\n",
+      "replacements": [
+        {
+          "name": "aggregate-add",
+          "text": "        *live_position += velocity;\n"
+        },
+        {
+          "name": "value-right",
+          "text": "        *live_position = *live_position + velocity;\n"
+        },
+        {
+          "name": "value-left",
+          "text": "        *live_position = velocity + *live_position;\n"
+        },
+        {
+          "name": "named-sum",
+          "text": "        Vector3 next_position = velocity + *live_position;\n        *live_position = next_position;\n"
+        },
+        {
+          "name": "named-position-first",
+          "text": "        Vector3 next_position = *live_position + velocity;\n        *live_position = next_position;\n"
+        }
+      ]
+    },
+    {
+      "name": "probe-sum-1",
+      "find": "Vector3(velocity.x + live_position->x, velocity.y + live_position->y, velocity.z + live_position->z)",
+      "replacements": [
+        {
+          "name": "velocity-first",
+          "text": "velocity + *live_position"
+        },
+        {
+          "name": "position-first",
+          "text": "*live_position + velocity"
+        }
+      ],
+      "occurrence": 1
+    },
+    {
+      "name": "probe-sum-2",
+      "find": "Vector3(velocity.x + live_position->x, velocity.y + live_position->y, velocity.z + live_position->z)",
+      "replacements": [
+        {
+          "name": "velocity-first",
+          "text": "velocity + *live_position"
+        },
+        {
+          "name": "position-first",
+          "text": "*live_position + velocity"
+        }
+      ],
+      "occurrence": 2
+    }
+  ]
+}

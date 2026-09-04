@@ -1,3 +1,7 @@
+Current recovery: **exact**, 218/218 instructions over 768 native bytes, with
+all 24 masked references clean. The September 5 recovery below supersedes
+the historical source-exhaustion and compiler-residual claims.
+
 # update_sub_lazer_projectile @ 0x4417d0
 
 Current best is `99.08%`, `218/218` candidate/target instructions, prefix
@@ -306,3 +310,17 @@ Together with the 82 recorded source variants and independent Android/iOS
 algorithm confirmation, this closes semantic recovery. The scratch is
 classified `RECOVERY=semantic-complete` with `RESIDUAL=compiler`; forcing the
 remaining operand order would add no recovered behavior.
+
+## 2026-09-05 attachment-vector expression lifetimes
+
+Replacing both scalar-constructed attachment search positions with
+`velocity + *live_position` matches the complete body. The earlier borrowed
+component integration stays unchanged: whole-vector values at the two later
+calls change VC6's earlier Y integration to the native velocity-first order.
+This was a full-function expression-lifetime interaction, not evidence that
+the earlier arithmetic required register coercion or a different compiler.
+
+The recorded 53-variant sweep combines five aggregate integration forms with
+the two addition orders at each attachment call. Only replacing both call
+arguments with velocity-first vector sums is exact. No shared type, ABI,
+compiler flag, reference map, or normalization rule changed.
