@@ -1,5 +1,8 @@
 # initialize_nuke
 
+Current result: **100.00%**, 64/64 instructions, all five references clean.
+This supersedes the historical register/constant residual assessments.
+
 - Near-exact/source-shaped match: 93.75%, 64/64 instructions.
 - Uses typed `cRNuke`, `Player`, `cRSubGame`, `SpriteManager`, and
   `Sprite` layouts. This pins the owner player pointer, `subgame_rate` read
@@ -175,3 +178,16 @@ Seventeen allocation-handle/flag-expression and shared-size lifetime combination
 A further 35 size-publication and vector-zero expression combinations also
 leave the 93.75% baseline unchanged or worse. No source is promoted; the
 remaining scheduling mismatch stays open.
+
+## 2026-09-05 exact sprite-slot array traversal
+
+A normal indexed loop through `sprite_slots[index]` closes the remaining
+flag-register and size-constant scheduling differences, raising 93.75% to
+100%. The initializer stores the newly allocated sprite in its owned slot,
+then uses that slot directly for the flag update and remaining sprite fields.
+It no longer increments a pointer early and refers back through `slots - 1`.
+
+Both indexed for and do loops are exact; retaining the allocated sprite as the
+receiver for subsequent stores regresses to 40.34%. The four recorded whole
+loop forms explain why earlier isolated flag/size probes were insufficient.
+No shared layout, compiler option, or normalization changed.

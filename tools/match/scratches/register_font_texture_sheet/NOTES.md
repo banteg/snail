@@ -54,3 +54,7 @@ Two predecessor immediates are not trusted source constants. The redistributed
 EXE tests width `0x5001` and its otherwise unreachable copy path uses x=`0x384`,
 both inconsistent with the extracted 0x800-wide source and exact canonical
 x=`0x3c0` crop. Keep them as a post-link-integrity warning, not a mutation lead.
+
+## 2026-09-05 whole-function source-lifetime probes
+
+Three glyph-scan products compare direct global font indexing and a structured for loop. The for loop alone is neutral at 76.50%, while direct bank indexing regresses. No source change is retained.

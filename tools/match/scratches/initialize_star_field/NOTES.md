@@ -189,3 +189,7 @@ Seven vector-position and colour-scope combinations do not improve the 97.57% ba
 
 The recorded specifications and experiment receipts preserve these negative
 results. They do not establish source exhaustion or compiler provenance.
+
+## 2026-09-05 whole-function source-lifetime probes
+
+Fifteen whole-entry variants combine typed allocation indexing, direct root/flag access, and call-local colors. None improves 97.57%, with all 26 references clean. The travel/colour argument schedule remains open.

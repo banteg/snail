@@ -168,3 +168,7 @@ Three direct-widget and definition-flag reload combinations regress from 84.42%.
 
 The recorded specifications and experiment receipts preserve these negative
 results. They do not establish source exhaustion or compiler provenance.
+
+## 2026-09-05 whole-function source-lifetime probes
+
+Eleven whole-function color/widget/flag combinations test call-local colors, independent color locals, direct widget access, and live definition flags. None improves 84.42%; all reference operands remain clean. These combinations do not close the remaining argument/register lifetimes.

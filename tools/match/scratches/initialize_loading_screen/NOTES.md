@@ -37,3 +37,7 @@ This makes the budget a distribution/content constant and confirms that the
 remaining saved-register mismatch is not missing loading-screen behavior. The
 older build supplies no alternative source shape worth replaying against the
 canonical target.
+
+## 2026-09-05 whole-function source-lifetime probes
+
+Three texture-load lifetime probes test a shared archive pointer, separate result/count scopes per texture, and the load helper result. None improves 83.00%. The returned-byte-pointer variant regresses and is not retained; native continues to consume the archive buffer.

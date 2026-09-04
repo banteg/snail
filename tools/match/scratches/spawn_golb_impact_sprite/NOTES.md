@@ -1,7 +1,7 @@
 # cRSubGolb::Explode @ 0x415d80
 
-Current recovery: semantic-complete (`compiler` residual), 63.64%, 43/45
-candidate instructions, 3/45 prefix, and all three masked operands clean.
+Current recovery: **100.00%**, 45/45 instructions and all three masked
+operands clean. The exact result below supersedes historical residual claims.
 
 ## Ownership and ABI
 
@@ -31,3 +31,17 @@ storage hints. None improves this baseline. A by-value Windows probe emits the
 wrong `ret 0xc` and also damages `cRSubGolb::AI()`, so it is rejected. Further
 matching work needs new Windows source-shape evidence rather than another ABI
 or field-layout guess.
+
+## 2026-09-05 exact velocity publication and allocator argument
+
+Publishing the complete `Vector3(0.0f, 0.05f, 0.0f)` after progress/lifetime
+initialization and before gravity setup reproduces the native interleaved vector
+and scalar stores. Reading `owner_player->player_slot` directly at the allocation
+call also restores its exact argument schedule. Together these recover all 45
+instructions and three references, raising 63.64% to 100%.
+
+The recorded 16-variant product tests four plausible velocity-publication sites,
+named/inline vectors, and local/direct player-slot arguments. Velocity publication
+alone reaches 95.56%; both source lifetimes are needed. The redundant velocity
+borrow and individual component staging are removed. The Windows pointer ABI
+remains intact; no compiler option, layout, or reference normalization changed.
