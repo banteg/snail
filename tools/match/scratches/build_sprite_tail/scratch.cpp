@@ -10,13 +10,7 @@ void cRSprite::BuildTail(tMatrix* matrix)
     Vector3 rotated;
     if ((flags & SPRITE_FLAG_THROTTLE_FACING_REFRESH) != 0) {
         if (facing_refresh_progress == 0.0f) {
-            Vector3 delta_source;
-            Vector3 delta;
-            delta_source.x = position.x - previous_position.x;
-            delta_source.y = position.y - previous_position.y;
-            delta_source.z = position.z - previous_position.z;
-            delta = delta_source;
-            rotated = delta.Rotate(*matrix);
+            rotated = (position - previous_position).Rotate(*matrix);
             float angle = ATan(rotated.x, rotated.y) + 7.0685835f;
             facing_refresh_progress = 0.001f;
             facing_angle = angle;
@@ -26,13 +20,7 @@ void cRSprite::BuildTail(tMatrix* matrix)
             facing_refresh_progress = 0.0f;
         }
     } else {
-        Vector3 delta_source;
-        Vector3 delta;
-        delta_source.x = position.x - previous_position.x;
-        delta_source.y = position.y - previous_position.y;
-        delta_source.z = position.z - previous_position.z;
-        delta = delta_source;
-        rotated = delta.Rotate(*matrix);
+        rotated = (position - previous_position).Rotate(*matrix);
         facing_angle = ATan(rotated.x, rotated.y) + 7.0685835f;
     }
 }

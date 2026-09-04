@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "normal",
+      "find": "            if (flip == 0) {\n                next_column = column + 1.0f;\n                float next_row = row + 1.0f;\n                float* cell = (float*)this + cell_index * 6;\n                right_y = next_column * 68.5714264f;\n                left_x = row * 91.4285736f;\n                right_x = next_row * 91.4285736f;\n                left_y = column * 68.5714264f;\n                OSDPrintUV(\n                    active_primary_texture_id,\n                    left_x + cell[26],\n                    left_y + cell[27],\n                    right_x + cell[32],\n                    left_y + cell[33],\n                    right_x + cell[80],\n                    right_y + cell[81],\n                    left_x + cell[74],\n                    right_y + cell[75],\n                    0,\n                    0,\n                    0x8000000,\n                    normal_color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n                    row * 0.0892857164f,\n                    column * 0.133928567f,\n                    next_row * 0.0892857164f,\n                    next_column * 0.133928567f,\n                    0,\n                    0);\n",
+      "replacements": [
+        {
+          "name": "right",
+          "text": "            if (flip == 0) {\n                next_column = column + 1.0f;\n                float next_row = row + 1.0f;\n                float* cell = (float*)this + cell_index * 6;\n                right_y = (column + 1.0f) * 68.5714264f;\n                left_x = row * 91.4285736f;\n                right_x = next_row * 91.4285736f;\n                left_y = column * 68.5714264f;\n                OSDPrintUV(\n                    active_primary_texture_id,\n                    left_x + cell[26],\n                    left_y + cell[27],\n                    right_x + cell[32],\n                    left_y + cell[33],\n                    right_x + cell[80],\n                    right_y + cell[81],\n                    left_x + cell[74],\n                    right_y + cell[75],\n                    0,\n                    0,\n                    0x8000000,\n                    normal_color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n                    row * 0.0892857164f,\n                    column * 0.133928567f,\n                    next_row * 0.0892857164f,\n                    next_column * 0.133928567f,\n                    0,\n                    0);\n"
+        },
+        {
+          "name": "uv",
+          "text": "            if (flip == 0) {\n                next_column = column + 1.0f;\n                float next_row = row + 1.0f;\n                float* cell = (float*)this + cell_index * 6;\n                right_y = next_column * 68.5714264f;\n                left_x = row * 91.4285736f;\n                right_x = next_row * 91.4285736f;\n                left_y = column * 68.5714264f;\n                OSDPrintUV(\n                    active_primary_texture_id,\n                    left_x + cell[26],\n                    left_y + cell[27],\n                    right_x + cell[32],\n                    left_y + cell[33],\n                    right_x + cell[80],\n                    right_y + cell[81],\n                    left_x + cell[74],\n                    right_y + cell[75],\n                    0,\n                    0,\n                    0x8000000,\n                    normal_color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n                    row * 0.0892857164f,\n                    column * 0.133928567f,\n                    next_row * 0.0892857164f,\n                    (column + 1.0f) * 0.133928567f,\n                    0,\n                    0);\n"
+        },
+        {
+          "name": "rightuv",
+          "text": "            if (flip == 0) {\n                next_column = column + 1.0f;\n                float next_row = row + 1.0f;\n                float* cell = (float*)this + cell_index * 6;\n                right_y = (column + 1.0f) * 68.5714264f;\n                left_x = row * 91.4285736f;\n                right_x = next_row * 91.4285736f;\n                left_y = column * 68.5714264f;\n                OSDPrintUV(\n                    active_primary_texture_id,\n                    left_x + cell[26],\n                    left_y + cell[27],\n                    right_x + cell[32],\n                    left_y + cell[33],\n                    right_x + cell[80],\n                    right_y + cell[81],\n                    left_x + cell[74],\n                    right_y + cell[75],\n                    0,\n                    0,\n                    0x8000000,\n                    normal_color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n                    row * 0.0892857164f,\n                    column * 0.133928567f,\n                    next_row * 0.0892857164f,\n                    (column + 1.0f) * 0.133928567f,\n                    0,\n                    0);\n"
+        }
+      ]
+    },
+    {
+      "name": "flipped",
+      "find": "            } else {\n                next_column = column + 1.0f;\n                float next_row = row + 1.0f;\n                float* cell = (float*)this + cell_index * 6;\n                right_y = next_column * 68.5714264f;\n                left_x = row * 91.4285736f;\n                right_x = next_row * 91.4285736f;\n                left_y = column * 68.5714264f;\n                OSDPrintUV(\n                    active_primary_texture_id,\n                    left_x + cell[26],\n                    left_y + cell[27],\n                    right_x + cell[32],\n                    left_y + cell[33],\n                    right_x + cell[80],\n                    right_y + cell[81],\n                    left_x + cell[74],\n                    right_y + cell[75],\n                    0,\n                    0,\n                    0x8000000,\n                    flipped_color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n                    0.800000012f - row * 0.0892857164f,\n                    column * 0.133928567f,\n                    0.800000012f - next_row * 0.0892857164f,\n                    next_column * 0.133928567f,\n                    0,\n                    0);",
+      "replacements": [
+        {
+          "name": "right",
+          "text": "            } else {\n                next_column = column + 1.0f;\n                float next_row = row + 1.0f;\n                float* cell = (float*)this + cell_index * 6;\n                right_y = (column + 1.0f) * 68.5714264f;\n                left_x = row * 91.4285736f;\n                right_x = next_row * 91.4285736f;\n                left_y = column * 68.5714264f;\n                OSDPrintUV(\n                    active_primary_texture_id,\n                    left_x + cell[26],\n                    left_y + cell[27],\n                    right_x + cell[32],\n                    left_y + cell[33],\n                    right_x + cell[80],\n                    right_y + cell[81],\n                    left_x + cell[74],\n                    right_y + cell[75],\n                    0,\n                    0,\n                    0x8000000,\n                    flipped_color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n                    0.800000012f - row * 0.0892857164f,\n                    column * 0.133928567f,\n                    0.800000012f - next_row * 0.0892857164f,\n                    next_column * 0.133928567f,\n                    0,\n                    0);"
+        },
+        {
+          "name": "uv",
+          "text": "            } else {\n                next_column = column + 1.0f;\n                float next_row = row + 1.0f;\n                float* cell = (float*)this + cell_index * 6;\n                right_y = next_column * 68.5714264f;\n                left_x = row * 91.4285736f;\n                right_x = next_row * 91.4285736f;\n                left_y = column * 68.5714264f;\n                OSDPrintUV(\n                    active_primary_texture_id,\n                    left_x + cell[26],\n                    left_y + cell[27],\n                    right_x + cell[32],\n                    left_y + cell[33],\n                    right_x + cell[80],\n                    right_y + cell[81],\n                    left_x + cell[74],\n                    right_y + cell[75],\n                    0,\n                    0,\n                    0x8000000,\n                    flipped_color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n                    0.800000012f - row * 0.0892857164f,\n                    column * 0.133928567f,\n                    0.800000012f - next_row * 0.0892857164f,\n                    (column + 1.0f) * 0.133928567f,\n                    0,\n                    0);"
+        },
+        {
+          "name": "rightuv",
+          "text": "            } else {\n                next_column = column + 1.0f;\n                float next_row = row + 1.0f;\n                float* cell = (float*)this + cell_index * 6;\n                right_y = (column + 1.0f) * 68.5714264f;\n                left_x = row * 91.4285736f;\n                right_x = next_row * 91.4285736f;\n                left_y = column * 68.5714264f;\n                OSDPrintUV(\n                    active_primary_texture_id,\n                    left_x + cell[26],\n                    left_y + cell[27],\n                    right_x + cell[32],\n                    left_y + cell[33],\n                    right_x + cell[80],\n                    right_y + cell[81],\n                    left_x + cell[74],\n                    right_y + cell[75],\n                    0,\n                    0,\n                    0x8000000,\n                    flipped_color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n                    0.800000012f - row * 0.0892857164f,\n                    column * 0.133928567f,\n                    0.800000012f - next_row * 0.0892857164f,\n                    (column + 1.0f) * 0.133928567f,\n                    0,\n                    0);"
+        }
+      ]
+    },
+    {
+      "name": "counter",
+      "find": "            column = next_column;",
+      "replacements": [
+        {
+          "name": "independent",
+          "text": "            column += 1.0f;"
+        }
+      ]
+    }
+  ]
+}

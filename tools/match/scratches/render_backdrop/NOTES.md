@@ -131,3 +131,20 @@ stack-scheduling difference. The retained source remains 99.22%, 193/192
 candidate/target instructions, and prefix 174/192; all 29 aligned references
 are now clean. The extra reload plus popping compare remain the intentionally
 visible byte residual.
+
+## 2026-09-04 counter-expression diagnostics
+
+Five recorded source products against `059c787cd` leave the retained 99.22%
+source unchanged: 7 counter-precision combinations, 6 loop forms, 7 independent
+coordinate-expression combinations, 4 branch-local assignment forms, and all
+31 combinations of the two branches' right-edge/UV expression uses plus the
+counter update. The new local specifications preserve their exact source.
+
+A double column yields 192/192 instructions and the native non-popping tail
+comparison, but promotes six reference operations to qword constants and is
+not retained. Expanding `next_column` to `column + 1.0f` throughout yields
+94.03%, 193/192 instructions: the loop tail agrees with native, while earlier
+branch calculations differ and one additional constant use is unaudited.
+The two-branch use interaction product does not reconcile that setup with the
+tail. These are source-shape diagnostics, not a new compiler attribution or
+closure of the remaining expression/lifetime question.

@@ -1,13 +1,11 @@
 # build_sprite_tail
 
-Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
-`cRSprite::BuildTail(tMatrix*)` bodies and the live Windows Sprite method
-establish both facing-refresh branches, position-delta rotation, angle update,
-and throttled progress wrap. All eight references are clean and both sides
-contain 86 instructions; the only delta is the dead returned-`z` spill slot in
-the two rotate-call branches.
-
-Near-match for Windows `cRSprite::BuildTail(tMatrix*)` at `0x44e410`.
+Current recovery: **exact**. Windows `cRSprite::BuildTail(tMatrix*)` at
+`0x44e410` now matches all **86/86 instructions** in the native **304-byte**
+body under canonical `msvc6.5 /O2 /G5 /W3`, with all **8** masked references
+clean. The source rotates the unnamed subtraction result directly in both
+branches. The September 4 entry below supersedes the historical compiler and
+returned-Z allocation claims.
 
 - `SPRITE_FLAG_THROTTLE_FACING_REFRESH` enables throttled facing refresh
   through `+0x8c/+0x90`.
@@ -17,10 +15,9 @@ Near-match for Windows `cRSprite::BuildTail(tMatrix*)` at `0x44e410`.
 - The recompute path uses `position - previous_position`, rotates that delta by
   the supplied transform matrix, then stores
   `atan2_positive(rotated.x, rotated.y) + 7.0685835f` into `+0x7c`.
-- Remaining residual: 97.67%, 86/86 instructions, eight masked operands clean.
-  The only mismatch is the stack slot used to spill the returned rotated `z`
-  component before `atan2_positive`; avoid forcing this with an artificial
-  one-field copy.
+- The former 97.67% residual was the returned `z` copy destination in both
+  branches. It is resolved by the subtraction temporary lifetime, without an
+  artificial one-field copy.
 
 Rejected source-shaped probes:
 
@@ -138,3 +135,42 @@ scratch's otherwise equivalent dead copy to the expired source slot. An
 explicit one-field self-copy can force the address, but has no source-level
 semantic purpose and remains rejected as fakematching. Keep the current
 canonical source until new authored evidence identifies a real lifetime idiom.
+
+## 2026-09-04 full match: rotate the subtraction temporary
+
+The complete source expression is:
+
+```cpp
+rotated = (position - previous_position).Rotate(*matrix);
+```
+
+Applying it to both facing-refresh branches raises **97.67% to 100.00%**.
+The canonical scratch was rebuilt after promotion: **86/86** instructions,
+**86/86** prefix, all **8** masked references clean, the same **0x18-byte**
+frame, and all **7/7** basic blocks exact. The checked five CFG edges have
+no conflicts. No shared type, compiler setting, ABI, reference, or matcher
+normalization changed.
+
+The old scratch split the expression into a memberwise `delta_source`, a
+separate `delta` copy, and a call on that named receiver. A named receiver
+remains alive beyond the full expression. The unnamed subtraction result has
+a full-expression lifetime: Rotate returns its reference, the result is copied
+to `rotated`, and the temporary expires. That source shape
+reproduces the native stack reuse for the returned Z copy in both branches.
+The existing by-value vector subtraction implementation supplies the necessary
+copy; explicitly spelling the extra source and receiver was not evidence that
+those were authored locals.
+
+`vector-expression-lifetime-mutations.json` records all 17 alternatives in a
+3 x 2 x 3 product against `059c787cd`: explicit component/copy construction,
+named subtraction receiver, or direct subtraction receiver (`delta0/1/2`);
+shared or branch-local result (`scope0/1`); folded, sequential, or parenthesized
+angle constants (`angle0/1/2`). All six direct-receiver variants are exact.
+The retained `delta2-scope0-angle0` changes only receiver construction and
+keeps the previously supported shared result and angle expression.
+
+The historical 153-variant claim was too broad. The old construction sweep
+changed how a named `delta` was built; the consumption sweep changed how its
+Rotate result was used; the scope sweep moved named owners. They did not test
+calling Rotate on the subtraction expression itself. Failure within that fixed
+named-receiver model did not justify a compiler limitation.

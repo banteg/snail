@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "queue-publication",
+      "find": "    anim_manager.queued_animations[anim_manager.queue_count] = animation_id;\n    ++anim_manager.queue_count;",
+      "replacements": [
+        {
+          "name": "postincrement",
+          "text": "    anim_manager.queued_animations[anim_manager.queue_count++] = animation_id;"
+        },
+        {
+          "name": "preincrement-next",
+          "text": "    anim_manager.queued_animations[++anim_manager.queue_count - 1] = animation_id;"
+        },
+        {
+          "name": "index-local",
+          "text": "    int queue_index = anim_manager.queue_count;\n    anim_manager.queued_animations[queue_index] = animation_id;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "value-local",
+          "text": "    int queued_id = animation_id;\n    anim_manager.queued_animations[anim_manager.queue_count] = queued_id;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "slot-reference",
+          "text": "    int& queue_slot = anim_manager.queued_animations[anim_manager.queue_count];\n    queue_slot = animation_id;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "commuted-index",
+          "text": "    anim_manager.queue_count[anim_manager.queued_animations] = animation_id;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "pointer-increment",
+          "text": "    int* queue_slot = anim_manager.queued_animations + anim_manager.queue_count;\n    *queue_slot = animation_id;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "unsigned-index",
+          "text": "    unsigned int queue_index = anim_manager.queue_count;\n    anim_manager.queued_animations[queue_index] = animation_id;\n    ++anim_manager.queue_count;"
+        }
+      ]
+    }
+  ]
+}

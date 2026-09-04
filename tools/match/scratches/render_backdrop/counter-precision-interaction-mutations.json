@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "row",
+      "find": "float row =",
+      "replacements": [
+        {
+          "name": "double",
+          "text": "double row ="
+        }
+      ]
+    },
+    {
+      "name": "column",
+      "find": "float column =",
+      "replacements": [
+        {
+          "name": "double",
+          "text": "double column ="
+        }
+      ]
+    },
+    {
+      "name": "next-column",
+      "find": "float next_column;",
+      "replacements": [
+        {
+          "name": "double",
+          "text": "double next_column;"
+        }
+      ]
+    }
+  ]
+}
