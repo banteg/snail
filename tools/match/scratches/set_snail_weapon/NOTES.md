@@ -18,3 +18,7 @@ state cases.
 The matcher source now uses authored `SetWeapon` and exact VC6 symbol
 `?SetWeapon@cRSnail@@QAEXH@Z`; `set_snail_weapon` remains only the stable scratch
 and Windows-address identity.
+
+## 2026-09-05 bounded animation-family probes
+
+Three complete channel-lifetime variants remove the channel-0 borrow and/or separate selected-state and immediate locals for each channel. All regress from 73.02% with references still clean. The original state-dispatch and channel interactions remain open; local simplification alone is insufficient.

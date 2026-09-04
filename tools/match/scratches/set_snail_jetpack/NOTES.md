@@ -29,3 +29,7 @@ therefore carried no matching evidence and obscured the authored state map.
 The experiment ledger preserves the complete mapping, local-lifetime, and
 transition results. Their three mutation recipes depended on the removed
 source text and are pruned rather than left as stale runnable inputs.
+
+## 2026-09-05 bounded animation-family probes
+
+Six mapping/transition lifetime variants move the immediate flag and replace the selected-state snapshot with direct reads. None improves 86.18%. The switch/prologue difference remains visible; these results bound only the tested source lifetimes.

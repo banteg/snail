@@ -16,3 +16,7 @@ anonymous vector/scalar stack-slot allocation across the four repeated blocks.
 The matcher source now uses authored `ReleaseWeapons` and exact VC6 symbol
 `?ReleaseWeapons@cRSnail@@QAEXXZ`; `release_snail_weapons` remains only the
 stable scratch and Windows-address identity.
+
+## 2026-09-05 bounded animation-family probes
+
+Eight complete release-vector variants compare shared versus scoped vectors, direct channel stores versus borrowed destinations, and final owner reuse. All regress from 92.80%; the RNG call order is preserved. No variant is retained. The first random-x spill and later vector publication lifetimes remain open.

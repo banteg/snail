@@ -1,5 +1,8 @@
 # cRSnail::SetAnimation @ 0x444600
 
+Current result: **100.00%**, 55/55 instructions, all three references clean.
+The exact recovery below supersedes historical queue-register residuals.
+
 Current recovery: semantic-complete (`compiler` residual). Windows exposes a
 void `thiscall` with `int`, one-byte immediate, and `int` arguments. Android
 names it `cRSnail::SetAnimation(int, bool, int)`, while iOS independently
@@ -25,3 +28,18 @@ Seventeen combinations of absolute-step expressions and post-incremented queue i
 
 The recorded specifications and experiment receipts preserve these negative
 results. They do not establish source exhaustion or compiler provenance.
+
+## 2026-09-05 exact selected-object publication lifetime
+
+The same source change closes both snail and weapon SetAnimation: read the
+selected slot directly and assign `object` before clearing `queue_count`.
+This removes the unnecessary root-object local. Although the immediate branch
+still emits the same native instructions, VC6 now also chooses the native
+registers in the queued branch. Both functions rise from 94.55% to 100%, with
+all three references clean. Direct active-animation lookup removes the
+pointer-to-pointer slot borrow and remains exact.
+
+A first 11-shape sweep isolated a 98.18% intermediate with an earlier mismatch;
+it was not retained. Four follow-up root/publication forms identify the exact
+ordering, without changing the absolute-step expressions or callee ABI. Local
+queue-expression probes had missed this whole-function lifetime interaction.

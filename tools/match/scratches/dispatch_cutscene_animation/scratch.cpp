@@ -10,8 +10,7 @@ void cRSnail::SetAnimation(
     int mode_flags)
 {
     if (immediate != 0) {
-        Object** slot_object = &cutscene_animation_slots[animation_id].body.object;
-        anim_manager.active_animation = (*slot_object)->animation;
+        anim_manager.active_animation = cutscene_animation_slots[animation_id].body.object->animation;
         if (mode_flags != OBJECT_ANIMATION_MODE_UNCHANGED)
             anim_manager.active_animation->flags = (unsigned short)mode_flags;
 
@@ -38,9 +37,8 @@ void cRSnail::SetAnimation(
             anim_manager.progress_step = step;
         }
 
-        Object* root = *slot_object;
+        object = cutscene_animation_slots[animation_id].body.object;
         anim_manager.queue_count = 0;
-        object = root;
         int flags = anim_manager.target_model->list_flags;
         flags |= 0x20;
         anim_manager.target_model->list_flags = flags;
