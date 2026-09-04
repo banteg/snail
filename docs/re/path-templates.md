@@ -332,7 +332,10 @@ original macro, template, or translation-unit arrangement.
 Their earlier scratches had evolved independently and no longer reflected that
 relationship. The better SlalomBig reconstruction now supplies Slalom's source
 shape with those two semantic constants changed. Future owner and expression
-experiments should be checked against both. Exact addresses and measured
+experiments should be checked against both. Recovering later-sample orientation
+as the fallthrough path then makes the native vertex-before-face bank order
+beneficial, although that bank order regressed in isolation. Both builders now
+reproduce that coordinated source change with clean references. Exact addresses and measured
 before/after results are in the two scratch notes.
 
 ## Matching Work

@@ -110,8 +110,8 @@ static __forceinline void build_extrapolated_strip_mesh(
     path->strip_mesh->RequestFaceQuads(
         2 * path->width_cells * path->segment_count);
 
-    cRFaceQuad* facequads = path->strip_mesh->facequads;
     Vector3* vertices = path->strip_mesh->vertices;
+    cRFaceQuad* facequads = path->strip_mesh->facequads;
 
     int row = 0;
     int column;
@@ -372,12 +372,7 @@ void cRPath::initialize_slalom_path_template_pair(
         ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset))
             ->transform.position.z = z;
 
-        if (curve_sample_offset == 4 * (int)sizeof(PathTemplateSample)) {
-            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)
-                ->transform.RotIdentity();
-            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)
-                ->transform.RotIdentity();
-        } else {
+        if (curve_sample_offset > 4 * (int)sizeof(PathTemplateSample)) {
             ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)
                 ->transform.basis_up =
                 Vector3(0.0f, 1.0f, 0.0f);
@@ -442,6 +437,11 @@ void cRPath::initialize_slalom_path_template_pair(
                     + curve_sample_offset) - 1)->center_x * 0.2617994f;
             ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)
                 ->transform.RotLocalZ(secondary_roll);
+        } else {
+            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)
+                ->transform.RotIdentity();
+            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)
+                ->transform.RotIdentity();
         }
     }
 

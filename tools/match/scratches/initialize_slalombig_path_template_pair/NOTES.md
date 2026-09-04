@@ -561,3 +561,33 @@ problems are the same, not independent compiler mysteries. Standalone copies
 retain compatibility with the current scratch-local mutation workflow. The
 Slalom transfer receipt records the previous baseline and source hash; historical
 mutation plans still describe their original source, not the paired current body.
+
+## 2026-09-04 paired orientation and mesh-bank recovery
+
+The native orientation path branches forward for the first curve sample and
+falls through for later samples. The scratch had the opposite source layout.
+Giving the later-sample arm the fallthrough raises **67.67% to 77.99%**.
+Loading vertices before facequads, as native does, then reaches **78.42%**.
+That bank-order change alone had reduced matching to **67.53%**: its effect
+reverses after recovering the orientation source shape.
+
+Both Slalom builders reproduce the same result after applying the paired source
+change: **694/696** instructions, **48/696** prefix, 0x50-byte frame, and all
+**40** masked references clean. The SlalomBig structural diagnostic now has
+**48/48** basic blocks, 20 trusted anchors, and no conflicts among the 15 checked
+anchor edges. This is partial matching evidence, not proof of whole-function
+control-flow equivalence.
+
+SlalomBig's `curve-owner-interaction-mutations.json` evaluates all 15 legal
+combinations of four effective axes (the phase move has linked insert/remove
+sites): sine-phase lifetime, absolute-value branch polarity, orientation
+fallthrough, and mesh-bank acquisition order. The polarity change is neutral;
+phase hoisting changes allocation and yields 55-56% on this product. Those
+receipts do not close the phase-lifetime hypothesis or untested repeated-site
+interactions. The winner has no reference, prefix, or instruction-count tradeoff.
+
+A separate whole-mesh transfer from Snake gives 60.29%, 704/696 instructions,
+and 40 clean references. It is not promoted. Similar mesh behavior does not
+supply the two-operand native identity that justified pairing the Slalom sources.
+The next residuals include the entry/departure secondary-sample address shape,
+curve preheader and falloff temporaries, and vertex/face construction.

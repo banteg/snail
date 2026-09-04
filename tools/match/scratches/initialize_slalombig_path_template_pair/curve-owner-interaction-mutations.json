@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "phase-before-fold",
+      "find": "        float t = (float)i / (float)curve_segments;",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "        float t = (float)i / (float)curve_segments;\n        float angle = t * 6.2831855f;",
+          "requires": [
+            "late-phase/remove"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "late-phase",
+      "find": "        float angle = t * 6.2831855f;\n",
+      "replacements": [
+        {
+          "name": "remove",
+          "text": "",
+          "requires": [
+            "phase-before-fold/recovered"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "fold-branch-polarity",
+      "find": "        if (folded >= 0.0f)\n            folded_copy = folded;\n        else\n            folded_copy = -folded;",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "        if (folded < 0.0f)\n            folded_copy = -folded;\n        else\n            folded_copy = folded;"
+        }
+      ]
+    },
+    {
+      "name": "orientation-fallthrough",
+      "find": "        if (curve_sample_offset == 4 * (int)sizeof(PathTemplateSample)) {\n            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)\n                ->transform.RotIdentity();\n            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)\n                ->transform.RotIdentity();\n        } else {\n            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)\n                ->transform.basis_up =\n                Vector3(0.0f, 1.0f, 0.0f);\n            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)\n                ->transform.basis_forward =\n                Vector3(\n                    ((PathTemplateSample*)((char*)primary_samples\n                        + curve_sample_offset))->transform.position.x\n                        - ((PathTemplateSample*)((char*)primary_samples\n                            + curve_sample_offset) - 1)->transform.position.x,\n                    ((PathTemplateSample*)((char*)primary_samples\n                        + curve_sample_offset))->transform.position.y\n                        - ((PathTemplateSample*)((char*)primary_samples\n                            + curve_sample_offset) - 1)->transform.position.y,\n                    ((PathTemplateSample*)((char*)primary_samples\n                        + curve_sample_offset))->transform.position.z\n                        - ((PathTemplateSample*)((char*)primary_samples\n                            + curve_sample_offset) - 1)->transform.position.z);\n            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)\n                ->transform.basis_forward.Normalize();\n            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)\n                ->transform.basis_right.cross_vectors(\n                    &((PathTemplateSample*)((char*)primary_samples\n                        + curve_sample_offset) - 1)->transform.basis_up,\n                    &((PathTemplateSample*)((char*)primary_samples\n                        + curve_sample_offset) - 1)->transform.basis_forward);\n            float primary_roll =\n                ((PathTemplateSample*)((char*)primary_samples\n                    + curve_sample_offset) - 1)->center_x * 0.2617994f;\n            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)\n                ->transform.RotLocalZ(primary_roll);\n\n            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)\n                ->transform.basis_up =\n                Vector3(0.0f, 1.0f, 0.0f);\n            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)\n                ->transform.basis_forward =\n                Vector3(\n                    ((PathTemplateSample*)((char*)secondary_samples\n                        + curve_sample_offset))->transform.position.x\n                        - ((PathTemplateSample*)((char*)secondary_samples\n                            + curve_sample_offset) - 1)->transform.position.x,\n                    ((PathTemplateSample*)((char*)secondary_samples\n                        + curve_sample_offset))->transform.position.y\n                        - ((PathTemplateSample*)((char*)secondary_samples\n                            + curve_sample_offset) - 1)->transform.position.y,\n                    ((PathTemplateSample*)((char*)secondary_samples\n                        + curve_sample_offset))->transform.position.z\n                        - ((PathTemplateSample*)((char*)secondary_samples\n                            + curve_sample_offset) - 1)->transform.position.z);\n            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)\n                ->transform.basis_forward.Normalize();\n            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)\n                ->transform.basis_right.cross_vectors(\n                    &((PathTemplateSample*)((char*)secondary_samples\n                        + curve_sample_offset) - 1)->transform.basis_up,\n                    &((PathTemplateSample*)((char*)secondary_samples\n                        + curve_sample_offset) - 1)->transform.basis_forward);\n\n            float secondary_roll =\n                ((PathTemplateSample*)((char*)primary_samples\n                    + curve_sample_offset) - 1)->center_x * 0.2617994f;\n            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)\n                ->transform.RotLocalZ(secondary_roll);\n        }",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "        if (curve_sample_offset > 4 * (int)sizeof(PathTemplateSample)) {\n            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)\n                ->transform.basis_up =\n                Vector3(0.0f, 1.0f, 0.0f);\n            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)\n                ->transform.basis_forward =\n                Vector3(\n                    ((PathTemplateSample*)((char*)primary_samples\n                        + curve_sample_offset))->transform.position.x\n                        - ((PathTemplateSample*)((char*)primary_samples\n                            + curve_sample_offset) - 1)->transform.position.x,\n                    ((PathTemplateSample*)((char*)primary_samples\n                        + curve_sample_offset))->transform.position.y\n                        - ((PathTemplateSample*)((char*)primary_samples\n                            + curve_sample_offset) - 1)->transform.position.y,\n                    ((PathTemplateSample*)((char*)primary_samples\n                        + curve_sample_offset))->transform.position.z\n                        - ((PathTemplateSample*)((char*)primary_samples\n                            + curve_sample_offset) - 1)->transform.position.z);\n            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)\n                ->transform.basis_forward.Normalize();\n            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)\n                ->transform.basis_right.cross_vectors(\n                    &((PathTemplateSample*)((char*)primary_samples\n                        + curve_sample_offset) - 1)->transform.basis_up,\n                    &((PathTemplateSample*)((char*)primary_samples\n                        + curve_sample_offset) - 1)->transform.basis_forward);\n            float primary_roll =\n                ((PathTemplateSample*)((char*)primary_samples\n                    + curve_sample_offset) - 1)->center_x * 0.2617994f;\n            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)\n                ->transform.RotLocalZ(primary_roll);\n\n            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)\n                ->transform.basis_up =\n                Vector3(0.0f, 1.0f, 0.0f);\n            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)\n                ->transform.basis_forward =\n                Vector3(\n                    ((PathTemplateSample*)((char*)secondary_samples\n                        + curve_sample_offset))->transform.position.x\n                        - ((PathTemplateSample*)((char*)secondary_samples\n                            + curve_sample_offset) - 1)->transform.position.x,\n                    ((PathTemplateSample*)((char*)secondary_samples\n                        + curve_sample_offset))->transform.position.y\n                        - ((PathTemplateSample*)((char*)secondary_samples\n                            + curve_sample_offset) - 1)->transform.position.y,\n                    ((PathTemplateSample*)((char*)secondary_samples\n                        + curve_sample_offset))->transform.position.z\n                        - ((PathTemplateSample*)((char*)secondary_samples\n                            + curve_sample_offset) - 1)->transform.position.z);\n            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)\n                ->transform.basis_forward.Normalize();\n            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)\n                ->transform.basis_right.cross_vectors(\n                    &((PathTemplateSample*)((char*)secondary_samples\n                        + curve_sample_offset) - 1)->transform.basis_up,\n                    &((PathTemplateSample*)((char*)secondary_samples\n                        + curve_sample_offset) - 1)->transform.basis_forward);\n\n            float secondary_roll =\n                ((PathTemplateSample*)((char*)primary_samples\n                    + curve_sample_offset) - 1)->center_x * 0.2617994f;\n            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)\n                ->transform.RotLocalZ(secondary_roll);\n        } else {\n            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)\n                ->transform.RotIdentity();\n            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)\n                ->transform.RotIdentity();\n        }"
+        }
+      ]
+    },
+    {
+      "name": "mesh-bank-order",
+      "find": "    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    Vector3* vertices = path->strip_mesh->vertices;",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;"
+        }
+      ]
+    }
+  ]
+}
