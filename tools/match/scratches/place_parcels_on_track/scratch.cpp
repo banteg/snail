@@ -29,13 +29,9 @@ void cRSubGame::PlaceParcels()
     if (level_mode != 0 && level_mode != 7)
         return;
 
-    for (int reset = 0;
-         reset < (int)sizeof(g_zero_parcel_buckets);
-         reset += sizeof(ParcelBucket)) {
-        *(int*)((char*)g_zero_parcel_buckets + reset
-               + offsetof(ParcelBucket, candidate_count)) = 0;
-        *(int*)((char*)g_parcel_set_buckets + reset
-               + offsetof(ParcelBucket, candidate_count)) = 0;
+    for (int reset = 0; reset < PARCEL_BUCKET_CAPACITY; ++reset) {
+        g_zero_parcel_buckets[reset].candidate_count = 0;
+        g_parcel_set_buckets[reset].candidate_count = 0;
     }
 
     int min_set_sizes[100];
@@ -47,13 +43,10 @@ void cRSubGame::PlaceParcels()
 
     for (int segment = 0; segment < level_definition.segment_count; ++segment) {
         last_segment_max_set_size = 0;
-        SubSegmentParcelScanAnchor* record =
-            (SubSegmentParcelScanAnchor*)
-                &level_definition.segment_slots[segment].row_count;
         min_set_sizes[segment] = 10000;
         for (set_or_target = 0; set_or_target < 10; ++set_or_target) {
-            for (int row = 0; row < record->row_count; ++row) {
-                AuthoredSegmentRow* authored = &record->rows[row];
+            for (int row = 0; row < level_definition.segment_slots[segment].row_count; ++row) {
+                AuthoredSegmentRow* authored = &level_definition.segment_slots[segment].rows[row];
                 if ((authored->flags & AUTHORED_SEGMENT_ROW_FLAG_PARCEL) != 0
                     && authored->parcel_set_id == set_or_target) {
                     if (set_or_target == 0) {
@@ -88,7 +81,7 @@ void cRSubGame::PlaceParcels()
                     }
                 }
                 for (int lane = 0; lane < 8; ++lane) {
-                    if (record->glyph_rows[lane][row] == set_or_target + 48) {
+                    if (level_definition.segment_slots[segment].glyph_rows[lane][row] == set_or_target + 48) {
                         if (set_or_target == 0) {
                             g_zero_parcel_buckets[zero_entry_count].segment_index =
                                 segment;
@@ -262,35 +255,45 @@ void cRSubGame::PlaceParcels()
     }
     level_definition.parcel_count = placed;
 
-    SubRow* row_record = runtime_rows;
-    for (int row = 0; row < runtime_row_count; ++row, ++row_record) {
-        if ((row_record->flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0
-            && (row_record->flags & SUBROW_FLAG_PRIMARY_ATTACHMENT) != 0) {
-            cRSubLoc* cell = row_record->primary_attachment_cell;
-            int node =
-                (int)row_record->parcel_spawn_position.z
-                - cell->Yi();
-            if (node < 0)
-                node = 0;
-            cRSubLoc* live_cell = row_record->primary_attachment_cell;
-            Path* template_record = live_cell->attachment_template_record;
-            if (template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42) {
-                TransformMatrix transform;
-                float out_angle;
-                template_record->compute_kind42_attachment_transform(
-                    template_record->primary_samples[node].special_scalar,
-                    row_record->parcel_spawn_position.x,
-                    row_record->parcel_spawn_position.y,
-                    &transform,
-                    &out_angle);
-                row_record->parcel_spawn_position.x = transform.position.x;
-                row_record->parcel_spawn_position.y = transform.position.y;
-            } else {
-                int row_index = live_cell->Yi();
-                template_record->GetPos(
-                    row_record->parcel_spawn_position, node, row_index,
-                    row_record->parcel_spawn_position);
+    int scan = 0;
+    if (runtime_row_count > 0) {
+        do {
+            if ((runtime_rows[scan].flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0
+                && (runtime_rows[scan].flags
+                        & SUBROW_FLAG_PRIMARY_ATTACHMENT)
+                    != 0) {
+                int source_row = runtime_rows[scan].primary_attachment_cell->Yi();
+                int node =
+                    (int)runtime_rows[scan].parcel_spawn_position.z
+                    - source_row;
+                if (node < 0) {
+                    node = 0;
+                }
+
+                cRSubLoc* cell = runtime_rows[scan].primary_attachment_cell;
+                Path* template_record = cell->attachment_template_record;
+                if (template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42) {
+                    TransformMatrix transform;
+                    float out_angle;
+                    template_record->compute_kind42_attachment_transform(
+                        template_record->primary_samples[node].special_scalar,
+                        runtime_rows[scan].parcel_spawn_position.x,
+                        runtime_rows[scan].parcel_spawn_position.y,
+                        &transform,
+                        &out_angle);
+                    runtime_rows[scan].parcel_spawn_position.x = transform.position.x;
+                    runtime_rows[scan].parcel_spawn_position.y = transform.position.y;
+                } else {
+                    runtime_rows[scan]
+                        .primary_attachment_cell->attachment_template_record
+                        ->GetPos(
+                            runtime_rows[scan].parcel_spawn_position,
+                            node,
+                            runtime_rows[scan].primary_attachment_cell->Yi(),
+                            runtime_rows[scan].parcel_spawn_position);
+                }
             }
-        }
+            ++scan;
+        } while (scan < runtime_row_count);
     }
 }

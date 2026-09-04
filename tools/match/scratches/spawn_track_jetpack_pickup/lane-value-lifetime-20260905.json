@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lane-lifetime",
+      "find": "    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    if (lane == 3 && cell[-1].tile_id == SUBLOC_TILE_WALL2\n        && cell[2].tile_id == SUBLOC_TILE_WALL2) {\n        live_position->x = live_position->x + 0.5f;\n    } else if (lane == 4 && cell[-2].tile_id == SUBLOC_TILE_WALL2\n        && cell[1].tile_id == SUBLOC_TILE_WALL2) {\n        live_position->x = live_position->x - 0.5f;\n    }\n\n",
+      "replacements": [
+        {
+          "name": "direct-False-unsigned-False-independent-True",
+          "text": "    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    if (lane == 3 && cell[-1].tile_id == SUBLOC_TILE_WALL2\n        && cell[2].tile_id == SUBLOC_TILE_WALL2) {\n        live_position->x = live_position->x + 0.5f;\n    }\n    if (lane == 4 && cell[-2].tile_id == SUBLOC_TILE_WALL2\n        && cell[1].tile_id == SUBLOC_TILE_WALL2) {\n        live_position->x = live_position->x - 0.5f;\n    }\n\n"
+        },
+        {
+          "name": "direct-False-unsigned-True-independent-False",
+          "text": "    unsigned int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    if (lane == 3 && cell[-1].tile_id == SUBLOC_TILE_WALL2\n        && cell[2].tile_id == SUBLOC_TILE_WALL2) {\n        live_position->x = live_position->x + 0.5f;\n    } else if (lane == 4 && cell[-2].tile_id == SUBLOC_TILE_WALL2\n        && cell[1].tile_id == SUBLOC_TILE_WALL2) {\n        live_position->x = live_position->x - 0.5f;\n    }\n\n"
+        },
+        {
+          "name": "direct-False-unsigned-True-independent-True",
+          "text": "    unsigned int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    if (lane == 3 && cell[-1].tile_id == SUBLOC_TILE_WALL2\n        && cell[2].tile_id == SUBLOC_TILE_WALL2) {\n        live_position->x = live_position->x + 0.5f;\n    }\n    if (lane == 4 && cell[-2].tile_id == SUBLOC_TILE_WALL2\n        && cell[1].tile_id == SUBLOC_TILE_WALL2) {\n        live_position->x = live_position->x - 0.5f;\n    }\n\n"
+        },
+        {
+          "name": "direct-True-unsigned-False-independent-False",
+          "text": "    if ((cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK) == 3 && cell[-1].tile_id == SUBLOC_TILE_WALL2\n        && cell[2].tile_id == SUBLOC_TILE_WALL2) {\n        live_position->x = live_position->x + 0.5f;\n    } else if ((cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK) == 4 && cell[-2].tile_id == SUBLOC_TILE_WALL2\n        && cell[1].tile_id == SUBLOC_TILE_WALL2) {\n        live_position->x = live_position->x - 0.5f;\n    }\n\n"
+        },
+        {
+          "name": "direct-True-unsigned-False-independent-True",
+          "text": "    if ((cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK) == 3 && cell[-1].tile_id == SUBLOC_TILE_WALL2\n        && cell[2].tile_id == SUBLOC_TILE_WALL2) {\n        live_position->x = live_position->x + 0.5f;\n    }\n    if ((cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK) == 4 && cell[-2].tile_id == SUBLOC_TILE_WALL2\n        && cell[1].tile_id == SUBLOC_TILE_WALL2) {\n        live_position->x = live_position->x - 0.5f;\n    }\n\n"
+        }
+      ]
+    }
+  ]
+}

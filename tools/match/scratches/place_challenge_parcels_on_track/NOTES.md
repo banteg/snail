@@ -297,3 +297,13 @@ The remaining two instructions and two unaudited row-base references arise
 from the typed candidate-row cursor and the compiler's source-cell spill. They
 do not leave a behavior or storage owner unresolved. This classification is
 based on the complete owner graph and cross-port agreement.
+
+## 2026-09-05 combined candidate and projection lifetime probes
+
+A recorded 29-variant sweep combines direct row indexing, fresh projection-cell
+lifetimes, and typed bucket resets. No variant improves the 81.40% canonical
+baseline. Fresh-cell forms recover the native frame but disturb other register
+lifetimes; typed reset indexing also loses one audited sentinel reference.
+These local combinations are rejected, not evidence of source-shape exhaustion.
+Normal placement's direct segment ownership gain does not by itself transfer
+to this function, which has no authored segment scan.

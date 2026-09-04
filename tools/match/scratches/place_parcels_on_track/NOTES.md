@@ -634,6 +634,20 @@ Across 14 unique variants, ten compiled byte-identically and four incomplete
 interactions failed to compile; none improved or regressed a valid build. The
 ledger records those shapes at 87.77%, 637/639 instructions, with all 98
 references clean.
-Retain the natural scoped source. Recovering the slot permutation would now
-require artificial lifetime or stack forcing rather than additional ownership
-evidence.
+Retain the natural scoped source. These bounded probes did not recover the slot permutation. They do not
+exclude other source expressions or interactions with the rest of the function.
+
+## 2026-09-05 direct segment ownership and projection lifetime
+
+Direct indexing through `level_definition.segment_slots[segment]`, together
+with typed parcel-bucket reset indexing, raises 88.71% to 89.34%. This removes
+the scratch's interior `SubSegmentParcelScanAnchor` cast; the native compiler
+can derive its row-count cursor from the actual segment array. A typed local
+segment borrow regresses, so that cursor representation was not sufficient.
+
+Replacing the final manual row-pointer walk with indexed rows and reloading
+the cell/template at the GetPos call further improves to 89.90%. Both recorded
+fresh-cell and direct second-Yi variants score equally; the retained direct
+form avoids a cross-call borrow. The candidate remains partial, 638/639
+instructions with all 98 references clean. The stack-slot permutation and
+projection call register lifetimes remain visible; none is declared exhausted.

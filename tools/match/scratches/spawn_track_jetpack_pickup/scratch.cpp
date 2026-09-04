@@ -7,7 +7,6 @@
 #include "track_attachment_types.h"
 #include "track_jetpack_pickup.h"
 
-typedef unsigned int DWORD;
 
 
 int report_errorf(char* format, ...);
@@ -15,7 +14,6 @@ int report_errorf(char* format, ...);
 void cRSubGame::AddJetPack(cRSubLoc* cell, cRSubGoldy* player)
 {
     int slot_index = 0;
-    DWORD* game_words = (DWORD*)this;
     JetPack* scan = &jetpack_pickup;
     while (slot_index < 1
         && scan->state != TRACK_PICKUP_STATE_INACTIVE) {
@@ -25,52 +23,48 @@ void cRSubGame::AddJetPack(cRSubLoc* cell, cRSubGoldy* player)
             return;
     }
 
-    DWORD* slot_base =
-        game_words + sizeof(JetPack) / sizeof(DWORD) * slot_index;
-    cRSubGame* slot = (cRSubGame*)slot_base;
-    slot->jetpack_pickup.state = TRACK_PICKUP_STATE_ACTIVE;
-    slot->jetpack_pickup.owner = player;
+    (&jetpack_pickup)[slot_index].state = TRACK_PICKUP_STATE_ACTIVE;
+    (&jetpack_pickup)[slot_index].owner = player;
 
     Vector3 staged_position =
         cell->position + Vector3(0.0f, 1.5f, 0.0f);
-    Vector3* live_position = &slot->jetpack_pickup.position;
+    Vector3* live_position = &(&jetpack_pickup)[slot_index].position;
     *live_position = staged_position;
 
-    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;
-    if (lane == 3 && cell[-1].tile_id == SUBLOC_TILE_WALL2
+    if ((cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK) == 3 && cell[-1].tile_id == SUBLOC_TILE_WALL2
         && cell[2].tile_id == SUBLOC_TILE_WALL2) {
         live_position->x = live_position->x + 0.5f;
-    } else if (lane == 4 && cell[-2].tile_id == SUBLOC_TILE_WALL2
+    } else if ((cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK) == 4 && cell[-2].tile_id == SUBLOC_TILE_WALL2
         && cell[1].tile_id == SUBLOC_TILE_WALL2) {
         live_position->x = live_position->x - 0.5f;
     }
 
-    BodNode* node = &slot->jetpack_pickup;
+    BodNode* node = &(&jetpack_pickup)[slot_index];
     g_game->active_bod_list.add_bod(node);
 
     cRSprite* sprite =
         g_sprite_manager.New(player->player_slot, 124, -1, -1);
-    slot->jetpack_pickup.sprite = sprite;
+    (&jetpack_pickup)[slot_index].sprite = sprite;
     unsigned int flags = sprite->flags;
     flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
     sprite->flags = flags;
-    slot->jetpack_pickup.sprite->gravity_step = 0.0f;
-    slot->jetpack_pickup.sprite->progress = 0.0f;
-    slot->jetpack_pickup.sprite->progress_step = 0.0f;
-    slot->jetpack_pickup.sprite->size_start = 1.5f;
-    slot->jetpack_pickup.sprite->size_end = 1.5f;
+    (&jetpack_pickup)[slot_index].sprite->gravity_step = 0.0f;
+    (&jetpack_pickup)[slot_index].sprite->progress = 0.0f;
+    (&jetpack_pickup)[slot_index].sprite->progress_step = 0.0f;
+    (&jetpack_pickup)[slot_index].sprite->size_start = 1.5f;
+    (&jetpack_pickup)[slot_index].sprite->size_end = 1.5f;
 
-    slot->jetpack_pickup.sprite->position = *live_position;
-    slot->jetpack_pickup.source_cell = cell;
-    float* bob_phase = &slot->jetpack_pickup.bob_phase;
+    (&jetpack_pickup)[slot_index].sprite->position = *live_position;
+    (&jetpack_pickup)[slot_index].source_cell = cell;
+    float* bob_phase = &(&jetpack_pickup)[slot_index].bob_phase;
     *bob_phase = 0.0f;
 
-    int z_as_int = (int)slot->jetpack_pickup.position.z;
+    int z_as_int = (int)(&jetpack_pickup)[slot_index].position.z;
     if ((z_as_int & 1) != 0) {
         *bob_phase = 0.0f;
-        slot->jetpack_pickup.bob_phase_step = 0.012820513f;
+        (&jetpack_pickup)[slot_index].bob_phase_step = 0.012820513f;
         return;
     }
     *bob_phase = 0.5f;
-    slot->jetpack_pickup.bob_phase_step = 0.012820513f;
+    (&jetpack_pickup)[slot_index].bob_phase_step = 0.012820513f;
 }

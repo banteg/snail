@@ -2,19 +2,8 @@
 
 Live source map for `cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)`.
 
-Current match:
-
-- `87.29%`, `147/144` candidate/target instructions, with a `44/144` exact
-  prefix, `9` clean masked operands, and no unresolved or mismatched
-  references.
-- The scratch uses the primary `JetPack` field names, the shared
-  `BodList`/`BodNode` active-list shape, and the native bounded singleton
-  traversal. The three-instruction candidate surplus is confined to the
-  lane-wall tile compare schedule (`mov cl, 0xe` once in native versus two
-  local byte-load/constant pairs in the candidate).
-- The sprite output copy is now the same typed `Vector3` assignment accepted in
-  the health spawner, reducing the tail residual to the bob-phase store versus
-  `world_z` conversion scheduling.
+Current match: **100.00%**, 144/144 instructions, all 9 masked references
+clean. The 2026-09-05 result below supersedes the historical residual claims.
 
 Evidence:
 
@@ -258,3 +247,20 @@ Four independent lane-test/constant forms and a direct typed view of the singlet
 
 The recorded specifications and experiment receipts preserve these negative
 results. They do not establish source exhaustion or compiler provenance.
+
+## 2026-09-05 exact lane-expression and pickup ownership recovery
+
+Reading `(cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK)` independently in
+both arms of the lane/wall conditional removes the unnecessary cached lane
+lifetime. VC6 then emits native's single early wall constant and the complete
+fallthrough to the lane-4 test. This raises 87.29% to 100%, removes the three
+extra instructions, and keeps all nine masked operands clean. Unsigned local
+and independent-if alternatives did not recover the same flow. The recorded
+five-variant lane sweep identifies the complete conditional expression as the
+missing source shape, not an exhausted compiler limitation.
+
+The complete direct typed singleton view `(&jetpack_pickup)[slot_index]` also
+reproduces this exact output. It replaces the manually shifted DWORD pointer
+and fictitious shifted cRSubGame receiver; the parent still owns its one inline
+JetPack, while its visual remains allocated by SpriteManager. No shared layout,
+compiler flag, or reference normalization changed.
