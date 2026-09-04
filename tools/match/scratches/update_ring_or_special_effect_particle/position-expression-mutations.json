@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "position-expression",
+      "find": "    Vector3 staged_position;\n    float orbit_y = Cos(phase) * radius;\n    float orbit_x = Sin(phase);\n    cRSubRing* live_parent = parent;\n    cRSprite* live_sprite = sprite;\n    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    orbit_x *= radius;\n    staged_position.x = orbit_x + parent_position->x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;\n\n    *sprite_position = staged_position;\n",
+      "replacements": [
+        {
+          "name": "offset-plus-parent",
+          "text": "    Vector3 offset(Sin(phase) * radius, Cos(phase) * radius, 0.0f);\n    sprite->position = offset + parent->transform.position;\n"
+        },
+        {
+          "name": "parent-plus-offset",
+          "text": "    Vector3 offset(Sin(phase) * radius, Cos(phase) * radius, 0.0f);\n    sprite->position = parent->transform.position + offset;\n"
+        },
+        {
+          "name": "inline-offset-plus-parent",
+          "text": "    sprite->position = Vector3(Sin(phase) * radius, Cos(phase) * radius, 0.0f)\n        + parent->transform.position;\n"
+        },
+        {
+          "name": "inline-parent-plus-offset",
+          "text": "    sprite->position = parent->transform.position\n        + Vector3(Sin(phase) * radius, Cos(phase) * radius, 0.0f);\n"
+        },
+        {
+          "name": "constructor-with-parent",
+          "text": "    float orbit_y = Cos(phase) * radius;\n    float orbit_x = Sin(phase);\n    cRSubRing* live_parent = parent;\n    cRSprite* live_sprite = sprite;\n    live_sprite->position = Vector3(\n        orbit_x * radius + live_parent->transform.position.x,\n        orbit_y + live_parent->transform.position.y,\n        live_parent->transform.position.z);\n"
+        },
+        {
+          "name": "constructor-borrowed-parent",
+          "text": "    float orbit_y = Cos(phase) * radius;\n    float orbit_x = Sin(phase);\n    cRSubRing* live_parent = parent;\n    cRSprite* live_sprite = sprite;\n    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    *sprite_position = Vector3(orbit_x * radius + parent_position->x,\n        orbit_y + parent_position->y, parent_position->z);\n"
+        }
+      ]
+    }
+  ]
+}

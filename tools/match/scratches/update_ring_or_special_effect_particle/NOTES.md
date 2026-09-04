@@ -11,14 +11,15 @@ Semantics:
 - emit the small star-shower sprite when the parent cadence lane at `+0x1e8`
   is zero
 
-Match status: 96.36%, pinned.
+Current match: **100.00%**, 55/55 instructions and all five references clean.
+The September 4 recovery below supersedes the historical residual claims.
 
 Cross-port owner: iOS preserves this helper as `cRSubRingStar::AI()`. The
 shared source now defines it on `cRSubRingStar` with a borrowed `cRSubRing*` parent;
 the historical combined-effect type names remain compatibility aliases.
-Focused matching remains 96.36%, 55/55 instructions, with five clean operands.
+The canonical source now reproduces the complete Windows body.
 
-Residual:
+Historical residual (resolved):
 
 - Native adds the sine-derived X offset from `[parent + 0x68]` before
   materializing `parent_position = parent + 0x68`; the clean typed pointer
@@ -224,3 +225,30 @@ three parent-state dispatch loops, followed by the conditional
 `cRSubRingStar::Shower(cRSubGoldy*)` call. The rename preserves the honest
 96.36%, 55/55-instruction, prefix-28 baseline. This ownership slice does not
 retry the previously explored position-materialization forms.
+
+## 2026-09-04 full match: compose the orbit vector
+
+```cpp
+Vector3 offset(Sin(phase) * radius, Cos(phase) * radius, 0.0f);
+sprite->position = parent->transform.position + offset;
+```
+
+This ordinary vector expression replaces the flattened component staging and
+explicit parent/sprite position pointers. It raises **96.36% to 100.00%**:
+**55/55** instructions, **55/55** prefix, native extent **174 bytes**, and all
+**5** masked references clean under canonical `msvc6.5 /O2 /G5 /W3`.
+No type, ABI, compiler option, reference, or matching rule changed.
+
+The six whole-expression probes in `position-expression-mutations.json` are
+recorded against `1738d815b`. Both orders of named offset addition are exact,
+as is the inline offset on the right of the parent position. The opposite
+inline operand order changes allocation and scores 83.64%; component constructor
+variants score 69.72% and 72.73%. The retained named offset is the simplest
+explicit representation of the circular displacement and its parent-relative
+position.
+
+The earlier 27-variant search varied pointer ownership and the X publication
+inside a fixed scalar staging model. Its claim that C++ could not express the
+native X address lifetime was unsupported. Full vector addition lets the
+compiler generate that lifetime while preserving the entire remaining body,
+including the two trigonometric calls and the conditional Shower call.

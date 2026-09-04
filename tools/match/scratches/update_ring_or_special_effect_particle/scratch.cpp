@@ -17,19 +17,8 @@ void cRSubRingStar::AI()
     if (phase > 6.2831855f)
         phase -= 6.2831855f;
 
-    Vector3 staged_position;
-    float orbit_y = Cos(phase) * radius;
-    float orbit_x = Sin(phase);
-    cRSubRing* live_parent = parent;
-    cRSprite* live_sprite = sprite;
-    Vector3* parent_position = &live_parent->transform.position;
-    Vector3* sprite_position = &live_sprite->position;
-    orbit_x *= radius;
-    staged_position.x = orbit_x + parent_position->x;
-    staged_position.y = orbit_y + parent_position->y;
-    staged_position.z = parent_position->z;
-
-    *sprite_position = staged_position;
+    Vector3 offset(Sin(phase) * radius, Cos(phase) * radius, 0.0f);
+    sprite->position = parent->transform.position + offset;
 
     cRSubRing* result_parent = parent;
     if (result_parent->star_shower_counter == 0)
