@@ -320,32 +320,30 @@ The March 10 Windows attachment package independently corroborated a few of thes
 - `WARP` remains a shipped authored placeholder in this Windows build: lookup resolves slot `30`, but world init leaves its record unbuilt
 - the template bank is constructor-generated runtime data, not a ready-made static blob in the executable, so a faithful extractor will need either constructor emulation or a runtime dump step
 
-## Matching Disposition
+## Matching Work
 
-The broad path-constructor matching campaign is retired. Its aggregate score
-table duplicated generated `tools/match/STATUS.md`,
-and its source-shape experiment log duplicated the `NOTES.md` files beside the
-individual scratches. Those scratches remain the matching evidence; this page
-and the checked-in path-template type lane remain the durable semantic model.
+The constructors remain active source-recovery targets. The aggregate board is
+`tools/match/STATUS.md`; experiment receipts and exact residual descriptions
+belong beside each scratch. Recovered behavior and shared types do not establish
+that a non-exact constructor is limited by the compiler.
 
-More path-template work is still useful when it closes a concrete ownership or
-runtime question:
+Use a constructor with a long exact prefix to separate curve generation from
+the repeated mesh work. Snake currently reproduces sample initialization,
+orientation, distance calculation, and allocation before diverging in vertex
+and face construction. Its native face-column initialization occurs before the
+width guard and UV calculations; recovering that scope improves the mesh without
+changing the earlier instructions. See its scratch notes for the measured
+result and complete interaction sweep.
 
-- which consumers can name the remaining conservative header fields at
-  `+0x30` and `+0x34`;
-- whether the primary/secondary half has a stronger family-independent
-  semantic than the proven mirror-selection behavior;
-- whether live execution of shipped `WARP` content confirms the static
-  unbuilt/no-op interpretation.
+Compare the related constructors by phase: paired sample generation, orientation,
+per-sample deltas, strip vertices, two-sided face records, and final length.
+Counter scopes and inlined vector expression lifetimes interact across those
+phases. A regression under one owner arrangement is not evidence that the same
+source construct cannot be correct under another. Preserve locally useful
+probes and test coordinated changes across homologous regions.
 
-Broad score polishing across every large constructor is not currently a good
-ownership investment. The common `PathTemplate`, `PathTemplateSample`, strip
-mesh, facequad, allocator, mirror, finalizer, and follow-state relationships are
-already recovered; most remaining diffs are constructor-local stack, register,
-and floating-point scheduling. Resume a constructor only when new callsite,
-consumer, dynamic-capture, or cross-platform evidence makes one of the open
-questions above answerable.
-
-The concrete constructor xrefs converge on `initialize_game_assets_and_world`.
-If the public-name or pair-bank mapping is reopened, audit those caller islands
-first instead of polishing every constructor body in parallel.
+The semantic questions remain open alongside matching: the conservative header
+fields at `+0x30` and `+0x34`, the family-independent meaning of primary versus
+secondary samples, and runtime behavior of the statically unbuilt `WARP` entry.
+Constructor xrefs converge on `initialize_game_assets_and_world`; use those
+caller islands when revisiting public-name or pair-bank mappings.

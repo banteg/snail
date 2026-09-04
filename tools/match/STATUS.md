@@ -2,15 +2,15 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**559/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **112393/294937** bytes (**38.11%**) are proof-grade, and overall fuzzy is **86.15%**.
+**559/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **112393/294937** bytes (**38.11%**) are proof-grade, and overall fuzzy is **86.16%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
 ## Residual frontier
 
-**103** non-exact scratch-backed functions hold **35536 fuzzy-gap bytes**. The top 5 hold **25.7%** of that gap; the top 10 hold **37.8%**.
+**103** non-exact scratch-backed functions hold **35513 fuzzy-gap bytes**. The top 5 hold **25.7%** of that gap; the top 10 hold **37.8%**.
 
-Current-baseline experiments cover **5 functions / 820 gap bytes**; **98 / 34716** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **5 functions / 820 gap bytes**; **98 / 34694** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -57,7 +57,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 39 | handle_subgoldy_collisions | 377 | semantic-complete | analysis | historical-only | 0/14 | repeated-specs,historical-only |
 | 40 | load_level_definition_file | 361 | semantic-complete | analysis,references | historical-only | 0/12 | repeated-variants,metric-tradeoffs,variant-errors,historical-only |
 | 41 | draw_frontend_widget | 350 | semantic-complete | analysis | historical-only | 0/4 | historical-only |
-| 42 | initialize_snake_path_template_pair | 340 | semantic-complete | analysis | historical-only | 0/44 | metric-tradeoffs,variant-errors,historical-only |
+| 42 | initialize_snake_path_template_pair | 318 | semantic-complete | analysis | historical-only | 0/45 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 43 | build_subgame_level | 299 | semantic-complete | analysis | historical-only | 0/19 | metric-tradeoffs,variant-errors,historical-only |
 | 44 | merge_track_tile_runs | 284 | semantic-complete | analysis | historical-only | 0/4 | repeated-variants,historical-only |
 | 45 | place_parcels_on_track | 270 | semantic-complete | analysis | historical-only | 0/6 | variant-errors,historical-only,stale-dependencies |
@@ -724,7 +724,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 523/521 | 88.89% | 88/521 | 66 ok |  | core |
 | 🚧 | traverse_path_follow_golb | 0x4217b0 | 1551 | 421/425 | 86.52% | 32/425 | 7 ok |  | core |
 | 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 650/652 | 84.33% | 32/652 | 37 ok |  | core |
-| 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 652/652 | 86.04% | 387/652 | 40 ok |  | core |
+| 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 652/652 | 86.96% | 387/652 | 40 ok |  | core |
 | 🚧 | build_track_fringe_mesh | 0x4246a0 | 1069 | 318/318 | 92.77% | 100/318 | 23 ok |  | core |
 | 🚧 | build_track_fringe_supertramp_mesh | 0x424ad0 | 1396 | 421/421 | 94.54% | 69/421 | 25 ok |  | core |
 | 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 609/610 | 87.94% | 148/610 | 35 ok |  | core |

@@ -556,3 +556,30 @@ against hoisting: it loses 417 weighted bytes, falls to **68.61%**, moves to
 variants retain **40/0/0/0** clean references. The mesh object remains implicit,
 the width and primary-sample loads remain branch-local, and no allocator-only
 source shape is retained.
+
+## 2026-09-04 mesh counter scope recovery
+
+The first 387 instructions now match after the shared SIB normalization, so
+sample initialization, orientation, deltas, and mesh allocation form a useful
+control region. The remaining mesh work is open source reconstruction.
+
+Native initializes the face-column owner at `0x423cd1`, before the width guard
+at `0x423cd9` and the row UV calculations. Moving `column = 0` to that same
+scope raises matching from **86.04% to 86.96%**, retaining **652/652**
+instructions, prefix **387/652**, and all **40** clean references. This also
+recovers the native face-row integer-conversion stack home; it is a lifetime
+recovery, not an added dependency or compiler-profile change.
+
+`mesh-owner-interaction-mutations.json` records all 31 combinations of five binary axes:
+sample-pointer scope, terminal vector addition, face-column guard scope,
+face-counter lifetime, and lateral float/double ownership. The retained column
+scope wins alone or with the neutral face-counter move. The sample-scope variants
+change earlier allocation and the float variants add four instructions. These
+observations cover this five-axis product only. They do not prove that either
+source family is generally wrong or that the remaining mesh is compiler-only.
+
+The next concrete differences are the ordinary/terminal sample-array load,
+terminal sum operand/lifetime shape, and branch-local face-address formation.
+The latter appears in Start too; compare those homologous native regions before
+changing the shared vector definitions or assuming one helper spelling fits all
+callers.

@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-sample-scope",
+      "find": "                    if (row != path->segment_count) {\n                        PathTemplateSample* sample =\n                            (PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset);",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "                    PathTemplateSample* sample =\n                        (PathTemplateSample*)((char*)path->primary_samples\n                            + sample_offset);\n                    if (row != path->segment_count) {"
+        }
+      ]
+    },
+    {
+      "name": "terminal-vector-sum",
+      "find": "                        Vector3 generated_position(\n                            endpoint.x + lateral_offset.x,\n                            endpoint.y + lateral_offset.y,\n                            endpoint.z + lateral_offset.z);",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "                        Vector3 generated_position = lateral_offset + endpoint;"
+        }
+      ]
+    },
+    {
+      "name": "face-column-guard",
+      "find": "        if (path->width_cells > 0) {\n            float v0 = (float)(row % 8) * 0.125f;\n            float v1 = (float)(row % 8 + 1) * 0.125f;\n            column = 0;",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "        column = 0;\n        if (path->width_cells > 0) {\n            float v0 = (float)(row % 8) * 0.125f;\n            float v1 = (float)(row % 8 + 1) * 0.125f;"
+        }
+      ]
+    },
+    {
+      "name": "face-counter-lifetime",
+      "find": "                next_column = column + 1;\n                float u0 = (float)column * 0.125f;\n                float u1 = (float)(column + 1) * 0.125f;\n                int face_index;\n                for (face_index = 0; face_index < 2; ++face_index) {",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "                int face_index = 0;\n                next_column = column + 1;\n                float u0 = (float)column * 0.125f;\n                float u1 = (float)(column + 1) * 0.125f;\n                for (; face_index < 2; ++face_index) {"
+        }
+      ]
+    },
+    {
+      "name": "lateral-value-type",
+      "find": "                    double lateral =",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "                    float lateral ="
+        }
+      ]
+    }
+  ]
+}
