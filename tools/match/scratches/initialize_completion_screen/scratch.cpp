@@ -22,14 +22,13 @@ void cRCompletion::Init(
         if (g_game->subgame.replay_launch_active != 0) {
             SubSolution* record = g_game->subgame.replay_launch_record;
             difficulty_index = record->challenge_difficulty_value / 20;
-            speed_source = record->challenge_speed_value;
+            speed_source = record->challenge_speed_value / 20;
         } else {
             difficulty_index =
                 g_runtime_config.challenge_difficulty_percent / 20;
-            speed_source = g_runtime_config.challenge_speed_percent;
+            speed_source = g_runtime_config.challenge_speed_percent / 20;
         }
 
-        speed_source /= 20;
         if (difficulty_index < 0)
             difficulty_index = 0;
         else if (difficulty_index > COMPLETION_BONUS_TABLE_CAPACITY - 1)

@@ -1,3 +1,6 @@
+Current recovery: **exact**, 278/278 instructions over 972 native bytes, with
+all 46 references clean. The September 5 entry supersedes earlier residual claims.
+
 # initialize_completion_screen
 
 Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
@@ -239,3 +242,16 @@ its exact 0x50-byte layout, and every field at `+0x00..+0x4c`. The enclosing
 matcher-only typedef remains codegen-neutral. The honest initializer result is
 still 92.81%, 278/278 instructions, prefix 23/278, with all 46 references
 clean.
+
+## 2026-09-05 branch-local bonus index calculation
+
+The replay-record and runtime-configuration arms each calculate both table
+indices by dividing their respective input by 20. Moving the speed division
+into those arms, alongside the difficulty division, recovers the native
+register lifetimes across both divisions and the subsequent clamps/table reads.
+The complete initializer now matches, including all UI construction calls.
+
+Nine recorded source forms compare declaration order, input load order,
+shared versus branch-local division, and shared versus temporary colour values.
+Only the branch-local divisions with the existing colour temporaries are exact.
+No type, ABI, flags, reference mapping, or normalization changed.
