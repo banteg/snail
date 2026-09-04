@@ -532,3 +532,32 @@ No source change is retained. SlalomBig remains at **66.23%**, 693/696
 instructions, prefix 48/696, with all 40
 references clean. The remaining load and counter identities are bounded
 compiler-allocation residuals rather than untested source owners.
+
+## 2026-09-04 Slalom native-twin recovery
+
+Slalom (`0x41f760`) and SlalomBig (`0x4221f0`) each contain 696 instructions
+in 2,564 bytes. Comparing decoded instructions with local branch destinations
+expressed as function-relative offsets leaves exactly two differences:
+
+| instruction | Slalom | SlalomBig |
+|---|---|---|
+| 10, kind store | `0x41f776`: kind 22 | `0x422206`: kind 23 |
+| 158, lateral multiply | `0x41f9c7`: `[0x497288]` = 5.0f | `0x422457`: `[0x497488]` = 4.44444465637207f |
+
+All other decoded operands, including call targets, absolute data references,
+registers, stack offsets, and local branch destinations, agree. This is much
+stronger source-family evidence than similarly named mobile exports. It does
+not identify whether the original author used a macro or copied the function.
+
+The independently evolved scratches had diverged: Slalom used the old generic
+multi-variant skeleton while SlalomBig carried later owner recovery. Transferring
+SlalomBig's source and changing only the method name, kind, and measured amplitude
+raises Slalom from **64.20% to 67.67%**, extends prefix **6 to 48**, and brings
+candidate instructions **684 to 693** against 696. Both now have the same
+partial result and all 40 references clean. SlalomBig remains unchanged.
+
+Keep the two bodies paired when testing source changes; their remaining native
+problems are the same, not independent compiler mysteries. Standalone copies
+retain compatibility with the current scratch-local mutation workflow. The
+Slalom transfer receipt records the previous baseline and source hash; historical
+mutation plans still describe their original source, not the paired current body.

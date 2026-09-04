@@ -320,6 +320,21 @@ The March 10 Windows attachment package independently corroborated a few of thes
 - `WARP` remains a shipped authored placeholder in this Windows build: lookup resolves slot `30`, but world init leaves its record unbuilt
 - the template bank is constructor-generated runtime data, not a ready-made static blob in the executable, so a faithful extractor will need either constructor emulation or a runtime dump step
 
+## Slalom and SlalomBig
+
+These are native structural twins: their 696-instruction Windows bodies differ
+only in the stored path kind (22 versus 23) and one lateral-amplitude constant
+(5.0f versus 4.44444465637207f). All registers, stack homes, calls, other data
+references, and function-relative branch destinations agree. This comparison
+supports recovering them as a paired source shape; it does not prove a particular
+original macro, template, or translation-unit arrangement.
+
+Their earlier scratches had evolved independently and no longer reflected that
+relationship. The better SlalomBig reconstruction now supplies Slalom's source
+shape with those two semantic constants changed. Future owner and expression
+experiments should be checked against both. Exact addresses and measured
+before/after results are in the two scratch notes.
+
 ## Matching Work
 
 The constructors remain active source-recovery targets. The aggregate board is
