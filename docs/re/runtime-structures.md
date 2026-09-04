@@ -447,8 +447,10 @@ Current practical read:
 - the paired narrow replay retires the generic analysis-only `DamageGuage`
   record in both decompilers, verifies the exact `cRDamageGuage` layout and
   `Player +0x3c4` embed, and applies the authored receiver to `Init`, `AI`, and
-  `Take(float, bool)`; this ownership result does not relabel the documented
-  `AI` render-local stack-slot residual as an exact source match
+  `Take(float, bool)`
+- [`AI` now matches exactly](../../tools/match/scratches/update_damage_gauge/NOTES.md):
+  grouping the flash-pulse expression and reusing `alpha` resolved the former
+  render-local stack-slot mismatch without changing the controller layout
 - the adjacent authored `cRProgressBar` is an empty one-byte owner at
   `player + 0x3f0`; its exact `AI` ignores `this`, but typed callsites and the
   mobile class names preserve ownership while both decompilers now expose its
@@ -1461,21 +1463,37 @@ The primary matcher owners are `cRSubRing` and the embedded
 `cRSubRingStar`; `SubRing` and `SubRingStar` remain compatibility typedefs
 only.
 
-High-confidence current fields:
+High-confidence current fields, using the names in
+[`ring_special_effect_types.h`](../../tools/match/include/ring_special_effect_types.h):
 
-- `+0x68`: `effect_position`
+- `+0x68`: inherited `transform.position`
 - `+0x80`: `state` (`SubRingState`)
-- `+0x84`: `owner`
+- `+0x84`: `owner_player`, a borrowed player pointer
 - `+0x88`: `kind` (`SubRingKind`)
-- `+0x8c`: `owner_snapshot`
-- `+0x90`: `halo_particles[10]`
-- `+0x1d4`: `effect_progress`
-- `+0x1d8`: `effect_progress_step`
-- `+0x1dc`: `active_x_oscillation_enabled`
-  - conservative gate name; the writer is still unresolved
+- `+0x8c`: `owner_lives_snapshot`
+- `+0x90`: inline `particles[10]`, each a `0x20`-byte `cRSubRingStar`
+- `+0x1d0`: `rate_source`, a borrowed `cRSubGame` pointer
+- `+0x1d4`: `transition_progress`
+- `+0x1d8`: `transition_step`
+- `+0x1dc`: `oscillate_x`
+  - names the observed gate; the writer is still unresolved
 - `+0x1e0`: `active_phase`
 - `+0x1e4`: `active_phase_step`
-- `+0x1e8`: `child_update_cadence`
+- `+0x1e8`: `star_shower_counter`
+- `+0x1ec`: `star_sprite_id`
+
+The parent owns the inline child records. Each child holds a non-owning
+`parent` backlink at `+0x04` and a separate sprite allocation handle at
+`+0x00`. [`cRSubRing::Init`](../../tools/match/scratches/initialize_ring_or_special_effect_particles/scratch.cpp)
+sets the backlink and obtains the sprite through `cRSpriteManager::New`;
+the [parent removal paths](../../tools/match/scratches/update_ring_or_special_effect_parent/scratch.cpp)
+return those sprites through `Kill()`. Removing the parent from the active
+list does not free its pool slot or its inline children.
+
+The [exact child `AI`](../../tools/match/scratches/update_ring_or_special_effect_particle/NOTES.md)
+computes `parent->transform.position + offset` as a vector value and copies it
+into the sprite's position. The former scalar staging mismatch did not require
+a different parent, position field, or child layout.
 
 Current practical read:
 
@@ -1503,7 +1521,7 @@ Current practical read:
   response, then `effect_kind` drives the reward/effect ladder; neither is a
   second owner of the slot or its kind field
 - on hit, the slot does not die immediately: `handle_subgoldy_collisions` moves `ACTIVE -> COLLECT_PENDING`, and the slot's `update_ring_or_special_effect_parent` vtable advances `COLLECT_PENDING -> COLLECTING` before teardown
-- the collect transition (`2 -> 3`) and expand transition (`4 -> 5`) seed `effect_progress_step` from `Game.track_center_x * 0.0694444478`, not from the live subgame speed scalar
+- the collect transition (`2 -> 3`) and expand transition (`4 -> 5`) seed `transition_step` from `Game.track_center_x * 0.0694444478`, not from the live subgame speed scalar
 - the same vtable owns the `EXPAND_PENDING -> EXPANDING` teardown lane keyed
   from `owner_lives_snapshot`; the older `movement_flag_selector_snapshot`
   label was a false ownership read
