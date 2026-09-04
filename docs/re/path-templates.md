@@ -335,8 +335,11 @@ shape with those two semantic constants changed. Future owner and expression
 experiments should be checked against both. Recovering later-sample orientation
 as the fallthrough path then makes the native vertex-before-face bank order
 beneficial, although that bank order regressed in isolation. Both builders now
-reproduce that coordinated source change with clean references. Exact addresses and measured
-before/after results are in the two scratch notes.
+reproduce that coordinated source change with clean references. The phase
+lifetime and two independent absolute-value expressions also need to be recovered
+together: each regresses in isolation, while their combination reproduces the
+native 34-instruction curve calculation. Exact addresses and measured before/after
+results are in the two scratch notes.
 
 ## Matching Work
 

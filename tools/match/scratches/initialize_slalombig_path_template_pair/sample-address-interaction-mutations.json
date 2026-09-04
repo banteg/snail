@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "independent-fold-phase",
+      "find": "        float t = (float)i / (float)curve_segments;\n        float folded = t - 0.5f;\n        float folded_copy;\n        if (folded >= 0.0f)\n            folded_copy = folded;\n        else\n            folded_copy = -folded;\n        if (folded < 0.0f)\n            folded = -folded;\n\n        float angle = t * 6.2831855f;\n",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "        float t = (float)i / (float)curve_segments;\n        float angle = t * 6.2831855f;\n        float folded = (t - 0.5f) < 0.0f ? -(t - 0.5f) : (t - 0.5f);\n        float folded_copy = (t - 0.5f) < 0.0f ? -(t - 0.5f) : (t - 0.5f);\n\n"
+        }
+      ]
+    },
+    {
+      "name": "departure-origin",
+      "find": "    int departure_index = lead_out_start;",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "    int departure_origin = -4 - curve_segments;\n    int departure_index = lead_out_start;",
+          "requires": [
+            "departure-distance/recovered"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "departure-distance",
+      "find": "departure_index - 4 - curve_segments < 4",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "departure_index + departure_origin < 4",
+          "requires": [
+            "departure-origin/recovered"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "lead-secondary-address",
+      "find": "        set_matrix_identity(\n            &((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n                ->transform);",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "        set_matrix_identity(\n            &((PathTemplateSample*)(lead_sample_offset + (char*)secondary_samples))\n                ->transform);"
+        }
+      ]
+    },
+    {
+      "name": "departure-secondary-address",
+      "find": "        set_matrix_identity(\n            &((PathTemplateSample*)((char*)secondary_samples + departure_sample_offset))\n                ->transform);",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "        set_matrix_identity(\n            &((PathTemplateSample*)(departure_sample_offset + (char*)secondary_samples))\n                ->transform);"
+        }
+      ]
+    },
+    {
+      "name": "curve-secondary-address",
+      "find": "        set_matrix_identity(\n            &((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset))\n                ->transform);",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "        set_matrix_identity(\n            &((PathTemplateSample*)(curve_sample_offset + (char*)secondary_samples))\n                ->transform);"
+        }
+      ]
+    }
+  ]
+}

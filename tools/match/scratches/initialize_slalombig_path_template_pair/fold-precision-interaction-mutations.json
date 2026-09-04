@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "departure-distance",
+      "find": "departure_index - 4 - curve_segments < 4",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "departure_index - (4 + curve_segments) < 4"
+        }
+      ]
+    },
+    {
+      "name": "folded-precision",
+      "find": "        float folded = t - 0.5f;",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "        double folded = t - 0.5f;"
+        }
+      ]
+    },
+    {
+      "name": "folded-copy-precision",
+      "find": "        float folded_copy;",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "        double folded_copy;"
+        }
+      ]
+    },
+    {
+      "name": "phase-early",
+      "find": "        float t = (float)i / (float)curve_segments;",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "        float t = (float)i / (float)curve_segments;\n        float angle = t * 6.2831855f;",
+          "requires": [
+            "phase-late/recovered"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "phase-late",
+      "find": "        float angle = t * 6.2831855f;\n",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "",
+          "requires": [
+            "phase-early/recovered"
+          ]
+        }
+      ]
+    }
+  ]
+}

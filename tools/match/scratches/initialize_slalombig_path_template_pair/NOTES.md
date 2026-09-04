@@ -591,3 +591,50 @@ and 40 clean references. It is not promoted. Similar mesh behavior does not
 supply the two-operand native identity that justified pairing the Slalom sources.
 The next residuals include the entry/departure secondary-sample address shape,
 curve preheader and falloff temporaries, and vertex/face construction.
+
+## 2026-09-04 paired absolute-expression recovery
+
+Recovering the phase lifetime required also recovering the two independent
+absolute-value expressions. With the `cd57ad62a` source, the early phase alone
+scores **55.83%**, and independent absolute expressions alone score **55.60%**.
+Together they reach **79.88%** from **78.42%**, with **691/696** instructions,
+**48/696** prefix, the same 0x50-byte frame, and all **40** references clean.
+The paired Slalom source independently reproduces these measurements.
+
+The decisive evidence is local: native SlalomBig instructions **126..159**
+(zero-based, `0x4223e7` through `0x42245d`) now agree across all 34 instructions
+with candidate instructions 123..156 after expressing branch destinations as
+instruction indices within the region. This includes the two absolute-value
+branches, x87 stack operations, phase argument, and final center multiplication.
+The masked reference audit separately confirms the actual call/data targets.
+Outside that region, the before/after decoded instruction sequence is unchanged
+apart from relocated local branch offsets. CFG diagnostics improve from 20 to
+25 trusted anchors, with zero conflicts among 19 checked edges (48/48 blocks).
+This remains a partial match, not whole-function CFG proof.
+
+The receipt flags `instruction-count-further-from-target`: 694 becomes 691.
+Here that aggregate warning is explained by the full diff, rather than ignored:
+three redundant instructions disappear while the curve expression becomes native.
+The old count was accidentally closer because excess curve instructions offset
+missing instructions elsewhere. No new mismatch region is introduced.
+
+The retained source spells both absolute expressions independently, permitting
+VC6 to share their unrounded folded value on the x87 stack. Reusing a rounded
+`float folded` for the copy made the prior scratch spill/reload it. Plain branch
+polarity or ternary rewrites of that reused local are byte-neutral. No precision
+change, compiler flag, or reference relaxation is retained.
+
+Reproduction uses the five new `*-interaction-mutations.json` specifications
+against `cd57ad62a`, with recorded baseline/spec/source hashes: 15 precision/phase
+combinations; 9 conditional-expression/phase combinations; 9 independent-fold/
+phase combinations; 31 paired math/address/origin combinations; and 15 departure-
+loop/math combinations. Each finite product was completely evaluated. Double
+precision variants introduce unaudited references. Reversing the three secondary
+Identity address expressions is neutral, including all repeated-site combinations.
+An explicit departure origin recovers the negative-base computation but changes
+register ownership; placing it after the byte offset gives 77.02% with recovered
+math, versus 51.88% before the index. Neither is promoted. The specs preserve
+these reconstructible hypotheses; they do not establish compiler exhaustion.
+
+Next unresolved source questions include the secondary Identity address owner,
+departure-origin lifetime, curve guard/cursor initialization, and mesh loops.

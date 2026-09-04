@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "absolute-expression",
+      "find": "        float folded = t - 0.5f;\n        float folded_copy;\n        if (folded >= 0.0f)\n            folded_copy = folded;\n        else\n            folded_copy = -folded;\n        if (folded < 0.0f)\n            folded = -folded;\n\n",
+      "replacements": [
+        {
+          "name": "conditional-both",
+          "text": "        float folded = t - 0.5f;\n        float folded_copy = folded < 0.0f ? -folded : folded;\n        folded = folded < 0.0f ? -folded : folded;\n\n"
+        },
+        {
+          "name": "conditional-copy",
+          "text": "        float folded = t - 0.5f;\n        float folded_copy = folded < 0.0f ? -folded : folded;\n        if (folded < 0.0f)\n            folded = -folded;\n\n"
+        },
+        {
+          "name": "duplicate-conditional",
+          "text": "        float folded = t - 0.5f;\n        float folded_copy = (t - 0.5f) < 0.0f ? -(t - 0.5f) : (t - 0.5f);\n        folded = folded < 0.0f ? -folded : folded;\n\n"
+        },
+        {
+          "name": "conditional-self",
+          "text": "        float folded = t - 0.5f;\n        float folded_copy;\n        if (folded >= 0.0f)\n            folded_copy = folded;\n        else\n            folded_copy = -folded;\n        folded = folded < 0.0f ? -folded : folded;\n\n"
+        }
+      ]
+    },
+    {
+      "name": "phase-early",
+      "find": "        float t = (float)i / (float)curve_segments;",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "        float t = (float)i / (float)curve_segments;\n        float angle = t * 6.2831855f;",
+          "requires": [
+            "phase-late/recovered"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "phase-late",
+      "find": "        float angle = t * 6.2831855f;\n",
+      "replacements": [
+        {
+          "name": "recovered",
+          "text": "",
+          "requires": [
+            "phase-early/recovered"
+          ]
+        }
+      ]
+    }
+  ]
+}

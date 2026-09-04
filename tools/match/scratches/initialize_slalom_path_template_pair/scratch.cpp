@@ -326,16 +326,10 @@ void cRPath::initialize_slalom_path_template_pair(
          ++curve_sample_index,
          curve_sample_offset += (int)sizeof(PathTemplateSample)) {
         float t = (float)i / (float)curve_segments;
-        float folded = t - 0.5f;
-        float folded_copy;
-        if (folded >= 0.0f)
-            folded_copy = folded;
-        else
-            folded_copy = -folded;
-        if (folded < 0.0f)
-            folded = -folded;
-
         float angle = t * 6.2831855f;
+        float folded = (t - 0.5f) < 0.0f ? -(t - 0.5f) : (t - 0.5f);
+        float folded_copy = (t - 0.5f) < 0.0f ? -(t - 0.5f) : (t - 0.5f);
+
         float center = Sin(angle) * (1.0f - folded) * (1.0f - folded_copy) * 5.0f;
         ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
             ->center_x = center;
