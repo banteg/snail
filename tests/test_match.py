@@ -3426,6 +3426,7 @@ def test_residual_frontier_separates_current_history_without_stopping_labels(
     markdown = "\n".join(render_residual_frontier_markdown(rows))
     assert "Current-baseline experiments cover **1 functions / 500 gap bytes**" in markdown
     assert "**1 / 250** are historical-only" in markdown
+    assert "Unversioned records do not prove that the source or generated code changed" in markdown
     assert "**1 / 50** have no recorded experiments" in markdown
     assert "Experiment counts never label a lane stalled or exhausted" in markdown
     assert "current-stalled" not in markdown

@@ -4384,7 +4384,9 @@ def evaluate_source_probe(
         manifest=manifest,
     )
     return ProbeResult(
-        baseline=baseline,
+        # The isolated build has already been removed. Keep its measured result,
+        # but identify the persistent baseline inputs for reporting and receipts.
+        baseline=replace(baseline, config=baseline_config),
         probe=probe,
         source_sha256=hashlib.sha256(source_text.encode()).hexdigest(),
         label=label,
@@ -5920,8 +5922,10 @@ def render_residual_frontier_markdown(
         "",
         (
             "Evidence labels are baseline-epoch aware. `historical-only` means "
-            "the recorded search belongs to older source, build, target, or "
-            "reference inputs; it must not suppress fresh analysis. Experiment "
+            "no recorded experiment has a verified current baseline: records may "
+            "have different input hashes or lack baseline identity. Unversioned "
+            "records do not prove that the source or generated code changed. "
+            "Inspect their hypotheses before replaying or dismissing them. Experiment "
             "counts never label a lane stalled or exhausted. Recovery and residual "
             "labels remain manual source assessments, not stopping rules."
         ),

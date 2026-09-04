@@ -13,6 +13,8 @@ from snail.match import (
     ScratchConfig,
     ScratchStatus,
     evaluate_source_probe,
+    scratch_dependency_sha256,
+    scratch_experiment_epoch,
 )
 
 
@@ -166,3 +168,63 @@ def test_probe_cli_records_the_complete_result(
     assert record["dependency_sha256"] == "d" * 64
     assert record["baseline_epoch"] == "e" * 64
     assert tracked_source.read_text(encoding="utf-8") == "baseline source\n"
+
+
+@pytest.mark.parametrize("compiler,cflags", [("msvc6.5", "/O2"), ("msvc6.6", "/O1")])
+def test_record_probe_after_temporary_builds_are_removed(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    compiler: str,
+    cflags: str,
+) -> None:
+    match_root = tmp_path / "match"
+    scratch = match_root / "scratches" / "foo"
+    scratch.mkdir(parents=True)
+    (scratch / "scratch.conf").write_text("FUNCTION=foo\n")
+    (scratch / "scratch.cpp").write_text("baseline source\n")
+    build = scratch / "build"
+    build.mkdir()
+    canonical_object = build / "scratch.obj"
+    canonical_object.write_bytes(b"preserve canonical build")
+    (match_root / "cl.sh").write_text("compiler wrapper\n")
+    compiler_exe = match_root / "compilers" / compiler / "Bin" / "CL.EXE"
+    compiler_exe.parent.mkdir(parents=True)
+    compiler_exe.write_bytes(b"compiler fixture")
+    image_path = tmp_path / "target.exe"
+    image_path.write_bytes(b"image fixture")
+    overlay = tmp_path / "overlay.cpp"
+    overlay.write_text("alternate source\n")
+    temporary_directories: list[Path] = []
+
+    def fake_compile_and_score(config: ScratchConfig, *_args, **_kwargs) -> ScratchStatus:
+        assert config.directory != scratch
+        temporary_directories.append(config.directory)
+        source = (config.directory / "scratch.cpp").read_text()
+        return _status(config, 0.5 if source == "baseline source\n" else 0.75, prefix=2)
+
+    # Exercise real overlay lifetime, result identity, hashing, and CLI recording.
+    # Only native compilation/scoring is replaced; no toolchain is needed in CI.
+    monkeypatch.setattr("snail.match.evaluate_scratch", fake_compile_and_score)
+    config = replace(_config(scratch), compiler=compiler, cflags=cflags)
+    expected_dependencies = scratch_dependency_sha256(config, match_root)
+    expected_epoch = scratch_experiment_epoch(config, match_root, image_path=image_path)
+
+    assert main([
+        "match", "probe", str(scratch), "--source", str(overlay),
+        "--match-root", str(match_root), "--image", str(image_path),
+        "--compiler", compiler, "--cflags", cflags, "--record", "--json",
+    ]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    record = json.loads((scratch / "experiments.jsonl").read_text())
+    assert len(temporary_directories) == 2
+    assert all(not path.exists() for path in temporary_directories)
+    assert record["baseline"]["scratch"] == str(scratch)
+    assert record["baseline"]["compiler"] == compiler
+    assert record["baseline"]["cflags"] == cflags
+    assert record["dependency_sha256"] == expected_dependencies
+    assert record["baseline_epoch"] == expected_epoch
+    assert payload["probe"]["scratch"] == "<shadow>"
+    assert (scratch / "scratch.cpp").read_text() == "baseline source\n"
+    assert canonical_object.read_bytes() == b"preserve canonical build"
