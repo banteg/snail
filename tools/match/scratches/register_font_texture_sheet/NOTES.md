@@ -90,3 +90,32 @@ boundaries regress against it. Slot snapshots are neutral and early slot
 consumption regresses. Only the two endpoint/run lifetime changes are retained.
 The split-coordinate versus glyph-slot storage difference remains unresolved;
 these source probes do not establish exhaustion.
+
+## 2026-09-05 glyph-width destination ownership
+
+A reference to the single `glyph_width[slot]` destination recovers the native
+split-coordinate register and the complete 0x210-byte frame/prologue, lifting
+79.78% to 84.52% with a 52-instruction prefix. A whole `FontSheet` borrow instead
+regresses and introduces reference debt; it is not retained. Assigning the
+converted run width directly to that destination removes an unnecessary float
+snapshot and reaches 84.88%.
+
+The old `last_x` local starts equal to `x`, is updated to `x` after every scan
+increment, and has no independent meaning. Using the live X cursor for the
+right edge removes that redundant owner and gives **88.32%, 274/274
+instructions, prefix 55, all 57 references clean**. This is a fresh focused
+compile of the retained source, not an inference from its fuzzy score.
+The initial filename derivation and split-coordinate setup now reproduce the
+native instruction sequence exactly. The remaining differences include glyph
+counter and conversion spill lifetimes, the split-page zero store, and the
+vertical-marker loop's initial height load.
+
+Nine recorded sweeps cover 50 compiling forms: eight glyph destination owners,
+five width/left consumption forms, seven coupled endpoint/reset scopes, seven
+additional output-field borrow sets, six scan-entry lifetimes, four live-X
+forms, four width/left declaration orders, four vertical-marker loops, and five
+remaining scan-counter declaration orders. Other field references are neutral;
+the whole-sheet borrows, earlier resets, and altered marker loops regress or
+retain tradeoffs. The retained source adds only the individual width-field
+reference, direct conversion, and live-X use. These results leave the remaining
+native source shape open.

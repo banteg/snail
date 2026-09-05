@@ -53,21 +53,20 @@ int FontLoad(
     int x = 0;
     int run_width = -1;
     int slot = 0;
-    int last_x = 0;
 
     while (x < image->width) {
         int pixel = sample_tga_pixel_rgb(image, x, 0);
         int font_index = g_registered_font_count;
         if (pixel == 0xffffff) {
-            float glyph_run_width = (float)run_width;
             int glyph_left = x - run_width;
-            g_font_sheets[font_index].glyph_width[slot] =
-                glyph_run_width;
+            float& glyph_width = g_font_sheets[font_index].glyph_width[slot];
+            glyph_width =
+                (float)run_width;
 
             float centered_left = (float)glyph_left + 0.5f;
             g_font_sheets[font_index].glyph_u0[slot] =
                 centered_left / (float)image->width;
-            float centered_last = (float)last_x + 0.5f;
+            float centered_last = (float)x + 0.5f;
             g_font_sheets[font_index].glyph_u1[slot] =
                 centered_last / (float)image->width;
             run_width = 0;
@@ -99,7 +98,6 @@ int FontLoad(
 
         ++run_width;
         ++x;
-        last_x = x;
     }
 
     int line_marker_y = 1;

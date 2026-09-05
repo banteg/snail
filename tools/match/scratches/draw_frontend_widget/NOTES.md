@@ -29,3 +29,11 @@ Seven shadow-edge reference, pointer, and inline getter probes are byte-neutral 
 ## 2026-09-05 operation-boundary checks
 
 Nine shadow-dimension helper forms test scalar value, reference and pointer arguments for expanded width, height or both. They regress from 99.72% and disturb much earlier allocation. No helper is retained; the two-instruction shadow-width operand-order difference remains open.
+
+## 2026-09-05 paired shadow-dimension lifetimes
+
+Six complete shadow-width/height forms stage both dimensions after the color
+call, in either order, using sums, compound additions, or a reused edge local.
+All compile with 68 clean references but regress from 99.72% to 98.46–98.74%.
+They do not recover the remaining width operand order without disturbing
+neighboring argument setup. Canonical source is unchanged.
