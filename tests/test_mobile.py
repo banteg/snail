@@ -3415,7 +3415,11 @@ def test_mobile_sub_lazer_and_salt_recover_authored_owners() -> None:
     subgame = (scratch_root / "update_subgame/scratch.cpp").read_text(
         encoding="utf-8"
     )
-    assert subgame.count("salt_hazards.Add(cell_slot->cell.position);") == 2
+    salt_spawns = re.findall(
+        r"salt_hazards\.Add\(runtime_cells\[[^\]]+\]\[[^\]]+\]\.position\);",
+        subgame,
+    )
+    assert len(salt_spawns) == 2
     runtime_constructor = (
         scratch_root
         / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
@@ -3559,7 +3563,7 @@ def test_mobile_slug_family_recovers_authored_owners() -> None:
         "build_subgame_level": ("slug_voice_manager.Init();",),
         "update_subgame": ("slug_voice_manager.AI();",),
         "handle_subgoldy_collisions": (".VoicePlay(", ".Kill();"),
-        "update_golb_ai": ("->Hit(2);", "->Hit(4);"),
+        "update_golb_ai": ("].Hit(2);", "].Hit(4);"),
         "spawn_slug_hazard": ("cRSlug* scan = slug_hazards.slots;",),
         "reset_subgame": ("cRSlug* slug = slug_hazards.slots;",),
     }
@@ -4020,7 +4024,13 @@ def test_mobile_vapour_pause_and_speedup_recover_authored_owners() -> None:
     ).read_text(encoding="utf-8")
 
     assert "golb_shot->vapour.Init(vapour_object, 0.159999996f);" in assets
-    assert "vapour.ReSet((float*)spawn_selector);" in create_golb
+    # The reset floor is now a typed float pointer, independent of the spawn
+    # selector's register lifetime. Do not pin this contract to a local name.
+    reset_floor = re.search(r"vapour\.ReSet\(([A-Za-z_]\w*)\);", create_golb)
+    assert reset_floor is not None
+    assert re.search(
+        r"float\s*\*\s*" + re.escape(reset_floor[1]) + r"\s*;", create_golb
+    )
     assert "vapour.Add(flight_transform);" in create_golb
     assert "vapour.Add(source_matrix);" in golb_ai
     assert "sub_pause.Init();" in subgame

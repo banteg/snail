@@ -12719,10 +12719,11 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
     assert "slot->collision_armed = 1;" in salt_scratches["spawn_salt_hazard"]
     assert "SALT_STATE_RECYCLE_PENDING" in salt_scratches["update_salt_hazard"]
     assert "fade_alpha = alpha;" in salt_scratches["update_salt_hazard"]
-    assert (
-        "offsetof(cRSalt, collision_armed)"
-        in salt_scratches["handle_subgoldy_collisions"]
-    )
+    # Collision matching now indexes the authored Salt objects directly.
+    collisions = salt_scratches["handle_subgoldy_collisions"]
+    assert "game->salt_hazards.slots[" in collisions
+    assert "].collision_armed == 1" in collisions
+    assert "].collision_armed = 0;" in collisions
 
 
 def test_banner_backlink_owner_survives_every_replay_lane() -> None:
@@ -22569,7 +22570,7 @@ def test_slalom_path_replay_preserves_shared_owner_lifetimes() -> None:
     assert "int departure_sample_offset =" in slalombig_scratch
     assert "int curve_sample_offset =" in slalombig_scratch
     assert (
-        "if (curve_sample_offset == 4 * (int)sizeof(PathTemplateSample))"
+        "if (curve_sample_offset > 4 * (int)sizeof(PathTemplateSample))"
         in slalombig_scratch
     )
     assert "if (current_index <= 4)" not in slalombig_scratch
