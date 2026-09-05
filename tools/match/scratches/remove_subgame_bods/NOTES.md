@@ -433,3 +433,12 @@ the large phase out of line, producing a new call and losing the native
 inlined body. The 56-instruction row prefix is preserved by the returned
 cursor form, but these complete functions regress. No wrapper or inline
 forcing is retained.
+
+## 2026-09-05 paired shared Remove flag lifetime probes
+
+The four `whole-shared-remover-flags-20260905-mutations.json` variants replay
+the unchanged control, signed flag snapshot, direct guards, and signed flag
+reference from RemoveSubLoc. Control and signed snapshot retain 72.17%,
+505/501 instructions, prefix 6, and 70 clean references. Direct guards regress
+to 68.15% with six unaudited references; the reference form reaches 65.79%
+with four. No shared-header change is retained.

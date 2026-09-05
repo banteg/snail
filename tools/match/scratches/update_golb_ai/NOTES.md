@@ -33,3 +33,11 @@ owner at the calls that need it; it does not extend a cached owner across
 Kill/Explode. Three distance-gate comparison spellings did not improve the
 current result. Their VC6 output does not independently establish NaN source
 semantics, and none is retained.
+
+## 2026-09-05 paired projectile latch type diagnostics
+
+The four `whole-projectile-latch-types-20260905-mutations.json` variants replay
+the unchanged-header control and the skip/bounce/both boolean alternatives
+used by CreateGolb. All retain 91.72%, 695/694 instructions, prefix 9, and
+71 clean references. This does not establish a bool-versus-byte ownership
+correction, so the shared header remains unchanged.

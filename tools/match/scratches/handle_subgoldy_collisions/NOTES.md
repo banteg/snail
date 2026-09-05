@@ -869,3 +869,32 @@ The recorded collision stack-coloring experiments were not rerun.
 ledger already preserves the explored pickup-vector lane and its winning
 variant, while the plan's block anchor no longer matches the authored owner
 spelling in the current source.
+
+## 2026-09-05 coupled owned hazard sweeps
+
+The salt and sub-lazer sweeps now index their actual manager slot arrays.
+This removes the scratch-local offset enumeration and root-byte arithmetic,
+while retaining the native fresh game reload when publishing collision state.
+Both loops must be recovered together: the paired form improves 86.92% to
+89.30%; either loop alone regresses below 71%. Signed capacity comparisons
+then recover the native signed loop branches and raise the result to
+**89.45%, 673/673 instructions, prefix 18, with all 89 references clean**.
+The native frame remains 0x74. The typed pair recovers state-publication
+address registers and later register scheduling without instruction or
+reference tradeoffs. This supersedes the old local recommendation to retain
+byte-strided loops merely because individual typed-loop probes regressed.
+
+The nine compatibility Normalize calls now use the independently verified
+float-returning `Vector3::Normalize()` member. The isolated contract variant
+is codegen-neutral at the prior 86.92% baseline. It does not alter the
+normalization operation or target. Shared headers and audit rules are unchanged.
+
+Four receipts contain 26 compiling variants: one owned Normalize control,
+three indexed-pool combinations, eight signed-capacity/initialized-vector
+combinations, and fourteen paired salt/firework expression combinations.
+The signed-capacity control is the simplest best result. Initializing the
+salt delta locally regresses; garbage/slug initializers are neutral. A scalar
+constructor for salt is neutral; component stores and the four whole-vector
+firework forms regress. The remaining salt temporary copies and firework
+argument/position schedule are unresolved source-shape questions, not evidence
+of exhaustion.

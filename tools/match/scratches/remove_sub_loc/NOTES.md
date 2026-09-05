@@ -287,3 +287,17 @@ were not retained. Canonical source is unchanged.
 ## 2026-09-05 additional operation-boundary probes
 
 Six prechecked-unlink helper forms preserve the smaller native guard behavior while varying node and mask borrows. All are byte-neutral at 91.19%; the existing source remains.
+
+## 2026-09-05 shared Remove flag lifetime probes
+
+Four `whole-shared-remover-flags-20260905-mutations.json` variants embed the
+shared BodList header, keeping an unchanged control and testing a signed flag
+snapshot, direct field guards, and a signed field reference in `remove_bod`.
+Control and signed snapshot retain 91.19%, 130/131 instructions, prefix 87,
+and 18 clean references. Direct guards fall to 89.41% with two unaudited
+references; the field reference falls to 71.76%. The paired RemoveSubGameBods
+replay also has no gain. No shared-header change is retained.
+
+The Android symbol `cLinkedList<cRBod>::Remove(cRBod*)` independently preserves
+a pointer argument. The recovered reference arguments of Add/AddAfter must
+not be generalized to Remove merely to alter receiver register allocation.

@@ -119,3 +119,11 @@ the whole-sheet borrows, earlier resets, and altered marker loops regress or
 retain tradeoffs. The retained source adds only the individual width-field
 reference, direct conversion, and live-X use. These results leave the remaining
 native source shape open.
+
+## 2026-09-05 complete glyph-width bank ownership probes
+
+Eight `whole-glyph-width-bank-owners-20260905-mutations.json` variants replace
+the retained individual glyph-width reference with a bank pointer or array
+reference, including early/late declaration and commuted indexing. All retain
+88.32%, 274/274 instructions, prefix 55, and 57 clean references. No bank
+owner is retained; these results do not close the glyph publication schedule.

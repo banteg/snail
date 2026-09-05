@@ -89,3 +89,12 @@ its publication site, instead of spanning construction or the whole function.
 All are byte-neutral at 99.14%, 582/582 instructions, prefix 156, with all
 48 references clean. The exact parcel-placement publication recovery does not
 transfer to these launch stores. No additional source change is retained.
+
+## 2026-09-05 projectile latch type diagnostics
+
+`whole-projectile-latch-types-20260905-mutations.json` embeds an unchanged
+`golb.h` control and three alternatives making `skip_one_tick`,
+`slug_bounce_armed`, or both boolean, including the homing overlay copies.
+All four are neutral at 99.14%, 582/582 instructions, prefix 156, and 48 clean
+references. The paired AI replay is likewise neutral. Observed zero/one
+writes alone do not settle the authored byte type; no shared type is changed.
