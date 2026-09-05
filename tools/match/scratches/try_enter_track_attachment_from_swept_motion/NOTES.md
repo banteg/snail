@@ -194,3 +194,12 @@ miss epilogue. These are observed code-generation differences. The original sour
 The seven Windows stack dwords prove the argument extent, not a six-scalar source signature: two three-float vectors passed by value plus the cell pointer have the same extent. Both mobile symbols explicitly retain vector-value arguments, and the current Windows `update_subgoldy` scratch already declares the same call through `SubgoldyPathView` with two `Vector3` values. The shared exact `SearchPos` family also uses vector-value arguments. The scalar declaration is therefore a compatibility reconstruction, not a proven authored Windows prototype. Earlier scalar-ABI closure statements must be read with this correction.
 
 Two local header-shadow probes test vector-value arguments with vector or component expressions; eight more test scalar copies, const copies, explicit components, reversed operands, and temporary scopes. They give 94.79% versus the canonical 95.78%, with all 47 references clean. The X addition order improves while Y/Z ordering changes, and the duplicated miss epilogue remains absent. No shared ABI is changed on this score evidence. Caller result non-use alone likewise does not prove a void return type; the empty native exits and path-dependent register residue are the stronger evidence here.
+
+## 2026-09-05 sample vector scopes
+
+Six complete source forms narrow the sample/hit origin, swept-position and
+probe vector declarations to their consuming branches, independently or
+together. Five are neutral at 95.78%; replacing the copied cell anchor with
+three direct scalar loads regresses to 79.10%. All retain 47 clean references.
+No source change is retained, and these scopes do not explain the missing
+native exhausted-loop epilogue.

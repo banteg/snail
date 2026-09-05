@@ -69,3 +69,24 @@ Four ordinary inline glyph-boundary operations borrow the consumed slot and
 run counters through references or pointers. All inline and remain neutral at
 76.50%, with all 57 references clean. No helper is retained. The stack-owned
 glyph slot versus register-owned split coordinate remains unresolved.
+
+## 2026-09-05 glyph endpoint and run-consumption lifetimes
+
+The native marker branch finishes each endpoint before starting the next:
+convert the centered left edge, publish `glyph_u0`, then convert the centered
+right edge and publish `glyph_u1`. Delaying `centered_last` until the first
+publication improves 76.50% to 76.87%. Resetting the consumed run counter after
+both endpoints have been published restores the native reuse of its register
+for the two unsigned image-width conversions and raises the result to
+**79.78%, 275/274 instructions, prefix 0, all 57 references clean**. Neither
+change alters the marker scan, split-page selection, or overflow checks.
+
+Five recorded sweeps cover 27 compiling variants: six endpoint lifetimes,
+five filename buffer/index owners, six split-coordinate scopes, five run-reset
+boundaries, and five glyph-slot consumption lifetimes. The filename forms add
+no gain to the endpoint recovery; later split-coordinate definitions regress.
+The retained reset boundary is after `glyph_u1`; the other four tested reset
+boundaries regress against it. Slot snapshots are neutral and early slot
+consumption regresses. Only the two endpoint/run lifetime changes are retained.
+The split-coordinate versus glyph-slot storage difference remains unresolved;
+these source probes do not establish exhaustion.

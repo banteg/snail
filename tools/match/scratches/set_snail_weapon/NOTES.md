@@ -42,3 +42,13 @@ to 68.29%. Eight coupled target-state array forms in
 58.42–59.02% and expose six unaudited operands. The undefined default-arm
 third state is left uninitialized in every probe. No source is retained;
 these results do not close the branch-lifetime or state-mapping source work.
+
+## 2026-09-05 shared transition owner and feedback joins
+
+Six whole-channel forms reuse a transition-channel pointer across the first,
+first two, or all three channels, either at target-switch entry or inside its
+two-call cases. All regress from 73.02%. Six additional forms join the third
+channel's duplicated state/sound exits, with the original, direct, or later
+channel-zero borrow and either a shared change gate or existing sound branch.
+All regress as well. Every variant compiles with all 24 references clean; no
+source change is retained. The native mapping/transition lifetimes remain open.

@@ -16,3 +16,12 @@ display name, glyph columns, and 256 complete authored row records.
 Fifteen catalog/row/file owner combinations test direct row indexing, direct row-count access, indexed filenames and a borrowed catalog entry. Using `segment_files[segment_index]` throughout removes the separately advanced filename pointer and raises **68.26% to 68.44%**, preserving 560/571 instructions and all 91 references clean. Row and entry lifetime alternatives regress. The unused fourth sprintf argument remains because the native mobile body independently retains it.
 
 The recorded probes describe the tested source forms only; they do not establish exhaustion.
+
+## 2026-09-05 text cursor and option-parser scope checks
+
+Four whole-row cursor forms combine the data, glyph and option cursors. Sharing
+only the data/option cursor is neutral at 68.44%; the other three regress.
+Eight option-parser forms scope model, parcel, path and ring-number cursors
+independently, with direct row and row-count access combinations. All compile
+and retain 91 clean references, but regress. Canonical source is unchanged;
+these results do not close the row ownership or parser lifetime questions.
