@@ -148,3 +148,16 @@ branch calculations differ and one additional constant use is unaudited.
 The two-branch use interaction product does not reconcile that setup with the
 tail. These are source-shape diagnostics, not a new compiler attribution or
 closure of the remaining expression/lifetime question.
+
+## 2026-09-05 grid/color and column-value probes
+
+Five variants in `typed-grid-color-lifetimes-20260905.json` test typed flat-cell
+access and color lifetimes. Per-call color construction is neutral at 99.22%;
+typed access falls to 86.86% and introduces four unaudited operands. A shared
+color falls to 97.66%. None is retained.
+
+Six variants in `column-value-lifetime-20260905.json` test next-column comparison,
+increment timing, double intermediates, and a shared next-column local.
+Next-column comparison and shared scope are neutral; other forms regress, and
+one double form introduces twelve unaudited operands. The near-match remains
+open; these local campaigns do not establish compiler exhaustion.

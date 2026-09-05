@@ -1,6 +1,12 @@
 # promote_track_tiles_to_fringe_variants
 
-Current recovery: semantic-complete (`compiler` residual). The exact Android
+Current result: **100.00%**, 75/75 instructions and six clean references.
+The September indexed-grid recovery below resolves the displacement mismatch
+and supersedes all earlier compiler-boundary/closure claims.
+
+## Historical partial assessment (superseded)
+
+Previous recovery: semantic-complete (`compiler` residual). The exact Android
 `cRSubGame::WarnTrack()` body, the live Windows SubGame method, its sole caller,
 catalog producer, and downstream cache consumer establish the complete
 row/lane bounds, empty-neighbor gate, two index-preserving replacement scans,
@@ -11,7 +17,7 @@ WarnTrack body was exported.
 
 - Promotes runtime track-cell BOD objects to fringe variants when the same-lane
   cell in the next row is open.
-- Current retained shape is 81.33%: same instruction count as native, same
+- The historical retained shape was 81.33%: same instruction count as native, same
   frame/register loop skeleton, 6 clean masked operands, no unresolved operands.
 - Native keeps its row cursor at `cRSubLoc +0x24` (`BodBase::object`) and
   accesses flags at cursor `+0x1c`; the retained source uses the shared
@@ -230,3 +236,19 @@ by the closed 2026-07-30 sweep (`source_sha256`
 byte-identical at 81.33%, 75/75, prefix 11/75, with all six references clean;
 it was adopted without rerunning the previously tested cursor/register/store
 variants. The remaining displacement-only cursor residual is unchanged.
+
+## 2026-09-05 indexed warning-grid recovery: exact
+
+`whole-warning-grid-20260905.json` tests four complete owner/lifetime shapes.
+Use `runtime_cells[row][lane]` for the current cell, `[row + 1][lane]` for its
+neighbor, and compare the live cell object field in both catalog scans. This
+reproduces the native interior object-slot cursor without spelling one in C++.
+Direct `g_game` access and the previous root borrow both reach 100%; the
+retained source uses direct access and removes the reload and base-class casts.
+Keeping an `Object*` snapshot while indexing the grid regresses to 47.62%.
+
+The canonical compiler verifies 75/75 instructions, full prefix, and six clean
+references with no unresolved, mismatched, or unaudited operands. Shared cell
+and catalog layouts were already correct. The explicit cursor and object
+borrow constrained the generated shape; the old compiler-residual diagnosis
+was too strong.

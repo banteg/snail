@@ -12,39 +12,28 @@ int cRBackdrop::update_backdrop()
         GRID_COLUMN_COUNT = sizeof(distort_grid[0]) / sizeof(distort_grid[0][0]),
     };
 
-    float phase;
-    int phase_bits;
-
     if (backdrop_change_queued != 0) {
         ChangeReal();
         backdrop_change_queued = 0;
     }
 
-    BackdropDistortCell* column = distort_cells;
-    int column_count = GRID_COLUMN_COUNT;
-    do {
-        BackdropDistortCell* cell = column;
-        int row_count = GRID_ROW_COUNT;
-        do {
-            phase = cell->phase_step;
-            phase += cell->phase;
-            phase_bits = *(int*)&phase;
-            *(int*)&cell->phase = phase_bits;
-            phase = *(float*)&phase_bits;
-            if (phase > 6.28318548f) {
-                cell->phase = phase - 6.28318548f;
+    for (int column_index = 0; column_index < GRID_COLUMN_COUNT; ++column_index) {
+        for (int row_index = 0; row_index < GRID_ROW_COUNT; ++row_index) {
+            distort_grid[row_index][column_index].phase =
+                    distort_grid[row_index][column_index].phase_step
+                    + distort_grid[row_index][column_index].phase;
+            if (distort_grid[row_index][column_index].phase > 6.28318548f) {
+                distort_grid[row_index][column_index].phase =
+                    distort_grid[row_index][column_index].phase - 6.28318548f;
             }
-
-            float& current_x = cell->current_x_offset;
-            current_x = Sin(cell->phase) * cell->x_offset;
-            cell->current_y_offset = Cos(cell->phase) * cell->y_offset;
-            cell += GRID_COLUMN_COUNT;
-            row_count--;
-        } while (row_count != 0);
-
-        ++column;
-        column_count--;
-    } while (column_count != 0);
+            distort_grid[row_index][column_index].current_x_offset =
+                Sin(distort_grid[row_index][column_index].phase)
+                * distort_grid[row_index][column_index].x_offset;
+            distort_grid[row_index][column_index].current_y_offset =
+                Cos(distort_grid[row_index][column_index].phase)
+                * distort_grid[row_index][column_index].y_offset;
+        }
+    }
 
     int result = active_primary_texture_id;
     if (result != -1) {

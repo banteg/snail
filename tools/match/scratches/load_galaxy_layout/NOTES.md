@@ -22,7 +22,7 @@ This replaces the old false split into an unrelated 0x50-byte route table plus
 four scalar X/Y globals. The checked-in reference manifest now describes the
 two complete banks and the group `y`-cursor sentinel.
 
-Current retained result: 89.13%, 236 candidate instructions for 233 target
+Current retained result: 89.74%, 235 candidate instructions for 233 target
 instructions, 62-instruction common prefix, and 42 clean / 0 unresolved / 0
 mismatched masked operands. The source keeps literals as literals so the matcher
 verifies the real `_Galaxy.txt` path, markers, errors, and missing-level string.
@@ -314,3 +314,18 @@ pinned by the recorded experiments. `semantic-complete` still describes the
 cross-port-proved behavior and ownership; it is not a stop state. The remaining
 four mismatch regions are open compiler/source-shape work, not an exhausted
 lane and not evidence for another Galaxy field or parser branch.
+
+## 2026-09-05 route-record owner recovery
+
+`whole-route-owner-20260905.json` raises 89.13% to **89.74%** with 235/233
+instructions, the unchanged 62-instruction prefix, and all 42 references clean.
+The retained source indexes `route_names[galaxy_index]` directly instead of
+using an integer cursor rooted inside its color and an offset enum. Color stores
+use float values; the star loop derives its point step from `star_index * 10`.
+The existing group-point cursor and native sentinel remain intact. Direct
+point-array/bound variants introduce reference debt and were rejected.
+
+Eight complete parser-loop/error/finalization variants in
+`structured-route-parser-20260905.json` regress from that new baseline. No
+parser rewrite was retained. These results leave source-shape work open and
+do not establish that the remaining mismatch is a compiler limitation.

@@ -42,3 +42,11 @@ casts with float copies (including the sprite branch), or combine both.
 Direct fields reach 97.74%; the float-copy forms give 61.02-63.28%, all at
 177 instructions. No source is retained. These whole-function variants differ
 from the earlier hit-copy-only neutral probe and do not invalidate it.
+
+## 2026-09-05 hit-copy and flag-lifetime probes
+
+Twelve combinations in `hit-copy-and-flag-lifetimes-20260905.json` test direct
+float fields, borrowed fields, paired integer snapshots, flag-read timing, and
+the redundant clamped-top local. None improves 99.44%; the twenty references
+remain clean. Canonical source is unchanged. This only bounds those tested
+copy/lifetime combinations.

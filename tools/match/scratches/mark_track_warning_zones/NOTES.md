@@ -191,3 +191,17 @@ difference; that is not a per-function original-toolchain attribution.
 Combined with the recorded ordinary source shapes and exact cross-port behavior
 above, the scratch is explicitly classified `RECOVERY=semantic-complete` with
 `RESIDUAL=compiler`; further source mutation needs a new semantic hypothesis.
+
+## 2026-09-05 direct-grid traversal probes
+
+`whole-grid-row-lifetimes-20260905.json` tests direct tile-field indexing with
+row/hazard/outer saved-row lifetimes and do/for traversal. The valid variants
+regress from 98.99% to 52.85% or below, with no reference debt. No source changed.
+
+Review found that `direct-grid-saved-outer-for` was an invalid experiment: it
+saved the row before the for-loop increment, so a subsequent hazard could
+restore the previous row. Its score is excluded as matching evidence. The
+separate `corrected-row-restoration-20260905.json` moves restoration-state
+publication after the increment and reproduces 52.58%. The historical spec and
+ledger are preserved to make this correction auditable. These results only
+bound the tested indexed traversal, not all source shapes.

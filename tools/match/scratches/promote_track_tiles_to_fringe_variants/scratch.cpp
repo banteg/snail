@@ -8,38 +8,31 @@
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 
-
 void cRSubGame::WarnTrack()
 {
     int row = 0;
     if (runtime_row_count - 1 > 0) {
-        cRSubLoc* cell = &runtime_cells[0][0];
         unsigned int promoted_flag = SUBLOC_FLAG_WARNING_CACHE_FAMILY;
         do {
-            unsigned int lane_count =
-                sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);
-            do {
-                cell->lane_and_flags &= ~SUBLOC_FLAG_WARNING_CACHE_FAMILY;
-                if ((cell + SUBGAME_TRACK_LANE_COUNT)->IsEmpty() != 0) {
-                    GameRoot* game = g_game;
+            for (int lane = 0; lane < SUBGAME_TRACK_LANE_COUNT; ++lane) {
+                runtime_cells[row][lane].lane_and_flags &= ~SUBLOC_FLAG_WARNING_CACHE_FAMILY;
+                if (runtime_cells[row + 1][lane].IsEmpty() != 0) {
                     // Physical slice index is also the rendered strip width - 1.
                     int slice_index = 0;
                     do {
-                        Object* object = cell->object;
-                        if (object
-                                == game->root_bod_catalog.floor_slices
+                        if (runtime_cells[row][lane].object
+                                == g_game->root_bod_catalog.floor_slices
                                        .storage[slice_index]
                                        .object
-                            || object
-                                == game->root_bod_catalog.slide_slices
+                            || runtime_cells[row][lane].object
+                                == g_game->root_bod_catalog.slide_slices
                                        .storage[slice_index]
                                        .object) {
-                            ((BodBase*)cell)->SetObject(
-                                game->root_bod_catalog.warning_slices
+                            runtime_cells[row][lane].SetObject(
+                                g_game->root_bod_catalog.warning_slices
                                     .storage[slice_index]
                                     .object);
-                            cell->lane_and_flags |= promoted_flag;
-                            game = g_game;
+                            runtime_cells[row][lane].lane_and_flags |= promoted_flag;
                         }
                         ++slice_index;
                     } while (slice_index < TRACK_SLICE_BOD_COUNT);
@@ -47,28 +40,24 @@ void cRSubGame::WarnTrack()
                     // All three corner banks share the 0, 1, 3, 2 storage map.
                     int corner_index = 0;
                     do {
-                        Object* object = cell->object;
-                        if (object
-                                == game->root_bod_catalog.floor_corners
+                        if (runtime_cells[row][lane].object
+                                == g_game->root_bod_catalog.floor_corners
                                        .storage[corner_index]
                                        .object
-                            || object
-                                == game->root_bod_catalog.slide_corners
+                            || runtime_cells[row][lane].object
+                                == g_game->root_bod_catalog.slide_corners
                                        .storage[corner_index]
                                        .object) {
-                            ((BodBase*)cell)->SetObject(
-                                game->root_bod_catalog.warning_corners
+                            runtime_cells[row][lane].SetObject(
+                                g_game->root_bod_catalog.warning_corners
                                     .storage[corner_index]
                                     .object);
-                            cell->lane_and_flags |= promoted_flag;
-                            game = g_game;
+                            runtime_cells[row][lane].lane_and_flags |= promoted_flag;
                         }
                         ++corner_index;
                     } while (corner_index < TRACK_CORNER_BOD_COUNT);
                 }
-                ++cell;
-                --lane_count;
-            } while (lane_count != 0);
+            }
 
             ++row;
         } while (row < runtime_row_count - 1);

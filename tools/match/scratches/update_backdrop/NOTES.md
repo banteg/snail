@@ -1,6 +1,8 @@
 # update_backdrop @ 0x4112f0
 
-Current scratch: 88.24% (67 target insns, 69 candidate insns), clean masks.
+Current scratch: **100.00%**, 67/67 instructions and seven clean references.
+The September indexed-grid recovery below supersedes the earlier phase-store
+residual assessments.
 
 Advances the active backdrop distortion grid and dispatches the split or warped
 draw path.
@@ -24,7 +26,7 @@ Recovered layout:
   countdown: every writer stores only zero or one, and this function decrements
   a local copy solely to spell the native `value == 1` test.
 
-Open source-shape issue: the bit-shadowed phase local recovers the native
+Historical source-shape issue (resolved 2026-09-05): the bit-shadowed phase local recovers the native
 8-byte frame and stack compare without using `volatile`, but VC6 still spills
 with `fstp [esp+0x10]` followed by integer moves into the cell. Native emits the
 tighter `fst [esp+0x10]; fstp [esi]; fld [esp+0x10]` sequence and stores the
@@ -162,3 +164,17 @@ Twelve complete floating phase/publication/consumer forms, including float and d
 
 The recorded specifications and experiment receipts preserve these negative
 results. They do not establish source exhaustion or compiler provenance.
+
+## 2026-09-05 indexed phase publication: exact
+
+`typed-grid-phase-lifetimes-20260905.json` tests nine complete traversal/phase
+shapes. Column-major nested `for` loops over `distort_grid[row][column]`, with
+the phase assigned and read directly through the cell field, reproduce all
+67 instructions, the full prefix, and all seven references. The native extra
+float store follows naturally from this source. The retained source removes
+the float/integer bit-copy detour, the manual column/cell cursors, and the
+borrowed x-offset. No shared layout, signature, compiler flag, or mask changed.
+
+An indexed cell borrow reaches 98.51%; a pointer traversal with direct phase
+publication reaches 74.24%. The exact result required the whole traversal and
+field-lifetime shape, not another isolated temporary spelling.

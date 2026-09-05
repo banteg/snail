@@ -47,30 +47,6 @@ void cRGalaxy::Open()
     int star_group_offset = 0;
     int star_index = 0;
     float* current_galaxy_point = &g_galaxy_group_points[0].y;
-    enum {
-        ROUTE_NAME_COLOR_TO_NAME =
-            offsetof(GalaxyRouteNameRecord, name)
-            - offsetof(GalaxyRouteNameRecord, color),
-        ROUTE_NAME_COLOR_TO_STAR_COUNT =
-            (offsetof(GalaxyRouteNameRecord, star_count)
-             - offsetof(GalaxyRouteNameRecord, color))
-            / sizeof(int),
-        ROUTE_NAME_COLOR_TO_MAP_X =
-            (offsetof(GalaxyRouteNameRecord, map_x_bits)
-             - offsetof(GalaxyRouteNameRecord, color))
-            / sizeof(int),
-        ROUTE_NAME_COLOR_TO_MAP_Y =
-            (offsetof(GalaxyRouteNameRecord, map_y_bits)
-             - offsetof(GalaxyRouteNameRecord, color))
-            / sizeof(int),
-        ROUTE_NAME_COLOR_TO_MAP_Z =
-            (offsetof(GalaxyRouteNameRecord, map_z_bits)
-             - offsetof(GalaxyRouteNameRecord, color))
-            / sizeof(int),
-        ROUTE_NAME_COLOR_STRIDE = sizeof(GalaxyRouteNameRecord) / sizeof(int),
-    };
-    int* route_name_cursor = (int*)&route_names[0].color;
-
     while (1) {
         char marker[64];
         sprintf(marker, "Galaxy%i:", galaxy_index);
@@ -84,7 +60,7 @@ void cRGalaxy::Open()
             goto missing_quote;
 
         cursor += 1;
-        char* name_cursor = (char*)route_name_cursor + ROUTE_NAME_COLOR_TO_NAME;
+        char* name_cursor = route_names[galaxy_index].name;
         while (*cursor != '"') {
             *name_cursor++ = *cursor;
             cursor += 1;
@@ -93,31 +69,29 @@ void cRGalaxy::Open()
 
         cursor = Rstrfind("StarNumber=", cursor);
         cursor = Rstrfind("=", cursor) + 1;
-        route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT] =
+        route_names[galaxy_index].star_count =
             Rstrint(&cursor);
-        route_name_cursor[0] = 0x3f800000;
-        route_name_cursor[1] = 0x3f800000;
-        route_name_cursor[2] = 0x3f800000;
-        route_name_cursor[3] = 0x3f4ccccd;
-        route_name_cursor[ROUTE_NAME_COLOR_TO_MAP_X] =
+        route_names[galaxy_index].color.r = 1.0f;
+        route_names[galaxy_index].color.g = 1.0f;
+        route_names[galaxy_index].color.b = 1.0f;
+        route_names[galaxy_index].color.a = 0.800000012f;
+        route_names[galaxy_index].map_x_bits =
             *(int*)&current_galaxy_point[-1];
-        route_name_cursor[ROUTE_NAME_COLOR_TO_MAP_Y] =
+        route_names[galaxy_index].map_y_bits =
             *(int*)&current_galaxy_point[0];
-        route_name_cursor[ROUTE_NAME_COLOR_TO_MAP_Z] = star_index;
+        route_names[galaxy_index].map_z_bits = star_index;
 
-        for (int step = 0;
-             star_index < route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT];
-             step += 10) {
+        for (; star_index < route_names[galaxy_index].star_count; ++star_index) {
             route_slots[record_count].record.route_name_index = galaxy_index;
             route_slots[record_count].record.map_x_bits =
                 g_galaxy_route_points[
                     star_group_offset
-                    + step / route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT]
+                    + star_index * 10 / route_names[galaxy_index].star_count
                     + 1].x_bits;
             route_slots[record_count].record.map_y_bits =
                 g_galaxy_route_points[
                     star_group_offset
-                    + step / route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT]
+                    + star_index * 10 / route_names[galaxy_index].star_count
                     + 1].y_bits;
             route_slots[record_count].record.map_z_bits = 0;
 
@@ -129,14 +103,12 @@ void cRGalaxy::Open()
                 route_slots[record_count].record.description_text,
                 missing_label);
             ++record_count;
-            ++star_index;
         }
 
         star_index = 0;
 
         current_galaxy_point += 2;
         ++galaxy_index;
-        route_name_cursor += ROUTE_NAME_COLOR_STRIDE;
         star_group_offset += 10;
         if ((int)current_galaxy_point < 0x4a1ca0)
             continue;

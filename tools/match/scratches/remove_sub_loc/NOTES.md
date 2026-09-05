@@ -264,3 +264,12 @@ The remaining 91.19% delta is one Windows-only fringe flag reload and its
 associated compiler common-subexpression/register schedule. It does not imply
 a missing owner or teardown step, and no experiment-count rule is used to
 classify it.
+
+## 2026-09-05 row/fringe owner probes
+
+Four variants in `whole-row-fringe-owners-20260905.json` test direct runtime-row
+indexing versus a row borrow, coupled with direct fringe-slot access. Direct
+row indexing with the existing fringe borrow is neutral at 91.19% and keeps
+all eighteen references clean. A row borrow regresses to 75.10% with four
+unaudited operands; direct fringe access also regresses. No source change is
+retained, and the remaining unlink/lifetime work stays open.
