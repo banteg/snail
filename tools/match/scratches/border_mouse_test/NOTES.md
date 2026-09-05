@@ -37,3 +37,12 @@ Eight whole-function hit-result lifetimes (boolean, byte or integer locals, bran
 Four ordinary mask-sampling operations test image ownership or explicit row dimensions. Explicit dimensions are neutral at 98.29%; loading the width through the image regresses to 84.26%. All five references remain clean. No helper is retained.
 
 These receipts bound the tested forms and do not establish source exhaustion.
+
+
+## 2026-09-05 diagnostic-export batch
+
+Seven pixel-address forms consume width, use row pointers, separate the 18-byte header, or convert row/column coordinates to byte strides. All reproduce the baseline's raw extracted code and relocation identity, including the incorrect `imul eax, esi` destination. Rewriting only the final address calculation adds no new generated-code hypothesis.
+
+Six inline clamp forms return the selected coordinate/bound by const reference, for X, Y, or both. They form three code groups and regress to 66.94–78.66%, with all five references clean. No helper is retained. The canonical 98.29% body and native `imul esi, eax` difference remain open.
+
+The receipts bound these hypotheses only. No new exact match or unsupported ownership/return contract was inferred.

@@ -1,6 +1,6 @@
 # cRBorder::Draw @ 0x401130
 
-Current recovery: semantic-complete (`compiler` residual). The Windows body is
+Current recovery: semantic-complete (`analysis` residual). The Windows body is
 a `void __thiscall cRBorder` member, and Android/iOS independently retain it as
 `cRBorder::Draw()` in `Border.o`. Its sole Windows caller supplies the widget in
 `ecx` and discards `eax`.
@@ -58,3 +58,12 @@ shared color constructor or return contract.
 Four shadow-width precision forms (edge, width, both operands, or the completed sum promoted to double) are neutral at 99.72%, prefix 253, with 68 clean references. No source change is retained.
 
 These receipts bound the tested forms and do not establish source exhaustion.
+
+
+## 2026-09-05 diagnostic-export batch
+
+Twelve paired normal/shadow dimension forms test whole-operation lifetimes: separate or reused width/height values, sums, compound updates, and edge snapshots. All compile with 68 clean references but regress to 67.46–69.00%, losing the native prefix at instruction 16. Raw code identities collapse the twelve forms into four groups. The regression begins well before the shadow call; it is not a repair of the shadow width in isolation. No source is retained.
+
+The remaining native difference is still the shadow call's `fld [esi+0x258]; fadd [esi+0x250]` versus the reversed source loads. The original sprite/frame recovery remains intact at 99.72%.
+
+The receipts bound these hypotheses only. No new exact match or unsupported ownership/return contract was inferred.

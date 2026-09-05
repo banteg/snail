@@ -201,3 +201,12 @@ type. A digest-bound invalid-plan audit preserves that evidence for record 9. Ev
 Four explicit unequal-fold exits to the new-key reset path regress to 97.50-97.73%, with all 74 references clean. Both operand orders were tested. RstrASC remains the free char-to-char case-fold helper; no return or argument type is changed.
 
 These receipts bound the tested forms and do not establish source exhaustion.
+
+
+## 2026-09-05 diagnostic-export batch
+
+Six current-input controls revisit the authored RstrASC call order using an explicit folded local, in-place folding, or a switch on the fold difference. The named local recovers the native call order and advances the prefix from 408 to 412, but regresses to 98.98% and 439/440 instructions: it stores AL directly before the second push and reloads CL, while native moves AL to DL, pushes the next argument, then spills/reloads DL. The diagnostic export establishes the exact tradeoff; this candidate is not promoted.
+
+Eighteen coupled forms then combine repeat-first, named-fold, or expression-assigned folding with character declaration order, signedness, and constant/chain publication. These produce six code identities and no improvement. Query evaluation order is preserved; duplicated stores are limited to constants. All 24 variants retain 74 clean references. Baseline remains 99.32%, 440/440, prefix 408. These are source-form observations, not evidence of compiler-only exhaustion.
+
+The receipts bound these hypotheses only. No new exact match or unsupported ownership/return contract was inferred.

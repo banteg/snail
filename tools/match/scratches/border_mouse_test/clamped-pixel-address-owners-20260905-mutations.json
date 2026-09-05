@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "clamped-pixel-address",
+      "find": "            int row = width;\n            row *= y;\n            int pixel_index = row + x + 6;\n\n            if (*((unsigned char*)mask + pixel_index * 3) == 0)",
+      "replacements": [
+        {
+          "name": "consume-width",
+          "text": "            width *= y;\n            int pixel_index = width + x + 6;\n            \n            if (*((unsigned char*)mask + pixel_index * 3) == 0)"
+        },
+        {
+          "name": "row-pointer",
+          "text": "            unsigned char* row = (unsigned char*)mask + width * y * 3;\n            int pixel_index = x + 6;\n            \n            if (*(row + pixel_index * 3) == 0)"
+        },
+        {
+          "name": "payload-row",
+          "text": "            unsigned char* row = (unsigned char*)mask + 18 + width * y * 3;\n            int pixel_index = x;\n            \n            if (*(row + pixel_index * 3) == 0)"
+        },
+        {
+          "name": "row-end-offset",
+          "text": "            int row_end = width * (y + 1);\n            int pixel_index = row_end - width + x + 6;\n            \n            if (*((unsigned char*)mask + pixel_index * 3) == 0)"
+        },
+        {
+          "name": "separate-pixel-and-header",
+          "text": "            int pixel_index = width * y + x;\n            unsigned char* row = (unsigned char*)mask + 18;\n            \n            if (*(row + pixel_index * 3) == 0)"
+        },
+        {
+          "name": "scale-coordinates",
+          "text": "            int row = width * y;\n            x *= 3;\n            int pixel_index = row * 3 + x + 18;\n            \n            if (*((unsigned char*)mask + pixel_index) == 0)"
+        },
+        {
+          "name": "row-byte-stride",
+          "text": "            int row_stride = width * 3;\n            int pixel_index = row_stride * y + (x + 6) * 3;\n            \n            if (*((unsigned char*)mask + pixel_index) == 0)"
+        }
+      ]
+    }
+  ]
+}

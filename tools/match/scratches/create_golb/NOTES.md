@@ -111,3 +111,10 @@ neutral, with unchanged instruction counts, prefixes, and clean references.
 These results do not independently prove free-versus-member authored spelling;
 they show that this distinction does not explain the tested native differences.
 No shared header or caller-specific operator implementation is changed.
+
+
+## 2026-09-05 diagnostic-export batch
+
+Ten paired launch-position/velocity forms test snapshots for the fallback, positive spread, negative spread, both spread branches, or all three, and either final publication order. All regress to 68.51–88.59% from 99.14% and differ from instruction zero. Eight also introduce one unaudited reference; the other two retain all 48 clean references. Whole-position snapshots therefore do not recover the residual scalar/store interleaving in these forms. No source, type, or reference-manifest change is retained.
+
+The receipts bound these hypotheses only. No new exact match or unsupported ownership/return contract was inferred.

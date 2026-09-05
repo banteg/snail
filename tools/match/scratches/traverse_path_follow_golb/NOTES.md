@@ -64,3 +64,12 @@ this result does not settle the Y-product x87 operand schedule.
 Eight carry/displacement precision combinations do not improve 99.29%. Uncast double carry moves the first address calculation toward native but introduces other floating-point differences (98.59%); the remaining forms are neutral. All seven references remain clean. No source change is retained.
 
 These receipts bound the tested forms and do not establish source exhaustion.
+
+
+## 2026-09-05 diagnostic-export batch
+
+Terminal-borrow probes compare the one-past sample owner with a last-sample pointer/reference, a transform pointer/reference, and borrowed forward/position vectors. Sample/transform borrows compile identically at 94.59% and lose the prefix at instruction 51; the forward borrow gives 98.82%, prefix 96. All seven references remain clean.
+
+Two initial position-borrow probes accidentally collided with the existing `terminal_position` result variable. Record 29 has a digest-bound invalid-plan audit; both are replayed with `borrowed_terminal_position` in the corrected recipe. They compile identically at 98.82%, prefix 96, seven clean references. These compile errors are not negative source evidence. The baseline remains 99.29%, with the terminal LEA/x87 ordering and ordinary right-offset Y product unresolved.
+
+The receipts bound these hypotheses only. No new exact match or unsupported ownership/return contract was inferred.
