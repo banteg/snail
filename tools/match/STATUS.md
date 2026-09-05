@@ -57,7 +57,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 39 | handle_subgoldy_collisions | 377 | semantic-complete | analysis | historical-only | 0/14 | repeated-specs,historical-only |
 | 40 | load_level_definition_file | 361 | semantic-complete | analysis,references | historical-only | 0/12 | repeated-variants,metric-tradeoffs,variant-errors,historical-only |
 | 41 | build_subgame_level | 299 | semantic-complete | analysis | historical-only | 0/19 | metric-tradeoffs,variant-errors,historical-only |
-| 42 | initialize_snake_path_template_pair | 288 | semantic-complete | analysis | current-inconclusive | 6/58 | metric-tradeoffs,variant-errors,audited-plan-errors,inconclusive-sweeps,stale-dependencies |
+| 42 | initialize_snake_path_template_pair | 288 | semantic-complete | analysis | current-inconclusive | 10/62 | metric-tradeoffs,variant-errors,audited-plan-errors,inconclusive-sweeps,stale-dependencies |
 | 43 | initialize_start_path_template_pair | 268 | incomplete | analysis | current-active | 2/65 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
 | 44 | set_snail_weapon | 254 | semantic-complete | analysis | current-active | 2/5 | repeated-variants |
 | 45 | register_font_texture_sheet | 242 | semantic-complete | analysis | current-active | 2/6 | stale-dependencies |
@@ -65,7 +65,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 47 | update_golb_ai | 224 | semantic-complete | analysis | historical-only | 0/16 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only |
 | 48 | traverse_path_follow_golb | 209 | semantic-complete | analysis | historical-only | 0/12 | metric-tradeoffs,historical-only |
 | 49 | initialize_intro_screen | 206 | semantic-complete | analysis | current-active | 2/5 | repeated-variants,variant-errors |
-| 50 | initialize_sbend_path_template_pair | 184 | semantic-complete | analysis | current-active | 5/53 | repeated-specs,metric-tradeoffs,stale-dependencies |
+| 50 | initialize_sbend_path_template_pair | 184 | semantic-complete | analysis | current-active | 9/57 | repeated-specs,metric-tradeoffs,stale-dependencies |
 | 51 | initialize_loading_screen | 129 | semantic-complete | analysis | current-active | 2/6 | variant-errors |
 | 52 | place_challenge_parcels_on_track | 115 | semantic-complete | analysis,references | current-active | 1/7 | - |
 | 53 | update_frontend_widget_interaction | 112 | semantic-complete | analysis,references | historical-only | 0/11 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only |
@@ -91,7 +91,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 73 | read_repeating_text_input_key_code | 9 | semantic-complete | analysis | current-active | 1/7 | stale-dependencies |
 | 74 | border_mouse_test | 7 | semantic-complete | analysis | current-active | 2/5 | variant-errors |
 | 75 | switch_track_mirror | 7 | semantic-complete | analysis | historical-only | 0/3 | historical-only |
-| 76 | draw_frontend_widget | 7 | semantic-complete | analysis | current-active | 1/10 | stale-dependencies |
+| 76 | draw_frontend_widget | 7 | semantic-complete | analysis | current-active | 2/11 | stale-dependencies |
 | 77 | append_track_cache_object | 5 | semantic-complete | analysis | current-active | 2/5 | - |
 | 78 | render_backdrop | 5 | semantic-complete | analysis | current-active | 7/16 | repeated-variants,metric-tradeoffs,variant-errors |
 | 79 | layout_frontend_widget | 4 | semantic-complete | analysis | current-active | 9/12 | repeated-variants,variant-errors |

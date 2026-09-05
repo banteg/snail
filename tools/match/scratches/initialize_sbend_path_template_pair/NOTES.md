@@ -347,3 +347,5 @@ The terminal endpoint is now expressed as `(previous.position + Vector3(0, 0, 1)
 Five branch-owner forms, three setter forms, and two diagnostic constructor forms do not improve the prior baseline. After the endpoint recovery, twelve UV-owner forms are non-improving; twelve parity/UV duplication forms regress, and four winding-dispatch forms have no tradeoff-free gain. These experiments leave the face schedule open rather than attributing it to the compiler.
 
 Fifteen per-corner UV value forms and fifteen texture-selection expression forms also give no tradeoff-free improvement; no auxiliary UV type or helper is retained.
+
+Twelve face-index arithmetic forms, 6 cross-phase counter reuse forms, nine face-field ownership forms, and twelve checkerboard-parity expressions add no tradeoff-free gain. Wide integer index expressions are byte-neutral, so the explicit short casts are not required by code generation. The nested checkerboard form raises Snake's fuzzy score but worsens instruction count and is rejected. These receipts preserve the tested combinations without closing the face-source hypothesis.

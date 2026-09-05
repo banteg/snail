@@ -601,3 +601,5 @@ The nested terminal vector expression shared with S-bend improves 87.58% to 88.1
 Five branch-owner and three setter forms do not improve the preceding source. Twelve UV-owner forms are non-improving after the endpoint change. Four corrected winding-dispatch probes compile, but higher scores worsen instruction count; none is retained. The earlier malformed dispatch sweep is digest-audited as a generator boundary error, not evidence against any source hypothesis.
 
 Fifteen per-corner UV value forms and fifteen texture-selection expression forms also give no tradeoff-free improvement; no auxiliary UV type or helper is retained.
+
+Twelve face-index arithmetic forms, 9 cross-phase counter reuse forms, nine face-field ownership forms, and twelve checkerboard-parity expressions add no tradeoff-free gain. Wide integer index expressions are byte-neutral, so the explicit short casts are not required by code generation. The nested checkerboard form raises Snake's fuzzy score but worsens instruction count and is rejected. These receipts preserve the tested combinations without closing the face-source hypothesis.
