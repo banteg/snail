@@ -227,3 +227,7 @@ Fifteen `edge-publication-lifetimes-20260905.json` variants test added-slot
 borrows, postincrement publication, cached compaction counts, post-tested
 loops, and pre-copy count decrement. None improves the new baseline. These
 results bound those specific lifetimes without claiming compiler exhaustion.
+
+## 2026-09-05 continued loop-owner campaign
+
+Eleven combinations of add/merge branch shape and outer delta/cross-vector lifetimes do not improve 91.59%. The normal snapshots need their existing branch-local ownership. Canonical source is unchanged.

@@ -26,6 +26,7 @@ void cRPath::build_track_fringe_mesh(char* texture_path, float clamp_side)
     Vector3* destination = mesh->vertices;
     cRFaceQuad* facequads = mesh->facequads;
 
+    Vector3 direction;
     int row = 0;
     if (segment_count >= 0) {
         do {
@@ -46,11 +47,9 @@ void cRPath::build_track_fringe_mesh(char* texture_path, float clamp_side)
                 near_inner_column = width_cells;
             }
 
-
             destination[row * 4 + 0] = strip_mesh->vertices[far_column + row * (width_cells + 1)];
             destination[row * 4 + 1] = strip_mesh->vertices[near_column + row * (width_cells + 1)];
 
-            Vector3 direction;
             direction = destination[row * 4 + 1] - destination[row * 4 + 0];
             direction.Normalize();
             destination[row * 4 + 0] = destination[row * 4 + 1] + direction * 0.40000001f;
@@ -85,7 +84,6 @@ void cRPath::build_track_fringe_mesh(char* texture_path, float clamp_side)
     row = 0;
     if (segment_count > 0) {
         do {
-
             facequads[row * 2].texture_ref = g_texture_refs.Add(texture_path, 0, 0);
             facequads[row * 2].vertex_0 = row * 4 + 5;
             facequads[row * 2].vertex_1 = row * 4 + 4;

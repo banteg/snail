@@ -46,11 +46,9 @@ int cRGalaxy::AI()
 
         int tick_index = 0;
         if (g_runtime_config.highest_galaxy_route_index >= 0) {
-            cRGalaxyStar* tick_record = route_slots;
             do {
-                tick_record->AI();
+                route_slots[tick_index].AI();
                 ++tick_index;
-                ++tick_record;
             } while (tick_index <= g_runtime_config.highest_galaxy_route_index);
         }
 
@@ -115,35 +113,31 @@ int cRGalaxy::AI()
         color.a = 0.200000003f;
         int line_index = 1;
         if (g_runtime_config.highest_galaxy_route_index > 1) {
-            cRGalaxyStar* next_record = &route_slots[2];
             do {
                 if (line_index < selected_index) {
                     color.a = 0.800000012f;
-                    Line(154, next_record[-1].record.map_x,
-                         next_record[-1].record.map_y, next_record->record.map_x,
-                         next_record->record.map_y, 4.0f, color);
+                    Line(154, route_slots[line_index].record.map_x,
+                         route_slots[line_index].record.map_y, route_slots[line_index + 1].record.map_x,
+                         route_slots[line_index + 1].record.map_y, 4.0f, color);
                 } else {
                     if (route_mode != 1) {
                         color.a = 0.200000003f;
-                        Line(154, next_record[-1].record.map_x,
-                             next_record[-1].record.map_y, next_record->record.map_x,
-                             next_record->record.map_y, 4.0f, color);
+                        Line(154, route_slots[line_index].record.map_x,
+                             route_slots[line_index].record.map_y, route_slots[line_index + 1].record.map_x,
+                             route_slots[line_index + 1].record.map_y, 4.0f, color);
                     }
                 }
                 ++line_index;
-                ++next_record;
             } while (line_index < g_runtime_config.highest_galaxy_route_index);
         }
 
         color.White();
         int galaxy_index = 0;
-        GalaxyRouteNameRecord* route_name = route_names;
         do {
-            OSDPrintUV(galaxy_index + 139, route_name->map_x - 128.0f,
-                                                route_name->map_y - 128.0f, 256.0f, 256.0f,
+            OSDPrintUV(galaxy_index + 139, route_names[galaxy_index].map_x - 128.0f,
+                                                route_names[galaxy_index].map_y - 128.0f, 256.0f, 256.0f,
                                                 0x1000000, &color, 0.0f, 0.0f, 1.0f, 1.0f, 15, 0);
             ++galaxy_index;
-            ++route_name;
         } while (galaxy_index < 10);
     }
 

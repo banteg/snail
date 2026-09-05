@@ -51,3 +51,7 @@ source is promoted; the specifications preserve the tested source forms.
 Sixteen whole-motion publication forms test named velocity construction, depth publication, position-copy shape and count-decrement lifetime. None improves 95.15%; canonical source is unchanged.
 
 The recorded probes describe the tested source forms only; they do not establish exhaustion.
+
+## 2026-09-05 continued loop-owner campaign
+
+Four loop-vector scope combinations and eight emitter counter/position ownership combinations do not improve 95.15%. Moving the velocity outside the loop is neutral here, unlike the two fringe builders. Canonical source is unchanged.

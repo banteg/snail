@@ -1,5 +1,10 @@
 # build_track_fringe_mesh reconstruction notes
 
+Current result: **100% exact**, 318/318 instructions, all 23 references clean.
+The 2026-09-05 loop-owner recovery below supersedes the historical residual
+assessments that follow.
+
+
 Current recovery: semantic-complete (open source-shape residual). The live Windows
 `cRPath` receiver and exact Android/iOS `BuildFringe` bodies establish the
 generated-object ownership, both edge extrusions and clamp cases, and the full
@@ -191,3 +196,17 @@ Direct generated-face indexing raises 92.77% to **99.06%**, with 318/318 instruc
 Only the two direction-result copy schedules remain different. Four additional whole-direction value forms (component constructor, named components, component stores, copy/subtract) do not improve the new baseline. The earlier description of face-store differences as a compiler residual was too strong: ordinary source ownership repaired them.
 
 The recorded probes describe the tested source forms only; they do not establish exhaustion.
+
+## 2026-09-05 exact loop-owned direction value
+
+Declaring the reusable `direction` vector before the row loop reproduces the
+complete native instruction stream. All three tested outer scopes are exact
+in `whole-direction-loop-scope-20260905.json`; the retained scope is immediately
+before row traversal. Together with direct face indexing this closes the
+builder without changing shared types, operators, flags, or reference rules.
+
+The preceding shared-vector diagnostics tested explicit field assignment,
+copy constructors, subtraction construction, member versus free arithmetic,
+const-value returns and RHS value/reference ownership. None improved the old
+baseline; their local header copies are diagnostic only and are not retained.
+The winning change is the caller's vector lifetime.

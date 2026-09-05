@@ -318,3 +318,7 @@ and proves it is a later source revision, not compiler scheduling. The rest of
 the function remains structurally identical modulo relocated addresses, so the
 older build does not offer an alternate allocation shape for the documented
 canonical residual.
+
+## 2026-09-05 continued loop-owner campaign
+
+Fifteen child-owner combinations test typed route records, indexed tick/line/name loops, indexed hit probes, and color scope. Indexed tick/line/name traversal alone raises **71.01% to 71.19%** with the 48-instruction prefix and all 55 references intact. That tradeoff-free source simplification is retained. The higher-scoring typed-record alternatives regress the prefix and are not retained.

@@ -17,13 +17,13 @@ void cRPath::build_track_fringe_supertramp_mesh(char* texture_path)
     Vector3* vertices = mesh->vertices;
     cRFaceQuad* facequads = mesh->facequads;
 
+    Vector3 direction;
     int row = 0;
     if (segment_count >= 0) {
         do {
             vertices[row * 4 + 0] = strip_mesh->vertices[row * (width_cells + 1) + 1];
             vertices[row * 4 + 1] = strip_mesh->vertices[row * (width_cells + 1)];
 
-            Vector3 direction;
             direction = vertices[row * 4 + 1] - vertices[row * 4 + 0];
             direction.Normalize();
             vertices[row * 4 + 0] = vertices[row * 4 + 1] + direction * 0.40000001f;
@@ -44,7 +44,6 @@ void cRPath::build_track_fringe_supertramp_mesh(char* texture_path)
     row = 0;
     if (segment_count > 0) {
         do {
-
             facequads[row * 2].texture_ref = g_texture_refs.Add(texture_path, 0, 0);
             facequads[row * 2].vertex_0 = row * 4 + 4;
             facequads[row * 2].vertex_1 = row * 4 + 5;

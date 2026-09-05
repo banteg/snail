@@ -335,3 +335,7 @@ candidate by five instructions, collapse the prefix to zero, and fall to
 with all 39 references clean. The first mismatch at `0x42e477` is now bounded
 across operand order, local lifetime, aggregate construction, compound
 assignment, and direct destination emission.
+
+## 2026-09-05 continued loop-owner campaign
+
+Fifteen mesh-vector lifetime combinations and six direct authored-body expansions are neutral at 90.06%. The helper boundary is not sufficient to explain this builder's remaining terminal and face schedule. Canonical source stays unchanged.

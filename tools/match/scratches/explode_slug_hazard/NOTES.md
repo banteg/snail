@@ -187,3 +187,7 @@ results. They do not establish source exhaustion or compiler provenance.
 Eleven velocity/position forms test owner borrowing, vector position expressions and scale lifetime. Six generated variants accidentally formed the undeclared name `owner_owner_game`; ledger record 6 has a digest-bound invalid-plan audit. `corrected-velocity-owner-20260905.json` reruns those six intended variants successfully. No valid variant improves 97.61%, and canonical source is unchanged.
 
 The recorded probes describe the tested source forms only; they do not establish exhaustion.
+
+## 2026-09-05 continued loop-owner campaign
+
+All seven combinations of moving random velocity, position offset, and staged position to the loop's outer scope are neutral at 97.61%. Canonical source is unchanged.

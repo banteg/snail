@@ -1,5 +1,10 @@
 # build_track_fringe_supertramp_mesh reconstruction notes
 
+Current result: **100% exact**, 421/421 instructions, all 25 references clean.
+The 2026-09-05 loop-owner recovery below supersedes the historical residual
+assessments that follow.
+
+
 Current recovery: semantic-complete (`compiler` residual). The live Windows
 `cRPath` receiver and exact Android/iOS `BuildFringeSuperTramp` bodies
 establish generated-object ownership, both edge extrusions, the terminal cap
@@ -165,3 +170,17 @@ flow.
 Direct generated-face indexing raises 94.54% to **99.05%**, with 421/421 instructions and all 25 references clean. Fifteen whole-mesh lifetime combinations recover the native face-store schedule through `facequads[row * 2]` / `[row * 2 + 1]`. Indexed vertex accesses preserve the row increment after both row-position stores. Four subsequent direction-value forms do not improve the new baseline. The remaining vector copy schedules are open source-shape questions, not a demonstrated compiler limitation.
 
 The recorded probes describe the tested source forms only; they do not establish exhaustion.
+
+## 2026-09-05 exact loop-owned direction value
+
+Declaring the reusable `direction` vector before the row loop reproduces the
+complete native instruction stream. All three tested outer scopes are exact
+in `whole-direction-loop-scope-20260905.json`; the retained scope is immediately
+before row traversal. Together with direct face indexing this closes the
+builder without changing shared types, operators, flags, or reference rules.
+
+The preceding shared-vector diagnostics tested explicit field assignment,
+copy constructors, subtraction construction, member versus free arithmetic,
+const-value returns and RHS value/reference ownership. None improved the old
+baseline; their local header copies are diagnostic only and are not retained.
+The winning change is the caller's vector lifetime.

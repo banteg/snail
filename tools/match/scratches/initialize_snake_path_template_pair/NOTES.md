@@ -589,3 +589,7 @@ callers.
 Seven whole generated-vertex lifetime combinations test a shared normal/end-cap result, a shared sample owner and endpoint vector addition. Another seven whole face-grid combinations test direct face indexing, column increment ownership and UV scope. None improves 86.96%; canonical source remains unchanged. The 387-instruction exact prefix localizes the next investigation to mesh generation, but these probes do not exhaust the source shapes.
 
 The recorded probes describe the tested source forms only; they do not establish exhaustion.
+
+## 2026-09-05 continued loop-owner campaign
+
+Writing the mesh construction directly in the owning method, rather than the reconstruction-only force-inline helper, raises **86.96% to 87.58%**, with all forty references clean and the 387-instruction prefix intact. Both block-scoped and method-scoped expansions agree. This removes an invented helper boundary. Fifteen vector lifetime combinations before expansion were neutral; no vector-layout change is retained.
