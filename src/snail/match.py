@@ -19,7 +19,7 @@ import struct
 from collections import Counter
 from collections.abc import Collection
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
-from dataclasses import dataclass, field, replace
+from dataclasses import asdict, dataclass, field, replace
 from functools import cache
 from pathlib import Path
 from threading import Lock
@@ -248,6 +248,18 @@ class ObjectFunction:
     data: bytes
     relocation_offsets: frozenset[int]
     relocation_references: tuple[ObjectRelocationReference, ...] = ()
+
+
+def object_function_fingerprint(function: ObjectFunction) -> str:
+    """Conservative code identity including raw bytes and relocation identities."""
+    payload = asdict(function)
+    payload.pop("name")
+    payload["data"] = function.data.hex()
+    payload["relocation_offsets"] = sorted(function.relocation_offsets)
+    return hashlib.sha256(json.dumps(
+        payload, sort_keys=True, default=lambda value: (
+            sorted(value) if isinstance(value, frozenset) else value.hex())
+    ).encode()).hexdigest()
 
 
 @dataclass(frozen=True, slots=True)
@@ -3203,6 +3215,7 @@ class ScratchStatus:
     first_target_mismatch_offset: int | None = None
     first_candidate_mismatch_offset: int | None = None
     error: str | None = None
+    code_sha256: str | None = None
 
     @property
     def state(self) -> str:
@@ -4302,6 +4315,11 @@ def evaluate_scratch(
                 else None
             ),
             error=None,
+            code_sha256=object_function_fingerprint(extract_object_function(
+                parse_coff_object(obj_path.read_bytes()),
+                config.symbol or config.function,
+                reference_manifest=load_default_reference_symbol_manifest(),
+            )),
         )
     except Exception as error:
         return ScratchStatus(
@@ -4398,6 +4416,7 @@ def scratch_status_payload(status: ScratchStatus) -> dict:
 
     return {
         "state": status.state,
+        "code_sha256": status.code_sha256,
         "function": status.config.function,
         "address": status.address,
         "target_bytes": status.target_size,

@@ -11,7 +11,13 @@ from pathlib import Path
 
 import msgspec
 
-from . import match_experiments, match_mutation
+from . import (
+    match_contracts,
+    match_experiments,
+    match_export,
+    match_history,
+    match_mutation,
+)
 from .archive import extract_archive, parse_archive_index, summarize_archive
 from .formats import parse_text_asset
 from .match import (
@@ -1054,10 +1060,23 @@ def build_parser() -> argparse.ArgumentParser:
         help="Print the ranked result as JSON.",
     )
 
+    match_mutate_parser.add_argument("--hypothesis", help="Reason for this source-shape experiment; saved with --record.")
+    match_mutate_parser.add_argument("--export-candidate", help="Exact evaluated label to export, regardless of score.")
+    match_mutate_parser.add_argument("--export-dir", type=Path, help="Fresh directory for a diagnostic candidate bundle.")
+
+    contracts_parser = match_subparsers.add_parser("contracts", help="Read-only native return-contract evidence.")
+    contracts_parser.add_argument("directory", type=Path)
+    contracts_parser.add_argument("--manifest", type=Path, default=DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH)
+    contracts_parser.add_argument("--image", type=Path)
+    contracts_parser.add_argument("--mobile-crosswalk", type=Path, default=REPO_ROOT / "analysis/symbols/windows-mobile-gameplay-crosswalk.json")
+    contracts_parser.add_argument("--json", action="store_true")
+
     match_experiments_parser = match_subparsers.add_parser(
         "experiments",
         help="Summarize recorded probes and mutation sweeps.",
     )
+    match_experiments_parser.add_argument("--search", help="Search receipt labels, hypotheses and hash-verified recipe edits.")
+    match_experiments_parser.add_argument("--details", action="store_true", help="Show individual experiment history with recipe edits.")
     match_experiments_parser.add_argument(
         "--match-root",
         type=Path,
@@ -1857,6 +1876,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
 
     if args.command == "match" and args.match_command == "mutate":
+        if bool(args.export_candidate) != bool(args.export_dir):
+            parser.error("--export-candidate and --export-dir must be supplied together")
         if args.time_budget is not None and args.time_budget <= 0:
             parser.error("--time-budget must be positive")
         if args.min_changes > args.max_changes:
@@ -1898,7 +1919,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     sweep.baseline.config,
                     args.match_root,
                 )
-                if args.record
+                if args.record or args.export_dir
                 else None
             )
             baseline_epoch = (
@@ -1908,9 +1929,15 @@ def main(argv: Sequence[str] | None = None) -> int:
                     image_path=image_path,
                     manifest_path=args.manifest,
                 )
-                if args.record
+                if args.record or args.export_dir
                 else None
             )
+            if args.export_dir is not None:
+                match_export.export_candidate(
+                    sweep, args.export_candidate, args.export_dir,
+                    source_text=source_text, match_root=args.match_root,
+                    image_path=image_path, manifest=manifest, baseline_epoch=baseline_epoch,
+                )
         except Exception as error:  # noqa: BLE001
             print(
                 f"mutation sweep failed: {str(error).splitlines()[0]}",
@@ -1934,6 +1961,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             record_payload = {
                 "schema": match_experiments.EXPERIMENT_SCHEMA,
                 "kind": "mutation-sweep",
+                "hypothesis": args.hypothesis,
+                "diagnostic_export": str(args.export_dir) if args.export_dir else None,
                 "recorded_at": datetime.now(UTC).isoformat(),
                 "best_source_written_to": written_to,
                 "dependency_sha256": dependency_sha256,
@@ -1956,6 +1985,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 sweep,
                 limit=args.top,
             )
+            payload["diagnostic_export"] = str(args.export_dir) if args.export_dir else None
             payload["best_source_written_to"] = written_to
             payload["recorded_to"] = recorded_to
             print(json.dumps(payload, indent=2, sort_keys=True))
@@ -1966,6 +1996,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                     limit=args.top,
                 )
             )
+            if args.export_dir is not None:
+                print(f"diagnostic_export={args.export_dir}")
             if written_to is not None:
                 print(f"best_source={written_to}")
             elif args.write_best is not None:
@@ -2033,7 +2065,44 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
         return 0
 
+    if args.command == "match" and args.match_command == "contracts":
+        try:
+            config = load_scratch_config(args.directory.resolve())
+            manifest = load_function_symbol_manifest(args.manifest)
+            payload = match_contracts.audit_contract(
+                config, image_path=args.image or REPO_ROOT / manifest.primary_target,
+                manifest=manifest, mobile_crosswalk=json.loads(args.mobile_crosswalk.read_text()),
+            )
+        except (OSError, ValueError) as error:
+            print(f"contract audit failed: {error}", file=sys.stderr)
+            return 2
+        print(json.dumps(payload, indent=2, sort_keys=True) if args.json else
+              match_contracts.render_contract_audit(payload))
+        return 0
+
     if args.command == "match" and args.match_command == "experiments":
+        if args.search is not None or args.details:
+            if args.check or args.strict or args.check_specs:
+                parser.error("history search cannot be combined with summary validation flags")
+            try:
+                paths = match_experiments.find_experiment_logs(args.match_root, args.scratch)
+                payload = match_history.search_history(
+                    paths, query=args.search or "",
+                    current_epochs=scratch_experiment_epochs(
+                        args.match_root, directories=[path.parent for path in paths],
+                        image_path=args.image, manifest_path=args.manifest),
+                )
+                payload["total_rows"] = len(payload["rows"])
+                if args.limit is not None:
+                    payload["rows"] = payload["rows"][:args.limit]
+            except (OSError, ValueError) as error:
+                print(f"experiment history failed: {error}", file=sys.stderr)
+                return 2
+            print(json.dumps(payload, indent=2, sort_keys=True) if args.json else
+                  match_history.render_history(payload))
+            for error in payload["errors"]:
+                print(error, file=sys.stderr)
+            return 1 if payload["errors"] else 0
         try:
             experiment_paths = match_experiments.find_experiment_logs(
                 args.match_root,

@@ -194,6 +194,48 @@ Useful analysis helpers:
   manifests so older experiments stay useful without masquerading as current
   evidence. `--write-best` writes only an improving winner and refuses to
   overwrite the tracked `scratch.cpp`.
+
+  Add `--hypothesis "why this code shape is worth testing" --record` to retain
+  the reasoning alongside the recipe and scores. `code_groups` in the JSON
+  report groups identical extracted function bytes **and relocation evidence**;
+  equal fuzzy scores or masked assembly alone never establish equivalence.
+  Text output shows repeated identities and identities shared with the baseline.
+
+  To inspect a neutral or degrading candidate, pass its exact evaluated label:
+
+  ```sh
+  uv run snail match mutate <scratch> --spec <plan.json> \
+    --export-candidate 'site/replacement' --export-dir /tmp/diagnostic-candidate
+  ```
+
+  The destination must be new. The bundle contains `candidate.cpp`,
+  `source.diff`, `assembly.diff`, target/candidate assembly and `report.json`
+  with the baseline epoch, compiler profile, score, CFG diagnostics and complete
+  reference audit. Export recompilation must reproduce the evaluated code
+  identity. Compile failures export source plus the error, without invented
+  assembly. Exporting a candidate does not promote it or require an improvement;
+  `--write-best` and `--require-improvement` retain their existing behavior.
+
+- `uv run snail match contracts <scratch>` gathers native return-contract
+  evidence without changing source declarations. It shows the current source
+  declaration excerpt when locatable, direct call sites, the first EAX read or
+  overwrite after each call, native return windows, and verified mobile mappings.
+  Use `--json` for full coverage and decode limitations. This is a conservative
+  straight-line EAX audit: branches, subsequent calls, forwarded returns and
+  conditional writes remain unknown. Partial writes do not discard the whole
+  register. Manifest ranges can include uncurated code, and indirect calls are
+  not covered. Caller non-use does not prove `void`; mobile mangled names often
+  omit return types. Use the report to formulate and check a source-contract
+  hypothesis against native control flow, ownership and other return registers.
+- `uv run snail match experiments --search 'return-contract' --limit 10`
+  searches individual receipt labels, hypotheses and recipe edits. Add
+  `--scratch <name>` to narrow the search or use `--details` to browse without
+  a query. `--json` includes scores, tradeoffs, epochs and physical ledger line
+  numbers. Edits are shown only when a saved recipe's SHA-256 matches the receipt
+  and its named choices agree. Missing or edited recipes are marked unavailable;
+  snippets are not claimed to reconstruct the full historical source. Old epochs
+  remain useful evidence, not proof of exhaustion. Search is separate from the
+  summary validation flags below.
 - `uv run snail match experiments` summarizes the append-only
   `experiments.jsonl` ledgers created by recorded probes and mutation sweeps.
   It reports improving/neutral/degrading variants, repeated source/compiler

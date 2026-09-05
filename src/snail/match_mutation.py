@@ -725,6 +725,7 @@ def mutation_sweep_payload(
     return {
         "schema": MUTATION_SPEC_SCHEMA,
         "spec_sha256": sweep.spec.sha256,
+        "code_groups": code_groups(sweep),
         "possible_variants": sweep.possible_variants,
         "planned_variants": sweep.planned_variants,
         "evaluated_variants": len(sweep.evaluations),
@@ -851,4 +852,23 @@ def render_mutation_sweep(
             f"{status.masked_unaudited:<3}  "
             f"{evaluation.variant.label}{warning_suffix}"
         )
+    groups = code_groups(sweep)
+    if groups:
+        lines.append(f"code identities: {len(groups)} (raw bytes and relocation evidence)")
+        for group in groups:
+            if len(group["labels"]) > 1 or group["same_as_baseline"]:
+                lines.append(f"  {group['code_sha256'][:12]} baseline={group['same_as_baseline']}: "
+                             + ", ".join(group["labels"]))
     return "\n".join(lines)
+
+
+def code_groups(sweep: MutationSweep) -> list[dict[str, Any]]:
+    """Group proven identical extracted object code, never merely equal scores."""
+    groups: dict[str, list[str]] = {}
+    for evaluation in sweep.evaluations:
+        digest = evaluation.status.code_sha256
+        if digest and evaluation.status.error is None:
+            groups.setdefault(digest, []).append(evaluation.variant.label)
+    return [{"code_sha256": digest, "labels": labels,
+             "same_as_baseline": digest == sweep.baseline.code_sha256}
+            for digest, labels in groups.items()]
