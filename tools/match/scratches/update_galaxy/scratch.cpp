@@ -11,15 +11,6 @@
 #include "vector3.h"
 
 
-inline Vector3 subtract_screen_xy(const Vector3& lhs, float screen_x, float screen_y)
-{
-    Vector3 result;
-    result.x = lhs.x - screen_x;
-    result.y = lhs.y - screen_y;
-    result.z = lhs.z;
-    return result;
-}
-
 int OSDPrintUV(
     int texture_id,
     float x,
@@ -36,6 +27,7 @@ int OSDPrintUV(
     float rotation); // @ 0x44a9b0
 int cRGalaxy::AI()
 {
+    Vector3 probe;
     tColour color;
     // Windows folds the mobile cRGalaxy::Render() phase into this update.
     {
@@ -74,10 +66,8 @@ int cRGalaxy::AI()
         int route_index = 1;
         if (g_runtime_config.highest_galaxy_route_index >= 1) {
             do {
-                int record_offset = route_index * sizeof(cRGalaxyStar);
-                GalaxyRouteIndexedSlotView* record =
-                    (GalaxyRouteIndexedSlotView*)((char*)this + record_offset);
-                color = route_names[record->route_name_index].color;
+                color = route_names[
+                    route_slots[route_index].record.route_name_index].color;
                 color.r = 1.0f;
                 color.g = 1.0f;
                 color.b = 1.0f;
@@ -93,15 +83,19 @@ int cRGalaxy::AI()
                     if (route_mode == 1 && route_index > selected_index)
                         goto skip_route_icon;
                     OSDPrintUV(
-                        151, record->map_x - 16.0f, record->map_y - 16.0f, 32.0f, 32.0f, 0x1000000,
+                        151, route_slots[route_index].record.map_x - 16.0f,
+                        route_slots[route_index].record.map_y - 16.0f,
+                        32.0f, 32.0f, 0x1000000,
                         &color, 0.0f, 0.0f, 1.0f, 1.0f, 15, 0);
                 }
 
             skip_route_icon:
-                if (record->route_tint_alpha > 0.0f) {
-                    color.a = record->route_tint_alpha;
+                if (route_slots[route_index].record.route_tint_alpha > 0.0f) {
+                    color.a = route_slots[route_index].record.route_tint_alpha;
                     OSDPrintUV(
-                        150, record->map_x - 32.0f, record->map_y - 32.0f, 64.0f, 64.0f, 0x1000000,
+                        150, route_slots[route_index].record.map_x - 32.0f,
+                        route_slots[route_index].record.map_y - 32.0f,
+                        64.0f, 64.0f, 0x1000000,
                         &color, 0.0f, 0.0f, 1.0f, 1.0f, 15, 0);
                 }
 
@@ -142,29 +136,29 @@ int cRGalaxy::AI()
     }
 
     int hovered_route_index = -1;
-    int probe_index = 1;
-    cRGameInput* mouse_state = g_game->players[0].game_input;
-    float mouse_x = mouse_state->input.authored_x;
-    float mouse_y = mouse_state->input.authored_y;
+    Vector3 mouse_position;
+    mouse_position.x = g_game->players[0].game_input->input.authored_x;
+    mouse_position.y = g_game->players[0].game_input->input.authored_y;
+    mouse_position.z = 0.0f;
 
     hover_state = 0;
     if (route_state == 1) {
         FrontendWidget* card = bounds_frame_widget;
-        float edge = card->active_padding;
-        if (card->frame_x - edge < mouse_x &&
-            card->frame_width + edge + card->frame_x > mouse_x &&
-            card->frame_y - edge < mouse_y &&
-            card->frame_height + card->frame_y + edge > mouse_y) {
+        if (card->frame_x - card->active_padding < mouse_position.x &&
+            card->frame_width + card->active_padding + card->frame_x > mouse_position.x &&
+            card->frame_y - card->active_padding < mouse_position.y &&
+            card->frame_height + card->frame_y + card->active_padding > mouse_position.y) {
             hover_state = 1;
+            int highlight_index = 1;
             if (g_runtime_config.highest_galaxy_route_index >= 1) {
                 do {
-                    if (probe_index == selected_index) {
-                        route_slots[probe_index].record.highlight_target = 1.0f;
+                    if (highlight_index == selected_index) {
+                        route_slots[highlight_index].record.highlight_target = 1.0f;
                     } else {
-                        route_slots[probe_index].record.highlight_target = 0.0f;
+                        route_slots[highlight_index].record.highlight_target = 0.0f;
                     }
-                    ++probe_index;
-                } while (probe_index <= g_runtime_config.highest_galaxy_route_index);
+                    ++highlight_index;
+                } while (highlight_index <= g_runtime_config.highest_galaxy_route_index);
             }
         }
     }
@@ -174,38 +168,38 @@ int cRGalaxy::AI()
     } else if (hover_state == 0) {
         if (route_state == 1) {
             GalaxyRouteRecord* selected_record = &route_slots[selected_index].record;
-            Vector3 selected_probe = subtract_screen_xy(
-                *(Vector3*)&selected_record->map_x, mouse_x, mouse_y);
-            if (selected_probe.Normalize() < 17.0f && hover_state == 0) {
+            probe = *(Vector3*)&selected_record->map_x - mouse_position;
+            if (probe.Normalize() < 17.0f && hover_state == 0) {
                 hovered_route_index = selected_index;
                 hover_state = 2;
                 route_slots[hovered_route_index].record.highlight_target = 1.0f;
             }
         }
 
+        int probe_index = 1;
         if (g_runtime_config.highest_galaxy_route_index >= 1) {
-            cRGalaxyStar* probe_slot = &route_slots[1];
             do {
-                Vector3 probe = subtract_screen_xy(
-                    *(Vector3*)&probe_slot->record.map_x, mouse_x, mouse_y);
+                probe =
+                    *(Vector3*)&route_slots[probe_index].record.map_x
+                    - mouse_position;
                 if (probe.Normalize() < 17.0f && hover_state == 0) {
                     hover_state = 2;
                     hovered_route_index = probe_index;
-                    probe_slot->record.highlight_target = 1.0f;
+                    route_slots[probe_index].record.highlight_target = 1.0f;
                 } else {
                     if (route_state == 1 && probe_index == selected_index) {
-                        probe_slot->record.highlight_target = 1.0f;
+                        route_slots[probe_index].record.highlight_target = 1.0f;
                     } else {
-                        probe_slot->record.highlight_target = 0.0f;
+                        route_slots[probe_index].record.highlight_target = 0.0f;
                     }
                 }
                 ++probe_index;
-                ++probe_slot;
             } while (probe_index <= g_runtime_config.highest_galaxy_route_index);
         }
     }
 
-    if (g_game->border_manager.delayed_widget_active != 0)
+    cRGame* input_game = g_game;
+    if (input_game->border_manager.delayed_widget_active != 0)
         return 0;
 
     unsigned int flags = exit_or_back_widget->widget_flags;
@@ -261,11 +255,10 @@ int cRGalaxy::AI()
     }
 
     if (g_game->fade.state == 0 && route_mode != 1) {
-        int current_hover_state = hover_state;
-        if (current_hover_state != 1) {
-            unsigned int mouse_flags = mouse_state->input.pressed_buttons;
-            if (current_hover_state == 2
-                && (mouse_flags & INPUT_BUTTON_PRIMARY) != 0) {
+        if (hover_state != 1) {
+            if (hover_state == 2
+                && (input_game->players[0].game_input->input.pressed_buttons
+                    & INPUT_BUTTON_PRIMARY) != 0) {
                 if (hovered_route_index != selected_index) {
                     if (state == 1) {
                         BoxOff();
@@ -279,8 +272,9 @@ int cRGalaxy::AI()
                 return 0;
             }
 
-            if (current_hover_state == 0
-                && (mouse_flags & INPUT_BUTTON_PRIMARY) != 0
+            if (hover_state == 0
+                && (input_game->players[0].game_input->input.pressed_buttons
+                    & INPUT_BUTTON_PRIMARY) != 0
                 && state == 1
                 && g_runtime_config.highest_galaxy_route_index > 1) {
                 BoxOff();

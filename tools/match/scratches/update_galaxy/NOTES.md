@@ -346,3 +346,47 @@ replay compiles and reaches 68.95%. All 17 compiling alternatives across the
 three receipts retain 55 clean references. No source or shared type change
 is retained. The native owner lifetime remains a concrete lead that these
 isolated forms do not recover.
+
+## 2026-09-05 exact combined render and input recovery
+
+**100.00%, 566/566 instructions, prefix 566, 2051 native bytes, all 55
+references clean.** The 0x3c frame and every native branch, load, store, call,
+and exit match under the unchanged project compiler profile. This supersedes
+all earlier remaining-work and compiler-bound interpretations in these notes
+and the old RESULT.md.
+
+The missing source shape was coupled across rendering and input. Seven new
+receipts contain 64 compiling alternatives:
+
+- Separating the panel-highlight counter from the mouse hit-test counter,
+  direct padding reads, and a late game/input borrow alone did not recover
+  the complete allocation. The independent counter is corroborated by the
+  native panel loop consuming EAX while the later probe count remains one.
+- A real zero-z mouse vector, with the shared vector subtraction operation,
+  restores the connector stack slot and extends the prefix from 48 to 79.
+  Member publication of its x/y coordinates reproduces native integer copies;
+  constructor publication instead emits floating-point loads and stores.
+- Direct indexed route-color and icon field access removes the early borrowed
+  slot owner, raising the combined result to 84.76%, prefix 261. Delaying the
+  old indexed view until after color lookup is equivalent, but the retained
+  array expressions avoid that unnecessary view in the loop.
+- Reusing one normalization probe and starting the hit-test counter just
+  before its loop raises the result to 95.76%, prefix 371, with the exact
+  566-instruction count. Declaring that counter before the selected-route
+  probe keeps an incorrect constant-one lifetime. A shared probe at function
+  entry or just before input produces the same best result.
+- Indexing the hit-test route slots removes the last vector-copy scheduling
+  difference and reaches 96.11%, prefix 409. Nested click conditions are
+  neutral and are not retained.
+- Reading the owned `hover_state` directly instead of keeping a scalar
+  snapshot completes the native click-mask materialization and fallback
+  control flow: 100%. A named click mask or input-pointer reference is
+  unnecessary; the simplest direct-field winner is retained.
+
+The mouse-coordinate input borrow ends with coordinate capture; the late game
+borrow begins only after hit probing, matching the native reload. The two
+counters have separate purposes even though the old reused-counter form
+happened to be behaviorally equivalent on its mutually exclusive paths.
+The native integer return contract, route-zero rendering arm, and later-build
+replay load remain intact. No private arithmetic variant, dummy local, register
+hint, flag override, or audit exception is used.
