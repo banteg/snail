@@ -153,13 +153,13 @@ int cRPathFollowGoldy::Traverse(
         } else {
             AttachmentSample* secondary = current_template->secondary_samples;
             AttachmentSample* sample = &secondary[current_index];
-            Vec3* anchor = &source_cell->position;
+            cRSubLoc* anchor = source_cell;
             float path_x = out_angle * sample->delta_dir_to_next.x;
             float path_y = out_angle * sample->delta_dir_to_next.y;
             float path_z = out_angle * sample->delta_dir_to_next.z;
-            v82 = path_x * v79 + anchor->x + sample->transform.position.x;
-            v83 = path_y * v79 + anchor->y + sample->transform.position.y;
-            v84 = path_z + anchor->z + sample->transform.position.z;
+            v82 = path_x * v79 + anchor->position.x + sample->transform.position.x;
+            v83 = path_y * v79 + anchor->position.y + sample->transform.position.y;
+            v84 = path_z + anchor->position.z + sample->transform.position.z;
             if (current_index == (unsigned int)terminal_index) {
                 transform.Identity();
             } else {
@@ -205,9 +205,7 @@ int cRPathFollowGoldy::Traverse(
             g_game->subgame.player.transform.basis_forward = transform.basis_forward;
         }
 
-        orientation_up.x = transform.basis_up.x;
-        orientation_up.y = transform.basis_up.y;
-        orientation_up.z = transform.basis_up.z;
+        orientation_up = transform.basis_up;
 
         Path* orient_template = this->template_record;
         unsigned int orient_index = sample_index;

@@ -26,3 +26,19 @@ Three complete channel-lifetime variants remove the channel-0 borrow and/or sepa
 ## 2026-09-05 continued source-shape investigation
 
 Eleven change-gate lifetime forms regress from 73.02%. The undefined default-arm value remains as in the native body; no fabricated initialization is added.
+
+## 2026-09-05 channel operation and target-array checks
+
+Twelve `whole-channel-transition-operation-20260905-mutations.json` forms
+factor the first two identical animation transitions, borrowing the channel
+or indexing it through the Snail and returning/borrowing the changed flag.
+All regress to 63.27%, with the 24 references still clean.
+
+Fourteen `whole-case-channel-borrows-20260905-mutations.json` forms place the
+channel borrow only inside the two-call target-state branches. Changing only
+channels one/two is neutral at 73.02%; moving channel zero's borrow regresses
+to 68.29%. Eight coupled target-state array forms in
+`whole-target-channel-array-20260905-mutations.json` regress further to
+58.42–59.02% and expose six unaudited operands. The undefined default-arm
+third state is left uninitialized in every probe. No source is retained;
+these results do not close the branch-lifetime or state-mapping source work.
