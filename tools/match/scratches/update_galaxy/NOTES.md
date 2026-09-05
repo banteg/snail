@@ -322,3 +322,27 @@ canonical residual.
 ## 2026-09-05 continued loop-owner campaign
 
 Fifteen child-owner combinations test typed route records, indexed tick/line/name loops, indexed hit probes, and color scope. Indexed tick/line/name traversal alone raises **71.01% to 71.19%** with the 48-instruction prefix and all 55 references intact. That tradeoff-free source simplification is retained. The higher-scoring typed-record alternatives regress the prefix and are not retained.
+
+## 2026-09-05 screen-vector and input-decision ownership
+
+Seven `whole-screen-vector-and-record-owners-20260905-mutations.json` forms
+compare the screen-XY subtraction helper with the shared vector subtraction
+of a zero-z screen position, a named screen vector, and a component result
+constructor, together with current or directly owned route-record access.
+The two shared subtraction forms are neutral at 71.19%; the constructor
+regresses. Owned route records reach 73.13% but shorten the native prefix
+from 48 to 25 instructions, so no tradeoff is retained.
+
+The native input tail keeps a game owner and separately reloads its input
+pointer for click decisions. The current scratch instead retains the input
+pointer and one flags snapshot. Ten game/live-owner and player-owner forms
+were attempted in `whole-game-input-decision-lifetimes-20260905-mutations.json`.
+Six compile: game pointer/reference owners reach 70.94%, while fresh global
+reads reach 67.08%. The four player alternatives accidentally declared
+cRSubGoldy instead of the root array's cRPlayer element type and fail to
+compile; the digest-bound audit excludes only those invalid plan alternatives.
+The separate corrected four-form `whole-player-input-decision-lifetimes-20260905-mutations.json`
+replay compiles and reaches 68.95%. All 17 compiling alternatives across the
+three receipts retain 55 clean references. No source or shared type change
+is retained. The native owner lifetime remains a concrete lead that these
+isolated forms do not recover.

@@ -10,7 +10,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 **77** non-exact scratch-backed functions hold **31484 fuzzy-gap bytes**. The top 5 hold **29.0%** of that gap; the top 10 hold **42.2%**.
 
-Current-baseline experiments cover **47 functions / 9829 gap bytes**; **30 / 21654** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **48 functions / 10420 gap bytes**; **29 / 21063** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -36,7 +36,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 18 | update_track_attachment_follow_state | 631 | semantic-complete | analysis | current-active | 1/13 | metric-tradeoffs,variant-errors,stale-dependencies |
 | 19 | load_segment_definitions | 611 | semantic-complete | analysis | current-active | 2/12 | metric-tradeoffs,variant-errors,stale-dependencies |
 | 20 | initialize_turnoverdouble_path_template_pair | 597 | semantic-complete | analysis | historical-only | 0/54 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only |
-| 21 | update_galaxy | 591 | semantic-complete | analysis | historical-only | 0/4 | metric-tradeoffs,historical-only,stale-dependencies |
+| 21 | update_galaxy | 591 | semantic-complete | analysis | current-inconclusive | 4/8 | metric-tradeoffs,variant-errors,audited-plan-errors,inconclusive-sweeps,stale-dependencies |
 | 22 | initialize_looptheloop_path_template_pair | 564 | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,metric-tradeoffs,historical-only |
 | 23 | initialize_hump_path_template_pair | 516 | semantic-complete | analysis | historical-only | 0/27 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 24 | build_track_fringe_objects | 508 | semantic-complete | analysis | current-active | 1/9 | metric-tradeoffs,stale-dependencies |
