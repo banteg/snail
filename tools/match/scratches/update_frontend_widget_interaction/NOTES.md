@@ -35,3 +35,12 @@ prefix 127, 96 clean and two unaudited references. Direct published clamps
 reach only 80.62%, prefix 1, despite clearing reference debt. No alternative
 is retained. The iOS body corroborates field publication before clamping;
 the matching source expression and its surrounding allocation remain open.
+
+## 2026-09-05 live flag and slider coupling
+
+Seven combinations test direct flag reads, direct slider publication before
+clamping, and reversed hot-color multiplication. The color-only control is
+neutral at 95.83%; live flags yield 91.50%; direct slider publication clears
+two unaudited constants but falls to 80.62%, or 78.27% with live flags. None
+improves the canonical source. These results bound this combination only; they
+do not establish compiler exhaustion.

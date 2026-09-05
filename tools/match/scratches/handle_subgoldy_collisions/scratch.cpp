@@ -30,9 +30,6 @@ void cRSubGoldy::Collision()
 {
     Vec3 probe_b;      // v67
     Vec3 delta;        // v69
-    Vec3 probe_salt;   // vector (also rings/effects source)
-    Vec3 burst_offset;
-    Vec3 burst_position; // v76
     Vec3 probe_rings;  // v77
     Vec3 probe_fx;     // v78
 
@@ -43,10 +40,10 @@ void cRSubGoldy::Collision()
                 ++i) {
                 if (game->salt_hazards.slots[i].state == 1
                     && game->salt_hazards.slots[i].collision_armed == 1) {
-                    delta =
+                    Vec3 delta =
                         game->salt_hazards.slots[i].transform.position
                         - cached_camera_target_world;
-                    probe_salt = delta;
+                    Vec3 probe_salt = delta;
                     if (delta.z < 1.0f && probe_salt.Normalize() < 0.98000002f) {
                         if (damage_retrigger_timer == 0.0f)
                             damage_retrigger_timer = damage_retrigger_step;
@@ -130,16 +127,10 @@ void cRSubGoldy::Collision()
                                         * 0.0000305175781f * -2.0f));
                                 float half = distance * 0.5f;
                                 presentation.wobble.lift_phase_step = 0.0f;
-                                burst_offset = probe_b * half;
-                                probe_salt.x = burst_offset.x + cached_camera_target_world.x;
-                                burst_position.x = probe_salt.x;
-                                int slot_id = player_slot;
-                                probe_salt.y = burst_offset.y + cached_camera_target_world.y;
-                                burst_position.y = probe_salt.y;
-                                probe_salt.z = burst_offset.z + cached_camera_target_world.z;
-                                burst_position.z = probe_salt.z;
-                                firework.Shoot(
-                                    &burst_position, slot_id, 92, 80);
+                                Vec3 burst_offset = probe_b * half;
+                                Vec3 burst_sum = burst_offset + cached_camera_target_world;
+                                Vec3 burst_position = burst_sum;
+                                firework.Shoot(&burst_position, player_slot, 92, 80);
                             } else {
                                 float rate = game->subgame_rate;
                                 float scaled_rate = rate * rate * 0.0040000002f;

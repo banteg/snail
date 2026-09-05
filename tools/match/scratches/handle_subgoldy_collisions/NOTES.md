@@ -1,15 +1,10 @@
 # handle_subgoldy_collisions @ 0x444cf0
 
-Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
-`cRSubGoldy::Collision()` bodies and the live Windows Player method establish
-all eight collision sweeps, their pool/state gates, distance tests, damage and
-pickup transitions, score/reward ladders, garbage response, and first/repeat
-slug-hit motion. All 89 references are clean and both sides contain 673
-instructions; the remaining deltas are equivalent vector stack colouring,
-register allocation, and two scale-one SIB encodings.
-
-Structure complete: all eight pool sweeps in order with asm-verified
-offsets. The remaining debt is systematic local-stack and register allocation:
+Current recovery: exact. The canonical MSVC 6.5 build reproduces all 673
+native instructions, the 0x74 stack frame, and all 89 audited references.
+The dated entries below retain historical experiments; their claims about
+irreducible compiler differences, required byte cursors, or exhausted vector
+lifetimes were superseded by the September source-shape recovery.
 
 2026-07-26 Android/iOS ownership and source-shape pass: the mobile bodies
 confirm that slug, parcel, health, ring, speedup, and jetpack collision entries
@@ -898,3 +893,25 @@ constructor for salt is neutral; component stores and the four whole-vector
 firework forms regress. The remaining salt temporary copies and firework
 argument/position schedule are unresolved source-shape questions, not evidence
 of exhaustion.
+
+## 2026-09-05 exact collision vector lifetimes
+
+The earlier 89.45% source had three extra salt copies balanced by three missing
+firework instructions. Initializing the salt delta inside the active-slot body
+and expressing the firework sum with the shared vector operators restores the
+native instruction order but initially grows the frame to 0x80 (84.40%). This
+is a useful diagnostic result despite the lower score: its remaining differences
+are stack locations and the resulting branch offsets.
+
+Moving the salt normalization probe into that same slot body lets VC6 reuse
+its stack slot for the later firework sum. The combination is exact at 100%,
+673/673 instructions, prefix 673, 0x74 frame, and 89 clean references. Scoping
+the burst offset and destination locally is also exact and makes their actual
+lifetimes explicit. No shared operator, compiler flag, API contract, or matcher
+rule changed. A manually shared salt/firework variable regresses to 76.65%:
+lexical lifetime and compiler stack reuse are distinct from forcing one source
+variable to serve both purposes.
+
+Three committed recipes record 23 compiling variants: 14 salt/firework
+expression combinations, two explicitly shared-sum controls, and seven local
+lifetime combinations. Four combinations with the local salt probe are exact.
