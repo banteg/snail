@@ -2,8 +2,6 @@
 // Straight or path-follow flight, homing blend (kind 2), per-kind trail
 // effects, garbage/slug contact sweeps, wall-14 impact, lifetime cleanup.
 
-#include <stddef.h>
-
 #include "golb.h"
 #include "player.h"
 #include "score_buckets.h"
@@ -13,23 +11,9 @@
 #include "vector3.h"
 
 typedef Vector3 Vec3;
-float __fastcall normalize_vector(Vec3* vector);
 
 void cRSubGolb::AI()
 {
-    enum {
-        SLUG_POOL_FROM_SUBGAME =
-            offsetof(cRSubGame, slug_hazards) + offsetof(SlugPool, slots),
-        SLUG_POOL_EXTENT = sizeof(((SlugPool*)0)->slots),
-        SLUG_SLOT_STRIDE = sizeof(cRSlug),
-        SLUG_STATE_FROM_SUBGAME =
-            SLUG_POOL_FROM_SUBGAME + offsetof(cRSlug, state),
-        SLUG_POSITION_FROM_SUBGAME =
-            SLUG_POOL_FROM_SUBGAME
-            + offsetof(cRSlug, transform)
-            + offsetof(TransformMatrix, position)
-    };
-
     float speed;
     float deflect_speed;
     float lived;
@@ -89,12 +73,12 @@ void cRSubGolb::AI()
             homing_blend = blend;
             if (blend > 1.0f)
                 homing_blend = 1.0f;
-            speed = normalize_vector(&velocity);
+            speed = velocity.Normalize();
             target_delta.x = homing_target.x - current_position->x;
             target_delta.y = homing_target.y - current_position->y;
             target_delta.z = homing_target.z - current_position->z;
             delta = target_delta;
-            if (normalize_vector(&delta) < 0.40000001f) {
+            if (delta.Normalize() < 0.40000001f) {
                 Explode(&flight_transform.position);
                 goto retire;
             }
@@ -110,7 +94,7 @@ void cRSubGolb::AI()
             blended_velocity.y = kept_velocity.y + pull_delta.y;
             blended_velocity.z = kept_velocity.z + pull_delta.z;
             velocity = blended_velocity;
-            normalize_vector(&velocity);
+            velocity.Normalize();
             velocity.x = speed * velocity.x;
             movement->y = speed * movement->y;
             movement->z = speed * movement->z;
@@ -187,40 +171,49 @@ void cRSubGolb::AI()
                     probe = collision_delta;
                     if (dz < 0.0f)
                         dz = -dz;
-                    if (dz < 3.0f
-                        && normalize_vector(&probe) < garbage->radius + 0.49000001f) {
-                        garbage->state = SUB_GARBAGE_STATE_BURST_PENDING;
-                        if (probe.x < 0.0f)
-                            garbage->collision_side =
-                                SUB_GARBAGE_COLLISION_SIDE_LEFT;
-                        else
-                            garbage->collision_side =
-                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;
-                        player->ScoreAdd(SUBGOLDY_SCORE_GARBAGE, 0);
-                        if (kind != 1)
-                            goto garbage_hit;
+                    if (dz < 3.0f) {
+                        float collision_distance = probe.Normalize();
+                        if (collision_distance < garbage->radius + 0.49000001f) {
+                            garbage->state = SUB_GARBAGE_STATE_BURST_PENDING;
+                            if (probe.x < 0.0f)
+                                garbage->collision_side =
+                                    SUB_GARBAGE_COLLISION_SIDE_LEFT;
+                            else
+                                garbage->collision_side =
+                                    SUB_GARBAGE_COLLISION_SIDE_RIGHT;
+                            player->ScoreAdd(SUBGOLDY_SCORE_GARBAGE, 0);
+                            if (kind != 1)
+                                goto garbage_hit;
+                        }
                     }
                 }
                 garbage = garbage->next_active;
             }
 
             {
-                int slug_index = 0;
-                for (int m = 0; m < SLUG_POOL_EXTENT; m += SLUG_SLOT_STRIDE) {
-                    cRSlug* slot = (cRSlug*)((char*)game->slug_hazards.slots + m);
-                    int slug_state = slot->state;
+                for (int m = 0; m < SUB_SLUG_SLOT_CAPACITY; ++m) {
+                    int slug_state = game->slug_hazards.slots[m].state;
                     if (slug_state == SUB_SLUG_STATE_ACTIVE
                         || slug_state == SUB_SLUG_STATE_LATERAL_ACTIVE) {
-                        Vec3 slug_delta = slot->transform.position - *new_output;
-                        float dz = slug_delta.z;
+                        Vec3 slug_delta;
+                        slug_delta.x =
+                            game->slug_hazards.slots[m].transform.position.x
+                            - new_output->x;
+                        slug_delta.y =
+                            game->slug_hazards.slots[m].transform.position.y
+                            - new_output->y;
+                        float dz =
+                            game->slug_hazards.slots[m].transform.position.z
+                            - new_output->z;
+                        slug_delta.z = dz;
                         probe = slug_delta;
                         if (dz < 0.0f)
                             dz = -dz;
-                        if (dz < 2.5f && normalize_vector(&probe) < 2.5f) {
+                        if (dz < 2.5f && probe.Normalize() < 2.5f) {
                             path_follow.active = 0;
-                            deflect_speed = normalize_vector(&velocity);
+                            deflect_speed = velocity.Normalize();
                             probe.y = 0.0f;
-                            normalize_vector(&probe);
+                            probe.Normalize();
                             delta.x = -(deflect_speed * probe.x);
                             delta.y = 0.0f;
                             delta.z = -(deflect_speed * probe.z);
@@ -228,17 +221,13 @@ void cRSubGolb::AI()
                             if (kind == 1) {
                                 Kill();
                                 Explode(new_output);
-                                ((cRSlug*)((char*)game
-                                    + SLUG_SLOT_STRIDE * slug_index
-                                    + SLUG_POOL_FROM_SUBGAME))->Hit(2);
+                                game->slug_hazards.slots[m].Hit(2);
                                 return;
                             }
                             if (kind == 2) {
                                 Kill();
                                 Explode(new_output);
-                                ((cRSlug*)((char*)game
-                                    + SLUG_SLOT_STRIDE * slug_index
-                                    + SLUG_POOL_FROM_SUBGAME))->Hit(4);
+                                game->slug_hazards.slots[m].Hit(4);
                                 return;
                             }
                             if (kind == 0) {
@@ -252,7 +241,6 @@ void cRSubGolb::AI()
                             }
                         }
                     }
-                    ++slug_index;
                 }
                 goto wall_probe;
             }
@@ -266,7 +254,7 @@ garbage_hit:
                     splash = splash->next_active) {
                     if (splash->state == SUB_GARBAGE_STATE_ACTIVE) {
                         probe = splash->transform.position - *new_output;
-                        if (normalize_vector(&probe) < 3.0f) {
+                        if (probe.Normalize() < 3.0f) {
                             splash->state = SUB_GARBAGE_STATE_BURST_PENDING;
                             if (probe.x < 0.0f)
                                 splash->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;

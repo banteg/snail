@@ -1,3 +1,22 @@
+# Current projectile AI result
+
+`cRSubGolb::AI()` at `0x414820` is **93.01%**, with **693/694
+instructions**, prefix **9**, the native **0x70 frame**, and **71 clean
+references** under `msvc6.5 /O2 /G5 /W3`.
+
+The latest pass replaces the slug byte cursor with direct owned indexing,
+publishes the slug z delta before normalization, and names the garbage
+collision distance before comparing it with the radius. These recover native
+addresses and floating-point scheduling from the preceding 91.72% baseline.
+The owned vector Normalize API is independently byte-neutral.
+
+Remaining work concerns the constant lifetime through the garbage collision
+branches, their resulting layout, and two floating-point operand orders.
+This is still a partial match. Dated notes and recorded mutation recipes
+preserve the measured source alternatives.
+
+## Historical initial recovery
+
 # `update_golb_ai` follow-up result
 
 ## Matcher summary
