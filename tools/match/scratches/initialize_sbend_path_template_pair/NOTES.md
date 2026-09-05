@@ -353,3 +353,7 @@ Twelve face-index arithmetic forms, 6 cross-phase counter reuse forms, nine face
 ## 2026-09-05 additional source-shape checks
 
 Seven combinations of const vector value returns are byte-neutral at 91.10%. No shared-header change is retained.
+
+## 2026-09-05 operation-boundary checks
+
+Six complete front/back face-emission helper forms test both indexed banks and per-face pointer arguments. Indexed forms are neutral at 91.10%; pointer forms regress. The native branch-local address scaling and UV publication remain unresolved. No helper is retained.

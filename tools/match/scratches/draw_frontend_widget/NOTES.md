@@ -25,3 +25,7 @@ The old `compiler` attribution is withdrawn. Native Draw preserves the original 
 Publishing blend mode after the two alpha assignments extends the prefix to 211 and reaches 99.44%. A local edge value for the ordinary sprite width then restores that argument's native x87 addition order, giving 99.72%, prefix 253, and the same exact instruction count and clean references. The only remaining difference is the commuted width addition in the optional shadow draw. Fourteen sprite-width/mode combinations, twelve padding expressions, nine edge borrows, and six shadow-edge lifetime forms are recorded; no higher-scoring form with a metric tradeoff is retained. The shadow expression remains open.
 
 Seven shadow-edge reference, pointer, and inline getter probes are byte-neutral at 99.72%. The exact sprite-width addition can be recovered through the earlier edge-value lifetime; these borrowed shadow-edge forms do not recover the remaining operand order. No helper or borrow is retained.
+
+## 2026-09-05 operation-boundary checks
+
+Nine shadow-dimension helper forms test scalar value, reference and pointer arguments for expanded width, height or both. They regress from 99.72% and disturb much earlier allocation. No helper is retained; the two-instruction shadow-width operand-order difference remains open.

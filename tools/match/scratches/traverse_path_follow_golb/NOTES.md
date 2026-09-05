@@ -48,3 +48,5 @@ assignment definitions, const value returns, expression boundaries, and
 component operand order did not close those differences. No diagnostic header
 shadow, wider scalar, or operator override is retained. The residual remains
 open; the former compiler attribution did not explain the recovered changes.
+
+Three additional shared multiplication-result diagnostics test direct constructor return, named constructor return, and copy-then-scale. The constructor forms are byte-neutral at 99.29%; copy-then-scale regresses. The shared operator definition remains unchanged.

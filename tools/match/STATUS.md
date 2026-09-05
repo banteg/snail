@@ -64,7 +64,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 46 | place_parcels_on_track | 242 | semantic-complete | analysis | historical-only | 0/8 | variant-errors,historical-only,stale-dependencies |
 | 47 | update_golb_ai | 220 | semantic-complete | analysis | current-active | 1/18 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
 | 48 | initialize_intro_screen | 206 | semantic-complete | analysis | current-active | 2/5 | repeated-variants,variant-errors |
-| 49 | initialize_sbend_path_template_pair | 184 | semantic-complete | analysis | current-active | 10/58 | repeated-specs,metric-tradeoffs,stale-dependencies |
+| 49 | initialize_sbend_path_template_pair | 184 | semantic-complete | analysis | current-active | 11/59 | repeated-specs,metric-tradeoffs,stale-dependencies |
 | 50 | initialize_loading_screen | 129 | semantic-complete | analysis | current-active | 3/7 | variant-errors |
 | 51 | place_challenge_parcels_on_track | 115 | semantic-complete | analysis,references | current-active | 1/7 | - |
 | 52 | update_frontend_widget_interaction | 112 | semantic-complete | analysis,references | historical-only | 0/11 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only |
@@ -87,11 +87,11 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 69 | firework_shoot | 19 | semantic-complete | analysis | current-active | 6/10 | repeated-variants,stale-dependencies |
 | 70 | extract_snail_local_hotspots | 18 | semantic-complete | analysis | current-active | 3/7 | repeated-variants,variant-errors |
 | 71 | explode_slug_hazard | 13 | semantic-complete | analysis | current-inconclusive | 6/9 | repeated-variants,variant-errors,audited-plan-errors,inconclusive-sweeps |
-| 72 | traverse_path_follow_golb | 11 | semantic-complete | analysis | current-active | 2/25 | repeated-variants,metric-tradeoffs,stale-dependencies |
+| 72 | traverse_path_follow_golb | 11 | semantic-complete | analysis | current-active | 3/26 | repeated-variants,metric-tradeoffs,stale-dependencies |
 | 73 | read_repeating_text_input_key_code | 9 | semantic-complete | analysis | current-active | 1/7 | stale-dependencies |
-| 74 | border_mouse_test | 7 | semantic-complete | analysis | current-active | 3/6 | variant-errors |
+| 74 | border_mouse_test | 7 | semantic-complete | analysis | current-active | 4/7 | variant-errors |
 | 75 | switch_track_mirror | 7 | semantic-complete | analysis | historical-only | 0/3 | historical-only |
-| 76 | draw_frontend_widget | 7 | semantic-complete | analysis | current-active | 2/11 | stale-dependencies |
+| 76 | draw_frontend_widget | 7 | semantic-complete | analysis | current-active | 3/12 | stale-dependencies |
 | 77 | append_track_cache_object | 5 | semantic-complete | analysis | current-active | 2/5 | - |
 | 78 | render_backdrop | 5 | semantic-complete | analysis | current-active | 7/16 | repeated-variants,metric-tradeoffs,variant-errors |
 | 79 | layout_frontend_widget | 4 | semantic-complete | analysis | current-active | 10/13 | repeated-variants,variant-errors |

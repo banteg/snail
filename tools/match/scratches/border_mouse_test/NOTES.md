@@ -29,3 +29,5 @@ results. They do not establish source exhaustion or compiler provenance.
 ## 2026-09-05 additional source-shape checks
 
 Twelve ordinary inline texel-clamp operations (return, reference and pointer forms, applied to either or both coordinates) do not improve 98.29%. The final row/width multiply allocation remains open.
+
+Eight whole-function hit-result lifetimes (boolean, byte or integer locals, branch/expression publication, and direct mask returns) regress from 98.29%. The unsigned-byte public return declaration is unchanged.
