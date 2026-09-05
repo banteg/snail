@@ -651,3 +651,33 @@ fresh-cell and direct second-Yi variants score equally; the retained direct
 form avoids a cross-call borrow. The candidate remains partial, 638/639
 instructions with all 98 references clean. The stack-slot permutation and
 projection call register lifetimes remain visible; none is declared exhausted.
+
+
+## 2026-09-05 exact catalog, compaction, and projection lifetimes
+
+**100.00%, 639/639 instructions, prefix 639, all 98 references clean.**
+The earlier catalog `set_or_target` conflated two authored purposes because
+they shared native storage. Separating the scan's `set_id` from the later
+`set_target` restores the native receiver at `esp+0x28` and segment at
+`esp+0x2c`, improving 89.90% to 92.56%. All six declaration-scope forms agree;
+the retained set ID is scoped to its catalog segment.
+
+Initializing the zero-candidate total before the zero-entry count and
+advancing the compaction scan before reducing the set-bank count restore the
+first 572 instructions and the missing final compaction move. This reaches
+96.87%, with all 639 instructions and 98 references. The explicit extra
+last-set bound is unnecessary and is not retained.
+
+Direct row-owned access to the attachment cell and its path removes the
+unneeded persistent cell/template borrows, recovering the full projection
+call setup and result copies at 99.84%. A reference to the actual final
+parcel-count field then preserves its publication before the row-count load,
+closing the last instruction-order difference. The recovered bank exhaustion
+checks, native placement arithmetic, and both attachment projection paths are
+unchanged.
+
+Six whole-source recipes record 49 evaluated variants. Three first attempts
+had invalid generated owner/type spellings; the corrected-owner recipe runs
+those intended candidates successfully. All 46 valid builds preserve their
+results in the ledger; only the exact source is promoted. No compiler flags,
+shared declarations, reference rules, or synthetic dependencies changed.

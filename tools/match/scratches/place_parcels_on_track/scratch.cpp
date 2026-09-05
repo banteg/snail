@@ -3,8 +3,8 @@
 // records + character grid into two candidate banks (digit 1-9 sets, digit-0
 // singles), then randomly place sets until 80% of the requirement, digit-0
 // singles for the rest, compacting the banks per draw, and finally project
-// flagged rows onto their attachments. The catalog set index is reused as the
-// post-scan set-placement target, matching the native scalar lifetime.
+// flagged rows onto their attachments. The catalog set ID and later placement
+// quota are distinct locals whose disjoint lifetimes share native storage.
 
 #include <stddef.h>
 
@@ -35,21 +35,21 @@ void cRSubGame::PlaceParcels()
     }
 
     int min_set_sizes[100];
-    int zero_entry_count = 0;
     int zero_candidate_total = 0;
+    int zero_entry_count = 0;
     int set_entry_count = 0;
-    int set_or_target;
     int last_segment_max_set_size;
 
     for (int segment = 0; segment < level_definition.segment_count; ++segment) {
         last_segment_max_set_size = 0;
         min_set_sizes[segment] = 10000;
-        for (set_or_target = 0; set_or_target < 10; ++set_or_target) {
+        int set_id;
+        for (set_id = 0; set_id < 10; ++set_id) {
             for (int row = 0; row < level_definition.segment_slots[segment].row_count; ++row) {
                 AuthoredSegmentRow* authored = &level_definition.segment_slots[segment].rows[row];
                 if ((authored->flags & AUTHORED_SEGMENT_ROW_FLAG_PARCEL) != 0
-                    && authored->parcel_set_id == set_or_target) {
-                    if (set_or_target == 0) {
+                    && authored->parcel_set_id == set_id) {
+                    if (set_id == 0) {
                         g_zero_parcel_buckets[zero_entry_count].segment_index =
                             segment;
                         g_zero_parcel_buckets[zero_entry_count]
@@ -76,13 +76,13 @@ void cRSubGame::PlaceParcels()
                                             .candidate_count]
                             .position = *authored->parcel_position();
                         g_parcel_set_buckets[set_entry_count].set_id =
-                            set_or_target;
+                            set_id;
                         ++g_parcel_set_buckets[set_entry_count].candidate_count;
                     }
                 }
                 for (int lane = 0; lane < 8; ++lane) {
-                    if (level_definition.segment_slots[segment].glyph_rows[lane][row] == set_or_target + 48) {
-                        if (set_or_target == 0) {
+                    if (level_definition.segment_slots[segment].glyph_rows[lane][row] == set_id + 48) {
+                        if (set_id == 0) {
                             g_zero_parcel_buckets[zero_entry_count].segment_index =
                                 segment;
                             g_zero_parcel_buckets[zero_entry_count]
@@ -111,7 +111,7 @@ void cRSubGame::PlaceParcels()
                                 .position = Vector3(
                                     (float)lane - 4.0f + 0.5f, 0.0f, 0.0f);
                             g_parcel_set_buckets[set_entry_count].set_id =
-                                set_or_target;
+                                set_id;
                             ++g_parcel_set_buckets[set_entry_count].candidate_count;
                         }
                     }
@@ -133,7 +133,7 @@ void cRSubGame::PlaceParcels()
     }
 
     int required = level_definition.parcel_count;
-    set_or_target = 80 * required / 100 - last_segment_max_set_size;
+    int set_target = 80 * required / 100 - last_segment_max_set_size;
     int reachable = zero_candidate_total;
     for (int check = 0; check < level_definition.segment_count; ++check) {
         if (min_set_sizes[check] != 10000)
@@ -142,12 +142,12 @@ void cRSubGame::PlaceParcels()
     if (reachable < required)
         report_errorf("Parcel Allocation could fail in %s.  Add more parcel Sets",
                       level_definition.level_display_name);
-    if (level_definition.parcel_count - set_or_target > zero_candidate_total)
+    if (level_definition.parcel_count - set_target > zero_candidate_total)
         report_errorf("Parcel Allocation could fail in %s. Add more 0 parcels ",
                       level_definition.level_display_name);
 
     int placed = 0;
-    while (placed < set_or_target && set_entry_count > 0) {
+    while (placed < set_target && set_entry_count > 0) {
         int picked = (int)RAND((float)set_entry_count, "P1");
         placed += g_parcel_set_buckets[picked].candidate_count;
         for (int spot = 0;
@@ -195,8 +195,8 @@ void cRSubGame::PlaceParcels()
                     g_parcel_set_buckets[move].set_id =
                         g_parcel_set_buckets[move + 1].set_id;
                 }
-                --set_entry_count;
                 --scan;
+                --set_entry_count;
             }
         }
     }
@@ -253,7 +253,8 @@ void cRSubGame::PlaceParcels()
             level_definition.parcel_quota =
                 placed * level_definition.parcel_count / level_definition.parcel_quota;
     }
-    level_definition.parcel_count = placed;
+    int& final_parcel_count = level_definition.parcel_count;
+    final_parcel_count = placed;
 
     int scan = 0;
     if (runtime_row_count > 0) {
@@ -270,13 +271,17 @@ void cRSubGame::PlaceParcels()
                     node = 0;
                 }
 
-                cRSubLoc* cell = runtime_rows[scan].primary_attachment_cell;
-                Path* template_record = cell->attachment_template_record;
-                if (template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42) {
+                if (runtime_rows[scan].primary_attachment_cell
+                        ->attachment_template_record->kind
+                    == PATH_TEMPLATE_KIND_NONLINEAR_42) {
                     TransformMatrix transform;
                     float out_angle;
-                    template_record->compute_kind42_attachment_transform(
-                        template_record->primary_samples[node].special_scalar,
+                    runtime_rows[scan].primary_attachment_cell
+                        ->attachment_template_record
+                        ->compute_kind42_attachment_transform(
+                        runtime_rows[scan].primary_attachment_cell
+                            ->attachment_template_record
+                            ->primary_samples[node].special_scalar,
                         runtime_rows[scan].parcel_spawn_position.x,
                         runtime_rows[scan].parcel_spawn_position.y,
                         &transform,
