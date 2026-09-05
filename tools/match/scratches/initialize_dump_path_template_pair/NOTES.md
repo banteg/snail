@@ -398,3 +398,15 @@ prefix from 20 to 15 instructions.
 
 The ledger now contains 22 records, 19 mutation sweeps, 3 probes, and 55
 unique variants. Those results document the updated Dump frontier.
+
+## 2026-09-05 terminal vector family replay
+
+The complete terminal-position expression raises the current shared-header
+baseline from **79.74% to 80.93%**, with 689/690 candidate/native
+instructions and prefix 20. Reference audit: 43 ok, 0 unresolved, 0 mismatch, 0 unaudited.
+
+The retained endpoint is previous position + Vector3(0,0,1), followed by
+the existing lateral offset. This recovers the native aggregate temporary
+lifetime without changing shared vector definitions or reference rules. The full
+function remains partial; earlier percentages above belong to prior source
+or dependency epochs. Existing reference debt, where present, is unchanged.

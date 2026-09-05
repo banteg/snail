@@ -128,10 +128,8 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                 PathTemplateSample* previous = sample - 1;
                 Vector3 lateral_offset =
                     previous->transform.basis_right * lateral;
-                Vector3 endpoint(
-                    previous->transform.position.x,
-                    previous->transform.position.y,
-                    previous->transform.position.z + 1.0f);
+                Vector3 endpoint = previous->transform.position
+                    + Vector3(0.0f, 0.0f, 1.0f);
                 Vector3 generated_position =
                     endpoint + lateral_offset;
                 *vertex = generated_position;

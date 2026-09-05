@@ -339,3 +339,15 @@ accepting a five-point whole-function regression.
 The ledger now contains 37 records, 34 mutation sweeps, three probes, and 153
 evaluated variants (147 unique). Those results document this post-counter
 call-schedule frontier.
+
+## 2026-09-05 terminal vector family replay
+
+The complete terminal-position expression raises the current shared-header
+baseline from **70.64% to 71.71%**, with 676/685 candidate/native
+instructions and prefix 58. Reference audit: 38 ok, 0 unresolved, 0 mismatch, 2 unaudited.
+
+The retained endpoint is previous position + Vector3(0,0,1), followed by
+the existing lateral offset. This recovers the native aggregate temporary
+lifetime without changing shared vector definitions or reference rules. The full
+function remains partial; earlier percentages above belong to prior source
+or dependency epochs. Existing reference debt, where present, is unchanged.

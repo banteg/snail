@@ -638,3 +638,15 @@ these reconstructible hypotheses; they do not establish compiler exhaustion.
 
 Next unresolved source questions include the secondary Identity address owner,
 departure-origin lifetime, curve guard/cursor initialization, and mesh loops.
+
+## 2026-09-05 terminal vector family replay
+
+The complete terminal-position expression raises the current shared-header
+baseline from **79.88% to 80.66%**, with 695/696 candidate/native
+instructions and prefix 48. Reference audit: 40 ok, 0 unresolved, 0 mismatch, 0 unaudited.
+
+The retained endpoint is previous position + Vector3(0,0,1), followed by
+the existing lateral offset. This recovers the native aggregate temporary
+lifetime without changing shared vector definitions or reference rules. The full
+function remains partial; earlier percentages above belong to prior source
+or dependency epochs. Existing reference debt, where present, is unchanged.

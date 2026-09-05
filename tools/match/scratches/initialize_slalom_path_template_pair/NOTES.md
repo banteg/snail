@@ -652,3 +652,15 @@ orientation owner with the correct current/previous array entry and uses the
 matching index guard. All eight corrected variants compile with forty clean
 references; the best reaches only 57.23%. This corrected evidence bounds this
 whole indexed-sample rewrite, not the untested source-shape space.
+
+## 2026-09-05 terminal vector family replay
+
+The complete terminal-position expression raises the current shared-header
+baseline from **79.88% to 80.66%**, with 695/696 candidate/native
+instructions and prefix 48. Reference audit: 40 ok, 0 unresolved, 0 mismatch, 0 unaudited.
+
+The retained endpoint is previous position + Vector3(0,0,1), followed by
+the existing lateral offset. This recovers the native aggregate temporary
+lifetime without changing shared vector definitions or reference rules. The full
+function remains partial; earlier percentages above belong to prior source
+or dependency epochs. Existing reference debt, where present, is unchanged.

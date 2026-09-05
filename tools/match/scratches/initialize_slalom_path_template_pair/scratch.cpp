@@ -141,10 +141,8 @@ static __forceinline void build_extrapolated_strip_mesh(
                                 + sample_offset);
                         Vector3 lateral_offset =
                             sample[-1].transform.basis_right * lateral;
-                        Vector3 endpoint(
-                            sample[-1].transform.position.x,
-                            sample[-1].transform.position.y,
-                            sample[-1].transform.position.z + 1.0f);
+                        Vector3 endpoint = sample[-1].transform.position
+                            + Vector3(0.0f, 0.0f, 1.0f);
                         Vector3 generated_position =
                             endpoint + lateral_offset;
                         Vector3* vertex =

@@ -413,3 +413,15 @@ shape, yet falls further to **44.22%** at the same 692/683 instructions. All
 three shared forms audit 45 clean references with no residuals. The two
 lane-local call residuals are therefore an explicit proof tradeoff, not enough
 reason to replace the substantially closer lane-local owner graph.
+
+## 2026-09-05 terminal vector family replay
+
+The complete terminal-position expression raises the current shared-header
+baseline from **57.88% to 58.08%**, with 684/683 candidate/native
+instructions and prefix 5. Reference audit: 44 ok, 0 unresolved, 0 mismatch, 2 unaudited.
+
+The retained endpoint is previous position + Vector3(0,0,1), followed by
+the existing lateral offset. This recovers the native aggregate temporary
+lifetime without changing shared vector definitions or reference rules. The full
+function remains partial; earlier percentages above belong to prior source
+or dependency epochs. Existing reference debt, where present, is unchanged.

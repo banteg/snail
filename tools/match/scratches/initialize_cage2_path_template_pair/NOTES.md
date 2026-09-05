@@ -393,3 +393,10 @@ distinct. The vertex column is `width_cells_2` at
 No source variant is justified: Cage2 already expresses the exact asymmetric
 ownership, and the retained **68.36%**, 654/648 instructions, prefix 10/648,
 and 46 clean references remain unchanged.
+
+## 2026-09-05 terminal vector family replay
+
+4 complete terminal-expression form(s) do not improve the current
+69.74% baseline. No source change is retained. The Twister result does not
+transfer uniformly across this family; these receipts describe only the
+examined aggregate and lateral lifetimes.

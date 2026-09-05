@@ -564,3 +564,10 @@ The ledger now contains 58 records, 55 mutation sweeps, 3 probes, and 240
 unique variants. The tested forms fail to improve the retained 66.21% source.
 The tail neighborhood remains unchanged instead of
 being widened with unsupported aliasing or volatile qualifiers.
+
+## 2026-09-05 terminal vector family replay
+
+1 complete terminal-expression form(s) do not improve the current
+65.46% baseline. No source change is retained. The Twister result does not
+transfer uniformly across this family; these receipts describe only the
+examined aggregate and lateral lifetimes.

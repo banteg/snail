@@ -449,3 +449,15 @@ not inferred from decompiler variable names.
 
 No acquisition or counter edit is retained. The complete recorded grids produce
 no improvement at this 83.10% frontier.
+
+## 2026-09-05 terminal vector family replay
+
+The complete terminal-position expression raises the current shared-header
+baseline from **84.33% to 84.66%**, with 652/652 candidate/native
+instructions and prefix 32. Reference audit: 37 ok, 0 unresolved, 0 mismatch, 0 unaudited.
+
+The retained endpoint is previous position + Vector3(0,0,1), followed by
+the existing lateral offset. This recovers the native aggregate temporary
+lifetime without changing shared vector definitions or reference rules. The full
+function remains partial; earlier percentages above belong to prior source
+or dependency epochs. Existing reference debt, where present, is unchanged.

@@ -502,3 +502,10 @@ Replaying the ordinary `Vector3::operator+` after direct face ownership and
 native mesh acquisition order is exactly byte-neutral at **66.67%**, 688/707
 instructions, prefix 18/707, with all 55 references clean. The component form
 stays retained to preserve the existing explicit mesh-value provenance.
+
+## 2026-09-05 terminal vector family replay
+
+1 complete terminal-expression form(s) do not improve the current
+68.96% baseline. No source change is retained. The Twister result does not
+transfer uniformly across this family; these receipts describe only the
+examined aggregate and lateral lifetimes.

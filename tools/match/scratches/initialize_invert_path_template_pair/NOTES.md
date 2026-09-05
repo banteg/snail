@@ -296,3 +296,16 @@ instructions, prefix 109/600,
 with all 35 references clean. The native acquisition and saved-base shapes are
 already compiler-produced from the clearer source, while the separate face
 row remains a measured allocation regression.
+
+## 2026-09-05 terminal vector family replay
+
+The complete terminal-position expression raises the current shared-header
+baseline from **80.17% to 83.13%**, with 603/600 candidate/native
+instructions and prefix 120. Reference audit: 35 ok, 0 unresolved, 0 mismatch, 0 unaudited.
+
+The retained endpoint is previous position + Vector3(0,0,1), followed by
+the existing lateral offset. This recovers the native aggregate temporary
+lifetime without changing shared vector definitions or reference rules. Invert also uses a double lateral temporary and the existing vector scale
+operations, reproducing the Twister x87 lifetime recovery. The full
+function remains partial; earlier percentages above belong to prior source
+or dependency epochs. Existing reference debt, where present, is unchanged.

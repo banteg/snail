@@ -96,10 +96,8 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                             (PathTemplateSample*)((char*)path->primary_samples + sample_offset);
                         Vector3 lateral_offset =
                             sample[-1].transform.basis_right * lateral;
-                        Vector3 endpoint(
-                            sample[-1].transform.position.x,
-                            sample[-1].transform.position.y,
-                            sample[-1].transform.position.z + 1.0f);
+                        Vector3 endpoint = sample[-1].transform.position
+                            + Vector3(0.0f, 0.0f, 1.0f);
                         Vector3 generated_position =
                             endpoint + lateral_offset;
                         int vertex_index =
@@ -233,7 +231,6 @@ void cRPath::initialize_wibble_path_template_pair(
     do {
         float t = (float)local_index;
         float turn_phase = t * 0.20943952f;
-        float roll_phase = turn_phase * 3.0f;
 
         primary_samples[sample_index].center_x =
             (primary_samples[31].center_x - primary_samples[0].center_x) *
@@ -245,6 +242,7 @@ void cRPath::initialize_wibble_path_template_pair(
         primary_samples[sample_index].lateral_scale = 1.0f;
         set_matrix_identity(&primary_samples[sample_index].transform);
 
+        float roll_phase = turn_phase * 3.0f;
         int z_index = local_index + 1;
         primary_samples[sample_index].transform.position.x = 0.0f;
         primary_samples[sample_index].transform.position.z = (float)z_index;

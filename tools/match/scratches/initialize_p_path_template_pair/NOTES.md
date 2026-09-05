@@ -394,3 +394,10 @@ vertex ownership changed the mesh allocation. `Vector3::operator+` remains
 exactly byte-neutral at **63.42%**, 677/679 instructions, prefix 6/679, with
 all 41 references clean. P therefore does not share the small post-face
 operator gain recovered in Start, Invert, Wibble, and the paired Twisters.
+
+## 2026-09-05 terminal vector family replay
+
+1 complete terminal-expression form(s) do not improve the current
+64.60% baseline. No source change is retained. The Twister result does not
+transfer uniformly across this family; these receipts describe only the
+examined aggregate and lateral lifetimes.

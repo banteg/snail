@@ -341,3 +341,26 @@ reproduces the 74.14% predecessor.
 The retained source keeps the already proven double lateral owner, both scale
 operators, and terminal addition. Only the previously neutral ordinary
 addition changes in the post-face dependency context.
+
+## 2026-09-05 terminal vector family replay
+
+The complete terminal-position expression raises the current shared-header
+baseline from **77.10% to 78.45%**, with 608/608 candidate/native
+instructions and prefix 85. Reference audit: 39 ok, 0 unresolved, 0 mismatch, 0 unaudited.
+
+The retained endpoint is previous position + Vector3(0,0,1), followed by
+the existing lateral offset. This recovers the native aggregate temporary
+lifetime without changing shared vector definitions or reference rules. The full
+function remains partial; earlier percentages above belong to prior source
+or dependency epochs. Existing reference debt, where present, is unchanged.
+
+The native roll-phase lifetime is rechecked on the new terminal baseline.
+Moving its multiplication to after matrix initialization improves 78.45% to
+**78.62%**, preserving 608/608 instructions, prefix 85, and all 39 clean
+references. Placing it after the position stores regresses. The recovered
+source keeps turn phase across Identity, then computes roll phase before Z
+publication. Earlier non-improving results belong to different dependencies.
+
+Four additional complete delta-loop forms reuse either caller counter through
+a reference or an expanded loop body. All are byte-neutral; no counter/helper
+change is retained. Native delta-loop index allocation remains open.

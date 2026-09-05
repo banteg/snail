@@ -267,3 +267,10 @@ weighted bytes, and reusing only the column loses 18. The retained distinct
 Focused matching stays **67.87%**, 723/718 instructions, prefix 0/718, with
 all 52 references clean. The ledger now contains 17 records, 13 mutation
 sweeps, four probes, and 77 unique variants.
+
+## 2026-09-05 terminal vector family replay
+
+1 complete terminal-expression form(s) do not improve the current
+68.15% baseline. No source change is retained. The Twister result does not
+transfer uniformly across this family; these receipts describe only the
+examined aggregate and lateral lifetimes.

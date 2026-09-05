@@ -414,3 +414,15 @@ already-negative explicit lead-byte-cursor transfer, this closes the natural
 lead-index scope as the cause of the EBX/ESI rotation. The retained source
 keeps the shorter post-allocation declarations and does not introduce a dummy
 use, register hint, volatile qualifier, or fabricated dependency.
+
+## 2026-09-05 terminal vector family replay
+
+The complete terminal-position expression raises the current shared-header
+baseline from **56.63% to 56.78%**, with 662/687 candidate/native
+instructions and prefix 6. Reference audit: 45 ok, 0 unresolved, 0 mismatch, 0 unaudited.
+
+The retained endpoint is previous position + Vector3(0,0,1), followed by
+the existing lateral offset. This recovers the native aggregate temporary
+lifetime without changing shared vector definitions or reference rules. The full
+function remains partial; earlier percentages above belong to prior source
+or dependency epochs. Existing reference debt, where present, is unchanged.

@@ -678,10 +678,8 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                         - 1;
                     Vector3 lateral_offset =
                         previous->transform.basis_right * lateral;
-                    Vector3 endpoint(
-                        previous->transform.position.x,
-                        previous->transform.position.y,
-                        previous->transform.position.z + 1.0f);
+                    Vector3 endpoint = previous->transform.position
+                        + Vector3(0.0f, 0.0f, 1.0f);
                     Vector3 generated_position =
                         endpoint + lateral_offset;
                     Vector3* vertex =
