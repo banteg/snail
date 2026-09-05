@@ -75,14 +75,9 @@ void cRObject::AddEdge(int vertex_a, int vertex_b, int normal_index)
             if (cross_length <= 0.050000001f
                 || cross.Dot(g_object_edge_build_edges[index].direction)
                     > 0.0020000001f) {
-                int shift_index = index;
-                if (index < g_object_edge_build_count - 1) {
-                    do {
-                        memcpy(&g_object_edge_build_edges[shift_index],
-                            &g_object_edge_build_edges[shift_index + 1],
-                            sizeof(ObjectToonEdge));
-                        ++shift_index;
-                    } while (shift_index < g_object_edge_build_count - 1);
+                for (; index < g_object_edge_build_count - 1; ++index) {
+                    g_object_edge_build_edges[index] =
+                        g_object_edge_build_edges[index + 1];
                 }
                 --g_object_edge_build_count;
             }

@@ -13,10 +13,8 @@ void cRObject::CalcEdges()
     }
 
     cRFaceQuad* face = facequads;
-    ObjectToonEdge* build_edges = (ObjectToonEdge*)get_archive_data_base();
-    g_object_edge_build_edges = build_edges;
-    int edge_count = 0;
-    g_object_edge_build_count = edge_count;
+    g_object_edge_build_edges = (ObjectToonEdge*)get_archive_data_base();
+    g_object_edge_build_count = 0;
 
     int face_index = 0;
     if (facequad_count > 0) {
@@ -36,37 +34,31 @@ void cRObject::CalcEdges()
             ++face_index;
             normal_index += 2;
         } while (face_index < facequad_count);
-
-        build_edges = g_object_edge_build_edges;
-        edge_count = g_object_edge_build_count;
     }
 
     if ((flags & 0x8000) != 0) {
         int index = 0;
-        if (edge_count > 0) {
+        if (g_object_edge_build_count > 0) {
             do {
-                if ((build_edges[index].flags & OBJECT_TOON_EDGE_FLAG_BOUNDARY) != 0) {
+                if ((g_object_edge_build_edges[index].flags
+                        & OBJECT_TOON_EDGE_FLAG_BOUNDARY) != 0) {
                     int shift_index = index;
-                    if (index < edge_count - 1) {
+                    if (index < g_object_edge_build_count - 1) {
                         do {
-                            memcpy(&build_edges[shift_index],
-                                &build_edges[shift_index + 1],
-                                sizeof(ObjectToonEdge));
+                            g_object_edge_build_edges[shift_index] =
+                                g_object_edge_build_edges[shift_index + 1];
                             ++shift_index;
-                            edge_count = g_object_edge_build_count;
-                            build_edges = g_object_edge_build_edges;
                         } while (shift_index < g_object_edge_build_count - 1);
                     }
-                    --edge_count;
-                    g_object_edge_build_count = edge_count;
+                    --g_object_edge_build_count;
                     --index;
                 }
                 ++index;
-            } while (index < edge_count);
+            } while (index < g_object_edge_build_count);
         }
     }
 
-    RequestEdges(edge_count);
+    RequestEdges(g_object_edge_build_count);
     memcpy(edges, g_object_edge_build_edges,
         sizeof(ObjectToonEdge) * g_object_edge_build_count);
 }

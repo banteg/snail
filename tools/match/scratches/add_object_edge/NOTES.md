@@ -1,5 +1,9 @@
 # add_object_edge
 
+Current retained result: **91.59%**, 225/227 instructions, 15-instruction prefix,
+34 clean references and three unaudited count-publication operands. The newer
+consumed-index recovery below supersedes earlier allocation-boundary claims.
+
 Current recovery: semantic-complete (`compiler,references` residual). Exact
 Android/iOS `cRObject::AddEdge` bodies establish the common reverse-edge merge
 algorithm; Windows proves its larger record, normalized direction/length, and
@@ -195,3 +199,31 @@ restoration on the new-edge path, and the final count-decrement schedule. No
 mobile layout or compact-record behavior is imported, and no register hint,
 volatile barrier, dummy dependency, or synthetic owner is used to force those
 choices.
+
+## 2026-09-05 consumed compaction index
+
+`whole-edge-vector-owners-20260905.json` tests seven combinations of typed edge
+indexing, a whole-vector delta, and direct normal-bank inputs. The first two
+are neutral; passing bank normals directly to the cross-product helper
+regresses. No changes from that campaign are retained.
+
+`consumed-edge-index-20260905.json` identifies the live owner in the native
+compaction loop: it consumes the search index after finding the removable
+edge, rather than copying it into an independent shift index. That raises
+86.53% to **91.59%** and fixes the associated saved-register choices throughout
+the matched-edge arm. Both loop spellings and both copy forms agree; the
+retained source uses a `for` loop and ordinary record assignment.
+
+The aggregate instruction-count warning (226 to 225 versus native 227) is
+explained by the full diff: it removes the extra index-copy instruction in
+compaction. The native two-instruction deficit in final count publication
+remains; the old extra instruction had only made the total accidentally closer.
+No new mismatch region is introduced, the prefix remains 15, and reference
+debt remains the same three operands. The remaining differences include early
+register restoration on the new-edge return, normal-index store scheduling,
+and final count publication/epilogue sharing.
+
+Fifteen `edge-publication-lifetimes-20260905.json` variants test added-slot
+borrows, postincrement publication, cached compaction counts, post-tested
+loops, and pre-copy count decrement. None improves the new baseline. These
+results bound those specific lifetimes without claiming compiler exhaustion.

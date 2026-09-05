@@ -1,10 +1,9 @@
 # calc_object_edges
 
-Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
-`cRObject::CalcEdges` bodies establish the authored build/compact/transfer
-lifecycle, while Windows proves its 0x30-byte face topology and 0x24-byte toon
-edge records. All 17 references are clean; the one-instruction delta is the
-documented one-slot versus two-slot VC6 cleanup-loop allocation.
+Current result: **100.00%**, 141/141 instructions and seventeen clean references.
+The September owner recovery below supersedes the earlier compiler-residual
+assessment. Android/iOS establish the authored build/compact/transfer lifecycle;
+Windows retains its 0x30-byte faces and 0x24-byte toon-edge records.
 
 First source-shaped scratch for the toon edge builder.
 
@@ -170,3 +169,18 @@ offset into an eight-byte frame. Replaying the declaration/register sweep
 against the improved source was intentional interaction coverage; all 106
 compiled variants are source-unique even though the experiment summary notes
 the reused mutation specification.
+
+## 2026-09-05 live build-bank ownership: exact
+
+`whole-edge-array-owners-20260905.json` evaluates fifteen combinations of face,
+build-bank, count, and compaction-copy ownership. Reading both
+`g_object_edge_build_edges` and `g_object_edge_build_count` directly raises
+77.74% to **100.00%**. Local copies and manual reloads had kept an unnecessary
+second spill slot and different register lifetimes. The face cursor remains
+native; replacing that independent owner with indexed face access regresses.
+
+The canonical body has 141/141 instructions, a full 141-instruction prefix,
+and seventeen clean references with no unresolved, mismatched, or unaudited
+operands. Ordinary record assignment and explicit `memcpy` both produce the
+same exact compaction loop; the retained source uses record assignment. No
+shared record layout, compiler setting, or reference mask changed.

@@ -636,3 +636,19 @@ these reconstructible hypotheses; they do not establish compiler exhaustion.
 
 Next unresolved source questions include the secondary Identity address owner,
 departure-origin lifetime, curve guard/cursor initialization, and mesh loops.
+
+## 2026-09-05 sample-owner and identity-call probes
+
+`whole-sample-owner-20260905.json` tests actual matrix-member Identity calls,
+indexed sample construction, indexed terminal deltas, and indexed mesh sample
+borrows. Member Identity and indexed deltas are neutral at 79.88%; the mesh
+borrow alone regresses to 79.16%. No source change is retained.
+
+The first plan accidentally removed `curve_sample_offset` while still using it
+in orientation and its guard. Eight variants therefore failed to compile and
+provide no matching evidence. A digest-bound invalid-plan audit preserves the
+failure record. `corrected-sample-owner-20260905.json` replaces every remaining
+orientation owner with the correct current/previous array entry and uses the
+matching index guard. All eight corrected variants compile with forty clean
+references; the best reaches only 57.23%. This corrected evidence bounds this
+whole indexed-sample rewrite, not the untested source-shape space.
