@@ -135,3 +135,7 @@ surviving slot count and vary the vertical scan's block/for scope. None improves
 the 88.32% source; the best block/for-x plus vertical-for shape gives 86.65%,
 with all 57 references clean. No source change is retained. These lexical
 scopes do not reproduce the remaining glyph index and conversion-slot choices.
+
+## 2026-09-05 additional bounded controls
+
+Three current-baseline font-index lifetime forms do not improve 88.32%. Outer scope is neutral; direct global indexing and carrying the index into the final metrics regress and introduce reference debt. Canonical source is unchanged.

@@ -60,7 +60,7 @@ public:
         int unused_max_indices,
         unsigned int color,
         unsigned char project_uv); // @ 0x433830
-    int append_track_cache_object(
+    void append_track_cache_object(
         int row_index,
         Object* source,
         Vector3* position,

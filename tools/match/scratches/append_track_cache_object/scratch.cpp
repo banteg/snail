@@ -5,7 +5,7 @@
 
 int report_errorf(const char* format, ...);
 
-int SegmentCache::append_track_cache_object(
+void SegmentCache::append_track_cache_object(
     int row_index,
     Object* source,
     Vector3* position,
@@ -59,6 +59,5 @@ int SegmentCache::append_track_cache_object(
     }
 
     if (*index_count > max_indices)
-        return report_errorf("Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX");
-    return *index_count;
+        report_errorf("Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX");
 }

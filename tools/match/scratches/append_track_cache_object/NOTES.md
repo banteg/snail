@@ -1,4 +1,4 @@
-# Render-cache face helper
+# Exact render-cache face helper
 
 `append_track_cache_object` @ `0x433960` is the second distinct helper after
 the public cache builder. It borrows source faces and position, writes into the
@@ -6,9 +6,10 @@ manager-owned family vertex/index staging buffers, emits one triangle for
 triangle faces and two for quads, and delegates vertex identity to
 `add_track_cache_vertex` before enforcing the family index capacity.
 
-Binary Ninja confirms the unused `row_index` still occupies the first stack
-slot and the function returns the resulting index count (or the error-report
-result on overflow).
+The unused `row_index` still occupies the first stack slot. The retained
+return contract is now `void`, verified by exact compilation and the native
+caller/data-flow audit below. The previous claim that Binary Ninja confirmed
+an integer result confused its reconstructed prototype with native evidence.
 
 ## Owner and source-shape closure (2026-07-11)
 
@@ -134,3 +135,26 @@ initialization, per-face entry, and the triangle/quad publication boundary.
 All are neutral at 98.80%, 167/167 instructions, prefix 155, and six clean
 references. No reference alias is retained; these scopes do not recover the
 terminal limit-load order.
+
+## 2026-09-05 exact match from return-contract correction
+
+The retained `void` member matches **167/167 instructions**, the full prefix,
+and **all six references** under `msvc6.5 /O2 /G5 /W3`. The two-variant
+`diagnostic-cache-return-contract-20260905-mutations.json` embeds an unchanged
+header control (98.80%) and changes only this member's return contract and its
+terminal return statements (100%). The final source uses the shared header.
+
+All five native calls in `build_track_render_caches` discard EAX: the calls at
+`0x433349`, `0x4333e3`, `0x43347e`, `0x43351b`, and `0x4335a5` each overwrite it
+before use. The count is already published through `index_count`. In the
+callee, EAX comes from the capacity comparison at `0x433b0a`; the overflow
+path leaves the unrelated `report_errorf` result there. Neither path adds an
+instruction to establish a return value. The former `int` declaration made
+VC6 keep the count as a return value and changed the limit-load ordering.
+
+Caller non-use alone cannot uniquely prove an original source return type.
+Together, the output-pointer contract, native EAX data flow, and exact `void`
+compilation support this reconstruction. The historical integer-return and
+compiler-residual claims above were too strong. The shared matcher declaration
+and durable Binary Ninja/IDA prototype replays now use `void`; no compiler
+flag, synthetic dependency, layout, or reference-audit rule changed.

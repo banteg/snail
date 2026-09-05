@@ -7,11 +7,14 @@
 00433979        int32_t face_index = 0
 0043397d        if (source->facequad_count s> 0)
 00433aff        bool cond:3_1
+0043398e        float y = position->y
+00433991        float z = position->z
 00433994        struct Vec3 local_position
 00433994        local_position.x = position->x
-0043399b        local_position.y = position->y
-004339a3        local_position.z = position->z
-004339a7        struct ObjectFaceQuad* face_vertex_0 = source->facequads + face_byte_offset
+00433998        struct ObjectFaceQuad* facequads = source->facequads
+0043399b        local_position.y = y
+004339a3        local_position.z = z
+004339a7        struct ObjectFaceQuad* face_vertex_0 = facequads + face_byte_offset
 004339e4        indices[*index_count] = add_track_cache_vertex(manager, source, &local_position, face_vertex_0->vertex_0, face_vertex_0->uv[0].u, face_vertex_0->uv[0].v, vertices, vertex_count, max_vertices, max_indices, color, project_uv)
 004339ef        struct ObjectFaceQuad* face_vertex_1 = source->facequads + face_byte_offset
 00433a2c        indices[*index_count + 1] = add_track_cache_vertex(manager, source, &local_position, face_vertex_1->vertex_1, face_vertex_1->uv[1].u, face_vertex_1->uv[1].v, vertices, vertex_count, max_vertices, max_indices, color, project_uv)
@@ -32,7 +35,6 @@
 00433af9        cond:3_1 = face_index + 1 s< source->facequad_count
 00433afb        face_index += 1
 00433aff        do while (cond:3_1)
-00433b0a        int32_t result = *index_count
-00433b11        if (result s<= max_indices)
-00433b23        return result
-00433b18        return report_errorf("Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX", manager, face_index)
+00433b11        if (*index_count s> max_indices)
+00433b18        report_errorf("Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX", manager, face_index)
+00433b23        return

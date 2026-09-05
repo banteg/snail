@@ -227,3 +227,7 @@ invalid labeled jump bypassed initialized vector locals and is omitted; the
 old file and failure evidence remain in Git history and the append-only
 ledger. The two valid branch alternatives are replayed on the corrected
 contract rather than leaving an unusable old anchor in the working tree.
+
+## 2026-09-05 additional bounded controls
+
+Five attenuation precision forms do not improve 89.13%. A wide distance cast back for float arithmetic is neutral; wide clamp values regress and add constant-reference debt. The verified float Normalize contract is unchanged.

@@ -3527,7 +3527,7 @@ int32_t __thiscall add_track_cache_vertex(
     uint8_t project_uv
 );
 
-int32_t __thiscall append_track_cache_object(
+void __thiscall append_track_cache_object(
     SegmentCache* manager,
     int32_t row_index,
     Object* source,

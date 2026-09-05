@@ -6454,9 +6454,12 @@
         "face_vertex_3->uv[3].v",
         "int32_t triangle_index_base = *index_count",
         "int32_t next_index_count",
-        "*index_count = next_index_count"
+        "*index_count = next_index_count",
+        "if (*index_count s> max_indices)"
       ],
       "forbidden_substrings": [
+        "return report_errorf",
+        "return result",
         "PathTemplateStripMesh",
         "source->__offset(",
         "int32_t ebp = 0",
@@ -6473,7 +6476,7 @@
       "name": "ida_track_cache_object_face_owner",
       "artifact": "analysis/decompile/ida/functions/00433960-append_track_cache_object.c",
       "required_substrings": [
-        "int32_t __thiscall append_track_cache_object(\n        SegmentCache *manager",
+        "void __thiscall append_track_cache_object(\n        SegmentCache *manager",
         "Object *source",
         "source->facequad_count",
         "source->facequads",

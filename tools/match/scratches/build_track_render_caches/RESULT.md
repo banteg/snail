@@ -84,8 +84,8 @@ scratches instead of counting adjacent functions as unmatched builder bytes.
 
 - `add_track_cache_vertex`: exact, 103/103 instructions, prefix 103/103,
   seven clean operands.
-- `append_track_cache_object`: 98.80%, 167/167 instructions, prefix 155/167,
-  six clean operands. Direct `Object::facequads[face_index]` access recovers
-  native `esi` source ownership and `ebp += 0x30` strength reduction, while
-  the cross-port `tVector(float*)` constructor recovers the local position
-  copy. Only the final equivalent compare-register schedule remains.
+- `append_track_cache_object`: exact, 167/167 instructions, prefix 167/167,
+  six clean operands. Direct owned face indexing and the native `tVector(float*)`
+  constructor recover the loop. Correcting the unsupported integer return to
+  `void` recovers the final capacity-check schedule; all five callers consume
+  the count through its output pointer and discard EAX.
