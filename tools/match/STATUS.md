@@ -2,15 +2,15 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**585/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **128150/294937** bytes (**43.45%**) are proof-grade, and overall fuzzy is **87.45%**.
+**585/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **128150/294937** bytes (**43.45%**) are proof-grade, and overall fuzzy is **87.46%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
 ## Residual frontier
 
-**77** non-exact scratch-backed functions hold **31701 fuzzy-gap bytes**. The top 5 hold **28.8%** of that gap; the top 10 hold **41.9%**.
+**77** non-exact scratch-backed functions hold **31679 fuzzy-gap bytes**. The top 5 hold **28.8%** of that gap; the top 10 hold **41.9%**.
 
-Current-baseline experiments cover **45 functions / 9228 gap bytes**; **32 / 22472** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **45 functions / 9228 gap bytes**; **32 / 22450** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -44,8 +44,8 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 26 | initialize_slalombig_path_template_pair | 496 | semantic-complete | analysis | historical-only | 0/53 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 27 | initialize_dump_path_template_pair | 489 | semantic-complete | analysis | historical-only | 0/23 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 28 | initialize_wibble_path_template_pair | 473 | semantic-complete | analysis | current-active | 1/24 | repeated-variants,repeated-specs,metric-tradeoffs,stale-dependencies |
-| 29 | render_game_frame | 463 | semantic-complete | analysis | historical-only | 0/18 | repeated-specs,metric-tradeoffs,historical-only |
-| 30 | remove_subgame_bods | 458 | semantic-complete | analysis | current-active | 2/10 | variant-errors,stale-dependencies |
+| 29 | remove_subgame_bods | 458 | semantic-complete | analysis | current-active | 2/10 | variant-errors,stale-dependencies |
+| 30 | render_game_frame | 441 | semantic-complete | analysis | historical-only | 0/22 | repeated-variants,repeated-specs,metric-tradeoffs,historical-only,stale-dependencies |
 | 31 | initialize_hill_valley_path_template_pair | 415 | semantic-complete | analysis | historical-only | 0/34 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only |
 | 32 | initialize_supertramp_path_template_pair | 392 | semantic-complete | analysis | historical-only | 0/18 | repeated-variants,repeated-specs,metric-tradeoffs,historical-only |
 | 33 | border_input_text | 391 | semantic-complete | analysis | current-active | 5/13 | metric-tradeoffs |
@@ -746,7 +746,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 |---|---|---|---|---|---|---|---|---|---|
 | 🚧 | border_input_text | 0x4035b0 | 1581 | 439/446 | 75.25% | 6/446 | 8 ok |  | core |
 | 🚧 | update_galaxy | 0x4092f0 | 2051 | 569/566 | 71.19% | 48/566 | 55 ok |  | core |
-| 🚧 | render_game_frame | 0x40a490 | 1460 | 431/439 | 68.28% | 6/439 | 34 ok |  | boundary |
+| 🚧 | render_game_frame | 0x40a490 | 1460 | 441/439 | 69.77% | 6/439 | 34 ok |  | boundary |
 | 🚧 | update_input | 0x40aa80 | 44 | 15/19 | 52.94% | 5/19 | - |  | boundary |
 | 🚧 | select_level_track_texture_set | 0x410730 | 156 | 41/43 | 76.19% | 0/43 | 1 mismatch, 6 ok |  | core |
 | 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 108/109 | 79.26% | 37/109 | 13 ok |  | core |

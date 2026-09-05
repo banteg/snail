@@ -39,8 +39,9 @@ void cRGame::render_game_frame()
     reset_render_counters();
 
     int rendered_sprite_count = 0;
+    int ordered_count = 0;
     TransformMatrix transform;
-    set_matrix_identity(&transform);
+    transform.Identity();
 
     int active_camera_count = 0;
     int camera_order[CAMERA_SLOT_COUNT];
@@ -64,7 +65,6 @@ void cRGame::render_game_frame()
     slots[1].flags =
         (slots[1].flags & ~RENDER_SCENE_MASK) | RENDER_SCENE_PLAYER_0;
 
-    int ordered_count = 0;
     {
         for (int order_index = 0;
              order_index < CAMERA_SLOT_COUNT;
@@ -88,7 +88,7 @@ void cRGame::render_game_frame()
                             }
                             camera_order[insert] = order_index;
                             ++ordered_count;
-                            break;
+                            insert = ordered_count;
                         }
                     }
                 }

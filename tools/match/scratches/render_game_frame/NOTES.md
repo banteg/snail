@@ -415,3 +415,30 @@ frame change. The ledger now contains 18 sweeps and 103 unique variants:
 12 improve, 34 are neutral, and 57 regress. The current
 function remains at **68.28%**, 431/439 instructions, prefix 6/439, and 34
 clean masked operands.
+
+
+## 2026-09-05 coupled camera insertion and ordering-count lifetimes
+
+The native insertion path sets the inner ordinal to the updated ordered count
+and still passes through the loop increment/compare; it does not branch out
+with the scratch's old `break`. Both mobile bodies corroborate this source
+shape. Retaining that exit together with the ordering-count lifetime before
+matrix setup improves **68.28% to 69.77%**, with **441/439** instructions
+instead of 431/439, unchanged prefix 6, and all **34** references clean.
+The native increment-and-compare exit is now represented explicitly. Remaining
+whole-function allocation and bucket/replay differences stay open.
+
+The matrix setup now calls the independently verified `tMatrix::Identity()`
+member rather than its ABI compatibility free-function spelling. This is
+byte-neutral on the recovered source. Moving the sprite ledger around reset,
+matrix setup, and the render loops supplies no further gain.
+
+Four whole-source recipes record 32 compiling variants. Five original
+slot-cursor forms are invalid semantic diagnostics: after insertion they
+rebound the pointer to the end and the loop then incremented it beyond the
+one-past limit when the camera array was full. Those five are rejected and
+are not source candidates. The bounded-slot recipe reruns all five with the
+unneeded pointer rebinding removed; they regress. The retained source uses
+only the native integer-ordinal exit and cannot make that invalid pointer.
+No source exhaustion or compiler-provenance conclusion follows from the
+negative combinations.
