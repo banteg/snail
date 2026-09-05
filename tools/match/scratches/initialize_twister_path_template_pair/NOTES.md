@@ -418,3 +418,30 @@ references. Twister2 independently reproduces every result exactly.
 No source change is retained. The paired Twister frontier is **77.85%**,
 682/677 instructions, prefix
 123/677, with all 49 references clean.
+
+## 2026-09-05 terminal vector and sample-Z lifetimes
+
+The current shared-header baseline reproduces 82.56%, 682/677 instructions,
+prefix 129, and 49 clean references. Older percentages above describe earlier
+dependency epochs.
+
+Twelve complete terminal/latch forms recover a coupled source improvement:
+keep lateral as a double temporary, use the existing shared vector scale and
+addition operations, express the endpoint as previous position plus
+Vector3(0,0,1), and calculate integer sample Z after the Y expression's two
+Sin calls. The result is **85.78%, 680/677 instructions, prefix 129**, with all
+**49 references clean**. Twister2 independently reproduces the same gain.
+
+Native retains lateral on the x87 stack across the ordinary/terminal branch;
+the prior scalar float source introduced a spill and reloads. The recovered
+terminal expression also restores the previous-position Y copy and saved
+vertex-bank lifetime. Moving sample Z later narrows its lifetime across Sin
+and recovers its native stack home. No vector implementation, ABI, compiler
+flag, or reference policy changes.
+
+Fifteen follow-up grid-owner forms test typed versus byte indexing, shared
+versus branch-local sample borrows, and cell/row/mesh position lifetimes. None
+improves the retained form. Three authored Identity member-call spellings
+are byte-neutral. The remaining differences include interior receiver
+formation, ordinary vertex destination allocation, and face-loop scheduling;
+these experiments do not establish source exhaustion.

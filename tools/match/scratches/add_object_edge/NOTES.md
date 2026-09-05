@@ -231,3 +231,11 @@ results bound those specific lifetimes without claiming compiler exhaustion.
 ## 2026-09-05 continued loop-owner campaign
 
 Eleven combinations of add/merge branch shape and outer delta/cross-vector lifetimes do not improve 91.59%. The normal snapshots need their existing branch-local ownership. Canonical source is unchanged.
+
+## 2026-09-05 compaction operation boundary
+
+Six ordinary inline compaction operations combine an index value/reference
+with a global, reference, or pointer count owner. Reference indices preserve
+91.59%; value indices restore the already rejected 86.53% independent-cursor
+shape. No helper is retained. Native's separate final count load/store and
+epilogue placement remain open.

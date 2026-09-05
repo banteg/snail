@@ -37,3 +37,10 @@ Six mapping/transition lifetime variants move the immediate flag and replace the
 ## 2026-09-05 additional source-shape checks
 
 Three inline state-mapping operations and three parameter-remapping lifetimes do not improve 86.18%. No helper is retained; the default-arm source lifetime remains unresolved.
+
+## 2026-09-05 state mapping borrows
+
+Six ordinary inline state-mapping forms cover a value, const reference, or
+const pointer input with either a returned state or a reference output. All
+are byte-neutral at 86.18%. No helper is retained. The native default-arm
+parameter reload remains unrecovered.

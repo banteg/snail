@@ -30,3 +30,11 @@ The recorded probes describe the tested source forms only; they do not establish
 ## 2026-09-05 additional source-shape checks
 
 Five diagnostic vector copy/assignment definitions regress from 92.80%; seven combinations of const vector value returns are neutral. No header change is retained.
+
+## 2026-09-05 release operation boundaries
+
+Six complete ordinary inline release operations test vector returns, vector
+outputs, and channel outputs, with either explicit inputs or the original
+ordered RNG calls inside the operation. Five are byte-neutral at 92.80%;
+channel ownership across the RNG calls regresses to 89.24%. No helper is
+retained. The first X spill and third channel's store schedule remain open.

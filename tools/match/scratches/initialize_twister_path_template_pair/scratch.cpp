@@ -98,15 +98,13 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
             column = 0;
             if (path->width_cells >= 0) {
                 do {
-                    float lateral =
+                    double lateral =
                         (float)column - (float)path->width_cells * 0.5f;
                     if (row != path->segment_count) {
                         PathTemplateSample* sample =
                             (PathTemplateSample*)((char*)path->primary_samples + sample_offset);
-                        Vector3 lateral_offset(
-                            lateral * sample->transform.basis_right.x,
-                            lateral * sample->transform.basis_right.y,
-                            lateral * sample->transform.basis_right.z);
+                        Vector3 lateral_offset =
+                            sample->transform.basis_right * lateral;
                         Vector3 generated_position =
                             sample->transform.position + lateral_offset;
                         int vertex_index =
@@ -115,18 +113,11 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                     } else {
                         PathTemplateSample* sample =
                             (PathTemplateSample*)((char*)path->primary_samples + sample_offset);
-                        Vector3 lateral_offset(
-                            lateral * sample[-1].transform.basis_right.x,
-                            lateral * sample[-1].transform.basis_right.y,
-                            lateral * sample[-1].transform.basis_right.z);
-                        Vector3 endpoint(
-                            sample[-1].transform.position.x,
-                            sample[-1].transform.position.y,
-                            sample[-1].transform.position.z + 1.0f);
-                        Vector3 generated_position(
-                            endpoint.x + lateral_offset.x,
-                            endpoint.y + lateral_offset.y,
-                            endpoint.z + lateral_offset.z);
+                        Vector3 lateral_offset =
+                            sample[-1].transform.basis_right * lateral;
+                        Vector3 endpoint = sample[-1].transform.position
+                            + Vector3(0.0f, 0.0f, 1.0f);
+                        Vector3 generated_position = endpoint + lateral_offset;
                         int vertex_index =
                             column + row * (path->width_cells + 1);
                         vertices[vertex_index] = generated_position;
@@ -268,9 +259,9 @@ void cRPath::initialize_twister_path_template_pair(
         set_matrix_identity(&primary_samples[i].transform);
         primary_samples[i].transform.position.x = primary_samples[i].center_x;
         float angle_sine = Sin(angle);
-        int sample_z = local_index + 1;
         primary_samples[i].transform.position.y =
             Sin(half_angle) * angle_sine * height;
+        int sample_z = local_index + 1;
         primary_samples[i].transform.position.z = (float)sample_z;
         set_matrix_identity(&secondary_samples[i].transform);
         secondary_samples[i].transform.position.x = primary_samples[i].center_x;

@@ -424,3 +424,12 @@ allocation change. That combined variant is not retained, but its complete
 source is reproducible from `whole-row-cell-removal-operation-20260905.json`
 (`return-pointer-countdown`). It is a concrete opening-loop lead for later
 coupled work, not proof of exhaustion.
+
+## 2026-09-05 cleanup phase separation
+
+Four ordinary inline live-object phase wrappers combine pointer/reference
+receivers with the existing row loop or the returned row cursor. VC6 emits
+the large phase out of line, producing a new call and losing the native
+inlined body. The 56-instruction row prefix is preserved by the returned
+cursor form, but these complete functions regress. No wrapper or inline
+forcing is retained.

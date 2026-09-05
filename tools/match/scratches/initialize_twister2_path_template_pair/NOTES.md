@@ -428,3 +428,18 @@ references. Twister independently reproduces every result exactly.
 No source change is retained. The paired Twister frontier is **77.85%**,
 682/677 instructions, prefix
 123/677, with all 49 references clean.
+
+## 2026-09-05 paired terminal vector recovery
+
+A complete transfer of Twister's native-backed terminal and sample-Z source
+lifetimes independently raises the current baseline from **82.56% to 85.78%**.
+Candidate instructions fall from 682 to 680 against 677 native; prefix stays
+129, and all 49 references remain clean. The different curve extent and
+angular constants are preserved.
+
+The retained change uses a double lateral temporary, existing shared vector
+operations, a previous-position plus Vector3(0,0,1) endpoint, and integer
+sample-Z initialization after the Y expression's Sin calls. The paired full
+diffs recover the same x87, saved vertex-bank, and sample-Z stack lifetimes.
+Older percentages above describe earlier shared-header epochs. No header,
+ABI, or compiler-setting change is retained. The function remains partial.

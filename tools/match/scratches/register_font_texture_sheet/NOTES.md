@@ -62,3 +62,10 @@ Three glyph-scan products compare direct global font indexing and a structured f
 ## 2026-09-05 continued loop-owner campaign
 
 Seven whole glyph-run forms test a start-index owner, a literal split offset, and removal of the last-X snapshot. None improves 76.50%; canonical source is unchanged.
+
+## 2026-09-05 glyph boundary operation
+
+Four ordinary inline glyph-boundary operations borrow the consumed slot and
+run counters through references or pointers. All inline and remain neutral at
+76.50%, with all 57 references clean. No helper is retained. The stack-owned
+glyph slot versus register-owned split coordinate remains unresolved.
