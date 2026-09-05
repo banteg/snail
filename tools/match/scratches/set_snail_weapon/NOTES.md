@@ -22,3 +22,7 @@ and Windows-address identity.
 ## 2026-09-05 bounded animation-family probes
 
 Three complete channel-lifetime variants remove the channel-0 borrow and/or separate selected-state and immediate locals for each channel. All regress from 73.02% with references still clean. The original state-dispatch and channel interactions remain open; local simplification alone is insufficient.
+
+## 2026-09-05 continued source-shape investigation
+
+Eleven change-gate lifetime forms regress from 73.02%. The undefined default-arm value remains as in the native body; no fabricated initialization is added.

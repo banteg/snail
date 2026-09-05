@@ -84,23 +84,9 @@ static __forceinline void build_strip_mesh(
                             &vertices[column + row * (path->width_cells + 1)];
                         *vertex = generated_position;
                     } else {
-                        Vector3 lateral_offset =
-                            ((PathTemplateSample*)((char*)path->primary_samples
-                                + sample_offset))[-1].transform.basis_right * lateral;
-                        Vector3 endpoint;
-                        endpoint.x =
-                            ((PathTemplateSample*)((char*)path->primary_samples
-                                + sample_offset))[-1].transform.position.x;
-                        endpoint.y =
-                            ((PathTemplateSample*)((char*)path->primary_samples
-                                + sample_offset))[-1].transform.position.y;
-                        endpoint.z =
-                            ((PathTemplateSample*)((char*)path->primary_samples
-                                + sample_offset))[-1].transform.position.z + 1.0f;
-                        Vector3 generated_position(
-                            endpoint.x + lateral_offset.x,
-                            endpoint.y + lateral_offset.y,
-                            endpoint.z + lateral_offset.z);
+                        Vector3 generated_position = (((PathTemplateSample*)((char*)path->primary_samples
+                                + sample_offset))[-1].transform.position + Vector3(0.0f, 0.0f, 1.0f)) + (((PathTemplateSample*)((char*)path->primary_samples
+                                + sample_offset))[-1].transform.basis_right * lateral);
                         Vector3* vertex =
                             &vertices[column + row * (path->width_cells + 1)];
                         *vertex = generated_position;

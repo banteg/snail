@@ -55,3 +55,7 @@ The recorded probes describe the tested source forms only; they do not establish
 ## 2026-09-05 continued loop-owner campaign
 
 Four loop-vector scope combinations and eight emitter counter/position ownership combinations do not improve 95.15%. Moving the velocity outside the loop is neutral here, unlike the two fringe builders. Canonical source is unchanged.
+
+## 2026-09-05 continued source-shape investigation
+
+Two diagnostic XYZ constructor-body forms are non-improving. XYZ assignment is neutral and reversed assignment regresses. The shared vector header remains unchanged.

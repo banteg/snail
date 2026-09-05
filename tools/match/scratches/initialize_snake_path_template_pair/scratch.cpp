@@ -238,25 +238,10 @@ void cRPath::initialize_snake_path_template_pair(
                                 + row * (this->width_cells + 1)];
                         *vertex = generated_position;
                     } else {
-                        Vector3 lateral_offset =
-                            ((PathTemplateSample*)((char*)this->primary_samples
+                        Vector3 generated_position = (((PathTemplateSample*)((char*)this->primary_samples
+                                + sample_offset))[-1].transform.position + Vector3(0.0f, 0.0f, 1.0f)) + (((PathTemplateSample*)((char*)this->primary_samples
                                 + sample_offset))[-1].transform.basis_right
-                            * lateral;
-                        Vector3 endpoint;
-                        endpoint.x =
-                            ((PathTemplateSample*)((char*)this->primary_samples
-                                + sample_offset))[-1].transform.position.x;
-                        endpoint.y =
-                            ((PathTemplateSample*)((char*)this->primary_samples
-                                + sample_offset))[-1].transform.position.y;
-                        endpoint.z =
-                            ((PathTemplateSample*)((char*)this->primary_samples
-                                + sample_offset))[-1].transform.position.z
-                                + 1.0f;
-                        Vector3 generated_position(
-                            endpoint.x + lateral_offset.x,
-                            endpoint.y + lateral_offset.y,
-                            endpoint.z + lateral_offset.z);
+                            * lateral);
                         Vector3* vertex =
                             &vertices[column
                                 + row * (this->width_cells + 1)];

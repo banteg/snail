@@ -56,3 +56,5 @@ copy/lifetime combinations.
 Seven whole-coordinate ownership combinations remove integer bit-copy carriers, replace layout-pointer borrows with direct fields, and move flag publication. None improves 99.44%; canonical source is unchanged. Direct fields repair the initial load ordering but introduce later differences, so that tradeoff is not retained.
 
 The recorded probes describe the tested source forms only; they do not establish exhaustion.
+
+Twelve hit-position setter/value-pair forms, including sprite-copy interactions, do not improve 99.44%. No synthetic point owner is retained.

@@ -339,3 +339,11 @@ assignment, and direct destination emission.
 ## 2026-09-05 continued loop-owner campaign
 
 Fifteen mesh-vector lifetime combinations and six direct authored-body expansions are neutral at 90.06%. The helper boundary is not sufficient to explain this builder's remaining terminal and face schedule. Canonical source stays unchanged.
+
+## 2026-09-05 continued source-shape investigation
+
+The terminal endpoint is now expressed as `(previous.position + Vector3(0, 0, 1)) + previous.basis_right * lateral`. Unlike the scalar endpoint reconstruction, this preserves the vector addition evaluation and reproduces the entire native terminal x87 sequence. All temporary, local, and outer constant-vector forms of this nested expression agree. The retained temporary form improves 90.06% to 91.10%, extending the exact prefix from 373 to 443, with all 39 references clean. This directly supersedes the earlier claim that the terminal expression boundary was closed.
+
+Five branch-owner forms, three setter forms, and two diagnostic constructor forms do not improve the prior baseline. After the endpoint recovery, twelve UV-owner forms are non-improving; twelve parity/UV duplication forms regress, and four winding-dispatch forms have no tradeoff-free gain. These experiments leave the face schedule open rather than attributing it to the compiler.
+
+Fifteen per-corner UV value forms and fifteen texture-selection expression forms also give no tradeoff-free improvement; no auxiliary UV type or helper is retained.

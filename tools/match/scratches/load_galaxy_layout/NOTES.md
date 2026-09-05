@@ -329,3 +329,7 @@ Eight complete parser-loop/error/finalization variants in
 `structured-route-parser-20260905.json` regress from that new baseline. No
 parser rewrite was retained. These results leave source-shape work open and
 do not establish that the remaining mismatch is a compiler limitation.
+
+## 2026-09-05 continued source-shape investigation
+
+Seven star-loop scope and finalization forms do not produce a tradeoff-free gain. The highest score, 90.17%, shortens the exact prefix from 62 to 47; the canonical 89.74% remains. This does not settle the original loop structure.

@@ -11,8 +11,8 @@ int OSDPrintUV(
     int texture_id,
     float x,
     float y,
-    float width,
-    float height,
+    float base_width,
+    float base_height,
     int flags,
     tColour* color,
     float u0,
@@ -43,47 +43,45 @@ void cRBorder::Draw()
 
     int blend_mode;
     if ((g_runtime_config.render_flags & 0x80) == 0) {
-        blend_mode = 0;
         white.a = 1.0f;
         reserved_color_0.a = 1.0f;
+        blend_mode = 0;
     } else {
         blend_mode = 3;
     }
-    int glow_blend_mode = blend_mode;
 
-    float width = layout_width;
-    float height = layout_height;
+    float base_width = layout_width;
+    float base_height = layout_height;
 
     if ((flags & FRONTEND_WIDGET_FLAG_SLIDER) != 0) {
         slider_color = current_text_color;
         tColour* color = &slider_color;
-        float slider = slider_position_current;
-        if (slider > 0.0f) {
+        if (slider_position_current > 0.0f) {
             OSDPrintUV(
                 37,
-                texture_hit_x + width * 0.5f - 128.0f,
+                texture_hit_x + base_width * 0.5f - 128.0f,
                 texture_hit_y + 50.0f,
-                slider * 256.0f,
+                slider_position_current * 256.0f,
                 32.0f,
                 0x1000000,
                 color,
                 0.0f,
                 0.0f,
-                slider,
+                slider_position_current,
                 1.0f,
                 blend_mode,
                 0);
         }
-        if (slider < 1.0f) {
+        if (slider_position_current < 1.0f) {
             OSDPrintUV(
                 36,
-                texture_hit_x + width * 0.5f - 128.0f + slider * 256.0f,
+                texture_hit_x + base_width * 0.5f - 128.0f + slider_position_current * 256.0f,
                 texture_hit_y + 50.0f,
-                (1.0f - slider) * 256.0f,
+                (1.0f - slider_position_current) * 256.0f,
                 32.0f,
                 0x1000000,
                 color,
-                slider,
+                slider_position_current,
                 0.0f,
                 1.0f,
                 1.0f,
@@ -139,12 +137,13 @@ void cRBorder::Draw()
     }
 
     if ((widget_flags & FRONTEND_WIDGET_FLAG_SPRITE_MODE) != 0) {
+        float sprite_edge = border_edge;
         float pad = border_edge * 0.5f;
         OSDPrintUV(
             texture_id,
             texture_hit_x - pad,
             texture_hit_y - pad,
-            texture_hit_width + border_edge,
+            sprite_edge + texture_hit_width,
             texture_hit_height + border_edge,
             0x1000000,
             &current_text_color,
@@ -162,7 +161,7 @@ void cRBorder::Draw()
                 texture_id,
                 texture_hit_x + sprite_shadow_offset - shadow_pad,
                 texture_hit_y + sprite_shadow_offset - shadow_pad,
-                texture_hit_width + border_edge,
+                border_edge + texture_hit_width,
                 texture_hit_height + border_edge,
                 0x1000000,
                 shadow_color.Set(0.0f, 0.0f, 0.0f, 0.89999998f),
@@ -178,31 +177,30 @@ void cRBorder::Draw()
     if ((widget_flags & FRONTEND_WIDGET_FLAG_FRAMELESS) != 0)
         return;
 
-    float x = texture_hit_x;
-    float y = texture_hit_y;
-    float edge = render_inset_base;
-    float u0 = edge * 0.0078125f;
-    float u1 = 1.0f - u0;
-
+    float x, y, width, height, edge, u0, u1;
     if (render_inset_dynamic != 0) {
         edge = 4.0f;
         u0 = 0.1f;
         u1 = 0.89999998f;
-        x += 4.0f;
-        y += 3.0f;
-        width -= 8.0f;
-        height -= 6.0f;
+        x = texture_hit_x + 4.0f;
+        y = texture_hit_y + 3.0f;
+        width = base_width - 8.0f;
+        height = base_height - 6.0f;
     } else if (current_padding < render_inset_base) {
         float delta = render_inset_base - current_padding;
         render_inset_delta = delta;
         edge = render_inset_base;
-        x += delta;
-        y += delta;
-        width -= delta + delta;
-        height -= delta + delta;
+        x = texture_hit_x + delta;
+        y = texture_hit_y + delta;
+        width = base_width - (delta + delta);
+        height = base_height - (delta + delta);
         u0 = edge * 0.0078125f;
         u1 = 1.0f - u0;
     } else {
+        x = texture_hit_x;
+        y = texture_hit_y;
+        width = base_width;
+        height = base_height;
         edge = current_padding;
         u0 = 0.2f;
         u1 = 0.80000001f;
@@ -214,14 +212,14 @@ void cRBorder::Draw()
     OSDPrintUV(border_texture_id, left, top, edge, edge, 0x1000000, &current_fill_color, 0.0f, 0.0f, u0, u0, blend_mode, 0);
     OSDPrintUV(border_texture_id, x, top, width, edge, 0x1000000, &current_fill_color, u0, 0.0f, u1, u0, blend_mode, 0);
     float right = x + width;
-    OSDPrintUV(border_texture_id, right, top, edge, edge, 0x1000000, &current_fill_color, u1, 0.0f, 1.0f, u0, glow_blend_mode, 0);
-    OSDPrintUV(border_texture_id, left, y, edge, height, 0x1000000, &current_fill_color, 0.0f, u0, u0, u1, glow_blend_mode, 0);
-    OSDPrintUV(border_texture_id, x, y, width, height, 0x1000000, &current_fill_color, u0, u0, u1, u1, glow_blend_mode, 0);
-    OSDPrintUV(border_texture_id, right, y, edge, height, 0x1000000, &current_fill_color, u1, u0, 1.0f, u1, glow_blend_mode, 0);
+    OSDPrintUV(border_texture_id, right, top, edge, edge, 0x1000000, &current_fill_color, u1, 0.0f, 1.0f, u0, blend_mode, 0);
+    OSDPrintUV(border_texture_id, left, y, edge, height, 0x1000000, &current_fill_color, 0.0f, u0, u0, u1, blend_mode, 0);
+    OSDPrintUV(border_texture_id, x, y, width, height, 0x1000000, &current_fill_color, u0, u0, u1, u1, blend_mode, 0);
+    OSDPrintUV(border_texture_id, right, y, edge, height, 0x1000000, &current_fill_color, u1, u0, 1.0f, u1, blend_mode, 0);
     float bottom = y + height;
-    OSDPrintUV(border_texture_id, left, bottom, edge, edge, 0x1000000, &current_fill_color, 0.0f, u1, u0, 1.0f, glow_blend_mode, 0);
-    OSDPrintUV(border_texture_id, x, bottom, width, edge, 0x1000000, &current_fill_color, u0, u1, u1, 1.0f, glow_blend_mode, 0);
-    OSDPrintUV(border_texture_id, right, bottom, edge, edge, 0x1000000, &current_fill_color, u1, u1, 1.0f, 1.0f, glow_blend_mode, 0);
+    OSDPrintUV(border_texture_id, left, bottom, edge, edge, 0x1000000, &current_fill_color, 0.0f, u1, u0, 1.0f, blend_mode, 0);
+    OSDPrintUV(border_texture_id, x, bottom, width, edge, 0x1000000, &current_fill_color, u0, u1, u1, 1.0f, blend_mode, 0);
+    OSDPrintUV(border_texture_id, right, bottom, edge, edge, 0x1000000, &current_fill_color, u1, u1, 1.0f, 1.0f, blend_mode, 0);
 
     if (g_game->border_manager.delayed_widget_active != 0
         && this == g_game->border_manager.delayed_widget) {

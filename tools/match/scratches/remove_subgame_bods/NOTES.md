@@ -402,3 +402,7 @@ product. Reproduce the saved overlay with:
 uv run snail match probe tools/match/scratches/remove_subgame_bods \
   --source tools/match/scratches/remove_subgame_bods/probe_typed_owners_countdown.cpp
 ```
+
+## 2026-09-05 continued source-shape investigation
+
+The 63 combinations of typed hazard owners, typed row owners, and an inner countdown do not improve the 71.77% baseline. A typed row alone is neutral; the countdown loses matching bytes. Required linked/state guards are preserved throughout.

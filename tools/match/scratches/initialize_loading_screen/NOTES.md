@@ -41,3 +41,7 @@ canonical target.
 ## 2026-09-05 whole-function source-lifetime probes
 
 Three texture-load lifetime probes test a shared archive pointer, separate result/count scopes per texture, and the load helper result. None improves 83.00%. The returned-byte-pointer variant regresses and is not retained; native continues to consume the archive buffer.
+
+## 2026-09-05 continued source-shape investigation
+
+Two common texture-loading helper forms are neutral at 83.00%. Both preserve error fallback and the native background-lock/bar-unlock behavior. No helper is retained.

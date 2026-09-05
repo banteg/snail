@@ -191,3 +191,9 @@ remains unverified rather than being forced onto `G0RenderObject`.
 ## 2026-09-05 whole-loop source probes
 
 Twenty-four paired copy-loop probes test the native float-pointer constructor, named vector copies, source borrows, and scalar field stores in both branches. None improves the 90.58% baseline. The two source-address preparation differences remain visible, with four clean references; no local or type workaround is retained.
+
+## 2026-09-05 continued source-shape investigation
+
+Nine copy-address ordering and reusable-vector combinations do not improve 90.58%. Reversing the pointer-plus-index operands is neutral. No artificial address dependency is retained.
+
+Nine memcpy/memmove upload forms give no gain. The memcpy intrinsic reproduces the existing aggregate assignment; memmove does not recover the native address setup.

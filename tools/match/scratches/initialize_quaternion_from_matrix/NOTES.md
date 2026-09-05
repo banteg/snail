@@ -145,3 +145,7 @@ structured trees with duplicated arithmetic leaves give 303 instructions
 rather than native's 186; VC6 does not merge those whole bodies here. These
 `structured-dominant-bodies-mutations.json` probes are not promoted. The
 canonical 92.47% source and its exact arithmetic bodies remain unchanged.
+
+## 2026-09-05 continued source-shape investigation
+
+Six materialized dominant-axis dispatch forms preserve the comparison decision tree and tie cases, but regress from 92.47%. The natural existing branch tree remains; these results do not establish a compiler limitation.

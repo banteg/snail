@@ -593,3 +593,11 @@ The recorded probes describe the tested source forms only; they do not establish
 ## 2026-09-05 continued loop-owner campaign
 
 Writing the mesh construction directly in the owning method, rather than the reconstruction-only force-inline helper, raises **86.96% to 87.58%**, with all forty references clean and the 387-instruction prefix intact. Both block-scoped and method-scoped expansions agree. This removes an invented helper boundary. Fifteen vector lifetime combinations before expansion were neutral; no vector-layout change is retained.
+
+## 2026-09-05 continued source-shape investigation
+
+The nested terminal vector expression shared with S-bend improves 87.58% to 88.19%, retaining the 387-instruction prefix, exact 652-instruction count, and all 40 clean references. The intermediate endpoint is a vector addition of the previous position and the one-unit terminal step before adding the lateral displacement.
+
+Five branch-owner and three setter forms do not improve the preceding source. Twelve UV-owner forms are non-improving after the endpoint change. Four corrected winding-dispatch probes compile, but higher scores worsen instruction count; none is retained. The earlier malformed dispatch sweep is digest-audited as a generator boundary error, not evidence against any source hypothesis.
+
+Fifteen per-corner UV value forms and fifteen texture-selection expression forms also give no tradeoff-free improvement; no auxiliary UV type or helper is retained.

@@ -172,3 +172,7 @@ results. They do not establish source exhaustion or compiler provenance.
 ## 2026-09-05 whole-function source-lifetime probes
 
 Eleven whole-function color/widget/flag combinations test call-local colors, independent color locals, direct widget access, and live definition flags. None improves 84.42%; all reference operands remain clean. These combinations do not close the remaining argument/register lifetimes.
+
+## 2026-09-05 continued source-shape investigation
+
+Eleven flag, definition, and widget-owner reuse forms give no gain at 84.42%. Reusing local names is neutral; changing the actual borrow or reload lifetimes regresses.

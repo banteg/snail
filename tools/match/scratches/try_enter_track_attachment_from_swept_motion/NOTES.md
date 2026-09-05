@@ -108,7 +108,7 @@ Windows cannot spell by itself. Both ports retain exact
 `cRPathFollowGoldy::{Init,Traverse}` symbols, and their `cRPath::Search` success
 tails hand ownership to that class. Windows remains authoritative for the
 embedded address at `Player +0x384`, the 0x40-byte extent, every member offset,
-and this split function's scalar ABI.
+and this split function's seven stack-word argument extent; that extent alone does not distinguish scalar floats from vectors passed by value.
 
 The shared matcher and analysis headers now make `cRPathFollowGoldy` the
 primary owner; `FollowState` is retained only as a compatibility alias. Player,
@@ -187,4 +187,10 @@ update. The Windows split ABI and every embedded offset remain native-derived.
 
 All 47 references are clean. The sole arithmetic delta is a commuted x87
 addition, and the five missing candidate instructions are a duplicated native
-miss epilogue. These are compiler residuals, not omitted behavior or ownership.
+miss epilogue. These are observed code-generation differences. The original source expression and argument grouping remain open; they are not proof of a compiler limitation.
+
+## 2026-09-05 argument grouping confidence correction
+
+The seven Windows stack dwords prove the argument extent, not a six-scalar source signature: two three-float vectors passed by value plus the cell pointer have the same extent. Both mobile symbols explicitly retain vector-value arguments, and the current Windows `update_subgoldy` scratch already declares the same call through `SubgoldyPathView` with two `Vector3` values. The shared exact `SearchPos` family also uses vector-value arguments. The scalar declaration is therefore a compatibility reconstruction, not a proven authored Windows prototype. Earlier scalar-ABI closure statements must be read with this correction.
+
+Two local header-shadow probes test vector-value arguments with vector or component expressions; eight more test scalar copies, const copies, explicit components, reversed operands, and temporary scopes. They give 94.79% versus the canonical 95.78%, with all 47 references clean. The X addition order improves while Y/Z ordering changes, and the duplicated miss epilogue remains absent. No shared ABI is changed on this score evidence. Caller result non-use alone likewise does not prove a void return type; the empty native exits and path-dependent register residue are the stronger evidence here.
