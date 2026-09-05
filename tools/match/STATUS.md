@@ -10,7 +10,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 **73** non-exact scratch-backed functions hold **30545 fuzzy-gap bytes**. The top 5 hold **29.9%** of that gap; the top 10 hold **43.5%**.
 
-Current-baseline experiments cover **43 functions / 9535 gap bytes**; **30 / 21010** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **44 functions / 9721 gap bytes**; **29 / 20824** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -58,7 +58,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 40 | initialize_start_path_template_pair | 268 | incomplete | analysis | current-active | 3/66 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
 | 41 | set_snail_weapon | 254 | semantic-complete | analysis | current-active | 7/10 | repeated-variants |
 | 42 | initialize_intro_screen | 206 | semantic-complete | analysis | current-active | 3/6 | repeated-variants,variant-errors |
-| 43 | update_golb_ai | 186 | semantic-complete | analysis | historical-only | 0/22 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 43 | update_golb_ai | 186 | semantic-complete | analysis | current-active | 1/23 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
 | 44 | initialize_sbend_path_template_pair | 184 | semantic-complete | analysis | current-active | 14/62 | repeated-specs,metric-tradeoffs,stale-dependencies |
 | 45 | initialize_loading_screen | 129 | semantic-complete | analysis | current-active | 3/7 | variant-errors |
 | 46 | register_font_texture_sheet | 120 | semantic-complete | analysis | current-active | 2/23 | repeated-variants,metric-tradeoffs,stale-dependencies |
@@ -68,26 +68,26 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 50 | initialize_tip | 80 | semantic-complete | analysis | current-active | 3/7 | repeated-variants |
 | 51 | sample_smtrack_heightmap | 75 | semantic-complete | analysis | current-active | 2/5 | - |
 | 52 | add_object_edge | 65 | semantic-complete | analysis,references | historical-only | 0/16 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 53 | initialize_quaternion_from_matrix | 44 | semantic-complete | analysis | current-active | 5/8 | - |
+| 53 | initialize_quaternion_from_matrix | 44 | semantic-complete | analysis | current-active | 6/9 | - |
 | 54 | load_frontend_level_by_mode_and_index | 41 | semantic-complete | analysis,references | current-active | 2/5 | - |
 | 55 | release_snail_weapons | 40 | semantic-complete | analysis | current-inconclusive | 8/12 | variant-errors,audited-plan-errors,inconclusive-sweeps |
-| 56 | select_level_track_texture_set | 37 | semantic-complete | analysis,references | current-active | 2/5 | variant-errors |
+| 56 | select_level_track_texture_set | 37 | semantic-complete | analysis,references | current-active | 3/6 | variant-errors |
 | 57 | refresh_object_vertex_buffer | 37 | semantic-complete | analysis | current-active | 5/8 | - |
 | 58 | play_subgoldy_shoot_sfx | 36 | semantic-complete | analysis,references | current-active | 1/7 | repeated-variants,variant-errors,stale-dependencies |
 | 59 | remove_sub_loc | 35 | semantic-complete | analysis | current-active | 4/7 | - |
 | 60 | try_enter_track_attachment_from_swept_motion | 34 | semantic-complete | analysis | current-active | 3/8 | - |
 | 61 | set_snail_jetpack | 26 | semantic-complete | analysis | current-active | 4/7 | repeated-variants |
-| 62 | initialize_star_field | 21 | semantic-complete | analysis | current-active | 5/14 | repeated-specs,metric-tradeoffs,variant-errors |
+| 62 | initialize_star_field | 21 | semantic-complete | analysis | current-active | 7/16 | repeated-specs,metric-tradeoffs,variant-errors |
 | 63 | update_input | 21 | semantic-complete | analysis | historical-only | 0/3 | historical-only |
 | 64 | create_golb | 20 | semantic-complete | analysis | current-active | 3/21 | variant-errors,stale-dependencies |
 | 65 | firework_shoot | 19 | semantic-complete | analysis | current-active | 6/10 | repeated-variants,stale-dependencies |
 | 66 | extract_snail_local_hotspots | 18 | semantic-complete | analysis | current-active | 3/7 | repeated-variants,variant-errors |
-| 67 | explode_slug_hazard | 13 | semantic-complete | analysis | current-inconclusive | 6/9 | repeated-variants,variant-errors,audited-plan-errors,inconclusive-sweeps |
-| 68 | traverse_path_follow_golb | 11 | semantic-complete | analysis | current-active | 4/27 | repeated-variants,metric-tradeoffs,stale-dependencies |
-| 69 | read_repeating_text_input_key_code | 9 | semantic-complete | analysis | current-inconclusive | 5/11 | variant-errors,audited-plan-errors,inconclusive-sweeps,stale-dependencies |
-| 70 | border_mouse_test | 7 | semantic-complete | analysis | current-active | 4/7 | variant-errors |
+| 67 | explode_slug_hazard | 13 | semantic-complete | analysis | current-inconclusive | 9/12 | repeated-variants,variant-errors,audited-plan-errors,inconclusive-sweeps |
+| 68 | traverse_path_follow_golb | 11 | semantic-complete | analysis | current-active | 5/28 | repeated-variants,metric-tradeoffs,stale-dependencies |
+| 69 | read_repeating_text_input_key_code | 9 | semantic-complete | analysis | current-inconclusive | 6/12 | variant-errors,audited-plan-errors,inconclusive-sweeps,stale-dependencies |
+| 70 | border_mouse_test | 7 | semantic-complete | analysis | current-active | 5/8 | variant-errors |
 | 71 | switch_track_mirror | 7 | semantic-complete | analysis | current-active | 1/4 | - |
-| 72 | draw_frontend_widget | 7 | semantic-complete | analysis | current-active | 5/14 | stale-dependencies |
+| 72 | draw_frontend_widget | 7 | semantic-complete | analysis | current-active | 6/15 | stale-dependencies |
 | 73 | append_track_cache_object | 5 | semantic-complete | analysis | current-active | 4/7 | - |
 
 

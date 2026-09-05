@@ -162,3 +162,9 @@ through a common exit. All reproduce the same 92.47%, 186/186 instructions,
 prefix 42, and 23 clean references. The compiler duplicates the same epilogues;
 this exit-lifetime change does not repair the diagonal dispatch placement.
 No source change is retained, and the dispatch source shape remains open.
+
+## 2026-09-05 continued 590-match investigation
+
+Four whole-constructor trace-path placements test explicit else, negative-first nesting, and either path behind a label. Two are neutral at 92.47%; two move substantial code and regress to 19.89%. All 23 references remain clean. These placements do not resolve the diagonal dispatch ordering.
+
+These receipts bound the tested forms and do not establish source exhaustion.

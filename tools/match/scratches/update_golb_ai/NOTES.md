@@ -68,3 +68,7 @@ the eight garbage-loop/exit alternatives leave the while/for cases neutral
 and regress the guarded do/while cases. These do not prove that the remaining
 constant or operand choices are exhausted. No shared vector implementation,
 compiler flag, return contract, or artificial collision-side dependency changed.
+
+## 2026-09-05 additional coupled source controls
+
+Four complete active-state forms test an if guard, enclosing if, enclosing switch, and a skip-tick else branch. The enclosing switch is neutral at 93.01%; the if forms regress to 88.46%. All 71 references remain clean, and source is unchanged.

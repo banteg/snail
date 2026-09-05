@@ -210,3 +210,7 @@ neutral, with unchanged instruction counts, prefixes, and clean references.
 These results do not independently prove free-versus-member authored spelling;
 they show that this distinction does not explain the tested native differences.
 No shared header or caller-specific operator implementation is changed.
+
+## 2026-09-05 additional coupled source controls
+
+Six explicit coordinate-construction combinations and six follow-up corner-value forms retain the shared vector header unchanged. Camera coordinate construction plus a named corner speed reaches 98.38%, 247/247 instructions, and 26 clean references, but moves the first mismatch from instruction 126 to 124. The new source still has four scheduling moves across travel/color setup and corner publication. It remains a diagnostic seed, not a retained gain. Travel coordinate construction regresses. Precision and destination-borrow follow-ups do not remove those remaining differences.

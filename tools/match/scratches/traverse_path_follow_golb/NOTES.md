@@ -58,3 +58,9 @@ owners before or after local displacement calculation. All regress from
 99.29% to 98.82%, with the same prefix and seven clean references. No snapshot
 is retained. The existing shared vector multiplication remains canonical;
 this result does not settle the Y-product x87 operand schedule.
+
+## 2026-09-05 continued 590-match investigation
+
+Eight carry/displacement precision combinations do not improve 99.29%. Uncast double carry moves the first address calculation toward native but introduces other floating-point differences (98.59%); the remaining forms are neutral. All seven references remain clean. No source change is retained.
+
+These receipts bound the tested forms and do not establish source exhaustion.

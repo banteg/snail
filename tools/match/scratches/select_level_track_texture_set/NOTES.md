@@ -134,3 +134,7 @@ residual, not a missing case or owner.
 ## 2026-09-05 additional source-shape checks
 
 Three inline state-mapping operations and three parameter-remapping lifetimes do not improve 76.19%. Existing reference debt remains visible; no helper is retained.
+
+## 2026-09-05 additional coupled source controls
+
+Four selector-mapping operations test const/reference inputs and returned/output selections. All are neutral at 76.19%, retaining the same jump-table mismatch. No helper or source change is retained.

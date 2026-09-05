@@ -52,3 +52,9 @@ alpha assignments in the render-mode branch. Their presence is independently
 supported; the unnamed prologue colors are not removed based only on their
 limited later use in the Windows body. This check does not establish a new
 shared color constructor or return contract.
+
+## 2026-09-05 continued 590-match investigation
+
+Four shadow-width precision forms (edge, width, both operands, or the completed sum promoted to double) are neutral at 99.72%, prefix 253, with 68 clean references. No source change is retained.
+
+These receipts bound the tested forms and do not establish source exhaustion.

@@ -195,3 +195,9 @@ global-reference cases used plain char for the shared unsigned-char field and
 failed compilation; the corrected recipe reruns all four with its actual
 type. A digest-bound invalid-plan audit preserves that evidence for record 9. Every valid form is byte-neutral at 99.32%, 440/440 instructions, prefix
 408, and 74 clean references. No global type or comparison source is changed.
+
+## 2026-09-05 continued 590-match investigation
+
+Four explicit unequal-fold exits to the new-key reset path regress to 97.50-97.73%, with all 74 references clean. Both operand orders were tested. RstrASC remains the free char-to-char case-fold helper; no return or argument type is changed.
+
+These receipts bound the tested forms and do not establish source exhaustion.

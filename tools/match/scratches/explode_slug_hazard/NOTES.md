@@ -191,3 +191,13 @@ The recorded probes describe the tested source forms only; they do not establish
 ## 2026-09-05 continued loop-owner campaign
 
 All seven combinations of moving random velocity, position offset, and staged position to the loop's outer scope are neutral at 97.61%. Canonical source is unchanged.
+
+## 2026-09-05 continued 590-match investigation
+
+Eight velocity-speed precision/borrow and staged-result combinations are neutral at 97.61%. Six upward-value precision forms are neutral or regress; promoted range/draw arithmetic also acquires constant-reference debt. No source or shared vector change is retained.
+
+These receipts bound the tested forms and do not establish source exhaustion.
+
+## 2026-09-05 additional coupled source controls
+
+Nine separate Y/Z calculation-step combinations (RNG conversion, range product, normalization, and player-velocity addition) are all neutral at 97.61%, prefix 79, with 32 clean references.

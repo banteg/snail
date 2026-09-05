@@ -1,6 +1,6 @@
 # cRBorder::MouseTest @ 0x404580
 
-Current recovery: semantic-complete (`compiler` residual). Live Windows
+Current recovery: semantic-complete with an unresolved source-shape difference. Live Windows
 analysis establishes an unsigned-byte `thiscall` member, while Android and iOS
 independently retain `cRBorder::MouseTest()` in `Border.o`.
 
@@ -31,3 +31,9 @@ results. They do not establish source exhaustion or compiler provenance.
 Twelve ordinary inline texel-clamp operations (return, reference and pointer forms, applied to either or both coordinates) do not improve 98.29%. The final row/width multiply allocation remains open.
 
 Eight whole-function hit-result lifetimes (boolean, byte or integer locals, branch/expression publication, and direct mask returns) regress from 98.29%. The unsigned-byte public return declaration is unchanged.
+
+## 2026-09-05 continued 590-match investigation
+
+Four ordinary mask-sampling operations test image ownership or explicit row dimensions. Explicit dimensions are neutral at 98.29%; loading the width through the image regresses to 84.26%. All five references remain clean. No helper is retained.
+
+These receipts bound the tested forms and do not establish source exhaustion.
