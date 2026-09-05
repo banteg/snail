@@ -45,3 +45,9 @@ Direct position assignment and direct velocity construction can preserve the
 95.15% baseline; moving the decrement to the loop condition gives 94.17%.
 The float-pointer position constructor changes allocation more broadly. No
 source is promoted; the specifications preserve the tested source forms.
+
+## 2026-09-05 goal-600 source ownership campaign
+
+Sixteen whole-motion publication forms test named velocity construction, depth publication, position-copy shape and count-decrement lifetime. None improves 95.15%; canonical source is unchanged.
+
+The recorded probes describe the tested source forms only; they do not establish exhaustion.

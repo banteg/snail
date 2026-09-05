@@ -197,3 +197,9 @@ native image has no unknown call or data target there. With the ABI, clamp,
 sound families, attenuation owners, and direct/scaled paths independently
 closed above, the function is `semantic-complete`. The extra call tail remains
 honest compiler and reference-alignment residue rather than a semantic gap.
+
+## 2026-09-05 goal-600 source ownership campaign
+
+Seven whole attenuation/vector forms test the owned float-returning Normalize API, one or two vectors, and distance lifetime. None improves 89.13%; canonical source is unchanged. Changing a declaration solely to select another floating-point schedule is not justified.
+
+The recorded probes describe the tested source forms only; they do not establish exhaustion.

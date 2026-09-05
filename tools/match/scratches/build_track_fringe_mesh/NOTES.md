@@ -1,6 +1,6 @@
 # build_track_fringe_mesh reconstruction notes
 
-Current recovery: semantic-complete (`compiler` residual). The live Windows
+Current recovery: semantic-complete (open source-shape residual). The live Windows
 `cRPath` receiver and exact Android/iOS `BuildFringe` bodies establish the
 generated-object ownership, both edge extrusions and clamp cases, and the full
 face/UV loop. Candidate and target are both 318 instructions with all 23
@@ -20,7 +20,7 @@ clears it after calling `set_object_color`.
 
 Current focused result:
 
-- match: 92.77%
+- match: 99.06%
 - target/candidate instructions: 318 / 318
 - prefix: 100 / 318
 - masked operands: 23 clean, 0 unresolved, 0 mismatched
@@ -183,3 +183,11 @@ mobile
 The residual is bounded to VC6 store scheduling, not missing geometry,
 ownership, reference identity, or control flow; no synthetic aggregate,
 volatile qualifier, or manual store barrier is retained.
+
+## 2026-09-05 goal-600 source ownership campaign
+
+Direct generated-face indexing raises 92.77% to **99.06%**, with 318/318 instructions and all 23 references clean. `whole-mesh-bank-lifetimes-20260905.json` tests fifteen combinations of row indexing, direct face indexing, mesh-bank lifetime and direction lifetimes. Replacing the borrowed face-pair pointer with `facequads[row * 2]` / `[row * 2 + 1]` recovers the face index and UV store schedule. The retained generated-vertex indexing is score-neutral within the winning combination. No layout or shared operator changes are needed.
+
+Only the two direction-result copy schedules remain different. Four additional whole-direction value forms (component constructor, named components, component stores, copy/subtract) do not improve the new baseline. The earlier description of face-store differences as a compiler residual was too strong: ordinary source ownership repaired them.
+
+The recorded probes describe the tested source forms only; they do not establish exhaustion.

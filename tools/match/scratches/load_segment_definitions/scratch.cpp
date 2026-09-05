@@ -33,12 +33,11 @@ void cRSMTracks::Import()
     }
 
     int segment_index = 0;
-    char* segment_file_name = segment_files[0];
     int* row_count = &entries[0].row_count;
     while (segment_index < count) {
         // The authored call passes the text buffer as an unused fourth vararg;
         // the same source bug survives in the symbol-rich iOS build.
-        sprintf(file_path, "Segments/%s", segment_file_name, file_buffer);
+        sprintf(file_path, "Segments/%s", segment_files[segment_index], file_buffer);
         load_file_bytes_from_archive_or_fs(file_path, file_buffer, (void*)0);
 
         char* id_cursor = Rstrfind("ID:", file_buffer);
@@ -59,7 +58,7 @@ void cRSMTracks::Import()
         }
 
         entries[segment_index].id = id;
-        sprintf(entries[segment_index].filename, "%s", segment_file_name);
+        sprintf(entries[segment_index].filename, "%s", segment_files[segment_index]);
 
         char* name_cursor = Rstrfind("Name:'", file_buffer);
         if (name_cursor == 0) {
@@ -197,7 +196,7 @@ void cRSMTracks::Import()
                 row->path_template_index =
                     g_game->subgame.path_manager.NameCode(path_name);
                 if (row->path_template_index == -1)
-                    report_errorf("Unknown path %s in %s", path_name, segment_file_name);
+                    report_errorf("Unknown path %s in %s", path_name, segment_files[segment_index]);
                 else
                     row->flags |=
                         AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY;
@@ -247,6 +246,5 @@ void cRSMTracks::Import()
 
         ++segment_index;
         row_count = &entries[segment_index].row_count;
-        segment_file_name += 0x80;
     }
 }

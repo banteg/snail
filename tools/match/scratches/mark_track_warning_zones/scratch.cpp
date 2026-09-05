@@ -8,31 +8,26 @@
 void cRSubGame::DeSaltTrack()
 {
     int row = 0;
-    int saved_row = row;
     if (runtime_row_count - 1 > 0) {
-        TrackRowCellTileByteView* row_cells = runtime_cell_tile_views();
         do {
-            TrackRowCellTileByteView* cell = row_cells;
-            for (int col = 0; col < 8; ++col, ++cell) {
-                char t = cell->tile_id;
+            for (int col = 0; col < 8; ++col) {
+                char t = runtime_cells[row][col].tile_id;
                 if (t == 2 || t == 3 || t == 4 || t == 5 || t == 6 || t == 7
                     || t == 8 || t == 9 || t == 10 || t == 11 || t == 12
                     || t == 13 || t == 14 || t == 23 || t == 25 || t == 33) {
+                    int scan_row = row;
                     for (int back = 6; back; --back) {
                         for (int dc = -1; dc < 1; ++dc) {
-                            if (row >= 0 && row < runtime_row_count - 1
+                            if (scan_row >= 0 && scan_row < runtime_row_count - 1
                                 && dc + col >= 0 && dc + col < 8)
-                                runtime_cells[row][col + dc].lane_and_flags |=
+                                runtime_cells[scan_row][col + dc].lane_and_flags |=
                                     SUBLOC_FLAG_RANDOM_HAZARD_BLOCKED;
                         }
-                        --row;
+                        --scan_row;
                     }
-                    row = saved_row;
                 }
             }
-            row_cells = cell;
             ++row;
-            saved_row = row;
         } while (row < runtime_row_count - 1);
     }
 }

@@ -229,3 +229,10 @@ residue.
 ## 2026-09-05 whole-function source-lifetime probes
 
 Eleven combined final velocity-copy and per-glyph position variants test indexed copies, float-pointer constructors, and inline vector construction. None improves 88.89%. Direct indexed copies and per-glyph construction are neutral, while other forms regress. The parser/stack and final buffer lifetimes remain unresolved.
+
+## 2026-09-05 whole intro object ownership probes
+
+Fifteen combinations of indexed image donors, indexed final velocity
+publication, aggregate velocity initialization and indexed glyph traversal
+do not improve 88.89%. Donor and final velocity indices are neutral; the
+other forms regress. Canonical source is unchanged.

@@ -181,3 +181,9 @@ Fifty-nine combinations of vector scaling, final position composition, and vecto
 
 The recorded specifications and experiment receipts preserve these negative
 results. They do not establish source exhaustion or compiler provenance.
+
+## 2026-09-05 goal-600 source ownership campaign
+
+Eleven velocity/position forms test owner borrowing, vector position expressions and scale lifetime. Six generated variants accidentally formed the undeclared name `owner_owner_game`; ledger record 6 has a digest-bound invalid-plan audit. `corrected-velocity-owner-20260905.json` reruns those six intended variants successfully. No valid variant improves 97.61%, and canonical source is unchanged.
+
+The recorded probes describe the tested source forms only; they do not establish exhaustion.

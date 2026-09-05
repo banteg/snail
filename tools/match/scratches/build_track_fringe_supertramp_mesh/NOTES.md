@@ -159,3 +159,9 @@ source-backed forms,
 consistent with the authored mobile builder. The residuals are bounded VC6
 scheduling differences rather than missing geometry, ownership, or control
 flow.
+
+## 2026-09-05 goal-600 source ownership campaign
+
+Direct generated-face indexing raises 94.54% to **99.05%**, with 421/421 instructions and all 25 references clean. Fifteen whole-mesh lifetime combinations recover the native face-store schedule through `facequads[row * 2]` / `[row * 2 + 1]`. Indexed vertex accesses preserve the row increment after both row-position stores. Four subsequent direction-value forms do not improve the new baseline. The remaining vector copy schedules are open source-shape questions, not a demonstrated compiler limitation.
+
+The recorded probes describe the tested source forms only; they do not establish exhaustion.

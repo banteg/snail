@@ -38,3 +38,11 @@ TGA header base all compile either to the old 60.36% allocation, the same
 after the column conversion and loads green before red; the best natural VC6
 source still hoists that term and chooses the opposite transient register
 schedule. Those are retained as an honest compiler/source-shape residual.
+
+## 2026-09-05 whole pixel/row lifetime probes
+
+Fourteen combinations of RGB expression ownership and bottom-up row arithmetic
+placement do not improve 79.26%. Separate byte/int components, one expression,
+and an image-base pixel view all regress; moving the row term inside the loop
+also changes the saved-register/frame shape. Canonical source is unchanged.
+These results bound the tested source shapes, not the remaining investigation.

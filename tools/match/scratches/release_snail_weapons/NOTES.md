@@ -20,3 +20,9 @@ stable scratch and Windows-address identity.
 ## 2026-09-05 bounded animation-family probes
 
 Eight complete release-vector variants compare shared versus scoped vectors, direct channel stores versus borrowed destinations, and final owner reuse. All regress from 92.80%; the RNG call order is preserved. No variant is retained. The first random-x spill and later vector publication lifetimes remain open.
+
+## 2026-09-05 goal-600 source ownership campaign
+
+Eleven whole-channel forms test direct channel fields, live owner velocity access, separate scopes and the final owner borrow. None improves 92.80%; canonical source is unchanged.
+
+The recorded probes describe the tested source forms only; they do not establish exhaustion.

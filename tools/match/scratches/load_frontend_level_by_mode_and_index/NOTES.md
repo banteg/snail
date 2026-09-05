@@ -117,3 +117,10 @@ caused by native cross-case tail sharing that the clean source does not
 reproduce. This is compiler/reference layout, not an omitted mode, filename,
 or receiver relationship, and its classification does not depend on the prior
 probe count.
+
+## 2026-09-05 whole format lifetime probes
+
+Seven whole-function forms vary the extra-level argument lifetime (mutated
+parameter, shared index, scoped value) and the path-buffer borrow. All are
+neutral at 81.36%; canonical source is unchanged. The duplicated sprintf
+region still needs a different source-shape explanation.

@@ -50,3 +50,9 @@ float fields, borrowed fields, paired integer snapshots, flag-read timing, and
 the redundant clamped-top local. None improves 99.44%; the twenty references
 remain clean. Canonical source is unchanged. This only bounds those tested
 copy/lifetime combinations.
+
+## 2026-09-05 goal-600 source ownership campaign
+
+Seven whole-coordinate ownership combinations remove integer bit-copy carriers, replace layout-pointer borrows with direct fields, and move flag publication. None improves 99.44%; canonical source is unchanged. Direct fields repair the initial load ordering but introduce later differences, so that tradeoff is not retained.
+
+The recorded probes describe the tested source forms only; they do not establish exhaustion.

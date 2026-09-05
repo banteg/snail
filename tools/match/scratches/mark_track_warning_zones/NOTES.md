@@ -205,3 +205,23 @@ separate `corrected-row-restoration-20260905.json` moves restoration-state
 publication after the increment and reproduces 52.58%. The historical spec and
 ledger are preserved to make this correction auditable. These results only
 bound the tested indexed traversal, not all source shapes.
+
+## 2026-09-05 goal-600 source ownership campaign
+
+Eleven saved-row lifetime and outer-loop combinations do not improve 98.99%. The alternative placement of the two final saved-cursor loads remains unresolved; canonical source is unchanged.
+
+The recorded probes describe the tested source forms only; they do not establish exhaustion.
+
+## 2026-09-05 exact independent backward scan
+
+The warning footprint now owns a separate `scan_row` inside the hazard branch,
+while `row` remains the outer grid index. This replaces the reconstructed
+save/mutate/restore lifetime with the natural independent backward traversal.
+All six variants in `whole-warning-scan-row-20260905.json` reproduce **100%**,
+99/99 instructions and 251 native bytes with no masked operands. The retained
+version uses direct `runtime_cells[row][col]` indexing and the narrow hazard
+scope, eliminating the byte-view cursor and saved-row variable.
+
+The preceding one-load residual was caused by the source lifetime, not a
+demonstrated compiler limitation. The six-row, two-column footprint, hazard
+set, signed bounds, and flag OR remain unchanged.
