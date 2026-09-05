@@ -1,23 +1,20 @@
-# `layout_frontend_widget` match result
+# Exact frontend widget layout
 
-## Score
+`cRBorder::RePosition()` at `0x4024a0` matches **177/177 native
+instructions**, the complete prefix, and **20 clean references**, using
+`msvc6.5 /O2 /G5 /W3`.
 
-| Metric | Starter | Current |
-|---|---:|---:|
-| Match | 0.00% | **86.44%** |
-| Target instructions | 177 | 177 |
-| Candidate instructions | 0 | 177 |
-| Common prefix | 0 / 177 | **21 / 177** |
-| Masked operands | none | **20 clean, 0 unresolved, 0 mismatched** |
+The final source restores the recursive value-widget call and accesses the
+receiver's layout fields directly. VC6 performs tail-recursion elimination
+and produces the native mutable receiver loop itself. Together these source
+choices resolve the final load-order difference from the 99.44% baseline.
+Hit-position publication now uses ordinary float assignments, and the redundant
+clamped-top copy is removed. The native-supported sprite bit-copy pair remains.
 
-This first scratch recovers the authored-frame path, measured text layout path,
-screen clamp, slider hit rectangle update, and recursive slider child layout.
-The 2026-06-20 pass additionally recovers the native post-layout
-coordinate/flags schedule and the separate slider-child `test eax, eax` tail.
+The body still selects sprite, authored rectangle, or measured text geometry,
+clamps the hit coordinates, updates anchors and slider bounds, and lays out
+all three slider children. No ownership layout, ABI, compiler option, shared
+helper, or reference-audit rule changed.
 
-## Remaining Work
-
-The residual is compiler shape: authored-frame dword load scheduling,
-`layout_and_queue_wrapped_font_text` argument staging register choices, and the
-recursive self-call target spelling. There are no unresolved call or data
-operands.
+The dated notes and mutation receipts preserve the earlier partial results,
+the corrected recursive combinations, and the final exact simplification.

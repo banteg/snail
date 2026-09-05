@@ -1,6 +1,6 @@
 # cRBorder::RePosition @ 0x4024a0
 
-Current recovery: semantic-complete (`compiler` residual). Binary Ninja types
+Current recovery: exact. Binary Ninja types
 the Windows entry as `void __thiscall(FrontendWidget*)`; all 24 Windows callers
 discard `eax`. Android and iOS independently retain the same owner and method as
 `cRBorder::RePosition()` in `Border.o`.
@@ -10,9 +10,10 @@ the hit rectangle unless off-screen placement is allowed; and recursively
 repositions the attached slider children. The shared field layout is supported
 by the initializers, draw path, mouse path, and mobile bodies.
 
-Focused VC6 result: **99.44%**, exact 177/177 instruction parity, prefix 66/177,
-with all 20 relocation operands audited and clean. The sole residual is the
-ordering of two independent loads around the first hit-rectangle stores.
+Focused VC6 result: **100%**, 177/177 instructions, prefix 177, with all
+20 reference operands clean. The dated partial results below are historical;
+the September recursive-source recovery disproves the earlier compiler-only
+attribution.
 
 The matcher source now uses the authored `RePosition` method and exact VC6
 symbol `?RePosition@cRBorder@@QAEXXZ`; `layout_frontend_widget` remains only the
@@ -83,3 +84,26 @@ begin destination-field borrows at each hit-coordinate publication. All are
 neutral at 99.44%, 177/177 instructions, prefix 66, and 20 clean references.
 The successful late field borrow in parcel placement does not transfer to
 this load/store region. No source change is retained.
+
+## 2026-09-05 exact recursive layout ownership
+
+The source now calls the value widget's `RePosition()` recursively, using the
+receiver's own layout fields throughout. It no longer expresses the compiler's
+tail-recursion elimination as a mutable widget pointer and an explicit loop.
+The combination restores the native coordinate-load order and all 177
+instructions, with 20 clean references. Recursion, direct field access, and
+copy lifetimes must be considered together: isolated earlier versions did not
+establish the limits of the combined source shape.
+
+The hit-position stores are ordinary float assignments, and the redundant
+clamped-top local is removed. The paired integer-bit copies in the sprite
+branch remain: direct sequential float copies produce 98.87%, while paired
+float snapshots produce 63.28%. Neither alternative changes the shared field
+layout or justifies a type change. No compiler flags or shared headers changed.
+
+The corrected recursive recipe has eight compiling cases, including two exact
+combinations. Three subsequent copy simplifications retain one exact result.
+The first generated recipe accidentally replaced the `widget` substring in
+slider member names; all eight C2039 errors are explicitly marked as invalid
+mutation-plan evidence in ledger record 18. The separate corrected recipe is
+the reproducible source evidence, not those rejected generated names.

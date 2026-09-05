@@ -127,3 +127,11 @@ the retained individual glyph-width reference with a bank pointer or array
 reference, including early/late declaration and commuted indexing. All retain
 88.32%, 274/274 instructions, prefix 55, and 57 clean references. No bank
 owner is retained; these results do not close the glyph publication schedule.
+
+## 2026-09-05 separate horizontal and vertical scan scopes
+
+Nine combinations bound the horizontal x/run-width locals separately from the
+surviving slot count and vary the vertical scan's block/for scope. None improves
+the 88.32% source; the best block/for-x plus vertical-for shape gives 86.65%,
+with all 57 references clean. No source change is retained. These lexical
+scopes do not reproduce the remaining glyph index and conversion-slot choices.
