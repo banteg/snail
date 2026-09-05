@@ -349,3 +349,7 @@ Five branch-owner forms, three setter forms, and two diagnostic constructor form
 Fifteen per-corner UV value forms and fifteen texture-selection expression forms also give no tradeoff-free improvement; no auxiliary UV type or helper is retained.
 
 Twelve face-index arithmetic forms, 6 cross-phase counter reuse forms, nine face-field ownership forms, and twelve checkerboard-parity expressions add no tradeoff-free gain. Wide integer index expressions are byte-neutral, so the explicit short casts are not required by code generation. The nested checkerboard form raises Snake's fuzzy score but worsens instruction count and is rejected. These receipts preserve the tested combinations without closing the face-source hypothesis.
+
+## 2026-09-05 additional source-shape checks
+
+Seven combinations of const vector value returns are byte-neutral at 91.10%. No shared-header change is retained.

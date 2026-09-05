@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "state-mapping-operation",
+      "find": "// select_level_track_texture_set @ 0x410730 (thiscall, ret 0x4)\n\n#include \"track.h\"\n#include \"rmath_random.h\"\n\n\nvoid cRTrack::Change(int texture_set)\n{\n    int selected;\n\n    switch (texture_set) {\n    case 0:\n        selected = 0;\n        break;\n    case 1:\n        selected = 1;\n        break;\n    case 2:\n        selected = 2;\n        break;\n    case 3:\n        selected = 3;\n        break;\n    case 5:\n        selected = (int)RAND(4.0f, 0);\n        break;\n    default:\n        selected = texture_set;\n        break;\n    }\n\n    int previous = current_texture_set;\n    if (selected != previous) {\n        g_object_list.ReTextureObjects(\n            track_textures[selected], track_textures[previous]);\n        g_object_list.ReTextureObjects(\n            slide_textures[selected], slide_textures[current_texture_set]);\n        current_texture_set = selected;\n    }\n}\n",
+      "replacements": [
+        {
+          "name": "switch-returns",
+          "text": "// select_level_track_texture_set @ 0x410730 (thiscall, ret 0x4)\n\n#include \"track.h\"\n#include \"rmath_random.h\"\n\n\nstatic inline int resolve_texture_set(int texture_set)\n{\n    switch (texture_set) { case 0: return 0; case 1: return 1; case 2: return 2; case 3: return 3; case 5: return (int)RAND(4.0f, 0); default: return texture_set; }\n}\n\nvoid cRTrack::Change(int texture_set)\n{\n    int selected = resolve_texture_set(texture_set);\n\n    int previous = current_texture_set;\n    if (selected != previous) {\n        g_object_list.ReTextureObjects(\n            track_textures[selected], track_textures[previous]);\n        g_object_list.ReTextureObjects(\n            slide_textures[selected], slide_textures[current_texture_set]);\n        current_texture_set = selected;\n    }\n}\n"
+        },
+        {
+          "name": "switch-fallback",
+          "text": "// select_level_track_texture_set @ 0x410730 (thiscall, ret 0x4)\n\n#include \"track.h\"\n#include \"rmath_random.h\"\n\n\nstatic inline int resolve_texture_set(int texture_set)\n{\n    switch (texture_set) { case 0: return 0; case 1: return 1; case 2: return 2; case 3: return 3; case 5: return (int)RAND(4.0f, 0); } return texture_set;\n}\n\nvoid cRTrack::Change(int texture_set)\n{\n    int selected = resolve_texture_set(texture_set);\n\n    int previous = current_texture_set;\n    if (selected != previous) {\n        g_object_list.ReTextureObjects(\n            track_textures[selected], track_textures[previous]);\n        g_object_list.ReTextureObjects(\n            slide_textures[selected], slide_textures[current_texture_set]);\n        current_texture_set = selected;\n    }\n}\n"
+        },
+        {
+          "name": "if-returns",
+          "text": "// select_level_track_texture_set @ 0x410730 (thiscall, ret 0x4)\n\n#include \"track.h\"\n#include \"rmath_random.h\"\n\n\nstatic inline int resolve_texture_set(int texture_set)\n{\n    if (texture_set == 5) return (int)RAND(4.0f, 0); return texture_set;\n}\n\nvoid cRTrack::Change(int texture_set)\n{\n    int selected = resolve_texture_set(texture_set);\n\n    int previous = current_texture_set;\n    if (selected != previous) {\n        g_object_list.ReTextureObjects(\n            track_textures[selected], track_textures[previous]);\n        g_object_list.ReTextureObjects(\n            slide_textures[selected], slide_textures[current_texture_set]);\n        current_texture_set = selected;\n    }\n}\n"
+        }
+      ]
+    }
+  ]
+}

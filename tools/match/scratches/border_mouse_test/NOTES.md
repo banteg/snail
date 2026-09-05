@@ -25,3 +25,7 @@ Nineteen pixel-payload/dimension-width combinations and twenty-four clamp-expres
 
 The recorded specifications and experiment receipts preserve these negative
 results. They do not establish source exhaustion or compiler provenance.
+
+## 2026-09-05 additional source-shape checks
+
+Twelve ordinary inline texel-clamp operations (return, reference and pointer forms, applied to either or both coordinates) do not improve 98.29%. The final row/width multiply allocation remains open.

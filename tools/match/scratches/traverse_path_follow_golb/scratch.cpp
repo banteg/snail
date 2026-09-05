@@ -40,14 +40,11 @@ int cRPathFollowGolb::Traverse(float path_factor, Vec3& position, Vec3* velocity
                     &launch_template->secondary_samples[count];
                 Vec3* anchor = &source_cell->position;
 
-                Vec3 forward = terminal[-1].transform.basis_forward * carry;
-                Vec3 terminal_position;
-                terminal_position.x =
-                    anchor->x + terminal[-1].transform.position.x + forward.x;
-                terminal_position.y =
-                    anchor->y + terminal[-1].transform.position.y + forward.y;
-                terminal_position.z =
-                    anchor->z + terminal[-1].transform.position.z + forward.z;
+                Vec3 forward;
+                forward.x = terminal[-1].transform.basis_forward.x * carry;
+                forward.y = terminal[-1].transform.basis_forward.y * carry;
+                forward.z = terminal[-1].transform.basis_forward.z * carry;
+                Vec3 terminal_position = (*anchor + terminal[-1].transform.position) + forward;
                 position = terminal_position;
                 position.x = old_x;
                 shot->flight_transform.position = position;
@@ -67,45 +64,45 @@ int cRPathFollowGolb::Traverse(float path_factor, Vec3& position, Vec3* velocity
         samples = current_template->secondary_samples;
     }
 
-    float advanced = delta + progress;
-    progress = advanced;
+    progress = delta + progress;
 
     current_template = template_record;
-    int terminal_index = current_template->segment_count - 1;
+    int sample_count = current_template->segment_count;
 
     float center_x;
-    if (sample_index == terminal_index) {
+    if (sample_index == (sample_count - 1)) {
         center_x = current_template->primary_samples[sample_index].center_x;
     } else {
         center_x =
-            advanced / current_template->secondary_samples[sample_index].delta_length
+            progress / current_template->secondary_samples[sample_index].delta_length
                 * (current_template->primary_samples[sample_index + 1].center_x
                    - current_template->primary_samples[sample_index].center_x)
             + current_template->primary_samples[sample_index].center_x;
     }
 
     float lateral_scale;
-    if (sample_index == terminal_index) {
+    if (sample_index == (sample_count - 1)) {
         lateral_scale = current_template->primary_samples[sample_index].lateral_scale;
     } else {
         lateral_scale =
-            advanced / current_template->secondary_samples[sample_index].delta_length
+            progress / current_template->secondary_samples[sample_index].delta_length
                 * (current_template->primary_samples[sample_index + 1].lateral_scale
                    - current_template->primary_samples[sample_index].lateral_scale)
             + current_template->primary_samples[sample_index].lateral_scale;
     }
 
     float special_scalar;
-    if (sample_index == terminal_index) {
+    if (sample_index == (sample_count - 1)) {
         special_scalar = current_template->primary_samples[sample_index].special_scalar;
     } else {
         special_scalar =
-            advanced / current_template->secondary_samples[sample_index].delta_length
+            progress / current_template->secondary_samples[sample_index].delta_length
                 * (current_template->primary_samples[sample_index + 1].special_scalar
                    - current_template->primary_samples[sample_index].special_scalar)
             + current_template->primary_samples[sample_index].special_scalar;
     }
 
+    Vec3 base;
     TransformMatrix transform;
     TransformMatrix from;
     TransformMatrix to;
@@ -113,13 +110,14 @@ int cRPathFollowGolb::Traverse(float path_factor, Vec3& position, Vec3* velocity
     Vec3* input_position = &position;
 
     if (current_template->kind == PATH_TEMPLATE_KIND_NONLINEAR_42) {
+        float transformed_scalar;
         float local_x = input_position->x - center_x;
         current_template->compute_kind42_attachment_transform(
             special_scalar,
             local_x,
             0.49000001f,
             &transform,
-            &special_scalar);
+            &transformed_scalar);
 
         AttachmentSample* active_sample =
             &template_record->secondary_samples[sample_index];
@@ -137,25 +135,22 @@ int cRPathFollowGolb::Traverse(float path_factor, Vec3& position, Vec3* velocity
     } else {
         AttachmentSample* ordinary_samples =
             current_template->secondary_samples;
-        float base_x =
-            lateral_scale
-                * (advanced
+        base.x = lateral_scale
+                * (progress
                    * ordinary_samples[sample_index].delta_dir_to_next.x)
             + ordinary_samples[sample_index].transform.position.x
             + source_cell->position.x;
-        float base_y =
-            lateral_scale
-                * (advanced
+        base.y = lateral_scale
+                * (progress
                    * ordinary_samples[sample_index].delta_dir_to_next.y)
             + ordinary_samples[sample_index].transform.position.y
             + source_cell->position.y;
-        float base_z =
-            advanced * ordinary_samples[sample_index].delta_dir_to_next.z
+        base.z = progress * ordinary_samples[sample_index].delta_dir_to_next.z
             + ordinary_samples[sample_index].transform.position.z
             + source_cell->position.z;
         AttachmentSample* sample = &ordinary_samples[sample_index];
 
-        if (sample_index == terminal_index) {
+        if (sample_index == (sample_count - 1)) {
             transform.Identity();
         } else {
             from = sample->transform;
@@ -167,7 +162,7 @@ int cRPathFollowGolb::Traverse(float path_factor, Vec3& position, Vec3* velocity
             to.position.y = 0.0f;
             to.position.x = 0.0f;
             float alpha =
-                advanced / current_template->secondary_samples[sample_index].delta_length;
+                progress / current_template->secondary_samples[sample_index].delta_length;
             transform.LinearInterpolate(from, to, alpha);
         }
 
@@ -179,7 +174,7 @@ int cRPathFollowGolb::Traverse(float path_factor, Vec3& position, Vec3* velocity
         Vec3* output = &output_position;
         float local_x = input_position->x - center_x;
         Vec3 right_offset = transform.basis_right * local_x;
-        Vec3 base(base_x, base_y, base_z);
+
         Vec3 result = right_offset + base;
         *output = result;
     }

@@ -58,3 +58,7 @@ Seven whole-coordinate ownership combinations remove integer bit-copy carriers, 
 The recorded probes describe the tested source forms only; they do not establish exhaustion.
 
 Twelve hit-position setter/value-pair forms, including sprite-copy interactions, do not improve 99.44%. No synthetic point owner is retained.
+
+## 2026-09-05 additional source-shape checks
+
+Eight coordinate-pair copy forms (memcpy, aggregate snapshots and field construction, with or without the sprite-anchor pair) regress from 99.44%. No pair type or copy helper is retained.

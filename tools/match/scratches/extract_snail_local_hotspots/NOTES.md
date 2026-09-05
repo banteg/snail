@@ -32,3 +32,7 @@ change is retained; the 91.55% baseline remains open.
 ## 2026-09-05 bounded animation-family probes
 
 Three whole indexed-hotspot loop variants pair scalar accumulation, vector +=, and vector addition with the owned hotspot array. None improves 91.55%, and each loses the audited name-table sentinel. The six native copy instructions remain unexplained. No explicit self-copy or unsupported operator return-type change is retained.
+
+## 2026-09-05 additional source-shape checks
+
+Five diagnostic vector copy/assignment definitions are neutral at 91.55%. The shared header remains unchanged and the unexplained native self-copy remains open.

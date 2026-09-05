@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "right-vector",
+      "find": "        Vec3 right_offset;\n        right_offset.x = transform.basis_right.x * local_x;\n        right_offset.y = transform.basis_right.y * local_x;\n        right_offset.z = transform.basis_right.z * local_x;",
+      "replacements": [
+        {
+          "name": "multiply",
+          "text": "        Vec3 right_offset = transform.basis_right * local_x;"
+        },
+        {
+          "name": "ctor",
+          "text": "        Vec3 right_offset(transform.basis_right.x * local_x, transform.basis_right.y * local_x, transform.basis_right.z * local_x);"
+        }
+      ]
+    },
+    {
+      "name": "forward-vector",
+      "find": "                Vec3 forward = terminal[-1].transform.basis_forward * carry;",
+      "replacements": [
+        {
+          "name": "fields",
+          "text": "                Vec3 forward;\n                forward.x = terminal[-1].transform.basis_forward.x * carry;\n                forward.y = terminal[-1].transform.basis_forward.y * carry;\n                forward.z = terminal[-1].transform.basis_forward.z * carry;"
+        },
+        {
+          "name": "ctor",
+          "text": "                Vec3 forward(terminal[-1].transform.basis_forward.x * carry, terminal[-1].transform.basis_forward.y * carry, terminal[-1].transform.basis_forward.z * carry);"
+        }
+      ]
+    },
+    {
+      "name": "terminal-base",
+      "find": "                Vec3 terminal_position = (*anchor + terminal[-1].transform.position) + forward;",
+      "replacements": [
+        {
+          "name": "named-sum",
+          "text": "                Vec3 terminal_base = *anchor + terminal[-1].transform.position;\n                Vec3 terminal_position = terminal_base + forward;"
+        },
+        {
+          "name": "ctor",
+          "text": "                Vec3 terminal_base(anchor->x + terminal[-1].transform.position.x, anchor->y + terminal[-1].transform.position.y, anchor->z + terminal[-1].transform.position.z);\n                Vec3 terminal_position = terminal_base + forward;"
+        },
+        {
+          "name": "fields",
+          "text": "                Vec3 terminal_base;\n                terminal_base.x = anchor->x + terminal[-1].transform.position.x;\n                terminal_base.y = anchor->y + terminal[-1].transform.position.y;\n                terminal_base.z = anchor->z + terminal[-1].transform.position.z;\n                Vec3 terminal_position = terminal_base + forward;"
+        }
+      ]
+    }
+  ]
+}

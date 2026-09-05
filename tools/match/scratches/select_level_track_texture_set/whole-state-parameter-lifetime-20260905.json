@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "state-parameter-lifetime",
+      "find": "// select_level_track_texture_set @ 0x410730 (thiscall, ret 0x4)\n\n#include \"track.h\"\n#include \"rmath_random.h\"\n\n\nvoid cRTrack::Change(int texture_set)\n{\n    int selected;\n\n    switch (texture_set) {\n    case 0:\n        selected = 0;\n        break;\n    case 1:\n        selected = 1;\n        break;\n    case 2:\n        selected = 2;\n        break;\n    case 3:\n        selected = 3;\n        break;\n    case 5:\n        selected = (int)RAND(4.0f, 0);\n        break;\n    default:\n        selected = texture_set;\n        break;\n    }\n\n    int previous = current_texture_set;\n    if (selected != previous) {\n        g_object_list.ReTextureObjects(\n            track_textures[selected], track_textures[previous]);\n        g_object_list.ReTextureObjects(\n            slide_textures[selected], slide_textures[current_texture_set]);\n        current_texture_set = selected;\n    }\n}\n",
+      "replacements": [
+        {
+          "name": "inplace-parameter",
+          "text": "// select_level_track_texture_set @ 0x410730 (thiscall, ret 0x4)\n\n#include \"track.h\"\n#include \"rmath_random.h\"\n\n\nvoid cRTrack::Change(int texture_set)\n{\n    switch (texture_set) {\n    case 0:\n        texture_set = 0;\n        break;\n    case 1:\n        texture_set = 1;\n        break;\n    case 2:\n        texture_set = 2;\n        break;\n    case 3:\n        texture_set = 3;\n        break;\n    case 5:\n        texture_set = (int)RAND(4.0f, 0);\n        break;\n    default:\n        texture_set = texture_set;\n        break;\n    }\n\n    int previous = current_texture_set;\n    if (texture_set != previous) {\n        g_object_list.ReTextureObjects(\n            track_textures[texture_set], track_textures[previous]);\n        g_object_list.ReTextureObjects(\n            slide_textures[texture_set], slide_textures[current_texture_set]);\n        current_texture_set = texture_set;\n    }\n}\n"
+        },
+        {
+          "name": "inplace-then-snapshot",
+          "text": "// select_level_track_texture_set @ 0x410730 (thiscall, ret 0x4)\n\n#include \"track.h\"\n#include \"rmath_random.h\"\n\n\nvoid cRTrack::Change(int texture_set)\n{\n    switch (texture_set) {\n    case 0:\n        texture_set = 0;\n        break;\n    case 1:\n        texture_set = 1;\n        break;\n    case 2:\n        texture_set = 2;\n        break;\n    case 3:\n        texture_set = 3;\n        break;\n    case 5:\n        texture_set = (int)RAND(4.0f, 0);\n        break;\n    default:\n        texture_set = texture_set;\n        break;\n    }\n\n    int selected = texture_set;\n    int previous = current_texture_set;\n    if (selected != previous) {\n        g_object_list.ReTextureObjects(\n            track_textures[selected], track_textures[previous]);\n        g_object_list.ReTextureObjects(\n            slide_textures[selected], slide_textures[current_texture_set]);\n        current_texture_set = selected;\n    }\n}\n"
+        },
+        {
+          "name": "snapshot-then-inplace",
+          "text": "// select_level_track_texture_set @ 0x410730 (thiscall, ret 0x4)\n\n#include \"track.h\"\n#include \"rmath_random.h\"\n\n\nvoid cRTrack::Change(int texture_set)\n{\n    int selector = texture_set;\n    switch (selector) {\n    case 0:\n        texture_set = 0;\n        break;\n    case 1:\n        texture_set = 1;\n        break;\n    case 2:\n        texture_set = 2;\n        break;\n    case 3:\n        texture_set = 3;\n        break;\n    case 5:\n        texture_set = (int)RAND(4.0f, 0);\n        break;\n    default:\n        texture_set = texture_set;\n        break;\n    }\n\n    int previous = current_texture_set;\n    if (texture_set != previous) {\n        g_object_list.ReTextureObjects(\n            track_textures[texture_set], track_textures[previous]);\n        g_object_list.ReTextureObjects(\n            slide_textures[texture_set], slide_textures[current_texture_set]);\n        current_texture_set = texture_set;\n    }\n}\n"
+        }
+      ]
+    }
+  ]
+}

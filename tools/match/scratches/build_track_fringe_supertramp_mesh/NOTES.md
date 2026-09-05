@@ -184,3 +184,7 @@ copy constructors, subtraction construction, member versus free arithmetic,
 const-value returns and RHS value/reference ownership. None improved the old
 baseline; their local header copies are diagnostic only and are not retained.
 The winning change is the caller's vector lifetime.
+
+## 2026-09-05 additional source-shape checks
+
+As an exact control, all seven const vector value-return combinations remain exact. This does not justify changing the shared header.

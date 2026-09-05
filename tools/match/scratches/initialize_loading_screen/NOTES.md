@@ -45,3 +45,7 @@ Three texture-load lifetime probes test a shared archive pointer, separate resul
 ## 2026-09-05 continued source-shape investigation
 
 Two common texture-loading helper forms are neutral at 83.00%. Both preserve error fallback and the native background-lock/bar-unlock behavior. No helper is retained.
+
+## 2026-09-05 additional source-shape checks
+
+Three tail-publication forms that chain or scope the loading state are byte-neutral at 83.00%. They do not resolve the receiver/archive register allocation.

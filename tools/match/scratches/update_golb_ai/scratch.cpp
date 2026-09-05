@@ -207,21 +207,12 @@ void cRSubGolb::AI()
             {
                 int slug_index = 0;
                 for (int m = 0; m < SLUG_POOL_EXTENT; m += SLUG_SLOT_STRIDE) {
-                    char* slot = (char*)game + m;
-                    int slug_state = *(int*)(slot + SLUG_STATE_FROM_SUBGAME);
+                    cRSlug* slot = (cRSlug*)((char*)game->slug_hazards.slots + m);
+                    int slug_state = slot->state;
                     if (slug_state == SUB_SLUG_STATE_ACTIVE
                         || slug_state == SUB_SLUG_STATE_LATERAL_ACTIVE) {
-                        Vec3 slug_delta;
-                        slug_delta.x = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME
-                                           + offsetof(Vector3, x))
-                                - new_output->x;
-                        slug_delta.y = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME
-                                           + offsetof(Vector3, y))
-                                - new_output->y;
-                        float dz = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME
-                                            + offsetof(Vector3, z))
-                            - new_output->z;
-                        slug_delta.z = dz;
+                        Vec3 slug_delta = slot->transform.position - *new_output;
+                        float dz = slug_delta.z;
                         probe = slug_delta;
                         if (dz < 0.0f)
                             dz = -dz;

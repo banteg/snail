@@ -130,3 +130,7 @@ The sole reference mismatch is the local jump table's default destination:
 native reloads the parameter after dispatch, while VC6 coalesces the same value
 into the switch register in the candidate. That is a compiler/reference-layout
 residual, not a missing case or owner.
+
+## 2026-09-05 additional source-shape checks
+
+Three inline state-mapping operations and three parameter-remapping lifetimes do not improve 76.19%. Existing reference debt remains visible; no helper is retained.

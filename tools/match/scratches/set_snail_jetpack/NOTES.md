@@ -33,3 +33,7 @@ source text and are pruned rather than left as stale runnable inputs.
 ## 2026-09-05 bounded animation-family probes
 
 Six mapping/transition lifetime variants move the immediate flag and replace the selected-state snapshot with direct reads. None improves 86.18%. The switch/prologue difference remains visible; these results bound only the tested source lifetimes.
+
+## 2026-09-05 additional source-shape checks
+
+Three inline state-mapping operations and three parameter-remapping lifetimes do not improve 86.18%. No helper is retained; the default-arm source lifetime remains unresolved.

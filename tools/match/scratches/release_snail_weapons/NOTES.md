@@ -26,3 +26,7 @@ Eight complete release-vector variants compare shared versus scoped vectors, dir
 Eleven whole-channel forms test direct channel fields, live owner velocity access, separate scopes and the final owner borrow. None improves 92.80%; canonical source is unchanged.
 
 The recorded probes describe the tested source forms only; they do not establish exhaustion.
+
+## 2026-09-05 additional source-shape checks
+
+Five diagnostic vector copy/assignment definitions regress from 92.80%; seven combinations of const vector value returns are neutral. No header change is retained.

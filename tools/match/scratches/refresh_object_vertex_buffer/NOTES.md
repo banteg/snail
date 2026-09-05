@@ -197,3 +197,7 @@ Twenty-four paired copy-loop probes test the native float-pointer constructor, n
 Nine copy-address ordering and reusable-vector combinations do not improve 90.58%. Reversing the pointer-plus-index operands is neutral. No artificial address dependency is retained.
 
 Nine memcpy/memmove upload forms give no gain. The memcpy intrinsic reproduces the existing aggregate assignment; memmove does not recover the native address setup.
+
+## 2026-09-05 additional source-shape checks
+
+Five diagnostic vector copy/assignment definitions do not improve 90.58%; an explicit copy constructor can be neutral, while explicit assignments regress. No header change is retained.
