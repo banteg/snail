@@ -14,11 +14,10 @@ matrices, kind-specific backlinks, target reservation, cRSubGame backlink, and
 the cRPathFollowGolb child. `Kill` and `AI` account for every created branch.
 
 The scratch exports `?Create@cRSubGolb@@QAEXPAVcRSubGoldy@@HH@Z`. It is
-semantic-complete at 77.98%, 549/582 instructions, prefix 81, with 47 clean
-references and one documented native-only constant. Recorded aggregate launch
-vector lifetimes regress by perturbing function-wide allocation; the remaining
-33-instruction factoring delta is classified as compiler/reference residue,
-not filled with synthetic temporaries.
+semantic-complete at **99.14%, 582/582 instructions, prefix 156**, with all
+48 references clean. Native-backed launch-vector and vapour pointer ownership
+recover the earlier 33-instruction gap. Four instruction-order regions remain
+open; the old compiler/reference classification was not justified.
 
 ## 2026-09-05 coupled launch-vector scopes
 
@@ -38,3 +37,46 @@ initial work vector for the true launch family or all launch families, with
 three declaration placements. All regress further to 46.51–51.45%, although
 all 48 references remain clean. No shared work vector is retained, and the
 recorded scope tests do not establish a compiler limitation.
+
+
+## 2026-09-05 launch and trail ownership recovery
+
+The previous source overwrote the integer `spawn_selector` with a laser
+hotspot pointer and later cast the integer back for `cRVapour::ReSet(float*)`.
+Windows reuses the argument stack slot once the selector is dead; that is not
+an authored integer/pointer relationship. Android's
+`00062d2c-_ZN9cRSubGolb6CreateEP10cRSubGoldyii.c` keeps the separate float-pointer
+value in `unaff_r9`. Both laser position branches choose the **left** laser
+hotspot's Z address when forward Z is positive, otherwise null. The right
+position branch must not be changed to the right hotspot's Z address.
+
+A separate `vapour_z_floor` now represents that value. The exact `Shoot`
+caller accepts only the supported weapon families; kind 1 is reached through
+the laser branch that initializes the pointer. `SetShootFlags` independently
+supplies those supported masks. No fabricated initial pointer is needed for
+unreachable invalid-mask paths. The existing fallback launch branches are
+preserved even though the preceding bit tests exclude them.
+
+This pointer recovery is byte-neutral alone. Coupled with genuine temporary
+launch vectors, it restores EBX zero ownership and the late EBP save instead
+of the earlier staged-vector regression. `tVector` constructors, owned hotspot
+copies, laser flag publication, and direct owned homing/history copies then
+recover the complete 582-instruction count and all 48 references. The positive
+spread branch snapshots its spawn X while the launch vector is live. The
+vapour splice borrows its links through the existing `BodNode` and its signed
+flag field by reference, preserving the native embedded-owner addressing.
+
+The eleven `whole-*` recipes added in this recovery contain 112 evaluated
+variants: 108 compile and four initial flag-reference diagnostics used the
+wrong unsigned type. The following signed-field recipe corrects those
+experiments; neither invalid source nor a shared layout change is retained.
+The best source improves **77.98% to 99.14%**, prefix **81 to 156**, instruction
+count **549 to 582**, and references **47 clean plus one unaudited to 48 clean**.
+
+Remaining native differences are local ordering: the fallback selector's
+position-X load relative to its comparison and velocity-Z store; the laser
+skip-byte store relative to velocity construction/copy; and the two spread
+branches' final velocity-Z stores relative to position-X arithmetic. Direct
+member X access, scalar borrows, moving the laser flag around hotspot setup,
+and scalar vector-copy forms do not resolve them. These receipts constrain
+those tested forms, not the underlying source shape or compiler provenance.

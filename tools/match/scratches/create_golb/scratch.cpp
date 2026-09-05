@@ -20,6 +20,10 @@ int gRMathRand2();
 
 void cRSubGolb::Create(cRSubGoldy* player_, int spawn_selector, int shot_slot_index)
 {
+    // Only the laser family consumes this pointer; both laser spawn branches
+    // define it before kind 1 resets the trail. It shares a native stack slot
+    // with spawn_selector after the selector is dead.
+    float* vapour_z_floor;
     skip_one_tick = 0;
     slug_bounce_armed = 0;
 
@@ -60,31 +64,19 @@ void cRSubGolb::Create(cRSubGoldy* player_, int spawn_selector, int shot_slot_in
                 *position = *source;
                 position->x -= 0.5f;
             }
-            Vec3 staged_velocity;
-            staged_velocity.x = 0.0f;
-            staged_velocity.y = 0.0f;
-            staged_velocity.z = player->velocity.z + 1.0f;
-            velocity = staged_velocity;
+            velocity = Vec3(0.0f, 0.0f, player->velocity.z + 1.0f);
             goto after_default_launch_family;
         }
 
         if ((shoot_flags & 0x18) == 0) {
             if ((shoot_flags & 0x60) == 0) {
                 if ((shoot_flags & 0x29) != 0) {
-                    Vec3 staged_velocity;
-                    staged_velocity.x = 0.0f;
-                    staged_velocity.y = 0.0f;
-                    staged_velocity.z = player->velocity.z + 1.0f;
-                    velocity = staged_velocity;
+                    velocity = Vec3(0.0f, 0.0f, player->velocity.z + 1.0f);
                     goto after_default_launch_family;
                 }
 
                 if ((shoot_flags & 0x52) != 0) {
-                    Vec3 staged_velocity;
-                    staged_velocity.x = 0.0f;
-                    staged_velocity.y = 0.0f;
-                    staged_velocity.z = player->velocity.z + 1.0f;
-                    velocity = staged_velocity;
+                    velocity = Vec3(0.0f, 0.0f, player->velocity.z + 1.0f);
                     if (spawn_selector == 2)
                         position->x += 0.5f;
                     else
@@ -97,11 +89,7 @@ void cRSubGolb::Create(cRSubGoldy* player_, int spawn_selector, int shot_slot_in
                 Vec3* source = &player->presentation.snail_hotspots_world[
                     SNAIL_HOTSPOT_ROCKET_BASE];
                 *position = *source;
-                Vec3 staged_velocity;
-                staged_velocity.x = 0.0f;
-                staged_velocity.y = 0.0f;
-                staged_velocity.z = player->velocity.z + 0.60000002f;
-                velocity = staged_velocity;
+                velocity = Vec3(0.0f, 0.0f, player->velocity.z + 0.60000002f);
             }
             goto after_default_launch_family;
         }
@@ -112,77 +100,55 @@ void cRSubGolb::Create(cRSubGoldy* player_, int spawn_selector, int shot_slot_in
                     SNAIL_HOTSPOT_LASER_LEFT];
                 *position = *source;
                 if (player->transform.basis_forward.z > 0.0f)
-                    spawn_selector =
-                        (int)&player->presentation.snail_hotspots_world[
+                    vapour_z_floor =
+                        &player->presentation.snail_hotspots_world[
                             SNAIL_HOTSPOT_LASER_LEFT].z;
                 else
-                    spawn_selector = 0;
+                    vapour_z_floor = 0;
             } else {
                 Vec3* source = &player->presentation.snail_hotspots_world[
                     SNAIL_HOTSPOT_LASER_RIGHT];
                 *position = *source;
                 if (player->transform.basis_forward.z > 0.0f)
-                    spawn_selector =
-                        (int)&player->presentation.snail_hotspots_world[
+                    vapour_z_floor =
+                        &player->presentation.snail_hotspots_world[
                             SNAIL_HOTSPOT_LASER_LEFT].z;
                 else
-                    spawn_selector = 0;
+                    vapour_z_floor = 0;
             }
+            velocity = Vec3(0.0f, 0.0f, player->velocity.z + 1.0f);
             skip_one_tick = 1;
-            Vec3 staged_velocity;
-            staged_velocity.x = 0.0f;
-            staged_velocity.y = 0.0f;
-            staged_velocity.z = player->velocity.z + 1.0f;
-            velocity = staged_velocity;
         }
         goto after_default_launch_family;
 
 after_default_launch_family:
         ;
     } else {
-        Vec3* source;
         if (spawn_selector == 3) {
-            source = &player->presentation.snail_hotspots_world[
+            *position = player->presentation.snail_hotspots_world[
                 SNAIL_HOTSPOT_BLASTER_LEFT_FIRE];
-            goto copy_shoot_flag_source;
-        }
-        if (spawn_selector == 2) {
-            source = &player->presentation.snail_hotspots_world[
+        } else if (spawn_selector == 2) {
+            *position = player->presentation.snail_hotspots_world[
                 SNAIL_HOTSPOT_BLASTER_RIGHT_FIRE];
-            goto copy_shoot_flag_source;
-        }
-        if (spawn_selector == 1) {
-            source = &player->presentation.snail_hotspots_world[
+        } else if (spawn_selector == 1) {
+            *position = player->presentation.snail_hotspots_world[
                 SNAIL_HOTSPOT_BLASTER_TOP_FIRE];
-            goto copy_shoot_flag_source;
         }
-        goto after_shoot_flag_source;
-
-copy_shoot_flag_source:
-        *position = *source;
-
-after_shoot_flag_source:
 
         if ((player->shoot_flags & 4) != 0) {
             if (spawn_selector == 3) {
-                velocity.x = 0.1f;
-                velocity.y = 0.0f;
-                velocity.z = player->velocity.z + 1.0f;
-                position->x += 0.5f;
+                Vec3 launch_velocity(0.1f, 0.0f, player->velocity.z + 1.0f);
+                float spawn_x = position->x + 0.5f;
+                velocity = launch_velocity;
+                position->x = spawn_x;
             } else if (spawn_selector == 2) {
-                velocity.x = -0.1f;
-                velocity.y = 0.0f;
-                velocity.z = player->velocity.z + 1.0f;
+                velocity = Vec3(-0.1f, 0.0f, player->velocity.z + 1.0f);
                 position->x -= 0.5f;
             } else {
-                velocity.x = 0.0f;
-                velocity.y = 0.0f;
-                velocity.z = player->velocity.z + 1.0f;
+                velocity = Vec3(0.0f, 0.0f, player->velocity.z + 1.0f);
             }
         } else {
-            velocity.x = 0.0f;
-            velocity.y = 0.0f;
-            velocity.z = player->velocity.z + 1.0f;
+            velocity = Vec3(0.0f, 0.0f, player->velocity.z + 1.0f);
         }
     }
 
@@ -218,8 +184,7 @@ after_shoot_flag_source:
                 homing_target_object = object;
                 if (!found->kind)
                     object->list_flags |= BOD_FLAG_SUPPRESS_CONTACT;
-                Vec3* homing_target = &this->homing_target;
-                *homing_target = found->position;
+                homing_target = found->position;
                 homing_blend = 0.0f;
                 homing_blend_step = 0.033333335f;
             }
@@ -231,19 +196,20 @@ after_shoot_flag_source:
             vapour_owner_shot = this;
 
             BodNode* node = &vapour;
+            int& trail_flags = node->list_flags;
             BodNode* anchor = &g_game->subgame.golb_vapour_list_head;
-            if ((vapour.list_flags & BOD_FLAG_LINKED) != 0) {
+            if ((trail_flags & BOD_FLAG_LINKED) != 0) {
                 report_errorf("List ADDafter");
             } else {
-                vapour.list_prev = anchor;
-                vapour.list_next = anchor->list_next;
+                node->list_prev = anchor;
+                node->list_next = anchor->list_next;
                 anchor->list_next = node;
-                if (vapour.list_next)
-                    vapour.list_next->list_prev = node;
-                vapour.list_flags |= BOD_FLAG_LINKED;
+                if (node->list_next)
+                    node->list_next->list_prev = node;
+                trail_flags |= BOD_FLAG_LINKED;
             }
 
-            vapour.ReSet((float*)spawn_selector);
+            vapour.ReSet(vapour_z_floor);
             vapour.color.store_color4f(1.0f, 1.0f, 1.0f, 0.99000001f);
             this->shot_slot_index = shot_slot_index;
             vapour.Add(flight_transform);
@@ -297,8 +263,7 @@ after_shoot_flag_source:
     }
 
     path_factor = velocity.Magnitude();
-    Vec3* previous_output = &previous_flight_transform.position;
-    *previous_output = *position;
+    previous_flight_transform.position = flight_transform.position;
 
     ((BodAiDispatch*)this)->update_bod_ai();
 }
