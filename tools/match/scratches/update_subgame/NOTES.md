@@ -772,3 +772,30 @@ HUD register scheduling and therefore shift equivalent local branch labels.
 The byte-identical replay-exit tail confirms that the displacement accumulates
 earlier; it does not expose a missing state, field, call, or owner. The 79.94%
 residual is compiler layout rather than unrecovered gameplay semantics.
+
+
+## 2026-09-05 owned runtime rows and shared list operations
+
+Direct `runtime_cells[cell_index][attachment_count]` expressions reproduce the
+complete existing compiled output, including all 129 reference bindings.
+The scratch no longer needs `RuntimeCellSlotBase`, whose artificial padding
+held the native cell offset, or its raw `char*` receiver. The pause-gate write
+uses its real field. The authored ramp-ring lookahead now indexes
+`runtime_cells[cell_index + 6][attachment_count]`, expressing the actual row
+relationship instead of crossing from one projected cell with pointer
+arithmetic.
+
+Both a cached cell pointer and a cached cell reference regress to 58.22%,
+with audit debt. Direct owner indexing remains **79.94%, 1036/1033
+instructions, prefix 9, all 129 references clean**. This distinguishes the
+array's ownership from a proposed long-lived cell borrow: the artificial slot
+view was not necessary to preserve the native displacement lifetime.
+
+The four after-node splices now use the established `BodNode::add_bod_after`
+operation, and row-model activation uses `BodList::add_bod`. Their individual
+and combined builds are byte-neutral. Full normalized instruction/reference
+diffs of the original and combined owner/helper source are identical, rather
+than merely sharing a fuzzy score. The copied list code and padded owner view
+are retired without a shared-header, ABI, compiler-profile, or audit change.
+Four recipes record twelve compiling variants; they do not establish closure
+of the remaining gameplay matching work.

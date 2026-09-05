@@ -25,11 +25,6 @@
 #include "segment_cache.h"
 #include "vector3.h"
 
-struct RuntimeCellSlotBase {
-    char before_cell[offsetof(cRSubGame, runtime_cells)];
-    cRSubLoc cell;
-};
-
 
 int OSDPrintUV(
     int texture_id,
@@ -49,7 +44,6 @@ int report_errorf(char* format, ...);
 
 void cRSubGame::AI()
 {
-    char* game = (char*)this;
     int cell_index;
     int attachment_count;
     tColour replay_color;
@@ -210,7 +204,7 @@ void cRSubGame::AI()
 
         if ((read_pressed_text_input_key_code() == 11 || g_window_deactivated == one)
             && g_game->fade.state == zero) {
-            *(unsigned char*)(game + offsetof(cRSubGame, subgame_pause_gate)) = one;
+            subgame_pause_gate = (unsigned char)one;
             subgame_state = three;
             g_sprite_manager.Pause((char)one);
             if (player.click_start.state == CLICK_START_STATE_WAITING_FOR_START)
@@ -255,25 +249,7 @@ void cRSubGame::AI()
                     & SUBROW_FLAG_ROW_MODEL_PRESENT)
                 != zero) {
                 BodNode* row_node = &runtime_rows[cell_index].row_model;
-                if ((row_node->list_flags & BOD_FLAG_LINKED) != zero) {
-                    report_errorf("List ADD");
-                } else {
-                    BodNode** first_ref =
-                        &g_game->active_bod_list.first;
-                    BodNode* first = *first_ref;
-                    if (first == 0) {
-                        *first_ref = row_node;
-                        row_node->list_prev = 0;
-                        (*first_ref)->list_next = 0;
-                    } else {
-                        first->list_prev = row_node;
-                        (*first_ref)->list_prev->list_next = *first_ref;
-                        BodNode* new_first = (*first_ref)->list_prev;
-                        *first_ref = new_first;
-                        new_first->list_prev = 0;
-                    }
-                    row_node->list_flags |= BOD_FLAG_LINKED;
-                }
+                g_game->active_bod_list.add_bod(row_node);
             }
 
             if ((runtime_rows[cell_index].flags
@@ -287,83 +263,42 @@ void cRSubGame::AI()
             attachment_count = zero;
             while (attachment_count < SUBGAME_TRACK_LANE_COUNT) {
                 if (cell_index >= zero && cell_index < runtime_row_count) {
-                    RuntimeCellSlotBase* cell_slot =
-                        (RuntimeCellSlotBase*)(game
-                            + sizeof(cRSubLoc)
-                                * (attachment_count
-                                    + SUBGAME_TRACK_LANE_COUNT * cell_index));
-                    if ((cell_slot->cell.list_flags & BOD_FLAG_LINKED) == zero) {
-                        if ((cell_slot->cell.lane_and_flags
+                    if ((runtime_cells[cell_index][attachment_count].list_flags & BOD_FLAG_LINKED) == zero) {
+                        if ((runtime_cells[cell_index][attachment_count].lane_and_flags
                                 & SUBLOC_FLAG_UNCACHED_BODY)
                             != zero) {
-                            unsigned char tile = cell_slot->cell.tile_id;
+                            unsigned char tile = runtime_cells[cell_index][attachment_count].tile_id;
                             if (tile == 29 || tile == 30) {
-                                if (cell_slot->cell.object != 0) {
-                                BodNode* node = &cell_slot->cell;
+                                if (runtime_cells[cell_index][attachment_count].object != 0) {
+                                BodNode* node = &runtime_cells[cell_index][attachment_count];
                                 BodNode* active_list = &special_track_cell_list_head;
-                                if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
-                                    report_errorf("List ADDafter");
-                                } else {
-                                    node->list_prev = active_list;
-                                    node->list_next = active_list->list_next;
-                                    active_list->list_next = node;
-                                    if (node->list_next != 0)
-                                        node->list_next->list_prev = node;
-                                    node->list_flags |= BOD_FLAG_LINKED;
-                                }
+                                node->add_bod_after(active_list);
 
-                                cell_slot->cell.render_arg_20 =
+                                runtime_cells[cell_index][attachment_count].render_arg_20 =
                                     (float)(cell_index % SUBGAME_TRACK_LANE_COUNT)
                                     * 0.125f;
                                 node = &runtime_rows[cell_index].attachment_body;
                                 active_list = &fringe_attachment_list_head;
-                                if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
-                                    report_errorf("List ADDafter");
-                                } else {
-                                    node->list_prev = active_list;
-                                    node->list_next = active_list->list_next;
-                                    active_list->list_next = node;
-                                    if (node->list_next != 0)
-                                        node->list_next->list_prev = node;
-                                    node->list_flags |= BOD_FLAG_LINKED;
-                                }
-                                runtime_rows[cell_index].attachment_body.position = cell_slot->cell.position;
+                                node->add_bod_after(active_list);
+                                runtime_rows[cell_index].attachment_body.position = runtime_cells[cell_index][attachment_count].position;
                                 }
                             } else {
-                                BodNode* node = &cell_slot->cell;
+                                BodNode* node = &runtime_cells[cell_index][attachment_count];
                                 BodNode* active_list = &track_body_list_head;
-                                if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
-                                    report_errorf("List ADDafter");
-                                } else {
-                                    node->list_prev = active_list;
-                                    node->list_next = active_list->list_next;
-                                    active_list->list_next = node;
-                                    if (node->list_next != 0)
-                                        node->list_next->list_prev = node;
-                                    node->list_flags |= BOD_FLAG_LINKED;
-                                }
+                                node->add_bod_after(active_list);
                             }
-                            ((BodAiDispatch*)&cell_slot->cell)->update_bod_ai();
+                            ((BodAiDispatch*)&runtime_cells[cell_index][attachment_count])->update_bod_ai();
                         }
 
-                        Fringe** fringe = cell_slot->cell.fringes;
-                        int fringe_count = (int)(sizeof(cell_slot->cell.fringes)
-                            / sizeof(cell_slot->cell.fringes[0]));
+                        Fringe** fringe = runtime_cells[cell_index][attachment_count].fringes;
+                        int fringe_count = (int)(sizeof(runtime_cells[cell_index][attachment_count].fringes)
+                            / sizeof(runtime_cells[cell_index][attachment_count].fringes[0]));
                         do {
                             Fringe* object = *fringe;
                             if (object != 0) {
                                 BodNode* node = (BodNode*)object;
                                 BodNode* active_list = &fringe_attachment_list_head;
-                                if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
-                                    report_errorf("List ADDafter");
-                                } else {
-                                    node->list_prev = active_list;
-                                    node->list_next = active_list->list_next;
-                                    active_list->list_next = node;
-                                    if (node->list_next != 0)
-                                        node->list_next->list_prev = node;
-                                    node->list_flags |= BOD_FLAG_LINKED;
-                                }
+                                node->add_bod_after(active_list);
                                 tColour* color =
                                     g_game->subgame.GetSkirtColour(&skirt_color);
                                 (*fringe)->color = *color;
@@ -372,28 +307,28 @@ void cRSubGame::AI()
                             --fringe_count;
                         } while (fringe_count != zero);
 
-                        if (cell_slot->cell.tile_id == SUBLOC_TILE_HEALTH_PICKUP
+                        if (runtime_cells[cell_index][attachment_count].tile_id == SUBLOC_TILE_HEALTH_PICKUP
                             && (runtime_flags & SUBGAME_RUNTIME_FLAG_HEALTH_PICKUPS)
                                 != zero
                             && cell_index >= first_block_row_count
                             && cell_index < completion_row_start)
-                            AddHealth(&cell_slot->cell, &player);
+                            AddHealth(&runtime_cells[cell_index][attachment_count], &player);
 
-                        if (cell_slot->cell.tile_id == SUBLOC_TILE_SPEEDUP_PICKUP
+                        if (runtime_cells[cell_index][attachment_count].tile_id == SUBLOC_TILE_SPEEDUP_PICKUP
                             && cell_index >= first_block_row_count
                             && cell_index < completion_row_start)
-                            AddSpeedUp(&cell_slot->cell, &player);
+                            AddSpeedUp(&runtime_cells[cell_index][attachment_count], &player);
 
-                        if (cell_slot->cell.tile_id == SUBLOC_TILE_JETPACK_PICKUP
+                        if (runtime_cells[cell_index][attachment_count].tile_id == SUBLOC_TILE_JETPACK_PICKUP
                             && cell_index >= first_block_row_count
                             && cell_index < completion_row_start)
-                            AddJetPack(&cell_slot->cell, &player);
+                            AddJetPack(&runtime_cells[cell_index][attachment_count], &player);
 
-                        unsigned char hazard_tile = cell_slot->cell.tile_id;
+                        unsigned char hazard_tile = runtime_cells[cell_index][attachment_count].tile_id;
                         if (hazard_tile == SUBLOC_TILE_GARBAGE_HAZARD) {
                             AddGarbage(
-                                &cell_slot->cell, &player);
-                        } else if ((cell_slot->cell.lane_and_flags
+                                &runtime_cells[cell_index][attachment_count], &player);
+                        } else if ((runtime_cells[cell_index][attachment_count].lane_and_flags
                                         & SUBLOC_FLAG_SUPPRESS_GARBAGE_SPAWN)
                                 == 0
                                 && (hazard_tile == SUBLOC_TILE_FLOOR_DOT
@@ -405,22 +340,22 @@ void cRSubGame::AI()
                                     > (1.0f - garbage_frequency) * 0.2f
                                         + 0.8f
                                 && (attachment_count == 0
-                                    || (&cell_slot->cell)[-1].tile_id
+                                    || (&runtime_cells[cell_index][attachment_count])[-1].tile_id
                                         == SUBLOC_TILE_FLOOR_DOT
-                                    || (&cell_slot->cell)[-1].tile_id
+                                    || (&runtime_cells[cell_index][attachment_count])[-1].tile_id
                                         == SUBLOC_TILE_FLOOR_VARIANT_14
-                                    || (&cell_slot->cell)[-1].tile_id
+                                    || (&runtime_cells[cell_index][attachment_count])[-1].tile_id
                                         == SUBLOC_TILE_FLOOR_DASH
-                                    || (&cell_slot->cell)[-1].tile_id
+                                    || (&runtime_cells[cell_index][attachment_count])[-1].tile_id
                                         == SUBLOC_TILE_FLOOR_HASH_MARKER)
                                 && (attachment_count == SUBGAME_TRACK_LANE_COUNT - 1
-                                    || (&cell_slot->cell)[1].tile_id
+                                    || (&runtime_cells[cell_index][attachment_count])[1].tile_id
                                         == SUBLOC_TILE_FLOOR_DOT
-                                    || (&cell_slot->cell)[1].tile_id
+                                    || (&runtime_cells[cell_index][attachment_count])[1].tile_id
                                         == SUBLOC_TILE_FLOOR_VARIANT_14
-                                    || (&cell_slot->cell)[1].tile_id
+                                    || (&runtime_cells[cell_index][attachment_count])[1].tile_id
                                         == SUBLOC_TILE_FLOOR_DASH
-                                    || (&cell_slot->cell)[1].tile_id
+                                    || (&runtime_cells[cell_index][attachment_count])[1].tile_id
                                         == SUBLOC_TILE_FLOOR_HASH_MARKER)
                                 && cell_index >= first_block_row_count
                                 && cell_index < completion_row_start
@@ -433,16 +368,16 @@ void cRSubGame::AI()
                                     || RAND(1.0f, "G3")
                                         <= base_subgame_rate * 0.6f + 0.4f)) {
                             AddGarbage(
-                                &cell_slot->cell, &player);
+                                &runtime_cells[cell_index][attachment_count], &player);
                         }
 
-                        hazard_tile = cell_slot->cell.tile_id;
+                        hazard_tile = runtime_cells[cell_index][attachment_count].tile_id;
                         if (hazard_tile == SUBLOC_TILE_SALT_HAZARD) {
                             if (cell_index >= first_block_row_count
                                 && cell_index < completion_row_start) {
-                                salt_hazards.Add(cell_slot->cell.position);
+                                salt_hazards.Add(runtime_cells[cell_index][attachment_count].position);
                             }
-                        } else if ((cell_slot->cell.lane_and_flags
+                        } else if ((runtime_cells[cell_index][attachment_count].lane_and_flags
                                         & SUBLOC_FLAG_SUPPRESS_SALT_SPAWN)
                                 == 0
                             && (hazard_tile == SUBLOC_TILE_FLOOR_DOT
@@ -456,131 +391,125 @@ void cRSubGame::AI()
                                     + 0.98f
                             && cell_index >= first_block_row_count
                             && cell_index < completion_row_start) {
-                            salt_hazards.Add(cell_slot->cell.position);
+                            salt_hazards.Add(runtime_cells[cell_index][attachment_count].position);
                         }
 
                         if ((runtime_flags & SUBGAME_RUNTIME_FLAG_SLUG_HAZARDS) != 0
-                            && cell_slot->cell.tile_id == SUBLOC_TILE_SLUG_HAZARD
+                            && runtime_cells[cell_index][attachment_count].tile_id == SUBLOC_TILE_SLUG_HAZARD
                             && cell_index >= first_block_row_count
                             && cell_index < completion_row_start) {
-                            AddSlug(&cell_slot->cell, &player);
+                            AddSlug(&runtime_cells[cell_index][attachment_count], &player);
                         }
 
                         unsigned int ring_flags = runtime_rows[cell_index].flags;
                         if ((ring_flags & SUBROW_FLAG_RING_NONE) == 0) {
-                            if (cell_slot->cell.tile_id == SUBLOC_TILE_RING_MARKER) {
+                            if (runtime_cells[cell_index][attachment_count].tile_id == SUBLOC_TILE_RING_MARKER) {
                                 if ((ring_flags & SUBROW_FLAG_RING_NORMAL) != 0) {
                                     AddRing(
-                                        &cell_slot->cell, SUB_RING_KIND_NORMAL_AUTHORED, &player,
+                                        &runtime_cells[cell_index][attachment_count], SUB_RING_KIND_NORMAL_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
                                 } else if ((ring_flags & SUBROW_FLAG_RING_POWER_UP) != 0) {
                                     AddRing(
-                                        &cell_slot->cell, SUB_RING_KIND_POWER_UP_AUTHORED, &player,
+                                        &runtime_cells[cell_index][attachment_count], SUB_RING_KIND_POWER_UP_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
                                 } else if ((ring_flags & SUBROW_FLAG_RING_EXPLODE) != 0) {
                                     AddRing(
-                                        &cell_slot->cell, SUB_RING_KIND_EXPLODE_AUTHORED, &player,
+                                        &runtime_cells[cell_index][attachment_count], SUB_RING_KIND_EXPLODE_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
                                 } else if ((ring_flags & SUBROW_FLAG_RING_SLOW) != 0) {
                                     AddRing(
-                                        &cell_slot->cell, SUB_RING_KIND_SLOW_AUTHORED, &player,
+                                        &runtime_cells[cell_index][attachment_count], SUB_RING_KIND_SLOW_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
                                 } else {
                                     goto after_authored_ring;
                                 }
                                 player.last_ring_spawn_z =
-                                    cell_slot->cell.position.z;
+                                    runtime_cells[cell_index][attachment_count].position.z;
 after_authored_ring:
                                 ;
-                            } else if ((cell_slot->cell.tile_id
+                            } else if ((runtime_cells[cell_index][attachment_count].tile_id
                                             == SUBLOC_TILE_RAMP_LEFT_BRACE
-                                    || cell_slot->cell.tile_id
+                                    || runtime_cells[cell_index][attachment_count].tile_id
                                         == SUBLOC_TILE_RAMP_GREATER
-                                    || cell_slot->cell.tile_id
+                                    || runtime_cells[cell_index][attachment_count].tile_id
                                         == SUBLOC_TILE_RAMP_RIGHT_BRACE
-                                    || cell_slot->cell.tile_id
+                                    || runtime_cells[cell_index][attachment_count].tile_id
                                         == SUBLOC_TILE_RAMP_LEFT_BRACKET
-                                    || cell_slot->cell.tile_id
+                                    || runtime_cells[cell_index][attachment_count].tile_id
                                         == SUBLOC_TILE_RAMP_LESS
-                                    || cell_slot->cell.tile_id
+                                    || runtime_cells[cell_index][attachment_count].tile_id
                                         == SUBLOC_TILE_RAMP_RIGHT_BRACKET)
                                 && player.last_ring_spawn_z + 10.0f
-                                    < cell_slot->cell.position.z
+                                    < runtime_cells[cell_index][attachment_count].position.z
                                 && cell_index < completion_row_start) {
                                 if ((ring_flags & SUBROW_FLAG_RING_POWER_UP) != 0) {
                                     AddRing(
-                                        &(&cell_slot->cell)[
-                                            6 * SUBGAME_TRACK_LANE_COUNT],
+                                        &runtime_cells[cell_index + 6][attachment_count],
                                         SUB_RING_KIND_POWER_UP_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
                                     player.last_ring_spawn_z =
-                                        (&cell_slot->cell)[
-                                            6 * SUBGAME_TRACK_LANE_COUNT]
+                                        runtime_cells[cell_index + 6][attachment_count]
                                             .position.z;
                                 } else if ((ring_flags & SUBROW_FLAG_RING_EXPLODE) != 0) {
                                     AddRing(
-                                        &(&cell_slot->cell)[
-                                            6 * SUBGAME_TRACK_LANE_COUNT],
+                                        &runtime_cells[cell_index + 6][attachment_count],
                                         SUB_RING_KIND_EXPLODE_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
                                     player.last_ring_spawn_z =
-                                        (&cell_slot->cell)[
-                                            6 * SUBGAME_TRACK_LANE_COUNT]
+                                        runtime_cells[cell_index + 6][attachment_count]
                                             .position.z;
                                 } else if ((ring_flags & SUBROW_FLAG_RING_SLOW) != 0) {
                                     AddRing(
-                                        &(&cell_slot->cell)[
-                                            6 * SUBGAME_TRACK_LANE_COUNT],
+                                        &runtime_cells[cell_index + 6][attachment_count],
                                         SUB_RING_KIND_SLOW_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
                                     player.last_ring_spawn_z =
-                                        (&cell_slot->cell)[
-                                            6 * SUBGAME_TRACK_LANE_COUNT]
+                                        runtime_cells[cell_index + 6][attachment_count]
                                             .position.z;
                                 } else if ((runtime_flags
                                                 & SUBGAME_RUNTIME_FLAG_DEFAULT_RAMP_RINGS)
                                             != 0
                                     && (RAND(1.0f, "R") > 0.7f
                                         || level_mode == 7)
-                                    && cell_slot->cell.tile_id
+                                    && runtime_cells[cell_index][attachment_count].tile_id
                                         != SUBLOC_TILE_RAMP_LEFT_BRACKET
-                                    && cell_slot->cell.tile_id
+                                    && runtime_cells[cell_index][attachment_count].tile_id
                                         != SUBLOC_TILE_RAMP_LESS
-                                    && cell_slot->cell.tile_id
+                                    && runtime_cells[cell_index][attachment_count].tile_id
                                         != SUBLOC_TILE_RAMP_RIGHT_BRACKET) {
                                     AddRing(
-                                        &cell_slot->cell, SUB_RING_KIND_NORMAL_DEFAULT,
+                                        &runtime_cells[cell_index][attachment_count], SUB_RING_KIND_NORMAL_DEFAULT,
                                         &player, 0.0f);
                                     if (player.lives < 10)
                                         player.last_ring_spawn_z =
-                                            cell_slot->cell.position.z;
+                                            runtime_cells[cell_index][attachment_count].position.z;
                                     else
                                         player.last_ring_spawn_z =
-                                            cell_slot->cell.position.z + 35.0f;
+                                            runtime_cells[cell_index][attachment_count].position.z + 35.0f;
                                 }
-                            } else if ((cell_slot->cell.tile_id
+                            } else if ((runtime_cells[cell_index][attachment_count].tile_id
                                             == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
-                                    || cell_slot->cell.tile_id
+                                    || runtime_cells[cell_index][attachment_count].tile_id
                                         == SUBLOC_TILE_RAMP_GREATER_RAISED
-                                    || cell_slot->cell.tile_id
+                                    || runtime_cells[cell_index][attachment_count].tile_id
                                         == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED)
                                 && player.last_ring_spawn_z + 10.0f
-                                    < cell_slot->cell.position.z
+                                    < runtime_cells[cell_index][attachment_count].position.z
                                 && cell_index < completion_row_start) {
                                 if ((ring_flags & SUBROW_FLAG_RING_EXPLODE) != 0) {
                                     AddRing(
-                                        &cell_slot->cell, SUB_RING_KIND_EXPLODE_RAMP, &player,
+                                        &runtime_cells[cell_index][attachment_count], SUB_RING_KIND_EXPLODE_RAMP, &player,
                                         runtime_rows[cell_index].ring_speed);
-                                    player.last_ring_spawn_z = cell_slot->cell.position.z;
+                                    player.last_ring_spawn_z = runtime_cells[cell_index][attachment_count].position.z;
                                 } else if (RAND(1.0f, "R2") > 0.7f
                                     || level_mode == 7
                                     || ((runtime_rows[cell_index].flags
                                             & SUBROW_FLAG_RING_EXPLODE)
                                         != 0)) {
                                     AddRing(
-                                        &cell_slot->cell, SUB_RING_KIND_EXPLODE_RAMP,
+                                        &runtime_cells[cell_index][attachment_count], SUB_RING_KIND_EXPLODE_RAMP,
                                         &player, 0.0f);
-                                    player.last_ring_spawn_z = cell_slot->cell.position.z;
+                                    player.last_ring_spawn_z = runtime_cells[cell_index][attachment_count].position.z;
                                 }
                             }
                         }

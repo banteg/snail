@@ -26,7 +26,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 8 | initialize_loopout_path_template_pair | 833 | semantic-complete | analysis | current-active | 1/18 | metric-tradeoffs,variant-errors |
 | 9 | initialize_halfpipe_path_template_pair | 805 | semantic-complete | analysis | current-active | 1/20 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors |
 | 10 | initialize_dip_path_template_pair | 802 | semantic-complete | analysis | historical-only | 0/46 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 11 | update_subgame | 752 | semantic-complete | analysis | historical-only | 0/8 | historical-only |
+| 11 | update_subgame | 752 | semantic-complete | analysis | historical-only | 0/12 | historical-only,stale-dependencies |
 | 12 | initialize_loopbow_path_template_pair | 748 | semantic-complete | analysis | historical-only | 0/12 | metric-tradeoffs,variant-errors,historical-only |
 | 13 | initialize_turnover_path_template_pair | 740 | semantic-complete | analysis | historical-only | 0/51 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only |
 | 14 | initialize_cage2_path_template_pair | 733 | semantic-complete | analysis | current-active | 1/15 | repeated-variants,metric-tradeoffs,variant-errors |
@@ -72,7 +72,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 54 | add_object_edge | 65 | semantic-complete | analysis,references | current-active | 2/14 | metric-tradeoffs,variant-errors,stale-dependencies |
 | 55 | initialize_quaternion_from_matrix | 44 | semantic-complete | analysis | current-active | 5/8 | - |
 | 56 | load_frontend_level_by_mode_and_index | 41 | semantic-complete | analysis,references | current-active | 2/5 | - |
-| 57 | release_snail_weapons | 40 | semantic-complete | analysis | current-active | 5/9 | variant-errors |
+| 57 | release_snail_weapons | 40 | semantic-complete | analysis | current-inconclusive | 8/12 | variant-errors,audited-plan-errors,inconclusive-sweeps |
 | 58 | select_level_track_texture_set | 37 | semantic-complete | analysis,references | current-active | 2/5 | variant-errors |
 | 59 | refresh_object_vertex_buffer | 37 | semantic-complete | analysis | current-active | 5/8 | - |
 | 60 | play_subgoldy_shoot_sfx | 36 | semantic-complete | analysis,references | current-active | 1/7 | repeated-variants,variant-errors,stale-dependencies |

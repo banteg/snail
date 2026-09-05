@@ -38,3 +38,13 @@ outputs, and channel outputs, with either explicit inputs or the original
 ordered RNG calls inside the operation. Five are byte-neutral at 92.80%;
 channel ownership across the RNG calls regresses to 89.24%. No helper is
 retained. The first X spill and third channel's store schedule remain open.
+
+
+## 2026-09-05 independent release-scalar scopes
+
+Separating the four channels' scalar and destination locals, or separating
+only the first or final channel, is byte-neutral at 92.80%, 125/125
+instructions, prefix 13, and 33 clean references. The first unique-name
+variant accidentally renamed real `release_step` members as well as locals;
+record 10 has a digest-bound invalid-plan audit. Its corrected recipe compiles
+successfully and is also neutral. No source or shared type changes are kept.
