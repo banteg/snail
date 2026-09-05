@@ -197,3 +197,16 @@ Fifteen whole-entry variants combine typed allocation indexing, direct root/flag
 ## 2026-09-05 continued source-shape investigation
 
 Two diagnostic XYZ constructor-body forms are non-improving. XYZ assignment is neutral and reversed assignment regresses. The shared vector header remains unchanged.
+
+## 2026-09-05 shared vector operator ownership diagnostics
+
+Four `whole-vector-operator-ownership-20260905-mutations.json` variants embed
+an unchanged vector header control and move addition, subtraction, or both
+from free const-reference functions to const members with identical explicit
+result bodies. All are neutral in this caller. The same four-way replay in
+S-bend, star-field initialization, CreateGolb, and exact LookAt also stays
+neutral, with unchanged instruction counts, prefixes, and clean references.
+
+These results do not independently prove free-versus-member authored spelling;
+they show that this distinction does not explain the tested native differences.
+No shared header or caller-specific operator implementation is changed.

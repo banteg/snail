@@ -369,3 +369,16 @@ the native apparently redundant checkerboard choice. All are neutral at
 91.10%, prefix 443, with all 39 references clean. No helper is retained. This
 operation boundary does not recover the branch-local face address or UV
 publication schedule; it does not establish exhaustion.
+
+## 2026-09-05 shared vector operator ownership diagnostics
+
+Four `whole-vector-operator-ownership-20260905-mutations.json` variants embed
+an unchanged vector header control and move addition, subtraction, or both
+from free const-reference functions to const members with identical explicit
+result bodies. All are neutral in this caller. The same four-way replay in
+S-bend, star-field initialization, CreateGolb, and exact LookAt also stays
+neutral, with unchanged instruction counts, prefixes, and clean references.
+
+These results do not independently prove free-versus-member authored spelling;
+they show that this distinction does not explain the tested native differences.
+No shared header or caller-specific operator implementation is changed.

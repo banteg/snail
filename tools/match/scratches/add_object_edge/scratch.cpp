@@ -70,7 +70,7 @@ void cRObject::AddEdge(int vertex_a, int vertex_b, int normal_index)
             Vector3 lhs = facequad_normals[g_object_edge_build_edges[index].normal_a];
             Vector3 rhs = facequad_normals[g_object_edge_build_edges[index].normal_b];
             Vector3 cross;
-            cross.cross_vectors(&lhs, &rhs);
+            cross.Cross(lhs, rhs);
             float cross_length = cross.Magnitude();
             if (cross_length <= 0.050000001f
                 || cross.Dot(g_object_edge_build_edges[index].direction)

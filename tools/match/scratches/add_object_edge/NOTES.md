@@ -239,3 +239,27 @@ with a global, reference, or pointer count owner. Reference indices preserve
 91.59%; value indices restore the already rejected 86.53% independent-cursor
 shape. No helper is retained. Native's separate final count load/store and
 epilogue placement remain open.
+
+## 2026-09-05 count exits and verified Cross contract
+
+The compatibility `cross.cross_vectors(&lhs, &rhs)` call now uses the
+independently verified `cross.Cross(lhs, rhs)` member and const-reference
+contract. The complete normalized native/candidate diff is identical before
+and after, at 91.59%, 225/227 instructions, prefix 15, 34 clean references and
+the same three unaudited count-publication operands. This is retained as an
+API ownership correction, not reported as a new match.
+
+`whole-existing-count-owner-20260905-mutations.json` isolates that correction
+and tests three final decrement/publication forms reusing the existing
+`build_count` variable. All four are neutral. The native final decrement uses
+EAX and a separate load/store, while the candidate still emits an in-memory
+decrement. An EAX residue at this exit alone does not establish an integer
+return contract: other native exits do not define a consistent count result.
+
+Three `whole-count-expression-exits-20260905-mutations.json` probes test final
+void expression returns for the increment, decrement, or both. VC6 rejects all
+three with C2562 even after explicitly casting the expression to void. They
+are compiler-rejected source alternatives, not generated matching objects;
+no code is retained and no return declaration is changed. The compiler and
+shared arithmetic definitions remain fixed. These bounded checks do not
+establish exhaustion of the native early epilogue and count-publication shape.

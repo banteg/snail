@@ -98,3 +98,16 @@ transfer to these launch stores. No additional source change is retained.
 All four are neutral at 99.14%, 582/582 instructions, prefix 156, and 48 clean
 references. The paired AI replay is likewise neutral. Observed zero/one
 writes alone do not settle the authored byte type; no shared type is changed.
+
+## 2026-09-05 shared vector operator ownership diagnostics
+
+Four `whole-vector-operator-ownership-20260905-mutations.json` variants embed
+an unchanged vector header control and move addition, subtraction, or both
+from free const-reference functions to const members with identical explicit
+result bodies. All are neutral in this caller. The same four-way replay in
+S-bend, star-field initialization, CreateGolb, and exact LookAt also stays
+neutral, with unchanged instruction counts, prefixes, and clean references.
+
+These results do not independently prove free-versus-member authored spelling;
+they show that this distinction does not explain the tested native differences.
+No shared header or caller-specific operator implementation is changed.
