@@ -126,3 +126,11 @@ Six recorded whole-loop probes test copy construction, per-face versus outer pos
 ## 2026-09-05 additional operation-boundary probes
 
 Six ordinary capacity-check helper forms, using value/reference/pointer count inputs and value/reference limits, are byte-neutral at 98.80%. No helper is retained.
+
+## 2026-09-05 emitted-index count borrow scopes
+
+Four complete count-reference scopes cover function entry, after face-index
+initialization, per-face entry, and the triangle/quad publication boundary.
+All are neutral at 98.80%, 167/167 instructions, prefix 155, and six clean
+references. No reference alias is retained; these scopes do not recover the
+terminal limit-load order.

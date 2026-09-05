@@ -1,5 +1,9 @@
 # render_backdrop
 
+Current result: **exact**, 192/192 instructions, prefix 192, with all 29
+references clean under the canonical MSVC 6.5 build. The dated partial
+results below are historical.
+
 - Initial scratch for `render_backdrop @ 0x411040`.
 - This is the 7x7 single-texture backdrop mesh renderer. It samples four
   neighboring `BackdropDistortCell::current_*_offset` pairs for each quad.
@@ -161,3 +165,27 @@ increment timing, double intermediates, and a shared next-column local.
 Next-column comparison and shared scope are neutral; other forms regress, and
 one double form introduces twelve unaudited operands. The near-match remains
 open; these local campaigns do not establish compiler exhaustion.
+
+## 2026-09-05 exact carried column coordinate
+
+The previous float-column source was 99.22%, 193/192 instructions, with an
+extra reload at the inner-loop compare. A double loop counter with explicit
+float geometry expressions reproduces the comparison but initially loads its
+zero as a qword, giving 99.48%, 192/192, prefix 6. Ordinary literal, local,
+and split-assignment initialization forms do not change that width.
+
+The exact reconstruction carries the next-column value in a float across
+iterations, reads it into the iteration's double coordinate at body entry,
+and uses float conversions for the authored coordinate and UV arithmetic.
+The loop tests the carried float directly. This restores the initial dword
+zero load and the native non-popping comparison without an extra reload.
+Both function-scope and body-local double coordinates are exact; the retained
+body-local form states its actual use lifetime.
+
+Four recorded recipes contain 21 compiling variants. Removing the float
+conversions changes reference widths; making the iteration coordinate a float
+changes the stack/lifetime schedule. Those simplifications are rejected.
+The retained mixed-precision source is a reproducible reconstruction of every
+native instruction and operand, not proof that the original author used these
+exact variable declarations. No compiler option, constant-pool substitution,
+inline assembly, dummy dependency, or reference-audit rule changed.

@@ -2,15 +2,15 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**588/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **133829/294937** bytes (**45.38%**) are proof-grade, and overall fuzzy is **87.84%**.
+**589/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **134509/294937** bytes (**45.61%**) are proof-grade, and overall fuzzy is **87.84%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
 ## Residual frontier
 
-**74** non-exact scratch-backed functions hold **30550 fuzzy-gap bytes**. The top 5 hold **29.9%** of that gap; the top 10 hold **43.5%**.
+**73** non-exact scratch-backed functions hold **30545 fuzzy-gap bytes**. The top 5 hold **29.9%** of that gap; the top 10 hold **43.5%**.
 
-Current-baseline experiments cover **44 functions / 9541 gap bytes**; **30 / 21010** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **43 functions / 9535 gap bytes**; **30 / 21010** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -88,11 +88,10 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 70 | border_mouse_test | 7 | semantic-complete | analysis | current-active | 4/7 | variant-errors |
 | 71 | switch_track_mirror | 7 | semantic-complete | analysis | current-active | 1/4 | - |
 | 72 | draw_frontend_widget | 7 | semantic-complete | analysis | current-active | 5/14 | stale-dependencies |
-| 73 | append_track_cache_object | 5 | semantic-complete | analysis | current-active | 3/6 | - |
-| 74 | render_backdrop | 5 | semantic-complete | analysis | current-active | 7/16 | repeated-variants,metric-tradeoffs,variant-errors |
+| 73 | append_track_cache_object | 5 | semantic-complete | analysis | current-active | 4/7 | - |
 
 
-## Proof Grade (588)
+## Proof Grade (589)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -216,6 +215,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ✅ | initialize_backdrop | 0x410e20 | 279 | 55/55 | 100.00% | 55/55 | 4 ok |  | core |
 | ✅ | set_backdrop_texture_target | 0x410f40 | 79 | 14/14 | 100.00% | 14/14 | 2 ok |  | core |
 | ✅ | draw_split_backdrop | 0x410f90 | 172 | 50/50 | 100.00% | 50/50 | 4 ok |  | core |
+| ✅ | render_backdrop | 0x411040 | 680 | 192/192 | 100.00% | 192/192 | 29 ok |  | core |
 | ✅ | update_backdrop | 0x4112f0 | 189 | 67/67 | 100.00% | 67/67 | 7 ok |  | core |
 | ✅ | add_bod_to_front | 0x4113b0 | 105 | 33/33 | 100.00% | 33/33 | 2 ok |  | core |
 | ✅ | append_bod_to_end | 0x411420 | 129 | 33/33 | 100.00% | 33/33 | 2 ok |  | core |
@@ -685,14 +685,13 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  | boundary |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 
-## Near Match (95-99.99%) (12)
+## Near Match (95-99.99%) (11)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
 | 🚧 | draw_frontend_widget | 0x401130 | 2353 | 712/712 | 99.72% | 253/712 | 68 ok |  | core |
 | 🚧 | update_frontend_widget_interaction | 0x402820 | 2677 | 649/647 | 95.83% | 127/647 | 2 unaudited, 96 ok |  | core |
 | 🚧 | border_mouse_test | 0x404580 | 421 | 117/117 | 98.29% | 73/117 | 5 ok |  | core |
-| 🚧 | render_backdrop | 0x411040 | 680 | 193/192 | 99.22% | 174/192 | 29 ok |  | core |
 | 🚧 | create_golb | 0x415280 | 2349 | 582/582 | 99.14% | 156/582 | 48 ok |  | core |
 | 🚧 | traverse_path_follow_golb | 0x4217b0 | 1551 | 425/425 | 99.29% | 96/425 | 7 ok |  | core |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 199/204 | 95.78% | 16/204 | 47 ok |  | core |

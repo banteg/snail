@@ -17,26 +17,26 @@ void cRBackdrop::render_backdrop()
 
     float row = 0.0f;
     do {
-        float column = 0.0f;
+        float next_column = 0.0f;
         do {
+            double column = next_column;
             int row_index = (int)row;
             int column_index = (int)column;
             unsigned char flip = active_flip;
             int cell_index = row_index + column_index * GRID_COLUMN_COUNT;
-            float next_column;
             float right_y;
             float left_x;
             float right_x;
             float left_y;
 
             if (flip == 0) {
-                next_column = column + 1.0f;
+                next_column = (float)column + 1.0f;
                 float next_row = row + 1.0f;
                 float* cell = (float*)this + cell_index * 6;
                 right_y = next_column * 68.5714264f;
                 left_x = row * 91.4285736f;
                 right_x = next_row * 91.4285736f;
-                left_y = column * 68.5714264f;
+                left_y = (float)column * 68.5714264f;
                 OSDPrintUV(
                     active_primary_texture_id,
                     left_x + cell[26],
@@ -52,19 +52,19 @@ void cRBackdrop::render_backdrop()
                     0x8000000,
                     normal_color.Set(1.0f, 1.0f, 1.0f, 1.0f),
                     row * 0.0892857164f,
-                    column * 0.133928567f,
+                    (float)column * 0.133928567f,
                     next_row * 0.0892857164f,
                     next_column * 0.133928567f,
                     0,
                     0);
             } else {
-                next_column = column + 1.0f;
+                next_column = (float)column + 1.0f;
                 float next_row = row + 1.0f;
                 float* cell = (float*)this + cell_index * 6;
                 right_y = next_column * 68.5714264f;
                 left_x = row * 91.4285736f;
                 right_x = next_row * 91.4285736f;
-                left_y = column * 68.5714264f;
+                left_y = (float)column * 68.5714264f;
                 OSDPrintUV(
                     active_primary_texture_id,
                     left_x + cell[26],
@@ -80,15 +80,14 @@ void cRBackdrop::render_backdrop()
                     0x8000000,
                     flipped_color.Set(1.0f, 1.0f, 1.0f, 1.0f),
                     0.800000012f - row * 0.0892857164f,
-                    column * 0.133928567f,
+                    (float)column * 0.133928567f,
                     0.800000012f - next_row * 0.0892857164f,
                     next_column * 0.133928567f,
                     0,
                     0);
             }
 
-            column = next_column;
-        } while (column < GRID_QUAD_COUNT);
+        } while (next_column < GRID_QUAD_COUNT);
 
         row += 1.0f;
     } while (row < GRID_QUAD_COUNT);
