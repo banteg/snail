@@ -603,3 +603,12 @@ Five branch-owner and three setter forms do not improve the preceding source. Tw
 Fifteen per-corner UV value forms and fifteen texture-selection expression forms also give no tradeoff-free improvement; no auxiliary UV type or helper is retained.
 
 Twelve face-index arithmetic forms, 9 cross-phase counter reuse forms, nine face-field ownership forms, and twelve checkerboard-parity expressions add no tradeoff-free gain. Wide integer index expressions are byte-neutral, so the explicit short casts are not required by code generation. The nested checkerboard form raises Snake's fuzzy score but worsens instruction count and is rejected. These receipts preserve the tested combinations without closing the face-source hypothesis.
+
+## 2026-09-05 shared checkerboard texture operation
+
+Twelve `whole-shared-texture-choice-20260905-mutations.json` forms transfer
+the paired texture-choice operation tested in Sbend: returned texture values,
+direct face publication, parity versus row/column arguments, value/reference
+texture parameters, and both predicate orientations. All are neutral at
+88.19%, prefix 387, with all 40 references clean. No helper is retained, and
+the face address/UV schedule remains an open source reconstruction problem.

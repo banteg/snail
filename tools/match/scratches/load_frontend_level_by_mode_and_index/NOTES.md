@@ -124,3 +124,13 @@ Seven whole-function forms vary the extra-level argument lifetime (mutated
 parameter, shared index, scoped value) and the path-buffer borrow. All are
 neutral at 81.36%; canonical source is unchanged. The duplicated sprintf
 region still needs a different source-shape explanation.
+
+## 2026-09-05 indexed formatting operation
+
+Five forms in `whole-indexed-format-operation-20260905-mutations.json` test
+a shared indexed `sprintf` operation with a buffer pointer or array reference,
+and the two indexed string literals independently confirmed by the Windows
+IDA export. All retain 81.36%, 61/57 instructions, prefix 5, and the duplicated
+call. Literal spellings additionally expose three reference-identity mismatches
+against the curated global symbols; no audit rule is weakened and no form is
+retained. The native cross-case tail sharing still needs a source explanation.

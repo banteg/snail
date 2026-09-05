@@ -46,3 +46,13 @@ placement do not improve 79.26%. Separate byte/int components, one expression,
 and an image-base pixel view all regress; moving the row term inside the loop
 also changes the saved-register/frame shape. Canonical source is unchanged.
 These results bound the tested source shapes, not the remaining investigation.
+
+## 2026-09-05 pixel sampling operation
+
+Eight `whole-pixel-sample-operation-20260905-mutations.json` forms separate
+pixel address lookup or complete grayscale sampling, borrowing the row value
+by value/reference. Passing the existing row base is neutral at 79.26%;
+passing the converted row coordinate and deriving the base inside the operation
+reproduces 60.36%. All thirteen references remain clean. No helper is retained.
+The native saved row coordinate and green-before-red load schedule remain
+unrecovered; these results do not establish a compiler limitation.

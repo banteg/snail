@@ -357,3 +357,15 @@ Seven combinations of const vector value returns are byte-neutral at 91.10%. No 
 ## 2026-09-05 operation-boundary checks
 
 Six complete front/back face-emission helper forms test both indexed banks and per-face pointer arguments. Indexed forms are neutral at 91.10%; pointer forms regress. The native branch-local address scaling and UV publication remain unresolved. No helper is retained.
+
+## 2026-09-05 shared checkerboard texture operation
+
+Twelve `whole-shared-texture-choice-20260905-mutations.json` forms separate
+checkerboard texture selection from face publication. They cover returned
+texture values, direct face publication, parity versus row/column arguments,
+value/reference texture parameters, and both predicate orientations. Both
+texture parameters receive the same per-winding source texture, preserving
+the native apparently redundant checkerboard choice. All are neutral at
+91.10%, prefix 443, with all 39 references clean. No helper is retained. This
+operation boundary does not recover the branch-local face address or UV
+publication schedule; it does not establish exhaustion.

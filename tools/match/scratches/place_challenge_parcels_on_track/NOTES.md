@@ -307,3 +307,21 @@ lifetimes; typed reset indexing also loses one audited sentinel reference.
 These local combinations are rejected, not evidence of source-shape exhaustion.
 Normal placement's direct segment ownership gain does not by itself transfer
 to this function, which has no authored segment scan.
+
+## 2026-09-05 candidate operations and rejection guards
+
+`whole-candidate-operations-20260905-mutations.json` tests twelve eligibility
+and candidate-compaction operations, with the current projection-cell lifetime
+and with a fresh cell after the first `Yi()`. Predicate pointer/reference and
+field-reference forms, plus value/reference compaction indices, reproduce
+81.40% on the current lifetime or 76.38% on the fresh lifetime. No helper is
+retained. The fresh lifetime recovers the native 0x48 frame and prefix 26 but
+changes subsequent register allocation. The exact `cRSubLoc::Yi()` body is
+read-only, so preserving the earlier cell is not an established behavioral
+error; the native reload remains useful source-lifetime evidence.
+
+`whole-row-rejection-guards-20260905-mutations.json` tests eight coupled
+rejection/while/end-pointer scans with both projection lifetimes. All regress
+(46.59–69.77%); end-pointer termination adds two unaudited references. The
+canonical source and its visible 33 clean plus two unaudited references remain.
+These results bound these operations and guards, not the possible source.
