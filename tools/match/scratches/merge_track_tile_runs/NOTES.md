@@ -290,3 +290,25 @@ The recorded scan guard/index campaign, surrounding loop/receiver scopes,
 run-count/saved-lane lifetimes, and index-expression ordering did not resolve
 those offsets. The full products and tradeoffs are preserved in the adjacent
 specs and ledger. No shared layout, compiler option, or reference mask changed.
+
+## 2026-09-05 exact continuation-operation boundary
+
+The complete method now reproduces **276/276 instructions, all 873 bytes of
+normalized instruction shape, and all twelve audited references** under the
+canonical compiler settings. The existing floor/slide/wall rules and their
+first-cell asymmetries are unchanged.
+
+The three continuation cleanups now call one ordinary `static inline`
+operation with the game, row, first lane and the run counter by reference.
+It preserves the previous macro's decrement-and-clear behavior, including
+the caller-owned counter becoming zero. That source boundary recovers the
+native receiver, row and saved-lane stack homes. Passing the counter by value
+or narrowing the owner to a row-bank argument does not match. A separate
+check confirms ordinary `inline` is sufficient; no forced-inline directive
+is retained.
+
+The helper is a source reconstruction, not a claim of a separately emitted
+Windows function or an independently recovered authored helper name. There
+are no new target calls or reference exceptions. The previous stack-layout
+residual was recoverable through a real repeated operation and its counter
+ownership. Both complete probe recipes and their results are recorded.

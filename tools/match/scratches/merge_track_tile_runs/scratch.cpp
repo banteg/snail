@@ -12,17 +12,18 @@
         || (tile) == SUBLOC_TILE_GARBAGE_HAZARD \
         || (tile) == SUBLOC_TILE_SALT_HAZARD)
 
-#define CLEAR_MERGED_CONTINUATIONS(game, row, first_lane, run_length) \
-    do { \
-        --(run_length); \
-        while ((run_length) > 0) { \
-            (game)->runtime_cells[(row)][(first_lane) + (run_length)].list_flags &= \
-                ~BOD_FLAG_RENDER_ENABLED; \
-            (game)->runtime_cells[(row)][(first_lane) + (run_length)].lane_and_flags &= \
-                ~(SUBLOC_FLAG_AI_ENABLED | SUBLOC_FLAG_UNCACHED_BODY); \
-            --(run_length); \
-        } \
-    } while (0)
+static inline void clear_merged_continuations(
+    cRSubGame* game, int row, int first_lane, int& run_length)
+{
+    --run_length;
+    while (run_length > 0) {
+        game->runtime_cells[row][first_lane + run_length].list_flags &=
+            ~BOD_FLAG_RENDER_ENABLED;
+        game->runtime_cells[row][first_lane + run_length].lane_and_flags &=
+            ~(SUBLOC_FLAG_AI_ENABLED | SUBLOC_FLAG_UNCACHED_BODY);
+        --run_length;
+    }
+}
 
 void cRSubGame::CondenseTrack()
 {
@@ -60,7 +61,7 @@ void cRSubGame::CondenseTrack()
                                 g_game->root_bod_catalog.floor_slices
                                     .storage[run_length - 1]
                                     .object);
-                        CLEAR_MERGED_CONTINUATIONS(this, row_index, lane, run_length);
+                        clear_merged_continuations(this, row_index, lane, run_length);
                     }
                 } else if (runtime_cells[row_index][lane].IsSlide() != 0
                            && (runtime_cells[row_index][lane].lane_and_flags & SUBLOC_FLAG_CORNER_OBJECT) == 0
@@ -84,7 +85,7 @@ void cRSubGame::CondenseTrack()
                                 g_game->root_bod_catalog.slide_slices
                                     .storage[run_length - 1]
                                     .object);
-                        CLEAR_MERGED_CONTINUATIONS(this, row_index, lane, run_length);
+                        clear_merged_continuations(this, row_index, lane, run_length);
                     }
                 } else {
                     unsigned char tile = runtime_cells[row_index][lane].tile_id;
@@ -116,7 +117,7 @@ void cRSubGame::CondenseTrack()
                                 (runtime_cells[row_index][lane].lane_and_flags & ~SUBLOC_MERGED_RUN_WIDTH_MASK)
                                 | ((run_length & SUBLOC_MERGED_RUN_WIDTH_VALUE_MASK)
                                     << SUBLOC_MERGED_RUN_WIDTH_SHIFT);
-                            CLEAR_MERGED_CONTINUATIONS(this, row_index, lane, run_length);
+                            clear_merged_continuations(this, row_index, lane, run_length);
                         }
                     } else if (tile == SUBLOC_TILE_EMPTY
                         || tile == SUBLOC_TILE_RING_MARKER) {
@@ -149,5 +150,4 @@ void cRSubGame::CondenseTrack()
     }
 }
 
-#undef CLEAR_MERGED_CONTINUATIONS
 #undef IS_FLOOR_RUN_TILE
