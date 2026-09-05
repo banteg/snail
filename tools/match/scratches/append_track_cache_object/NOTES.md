@@ -122,3 +122,7 @@ source lifetimes and compiler provenance remain separate hypotheses.
 ## 2026-09-05 whole-loop source probes
 
 Six recorded whole-loop probes test copy construction, per-face versus outer position lifetime, and structured for/while face traversal. The copy-lifetime changes regress and the structured loops are neutral at 98.80%, with all six references clean. The capacity-tail lifetime remains open; these probes do not establish a compiler-provenance requirement.
+
+## 2026-09-05 additional operation-boundary probes
+
+Six ordinary capacity-check helper forms, using value/reference/pointer count inputs and value/reference limits, are byte-neutral at 98.80%. No helper is retained.

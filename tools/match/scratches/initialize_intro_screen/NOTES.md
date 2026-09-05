@@ -236,3 +236,7 @@ Fifteen combinations of indexed image donors, indexed final velocity
 publication, aggregate velocity initialization and indexed glyph traversal
 do not improve 88.89%. Donor and final velocity indices are neutral; the
 other forms regress. Canonical source is unchanged.
+
+## 2026-09-05 additional operation-boundary probes
+
+Six image-dimension parser operations test reference outputs and a real width/height pair, with pointer or reference cursor ownership. Scalar reference outputs are neutral at 88.89%; pair forms regress. No parser helper or local pair type is retained.

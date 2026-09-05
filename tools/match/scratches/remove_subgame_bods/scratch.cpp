@@ -21,11 +21,11 @@ int report_errorf(char* format, ...);
         list->remove_bod(BOD_NODE_FROM_NEXT_LINK(next_link));    \
     } while (0)
 
-#define REMOVE_INLINE_BOD_NODE(node_expr)                        \
-    do {                                                         \
-        BodList* list = &g_game->active_bod_list;                 \
-        list->remove_bod((node_expr));                           \
-    } while (0)
+static inline void remove_inline_bod_node(BodNode* node)
+{
+    BodList* list = &g_game->active_bod_list;
+    list->remove_bod(node);
+}
 
 void cRSubGame::RemoveBods()
 {
@@ -63,13 +63,13 @@ void cRSubGame::RemoveBods()
 
     BodNode* speedup = &speedup_pickup;
     if ((speedup->list_flags & BOD_FLAG_LINKED) != 0) {
-        REMOVE_INLINE_BOD_NODE(speedup);
+        remove_inline_bod_node(speedup);
         speedup_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
     }
 
     BodNode* jetpack = &jetpack_pickup;
     if ((jetpack->list_flags & BOD_FLAG_LINKED) != 0) {
-        REMOVE_INLINE_BOD_NODE(jetpack);
+        remove_inline_bod_node(jetpack);
         jetpack_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
     }
 
@@ -114,12 +114,12 @@ void cRSubGame::RemoveBods()
     {
         cRSubGoldy& player_owner = player;
         if ((((BodNode*)&player_owner)->list_flags & BOD_FLAG_LINKED) != 0) {
-            REMOVE_INLINE_BOD_NODE((BodNode*)&player_owner);
-            REMOVE_INLINE_BOD_NODE(
+            remove_inline_bod_node((BodNode*)&player_owner);
+            remove_inline_bod_node(
                 (BodNode*)&player_owner.presentation);
-            REMOVE_INLINE_BOD_NODE(
+            remove_inline_bod_node(
                 &player_owner.presentation.jetpack_channel);
-            REMOVE_INLINE_BOD_NODE(
+            remove_inline_bod_node(
                 &player_owner.presentation.weapon_channels[0]);
 
             BodList* list = &g_game->active_bod_list;

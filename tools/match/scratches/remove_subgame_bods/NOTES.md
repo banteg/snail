@@ -406,3 +406,21 @@ uv run snail match probe tools/match/scratches/remove_subgame_bods \
 ## 2026-09-05 continued source-shape investigation
 
 The 63 combinations of typed hazard owners, typed row owners, and an inner countdown do not improve the 71.77% baseline. A typed row alone is neutral; the countdown loses matching bytes. Required linked/state guards are preserved throughout.
+
+## 2026-09-05 unlink-operation boundary
+
+Replacing the repeated ordinary-node unlink macro with a `static inline`
+wrapper around the existing `BodList::remove_bod` improves **71.77% to 72.17%**.
+The next-link wrapper remains a macro: replacing that wrapper too loses the
+gain. The current result is **505/501 instructions, prefix 6**, with all 70
+references clean; instruction-count distance is unchanged. No lifecycle guard
+or diagnostic is removed.
+
+Six row-cell removal operations also test the loop's pointer/count ownership.
+Returning the advanced cell pointer from a countdown helper recovers the first
+56 native instructions, including the native EDI cell cursor and EBX count.
+Its remaining teardown drops to 66.40% because the receiver and linked-mask
+allocation change. That combined variant is not retained, but its complete
+source is reproducible from `whole-row-cell-removal-operation-20260905.json`
+(`return-pointer-countdown`). It is a concrete opening-loop lead for later
+coupled work, not proof of exhaustion.

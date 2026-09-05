@@ -283,3 +283,7 @@ The four `unguarded-call` variants are excluded as invalid semantic probes:
 the shared helper reports `List remove` on an unlinked node, whereas the native
 outer precheck skips it. They are preserved in the ledger for auditability and
 were not retained. Canonical source is unchanged.
+
+## 2026-09-05 additional operation-boundary probes
+
+Six prechecked-unlink helper forms preserve the smaller native guard behavior while varying node and mask borrows. All are byte-neutral at 91.19%; the existing source remains.

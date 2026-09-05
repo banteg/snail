@@ -201,3 +201,7 @@ Nine memcpy/memmove upload forms give no gain. The memcpy intrinsic reproduces t
 ## 2026-09-05 additional source-shape checks
 
 Five diagnostic vector copy/assignment definitions do not improve 90.58%; an explicit copy constructor can be neutral, while explicit assignments regress. No header change is retained.
+
+## 2026-09-05 additional operation-boundary probes
+
+Six repeated position-upload operations test source/destination borrows and indexed banks or objects. They do not improve 90.58%; no wrapper is retained.

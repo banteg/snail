@@ -181,3 +181,7 @@ Nine whole-function key-value lifetime forms test one result variable, a wider r
 
 The recorded specifications and experiment receipts preserve these negative
 results. They do not establish source exhaustion or compiler provenance.
+
+## 2026-09-05 additional operation-boundary probes
+
+Eight case-fold comparison operation forms test value/reference character inputs and explicit versus expression-local call results. They regress from 99.32%; no comparison helper or public signature change is retained.

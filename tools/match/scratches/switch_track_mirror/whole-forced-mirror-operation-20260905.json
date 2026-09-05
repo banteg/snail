@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "forced-mirror-operation",
+      "find": "// switch_track_mirror @ 0x435e60 (thiscall, ret)\n// Anti-streak track mirror toggle: randomizes the row mirror flag, but never\n// repeats the same state more than 4 times in a row.\n\n#include \"subgame_runtime.h\"\n#include \"rmath_random.h\"\n\n\nvoid cRSubGame::SwitchMirror()\n{\n    bool mirror_enabled = RAND(1.0f, \"Mirror\") > 0.5f;\n    if (mirror_enabled == track_mirror_enabled)\n        ++track_mirror_repeat_count;\n    else\n        track_mirror_repeat_count = 0;\n    if (track_mirror_repeat_count < 4) {\n        track_mirror_enabled = mirror_enabled;\n        return;\n    }\n    track_mirror_repeat_count = 0;\n    mirror_enabled = !mirror_enabled;\n    track_mirror_enabled = mirror_enabled;\n}\n",
+      "replacements": [
+        {
+          "name": "game-selected-value",
+          "text": "// switch_track_mirror @ 0x435e60 (thiscall, ret)\n// Anti-streak track mirror toggle: randomizes the row mirror flag, but never\n// repeats the same state more than 4 times in a row.\n\n#include \"subgame_runtime.h\"\n#include \"rmath_random.h\"\n\n\nstatic inline void invert_repeated_mirror(cRSubGame* game, bool selected)\n{\n    game->track_mirror_repeat_count = 0;\n    game->track_mirror_enabled = !selected;\n}\n\nvoid cRSubGame::SwitchMirror()\n{\n    bool mirror_enabled = RAND(1.0f, \"Mirror\") > 0.5f;\n    if (mirror_enabled == track_mirror_enabled)\n        ++track_mirror_repeat_count;\n    else\n        track_mirror_repeat_count = 0;\n    if (track_mirror_repeat_count < 4) {\n        track_mirror_enabled = mirror_enabled;\n        return;\n    }\n    invert_repeated_mirror(this, mirror_enabled);\n}\n"
+        },
+        {
+          "name": "game-selected-ref",
+          "text": "// switch_track_mirror @ 0x435e60 (thiscall, ret)\n// Anti-streak track mirror toggle: randomizes the row mirror flag, but never\n// repeats the same state more than 4 times in a row.\n\n#include \"subgame_runtime.h\"\n#include \"rmath_random.h\"\n\n\nstatic inline void invert_repeated_mirror(cRSubGame* game, const bool& selected)\n{\n    game->track_mirror_repeat_count = 0;\n    game->track_mirror_enabled = !selected;\n}\n\nvoid cRSubGame::SwitchMirror()\n{\n    bool mirror_enabled = RAND(1.0f, \"Mirror\") > 0.5f;\n    if (mirror_enabled == track_mirror_enabled)\n        ++track_mirror_repeat_count;\n    else\n        track_mirror_repeat_count = 0;\n    if (track_mirror_repeat_count < 4) {\n        track_mirror_enabled = mirror_enabled;\n        return;\n    }\n    invert_repeated_mirror(this, mirror_enabled);\n}\n"
+        },
+        {
+          "name": "fields-selected-value",
+          "text": "// switch_track_mirror @ 0x435e60 (thiscall, ret)\n// Anti-streak track mirror toggle: randomizes the row mirror flag, but never\n// repeats the same state more than 4 times in a row.\n\n#include \"subgame_runtime.h\"\n#include \"rmath_random.h\"\n\n\nstatic inline void invert_repeated_mirror(bool& mirror, int& repeats, bool selected)\n{\n    repeats = 0;\n    mirror = !selected;\n}\n\nvoid cRSubGame::SwitchMirror()\n{\n    bool mirror_enabled = RAND(1.0f, \"Mirror\") > 0.5f;\n    if (mirror_enabled == track_mirror_enabled)\n        ++track_mirror_repeat_count;\n    else\n        track_mirror_repeat_count = 0;\n    if (track_mirror_repeat_count < 4) {\n        track_mirror_enabled = mirror_enabled;\n        return;\n    }\n    invert_repeated_mirror(track_mirror_enabled, track_mirror_repeat_count, mirror_enabled);\n}\n"
+        },
+        {
+          "name": "fields-selected-ref",
+          "text": "// switch_track_mirror @ 0x435e60 (thiscall, ret)\n// Anti-streak track mirror toggle: randomizes the row mirror flag, but never\n// repeats the same state more than 4 times in a row.\n\n#include \"subgame_runtime.h\"\n#include \"rmath_random.h\"\n\n\nstatic inline void invert_repeated_mirror(bool& mirror, int& repeats, const bool& selected)\n{\n    repeats = 0;\n    mirror = !selected;\n}\n\nvoid cRSubGame::SwitchMirror()\n{\n    bool mirror_enabled = RAND(1.0f, \"Mirror\") > 0.5f;\n    if (mirror_enabled == track_mirror_enabled)\n        ++track_mirror_repeat_count;\n    else\n        track_mirror_repeat_count = 0;\n    if (track_mirror_repeat_count < 4) {\n        track_mirror_enabled = mirror_enabled;\n        return;\n    }\n    invert_repeated_mirror(track_mirror_enabled, track_mirror_repeat_count, mirror_enabled);\n}\n"
+        }
+      ]
+    }
+  ]
+}

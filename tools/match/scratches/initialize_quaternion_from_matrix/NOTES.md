@@ -149,3 +149,7 @@ canonical 92.47% source and its exact arithmetic bodies remain unchanged.
 ## 2026-09-05 continued source-shape investigation
 
 Six materialized dominant-axis dispatch forms preserve the comparison decision tree and tie cases, but regress from 92.47%. The natural existing branch tree remains; these results do not establish a compiler limitation.
+
+## 2026-09-05 additional operation-boundary probes
+
+Six shared checked-root operations test reference/value radicands, clamp-only returns and doubled-root returns. Reference forms are neutral at 92.47%; value forms regress. No helper is retained.

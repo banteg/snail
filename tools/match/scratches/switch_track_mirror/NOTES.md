@@ -100,3 +100,7 @@ errors, repeats, or tradeoffs. The retained void source remains the
 mobile-authored semantic form. Recovering the native duplicated hot return
 would require defeating VC6's tail merge rather than expressing a missing
 program property, so no source change is retained.
+
+## 2026-09-05 additional operation-boundary probes
+
+Four forced-inversion operation forms preserve both reset and inversion with game or field ownership. All are byte-neutral at 91.23%; no helper is retained.

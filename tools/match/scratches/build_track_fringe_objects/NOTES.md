@@ -385,3 +385,28 @@ is therefore still dominated by the receiver/family/edge-selector register
 permutation, but the earlier claim that all of it was compiler residue was too
 strong. The retained change is ordinary publication sequencing, with no
 volatile state, dummy dependency, or register coercion.
+
+## 2026-09-05 palette receiver correction and indexed grid
+
+The four skirt-color calls now use `g_game->subgame`. Native reloads the global
+root before each call, and the exact `GetSkirtColour` body reads its receiver's
+level-definition color. Calling the current `FringeEdgeTrack` receiver instead
+is not a generally equivalent owner relationship. The earlier notes calling
+these four missing global loads only compiler/reference layout were too
+confident; a higher fuzzy score did not justify preserving that assumption.
+
+The receiver correction alone initially lowers fuzzy matching to 42.25%.
+Indexing all cell accesses by row and lane recovers the native cell induction
+and prevents the extra persistent position pointer; indexing the row owner
+also helps. Together, the retained source improves the original 61.20% to
+**64.45%**, with **498/495 instructions and all 53 references clean**.
+Instruction-count distance remains three; the exact prefix changes from three
+to zero because the remaining frame is four bytes too large. This is an
+explicit correctness-driven owner correction with a net fuzzy improvement,
+not a claim that every matching metric improved.
+
+Five directional-emission forms, six cell/position owners, three family
+operations, eight row/edge scope combinations and six selector lifetimes are
+recorded. No emission helper, family helper, local constructor copy, or wider
+selector scope is retained. The remaining receiver/edge-selector register and
+stack lifetimes remain open.
