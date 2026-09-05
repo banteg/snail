@@ -53,25 +53,25 @@ void set_input_controller_pointer_authored_xy(
     float authored_y); // @ 0x4323a0
 static __forceinline void link_root_bod(BodBase* bod)
 {
-    char* node = (char*)bod;
-    unsigned int* flags = (unsigned int*)(node + 4);
+    BodNode* node = bod;
+    int* flags = &node->list_flags;
     if ((*flags & BOD_FLAG_LINKED) != 0) {
         report_errorf((char*)"List ADD");
         return;
     }
 
-    char* head = (char*)&g_game->active_bod_list.first;
-    char* first = *(char**)head;
+    BodNode** head = &g_game->active_bod_list.first;
+    BodNode* first = *head;
     if (first != 0) {
-        *(char**)(first + 8) = node;
-        *(char**)(*(char**)(*(char**)head + 8) + 12) = *(char**)head;
-        first = *(char**)(*(char**)head + 8);
-        *(char**)head = first;
-        *(int*)(first + 8) = 0;
+        first->list_prev = node;
+        (*head)->list_prev->list_next = *head;
+        first = (*head)->list_prev;
+        *head = first;
+        first->list_prev = 0;
     } else {
-        *(char**)head = node;
-        *(int*)(node + 8) = 0;
-        *(int*)(*(char**)head + 12) = 0;
+        *head = node;
+        node->list_prev = 0;
+        (*head)->list_next = 0;
     }
     *flags |= BOD_FLAG_LINKED;
 }
@@ -138,8 +138,8 @@ char cRGame::initialize_game_assets_and_world()
     landscape->Import(g_help_script_path);
 
     subgame.level_mode_arg = g_runtime_config.landscape_backdrop_variant_selector;
-    ((SubgameOwnerLink*)&subgame.gui)->bind_subgame_owner();
-    ((SubgameOwnerLink*)&subgame.splash)->bind_subgame_owner();
+    subgame.gui.Open();
+    subgame.splash.Open();
     subgame.galaxy.Open();
     subgame.player.cameraman.Init();
     logo.Open();

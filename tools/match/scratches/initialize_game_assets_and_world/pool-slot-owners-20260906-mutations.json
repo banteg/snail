@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lazer-slot-owner",
+      "find": "    Object** sub_lazer_object = &subgame.sub_lazers.slots[0].object;\n    int sub_lazer_count = SUB_LAZER_SLOT_COUNT;\n    do {\n        ((BodBase*)((char*)sub_lazer_object - BOD_OBJECT_OFFSET))\n            ->SetObject(lazer->object);\n        (*sub_lazer_object)->facequads[0].texture_ref->flags |= TEXTURE_REF_REGISTERED;\n        *(cRSubGame**)(\n            (char*)sub_lazer_object + SUB_LAZER_OWNER_FROM_OBJECT) = &subgame;\n        ((tColour*)(sub_lazer_object + 1))\n            ->store_color4f(1.0f, 1.0f, 1.0f, 0.7f);\n        (*sub_lazer_object)->blend_mode = 9;\n        sub_lazer_object = (Object**)((char*)sub_lazer_object + sizeof(cRSubLazer));\n        --sub_lazer_count;\n    } while (sub_lazer_count != 0);\n",
+      "replacements": [
+        {
+          "name": "slot-cursor",
+          "text": "    cRSubLazer* slot = &subgame.sub_lazers.slots[0];\n    int sub_lazer_count = SUB_LAZER_SLOT_COUNT;\n    do {\n        slot->SetObject(lazer->object);\n        slot->object->facequads[0].texture_ref->flags |= TEXTURE_REF_REGISTERED;\n        slot->owner_game = &subgame;\n        slot->color.store_color4f(1.0f, 1.0f, 1.0f, 0.7f);\n        slot->object->blend_mode = 9;\n        ++slot;\n        --sub_lazer_count;\n    } while (sub_lazer_count != 0);\n"
+        },
+        {
+          "name": "indexed-slot",
+          "text": "    int sub_lazer_index = 0;\n    do {\n        cRSubLazer* slot = &subgame.sub_lazers.slots[sub_lazer_index];\n        slot->SetObject(lazer->object);\n        slot->object->facequads[0].texture_ref->flags |= TEXTURE_REF_REGISTERED;\n        slot->owner_game = &subgame;\n        slot->color.store_color4f(1.0f, 1.0f, 1.0f, 0.7f);\n        slot->object->blend_mode = 9;\n        ++sub_lazer_index;\n    } while (sub_lazer_index < SUB_LAZER_SLOT_COUNT);\n"
+        }
+      ]
+    },
+    {
+      "name": "salt-slot-owner",
+      "find": "    cRSubGame** salt_owner = &subgame.salt_hazards.slots[0].owner_game;\n    int salt_count = 40;\n    do {\n        cRSalt* salt = (cRSalt*)((char*)salt_owner - 0x88);\n        salt->SetObject(salt_model->object);\n        *salt_owner = &subgame;\n        salt->color.store_color4f(1.0f, 1.0f, 1.0f, 0.9f);\n        salt->object->blend_mode = 12;\n        set_matrix_identity(&salt->transform);\n        salt_owner = (cRSubGame**)((char*)salt_owner + sizeof(cRSalt));\n        --salt_count;\n    } while (salt_count != 0);\n",
+      "replacements": [
+        {
+          "name": "slot-cursor",
+          "text": "    cRSalt* salt = &subgame.salt_hazards.slots[0];\n    int salt_count = 40;\n    do {\n        salt->SetObject(salt_model->object);\n        salt->owner_game = &subgame;\n        salt->color.store_color4f(1.0f, 1.0f, 1.0f, 0.9f);\n        salt->object->blend_mode = 12;\n        set_matrix_identity(&salt->transform);\n        ++salt;\n        --salt_count;\n    } while (salt_count != 0);\n"
+        },
+        {
+          "name": "indexed-slot",
+          "text": "    int salt_index = 0;\n    do {\n        cRSalt* salt = &subgame.salt_hazards.slots[salt_index];\n        salt->SetObject(salt_model->object);\n        salt->owner_game = &subgame;\n        salt->color.store_color4f(1.0f, 1.0f, 1.0f, 0.9f);\n        salt->object->blend_mode = 12;\n        set_matrix_identity(&salt->transform);\n        ++salt_index;\n    } while (salt_index < 40);\n"
+        }
+      ]
+    },
+    {
+      "name": "banner-slot-owner",
+      "find": "    int banner_index = 0;\n    do {\n        char* banner_cursor = game + banner_index * sizeof(Banner);\n        ((Banner*)(banner_cursor + BANNER_POOL_FROM_ROOT))\n            ->SetObject(g_object_list.Add());\n        if (banner_index == 0) {\n            loader->Load(\n                (char*)\"postofficestop.x\",\n                subgame.banners.slots[0].object,\n                1);\n        }\n        if (banner_index == 1) {\n            loader->Load(\n                (char*)\"postofficestop.x\",\n                subgame.banners.slots[1].object,\n                banner_index);\n        }\n        ((Banner*)(banner_cursor + BANNER_POOL_FROM_ROOT))->position.z = 0.0f;\n        ((Banner*)(banner_cursor + BANNER_POOL_FROM_ROOT))->position.y = 0.0f;\n        ((Banner*)(banner_cursor + BANNER_POOL_FROM_ROOT))->position.x = 0.0f;\n        subgame.banners.slots[banner_index].owner_game = &subgame;\n        ((Banner*)(banner_cursor + BANNER_POOL_FROM_ROOT))->visibility_mode = banner_index;\n        ++banner_index;\n        ((Banner*)(banner_cursor + BANNER_POOL_FROM_ROOT))->phase = 0.0f;\n        ((Banner*)(banner_cursor + BANNER_POOL_FROM_ROOT))->phase_step = 0.006944444f;\n    } while (banner_index < BANNER_SLOT_COUNT);\n",
+      "replacements": [
+        {
+          "name": "indexed-slot",
+          "text": "    int banner_index = 0;\n    do {\n        Banner* banner = &subgame.banners.slots[banner_index];\n        banner\n            ->SetObject(g_object_list.Add());\n        if (banner_index == 0) {\n            loader->Load(\n                (char*)\"postofficestop.x\",\n                subgame.banners.slots[0].object,\n                1);\n        }\n        if (banner_index == 1) {\n            loader->Load(\n                (char*)\"postofficestop.x\",\n                subgame.banners.slots[1].object,\n                banner_index);\n        }\n        banner->position.z = 0.0f;\n        banner->position.y = 0.0f;\n        banner->position.x = 0.0f;\n        subgame.banners.slots[banner_index].owner_game = &subgame;\n        banner->visibility_mode = banner_index;\n        ++banner_index;\n        banner->phase = 0.0f;\n        banner->phase_step = 0.006944444f;\n    } while (banner_index < BANNER_SLOT_COUNT);\n"
+        },
+        {
+          "name": "slot-cursor",
+          "text": "    Banner* banner = &subgame.banners.slots[0];\n    int banner_index = 0;\n    do {\n        banner\n            ->SetObject(g_object_list.Add());\n        if (banner_index == 0) {\n            loader->Load(\n                (char*)\"postofficestop.x\",\n                subgame.banners.slots[0].object,\n                1);\n        }\n        if (banner_index == 1) {\n            loader->Load(\n                (char*)\"postofficestop.x\",\n                subgame.banners.slots[1].object,\n                banner_index);\n        }\n        banner->position.z = 0.0f;\n        banner->position.y = 0.0f;\n        banner->position.x = 0.0f;\n        subgame.banners.slots[banner_index].owner_game = &subgame;\n        banner->visibility_mode = banner_index;\n        ++banner_index;\n        banner->phase = 0.0f;\n        banner->phase_step = 0.006944444f;\n        ++banner;\n    } while (banner_index < BANNER_SLOT_COUNT);\n"
+        }
+      ]
+    }
+  ]
+}

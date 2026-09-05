@@ -10,6 +10,7 @@ class cRSubGame;
 
 class cRSplash {
 public:
+    void Open(); // @ 0x433fc0, folded with cRGUI::Open()
     void Init(); // @ 0x433fd0
     void UnInit(); // @ 0x4340c0
     void AI(); // @ 0x4340f0
@@ -19,16 +20,6 @@ public:
     int message_state; // +0x08
     float message_progress; // +0x0c
     float message_progress_step; // +0x10
-};
-
-// Field-first owner-link view shared by GUI and cRSplash.
-// Both concrete controllers keep their own layouts; this does not assert a
-// common C++ base class merely because their identical setup was folded.
-class SubgameOwnerLink {
-public:
-    cRSubGame* bind_subgame_owner(); // @ 0x433fc0
-
-    cRSubGame* game; // +0x00
 };
 
 #endif

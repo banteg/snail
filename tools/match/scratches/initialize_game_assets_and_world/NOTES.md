@@ -1443,3 +1443,43 @@ The append-only ledger contains five bounded sweeps and 28 variants:
 forms. The
 retained frontier is 81.34%; a useful future probe needs new original-source
 evidence or a neighboring lifetime change.
+
+## 2026-09-06 concrete controller and intrusive-list owners
+
+The initializer now calls `subgame.gui.Open()` and `subgame.splash.Open()`.
+Both concrete definitions independently match the folded four-instruction
+Windows body; the shared `SubgameOwnerLink` matcher type is removed. The
+owner-qualified relocation aliases are limited to those two proven methods.
+
+The overlay linker now uses `BodNode*`, `BodNode**`, `list_flags`, `list_prev`,
+and `list_next` instead of reconstructing those fields through byte offsets
+and repeated casts. Its typed node, flag address, list-head address, and
+head-reload lifetimes reproduce the original candidate code hash exactly
+(`60bf0f32b72e01e13e5e9bd1bab43ed8d167bd5f329f74d676eec64087cfaef1`).
+The initial typed probe incorrectly used `unsigned int*` for the canonical
+signed flag field and failed C2440; correcting that declaration proves the
+rewrite. This is removal of an obsolete type reconstruction, not a new match.
+
+Replacing the complete linker with `BodList::add_bod` instead gives 75.30%
+and 5,335 instructions; forcing that existing operation inline gives 75.47%
+and 5,406. Neither preserves the native lifetime schedule, so the shared
+operation and its other callers are unchanged.
+
+`pool-slot-owners-20260906-mutations.json` tests all 26 single and combined
+cursor/indexed owners for the independently recovered cRSubLazer, cRSalt,
+and Banner pools. The best score, 81.55%, loses eight more instructions
+(5,397 versus 5,411 native); every improving variant worsens instruction-count
+parity. None is retained. Knowing each complete slot layout does not by
+itself recover the initializer's borrowed interior-field induction.
+
+After both retained owner changes the complete initializer remains **81.34%**,
+5,405/5,411 instructions, with 1,880 clean references, zero mismatches, and
+the same two unaudited Golb-vapour stride references. The next useful owner
+recovery is that nested `GolbShot::vapour.object` borrow or the related cleanup
+loop lifetime; another flag-only rewrite is not indicated by this evidence.
+
+Adding the two decorated reference aliases changes the manifest baseline
+identity. The preceding experiments therefore become historical on the
+regenerated board, even though the full matching check confirms unchanged
+scores and instruction counts. Their recorded input hashes and reproducible
+pool mutation spec preserve the distinction.

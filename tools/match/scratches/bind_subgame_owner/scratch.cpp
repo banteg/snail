@@ -1,12 +1,9 @@
-// bind_subgame_owner @ 0x433fc0 (thiscall, ret)
+// bind_subgame_owner @ 0x433fc0: folded cRGUI::Open / cRSplash::Open
 
 #include "game_root.h"
-#include "thanks_screen.h"
+#include "gui.h"
 
-
-cRSubGame* SubgameOwnerLink::bind_subgame_owner()
+void cRGUI::Open()
 {
-    cRSubGame* result = &g_game->subgame;
-    game = result;
-    return result;
+    game = &g_game->subgame;
 }

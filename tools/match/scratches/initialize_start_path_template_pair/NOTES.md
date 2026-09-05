@@ -523,3 +523,20 @@ isolated first-sample comparison. All regress from 87.94%; the closest is
 87.36%, while the single for loop gives 81.54%. All 35 references are clean.
 No loop change is retained. The physical sample cursor, logical phase, and
 first-sample guard still need a jointly native-backed source reconstruction.
+
+## 2026-09-06 dependency transfer from exact fringe generation
+
+The newly exact `build_track_fringe_mesh` establishes a reusable direction
+value outside its row loop. `whole-vector-owners-20260906-mutations.json`
+tests that source relationship here: shared or paired curve-direction values
+inside/outside the curve loop, and generated-position/lateral-offset values
+owned by the column, row, or complete mesh traversal. All 34 individual and
+paired variants produce the identical canonical code hash, at **87.94%**,
+609/610 instructions, prefix 148, and 35 clean references.
+
+The native curve subtraction at `0x42675e..0x426798` and mesh position copy at
+`0x4269e2..0x426a50` already have complete three-float value owners. Broadening
+those values' scopes does not repair Start's sample-index/first-sample guard
+or branch-local face-address schedule. The exact fringe helper is a useful
+control, but does not establish one universal local-variable scope for the
+other path constructors. No variant is retained.

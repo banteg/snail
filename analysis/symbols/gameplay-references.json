@@ -3179,6 +3179,16 @@
       "description": "Tiny cdecl outbound-link helper reached from update_completion_screen after pushing the Alpha72.url resource literal; the helper ignores the argument and sets the launch latch."
     },
     {
+      "address": "0x433fc0",
+      "name": "bind_subgame_owner",
+      "kind": "function",
+      "aliases": [
+        "?Open@cRGUI@@QAEXXZ",
+        "?Open@cRSplash@@QAEXXZ"
+      ],
+      "description": "Audited folded Windows Open methods: startup passes the embedded cRGUI at 0x40aee1 and cRSplash at 0x40aeec. Both concrete void methods independently reproduce the same four instructions and borrow the root-owned cRSubGame. Android and iOS retain both authored method identities; only Windows supplies their field offsets."
+    },
+    {
       "address": "0x433fd0",
       "name": "initialize_thanks_for_playing_screen",
       "kind": "function",

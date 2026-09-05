@@ -10,6 +10,7 @@ class cRSubGame;
 
 class cRGUI {
 public:
+    void Open();   // @ 0x433fc0, folded with cRSplash::Open()
     void Init();   // @ 0x415f50
     void UnInit(); // @ 0x4161f0
     int AI();      // @ 0x416370
