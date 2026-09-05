@@ -37,3 +37,18 @@ call, in either order, using sums, compound additions, or a reused edge local.
 All compile with 68 clean references but regress from 99.72% to 98.46–98.74%.
 They do not recover the remaining width operand order without disturbing
 neighboring argument setup. Canonical source is unchanged.
+
+## 2026-09-05 shared sprite/shadow scalar lifetimes
+
+Four combinations reuse the ordinary sprite padding and reload either the
+existing sprite-edge variable or a fresh edge after the shadow-color Set
+call. Padding reuse alone is neutral at 99.72%; the post-Set edge snapshots
+give 98.74%, prefix 234, with all 68 references clean. They do not improve
+the current source, and none is retained.
+
+The otherwise surprising four constructor calls at function entry are also
+present in the Android 0x5f5b0 and iOS 0x391a0 Draw exports, including the two
+alpha assignments in the render-mode branch. Their presence is independently
+supported; the unnamed prologue colors are not removed based only on their
+limited later use in the Windows body. This check does not establish a new
+shared color constructor or return contract.

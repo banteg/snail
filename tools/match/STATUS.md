@@ -59,7 +59,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 41 | set_snail_weapon | 254 | semantic-complete | analysis | current-active | 7/10 | repeated-variants |
 | 42 | initialize_intro_screen | 206 | semantic-complete | analysis | current-active | 3/6 | repeated-variants,variant-errors |
 | 43 | update_golb_ai | 186 | semantic-complete | analysis | historical-only | 0/22 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 44 | initialize_sbend_path_template_pair | 184 | semantic-complete | analysis | current-active | 13/61 | repeated-specs,metric-tradeoffs,stale-dependencies |
+| 44 | initialize_sbend_path_template_pair | 184 | semantic-complete | analysis | current-active | 14/62 | repeated-specs,metric-tradeoffs,stale-dependencies |
 | 45 | initialize_loading_screen | 129 | semantic-complete | analysis | current-active | 3/7 | variant-errors |
 | 46 | register_font_texture_sheet | 120 | semantic-complete | analysis | current-active | 2/23 | repeated-variants,metric-tradeoffs,stale-dependencies |
 | 47 | place_challenge_parcels_on_track | 115 | semantic-complete | analysis,references | current-active | 3/9 | - |
@@ -87,7 +87,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 69 | read_repeating_text_input_key_code | 9 | semantic-complete | analysis | current-inconclusive | 5/11 | variant-errors,audited-plan-errors,inconclusive-sweeps,stale-dependencies |
 | 70 | border_mouse_test | 7 | semantic-complete | analysis | current-active | 4/7 | variant-errors |
 | 71 | switch_track_mirror | 7 | semantic-complete | analysis | current-active | 1/4 | - |
-| 72 | draw_frontend_widget | 7 | semantic-complete | analysis | current-active | 4/13 | stale-dependencies |
+| 72 | draw_frontend_widget | 7 | semantic-complete | analysis | current-active | 5/14 | stale-dependencies |
 | 73 | append_track_cache_object | 5 | semantic-complete | analysis | current-active | 3/6 | - |
 | 74 | render_backdrop | 5 | semantic-complete | analysis | current-active | 7/16 | repeated-variants,metric-tradeoffs,variant-errors |
 

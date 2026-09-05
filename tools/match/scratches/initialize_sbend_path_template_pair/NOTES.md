@@ -382,3 +382,11 @@ neutral, with unchanged instruction counts, prefixes, and clean references.
 These results do not independently prove free-versus-member authored spelling;
 they show that this distinction does not explain the tested native differences.
 No shared header or caller-specific operator implementation is changed.
+
+## 2026-09-05 owning-member build phases
+
+Six whole-source variants inline the delta phase, strip-mesh phase, or both
+into the owning cRPath method, with explicit blocks or flat local scopes.
+All are neutral at 91.10%, 578/579 instructions, prefix 443, and 39 clean
+references. The scratch-only helper boundary is not responsible for this
+measured residual. No source change is retained.
