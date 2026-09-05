@@ -273,3 +273,13 @@ row indexing with the existing fringe borrow is neutral at 91.19% and keeps
 all eighteen references clean. A row borrow regresses to 75.10% with four
 unaudited operands; direct fringe access also regresses. No source change is
 retained, and the remaining unlink/lifetime work stays open.
+
+## 2026-09-05 whole unlink/owner replay
+
+`whole-inline-unlink-20260905.json` couples row/fringe ownership with the shared
+inline remover. The valid guarded-call forms reproduce the earlier 83.46%
+regression and add unaudited diagnostic calls; none improve 91.19%.
+The four `unguarded-call` variants are excluded as invalid semantic probes:
+the shared helper reports `List remove` on an unlinked node, whereas the native
+outer precheck skips it. They are preserved in the ledger for auditability and
+were not retained. Canonical source is unchanged.

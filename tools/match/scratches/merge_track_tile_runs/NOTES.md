@@ -1,5 +1,9 @@
 # merge_track_tile_runs
 
+Current result: **94.20%**, 276/276 instructions, twelve clean references.
+The September indexed-owner recovery below supersedes earlier claims that
+the extra induction variable and store-width differences were compiler limits.
+
 `cRSubGame::CondenseTrack` makes a second pass over the populated
 runtime track cells. It seeds every cell with the independent
 `SUBLOC_FLAG_AI_ENABLED | SUBLOC_FLAG_UNCACHED_BODY` (`0x6000`) bits,
@@ -260,3 +264,29 @@ All 12 references are clean. The 67.50% residual is the compiler's extra
 current-cell induction variable, stack-slot allocation, and byte-versus-dword
 store scheduling; it does not leave a branch, flag, or storage owner missing.
 This conclusion is independent of the historical sweep count.
+
+## 2026-09-05 indexed grid and run-length recovery
+
+The whole-function `whole-indexed-grid-20260905.json` campaign tests 31
+combinations of seed, current-cell, scan, continuation, and row ownership.
+Indexing the current cell and continuation cleanup together raises 67.50% to
+72.79%, removes the extra stack slot, and preserves all twelve references.
+The seed and row owner can also be indexed without changing those instructions;
+the retained source removes the field-interior casts and attachment-row offset.
+
+`cleanup-counter-lifetime-20260905.json` then raises the score to 80.80%:
+a positive-count cleanup loop generates the native full-width flag stores
+and removes extra termination tests. `run-length-index-20260905.json` raises
+it again to **94.20%** by deriving all three scan indices from `lane +
+run_length`. This removes the separate cursor and lane counter while retaining
+the wall branch's intentional first-cell flag ownership.
+
+The canonical candidate now has exactly 276 instructions, the native 0x10-byte
+frame, and all twelve references clean. The sixteen remaining differences are
+only stack-slot offsets: the candidate assigns the saved lane, row, and receiver
+to different slots. This is an observed mismatch, not an exhaustion claim.
+
+The recorded scan guard/index campaign, surrounding loop/receiver scopes,
+run-count/saved-lane lifetimes, and index-expression ordering did not resolve
+those offsets. The full products and tradeoffs are preserved in the adjacent
+specs and ledger. No shared layout, compiler option, or reference mask changed.
