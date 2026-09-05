@@ -153,3 +153,12 @@ Six materialized dominant-axis dispatch forms preserve the comparison decision t
 ## 2026-09-05 additional operation-boundary probes
 
 Six shared checked-root operations test reference/value radicands, clamp-only returns and doubled-root returns. Reference forms are neutral at 92.47%; value forms regress. No helper is retained.
+
+
+## 2026-09-05 constructor exit-lifetime follow-up
+
+Fifteen whole-constructor forms join subsets of the four natural return paths
+through a common exit. All reproduce the same 92.47%, 186/186 instructions,
+prefix 42, and 23 clean references. The compiler duplicates the same epilogues;
+this exit-lifetime change does not repair the diagonal dispatch placement.
+No source change is retained, and the dispatch source shape remains open.

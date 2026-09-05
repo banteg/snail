@@ -10,7 +10,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 **77** non-exact scratch-backed functions hold **31701 fuzzy-gap bytes**. The top 5 hold **28.8%** of that gap; the top 10 hold **41.9%**.
 
-Current-baseline experiments cover **44 functions / 9208 gap bytes**; **33 / 22492** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **45 functions / 9228 gap bytes**; **32 / 22472** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -81,18 +81,18 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 63 | set_snail_jetpack | 26 | semantic-complete | analysis | current-active | 4/7 | repeated-variants |
 | 64 | initialize_star_field | 21 | semantic-complete | analysis | current-active | 4/13 | repeated-specs,metric-tradeoffs,variant-errors |
 | 65 | update_input | 21 | semantic-complete | analysis | historical-only | 0/3 | historical-only |
-| 66 | create_golb | 20 | semantic-complete | analysis | historical-only | 0/18 | variant-errors,historical-only,stale-dependencies |
+| 66 | create_golb | 20 | semantic-complete | analysis | current-active | 1/19 | variant-errors,stale-dependencies |
 | 67 | firework_shoot | 19 | semantic-complete | analysis | current-active | 6/10 | repeated-variants,stale-dependencies |
 | 68 | extract_snail_local_hotspots | 18 | semantic-complete | analysis | current-active | 3/7 | repeated-variants,variant-errors |
 | 69 | explode_slug_hazard | 13 | semantic-complete | analysis | current-inconclusive | 6/9 | repeated-variants,variant-errors,audited-plan-errors,inconclusive-sweeps |
 | 70 | traverse_path_follow_golb | 11 | semantic-complete | analysis | current-active | 4/27 | repeated-variants,metric-tradeoffs,stale-dependencies |
-| 71 | read_repeating_text_input_key_code | 9 | semantic-complete | analysis | current-active | 2/8 | stale-dependencies |
+| 71 | read_repeating_text_input_key_code | 9 | semantic-complete | analysis | current-inconclusive | 5/11 | variant-errors,audited-plan-errors,inconclusive-sweeps,stale-dependencies |
 | 72 | border_mouse_test | 7 | semantic-complete | analysis | current-active | 4/7 | variant-errors |
 | 73 | switch_track_mirror | 7 | semantic-complete | analysis | current-active | 1/4 | - |
 | 74 | draw_frontend_widget | 7 | semantic-complete | analysis | current-active | 3/12 | stale-dependencies |
 | 75 | append_track_cache_object | 5 | semantic-complete | analysis | current-active | 3/6 | - |
 | 76 | render_backdrop | 5 | semantic-complete | analysis | current-active | 7/16 | repeated-variants,metric-tradeoffs,variant-errors |
-| 77 | layout_frontend_widget | 4 | semantic-complete | analysis | current-active | 13/16 | repeated-variants,variant-errors |
+| 77 | layout_frontend_widget | 4 | semantic-complete | analysis | current-active | 14/17 | repeated-variants,variant-errors |
 
 
 ## Proof Grade (585)

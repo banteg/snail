@@ -80,3 +80,12 @@ branches' final velocity-Z stores relative to position-X arithmetic. Direct
 member X access, scalar borrows, moving the laser flag around hotspot setup,
 and scalar vector-copy forms do not resolve them. These receipts constrain
 those tested forms, not the underlying source shape or compiler provenance.
+
+
+## 2026-09-05 late member-publication follow-up
+
+Eight pointer/reference forms begin the skip-byte or launch-vector borrow at
+its publication site, instead of spanning construction or the whole function.
+All are byte-neutral at 99.14%, 582/582 instructions, prefix 156, with all
+48 references clean. The exact parcel-placement publication recovery does not
+transfer to these launch stores. No additional source change is retained.

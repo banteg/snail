@@ -185,3 +185,13 @@ results. They do not establish source exhaustion or compiler provenance.
 ## 2026-09-05 additional operation-boundary probes
 
 Eight case-fold comparison operation forms test value/reference character inputs and explicit versus expression-local call results. They regress from 99.32%; no comparison helper or public signature change is retained.
+
+
+## 2026-09-05 repeat-input owner borrows
+
+Six pointer/reference combinations borrow the current stack code, the global
+last-repeat byte, or both at the fold comparison. The first recipe's four
+global-reference cases used plain char for the shared unsigned-char field and
+failed compilation; the corrected recipe reruns all four with its actual
+type. A digest-bound invalid-plan audit preserves that evidence for record 9. Every valid form is byte-neutral at 99.32%, 440/440 instructions, prefix
+408, and 74 clean references. No global type or comparison source is changed.

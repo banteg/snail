@@ -72,3 +72,14 @@ alters later register allocation. Six separate scalar-copy forms then test
 4-byte memcpy and ordinary pointer/reference copy operations. Four are neutral
 and two regress to 98.87%. No helper, cast change, or snapshot is retained.
 The native Y load before the X store remains the single scheduling gap.
+
+
+## 2026-09-05 join ownership and late hit-publication follow-up
+
+Twelve whole-source forms vary X-only, Y-only, and paired direct member reads
+with paired versus interleaved copies and float versus bit carriers. One is
+neutral at 99.44%; eleven regress. Twelve further pointer/reference forms
+begin destination-field borrows at each hit-coordinate publication. All are
+neutral at 99.44%, 177/177 instructions, prefix 66, and 20 clean references.
+The successful late field borrow in parcel placement does not transfer to
+this load/store region. No source change is retained.
