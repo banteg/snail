@@ -513,3 +513,13 @@ native induction relationship remains a hypothesis to recover through coupled
 index/lifetime changes, not evidence of an irreducible compiler difference.
 The branch at the canonical prefix boundary only differs in destination byte
 offset; do not mistake that offset shift for the first changed computation.
+
+## 2026-09-05 single sample induction
+
+Five complete curve loops test one source sample index starting at five, with
+direct or derived zero-based phase, absolute or relative bounds, and a for
+loop. These test the coupled induction relationship, not merely the old
+isolated first-sample comparison. All regress from 87.94%; the closest is
+87.36%, while the single for loop gives 81.54%. All 35 references are clean.
+No loop change is retained. The physical sample cursor, logical phase, and
+first-sample guard still need a jointly native-backed source reconstruction.

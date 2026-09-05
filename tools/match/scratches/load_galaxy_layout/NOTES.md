@@ -333,3 +333,12 @@ do not establish that the remaining mismatch is a compiler limitation.
 ## 2026-09-05 continued source-shape investigation
 
 Seven star-loop scope and finalization forms do not produce a tradeoff-free gain. The highest score, 90.17%, shortens the exact prefix from 62 to 47; the canonical 89.74% remains. This does not settle the original loop structure.
+
+## 2026-09-05 counter entry lifetimes
+
+Six complete source forms move the star counter, or all three outer counters,
+ahead of owner/file acquisition or to function entry. None improves 89.74%.
+Moving only the star counter before acquisition is neutral; earlier group
+lifetimes disturb the native opening. All 42 references stay clean. No source
+change is retained; the parser's first zero comparison and later loop/exit
+publication remain unresolved.

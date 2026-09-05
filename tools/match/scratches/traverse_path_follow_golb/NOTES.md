@@ -50,3 +50,11 @@ shadow, wider scalar, or operator override is retained. The residual remains
 open; the former compiler attribution did not explain the recovered changes.
 
 Three additional shared multiplication-result diagnostics test direct constructor return, named constructor return, and copy-then-scale. The constructor forms are byte-neutral at 99.29%; copy-then-scale regresses. The shared operator definition remains unchanged.
+
+## 2026-09-05 ordinary basis snapshots
+
+Six complete basis snapshots compare vector, const-vector, and three-scalar
+owners before or after local displacement calculation. All regress from
+99.29% to 98.82%, with the same prefix and seven clean references. No snapshot
+is retained. The existing shared vector multiplication remains canonical;
+this result does not settle the Y-product x87 operand schedule.

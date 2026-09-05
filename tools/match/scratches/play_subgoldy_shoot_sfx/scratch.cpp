@@ -6,7 +6,6 @@
 
 
 int gRMathRand2();
-double __fastcall normalize_vector(Vector3* vector);
 
 void cRSubGoldy::PlayShootSfx()
 {
@@ -41,7 +40,7 @@ void cRSubGoldy::PlayShootSfx()
                 g_game->players[0].transform.position - transform.position;
 
             normalized_vector = vector;
-            float distance = (float)normalize_vector(&normalized_vector);
+            float distance = normalized_vector.Normalize();
             float volume = distance / -60.0f + 1.0f;
             if (volume < 0.0f) {
                 volume = 0.0f;

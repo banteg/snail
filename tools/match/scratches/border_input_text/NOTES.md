@@ -19,3 +19,25 @@ missing editor branch is known.
 The matcher source now uses the authored `InputText` method and exact VC6 symbol
 `?InputText@cRBorder@@QAEXXZ`; `border_input_text` remains only the stable
 scratch and Windows-address identity.
+
+## 2026-09-05 text-shift operation and carry lifetimes
+
+The current shared-header baseline is 75.25%, 439/446 instructions, prefix 6,
+and eight clean references. Its low fuzzy percentage includes many displaced
+branch targets: the full comparison has small non-branch gaps at the opening
+flag load, two character-rotation loops, Home movement, and completion.
+
+Eight deletion/cursor-shift helper combinations and three consumed-key carry
+forms are neutral. Four staged-displacement/pointer-owner rotations and two
+returned-character operations are neutral or worse. Three final-character
+publication forms also regress. The latter follow the separate loop-carried
+and final-output values visible in both Windows and the Android newline
+branch, but still do not reproduce the Windows compilation. No helper or
+character temporary is retained.
+
+Native retains extra carry copies in the two insertion arms and, at completion,
+a redundant first-character load plus separate cleared/final flag publication.
+The current source does not recover those instructions. Mobile has additional
+capitalization behavior on its ordinary path; importing it into Windows or
+adding an unused load solely to reproduce bytes is not justified. These are
+source-recovery questions, not proof of an irreducible compiler residual.

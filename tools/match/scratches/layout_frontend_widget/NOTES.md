@@ -62,3 +62,13 @@ Twelve hit-position setter/value-pair forms, including sprite-copy interactions,
 ## 2026-09-05 additional source-shape checks
 
 Eight coordinate-pair copy forms (memcpy, aggregate snapshots and field construction, with or without the sprite-anchor pair) regress from 99.44%. No pair type or copy helper is retained.
+
+## 2026-09-05 paired loads and scalar-copy boundaries
+
+Four complete paired-coordinate snapshots explicitly place the live flags
+read between or before the destination stores, using integer bits or floats.
+They regress from 99.44% to 92.09–97.74%; recovering the early Y load alone
+alters later register allocation. Six separate scalar-copy forms then test
+4-byte memcpy and ordinary pointer/reference copy operations. Four are neutral
+and two regress to 98.87%. No helper, cast change, or snapshot is retained.
+The native Y load before the X store remains the single scheduling gap.

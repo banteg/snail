@@ -203,3 +203,27 @@ honest compiler and reference-alignment residue rather than a semantic gap.
 Seven whole attenuation/vector forms test the owned float-returning Normalize API, one or two vectors, and distance lifetime. None improves 89.13%; canonical source is unchanged. Changing a declaration solely to select another floating-point schedule is not justified.
 
 The recorded probes describe the tested source forms only; they do not establish exhaustion.
+
+## 2026-09-05 verified Normalize contract
+
+The exact `normalize_vector` scratch and shared `tVector` surface establish
+the float-returning `Normalize()` member. This caller still declared a stale
+double-returning fastcall compatibility function. Replacing that declaration
+and call with `normalized_vector.Normalize()` is retained as a contract
+correction: the full native/candidate diff is byte-for-byte identical before
+and after, at 89.13%, 96/88 instructions, prefix 26, 19 clean references and
+the same two unaudited references in the duplicated playback tail.
+
+Ten clamp-operation combinations compare the old and owned Normalize calls
+with reference/pointer updates, returned clamps, and a loop-break form. Six
+are neutral; returned-local and loop-break forms regress to 80.43%. No clamp
+helper is retained. The separate one-variant contract receipt isolates the
+actual source correction from those diagnostics. A non-improving score is
+not a reason to retain a declaration inconsistent with the verified owner.
+
+The active playback-branch recipe is migrated to the owned Normalize call as
+`playback-branch-control-owned-normalize-mutations.json`. Its previously known
+invalid labeled jump bypassed initialized vector locals and is omitted; the
+old file and failure evidence remain in Git history and the append-only
+ledger. The two valid branch alternatives are replayed on the corrected
+contract rather than leaving an unusable old anchor in the working tree.
