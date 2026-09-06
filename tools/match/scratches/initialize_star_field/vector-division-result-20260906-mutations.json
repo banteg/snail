@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "division-result",
+      "find": "    return Vector3(vector.x / scale, vector.y / scale, vector.z / scale);",
+      "replacements": [
+        {
+          "name": "explicit-result",
+          "text": "    Vector3 result;\n    result.x = vector.x / scale;\n    result.y = vector.y / scale;\n    result.z = vector.z / scale;\n    return result;"
+        },
+        {
+          "name": "copy-divide",
+          "text": "    Vector3 result = vector;\n    result.x /= scale;\n    result.y /= scale;\n    result.z /= scale;\n    return result;"
+        }
+      ]
+    },
+    {
+      "name": "corner-value",
+      "find": "            entries[index].sprite->corner_scale =\n                (entries[index].speed + 1.0f) * 4.0f;",
+      "replacements": [
+        {
+          "name": "named-speed",
+          "text": "            float speed = entries[index].speed;\n            entries[index].sprite->corner_scale = (speed + 1.0f) * 4.0f;"
+        }
+      ]
+    }
+  ]
+}

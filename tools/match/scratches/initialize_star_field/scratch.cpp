@@ -7,7 +7,11 @@ int gRMathRand2(); // @ 0x44c900
 
 inline Vector3 operator/(const Vector3& vector, float scale)
 {
-    return Vector3(vector.x / scale, vector.y / scale, vector.z / scale);
+    Vector3 result;
+    result.x = vector.x / scale;
+    result.y = vector.y / scale;
+    result.z = vector.z / scale;
+    return result;
 }
 
 void cRStarManager::Init()

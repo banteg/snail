@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "travel-distance-publication",
+      "find": "            entries[index].travel_distance =\n                (float)gRMathRand2() * 0.0000305175781f * 35.0f;",
+      "replacements": [
+        {
+          "name": "named-random-float",
+          "text": "            float travel_random = (float)gRMathRand2();\n            entries[index].travel_distance =\n                travel_random * 0.0000305175781f * 35.0f;"
+        },
+        {
+          "name": "named-complete-value",
+          "text": "            float travel_distance =\n                (float)gRMathRand2() * 0.0000305175781f * 35.0f;\n            entries[index].travel_distance = travel_distance;"
+        }
+      ]
+    },
+    {
+      "name": "sprite-color-publication",
+      "find": "            tColour color;\n            entries[index].sprite->color =\n                *color.Set(0.800000012f, 0.800000012f, 1.0f, 0.400000006f);",
+      "replacements": [
+        {
+          "name": "named-set-result",
+          "text": "            tColour color;\n            tColour* set_color =\n                color.Set(0.800000012f, 0.800000012f, 1.0f, 0.400000006f);\n            entries[index].sprite->color = *set_color;"
+        },
+        {
+          "name": "separate-set-and-copy",
+          "text": "            tColour color;\n            color.Set(0.800000012f, 0.800000012f, 1.0f, 0.400000006f);\n            entries[index].sprite->color = color;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,11 +1,11 @@
 # initialize_star_field
 
-Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+Current recovery: semantic-complete (`analysis` residual). Exact Android/iOS
 `cRStarManager::Init()` bodies and the live Windows StarManager method establish
 the complete entry allocation, camera-relative position, randomized direction,
-speed/travel, Sprite setup, and virtual `AI()` handoff. All 26 references are
-clean and both sides contain 247 instructions; the remaining six differences
-are scheduling in the travel/color and corner-scale windows.
+speed/travel, Sprite setup, and virtual `AI()` handoff. The retained result is
+**98.38%**, 247/247 instructions, prefix 126, and all 26 references clean.
+Only the travel-store/color-argument scheduling window remains non-exact.
 
 - Source-shaped initializer for the `cRStarManager` entries and backing
   `Sprite` objects. Windows owns the manager at `GameRoot +0x4f33c`; its first
@@ -134,11 +134,11 @@ cluster is introduced.
 
 Eight bounded mutation sweeps now preserve the remaining search rather than
 leaving it as manual probe history: 83 variants were evaluated and 66 compiled.
-The honest scalar and ownership alternatives are closed cleanly. Moving the
-`tColour` lifetime, naming its call result or components, folding the travel
-scale, naming the random/travel values, and nine localized corner
-value/pointer/reference shapes are all byte-identical. Extending entry,
-Sprite, or destination ownership changes register allocation and regresses.
+The tested scalar and ownership alternatives did not improve that baseline.
+Moving the `tColour` lifetime, naming its call result or components, folding the
+travel scale, naming the random/travel values, and nine localized corner
+value/pointer/reference shapes were all byte-identical. Extending entry,
+Sprite, or destination ownership changed register allocation and regressed.
 
 One forced intermediate travel multiply rises to 98.18%, but it has 248/247
 instructions, only 25 clean masks plus three unaudited constants, and a
@@ -155,9 +155,9 @@ reintroduce the operator fakematch rejected during shared arithmetic
 ownership. The canonical scratch therefore remains source-unchanged at
 97.57%, 247/247 instructions, prefix 126, with all 26 masks clean.
 
-## 2026-07-29 final corner-neighborhood boundary
+## 2026-07-29 corner-neighborhood probes
 
-A ninth recorded sweep closes the only untested honest neighborhood around the
+A ninth recorded sweep tests the adjacent source neighborhood around the
 second residual. Ten variants move or rename the speed, Sprite, entry,
 destination, size, and constant lifetimes across the preceding size stores.
 Nested scope and named corner constants are byte-identical; the other eight
@@ -214,3 +214,32 @@ No shared header or caller-specific operator implementation is changed.
 ## 2026-09-05 additional coupled source controls
 
 Six explicit coordinate-construction combinations and six follow-up corner-value forms retain the shared vector header unchanged. Camera coordinate construction plus a named corner speed reaches 98.38%, 247/247 instructions, and 26 clean references, but moves the first mismatch from instruction 126 to 124. The new source still has four scheduling moves across travel/color setup and corner publication. It remains a diagnostic seed, not a retained gain. Travel coordinate construction regresses. Precision and destination-borrow follow-ups do not remove those remaining differences.
+
+## 2026-09-06 division result ownership recovery
+
+The scratch-local vector division still returned a three-argument constructor,
+unlike the explicit-result addition, subtraction, and multiplication in the
+shared vector header. Giving division the same ordinary result ownership
+preserves all three scalar divisions and the by-value result, without changing
+the shared operators, compiler profile, or caller's vector expression.
+
+`vector-division-result-20260906-mutations.json` tests explicit-result and
+copy-then-divide bodies, independently and with a named corner speed. The
+explicit-result body alone improves **97.57% to 98.38%** (**840 to 847 / 861**
+fuzzy bytes), retaining **247/247 instructions**, **prefix 126**, and **26 clean
+references**. It makes the complete corner-scale load/add/multiply/publication
+window exact. The native and candidate still allocate the same `0x60` frame.
+This is a gain without the shortened prefix of the earlier coordinate-
+construction seed or a caller-specific replacement of shared vector addition.
+
+The full diff now contains only the travel-store/color-argument window.
+Copy-then-divide regresses to 75.50%; adding a named corner speed to the retained
+explicit-result body regresses to 97.98%. Neither is retained.
+
+On the improved baseline,
+`division-followup-travel-color-20260906-mutations.json` crosses named random
+and complete travel values with named `Set` results and separate `Set`/copy
+statements. All eight combinations were evaluated: five reproduce the new
+baseline's exact code identity; three separate-Set/copy forms regress to
+85.02%. No further source change is retained. These results constrain those
+particular ownership forms, not other source shapes or compiler provenance.
