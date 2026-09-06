@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "stem-copy-lifetime",
+      "find": "// classify_archive_entry_extension @ 0x4050c0 (cdecl)\n\n#include \"archive_index.h\"\n\nArchiveEntryExtensionClass __cdecl classify_archive_entry_extension(\n    unsigned char* path, unsigned char* stem_out)\n{\n    unsigned char value;\n    value = *path;\n    unsigned char* output = stem_out;\n    while (1) {\n        if (value == 0)\n            break;\n        if (value == '.')\n            break;\n        ++path;\n        *output = value;\n        ++output;\n        value = *path;\n    }\n\n    *output = 0;\n    value = *path;\n    if (value == 0)\n        return ARCHIVE_ENTRY_EXTENSION_UNKNOWN;\n\n    ++path;\n    char letter_a = 'A';\n    if (*path == 'T' && path[1] == 'G' && path[2] == letter_a)\n        return ARCHIVE_ENTRY_EXTENSION_TGA;\n    else if (*path == 'W' && path[1] == letter_a && path[2] == 'V')\n        return ARCHIVE_ENTRY_EXTENSION_WAV;\n    else if (*path == 'M' && path[1] == 'P' && path[2] == '3')\n        return ARCHIVE_ENTRY_EXTENSION_MP3;\n    return ARCHIVE_ENTRY_EXTENSION_UNKNOWN;\n}\n",
+      "replacements": [
+        {
+          "name": "cached-guard-input-copy",
+          "text": "// classify_archive_entry_extension @ 0x4050c0 (cdecl)\n\n#include \"archive_index.h\"\n\nArchiveEntryExtensionClass __cdecl classify_archive_entry_extension(\n    unsigned char* path, unsigned char* stem_out)\n{\n    unsigned char value = *path;\n    unsigned char* output = stem_out;\n    while (value && value != '.') {\n        *output = *path++;\n        ++output;\n        value = *path;\n    }\n\n    *output = 0;\n    value = *path;\n    if (value == 0)\n        return ARCHIVE_ENTRY_EXTENSION_UNKNOWN;\n\n    ++path;\n    char letter_a = 'A';\n    if (*path == 'T' && path[1] == 'G' && path[2] == letter_a)\n        return ARCHIVE_ENTRY_EXTENSION_TGA;\n    else if (*path == 'W' && path[1] == letter_a && path[2] == 'V')\n        return ARCHIVE_ENTRY_EXTENSION_WAV;\n    else if (*path == 'M' && path[1] == 'P' && path[2] == '3')\n        return ARCHIVE_ENTRY_EXTENSION_MP3;\n    return ARCHIVE_ENTRY_EXTENSION_UNKNOWN;\n}\n"
+        },
+        {
+          "name": "split-guard-input-copy",
+          "text": "// classify_archive_entry_extension @ 0x4050c0 (cdecl)\n\n#include \"archive_index.h\"\n\nArchiveEntryExtensionClass __cdecl classify_archive_entry_extension(\n    unsigned char* path, unsigned char* stem_out)\n{\n    unsigned char value = *path;\n    unsigned char* output = stem_out;\n    while (value) {\n        if (value == '.') break;\n        *output = *path++;\n        ++output;\n        value = *path;\n    }\n\n    *output = 0;\n    value = *path;\n    if (value == 0)\n        return ARCHIVE_ENTRY_EXTENSION_UNKNOWN;\n\n    ++path;\n    char letter_a = 'A';\n    if (*path == 'T' && path[1] == 'G' && path[2] == letter_a)\n        return ARCHIVE_ENTRY_EXTENSION_TGA;\n    else if (*path == 'W' && path[1] == letter_a && path[2] == 'V')\n        return ARCHIVE_ENTRY_EXTENSION_WAV;\n    else if (*path == 'M' && path[1] == 'P' && path[2] == '3')\n        return ARCHIVE_ENTRY_EXTENSION_MP3;\n    return ARCHIVE_ENTRY_EXTENSION_UNKNOWN;\n}\n"
+        },
+        {
+          "name": "cached-guard-cached-copy",
+          "text": "// classify_archive_entry_extension @ 0x4050c0 (cdecl)\n\n#include \"archive_index.h\"\n\nArchiveEntryExtensionClass __cdecl classify_archive_entry_extension(\n    unsigned char* path, unsigned char* stem_out)\n{\n    unsigned char value = *path;\n    unsigned char* output = stem_out;\n    while (value && value != '.') {\n        ++path;\n        *output = value;\n        ++output;\n        value = *path;\n    }\n\n    *output = 0;\n    value = *path;\n    if (value == 0)\n        return ARCHIVE_ENTRY_EXTENSION_UNKNOWN;\n\n    ++path;\n    char letter_a = 'A';\n    if (*path == 'T' && path[1] == 'G' && path[2] == letter_a)\n        return ARCHIVE_ENTRY_EXTENSION_TGA;\n    else if (*path == 'W' && path[1] == letter_a && path[2] == 'V')\n        return ARCHIVE_ENTRY_EXTENSION_WAV;\n    else if (*path == 'M' && path[1] == 'P' && path[2] == '3')\n        return ARCHIVE_ENTRY_EXTENSION_MP3;\n    return ARCHIVE_ENTRY_EXTENSION_UNKNOWN;\n}\n"
+        },
+        {
+          "name": "combined-output-increment",
+          "text": "// classify_archive_entry_extension @ 0x4050c0 (cdecl)\n\n#include \"archive_index.h\"\n\nArchiveEntryExtensionClass __cdecl classify_archive_entry_extension(\n    unsigned char* path, unsigned char* stem_out)\n{\n    unsigned char value = *path;\n    unsigned char* output = stem_out;\n    while (value && value != '.') {\n        *output++ = *path;\n        ++path;\n        value = *path;\n    }\n\n    *output = 0;\n    value = *path;\n    if (value == 0)\n        return ARCHIVE_ENTRY_EXTENSION_UNKNOWN;\n\n    ++path;\n    char letter_a = 'A';\n    if (*path == 'T' && path[1] == 'G' && path[2] == letter_a)\n        return ARCHIVE_ENTRY_EXTENSION_TGA;\n    else if (*path == 'W' && path[1] == letter_a && path[2] == 'V')\n        return ARCHIVE_ENTRY_EXTENSION_WAV;\n    else if (*path == 'M' && path[1] == 'P' && path[2] == '3')\n        return ARCHIVE_ENTRY_EXTENSION_MP3;\n    return ARCHIVE_ENTRY_EXTENSION_UNKNOWN;\n}\n"
+        }
+      ]
+    }
+  ]
+}

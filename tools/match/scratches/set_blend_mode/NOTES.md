@@ -1,78 +1,41 @@
 # set_blend_mode
 
-Object blend preset mapper at `0x412d00`.
+Object blend preset mapper at `0x412d00`. Current result: **100.00%**,
+92/92 instructions, prefix 92/92, with all 16 masked operands audited and
+clean under the standard `msvc6.5 /O2 /G5 /W3` profile.
 
-Current Wibo result: 92.39%, 92/92 instructions, prefix 2/92, masked operands
-15 ok, 0 unresolved, 1 mismatch.
+The function enables alpha blending and selects source/destination factors
+through Direct3D render states `0x1b`, `0x13`, and `0x14`. Its compiler-generated
+lookup table at `0x412e30` maps presets `0..20` to six native destinations.
+Unrecognized presets leave render state unchanged.
 
-Recovered relationships:
+The void contract follows the sole Windows caller, which discards EAX, and
+the Android/iOS `G0SetBlend(int)` exports. Windows splits that responsibility
+between this object-rendering helper and `set_immediate_blend_mode` at
+`0x412e50`.
 
-- Uses `set_blend_mode_lookup_table` at `0x412e30` to map authored blend modes
-  `0..20` onto six compact switch cases.
-- Programs Direct3D render states `0x1b`, `0x13`, and `0x14`.
-- Lookup case `5` and out-of-range values return the original blend mode
-  without touching render state.
+## 2026-09-07 preset case ownership
 
-Expected residuals:
+The previous 92.39% source manually shared the source/destination suffix with
+a `source_blend` local and `goto`. That captured the native control-flow join
+but forced the source factor into a register, while native pushes each factor
+before entering the shared call suffix.
 
-- The source-shaped sparse switch correctly regenerates the compiler byte
-  lookup/table idiom. The retained source now spells the decompiler's shared
-  `dest=6` suffix explicitly with `source_blend`, which fixes the previous
-  wrong tail-sharing owner for the two `src=5, dest=6` groups.
-- The lookup bytes are content-audited and match. The remaining masked operand
-  mismatch is the jump table; do not hide it with convenience aliases unless the
-  target label evidence is recovered independently.
-- Native pushes the source blend immediate before entering the shared suffix;
-  the retained explicit suffix keeps that value in a register instead. A narrower
-  pair of immediate-valued `goto` labels regressed back to 81.52% by letting VC6
-  choose the old wrong full-block owner, so keep the `source_blend` spelling.
-- 2026-06-20 render-state family audit: rechecked the literal source-blend call
-  plus shared destination suffix against the current headers. It still regresses
-  to 78.26%, duplicating the wrong full blocks and dropping two masked
-  references, so the `source_blend` local remains the best source-shaped owner
-  for the native shared `dest=6` suffix. Replacing the shared
-  `direct3d_device8_view.h` include with a local narrow device/vtable view is
-  codegen-neutral at 92.39% and leaves the same jump-table masked mismatch.
-- 2026-06-20 render-state helper retry: focused Wibo still reports `92.39%`,
-  `92/92` candidate/target instructions, `2/92` prefix, fifteen clean masked
-  operands, and the expected jump-table masked mismatch. Changing the public
-  `blend_mode` parameter to `unsigned int` is codegen-neutral. Spelling the
-  decompiler-style source render-state calls explicitly before a shared
-  destination-six label regresses to `78.26%`: VC6 duplicates the full `src=5`
-  and `src=2` blocks and loses native's shared source-call suffix. Keep the
-  current `source_blend` local despite the register/immediate residual; it is
-  the only tested shape that preserves the native shared suffix. The exact
-  `configure_sprite_render_state` semantic-switch form does not expose a
-  transferable switch-order trick for this helper.
+Ordinary complete preset bodies recover the native sharing when the `0/6`
+and `9/12` groups remain separate in source. VC6 independently folds their
+identical render-state sequences, while sharing the source-call suffix of
+`1/8/20` and `19`. The local and explicit label are no longer needed.
 
-`render_object` calls this helper before applying the object tint and grouped
-draw call.
+A bounded comparison of source groupings found three forms with identical
+function bytes and clean reference audits. The retained `0/6` and `9/12`
+partition is a straightforward complete switch, not evidence that the
+original source grouping is uniquely determined. Other instruction-exact
+forms differed in lookup-table contents and were rejected. Both the lookup
+and jump table operands are clean for the retained source.
 
-2026-07-09 jump-table content audit: the masked mismatch is real layout debt,
-not a bad reference alias. Native jump-table entries are
-`(28, 83, 115, 170, 225, 279)`; the retained source emits
-`(28, 83, 116, 171, 226, 284)` because the shared `src`/`dest=6` suffix keeps
-the blend value in a register (`mov ecx, 5; jmp`) instead of native's
-`push 5; mov edx,[eax]; jmp`. Fully expanded case bodies and immediate-valued
-shared labels still regress to 81.52%. Do not add `$L###` aliases to clear the
-audit while the table contents diverge.
+Primary evidence:
 
-2026-07-14 cross-port contract closure: iOS and Android export the shared
-responsibility as `G0SetBlend(int)`, whose authored contract is void. Windows
-splits it into this object-rendering helper and the immediate-quad variant at
-`0x412e50`. The sole Windows caller discards EAX, and replacing synthetic
-Direct3D return forwarding with ordinary calls plus `return;` is byte-identical:
-92.39%, 92/92 instructions, fifteen clean operands, and the existing honest
-jump-table mismatch.
-
-2026-07-15 replay closure: the void ABI and canonical name now replay in both
-BN and IDA lanes, and the refreshed BN artifact resolves all render-state calls
-through `g_direct3d_renderer.device`. Fresh `break`/`return` and shared-suffix
-probes were byte-neutral, so the 92.39% result and honest jump-table mismatch
-remain rather than forcing compiler layout.
-
-2026-07-25 IDA replay closure: IDA was carrying the correct void prototype and
-renderer struct but a stale cached pseudocode body. Adding the blend helper to
-the bounded object-render invalidation set now resolves every render-state call
-through `g_direct3d_renderer.device`. No matcher source changed; the honest
-92.39% result and jump-table mismatch remain.
+- `analysis/decompile/ida/functions/00412d00-set_blend_mode.c`
+- `analysis/decompile/binja/functions/00412d00-set_blend_mode.c`
+- `analysis/decompile/android/functions/0008b6f0-_Z10G0SetBlendi.c`
+- `analysis/decompile/ios/functions/0006eb94-_Z10G0SetBlendi.c`

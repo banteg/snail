@@ -2,6 +2,9 @@
 
 The renderer's embedded fixed-pool vertex-buffer factory.
 
+Current result: **100%, 101/101 instructions**, with all **11 masked
+references clean**, using the standard `msvc6.5 /O2 /G5 /W3` profile.
+
 - The factory-owned `ObjectRenderBuffers` slot is recovered as a 12-byte
   record: requested FVF at `+0x00`, one still-unknown dword at `+0x04`, and the
   `IDirect3DVertexBuffer8*` at `+0x08`. Those fields now live in the shared
@@ -28,8 +31,9 @@ instructions and preserves all three complete calls, but uses literal `cmp`
 dispatch; the recovered `switch` emits the native subtract ladder and
 tail-merges nine instructions from the shared call suffix. Ordinary `break`s,
 explicit case `goto`s, the real virtual-interface syntax, and VC6 RTM all keep
-that merge. The residual is therefore bounded compiler-layout debt, not forced
-with volatile state or byte-shaped dispatch arithmetic.
+that merge. These probes bounded only the tested source shapes; the former
+compiler-layout attribution was not established and is superseded by the
+request/result lifetime recovery below.
 
 2026-07-15 replay closure: the manifest/source name `create_vertex_buffer` is
 now canonical in both decompiler replay lanes. Binary Ninja readback confirms
@@ -63,3 +67,22 @@ return expression did not survive exact user-variable readback and were
 removed. Strict dual-lane export has zero mismatches, and health checks reject
 the former false `vertex_count_1` and anonymous `edx_5` lifetimes. Matcher
 source and the honest 76.68% focused result remain unchanged.
+
+## 2026-09-07 request/result lifetime recovery
+
+The incoming vertex count is consumed by one `CreateVertexBuffer` call and
+then reused for that call's HRESULT. Keeping a distinct result variable made
+VC6 merge the three call suffixes; reusing the parameter recovers the native
+three complete call blocks and descending physical switch order. Ordinary
+`break`s match exactly, so the retained source removes the old `goto created`
+labels. An unsupported FVF still leaves the incoming count unchanged for the
+native diagnostic checks and still advances the factory pool cursor.
+
+The four-form `request-result-lifetime-20260907-mutations.json` receipt compares
+an initialized separate result owner, parameter reuse with literal or forwarded
+FVF values, and the retained switch/break form. All three parameter-reuse forms
+are byte-identical exact matches; initializing a separate result owner produces
+42.11%. No compiler setting, interface type, reference alias, or volatile access
+changed. The prior analyzer names `create_result` and `next_count` still describe
+distinct machine-value lifetimes; they do not require distinct authored C++
+variables.

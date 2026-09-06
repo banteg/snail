@@ -5,16 +5,10 @@
 ArchiveEntryExtensionClass __cdecl classify_archive_entry_extension(
     unsigned char* path, unsigned char* stem_out)
 {
-    unsigned char value;
-    value = *path;
+    unsigned char value = *path;
     unsigned char* output = stem_out;
-    while (1) {
-        if (value == 0)
-            break;
-        if (value == '.')
-            break;
-        ++path;
-        *output = value;
+    while (value && value != '.') {
+        *output = *path++;
         ++output;
         value = *path;
     }

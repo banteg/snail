@@ -4,30 +4,20 @@
 
 void set_blend_mode(int blend_mode)
 {
-    Direct3DDevice8* device;
-    int source_blend;
-
     switch (blend_mode) {
     case 0:
     case 6:
-    case 9:
-    case 12:
-    {
-        Direct3DDevice8* device = g_d3d_device;
-        device->vtbl->SetRenderState(device, 0x1b, 1);
-        device = g_d3d_device;
-        device->vtbl->SetRenderState(device, 0x13, 5);
-        device = g_d3d_device;
-        device->vtbl->SetRenderState(device, 0x14, 6);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 5);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);
         return;
-    }
     case 1:
     case 8:
     case 20:
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);
-        device = g_d3d_device;
-        source_blend = 5;
-        goto set_source_then_dest_six;
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 5);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);
+        return;
     case 5:
     case 13:
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);
@@ -39,14 +29,16 @@ void set_blend_mode(int blend_mode)
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 2);
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 2);
         return;
+    case 9:
+    case 12:
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 5);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);
+        return;
     case 19:
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);
-        device = g_d3d_device;
-        source_blend = 2;
-set_source_then_dest_six:
-        device->vtbl->SetRenderState(device, 0x13, source_blend);
-        device = g_d3d_device;
-        device->vtbl->SetRenderState(device, 0x14, 6);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 2);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);
         return;
     }
 }

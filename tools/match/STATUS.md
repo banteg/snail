@@ -776,7 +776,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
-| 🖥 | classify_archive_entry_extension | 0x4050c0 | 114 | 45/46 | 70.33% | 4/46 | - |  | replaceable-platform |
+| 🖥 | classify_archive_entry_extension | 0x4050c0 | 114 | 46/46 | 100.00% | 46/46 | - |  | replaceable-platform |
 | 🖥 | scramble_archive_bytes_in_place | 0x405270 | 48 | 25/25 | 100.00% | 25/25 | - |  | replaceable-platform |
 | 🖥 | save_file_bytes_with_optional_archive_scramble | 0x4052a0 | 156 | 56/56 | 100.00% | 56/56 | 10 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
 | 🖥 | delete_file_path | 0x405340 | 12 | 5/5 | 100.00% | 5/5 | 1 ok |  | replaceable-platform |
@@ -800,7 +800,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🖥 | initialize_audio_subsystem | 0x407a10 | 230 | 73/73 | 100.00% | 73/73 | 23 ok |  | replaceable-platform |
 | 🖥 | shutdown_bass_audio_window | 0x407b00 | 72 | 19/19 | 100.00% | 19/19 | 10 ok |  | replaceable-platform |
 | 🖥 | abort_startup_with_3d_error | 0x4088a0 | 27 | 7/7 | 100.00% | 7/7 | 4 ok |  | replaceable-platform |
-| 🖥 | create_vertex_buffer | 0x4114b0 | 286 | 92/101 | 76.68% | 8/101 | 11 ok |  | replaceable-platform |
+| 🖥 | create_vertex_buffer | 0x4114b0 | 286 | 101/101 | 100.00% | 101/101 | 11 ok |  | replaceable-platform |
 | 🖥 | create_index_buffer | 0x4115d0 | 91 | 36/36 | 100.00% | 36/36 | 5 ok |  | replaceable-platform |
 | 🖥 | initialize_direct3d_renderer_defaults | 0x411630 | 180 | 38/38 | 100.00% | 38/38 | 15 ok |  | replaceable-platform |
 | 🖥 | release_direct3d_renderer_resources | 0x4116f0 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  | replaceable-platform |
@@ -816,7 +816,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🖥 | begin_overlay_render_state | 0x411e10 | 395 | 97/97 | 100.00% | 97/97 | 14 ok |  | replaceable-platform |
 | 🖥 | update_display_mode_view_state | 0x412940 | 120 | 46/46 | 100.00% | 46/46 | 4 ok |  | replaceable-platform |
 | 🖥 | initialize_direct3d_renderer | 0x4129c0 | 47 | 12/12 | 100.00% | 12/12 | 7 ok |  | replaceable-platform |
-| 🖥 | set_blend_mode | 0x412d00 | 325 | 92/92 | 92.39% | 2/92 | 16 ok |  | replaceable-platform |
+| 🖥 | set_blend_mode | 0x412d00 | 325 | 92/92 | 100.00% | 92/92 | 16 ok |  | replaceable-platform |
 | 🖥 | set_immediate_blend_mode | 0x412e50 | 472 | 126/136 | 85.50% | 2/136 | 1 mismatch, 2 unaudited, 20 ok |  | replaceable-platform |
 | 🖥 | draw_textured_quad_immediate | 0x413030 | 1156 | 331/332 | 98.34% | 111/332 | 26 ok |  | replaceable-platform |
 | 🖥 | render_game_frame_scene | 0x4134c0 | 92 | 24/24 | 100.00% | 24/24 | 8 ok |  | replaceable-platform |

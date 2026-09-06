@@ -1,5 +1,29 @@
 # classify_archive_entry_extension
 
+## Exact recovery (2026-09-07)
+
+The project-standard `msvc6.5 /O2 /G5 /W3` build now matches **100.00%**:
+46/46 instructions, a complete 46-instruction prefix, and no masked operands.
+
+The stem loop tests the cached current byte for NUL or a dot, copies from the
+input cursor with `*output = *path++`, then advances the output cursor. This
+ordinary copy idiom lets VC6 retain the native input cursor and byte registers
+while emitting the bottom NUL test. Copying the cached guard byte instead
+changes register allocation; combining both pointer increments into one
+assignment changes the reload schedule. The loop condition and copy expression
+needed to be recovered together.
+
+The classifier still stops at the first dot, terminates the copied stem, and
+recognizes the uppercase TGA/WAV/MP3 prefixes. The extension checks, enum values,
+ABI, and compiler profile are unchanged. Native evidence is in the Windows
+decompiles at `analysis/decompile/{binja,ida}/functions/004050c0-`
+`classify_archive_entry_extension.c`. The focused four-form experiment is
+recorded in `stem-copy-lifetimes-20260907.json` and `experiments.jsonl`.
+
+This exact result supersedes the partial scores and residual assessments below.
+
+## Earlier investigation
+
 - Rebuild helper used while converting `SnailMail.dam` into `SnailMail.dat`.
 - Copies the entry name stem before the first dot into the caller buffer.
 - Returns `1` for uppercase `TGA`, `2` for uppercase `WAV`, `3` for uppercase

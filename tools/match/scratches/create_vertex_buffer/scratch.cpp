@@ -11,36 +11,32 @@ ObjectRenderBuffers* VertexBufferFactory::create_vertex_buffer(
 {
     buffers[count].fvf = fvf;
 
-    int result;
+    // The request size is consumed by the call, then reused for its HRESULT.
     switch (fvf) {
     case 0x142:
-        result = g_d3d_device->vtbl->CreateVertexBuffer(g_d3d_device,
+        vertex_count = g_d3d_device->vtbl->CreateVertexBuffer(g_d3d_device,
             vertex_count * 24, 8, 0x142, 1,
             &buffers[count].vertex_buffer);
-        goto created;
+        break;
     case 0x102:
-        result = g_d3d_device->vtbl->CreateVertexBuffer(g_d3d_device,
+        vertex_count = g_d3d_device->vtbl->CreateVertexBuffer(g_d3d_device,
             vertex_count * 20, 8, 0x102, 1,
             &buffers[count].vertex_buffer);
-        goto created;
+        break;
     case 2:
-        result = g_d3d_device->vtbl->CreateVertexBuffer(g_d3d_device,
+        vertex_count = g_d3d_device->vtbl->CreateVertexBuffer(g_d3d_device,
             vertex_count * 12, 8, 2, 1,
             &buffers[count].vertex_buffer);
-        goto created;
-    default:
-        result = vertex_count;
         break;
     }
 
-created:
-    if (result != 0) {
+    if (vertex_count != 0) {
         report_errorf("Vertex Buffer Request fail");
-        if (result == (int)0x8876017c) {
+        if (vertex_count == (int)0x8876017c) {
             debug_report_stub("\tOut of video memory\n");
-        } else if (result == (int)0x8007000e) {
+        } else if (vertex_count == (int)0x8007000e) {
             debug_report_stub("\tOut of memory\n");
-        } else if (result == (int)0x8876086c) {
+        } else if (vertex_count == (int)0x8876086c) {
             debug_report_stub("\tInvalid call\n");
         }
     }
