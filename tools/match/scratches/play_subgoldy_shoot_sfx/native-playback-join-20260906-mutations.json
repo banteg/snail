@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "native-playback-join",
+      "find": "    if (sound_id != -1) {\n        if (attachment_exit_pending) {\n            Vector3 vector;\n            Vector3 normalized_vector;\n\n            vector =\n                g_game->players[0].transform.position - transform.position;\n\n            normalized_vector = vector;\n            float distance = normalized_vector.Normalize();\n            float volume = distance / -60.0f + 1.0f;\n            if (volume < 0.0f) {\n                volume = 0.0f;\n            } else if (volume > 1.0f) {\n                volume = 1.0f;\n            }\n            g_sound_effect_manager.PlayVolume(sound_id, volume);\n        } else {\n            g_sound_effect_manager.Play(sound_id);\n        }\n    }",
+      "replacements": [
+        {
+          "name": "invalid-sound-early-return",
+          "text": "    if (sound_id == -1)\n        return;\n        if (attachment_exit_pending) {\n            Vector3 vector;\n            Vector3 normalized_vector;\n\n            vector =\n                g_game->players[0].transform.position - transform.position;\n\n            normalized_vector = vector;\n            float distance = normalized_vector.Normalize();\n            float volume = distance / -60.0f + 1.0f;\n            if (volume < 0.0f) {\n                volume = 0.0f;\n            } else if (volume > 1.0f) {\n                volume = 1.0f;\n            }\n            g_sound_effect_manager.PlayVolume(sound_id, volume);\n        } else {\n            g_sound_effect_manager.Play(sound_id);\n        }"
+        },
+        {
+          "name": "attachment-first-return",
+          "text": "    if (sound_id != -1) {\n        if (attachment_exit_pending) {\n            Vector3 vector;\n            Vector3 normalized_vector;\n\n            vector =\n                g_game->players[0].transform.position - transform.position;\n\n            normalized_vector = vector;\n            float distance = normalized_vector.Normalize();\n            float volume = distance / -60.0f + 1.0f;\n            if (volume < 0.0f) {\n                volume = 0.0f;\n            } else if (volume > 1.0f) {\n                volume = 1.0f;\n            }\n            g_sound_effect_manager.PlayVolume(sound_id, volume);\n            return;\n        }\n        g_sound_effect_manager.Play(sound_id);\n    }"
+        },
+        {
+          "name": "boolean-switch",
+          "text": "    if (sound_id != -1) {\n        switch (attachment_exit_pending != 0) {\n        case true: {\n            Vector3 vector;\n            Vector3 normalized_vector;\n\n            vector =\n                g_game->players[0].transform.position - transform.position;\n\n            normalized_vector = vector;\n            float distance = normalized_vector.Normalize();\n            float volume = distance / -60.0f + 1.0f;\n            if (volume < 0.0f) {\n                volume = 0.0f;\n            } else if (volume > 1.0f) {\n                volume = 1.0f;\n            }\n            g_sound_effect_manager.PlayVolume(sound_id, volume);\n            break;\n        }\n        case false:\n            g_sound_effect_manager.Play(sound_id);\n            break;\n        }\n    }"
+        },
+        {
+          "name": "scoped-direct-label",
+          "text": "    if (sound_id != -1) {\n        if (!attachment_exit_pending)\n            goto play_direct;\n        {\n            Vector3 vector;\n            Vector3 normalized_vector;\n\n            vector =\n                g_game->players[0].transform.position - transform.position;\n\n            normalized_vector = vector;\n            float distance = normalized_vector.Normalize();\n            float volume = distance / -60.0f + 1.0f;\n            if (volume < 0.0f) {\n                volume = 0.0f;\n            } else if (volume > 1.0f) {\n                volume = 1.0f;\n            }\n            g_sound_effect_manager.PlayVolume(sound_id, volume);\n        }\n        return;\nplay_direct:\n        g_sound_effect_manager.Play(sound_id);\n    }"
+        },
+        {
+          "name": "nested-attenuation-lifetime",
+          "text": "    if (sound_id != -1) {\n        if (attachment_exit_pending) {\n            float volume;\n            {\n            Vector3 vector;\n            Vector3 normalized_vector;\n\n            vector =\n                g_game->players[0].transform.position - transform.position;\n\n            normalized_vector = vector;\n            float distance = normalized_vector.Normalize();\n            volume = distance / -60.0f + 1.0f;\n            }\n            if (volume < 0.0f) {\n                volume = 0.0f;\n            } else if (volume > 1.0f) {\n                volume = 1.0f;\n            }\n            g_sound_effect_manager.PlayVolume(sound_id, volume);\n        } else {\n            g_sound_effect_manager.Play(sound_id);\n        }\n    }"
+        }
+      ]
+    }
+  ]
+}

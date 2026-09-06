@@ -231,3 +231,24 @@ contract rather than leaving an unusable old anchor in the working tree.
 ## 2026-09-05 additional bounded controls
 
 Five attenuation precision forms do not improve 89.13%. A wide distance cast back for float arithmetic is neutral; wide clamp values regress and add constant-reference debt. The verified float Normalize contract is unchanged.
+
+## 2026-09-06 native playback join and clamp interaction
+
+Two further recorded sweeps test ten source-shaped control-flow variants against
+the native attachment-first playback order. Early invalid-sound and terminating
+attachment branches, a nested attenuation lifetime, and a switch on the raw
+attachment byte are codegen-neutral. A Boolean switch materializes extra state
+and regresses to 84.66%.
+
+Scoping the vector locals makes the formerly invalid direct-playback label legal
+and produces the same 88 instructions as the native body with all 19 references
+clean, but its branch and clamp layout regresses the fuzzy result to 85.23%.
+Independent and unordered-safe inverted lower clamps do not recover the native
+join; the best inverted form reaches only 88.04%. The exported Boolean-switch
+and shared-tail diagnostics preserve the block-level evidence behind those
+conclusions.
+
+No source change is retained. The clear 89.13%, 96/88-instruction baseline and
+its two explicitly unaudited duplicate-tail references remain preferable to a
+globally worse instruction-count or reference-only tradeoff. These probes bound
+the recorded joins and clamp interactions without establishing exhaustion.

@@ -1,0 +1,25 @@
+--- baseline.cpp
++++ candidate.cpp
+@@ -32,7 +32,8 @@
+     }
+ 
+     if (sound_id != -1) {
+-        if (attachment_exit_pending) {
++        switch (attachment_exit_pending != 0) {
++        case true: {
+             Vector3 vector;
+             Vector3 normalized_vector;
+ 
+@@ -48,8 +49,11 @@
+                 volume = 1.0f;
+             }
+             g_sound_effect_manager.PlayVolume(sound_id, volume);
+-        } else {
++            break;
++        }
++        case false:
+             g_sound_effect_manager.Play(sound_id);
++            break;
+         }
+     }
+ }

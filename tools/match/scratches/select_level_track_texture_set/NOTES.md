@@ -100,8 +100,8 @@ every ordinary form tested.
 Do not restore the formerly exact volatile parameter view, take the parameter's
 address, or add another register-allocation coercion. The mobile bodies confirm
 the owner and algorithm but use different texture-set counts and cannot prove
-the Windows source lifetime. Further progress needs original Windows source or
-compiler provenance, neither of which is currently available.
+the Windows source lifetime. These results rule out the recorded forms, not
+other native-backed source shapes.
 
 ## 2026-07-30 exact-offset jump-table audit
 
@@ -138,3 +138,50 @@ Three inline state-mapping operations and three parameter-remapping lifetimes do
 ## 2026-09-05 additional coupled source controls
 
 Four selector-mapping operations test const/reference inputs and returned/output selections. All are neutral at 76.19%, retaining the same jump-table mismatch. No helper or source change is retained.
+
+## 2026-09-06 case-owned guard and update experiment
+
+Re-read the native body and both verified mobile bodies rather than repeating
+the selector-local/helper sweeps. Both mobile decompiles expose an early
+current-set equality return within each explicit selector case. Windows instead
+has one common current-set load at `0x410779`, comparison at `0x41077c`, and
+branch at `0x41077e`, reached after case-local assignments and a distinct
+default argument reload at `0x410775`. This motivates testing whether VC6
+tail-merges source-level case-owned guards or full guarded texture updates into
+the Windows common tail; it does not transfer mobile counts or offsets.
+
+`case-owned-update-20260906-mutations.json` records two bounded alternatives,
+both compiled with standard `msvc6.5 /O2 /G5 /W3`:
+
+| Source shape | Match | Candidate/target instructions | Prefix | References ok/unresolved/mismatch/unaudited |
+| --- | ---: | ---: | ---: | --- |
+| Retained common guard | 76.19% | 41/43 | 0/43 | 6/0/1/0 |
+| Case-local early returns, common update | 64.00% | 57/43 | 0/43 | 6/0/1/0 |
+| Complete guarded update in each case | 25.00% | 133/43 | 0/43 | 6/0/0/22 |
+
+The full exported diffs reject both hypotheses, not just their scores. The
+first emits separate current-set loads/comparisons in the cases, although its
+final 14-instruction update block remains exact. The second constant-folds
+texture indexes and duplicates the two-call updates and return tails instead
+of merging them. Both still keep the dispatch argument in `edi`; neither
+recovers the native pre-save `eax` selector load or default reload. They
+produce two distinct byte-and-relocation identities, neither the baseline.
+
+The six paired ordinary references remain explained in both candidates:
+`RAND` at native `0x410764` resolves to `0x44dc90`, `ftol` at `0x41076c` to
+`0x48b380`, `g_object_list` at `0x410788`/`0x41079f` to `0x4b7648`, and
+`ReTextureObjects` at `0x41078d`/`0x4107a4` to `0x430d90`. The duplicated-update
+candidate's 22 unaudited references comprise the two unpaired dispatches and
+20 extra candidate global/call operands; its zero mismatches is not cleaner
+reference proof.
+
+No source is promoted. Baseline and final remain **76.19%, 41/43 instructions,
+prefix 0/43, references 6/0/1/0**. The only retained mismatch is native
+`0x41073d`'s displacement to the already-curated six-entry table at `0x4107b4`
+versus compiler-local relocation `$L1232`. Native ordered destination offsets
+are `0x14, 0x18, 0x1f, 0x26, 0x45, 0x2d`; default slot 4 reaches the native
+reload at `+0x45`, whereas the retained candidate goes straight to its common
+tail at `+0x43`. There is no missing shared symbol to curate. Source/default
+lifetime remains the technical residual; the failed mobile-inspired guard
+transfer does not establish that all standard-profile source forms are ruled
+out. Scratch configuration and semantic-complete classification are unchanged.

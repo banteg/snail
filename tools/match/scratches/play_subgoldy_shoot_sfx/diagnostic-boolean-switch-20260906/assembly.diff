@@ -1,0 +1,57 @@
+--- target
++++ candidate
+@@ -24,7 +24,7 @@
+ lea edi, dword [eax+0x13]
+ jmp L84
+ test al, 0x60
+-je L149
++je L16c
+ call ADDR
+ mov dword [esp+0x8], eax
+ fild dword [esp+0x8]
+@@ -33,10 +33,15 @@
+ mov dword [esi+0x1cc], eax
+ lea edi, dword [eax+0x16]
+ cmp edi, -0x1
+-je L149
+-mov al, byte [esi+0x41d]
+-test al, al
+-je L13e
++je L16c
++mov dl, byte [esi+0x41d]
++xor eax, eax
++test dl, dl
++setne al
++sub eax, 0x0
++je L161
++dec eax
++jne L16c
+ mov eax, dword [ADDR]
+ fld dword [eax+0x18c]
+ fsub dword [esi+0x68]
+@@ -61,14 +66,22 @@
+ fcomp dword [ADDR]
+ fnstsw ax
+ test ah, 0x1
+-je L10f
++je L132
+ mov dword [esp+0x8], 0x0
+-jmp L128
++mov ecx, ADDR
++mov eax, dword [esp+0x8]
++push eax
++push edi
++call ADDR
++pop edi
++pop esi
++add esp, 0x1c
++ret
+ fld dword [esp+0x8]
+ fcomp dword [ADDR]
+ fnstsw ax
+ test ah, 0x41
+-jne L128
++jne L14b
+ mov dword [esp+0x8], 0x3f800000
+ mov eax, dword [esp+0x8]
+ mov ecx, ADDR

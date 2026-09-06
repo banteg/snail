@@ -1,0 +1,31 @@
+--- baseline.cpp
++++ candidate.cpp
+@@ -32,7 +32,9 @@
+     }
+ 
+     if (sound_id != -1) {
+-        if (attachment_exit_pending) {
++        if (!attachment_exit_pending)
++            goto play_direct;
++        {
+             Vector3 vector;
+             Vector3 normalized_vector;
+ 
+@@ -44,12 +46,14 @@
+             float volume = distance / -60.0f + 1.0f;
+             if (volume < 0.0f) {
+                 volume = 0.0f;
+-            } else if (volume > 1.0f) {
++            }
++            if (volume > 1.0f) {
+                 volume = 1.0f;
+             }
+             g_sound_effect_manager.PlayVolume(sound_id, volume);
+-        } else {
+-            g_sound_effect_manager.Play(sound_id);
+         }
++        return;
++play_direct:
++        g_sound_effect_manager.Play(sound_id);
+     }
+ }
