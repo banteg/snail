@@ -7549,11 +7549,15 @@ def test_ghidra_symbol_probe_is_versioned_bounded_and_persistent() -> None:
     wrapper = (repo_root / "tools/ghidra/decompile_symbol.py").read_text(
         encoding="utf-8"
     )
+    project = (repo_root / "tools/ghidra/project.py").read_text(encoding="utf-8")
     script = (repo_root / "tools/ghidra/DecompileSymbol.java").read_text(
         encoding="utf-8"
     )
 
-    assert 'Path("/Applications/ghidra_12.1.2_PUBLIC")' in wrapper
+    assert "DEFAULT_GHIDRA_DIR" in wrapper
+    assert 'Path.home() / ".local/opt/ghidra_12.1.3_PUBLIC"' in project
+    assert '"/Applications/ghidra_12.1.3_PUBLIC"' in project
+    assert 'os.environ.get("GHIDRA_INSTALL_DIR")' in project
     assert "-Duser.home=" in wrapper
     assert "locked_persistent_project(" in wrapper
     assert "temporary_fresh_project(" in wrapper
