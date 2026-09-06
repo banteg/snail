@@ -1027,29 +1027,19 @@ steering_stored:
             if (advanced > 1.0f)
                 shoot_cooldown_progress = 0.0f;
         } else if (emitter_game->track_state_latch) {
-            if (emitter_game->selected_level_record_active) {
-                if (emitter_game
-                        ->selected_level_record
-                        ->run_records[emitter_game->replay_update_cursor]
-                        .flags
-                    & 1) {
-                    PlayShootSfx();
-                    Shoot(this);
-                    shoot_cooldown_progress = shoot_cooldown_step + 0.30000001f;
-                } else if (emitter_game
-                               ->selected_level_record
-                               ->run_records[emitter_game->replay_update_cursor]
-                               .flags
-                           & 2) {
-                    shoot_cooldown_progress = shoot_cooldown_step;
-                    PlayShootSfx();
-                    Shoot(this);
-                }
-            } else if (control_source->control_flags_a & INPUT_BUTTON_PRIMARY) {
+            if ((emitter_game->selected_level_record_active
+                    && (emitter_game->selected_level_record
+                            ->run_records[emitter_game->replay_update_cursor].flags & 1))
+                || (!emitter_game->selected_level_record_active
+                    && (control_source->control_flags_a & INPUT_BUTTON_PRIMARY))) {
                 PlayShootSfx();
                 Shoot(this);
                 shoot_cooldown_progress = shoot_cooldown_step + 0.30000001f;
-            } else if (control_source->control_flags_b & INPUT_BUTTON_PRIMARY) {
+            } else if ((emitter_game->selected_level_record_active
+                    && (emitter_game->selected_level_record
+                            ->run_records[emitter_game->replay_update_cursor].flags & 2))
+                || (!emitter_game->selected_level_record_active
+                    && (control_source->control_flags_b & INPUT_BUTTON_PRIMARY))) {
                 shoot_cooldown_progress = shoot_cooldown_step;
                 PlayShootSfx();
                 Shoot(this);

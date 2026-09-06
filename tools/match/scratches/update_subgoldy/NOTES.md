@@ -1,4 +1,4 @@
-# update_subgoldy @ 0x43b120 — 82.75%, 2087/2087 insns, structure complete
+# update_subgoldy @ 0x43b120 — 83.54%, 2093/2087 insns, structure complete
 
 The boss of bosses (2087 normalized instructions, 8456 bytes) has a full
 scratch: every block of the function is transcribed and the diff is dominated
@@ -1079,3 +1079,40 @@ known root in the branch arms. It exposes compiler scheduling and one-to-one
 reference-alignment residue, not a missing global, state, call, or owner. Exact
 matching of the observed Windows lifetime remains open without making the
 semantic recovery incomplete.
+
+## 2026-09-07 firing-action branch recovery
+
+The retained firing tail now groups pressed and held shots by action, with
+replay flags and live input as the two sources for each action. Previously it
+selected replay versus live input first and duplicated both action bodies.
+Native `0x43d10e`--`0x43d1a6` instead tests replay flag 1 or the live primary
+pressed lane before one sound/shot pair, then replay flag 2 or the live held
+lane before the other. The first action stores `step + 0.3f` after shooting;
+the second stores `step` before shooting. The short-circuit replay predicates
+also keep replay-record reads out of the live-input path.
+
+`firing-action-groups-20260907.json` records two complete source hypotheses.
+An explicit replay-byte snapshot improves only to 82.84%. The retained direct
+field predicates let VC6 recover native's shared DL snapshot, record-address
+loads, byte flag tests, short-circuit edges, and both sound/shot/cooldown
+sequences. All 42 instructions in the firing decision/action region have the
+native sequence; branch labels retain a uniform `+0x13` displacement because earlier
+regions of this partial function still differ. This is local instruction and
+control-flow evidence, not a claim that the whole function is exact.
+
+The verified iOS `cRSubGoldy::AI()` export corroborates replay bits 1/2,
+input lanes `+0x04/+0x0c`, primary mask `0x4000`, and the distinct cooldown
+actions. Android corroborates the same live-input lanes and cooldown actions,
+but its replay firing uses bit `0x40` and a separate branch. Those mobile
+input gates, replay differences, and inlined shooting bodies are not
+transferred to Windows. Windows instructions determine the retained
+short-circuit grouping.
+
+Focused matching improves from **82.75% to 83.54%**, or **6997 to 7064**
+reported fuzzy bytes of the 8456-byte function. Candidate instructions increase
+from 2087 to **2093**, against 2087 native instructions: the original equal
+total concealed missing firing tests and extra instructions elsewhere. The
+12-instruction exact prefix is unchanged. All **315** aligned references stay
+clean; the existing single unaudited `g_game` load in the completion-exit
+branch remains visible. No compiler flags, declarations, reference aliases,
+or matching rules changed.

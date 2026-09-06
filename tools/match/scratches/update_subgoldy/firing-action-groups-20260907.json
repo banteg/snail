@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "firing-actions",
+      "find": "            if (emitter_game->selected_level_record_active) {\n                if (emitter_game\n                        ->selected_level_record\n                        ->run_records[emitter_game->replay_update_cursor]\n                        .flags\n                    & 1) {\n                    PlayShootSfx();\n                    Shoot(this);\n                    shoot_cooldown_progress = shoot_cooldown_step + 0.30000001f;\n                } else if (emitter_game\n                               ->selected_level_record\n                               ->run_records[emitter_game->replay_update_cursor]\n                               .flags\n                           & 2) {\n                    shoot_cooldown_progress = shoot_cooldown_step;\n                    PlayShootSfx();\n                    Shoot(this);\n                }\n            } else if (control_source->control_flags_a & INPUT_BUTTON_PRIMARY) {\n                PlayShootSfx();\n                Shoot(this);\n                shoot_cooldown_progress = shoot_cooldown_step + 0.30000001f;\n            } else if (control_source->control_flags_b & INPUT_BUTTON_PRIMARY) {\n                shoot_cooldown_progress = shoot_cooldown_step;\n                PlayShootSfx();\n                Shoot(this);\n            }",
+      "replacements": [
+        {
+          "name": "replay-snapshot",
+          "text": "            unsigned char replay_active = emitter_game->selected_level_record_active;\n            if ((replay_active\n                    && (emitter_game->selected_level_record\n                            ->run_records[emitter_game->replay_update_cursor].flags & 1))\n                || (!replay_active\n                    && (control_source->control_flags_a & INPUT_BUTTON_PRIMARY))) {\n                PlayShootSfx();\n                Shoot(this);\n                shoot_cooldown_progress = shoot_cooldown_step + 0.30000001f;\n            } else if ((replay_active\n                    && (emitter_game->selected_level_record\n                            ->run_records[emitter_game->replay_update_cursor].flags & 2))\n                || (!replay_active\n                    && (control_source->control_flags_b & INPUT_BUTTON_PRIMARY))) {\n                shoot_cooldown_progress = shoot_cooldown_step;\n                PlayShootSfx();\n                Shoot(this);\n            }"
+        },
+        {
+          "name": "direct-replay-gate",
+          "text": "            if ((emitter_game->selected_level_record_active\n                    && (emitter_game->selected_level_record\n                            ->run_records[emitter_game->replay_update_cursor].flags & 1))\n                || (!emitter_game->selected_level_record_active\n                    && (control_source->control_flags_a & INPUT_BUTTON_PRIMARY))) {\n                PlayShootSfx();\n                Shoot(this);\n                shoot_cooldown_progress = shoot_cooldown_step + 0.30000001f;\n            } else if ((emitter_game->selected_level_record_active\n                    && (emitter_game->selected_level_record\n                            ->run_records[emitter_game->replay_update_cursor].flags & 2))\n                || (!emitter_game->selected_level_record_active\n                    && (control_source->control_flags_b & INPUT_BUTTON_PRIMARY))) {\n                shoot_cooldown_progress = shoot_cooldown_step;\n                PlayShootSfx();\n                Shoot(this);\n            }"
+        }
+      ]
+    }
+  ]
+}
