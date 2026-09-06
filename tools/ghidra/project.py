@@ -3,6 +3,7 @@ from __future__ import annotations
 import fcntl
 import hashlib
 import json
+import os
 import re
 import tempfile
 from collections.abc import Iterator
@@ -11,6 +12,15 @@ from dataclasses import dataclass
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+USER_GHIDRA_DIR = Path.home() / ".local/opt/ghidra_12.1.3_PUBLIC"
+DEFAULT_GHIDRA_DIR = Path(
+    os.environ.get("GHIDRA_INSTALL_DIR")
+    or (
+        str(USER_GHIDRA_DIR)
+        if USER_GHIDRA_DIR.is_dir()
+        else "/Applications/ghidra_12.1.3_PUBLIC"
+    )
+).expanduser()
 DEFAULT_PROJECT_ROOT = REPO_ROOT / "artifacts/ghidra"
 PROJECT_NAME = "SnailMailAnalysis"
 METADATA_SCHEMA = 1

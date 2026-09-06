@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 
 from project import (
+    DEFAULT_GHIDRA_DIR,
     DEFAULT_PROJECT_ROOT,
     Project,
     ProjectLockError,
@@ -20,7 +21,6 @@ from project import (
     temporary_fresh_project,
 )
 
-DEFAULT_GHIDRA_DIR = Path("/Applications/ghidra_12.1.2_PUBLIC")
 SCRIPT_DIR = Path(__file__).resolve().parent
 FAILURE_LOG_LINES = 80
 

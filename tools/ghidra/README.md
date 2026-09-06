@@ -1,5 +1,26 @@
 # Ghidra mobile decompile tools
 
+## Local installation
+
+Use the official [Ghidra 12.1.3 release](https://github.com/NationalSecurityAgency/ghidra/releases/tag/Ghidra_12.1.3_build).
+The helpers use `--ghidra-dir` when supplied, then `GHIDRA_INSTALL_DIR`,
+then `~/.local/opt/ghidra_12.1.3_PUBLIC` when installed, with
+`/Applications/ghidra_12.1.3_PUBLIC` as the macOS fallback. Both the one-function
+probe and batch exporter use this same selection.
+
+On this Linux setup, `ghidra` launches the GUI and `ghidra-headless` launches
+the headless analyzer from the user installation. The installation can be
+shared by other projects; analysis databases remain local to each repository.
+Ghidra needs a full JDK 21 or newer, not just a Java runtime. A user-local JDK
+can be selected with `JAVA_HOME_OVERRIDE` in the installation's
+`support/launch.properties`, without changing the system Java installation.
+
+To decompile a Windows function by its native entry address:
+
+```sh
+uv run tools/ghidra/decompile_symbol.py artifacts/bin/SnailMail_unwrapped.exe 0x44ccf0
+```
+
 ## Batch corpus export
 
 `export_itanium_symbols.py` exports every Itanium C++ text/weak function selected
@@ -43,7 +64,7 @@ the persistent project. `--project-root` relocates the persistent project store.
 ## One-function probe
 
 `decompile_symbol.py` is the bounded second-opinion path for Android, iOS, or
-Windows functions. It defaults to Ghidra 12.1.2 and reuses the same isolated
+Windows functions. It defaults to Ghidra 12.1.3 and reuses the same isolated
 per-binary persistent project and Ghidra home as the batch exporter. It does not
 mutate the normal GUI profile. Pass `--fresh` for the former temporary-project
 behavior.

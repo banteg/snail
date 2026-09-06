@@ -14,6 +14,7 @@ import tempfile
 from pathlib import Path
 
 from project import (
+    DEFAULT_GHIDRA_DIR,
     DEFAULT_PROJECT_ROOT,
     Project,
     ProjectLockError,
@@ -24,7 +25,6 @@ from project import (
     temporary_fresh_project,
 )
 
-DEFAULT_GHIDRA_DIR = Path("/Applications/ghidra_12.1.2_PUBLIC")
 DEFAULT_NM = Path("/usr/bin/nm")
 DEFAULT_CXXFILT = Path("/usr/bin/c++filt")
 SCRIPT_DIR = Path(__file__).resolve().parent
