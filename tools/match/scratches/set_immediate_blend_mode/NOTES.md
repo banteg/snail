@@ -90,3 +90,17 @@ candidate/target instructions, prefix 2/136, with 20 clean references, two
 target-only device loads, and the explicit nonuniform jump-table mismatch. No
 selector dependency, duplicate receiver lifetime, or goto is retained solely
 to defeat VC6's identical-block merge.
+
+## 2026-09-07 complete preset grouping and ordering
+
+The now-exact object blend helper motivated two bounded source-switch checks.
+The 150-form partition recipe splits the existing equal-effect preset groups
+into complete case bodies. It produces no improvement over 85.50%.
+
+The 38-form order recipe compares numeric/reversed preset order and individual
+case-body swaps. Several forms reach 89.30%, 135/136 instructions, prefix 2,
+with 21 clean references, one unaudited load, and a mismatched jump table.
+These are useful diagnostic seeds: native physical block order need not be the
+authored case order. No alternative is exact, and no case reordering is retained
+in the canonical source in this batch. Both recipes and their complete receipts
+remain available; neither establishes a compiler-provenance requirement.

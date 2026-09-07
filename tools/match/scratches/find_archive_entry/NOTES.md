@@ -63,3 +63,13 @@ This is analysis-only and leaves the focused result at 79.34%, 61/60
 instructions, a 7-instruction prefix, and two clean masked references. The
 remaining differences are the shared not-found block placement and equivalent
 ASCII-fold instruction encoding.
+
+## 2026-09-07 search-loop operation probes
+
+Sixteen recorded variants compare nested and early-exit for/do searches,
+returning at the successful entry, and char/int uppercase expressions with
+or without an inline operation. None improves the retained 79.34% result.
+Early-exit do loops with a char expression or inline char conversion are
+byte-identical to the baseline. The other tested forms regress. The recipe
+is `lookup-loop-operation-20260907.json`; this does not establish source-shape
+exhaustion or compiler provenance.
