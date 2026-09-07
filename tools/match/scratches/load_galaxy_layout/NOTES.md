@@ -368,3 +368,15 @@ the group offset before the point cursor. Staged next values and a separately
 indexed or borrowed route-name record do not remove those swaps without
 regressing other instructions. This is a verified partial improvement and is
 not counted as another exact match.
+
+
+## 2026-09-07 five-function campaign evidence
+
+Twenty-five point-index/route-borrow forms and 29 structured outer-loop
+forms do not improve the retained 99.14%, 233/233-instruction result. These
+couple interpolation-index lifetime with loop induction and index/point bounds;
+the two native latch ordering differences remain. No additional source change
+is retained.
+
+The committed recipes and hash-bound receipts describe the tested forms; they
+do not establish source exhaustion.

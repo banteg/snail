@@ -205,3 +205,14 @@ Five diagnostic vector copy/assignment definitions do not improve 90.58%; an exp
 ## 2026-09-05 additional operation-boundary probes
 
 Six repeated position-upload operations test source/destination borrows and indexed banks or objects. They do not improve 90.58%; no wrapper is retained.
+
+
+## 2026-09-07 five-function campaign evidence
+
+Eight position-aggregate and Lock-output ownership forms do not improve
+90.58%. An aggregate position view or function-scoped output is neutral;
+a void-pointer output regresses. No header overlay is promoted, and the two
+native source-address register copies remain open.
+
+The committed recipes and hash-bound receipts describe the tested forms; they
+do not establish source exhaustion.

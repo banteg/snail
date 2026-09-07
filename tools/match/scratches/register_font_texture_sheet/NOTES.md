@@ -139,3 +139,14 @@ scopes do not reproduce the remaining glyph index and conversion-slot choices.
 ## 2026-09-05 additional bounded controls
 
 Three current-baseline font-index lifetime forms do not improve 88.32%. Outer scope is neutral; direct global indexing and carrying the index into the final metrics regress and introduce reference debt. Canonical source is unchanged.
+
+
+## 2026-09-07 five-function campaign evidence
+
+Twenty-nine glyph-scan variable, loop, and width-publication forms do not
+improve 88.32%. They preserve scan order while varying the ownership of X,
+run width, and glyph slot. The native stack/register assignment remains open;
+no source change is retained.
+
+The committed recipes and hash-bound receipts describe the tested forms; they
+do not establish source exhaustion.

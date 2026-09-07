@@ -111,12 +111,9 @@ int __stdcall game_startup_and_main_loop(
             g_loading_bar.Init();
 
             int warmup_count = (int)timeGetTime() % 1000;
-            if (warmup_count > 0) {
-                do {
-                    RAND(1.0f, 0);
-                    gRMathRand2();
-                    --warmup_count;
-                } while (warmup_count != 0);
+            for (int warmup_index = 0; warmup_index < warmup_count; ++warmup_index) {
+                RAND(1.0f, 0);
+                gRMathRand2();
             }
 
             construct_game_runtime();
@@ -163,16 +160,17 @@ int __stdcall game_startup_and_main_loop(
             g_current_frame_update_steps = g_current_frame_update_steps + 1.0f;
             g_frame_time_accumulator = g_frame_time_accumulator - 0.016666668f;
 
-            float remaining = g_frame_time_accumulator;
-            if (remaining < 0.0f)
-                remaining = -remaining;
+            float remaining;
+            if (g_frame_time_accumulator < 0.0f)
+                remaining = -g_frame_time_accumulator;
+            else
+                remaining = g_frame_time_accumulator;
 
-            if (remaining >= 0.0000083333334f) {
-                g_render_queue_active = (g_frame_time_accumulator <= 0.0f);
-            } else {
+            g_render_queue_active = 1;
+            if (!(remaining >= 0.0000083333334f))
                 g_frame_time_accumulator = 0.0f;
-                g_render_queue_active = 1;
-            }
+            else if (!(g_frame_time_accumulator <= 0.0f))
+                g_render_queue_active = 0;
 
             HWND active_window = GetActiveWindow();
             if (active_window == g_main_window) {
@@ -182,7 +180,13 @@ int __stdcall game_startup_and_main_loop(
                     goto update_game;
             }
 
-            if (g_window_deactivated != 0) {
+            if (g_window_deactivated == 0) {
+                ClipCursor(0);
+                g_render_queue_active = 1;
+                g_frame_render_requested = 1;
+                if (g_runtime_config.fullscreen_enabled != 0)
+                    minimize_game_window();
+            } else {
 update_game:
                 int update_index = 0;
                 while (update_index < g_game->fixed_update_count) {
@@ -198,12 +202,6 @@ update_game:
                     }
                     ++update_index;
                 }
-            } else {
-                ClipCursor(0);
-                g_render_queue_active = 1;
-                g_frame_render_requested = 1;
-                if (g_runtime_config.fullscreen_enabled != 0)
-                    minimize_game_window();
             }
         }
 

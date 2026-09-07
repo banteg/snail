@@ -46,3 +46,14 @@ Seven pixel-address forms consume width, use row pointers, separate the 18-byte 
 Six inline clamp forms return the selected coordinate/bound by const reference, for X, Y, or both. They form three code groups and regress to 66.94–78.66%, with all five references clean. No helper is retained. The canonical 98.29% body and native `imul esi, eax` difference remain open.
 
 The receipts bound these hypotheses only. No new exact match or unsupported ownership/return contract was inferred.
+
+
+## 2026-09-07 five-function campaign evidence
+
+Eighteen coordinate/dimension lifetime variants do not improve 98.29%.
+They vary X/Y normalization and dimension availability while preserving getter
+and conversion order. The native row-product destination remains unresolved;
+no source or type change is retained.
+
+The committed recipes and hash-bound receipts describe the tested forms; they
+do not establish source exhaustion.

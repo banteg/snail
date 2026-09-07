@@ -124,3 +124,14 @@ borrowed `quad` pointer. The tracked decompile exposes all four
 instead of an integer lock result and 0x60 bytes of pointer arithmetic.
 Matcher source remains unchanged at the honest 98.34%, 331/332 result with all
 26 operands clean.
+
+
+## 2026-09-07 five-function campaign evidence
+
+Forty-seven dimension-lifetime forms and 54 point-pair/radius forms do not
+improve 98.34%. Coupled width/height parameter reuse, center ownership, and
+radius operations leave the native half-height spill/reload and later Z-store
+schedule open. No auxiliary point type or parameter reuse is retained.
+
+The committed recipes and hash-bound receipts describe the tested forms; they
+do not establish source exhaustion.

@@ -56,3 +56,14 @@ passing the converted row coordinate and deriving the base inside the operation
 reproduces 60.36%. All thirteen references remain clean. No helper is retained.
 The native saved row coordinate and green-before-red load schedule remain
 unrecovered; these results do not establish a compiler limitation.
+
+
+## 2026-09-07 five-function campaign evidence
+
+Sixty-three row-base, RGB-value, pixel-pointer, and output-vertex lifetime
+combinations do not improve 79.26%. Moving row formation after X conversion
+changes broader allocation instead of recovering the complete native loop.
+No source or image layout change is retained.
+
+The committed recipes and hash-bound receipts describe the tested forms; they
+do not establish source exhaustion.

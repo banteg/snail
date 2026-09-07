@@ -134,3 +134,13 @@ IDA export. All retain 81.36%, 61/57 instructions, prefix 5, and the duplicated
 call. Literal spellings additionally expose three reference-identity mismatches
 against the curated global symbols; no audit rule is weakened and no form is
 retained. The native cross-case tail sharing still needs a source explanation.
+
+
+## 2026-09-07 five-function campaign evidence
+
+All 119 alternative orders of the five complete case groups are
+non-improving at the 81.36% baseline. They do not recover the native shared
+indexed-sprintf suffix; source and formatting behavior remain unchanged.
+
+The committed recipes and hash-bound receipts describe the tested forms; they
+do not establish source exhaustion.

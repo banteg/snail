@@ -104,3 +104,13 @@ These are useful diagnostic seeds: native physical block order need not be the
 authored case order. No alternative is exact, and no case reordering is retained
 in the canonical source in this batch. Both recipes and their complete receipts
 remain available; neither establishes a compiler-provenance requirement.
+
+
+## 2026-09-07 five-function campaign evidence
+
+A C++ COM-interface view and an inline device-call operation are both
+byte-neutral at 85.50%. The complete preset-block sharing remains unresolved;
+no interface header or call wrapper is retained.
+
+The committed recipes and hash-bound receipts describe the tested forms; they
+do not establish source exhaustion.

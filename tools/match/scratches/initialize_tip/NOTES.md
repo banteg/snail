@@ -176,3 +176,14 @@ Eleven whole-function color/widget/flag combinations test call-local colors, ind
 ## 2026-09-05 continued source-shape investigation
 
 Eleven flag, definition, and widget-owner reuse forms give no gain at 84.42%. Reusing local names is neutral; changing the actual borrow or reload lifetimes regresses.
+
+
+## 2026-09-07 five-function campaign evidence
+
+Twenty-nine paired alignment, widget, and definition-flag ownership forms
+were recorded. The best reaches 87.01% from 84.42% but does not recover the
+complete native call and flag-read schedule. No source or shared flag type is
+promoted; the signed-byte complement and later live reads remain useful leads.
+
+The committed recipes and hash-bound receipts describe the tested forms; they
+do not establish source exhaustion.

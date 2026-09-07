@@ -168,3 +168,14 @@ No source change is retained, and the dispatch source shape remains open.
 Four whole-constructor trace-path placements test explicit else, negative-first nesting, and either path behind a label. Two are neutral at 92.47%; two move substantial code and regress to 19.89%. All 23 references remain clean. These placements do not resolve the diagonal dispatch ordering.
 
 These receipts bound the tested forms and do not establish source exhaustion.
+
+
+## 2026-09-07 five-function campaign evidence
+
+All 120 lexical orders of the five complete dispatch/arithmetic blocks were
+tested without changing their predicates or computations. None improves
+92.47%; explicit block permutation does not recover the native dispatch
+continuations. The canonical source remains unchanged.
+
+The committed recipes and hash-bound receipts describe the tested forms; they
+do not establish source exhaustion.

@@ -106,3 +106,17 @@ boolean-offset form slightly regresses to 92.45%. None reproduces native's
 reuse of the hoisted `0x400` in `ebp` for both the render-depth test and the
 1024-pixel width case, so the remaining difference stays classified as a VC6
 lifetime/allocation residual rather than an exhausted semantic lead.
+
+
+## 2026-09-07 five-function campaign evidence
+
+Resolution/depth interactions, explicit color-depth branches, returned depth
+values, and SDK handle projections do not produce a complete improvement over
+92.48%. Moving depth selection after the resolution switch raises fuzzy score
+to 94.36% but loses the prefix, so it is rejected. The native separate mask and
+1024-width constant lifetimes remain open. The installed VC6 SDK independently
+supports opaque Win32 handles; both STRICT and non-STRICT diagnostic overlays
+are neutral here, and shared declarations remain unchanged.
+
+The committed recipes and hash-bound receipts describe the tested forms; they
+do not establish source exhaustion.

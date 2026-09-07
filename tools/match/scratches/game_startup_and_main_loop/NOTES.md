@@ -335,3 +335,30 @@ as `gRegisterLoadFile("SnailMail.cfg", &g_runtime_config)` in authored terms and
 proves that config offsets `+0x20..+0x30` hold the registration key while
 `+0x31` records its validity. Stable harness names remain in source; the field
 promotion is codegen-neutral and does not alter the honest main-loop residual.
+
+
+## 2026-09-07 five-function campaign evidence
+
+Current retained result: **93.83%, 323/325 instructions, prefix 176**, with
+162 clean reference operands and one explicitly unaudited operand, up from
+70.86%, 327/325, prefix 1, and 151 clean plus 23 unaudited operands.
+
+The counted RNG warmup, branch-owned accumulator magnitude, default rendering
+decision, and inactive-window fallthrough recover the native zero register,
+cached timer import, startup/message/warmup prefix, and input-update layout.
+The threshold complements retain the prior comparison behavior. Both versions
+publish the same render-ready value before the next external operation; the
+remaining native difference is that activation stores stay inside two branches
+while the candidate publishes the default once before those branches. This
+removes two native instructions and is **not an exact match**. The count gap
+has the same magnitude as before; the full diff introduces no new mismatch
+region and substantially improves instruction and reference alignment.
+
+Explicit render branches, value-returning normalization, quit-state types,
+frame-flag types, SDK handle types, and imported-operation locals are recorded
+controls. None closes the remaining difference. The shared headers and compiler
+profile are unchanged. The VC6 8168 control is also non-improving here; the
+archive loader's supported profile selection is not generalized to WinMain.
+
+The committed recipes and hash-bound receipts describe the tested forms; they
+do not establish source exhaustion.
