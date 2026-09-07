@@ -83,3 +83,20 @@ pointer form. Its captured baseline and candidate source hashes, reproduced
 code identity, six complete artifacts, and two-instruction shadow-width diff
 were verified. This export supports inspection without creating an otherwise
 unnecessary mutation plan; it does not change the match or audit standard.
+
+
+## 2026-09-07 shared dimensions with real color construction
+
+Twelve complete forms apply one edge-first dimension operation to all four
+sprite draws, for width, height, or both. Each is tested with scalar values or
+const references, independently under the existing compatibility calls and the
+previously verified real `tColour` constructor overlay. This couples the full
+repeated geometry operation with the recovered constructor distinction; it
+keeps the one-pointer Windows draw argument contract.
+
+Every form compiles with 68 clean references but regresses from 99.72% to
+68.30-68.77%, 713-714/712 instructions, prefix 16. Value/reference and
+constructor choices preserve the corresponding comparison metrics; constructor
+symbol changes produce distinct raw relocation identities. No helper, type,
+constructor migration, or geometry change is retained. The shadow-width
+operand order remains unresolved.

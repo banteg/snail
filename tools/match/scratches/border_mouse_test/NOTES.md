@@ -64,3 +64,13 @@ Recorded msvc6.0 and msvc6.3 probes preserve the current extracted code and
 comparison metrics. No compiler setting or source change is retained. See the
 [profile controls](../rebuild_game_archive_if_needed/profile-controls-20260907.md)
 for component provenance, exact neighbors, and the limits of this comparison.
+
+
+## 2026-09-07 signed local-width controls
+
+All 15 non-empty combinations replace the four local coordinate/dimension
+roles (`width`, `height`, `x`, `y`) with Win32 signed `long`, preserving their
+32-bit width and every public/field type. Each produces the baseline's raw
+code identity: 98.29%, 117/117 instructions, prefix 73, five clean references.
+The earlier long-product probe did not cover these input roles. No local type
+change is retained; this control does not recover the final multiply owner.
