@@ -24,6 +24,13 @@ VERSION = "win32-reflexive"
 PROGRESS = REPO_ROOT / "analysis/progress"
 DEFAULT_EVIDENCE = PROGRESS / f"{VERSION}.json"
 DEFAULT_REPORT = REPO_ROOT / "artifacts/decomp/report.json"
+ATTRIBUTION = REPO_ROOT / "analysis/ownership/library-attribution.json"
+CATEGORY_LABELS = {
+    "game": "Game & Engine", "libs": "Libraries",
+    "libs.d3dx8": "D3DX8", "libs.msvc6-crt": "MSVC runtime",
+    "libs.libpng-1.2.5": "libpng 1.2.5", "libs.zlib-1.2.1": "zlib 1.2.1",
+    "other": "Unclassified code",
+}
 
 
 def file_hash(path: Path) -> str:
@@ -37,11 +44,13 @@ def _input_path(path: str) -> bool:
     if path in {"pyproject.toml", "uv.lock"}:
         return True
     if path.startswith("src/snail/") and p.suffix == ".py":
-        return p.stem.startswith("match") or p.stem in {"symbols", "code_inventory"}
+        return p.stem.startswith("match") or p.stem in {"symbols", "code_inventory", "library_attribution"}
     if path.startswith("analysis/symbols/"):
         return p.name in {"gameplay-functions.json", "gameplay-references.json"}
     if path.startswith("analysis/progress/"):
         return p.name.endswith("code-inventory.json")
+    if path.startswith("analysis/ownership/"):
+        return p.name in {"library-attribution.json", "reference-build.json"}
     if path == "tools/match/cl.sh":
         return True
     return path.startswith("tools/match/") and (
@@ -266,11 +275,28 @@ def publish(*, refresh: bool = False, output: Path = DEFAULT_REPORT, jobs: int =
     return report
 
 
+def _load_attribution() -> dict[int, dict[str, Any]]:
+    payload = json.loads(ATTRIBUTION.read_text())
+    inventory_target = json.loads((PROGRESS / "executable-code-inventory.json").read_text())["target_sha256"]
+    if payload.get("schema") != 1 or payload.get("target_sha256") != inventory_target:
+        raise ValueError("ownership evidence belongs to another executable")
+    rows = payload["functions"]
+    if len({r["address"] for r in rows}) != len(rows):
+        raise ValueError("duplicate ownership identity")
+    for row in rows:
+        if row["component"] != "game-init" and "libs." + row["component"] not in CATEGORY_LABELS:
+            raise ValueError("unknown ownership component")
+    return {r["address"]: r for r in rows}
+
+
 def build_report(functions: list[dict[str, Any]]) -> dict[str, Any]:
     """Full-executable totals with an optional identified Game & Engine view."""
     manifest = load_function_symbol_manifest(REPO_ROOT / "analysis/symbols/gameplay-functions.json")
     game_addresses = {f.address for f in manifest.functions if f.port_scope != "third-party"}
-    names = Counter(row["name"] for row in functions)
+    attribution = _load_attribution()
+    game_addresses.update(a for a, r in attribution.items() if r["component"] == "game-init")
+    display_names = {r["address"]: attribution.get(r["address"], {}).get("name", r["name"]) for r in functions}
+    names = Counter(display_names.values())
     seen: set[int] = set()
     units: list[dict[str, Any]] = []
     total = matched = complete = matched_functions = complete_units = 0
@@ -303,10 +329,17 @@ def build_report(functions: list[dict[str, Any]]) -> dict[str, Any]:
             1,
             int(is_complete),
         )
-        name = row["name"] if names[row["name"]] == 1 else f"{row['name']}@{row['address']:08x}"
+        display_name = display_names[key]
+        name = display_name if names[display_name] == 1 else f"{display_name}@{row['address']:08x}"
+        owner = attribution.get(key)
+        categories = ["other"]
+        if row["is_function"] and key in game_addresses:
+            categories = ["game"]
+        elif row["is_function"] and owner and owner["component"] != "game-init":
+            categories = ["libs", "libs." + owner["component"]]
         metadata: dict[str, Any] = {
             "complete": is_complete,
-            "progress_categories": ["game"] if row["is_function"] and key in game_addresses else [],
+            "progress_categories": categories,
         }
         if row["source"]:
             metadata["source_path"] = row["source"]
@@ -318,7 +351,7 @@ def build_report(functions: list[dict[str, Any]]) -> dict[str, Any]:
                 "measures": measures,
                 "functions": [
                     {
-                        "name": row["name"],
+                        "name": display_name,
                         "size": str(size),
                         "fuzzy_match_percent": percent,
                         "metadata": {"virtual_address": str(row["address"])},
@@ -347,12 +380,12 @@ def build_report(functions: list[dict[str, Any]]) -> dict[str, Any]:
         ),
         "units": units,
         "categories": [{
-            "id": "game",
-            "name": "Game & Engine",
+            "id": category,
+            "name": label,
             "measures": _sum_measures([
-                unit["measures"] for unit in units if "game" in unit["metadata"]["progress_categories"]
+                unit["measures"] for unit in units if category in unit["metadata"]["progress_categories"]
             ]),
-        }],
+        } for category, label in CATEGORY_LABELS.items()],
     }
 
 

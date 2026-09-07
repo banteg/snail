@@ -4,7 +4,7 @@
 Windows gameplay executable as `win32-reflexive`. This integration follows
 [Crimson’s evidence-backed custom reporting](https://github.com/banteg/crimson/blob/master/analysis/decomp/README.md).
 The comparison is performed by `snail match`, not objdiff; objdiff v3.8.1 validates
-the v2 report format. Library recovery remains separate work.
+the v2 report format. Library attribution is recorded in [the ownership report](../ownership/README.md); library matching remains separate work.
 
 ## Game & Engine view
 
@@ -12,13 +12,15 @@ The optional [Game & Engine category](https://decomp.dev/banteg/snail?category=g
 filters the treemap to curated functions in `analysis/symbols/gameplay-functions.json`
 whose `port_scope` is not `third-party`. Like Crimson, it includes original Windows
 platform code as well as core and boundary functions, regardless of whether they
-have a source candidate. The initial category contains 782 function owners.
+have a source candidate. The initial category contained 782 function owners. The ownership pass added five
+verified no-op startup initializers, bringing it to 787 owners.
 It uses their existing disjoint native code ranges and the same matching rules.
 
 This is identified game/engine ownership, not a claim that every remaining byte
-is library code. Uncurated functions, explicit third-party functions and unassigned
-code remain in **All**, which retains the full-executable denominator and default
-view. Category attribution is pinned by the existing manifest input hash.
+is library code. **Libraries** and its D3DX8, MSVC runtime, libpng and zlib filters
+show confirmed identities; **Unclassified code** retains the rest. All categories
+use the same units. **All** retains the full-executable denominator and default
+view. Category attribution is pinned by the manifest and ownership-map input hashes.
 
 ## Target and native evidence
 
@@ -182,10 +184,10 @@ Commit refreshed evidence alongside scoring, source, shared-header, config, or
 native-inventory changes. `README.md`, research notes and experiment logs do not
 affect scores. Registration uses game name **Snail Mail**, platform **Windows**.
 
-Library recovery is deferred. Existing strings include zlib 1.2.1 banners,
-libpng 1.2.5, older zlib 1.1.3/PNG 1.0.5 leads, and a JPEG copyright signature.
-Multiple copies and mixed compiler provenance remain possible. These are
-future attribution leads, not recovered-library ranges or match credit.
+The [ownership pass](../ownership/README.md) attributes individual D3DX8/CRT
+functions and separates the standalone libpng 1.2.5/zlib 1.2.1 pair from the older
+D3DX8 codec copy. Attribution and reference-source compilation do not add public
+match credit; library source reconstruction and full reference audits remain work.
 
 ## Files and reproduction
 

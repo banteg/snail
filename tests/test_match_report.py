@@ -50,7 +50,7 @@ def test_game_category_keeps_platform_and_unrecovered_game_but_excludes_unknown_
         row(1200, 100), row(1400, 200),
         row(1800, 50, candidate=None, source=None, ratio=0, matched=False, is_function=False),
     ])
-    category, = result["categories"]
+    category = result["categories"][0]
     assert (category["id"], category["name"]) == ("game", "Game & Engine")
     m = category["measures"]
     assert m["total_code"] == "900"
@@ -60,7 +60,7 @@ def test_game_category_keeps_platform_and_unrecovered_game_but_excludes_unknown_
     assert m["matched_functions"] == 1
     assert m["complete_code"] == "0"
     assert [u["metadata"]["progress_categories"] for u in result["units"]] == [
-        ["game"], ["game"], ["game"], [], [], [],
+        ["game"], ["game"], ["game"], ["other"], ["other"], ["other"],
     ]
     assert result["measures"]["total_code"] == "1250"
     assert result["measures"]["matched_code"] == "400"
@@ -138,3 +138,27 @@ def test_added_or_deleted_source_invalidates_input_set(tmp_path: Path):
     source.unlink()
     with pytest.raises(ValueError, match="missing report input"):
         report.repository_inputs(tmp_path)
+
+
+def test_ownership_filters_partition_all_code_without_adding_match_credit(monkeypatch):
+    monkeypatch.setattr(report, "load_function_symbol_manifest", lambda _: SimpleNamespace(functions=[
+        SimpleNamespace(address=1, port_scope="core"),
+    ]))
+    monkeypatch.setattr(report, "_load_attribution", lambda: {
+        200: {"name": "png_known", "component": "libpng-1.2.5"},
+        600: {"name": "noop_initializer", "component": "game-init"},
+    })
+    result = report.build_report([
+        row(), row(200, 300, candidate=None, source=None, ratio=0, matched=False),
+        row(600, 6, candidate=None, source=None, ratio=0, matched=False),
+        row(700, 50, candidate=None, source=None, ratio=0, matched=False),
+    ])
+    categories = {c["id"]: c["measures"] for c in result["categories"]}
+    assert sum(int(categories[c]["total_code"]) for c in ("game", "libs", "other")) == 456
+    assert categories["game"]["total_code"] == "106"
+    assert categories["libs"]["total_code"] == categories["libs.libpng-1.2.5"]["total_code"] == "300"
+    assert categories["libs"]["matched_code"] == "0"
+    assert categories["libs"]["fuzzy_match_percent"] == 0
+    assert result["measures"]["matched_code"] == "100"
+    assert result["units"][1]["name"] == "png_known"
+    assert result["units"][1]["metadata"]["progress_categories"] == ["libs", "libs.libpng-1.2.5"]
