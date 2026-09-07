@@ -301,3 +301,21 @@ replay also has no gain. No shared-header change is retained.
 The Android symbol `cLinkedList<cRBod>::Remove(cRBod*)` independently preserves
 a pointer argument. The recovered reference arguments of Add/AddAfter must
 not be generalized to Remove merely to alter receiver register allocation.
+
+## 2026-09-07 shared Remove and direct owner recovery
+
+Recovered exactly: **100%, 131/131 instructions, prefix 131, all 18 references
+clean** under the unchanged VC6 profile. The shared remover reads the linked
+guard directly and derives its next-update guard afterward. Together with
+direct `fringes[i]` access, that reproduces the native flag reload and mask
+lifetime. Direct runtime-row indexing is also exact and replaces the raw
+root-relative cursor. The special prechecked self-unlink macro is removed;
+the ordinary shared method now lets VC6 eliminate precisely the redundant
+self check while retaining the native fringe checks.
+
+The 47-form whole-unlink recipe tests shared flag reads, row ownership,
+self-removal, and final fringe access together. Four combinations are exact.
+The follow-up guard recipe confirms four exact guard spellings here; the
+retained separately named next-update mask also preserves the previously
+exact `update_sub_lazer_projectile` control. Both complete shared-helper
+callers and the emitted remover are covered by the full corpus check.

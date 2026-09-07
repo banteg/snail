@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**591/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **135007/294937** bytes (**45.77%**) are proof-grade, and overall fuzzy is **87.88%**.
+**593/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **137047/294937** bytes (**46.47%**) are proof-grade, and overall fuzzy is **88.05%**.
 
 **111/120** platform helpers matched, **120/120** have a scratch, **15658/22103** bytes (**70.84%**) are proof-grade, and overall fuzzy is **94.89%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -10,9 +10,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**71** non-exact scratch-backed functions hold **30445 fuzzy-gap bytes**. The top 5 hold **29.7%** of that gap; the top 10 hold **43.4%**.
+**69** non-exact scratch-backed functions hold **29952 fuzzy-gap bytes**. The top 5 hold **30.2%** of that gap; the top 10 hold **44.1%**.
 
-Current-baseline experiments cover **3 functions / 119 gap bytes**; **68 / 30325** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **2 functions / 85 gap bytes**; **67 / 29868** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -23,15 +23,15 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 3 | populate_runtime_track_cells_from_segments | 1223 | semantic-complete | analysis,references | historical-only | 0/139 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only |
 | 4 | initialize_turnunder_path_template_pair | 1075 | semantic-complete | analysis | historical-only | 0/27 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 5 | initialize_slalomdouble_path_template_pair | 1063 | semantic-complete | analysis,references | historical-only | 0/27 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 6 | initialize_p_path_template_pair | 879 | semantic-complete | analysis | historical-only | 0/21 | repeated-specs,metric-tradeoffs,variant-errors,historical-only |
-| 7 | initialize_toad_path_template_pair | 836 | semantic-complete | analysis | historical-only | 0/59 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only |
-| 8 | initialize_loopout_path_template_pair | 833 | semantic-complete | analysis | historical-only | 0/18 | metric-tradeoffs,variant-errors,historical-only |
-| 9 | initialize_halfpipe_path_template_pair | 805 | semantic-complete | analysis | historical-only | 0/20 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only |
+| 6 | initialize_p_path_template_pair | 879 | semantic-complete | analysis | historical-only | 0/21 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 7 | initialize_toad_path_template_pair | 836 | semantic-complete | analysis | historical-only | 0/59 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 8 | initialize_loopout_path_template_pair | 833 | semantic-complete | analysis | historical-only | 0/18 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 9 | initialize_halfpipe_path_template_pair | 805 | semantic-complete | analysis | historical-only | 0/20 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 10 | initialize_dip_path_template_pair | 802 | semantic-complete | analysis | historical-only | 0/46 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 11 | update_subgame | 752 | semantic-complete | analysis | historical-only | 0/12 | historical-only,stale-dependencies |
 | 12 | initialize_loopbow_path_template_pair | 748 | semantic-complete | analysis | historical-only | 0/12 | metric-tradeoffs,variant-errors,historical-only |
 | 13 | initialize_turnover_path_template_pair | 740 | semantic-complete | analysis | historical-only | 0/51 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only |
-| 14 | initialize_cage2_path_template_pair | 733 | semantic-complete | analysis | historical-only | 0/15 | repeated-variants,metric-tradeoffs,variant-errors,historical-only |
+| 14 | initialize_cage2_path_template_pair | 733 | semantic-complete | analysis | historical-only | 0/15 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 15 | initialize_screw_path_template_pair | 706 | semantic-complete | analysis,references | historical-only | 0/38 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 16 | initialize_looptheloopw_path_template_pair | 698 | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,metric-tradeoffs,historical-only |
 | 17 | initialize_worm_path_template_pair | 641 | semantic-complete | analysis | historical-only | 0/9 | repeated-variants,variant-errors,historical-only |
@@ -45,53 +45,51 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 25 | initialize_slalombig_path_template_pair | 496 | semantic-complete | analysis | historical-only | 0/53 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 26 | initialize_dump_path_template_pair | 489 | semantic-complete | analysis | historical-only | 0/23 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 27 | initialize_wibble_path_template_pair | 473 | semantic-complete | analysis | historical-only | 0/24 | repeated-variants,repeated-specs,metric-tradeoffs,historical-only,stale-dependencies |
-| 28 | remove_subgame_bods | 458 | semantic-complete | analysis | historical-only | 0/11 | variant-errors,historical-only,stale-dependencies |
-| 29 | render_game_frame | 441 | semantic-complete | analysis | historical-only | 0/22 | repeated-variants,repeated-specs,metric-tradeoffs,historical-only,stale-dependencies |
-| 30 | initialize_hill_valley_path_template_pair | 415 | semantic-complete | analysis | historical-only | 0/34 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only |
-| 31 | initialize_supertramp_path_template_pair | 392 | semantic-complete | analysis | historical-only | 0/18 | repeated-variants,repeated-specs,metric-tradeoffs,historical-only |
-| 32 | border_input_text | 391 | semantic-complete | analysis | historical-only | 0/13 | metric-tradeoffs,historical-only,stale-dependencies |
-| 33 | initialize_sweep_path_template_pair | 372 | semantic-complete | analysis | historical-only | 0/31 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 34 | initialize_invert_path_template_pair | 368 | semantic-complete | analysis | historical-only | 0/27 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 35 | initialize_twister_path_template_pair | 361 | semantic-complete | analysis | historical-only | 0/27 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 36 | initialize_twister2_path_template_pair | 361 | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 37 | load_level_definition_file | 361 | semantic-complete | analysis,references | historical-only | 0/12 | repeated-variants,metric-tradeoffs,variant-errors,historical-only |
-| 38 | build_subgame_level | 299 | semantic-complete | analysis | historical-only | 0/19 | metric-tradeoffs,variant-errors,historical-only |
-| 39 | initialize_snake_path_template_pair | 288 | semantic-complete | analysis | historical-only | 0/63 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 40 | initialize_start_path_template_pair | 268 | incomplete | analysis | historical-only | 0/67 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 41 | set_snail_weapon | 254 | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only |
-| 42 | initialize_intro_screen | 206 | semantic-complete | analysis | historical-only | 0/6 | repeated-variants,variant-errors,historical-only,stale-dependencies |
-| 43 | update_golb_ai | 186 | semantic-complete | analysis | historical-only | 0/23 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 44 | initialize_sbend_path_template_pair | 184 | semantic-complete | analysis | historical-only | 0/62 | repeated-specs,metric-tradeoffs,historical-only,stale-dependencies |
-| 45 | initialize_loading_screen | 129 | semantic-complete | analysis | historical-only | 0/7 | variant-errors,historical-only |
-| 46 | register_font_texture_sheet | 120 | semantic-complete | analysis | historical-only | 0/24 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
-| 47 | place_challenge_parcels_on_track | 115 | semantic-complete | analysis,references | historical-only | 0/9 | historical-only,stale-dependencies |
-| 48 | update_frontend_widget_interaction | 112 | semantic-complete | analysis,references | historical-only | 0/14 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 49 | load_galaxy_layout | 82 | semantic-complete | analysis | historical-only | 0/18 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 50 | initialize_tip | 80 | semantic-complete | analysis | historical-only | 0/7 | repeated-variants,historical-only,stale-dependencies |
-| 51 | sample_smtrack_heightmap | 75 | semantic-complete | analysis | historical-only | 0/5 | historical-only |
-| 52 | add_object_edge | 65 | semantic-complete | analysis,references | historical-only | 0/16 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 53 | initialize_quaternion_from_matrix | 44 | semantic-complete | analysis | current-active | 1/10 | - |
-| 54 | load_frontend_level_by_mode_and_index | 41 | semantic-complete | analysis,references | current-active | 1/6 | - |
-| 55 | release_snail_weapons | 40 | semantic-complete | analysis | historical-only | 0/12 | variant-errors,historical-only |
-| 56 | select_level_track_texture_set | 37 | semantic-complete | analysis,references | historical-only | 0/7 | variant-errors,historical-only |
-| 57 | refresh_object_vertex_buffer | 37 | semantic-complete | analysis | historical-only | 0/8 | historical-only |
-| 58 | play_subgoldy_shoot_sfx | 36 | semantic-complete | analysis,references | historical-only | 0/10 | repeated-variants,variant-errors,historical-only,stale-dependencies |
-| 59 | remove_sub_loc | 35 | semantic-complete | analysis | current-active | 1/8 | stale-dependencies |
-| 60 | try_enter_track_attachment_from_swept_motion | 34 | semantic-complete | analysis | historical-only | 0/8 | historical-only,stale-dependencies |
-| 61 | set_snail_jetpack | 26 | semantic-complete | analysis | historical-only | 0/7 | repeated-variants,historical-only |
-| 62 | create_golb | 20 | semantic-complete | analysis | historical-only | 0/22 | variant-errors,historical-only,stale-dependencies |
-| 63 | firework_shoot | 19 | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
-| 64 | extract_snail_local_hotspots | 18 | semantic-complete | analysis | historical-only | 0/7 | repeated-variants,variant-errors,historical-only |
-| 65 | initialize_star_field | 14 | semantic-complete | analysis | historical-only | 0/18 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 66 | explode_slug_hazard | 13 | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,variant-errors,historical-only,stale-dependencies |
-| 67 | traverse_path_follow_golb | 11 | semantic-complete | analysis | historical-only | 0/31 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 68 | read_repeating_text_input_key_code | 9 | semantic-complete | analysis | historical-only | 0/14 | variant-errors,historical-only,stale-dependencies |
-| 69 | border_mouse_test | 7 | semantic-complete | analysis | historical-only | 0/10 | variant-errors,historical-only,stale-dependencies |
-| 70 | switch_track_mirror | 7 | semantic-complete | analysis | historical-only | 0/4 | historical-only,stale-dependencies |
-| 71 | draw_frontend_widget | 7 | semantic-complete | analysis | historical-only | 0/16 | historical-only,stale-dependencies |
+| 28 | render_game_frame | 441 | semantic-complete | analysis | historical-only | 0/22 | repeated-variants,repeated-specs,metric-tradeoffs,historical-only,stale-dependencies |
+| 29 | initialize_hill_valley_path_template_pair | 415 | semantic-complete | analysis | historical-only | 0/34 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only |
+| 30 | initialize_supertramp_path_template_pair | 392 | semantic-complete | analysis | historical-only | 0/18 | repeated-variants,repeated-specs,metric-tradeoffs,historical-only |
+| 31 | border_input_text | 391 | semantic-complete | analysis | historical-only | 0/13 | metric-tradeoffs,historical-only,stale-dependencies |
+| 32 | initialize_sweep_path_template_pair | 372 | semantic-complete | analysis | historical-only | 0/31 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 33 | initialize_invert_path_template_pair | 368 | semantic-complete | analysis | historical-only | 0/27 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 34 | initialize_twister_path_template_pair | 361 | semantic-complete | analysis | historical-only | 0/27 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 35 | initialize_twister2_path_template_pair | 361 | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 36 | load_level_definition_file | 361 | semantic-complete | analysis,references | historical-only | 0/12 | repeated-variants,metric-tradeoffs,variant-errors,historical-only |
+| 37 | build_subgame_level | 299 | semantic-complete | analysis | historical-only | 0/19 | metric-tradeoffs,variant-errors,historical-only |
+| 38 | initialize_snake_path_template_pair | 288 | semantic-complete | analysis | historical-only | 0/63 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 39 | initialize_start_path_template_pair | 268 | incomplete | analysis | historical-only | 0/67 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 40 | set_snail_weapon | 254 | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
+| 41 | initialize_intro_screen | 206 | semantic-complete | analysis | historical-only | 0/6 | repeated-variants,variant-errors,historical-only,stale-dependencies |
+| 42 | update_golb_ai | 186 | semantic-complete | analysis | historical-only | 0/23 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 43 | initialize_sbend_path_template_pair | 184 | semantic-complete | analysis | historical-only | 0/62 | repeated-specs,metric-tradeoffs,historical-only,stale-dependencies |
+| 44 | initialize_loading_screen | 129 | semantic-complete | analysis | historical-only | 0/7 | variant-errors,historical-only |
+| 45 | register_font_texture_sheet | 120 | semantic-complete | analysis | historical-only | 0/24 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
+| 46 | place_challenge_parcels_on_track | 115 | semantic-complete | analysis,references | historical-only | 0/9 | historical-only,stale-dependencies |
+| 47 | update_frontend_widget_interaction | 112 | semantic-complete | analysis,references | historical-only | 0/14 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 48 | load_galaxy_layout | 82 | semantic-complete | analysis | historical-only | 0/18 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 49 | initialize_tip | 80 | semantic-complete | analysis | historical-only | 0/7 | repeated-variants,historical-only,stale-dependencies |
+| 50 | sample_smtrack_heightmap | 75 | semantic-complete | analysis | historical-only | 0/5 | historical-only,stale-dependencies |
+| 51 | add_object_edge | 65 | semantic-complete | analysis,references | historical-only | 0/16 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 52 | initialize_quaternion_from_matrix | 44 | semantic-complete | analysis | current-active | 1/10 | - |
+| 53 | load_frontend_level_by_mode_and_index | 41 | semantic-complete | analysis,references | current-active | 1/6 | - |
+| 54 | release_snail_weapons | 40 | semantic-complete | analysis | historical-only | 0/12 | variant-errors,historical-only,stale-dependencies |
+| 55 | select_level_track_texture_set | 37 | semantic-complete | analysis,references | historical-only | 0/7 | variant-errors,historical-only |
+| 56 | refresh_object_vertex_buffer | 37 | semantic-complete | analysis | historical-only | 0/8 | historical-only,stale-dependencies |
+| 57 | play_subgoldy_shoot_sfx | 36 | semantic-complete | analysis,references | historical-only | 0/10 | repeated-variants,variant-errors,historical-only,stale-dependencies |
+| 58 | try_enter_track_attachment_from_swept_motion | 34 | semantic-complete | analysis | historical-only | 0/8 | historical-only,stale-dependencies |
+| 59 | set_snail_jetpack | 26 | semantic-complete | analysis | historical-only | 0/7 | repeated-variants,historical-only,stale-dependencies |
+| 60 | create_golb | 20 | semantic-complete | analysis | historical-only | 0/22 | variant-errors,historical-only,stale-dependencies |
+| 61 | firework_shoot | 19 | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
+| 62 | extract_snail_local_hotspots | 18 | semantic-complete | analysis | historical-only | 0/7 | repeated-variants,variant-errors,historical-only,stale-dependencies |
+| 63 | initialize_star_field | 14 | semantic-complete | analysis | historical-only | 0/18 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 64 | explode_slug_hazard | 13 | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,variant-errors,historical-only,stale-dependencies |
+| 65 | traverse_path_follow_golb | 11 | semantic-complete | analysis | historical-only | 0/31 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 66 | read_repeating_text_input_key_code | 9 | semantic-complete | analysis | historical-only | 0/14 | variant-errors,historical-only,stale-dependencies |
+| 67 | border_mouse_test | 7 | semantic-complete | analysis | historical-only | 0/10 | variant-errors,historical-only,stale-dependencies |
+| 68 | switch_track_mirror | 7 | semantic-complete | analysis | historical-only | 0/4 | historical-only,stale-dependencies |
+| 69 | draw_frontend_widget | 7 | semantic-complete | analysis | historical-only | 0/16 | historical-only,stale-dependencies |
 
 
-## Proof Grade (591)
+## Proof Grade (593)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -418,6 +416,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ✅ | is_sub_loc_empty | 0x439ab0 | 29 | 15/15 | 100.00% | 15/15 | - |  | core |
 | ✅ | is_sub_loc_slide | 0x439ad0 | 41 | 21/21 | 100.00% | 21/21 | - |  | core |
 | ✅ | refresh_fringe_object_draw_list | 0x439b00 | 186 | 63/63 | 100.00% | 63/63 | 8 ok |  | core |
+| ✅ | remove_sub_loc | 0x439bc0 | 396 | 131/131 | 100.00% | 131/131 | 18 ok |  | core |
 | ✅ | update_sub_loc | 0x439d50 | 702 | 187/187 | 100.00% | 187/187 | 39 ok |  | core |
 | ✅ | health_collect_particles | 0x43a010 | 386 | 104/104 | 100.00% | 104/104 | 13 ok |  | core |
 | ✅ | set_subgoldy_shoot_flags | 0x43a1a0 | 344 | 50/50 | 100.00% | 50/50 | 2 ok |  | core |
@@ -472,6 +471,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ✅ | update_pause_menu | 0x4407a0 | 249 | 55/55 | 100.00% | 55/55 | 10 ok |  | core |
 | ✅ | advance_blink_random | 0x4408a0 | 31 | 10/10 | 100.00% | 10/10 | - |  | core |
 | ✅ | initialize_blink_random | 0x4408c0 | 74 | 21/21 | 100.00% | 21/21 | 5 ok |  | core |
+| ✅ | remove_subgame_bods | 0x440910 | 1644 | 501/501 | 100.00% | 501/501 | 70 ok |  | core |
 | ✅ | update_barrier_ai | 0x440f80 | 17 | 5/5 | 100.00% | 5/5 | - |  | core |
 | ✅ | initialize_damage_gauge | 0x440fa0 | 40 | 12/12 | 100.00% | 12/12 | - |  | core |
 | ✅ | update_damage_gauge | 0x440fd0 | 1043 | 268/268 | 100.00% | 268/268 | 65 ok |  | core |
@@ -702,7 +702,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 146/147 | 97.61% | 79/147 | 32 ok |  | core |
 | 🚧 | firework_shoot | 0x441dd0 | 390 | 103/103 | 95.15% | 78/103 | 21 ok |  | core |
 
-## High Progress (80-94.99%) (32)
+## High Progress (80-94.99%) (31)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -726,7 +726,6 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | add_object_edge | 0x4305a0 | 772 | 225/227 | 91.59% | 15/227 | 3 unaudited, 34 ok |  | core |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | 20/30 | 3 ok |  | core |
 | 🚧 | build_subgame_level | 0x437eb0 | 2128 | 555/555 | 85.95% | 177/555 | 108 ok |  | core |
-| 🚧 | remove_sub_loc | 0x439bc0 | 396 | 130/131 | 91.19% | 87/131 | 18 ok |  | core |
 | 🚧 | play_subgoldy_shoot_sfx | 0x43afd0 | 335 | 96/88 | 89.13% | 26/88 | 2 unaudited, 19 ok |  | core |
 | 🚧 | update_subgoldy | 0x43b120 | 8456 | 2093/2087 | 83.54% | 12/2087 | 1 unaudited, 315 ok |  | core |
 | 🚧 | release_snail_weapons | 0x442e40 | 554 | 125/125 | 92.80% | 13/125 | 33 ok |  | core |
@@ -739,7 +738,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 274/274 | 88.32% | 55/274 | 57 ok |  | boundary |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  | core |
 
-## Mid Progress (50-79.99%) (29)
+## Mid Progress (50-79.99%) (28)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -769,7 +768,6 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 498/495 | 64.45% | 0/495 | 53 ok |  | core |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1253/1245 | 75.74% | 76/1245 | 4 unaudited, 163 ok |  | core |
 | 🚧 | update_subgame | 0x438b90 | 3748 | 1036/1033 | 79.94% | 9/1033 | 129 ok |  | core |
-| 🚧 | remove_subgame_bods | 0x440910 | 1644 | 505/501 | 72.17% | 6/501 | 70 ok |  | core |
 | 🚧 | set_snail_weapon | 0x445920 | 940 | 245/248 | 73.02% | 1/248 | 24 ok |  | core |
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 560/571 | 68.44% | 7/571 | 91 ok |  | core |
 

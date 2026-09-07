@@ -442,3 +442,25 @@ reference from RemoveSubLoc. Control and signed snapshot retain 72.17%,
 505/501 instructions, prefix 6, and 70 clean references. Direct guards regress
 to 68.15% with six unaudited references; the reference form reaches 65.79%
 with four. No shared-header change is retained.
+
+## 2026-09-07 complete teardown ownership recovery
+
+Recovered exactly: **100%, 501/501 instructions, prefix 501, all 70 references
+clean** under the unchanged VC6 profile. The row-cell operation returns its
+advanced cursor after the native eight-cell countdown. The singleton guards
+and removals refer directly to `speedup_pickup` and `jetpack_pickup`, and the
+player teardown uses the embedded player directly. These changes combine with
+the shared remover's separately evaluated linked and next-update guards.
+
+The 47-form `whole-teardown-owner-lifetimes-20260907.json` checks those
+interactions. Two forms are exact; the retained one calls the shared remover
+directly and removes the redundant ordinary-node wrapper. The next-link pool
+cursor macro remains the established native representation. State resets,
+all removal diagnostics, out-of-line cleanup calls, and the final sprite
+cleanup are preserved.
+
+The former 66.40% returned-cursor probe was a useful partial source recovery:
+its row prefix was correct, but its later owner accesses were still wrong.
+Likewise, direct shared guards alone lost three native diagnostic branches.
+Recovering both caller ownership and the row operation resolves those
+interactions and improves the complete function from 72.17% to exact.

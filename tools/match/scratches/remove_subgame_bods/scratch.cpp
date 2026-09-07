@@ -21,10 +21,15 @@ int report_errorf(char* format, ...);
         list->remove_bod(BOD_NODE_FROM_NEXT_LINK(next_link));    \
     } while (0)
 
-static inline void remove_inline_bod_node(BodNode* node)
+
+static inline cRSubLoc* remove_row_cells(cRSubLoc* cell, int count)
 {
-    BodList* list = &g_game->active_bod_list;
-    list->remove_bod(node);
+    do {
+        cell->Remove();
+        ++cell;
+        --count;
+    } while (count != 0);
+    return cell;
 }
 
 void cRSubGame::RemoveBods()
@@ -36,12 +41,7 @@ void cRSubGame::RemoveBods()
         if ((BOD_NEXT_LINK_FLAGS(row_next) & BOD_FLAG_LINKED) != 0)
             REMOVE_BOD_NODE_FROM_NEXT_LINK(row_next);
 
-        cRSubLoc* row_end =
-            cell + sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);
-        do {
-            cell->Remove();
-            ++cell;
-        } while (cell != row_end);
+        cell = remove_row_cells(cell, sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]));
 
         row_next = (BodNode**)((char*)row_next + sizeof(SubRow));
         --row_count;
@@ -61,15 +61,13 @@ void cRSubGame::RemoveBods()
         --health_count;
     } while (health_count != 0);
 
-    BodNode* speedup = &speedup_pickup;
-    if ((speedup->list_flags & BOD_FLAG_LINKED) != 0) {
-        remove_inline_bod_node(speedup);
+    if ((speedup_pickup.list_flags & BOD_FLAG_LINKED) != 0) {
+        g_game->active_bod_list.remove_bod(&speedup_pickup);
         speedup_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
     }
 
-    BodNode* jetpack = &jetpack_pickup;
-    if ((jetpack->list_flags & BOD_FLAG_LINKED) != 0) {
-        remove_inline_bod_node(jetpack);
+    if ((jetpack_pickup.list_flags & BOD_FLAG_LINKED) != 0) {
+        g_game->active_bod_list.remove_bod(&jetpack_pickup);
         jetpack_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
     }
 
@@ -112,28 +110,27 @@ void cRSubGame::RemoveBods()
     } while (ring_count != 0);
 
     {
-        cRSubGoldy& player_owner = player;
-        if ((((BodNode*)&player_owner)->list_flags & BOD_FLAG_LINKED) != 0) {
-            remove_inline_bod_node((BodNode*)&player_owner);
-            remove_inline_bod_node(
-                (BodNode*)&player_owner.presentation);
-            remove_inline_bod_node(
-                &player_owner.presentation.jetpack_channel);
-            remove_inline_bod_node(
-                &player_owner.presentation.weapon_channels[0]);
+        if ((player.list_flags & BOD_FLAG_LINKED) != 0) {
+            g_game->active_bod_list.remove_bod((BodNode*)&player);
+            g_game->active_bod_list.remove_bod(
+                (BodNode*)&player.presentation);
+            g_game->active_bod_list.remove_bod(
+                &player.presentation.jetpack_channel);
+            g_game->active_bod_list.remove_bod(
+                &player.presentation.weapon_channels[0]);
 
             BodList* list = &g_game->active_bod_list;
             list->recycle_bod_to_free_list(
-                &player_owner.presentation.weapon_channels[1]);
+                &player.presentation.weapon_channels[1]);
             g_game->active_bod_list.recycle_bod_to_free_list(
-                &player_owner.presentation.weapon_channels[2]);
+                &player.presentation.weapon_channels[2]);
             g_game->active_bod_list.recycle_bod_to_free_list(
-                (BodNode*)&player_owner.presentation.invincible_shell);
+                (BodNode*)&player.presentation.invincible_shell);
 
-            player_owner.movement_mode_selector = 0;
+            player.movement_mode_selector = 0;
             // Windows folds the cRSubGoldy teardown hook to the shared
             // one-byte stub.
-            ((RuntimeSlot*)&player_owner)->noop_runtime_ai();
+            ((RuntimeSlot*)&player)->noop_runtime_ai();
         }
     }
 

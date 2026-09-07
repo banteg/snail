@@ -1,72 +1,30 @@
 // remove_sub_loc @ 0x439bc0 (thiscall, ret) — cRSubLoc::Remove()
 
-#include <stddef.h>
-
 #include "fringe_object.h"
 #include "game_root.h"
 #include "track_attachment_types.h"
-
-typedef unsigned int DWORD;
-
-
-int report_errorf(char* format, ...);
-
-enum {
-    ROOT_RUNTIME_ROWS_BASE =
-        offsetof(GameRoot, subgame) + offsetof(cRSubGame, runtime_rows),
-};
-
-#define OUTER_RUNTIME_ROW(cursor_expr) \
-    ((SubRow*)((cursor_expr) + ROOT_RUNTIME_ROWS_BASE))
-
-#define REMOVE_PRECHECKED_BOD_NODE(node_expr, unlink_mask_expr)   \
-    do {                                                          \
-        BodNode* node = (node_expr);                              \
-        DWORD flags = node->list_flags;                           \
-        BodList* list = &g_game->active_bod_list;                 \
-        if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {         \
-            report_errorf("List remove NEXTBOD");                \
-        } else {                                                  \
-            BodNode* next = node->list_next;                      \
-            if (next != 0)                                       \
-                next->list_prev = node->list_prev;                \
-            BodNode* prev = node->list_prev;                      \
-            if (prev != 0)                                       \
-                prev->list_next = node->list_next;                \
-            else                                                  \
-                list->first = node->list_next;                    \
-            node->list_next = list->free_top;                     \
-            list->free_top = node;                                \
-            node->list_flags &= (unlink_mask_expr);               \
-        }                                                         \
-    } while (0)
 
 void cRSubLoc::Remove()
 {
     int row_index = Yi();
     unsigned char tile = tile_id;
-    DWORD unlink_mask = ~BOD_FLAG_LINKED;
 
     if (tile == SUBLOC_TILE_PATH_ENTRY_LOWERCASE
         || tile == SUBLOC_TILE_PATH_ENTRY_UPPERCASE) {
-        char* row_record = (char*)g_game + row_index * sizeof(SubRow);
-        if ((OUTER_RUNTIME_ROW(row_record)->flags
-                & SUBROW_FLAG_PATH_OR_MODEL_VELOCITY)
-            != 0) {
-            if ((OUTER_RUNTIME_ROW(row_record)->attachment_body.list_flags
+        if ((g_game->subgame.runtime_rows[row_index].flags
+                & SUBROW_FLAG_PATH_OR_MODEL_VELOCITY) != 0) {
+            if ((g_game->subgame.runtime_rows[row_index].attachment_body.list_flags
                     & BOD_FLAG_LINKED) != 0)
                 g_game->active_bod_list.remove_bod(
-                    &OUTER_RUNTIME_ROW(row_record)->attachment_body);
+                    &g_game->subgame.runtime_rows[row_index].attachment_body);
         }
     }
 
     if ((list_flags & BOD_FLAG_LINKED) != 0)
-        REMOVE_PRECHECKED_BOD_NODE(this, unlink_mask);
+        g_game->active_bod_list.remove_bod(this);
 
-    Fringe** fringe = fringes;
     for (int i = 0; i < (int)(sizeof(fringes) / sizeof(fringes[0])); ++i) {
-        Fringe* object = fringe[i];
-        if (object != 0 && (object->list_flags & BOD_FLAG_LINKED) != 0)
-            g_game->active_bod_list.remove_bod(object);
+        if (fringes[i] != 0 && (fringes[i]->list_flags & BOD_FLAG_LINKED) != 0)
+            g_game->active_bod_list.remove_bod(fringes[i]);
     }
 }

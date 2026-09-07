@@ -79,12 +79,12 @@ public:
     // Inlined cLinkedList<cRBod>::Remove; 0x447290 is its exact emitted copy.
     void remove_bod(BodNode* node)
     {
-        unsigned int flags = node->list_flags;
-        if ((flags & BOD_FLAG_LINKED) == 0) {
+        if ((node->list_flags & BOD_FLAG_LINKED) == 0) {
             report_errorf("List remove");
             return;
         }
-        if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {
+        unsigned int next_update = node->list_flags & BOD_FLAG_NEXT_UPDATE_GUARD;
+        if (next_update != 0) {
             report_errorf("List remove NEXTBOD");
             return;
         }
