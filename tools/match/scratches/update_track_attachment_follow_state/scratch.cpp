@@ -42,7 +42,7 @@ int cRPathFollowGoldy::Traverse(
 
     unsigned int current_index;
     Path* current_template;
-    int terminal_index;
+    int sample_count;
     while (delta + progress > *p_delta_length) {
         delta -= *p_delta_length - progress;
         ++index;
@@ -87,9 +87,8 @@ int cRPathFollowGoldy::Traverse(
         out_angle = delta + progress;
         progress = out_angle;
         current_template = this->template_record;
-        int segment_count = current_template->segment_count;
-        terminal_index = segment_count - 1;
-        if (current_index == (unsigned int)terminal_index) {
+        sample_count = current_template->segment_count;
+        if (current_index == (unsigned int)(sample_count - 1)) {
             v85 = current_template->primary_samples[current_index].center_x;
         } else {
             v85 = out_angle / current_template->secondary_samples[current_index].delta_length
@@ -97,7 +96,7 @@ int cRPathFollowGoldy::Traverse(
                     - current_template->primary_samples[current_index].center_x)
                 + current_template->primary_samples[current_index].center_x;
         }
-        if (current_index == (unsigned int)terminal_index) {
+        if (current_index == (unsigned int)(sample_count - 1)) {
             v79 = current_template->primary_samples[current_index].lateral_scale;
         } else {
             v79 = out_angle / current_template->secondary_samples[current_index].delta_length
@@ -105,7 +104,7 @@ int cRPathFollowGoldy::Traverse(
                     - current_template->primary_samples[current_index].lateral_scale)
                 + current_template->primary_samples[current_index].lateral_scale;
         }
-        if (current_index == (unsigned int)terminal_index) {
+        if (current_index == (unsigned int)(sample_count - 1)) {
             arg1 = current_template->primary_samples[current_index].special_scalar;
         } else {
             arg1 = out_angle / current_template->secondary_samples[current_index].delta_length
@@ -160,7 +159,7 @@ int cRPathFollowGoldy::Traverse(
             v82 = path_x * v79 + anchor->position.x + sample->transform.position.x;
             v83 = path_y * v79 + anchor->position.y + sample->transform.position.y;
             v84 = path_z + anchor->position.z + sample->transform.position.z;
-            if (current_index == (unsigned int)terminal_index) {
+            if (current_index == (unsigned int)(sample_count - 1)) {
                 transform.Identity();
             } else {
                 v95 = sample->transform;
@@ -299,14 +298,8 @@ terminal_path:
             forward_offset.x = carry * terminal[-1].transform.basis_forward.x;
             forward_offset.y = carry * terminal[-1].transform.basis_forward.y;
             forward_offset.z = carry * terminal[-1].transform.basis_forward.z;
-            Vec3 base_position;
-            base_position.x = anchor->x + terminal[-1].transform.position.x;
-            base_position.y = terminal[-1].transform.position.y + anchor->y;
-            base_position.z = terminal[-1].transform.position.z + anchor->z;
-            Vec3 launch_position;
-            launch_position.x = base_position.x + forward_offset.x;
-            launch_position.y = base_position.y + forward_offset.y;
-            launch_position.z = base_position.z + forward_offset.z;
+            Vec3 launch_position =
+                (*anchor + terminal[-1].transform.position) + forward_offset;
             out_position = launch_position;
             out_position.x = old_x;
             player->cutscene_pitch_cycle_step =

@@ -201,3 +201,13 @@ These receipts bound the tested forms and do not establish source exhaustion.
 ## 2026-09-05 additional coupled source controls
 
 Nine separate Y/Z calculation-step combinations (RNG conversion, range product, normalization, and player-velocity addition) are all neutral at 97.61%, prefix 79, with 32 clean references.
+
+## 2026-09-07 scalar-vector input controls
+
+`scalar-vector-operation-inputs-20260907.json` compares const scalar value
+and reference inputs, plus free multiplication with a vector reference and
+either scalar form. Each overlay preserves the component result body, vector
+layout, and all out-of-line call contracts. All four forms are byte-neutral
+in this caller. The five-function batch covers Golb traversal, slug explosion,
+S-bend, and both exact fringe builders; no shared-header change is retained.
+The recurring x87 operand choices remain open.

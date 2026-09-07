@@ -73,3 +73,13 @@ Terminal-borrow probes compare the one-past sample owner with a last-sample poin
 Two initial position-borrow probes accidentally collided with the existing `terminal_position` result variable. Record 29 has a digest-bound invalid-plan audit; both are replayed with `borrowed_terminal_position` in the corrected recipe. They compile identically at 98.82%, prefix 96, seven clean references. These compile errors are not negative source evidence. The baseline remains 99.29%, with the terminal LEA/x87 ordering and ordinary right-offset Y product unresolved.
 
 The receipts bound these hypotheses only. No new exact match or unsupported ownership/return contract was inferred.
+
+## 2026-09-07 scalar-vector input controls
+
+`scalar-vector-operation-inputs-20260907.json` compares const scalar value
+and reference inputs, plus free multiplication with a vector reference and
+either scalar form. Each overlay preserves the component result body, vector
+layout, and all out-of-line call contracts. All four forms are byte-neutral
+in this caller. The five-function batch covers Golb traversal, slug explosion,
+S-bend, and both exact fringe builders; no shared-header change is retained.
+The recurring x87 operand choices remain open.

@@ -390,3 +390,13 @@ into the owning cRPath method, with explicit blocks or flat local scopes.
 All are neutral at 91.10%, 578/579 instructions, prefix 443, and 39 clean
 references. The scratch-only helper boundary is not responsible for this
 measured residual. No source change is retained.
+
+## 2026-09-07 scalar-vector input controls
+
+`scalar-vector-operation-inputs-20260907.json` compares const scalar value
+and reference inputs, plus free multiplication with a vector reference and
+either scalar form. Each overlay preserves the component result body, vector
+layout, and all out-of-line call contracts. All four forms are byte-neutral
+in this caller. The five-function batch covers Golb traversal, slug explosion,
+S-bend, and both exact fringe builders; no shared-header change is retained.
+The recurring x87 operand choices remain open.

@@ -46,3 +46,25 @@ highest 84.28% exit-branch form also loses two audited float-constant
 references; no reference rule is changed. Scope and pointer-spelling changes
 do not repair the merged-return frontier. These are bounds on the tested
 source forms, not evidence of exhaustion.
+
+## 2026-09-07 live sample count and terminal vector composition
+
+Keeping the sample count live and deriving its last index at each comparison
+recovers the native count-to-final-index register relationship. The terminal
+launch position is now the complete vector expression
+`(anchor + terminal.position) + forward_offset`, preserving the two additions
+and the caller's final X restoration. These are the same source relationships
+independently recovered in the Golb traversal.
+
+Together they improve **77.05% to 78.30%**, with **712/726 instructions**,
+**prefix 145** (previously 122), and all **65 references clean**. No frame,
+layout, ABI, or shared arithmetic implementation changes.
+
+`coupled-sample-count-and-vector-results-20260907.json` records 15 forms on
+the former canonical body and the earlier vector reconstruction. A separate
+nonlinear output scalar does not improve the retained combination. The vector
+seed with the live count and complete terminal sum reaches 86.79%, prefix 194,
+and 65 clean references, but still has only 705/726 instructions and is not
+promoted. Its full diff isolates a large deficit in merged side-exit/clamp
+returns, alongside nonlinear input/output and normal-bank reload lifetimes.
+This remains an active source hypothesis rather than an exact match.

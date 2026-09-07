@@ -261,3 +261,13 @@ join. The strict comparisons retain the current NaN behavior. None improves
 89.13%; the best is 84.92%, 91/88 instructions, prefix 26, with 19 clean and
 one unaudited reference. No helper or source change is retained. The duplicated
 playback tail remains unresolved.
+
+## 2026-09-07 family dispatch and playback gates
+
+`sound-family-and-playback-gates-20260907.json` records 18 combinations of
+integer flag-family switches, a sound-validity switch, and independent strict
+volume clamps. RNG calls, sound families, NaN propagation, and the direct and
+attenuated playback paths are preserved. All forms reproduce the same
+89.13%, 96/88 instructions, prefix 26, 19 clean references and two unaudited
+references in the duplicate tail. No source is retained. The earlier projectile
+state-dispatch recovery does not transfer through these audio gates.
