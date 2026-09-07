@@ -400,3 +400,13 @@ layout, and all out-of-line call contracts. All four forms are byte-neutral
 in this caller. The five-function batch covers Golb traversal, slug explosion,
 S-bend, and both exact fringe builders; no shared-header change is retained.
 The recurring x87 operand choices remain open.
+
+## 2026-09-07 coupled face-owner replay
+
+The five branch-local face-owner forms had been measured before the terminal
+vector expression was recovered. Replaying them with the current exact
+terminal region gives 69.81-77.82%, versus 91.10%, with all 39 references clean.
+Pointer and reference forms agree; moving the flat index into the winding
+branches gives 76.00% and adds instructions. This tests the relevant recovered
+terminal/face lifetime interaction without changing shared operators, field
+layouts, or the native per-winding texture parameters. No source is retained.

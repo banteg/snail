@@ -106,3 +106,23 @@ improvement is not counted as an exact match.
 ## 2026-09-07 vector addition result controls
 
 The complete shared-header diagnostic compares unchanged vector `+=` arithmetic with reference, void, and value results. Reference and void are neutral at 99.50%, 695/694 instructions, prefix 417, and 71 clean references. A value result regresses to 99.06% and prefix 53. The exact intro-logo control remains exact under all three forms. No shared return contract or source change is inferred from the experiment.
+
+## 2026-09-07 complete state handlers and shared hit operations
+
+Eleven layouts enumerate the actual inactive, pending-burst, and burst states
+or move the empty default handler around the active case. All preserve the
+99.50% canonical result, 695/694 instructions, prefix 417, and 71 clean
+references. The initial generator incorrectly included the existing default
+label in the extracted active body; its eleven compile failures have a
+hash-bound invalid-plan audit. Every corrected layout compiles. Those failed
+inputs are not evidence about the original state machine.
+
+Eighteen coupled guards and hit-operation helpers test the duplicated
+burst/side/score transition with scalar values, scalar references, or vector
+references. All regress (best 99.21%). Fifteen reflected-velocity forms then
+compare direct or named constructors, component results, a dead local normal,
+and reuse of the normalized speed shared by homing and deflection at native
+stack offset +0x10. All regress (best 99.21%); constructor-assignment forms also
+add instructions. No helper, arithmetic rewrite, or lifetime change is retained.
+The native compare-memory instruction and deflection Z-product operand order
+remain unresolved.
