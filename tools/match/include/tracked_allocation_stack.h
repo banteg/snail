@@ -32,5 +32,12 @@ public:
 };
 
 extern TrackedAllocationStack g_tracked_allocation_stack;
+extern int g_tracked_allocation_total_bytes;
+
+void* allocate_tracked_memory(int size, char* name);
+void free_tracked_memory(void* pointer);
+void initialize_tracked_allocation_depth();
+void set_tracked_allocation_mark();
+void free_tracked_allocations_to_mark();
 
 #endif

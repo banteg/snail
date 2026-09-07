@@ -1,8 +1,7 @@
 // push_tracked_allocation @ 0x431af0 (thiscall, ret 0xc)
 
 #include "tracked_allocation_stack.h"
-
-void report_errorf(char* format, ...);
+#include "rdebug.h"
 
 void TrackedAllocationStack::push_tracked_allocation(char* label, void* pointer, int size)
 {

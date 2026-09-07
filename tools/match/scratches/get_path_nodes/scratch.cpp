@@ -1,7 +1,7 @@
 // get_path_nodes @ 0x41b0a0 (cRPath::GetNodes, thiscall)
 #include "track_attachment.h"
 
-void* allocate_tracked_memory(int size, char* name);
+#include "tracked_allocation_stack.h"
 
 void cRPath::GetNodes()
 {

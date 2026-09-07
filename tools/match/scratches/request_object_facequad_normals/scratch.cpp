@@ -2,7 +2,7 @@
 
 #include "object_render_types.h"
 
-void* allocate_tracked_memory(int size, char* name);
+#include "tracked_allocation_stack.h"
 
 Vector3* cRObject::RequestFaceQuadNormals()
 {

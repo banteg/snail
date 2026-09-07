@@ -3,7 +3,7 @@
 #include "object_render_types.h"
 #include "sprite.h"
 
-void* allocate_tracked_memory(int size, char* name);
+#include "tracked_allocation_stack.h"
 
 void cRObject::RequestColours()
 {

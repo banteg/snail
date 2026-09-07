@@ -96,6 +96,9 @@ link feasibility only and does not receive executable-reconstruction credit.
 The subsequent [math storage pass](rmath-storage-and-runtime-20260908.md)
 adds coherent table definitions and an executable integration harness with
 positive and negative runtime controls.
+The [allocator and mesh pass](allocator-mesh-and-path-runtime-20260908.md)
+closes the reporting ABI, exercises mesh storage, and runs recovered path-node
+allocation through `CalcLengthZ` and cleanup in a 31-function linked group.
 
 1. Create `scratches/<function>/` with:
    - `scratch.cpp` — candidate implementation; use a class member function to

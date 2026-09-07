@@ -2,9 +2,8 @@
 
 #include "object_render_types.h"
 
-void* allocate_tracked_memory(int size, char* name);
-void free_tracked_memory(void* ptr);
-int report_errorf(char* format, ...);
+#include "tracked_allocation_stack.h"
+#include "rdebug.h"
 
 void cRObject::RequestFaceQuads(int requested_count)
 {

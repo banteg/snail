@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Link and verify the recovered CalcLengthZ dependency group (not a game build)."""
+"""Link and exercise recovered dependency groups (not a game build)."""
 
 import argparse
 import hashlib
@@ -21,7 +21,11 @@ from snail.match import (
     load_scratch_config,
     parse_coff_object,
 )
-from snail.symbols import REPO_ROOT
+from snail.symbols import (
+    DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+    REPO_ROOT,
+    load_function_symbol_manifest,
+)
 
 PATH_MATH_FUNCTIONS = (
     "calc_path_length_z",
@@ -44,6 +48,65 @@ GROUPS = {
         "normalize_vector_from_source",
         "set_matrix_identity",
     ),
+    "allocator": (
+        "get_path_nodes",
+        "allocate_tracked_memory",
+        "free_tracked_memory",
+        "push_tracked_allocation",
+        "pop_tracked_allocation",
+        "get_tracked_allocation_size",
+        "initialize_tracked_allocation_depth",
+        "set_tracked_allocation_mark",
+        "free_tracked_allocations_to_mark",
+        "report_errorf",
+        "debug_report_stub",
+    ),
+}
+GROUPS["mesh-storage"] = GROUPS["allocator"] + (
+    "initialize_object_constructor_thunk",
+    "initialize_object",
+    "request_object_vertices",
+    "request_object_vertex_colours",
+    "request_object_vertices_copy",
+    "copy_object_vertices",
+    "request_object_facequads",
+    "request_object_facequad_normals",
+    "request_object_texture_groups",
+    "request_object_edges",
+)
+GROUPS["path-nodes"] = (
+    GROUPS["mesh-storage"]
+    + PATH_MATH_FUNCTIONS
+    + (
+        "set_matrix_identity",
+        "initialize_bod_base",
+        "initialize_path_template_record_pair",
+        "noop_this_constructor",
+        "store_color4f",
+        "noop_runtime_ai",
+    )
+)
+RUN_CONFIG = {
+    "rmath": (
+        23,
+        "!corrupt-table",
+        "Selected math operations; CalcLengthZ is linked but not exercised",
+    ),
+    "allocator": (
+        20,
+        "!corrupt-payload",
+        "Tracked allocator on valid LIFO inputs; GetNodes is linked but not exercised",
+    ),
+    "mesh-storage": (
+        21,
+        "!corrupt-copy",
+        "cRObject construction and mesh allocations; no rendering or path lifecycle",
+    ),
+    "path-nodes": (
+        15,
+        "!corrupt-span",
+        "GetNodes through CalcLengthZ on a constructed two-sample fixture; no template generator or rendering",
+    ),
 }
 
 
@@ -57,7 +120,7 @@ def main() -> None:
     parser.add_argument(
         "--run",
         action="store_true",
-        help="Build the rmath integration executable and run positive/negative controls",
+        help="Build an integration executable and run positive/negative controls",
     )
     parser.add_argument(
         "--runtime-library",
@@ -69,8 +132,8 @@ def main() -> None:
         "--out", type=Path, default=REPO_ROOT / "artifacts/match/path-math"
     )
     args = parser.parse_args()
-    if args.run and args.group != "rmath":
-        parser.error("--run requires --group rmath")
+    if args.run and args.group not in RUN_CONFIG:
+        parser.error("--run requires a group with a runtime harness")
     runtime = args.runtime_library.resolve(strict=True)
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -113,9 +176,15 @@ def main() -> None:
         )
 
     support = []
-    support_names = ["rmath_storage"] if args.group == "rmath" else []
+    storage_groups = {
+        "rmath": ["rmath"],
+        "allocator": ["allocator"],
+        "mesh-storage": ["allocator"],
+        "path-nodes": ["allocator", "path-nodes"],
+    }
+    support_names = [f"{group}_storage" for group in storage_groups.get(args.group, [])]
     if args.run:
-        support_names.append("rmath_smoke")
+        support_names.append(f"{args.group}_smoke")
     for name in support_names:
         source = DEFAULT_MATCH_ROOT / f"link/{name}.cpp"
         obj = out / f"{name}.obj"
@@ -156,7 +225,7 @@ def main() -> None:
     if not runner:
         raise FileNotFoundError("Wibo is required, as for the regular matcher")
 
-    dll = out / ("rmath-smoke.exe" if args.run else f"{args.group}.dll")
+    dll = out / (f"{args.group}-smoke.exe" if args.run else f"{args.group}.dll")
     map_path = dll.with_suffix(".map")
     dll.unlink(missing_ok=True)
     map_path.unlink(missing_ok=True)
@@ -199,6 +268,33 @@ def main() -> None:
     pe = pefile.PE(str(dll))
     mapped = pe.get_memory_mapped_image()
     image_base = pe.OPTIONAL_HEADER.ImageBase
+    data_tables = []
+    if args.group == "path-nodes":
+        manifest = load_function_symbol_manifest(DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH)
+        native = pefile.PE(str(REPO_ROOT / manifest.primary_target))
+        for table, native_address in [
+            ("?g_bod_base_vtable@@3PAXA", 0x4974FC),
+            ("?g_path_template_record_vtable@@3PAXA", 0x497334),
+        ]:
+            native_target = struct.unpack(
+                "<I",
+                native.get_data(native_address - native.OPTIONAL_HEADER.ImageBase, 4),
+            )[0]
+            if native_target != 0x407B50:
+                raise ValueError(f"native callback table changed: {table}")
+            address = symbols[table]
+            target = struct.unpack_from("<I", mapped, address - image_base)[0]
+            if target != symbols["?noop_runtime_ai@@YAXXZ"]:
+                raise ValueError(f"wrong recovered callback table entry: {table}")
+            data_tables.append(
+                {
+                    "symbol": table,
+                    "native_address": native_address,
+                    "native_target": native_target,
+                    "linked_address": address,
+                    "linked_target": target,
+                }
+            )
     for record, function in zip(records, functions, strict=True):
         address = symbols[function.name]
         offset = address - image_base
@@ -279,9 +375,10 @@ def main() -> None:
     ]
     runs = []
     if args.run:
+        expected_checks, negative_argument, _ = RUN_CONFIG[args.group]
         for label, extra, expected in [
             ("positive", [], 0),
-            ("negative", ["!corrupt-table"], 1),
+            ("negative", [negative_argument], 1),
         ]:
             run = subprocess.run(
                 [runner, str(dll), *extra],
@@ -291,11 +388,13 @@ def main() -> None:
                 check=False,
             )
             (out / f"{label}.log").write_text(run.stdout + run.stderr)
-            summary = re.search(r"rmath checks=(\d+) failures=(\d+)", run.stdout)
+            summary = re.search(
+                rf"{args.group} checks=(\d+) failures=(\d+)", run.stdout
+            )
             if (
                 run.returncode != expected
                 or not summary
-                or int(summary[1]) != 23
+                or int(summary[1]) != expected_checks
                 or bool(int(summary[2])) != bool(expected)
             ):
                 raise ValueError(
@@ -317,7 +416,7 @@ def main() -> None:
         "support": support,
         "entry_point": pe.OPTIONAL_HEADER.AddressOfEntryPoint,
         "runtime_execution_tested": bool(args.run),
-        "runtime_scope": "Selected math operations; CalcLengthZ is linked but not exercised",
+        "runtime_scope": RUN_CONFIG[args.group][2] if args.run else None,
         "runs": runs,
         "public_linked_credit": False,
         "linker_sha256": sha(linker),
@@ -326,6 +425,7 @@ def main() -> None:
         "dll_sha256": sha(dll),
         "imports": imports,
         "functions": records,
+        "verified_callback_tables": data_tables,
     }
     receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
     print(f"Linked and verified {len(records)} recovered functions: {receipt_path}")

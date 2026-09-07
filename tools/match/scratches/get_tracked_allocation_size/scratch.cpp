@@ -1,8 +1,7 @@
 // get_tracked_allocation_size @ 0x431ab0 (thiscall, ret 0x4)
 
 #include "tracked_allocation_stack.h"
-
-int report_errorf(char* format, ...);
+#include "rdebug.h"
 
 int TrackedAllocationStack::get_tracked_allocation_size(void* pointer)
 {

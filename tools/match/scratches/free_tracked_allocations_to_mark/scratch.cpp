@@ -2,8 +2,6 @@
 
 #include "tracked_allocation_stack.h"
 
-void free_tracked_memory(void* pointer);
-
 void free_tracked_allocations_to_mark()
 {
     int depth = g_tracked_allocation_stack.depth;

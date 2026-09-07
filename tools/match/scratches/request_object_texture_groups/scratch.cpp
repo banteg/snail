@@ -2,8 +2,8 @@
 
 #include "object_render_types.h"
 
-void* allocate_tracked_memory(int size, char* name);
-int report_errorf(char* format, ...);
+#include "tracked_allocation_stack.h"
+#include "rdebug.h"
 
 void cRObject::RequestFaceQuadTextureGroups(int requested_count)
 {
