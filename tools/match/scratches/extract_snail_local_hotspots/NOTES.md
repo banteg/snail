@@ -36,3 +36,7 @@ Three whole indexed-hotspot loop variants pair scalar accumulation, vector +=, a
 ## 2026-09-05 additional source-shape checks
 
 Five diagnostic vector copy/assignment definitions are neutral at 91.55%. The shared header remains unchanged and the unexplained native self-copy remains open.
+
+## 2026-09-07 vector addition result controls
+
+The diagnostic shared-header overlays compare reference, value, and void results from unchanged vector `+=` arithmetic. Typed-cursor accumulation gives 68/74 instructions at 78.87%; direct vector access and the corrected block-scoped borrow give 75/74 at 73.83%. The first unscoped borrow crossed the existing error label and did not compile; its three invalid variants are explicitly audited, then rerun with the declaration inside a block. They are not negative matching evidence. The native six-instruction copy is not recovered by changing this inline return contract, and no header or canonical source is changed.

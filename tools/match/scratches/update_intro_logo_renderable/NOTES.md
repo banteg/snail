@@ -63,3 +63,7 @@ The primary matcher method is `cRLogoLetter::AI()`, symbol
 `?AI@cRLogoLetter@@QAEXXZ`; `update_intro_logo_renderable` remains the stable
 harness name. The authored spelling is codegen-neutral at 100.00%, 42/42,
 prefix 42/42, with all seven references clean.
+
+## 2026-09-07 vector addition result control
+
+All three complete shared-header overlays (reference, value, or void result from unchanged `+=` arithmetic) preserve this exact 42/42-instruction body and all seven references. The control constrains the paired hotspot/Golb experiments; it does not prove a unique original inline return type. No canonical header or source is changed.

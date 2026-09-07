@@ -1,4 +1,6 @@
-// set_color_rgba @ 0x44db60 (thiscall, ret 0x10) — tColour::Set(float, float, float, float)
+// set_color_rgba @ 0x44db60 (thiscall, ret 0x10)
+// Legacy explicit-receiver transcription of tColour(float, float, float, float).
+// See authored-abi-control for the equally exact real constructor definition.
 
 #include "sprite.h"
 

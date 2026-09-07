@@ -101,3 +101,7 @@ addition orders, and the right-offset Y multiplication. The terminal and
 right-offset differences also occur in Golb traversal. This is a substantial
 partial recovery, not a new exact match; no shared header, ABI, compiler
 profile, reference rule, or normalization changes.
+
+## 2026-09-07 output lifetime controls after sample recovery
+
+Seventeen follow-ups test late shared or branch-local output borrows at four nonlinear and two ordinary publication boundaries, plus a shared main-branch reference. Moving the output pointer to a late phase regresses to 85.40-85.95%, even at the native 726-instruction count; some alignments also lose reference audit coverage. A shared reference is neutral at 97.25%. These results support retaining the early main-branch output borrow after the primary/secondary sample recovery; no further source is promoted.

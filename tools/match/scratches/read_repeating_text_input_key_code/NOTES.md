@@ -210,3 +210,7 @@ Six current-input controls revisit the authored RstrASC call order using an expl
 Eighteen coupled forms then combine repeat-first, named-fold, or expression-assigned folding with character declaration order, signedness, and constant/chain publication. These produce six code identities and no improvement. Query evaluation order is preserved; duplicated stores are limited to constants. All 24 variants retain 74 clean references. Baseline remains 99.32%, 440/440, prefix 408. These are source-form observations, not evidence of compiler-only exhaustion.
 
 The receipts bound these hypotheses only. No new exact match or unsupported ownership/return contract was inferred.
+
+## 2026-09-07 folded-character comparison inputs
+
+Twelve inline comparison forms take already-folded characters as values or const references, reverse the comparison, and use equality or negated inequality. All produce the same 98.98% result, 439/440 instructions, prefix 412, and 74 clean references. They restore neither the native delayed byte spill nor its extra `mov dl, al`. The 99.32% canonical source is unchanged.

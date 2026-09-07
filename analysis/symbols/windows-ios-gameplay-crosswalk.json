@@ -4143,11 +4143,11 @@
     {
       "address": "0x44db60",
       "windows_name": "set_color_rgba",
-      "android_symbol": "tColour::Set(float, float, float, float)",
+      "android_symbol": "tColour::tColour(float, float, float, float)",
       "source_object": "RMaths.o",
       "confidence": "high",
-      "notes": "Both bodies store the four float lanes at +0/+4/+8/+12. Windows additionally establishes eax as the receiver before the stores; the pointer-returning tColour method remains exact at 10/10 instructions and is consumed directly by many callsites.",
-      "ios_symbol": "tColour::Set(float, float, float, float)",
+      "notes": "Corrected from the historical Set mapping using both ports of cRBorder::Draw: the shadow temporary calls this constructor, while the later default-constructed glow calls Set. cRStarManager::Init independently constructs the same 0.8/0.8/1.0/0.4 temporary. A real VC6 constructor matches the Windows receiver return and all 10 instructions; the old pointer-returning Set spelling is a legacy ABI transcription.",
+      "ios_symbol": "tColour::tColour(float, float, float, float)",
       "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {
@@ -4171,11 +4171,11 @@
     {
       "address": "0x44dbb0",
       "windows_name": "store_color4f",
-      "android_symbol": "tColour::tColour(float, float, float, float)",
+      "android_symbol": "tColour::Set(float, float, float, float)",
       "source_object": "RMaths.o",
       "confidence": "high",
-      "notes": "The mobile constructor is the semantic counterpart: both implementations write RGBA at +0/+4/+8/+12. It is not the exact Windows VC6 source shape, because spelling the Windows body as a constructor synthesizes an extra `mov eax, ecx` and falls from 9/9 to 0/9 prefix instructions. The honest Windows transcription remains a void write until an authored non-constructor name is recovered.",
-      "ios_symbol": "tColour::tColour(float, float, float, float)",
+      "notes": "Corrected from the historical constructor mapping using the delayed-widget glow in Android and iOS cRBorder::Draw. Both ports default-construct the glow colour, then call Set with white RGB and 1 minus progress, matching Windows calls to 0x44db50 and 0x44dbb0. Real void Set source matches all nine Windows instructions. The mobile constructor and setter have identical stores; their caller roles distinguish them.",
+      "ios_symbol": "tColour::Set(float, float, float, float)",
       "ios_symbol_evidence": "exact-demangled-symbol"
     },
     {

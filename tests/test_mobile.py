@@ -1213,8 +1213,8 @@ def test_mobile_tcolour_methods_recover_authored_surface() -> None:
     expected_methods = (
         (
             "set_color_rgba",
-            "Set",
-            "tColour::Set(float, float, float, float)",
+            "Set",  # historical explicit-receiver constructor transcription
+            "tColour::tColour(float, float, float, float)",
             "tColour_SetRGBA",
             "?Set@tColour@@QAEPAU1@MMMM@Z",
         ),
@@ -1339,8 +1339,7 @@ def test_mobile_tcolour_methods_recover_authored_surface() -> None:
     store_source = (
         repo_root / "tools/match/scratches/store_color4f/scratch.cpp"
     ).read_text(encoding="utf-8")
-    assert store_entry["android_symbol"].startswith("tColour::tColour(")
-    assert "not the exact Windows VC6 source shape" in store_entry["notes"]
+    assert store_entry["android_symbol"] == "tColour::Set(float, float, float, float)"
     assert "void tColour::store_color4f(" in store_source
     assert "tColour::tColour(" not in store_source
 

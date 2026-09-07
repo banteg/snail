@@ -102,3 +102,7 @@ reflection-result lifetimes. The remaining normalized diff is precisely:
 The follow-up forms do not resolve either difference. No ABI, shared header,
 compiler profile, float comparison, or field meaning changes, and this partial
 improvement is not counted as an exact match.
+
+## 2026-09-07 vector addition result controls
+
+The complete shared-header diagnostic compares unchanged vector `+=` arithmetic with reference, void, and value results. Reference and void are neutral at 99.50%, 695/694 instructions, prefix 417, and 71 clean references. A value result regresses to 99.06% and prefix 53. The exact intro-logo control remains exact under all three forms. No shared return contract or source change is inferred from the experiment.

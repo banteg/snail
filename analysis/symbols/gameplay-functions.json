@@ -5626,7 +5626,7 @@
       "aliases": [
         "tColour_SetRGBA"
       ],
-      "description": "Exact Windows `tColour::Set(float, float, float, float)` role: stores the four RGBA floats at `+0/+4/+8/+12` and returns the same destination pointer. Android preserves the class, method name, field order, and four stores."
+      "description": "Exact Windows tColour(float, float, float, float) constructor: stores RGBA at +0/+4/+8/+12 and establishes the receiver return. The shadow-colour and star-initialization callers in both mobile ports distinguish it from void Set at 0x44dbb0. Stable descriptive and historical Set aliases retain existing scratch compatibility."
     },
     {
       "address": "0x44db80",
@@ -5647,7 +5647,7 @@
     {
       "address": "0x44dbb0",
       "name": "store_color4f",
-      "description": "Exact Windows void four-float colour write at `+0/+4/+8/+12`. The mobile `tColour(float, float, float, float)` constructor is its semantic counterpart, but not its exact VC6 source shape: the constructor spelling synthesizes an extra `mov eax, ecx` and loses the native 9/9 instruction stream."
+      "description": "Exact void tColour::Set(float, float, float, float), with nine Windows instructions. Both mobile Draw routines use this setter after default-constructing the delayed-widget glow colour; the adjacent 0x44db60 helper is the four-argument constructor."
     },
     {
       "address": "0x44dbd0",

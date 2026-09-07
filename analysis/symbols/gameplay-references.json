@@ -5190,6 +5190,7 @@
         "??0tQuaternian@@QAE@XZ",
         "??0AxisAngle@@QAE@XZ",
         "??0Quaternion@@QAE@XZ",
+        "??0tColour@@QAE@XZ",
         "sub_44db50"
       ],
       "description": "Three-byte generic identity thunk (`eax = ecx; ret`) shared by folded trivial default constructors; its cross-tool ABI is `void* __thiscall(void* self)` rather than any one aliased owner type."
@@ -5199,9 +5200,10 @@
       "name": "set_color_rgba",
       "kind": "function",
       "aliases": [
-        "?Set@tColour@@QAEPAU1@MMMM@Z"
+        "?Set@tColour@@QAEPAU1@MMMM@Z",
+        "??0tColour@@QAE@MMMM@Z"
       ],
-      "description": "Exact Windows pointer-returning tColour::Set(float, float, float, float) entry."
+      "description": "Exact Windows tColour(float, float, float, float) constructor, proved by its receiver return and the matching shadow-colour and star-initialization callers in both mobile ports. The pointer-returning Set alias preserves the historical scratch transcription."
     },
     {
       "address": "0x44db80",
@@ -5220,6 +5222,15 @@
         "?Grey@tColour@@QAEXM@Z"
       ],
       "description": "Exact Windows void tColour::Grey(float) entry."
+    },
+    {
+      "address": "0x44dbb0",
+      "name": "store_color4f",
+      "kind": "function",
+      "aliases": [
+        "?Set@tColour@@QAEXMMMM@Z"
+      ],
+      "description": "Exact Windows void tColour::Set(float, float, float, float), identified by the delayed-widget glow caller shared with both mobile ports."
     },
     {
       "address": "0x44dbd0",

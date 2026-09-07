@@ -23943,12 +23943,12 @@
       "windows_name": "set_color_rgba",
       "windows_size": 32,
       "status": "verified",
-      "android_symbol": "tColour::Set(float, float, float, float)",
-      "ios_symbol": "tColour::Set(float, float, float, float)",
+      "android_symbol": "tColour::tColour(float, float, float, float)",
+      "ios_symbol": "tColour::tColour(float, float, float, float)",
       "ios_symbol_evidence": "exact-demangled-symbol",
       "source_object": "RMaths.o",
       "confidence": "high",
-      "android_body_count": 1,
+      "android_body_count": 2,
       "ios_body_count": 1
     },
     {
@@ -24011,12 +24011,12 @@
       "windows_name": "store_color4f",
       "windows_size": 32,
       "status": "verified",
-      "android_symbol": "tColour::tColour(float, float, float, float)",
-      "ios_symbol": "tColour::tColour(float, float, float, float)",
+      "android_symbol": "tColour::Set(float, float, float, float)",
+      "ios_symbol": "tColour::Set(float, float, float, float)",
       "ios_symbol_evidence": "exact-demangled-symbol",
       "source_object": "RMaths.o",
       "confidence": "high",
-      "android_body_count": 2,
+      "android_body_count": 1,
       "ios_body_count": 1
     },
     {
@@ -24850,6 +24850,12 @@
       "status": "unverified",
       "android_candidates": [
         {
+          "symbol": "cRPath::BuildLoopTheLoop(float, int, bool, char*, char*)",
+          "score": 0.6462,
+          "name_score": 0.45,
+          "size_score": 0.9405
+        },
+        {
           "symbol": "cRPath::BuildTwisterA(float, int, bool, char*, char*)",
           "score": 0.6213,
           "name_score": 0.45,
@@ -24862,22 +24868,16 @@
           "size_score": 0.6453
         },
         {
+          "symbol": "cRPath::BuildLoopTheLoopW(float, int, bool, char*, char*)",
+          "score": 0.6115,
+          "name_score": 0.36,
+          "size_score": 0.9888
+        },
+        {
           "symbol": "cRIntro::Init()",
           "score": 0.5989,
           "name_score": 0.3692,
           "size_score": 0.9433
-        },
-        {
-          "symbol": "cRIntro::AI()",
-          "score": 0.5931,
-          "name_score": 0.3692,
-          "size_score": 0.9289
-        },
-        {
-          "symbol": "cRPath::BuildFringeSuperTramp(char*)",
-          "score": 0.5821,
-          "name_score": 0.3243,
-          "size_score": 0.9688
         }
       ],
       "ios_candidates": [
@@ -24964,6 +24964,12 @@
           "size_score": 0.3122
         },
         {
+          "symbol": "cRObject::Load(char*)",
+          "score": 0.4814,
+          "name_score": 0.45,
+          "size_score": 0.5285
+        },
+        {
           "symbol": "SHA1Transform(unsigned long*, unsigned char*)",
           "score": 0.4772,
           "name_score": 0.1778,
@@ -24974,12 +24980,6 @@
           "score": 0.4503,
           "name_score": 0.225,
           "size_score": 0.7882
-        },
-        {
-          "symbol": "cRBorder::Draw()",
-          "score": 0.4488,
-          "name_score": 0.45,
-          "size_score": 0.447
         }
       ]
     },
@@ -25008,13 +25008,13 @@
           "size_score": null
         },
         {
-          "symbol": "cRDirectX::Export(cRObject*, char*)",
+          "symbol": "cRBorder::XRight()",
           "score": 0.6,
           "name_score": 0.6,
           "size_score": null
         },
         {
-          "symbol": "cRDirectX::Init()",
+          "symbol": "cRDirectX::Export(cRObject*, char*)",
           "score": 0.6,
           "name_score": 0.6,
           "size_score": null

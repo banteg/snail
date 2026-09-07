@@ -1,9 +1,19 @@
 # store_color4f @ 0x44dbb0
 
-Exact Windows four-float `tColour` write at `+0/+4/+8/+12`, retained at 9/9
-instructions as a void member. Android and iOS preserve a semantically
-equivalent four-float constructor, but VC6 source trials reject that spelling
-for Windows: a real constructor inserts an extra `mov eax, ecx`, shifts the
-stores to an `eax` receiver, and falls to a 0/9 prefix. The value left in `edx`
-by the native body is incidental, and the descriptive member remains honest
-until an authored non-constructor name is recovered.
+Exact 9/9-instruction void `tColour::Set(float, float, float, float)`.
+The historical constructor mapping was wrong: the mobile constructor and
+setter perform the same four RGBA stores, but the delayed-widget glow in
+Android and iOS `cRBorder::Draw` specifically calls `Set` after default
+construction. Windows makes the corresponding call at `0x4018bb`.
+
+The real authored setter in `authored-abi-control/scratch.cpp` is independently
+exact. Run it with:
+
+```sh
+uv run snail match scratch tools/match/scratches/store_color4f/authored-abi-control --full
+```
+
+The four-float constructor is the neighboring `0x44db60` body: its additional
+receiver return is expected VC6 constructor code, not evidence against the
+constructor mapping. See `../set_color_rgba/NOTES.md` for the matched caller
+roles and the shared header's temporary compatibility naming.

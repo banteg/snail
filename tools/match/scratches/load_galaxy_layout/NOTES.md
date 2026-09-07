@@ -398,3 +398,7 @@ and all 42 clean references. The five-function batch also includes
 exact formatted-output controls. C++-to-C symbol spelling may change the raw
 COFF digest while leaving normalized instructions and audited references
 unchanged. No compiler or source declaration change is retained.
+
+## 2026-09-07 coordinate publication types
+
+Seven combinations use the owned float coordinate fields instead of bitwise integer views when publishing route labels, stars, and the origin. All preserve the current 99.14%, 233/233 instructions, prefix 194, and 42 clean references. These typed accesses do not affect the two remaining loop-latch scheduling differences; no neutral source churn is retained.

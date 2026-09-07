@@ -25,15 +25,20 @@ enum {
 // Set/Alpha/Grey/White/Black family with the same RGBA field order.
 struct tColour {
     tColour* noop_this_constructor();
-    tColour* Set(float r, float g, float b, float a); // @ 0x44db60
+    // Legacy explicit-receiver spelling of the four-float constructor. The
+    // mobile Draw and StarManager::Init callers distinguish it from Set below.
+    // Real constructor controls are retained in set_color_rgba; introducing
+    // automatic default construction also requires recovering return buffers
+    // in existing callers, so this compatibility declaration remains for now.
+    tColour* Set(float r, float g, float b, float a); // constructor @ 0x44db60
     void Set(float r, float g, float b); // @ 0x44dbd0
     void Alpha(float alpha); // @ 0x44db80
     void Grey(float intensity); // @ 0x44db90
     void White(); // @ 0x44dc50
     void Black(); // @ 0x44dc60
 
-    // The mobile four-float constructor is the semantic counterpart, but a
-    // VC6 constructor adds a `this` return absent from the Windows body.
+    // Authored void Set(float, float, float, float). This descriptive spelling
+    // avoids colliding with the historical constructor transcription above.
     void store_color4f(float r, float g, float b, float a); // @ 0x44dbb0
 
     float r; // +0x00
