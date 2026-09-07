@@ -12,7 +12,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 **69** non-exact scratch-backed functions hold **29147 fuzzy-gap bytes**. The top 5 hold **31.1%** of that gap; the top 10 hold **45.3%**.
 
-Current-baseline experiments cover **8 functions / 350 gap bytes**; **61 / 28797** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **9 functions / 429 gap bytes**; **60 / 28718** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -63,7 +63,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 43 | register_font_texture_sheet | 120 | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
 | 44 | place_challenge_parcels_on_track | 115 | semantic-complete | analysis,references | historical-only | 0/9 | historical-only,stale-dependencies |
 | 45 | update_frontend_widget_interaction | 112 | semantic-complete | analysis,references | historical-only | 0/14 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 46 | initialize_tip | 80 | semantic-complete | analysis | historical-only | 0/8 | repeated-variants,historical-only,stale-dependencies |
+| 46 | initialize_tip | 80 | semantic-complete | analysis | current-active | 1/9 | repeated-variants,stale-dependencies |
 | 47 | update_track_attachment_follow_state | 76 | semantic-complete | analysis | current-active | 2/24 | repeated-variants,metric-tradeoffs,variant-errors,stale-dependencies |
 | 48 | sample_smtrack_heightmap | 75 | semantic-complete | analysis | historical-only | 0/7 | repeated-variants,historical-only,stale-dependencies |
 | 49 | add_object_edge | 65 | semantic-complete | analysis,references | historical-only | 0/16 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |

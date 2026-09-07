@@ -526,16 +526,20 @@ def test_experiment_audit_command_appends_digest_bound_review(
     )
 
 
+@pytest.mark.parametrize("suffix", ["mutations.json", "source-20260907.json"])
+@pytest.mark.parametrize("scoped", [False, True])
 def test_experiment_spec_check_ignores_historical_and_rejects_stale_active(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
+    suffix: str,
+    scoped: bool,
 ) -> None:
     scratch = tmp_path / "scratches" / "foo"
     scratch.mkdir(parents=True)
     (scratch / "scratch.cpp").write_text("needle\n", encoding="utf-8")
-    historical = scratch / "historical-mutations.json"
-    runnable = scratch / "runnable-mutations.json"
-    stale = scratch / "stale-mutations.json"
+    historical = scratch / f"historical-{suffix}"
+    runnable = scratch / f"runnable-{suffix}"
+    stale = scratch / f"stale-{suffix}"
     _write_mutation_spec(historical, find="retired anchor")
     _write_mutation_spec(runnable, find="needle")
     _write_mutation_spec(stale, find="missing anchor")
@@ -557,6 +561,7 @@ def test_experiment_spec_check_ignores_historical_and_rejects_stale_active(
             str(tmp_path),
             "--check-specs",
             "--json",
+            *(["--scratch", "foo"] if scoped else []),
         ]
     )
 
@@ -572,26 +577,26 @@ def test_experiment_spec_check_ignores_historical_and_rejects_stale_active(
         "stale": 1,
         "errors": [
             (
-                "scratches/foo/stale-mutations.json: mutation site "
-                "'stale-mutations' must match exactly once; found 0 "
+                f"scratches/foo/{stale.name}: mutation site "
+                f"'{stale.stem}' must match exactly once; found 0 "
                 "(set occurrence to select one)"
             )
         ],
         "rows": [
             {
-                "spec": "scratches/foo/runnable-mutations.json",
+                "spec": f"scratches/foo/{runnable.name}",
                 "scratch": "scratches/foo",
                 "sha256": load_mutation_spec(runnable).sha256,
                 "state": "runnable",
                 "error": None,
             },
             {
-                "spec": "scratches/foo/stale-mutations.json",
+                "spec": f"scratches/foo/{stale.name}",
                 "scratch": "scratches/foo",
                 "sha256": load_mutation_spec(stale).sha256,
                 "state": "stale",
                 "error": (
-                    "mutation site 'stale-mutations' must match exactly once; "
+                    f"mutation site '{stale.stem}' must match exactly once; "
                     "found 0 (set occurrence to select one)"
                 ),
             },

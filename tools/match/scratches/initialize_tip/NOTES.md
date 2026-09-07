@@ -187,3 +187,16 @@ promoted; the signed-byte complement and later live reads remain useful leads.
 
 The committed recipes and hash-bound receipts describe the tested forms; they
 do not establish source exhaustion.
+
+## 2026-09-07 recipe discovery and allocator-name repair
+
+The expanded `--check-specs` audit now discovers every scratch-local JSON
+recipe. It exposed `main-call-owner-interactions.json` as an unreceipted,
+stale input: its anchor and six alternatives still used `allocate_border()`
+after the authored allocator was renamed to `GetBorder()`.
+
+Only that method spelling is refreshed. All six variants were replayed and
+recorded against the current source; they reproduce 80.78%, 80.78%, 80.00%,
+79.35%, 68.81% and 61.29%, with 27 clean references apiece. None improves the
+canonical 84.42%, 154/154, prefix-19 result. This fixes the runnable recipe
+without changing or retroactively rewriting the prior experimental evidence.

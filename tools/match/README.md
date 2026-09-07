@@ -247,7 +247,9 @@ Useful analysis helpers:
   `uv run snail match experiments --check --strict --check-specs` for
   repository-wide validation. `--check` rejects malformed ledger records;
   `--strict` also rejects current-baseline evaluation errors. `--check-specs`
-  treats a mutation plan whose exact current digest already appears in that
+  checks every `.json` recipe directly inside each selected scratch directory,
+  regardless of its filename. Keep diagnostic exports in their own subdirectory.
+  It treats a mutation plan whose exact current digest already appears in that
   scratch's ledger as historical, while an unreceipted current digest is an
   active input whose schema and exact `find` anchors must still resolve against
   `scratch.cpp`. Run the combined gate after changing scratch sources or

@@ -114,12 +114,12 @@ def _mutation_spec_paths(
 ) -> list[Path]:
     root = match_root.resolve()
     if not scratches:
-        return sorted(root.glob("scratches/*/*mutations.json"))
+        return sorted(root.glob("scratches/*/*.json"))
     return sorted(
         {
             spec.resolve()
             for log in find_experiment_logs(root, scratches)
-            for spec in log.parent.glob("*mutations.json")
+            for spec in log.parent.glob("*.json")
         }
     )
 
