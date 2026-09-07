@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import hashlib
+import io
 import json
 from dataclasses import replace
 from pathlib import Path
 
 import pytest
 
+from snail import match as matchlib
+from snail import match_export
 from snail.cli import main
 from snail.match import (
     ProbeResult,
@@ -101,6 +104,7 @@ def test_source_probe_compares_one_baseline_and_overlay(
     assert result.ratio_delta == 0.25
     assert result.label == "same-tu"
     assert result.source_sha256 == hashlib.sha256(b"alternate source\n").hexdigest()
+    assert result.baseline_source_text == "baseline source\n"
 
 
 def test_probe_cli_records_the_complete_result(
@@ -167,17 +171,84 @@ def test_probe_cli_records_the_complete_result(
     assert record["source_sha256"] == "probe-sha"
     assert record["dependency_sha256"] == "d" * 64
     assert record["baseline_epoch"] == "e" * 64
+    assert "diagnostic_export" not in payload
+    assert "diagnostic_export" not in record
     assert tracked_source.read_text(encoding="utf-8") == "baseline source\n"
 
 
+@pytest.mark.parametrize("json_output", [False, True])
+def test_probe_without_export_preserves_output_and_skips_receipts(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    json_output: bool,
+) -> None:
+    (tmp_path / "scratch.conf").write_text("FUNCTION=foo\n")
+    config = _config(tmp_path)
+    result = ProbeResult(
+        baseline=_status(config, 0.5, prefix=2),
+        probe=_status(config, 0.75, prefix=4),
+        source_sha256="source-hash",
+    )
+    monkeypatch.setattr("snail.cli.evaluate_source_probe", lambda *a, **kw: result)
+    monkeypatch.setattr("sys.stdin", io.StringIO("source\n"))
+
+    def unexpected(*_args, **_kwargs):
+        pytest.fail("unrequested export or receipt work")
+
+    monkeypatch.setattr("snail.cli.scratch_dependency_sha256", unexpected)
+    monkeypatch.setattr("snail.cli.scratch_experiment_epoch", unexpected)
+    monkeypatch.setattr(match_export, "export_probe", unexpected)
+    args = ["match", "probe", str(tmp_path), "--stdin"]
+    assert main(args + (["--json"] if json_output else [])) == 0
+    output = capsys.readouterr().out
+    if json_output:
+        assert json.loads(output) == matchlib.probe_result_payload(result)
+    else:
+        assert output == matchlib.render_probe_result(result) + "\n"
+    assert not (tmp_path / "experiments.jsonl").exists()
+
+
+@pytest.fixture
+def export_compiler(monkeypatch: pytest.MonkeyPatch):
+    function = matchlib.ObjectFunction("foo", b"\x90\xc3", frozenset())
+    digest = matchlib.object_function_fingerprint(function)
+    builds: list[ScratchConfig] = []
+    target = (matchlib.DisassemblyLine(0, 0x401000, "ret", 1),)
+    candidate = (
+        matchlib.DisassemblyLine(0, 0, "nop", 1),
+        matchlib.DisassemblyLine(1, 1, "ret", 1),
+    )
+    diagnostic = matchlib.MatchResult(
+        0.5, 0, tuple(line.text for line in target),
+        tuple(line.text for line in candidate), target, candidate,
+    )
+
+    def compile_source(config: ScratchConfig, _match_root: Path) -> Path:
+        builds.append(config)
+        obj = config.directory / "scratch.obj"
+        obj.write_bytes(b"object fixture")
+        return obj
+
+    monkeypatch.setattr(matchlib, "compile_scratch", compile_source)
+    monkeypatch.setattr(matchlib, "parse_coff_object", lambda *_args: None)
+    monkeypatch.setattr(matchlib, "extract_object_function", lambda *a, **kw: function)
+    monkeypatch.setattr(matchlib, "run_match", lambda **_kwargs: diagnostic)
+    return digest, builds, diagnostic
+
+
 @pytest.mark.parametrize("compiler,cflags", [("msvc6.5", "/O2"), ("msvc6.6", "/O1")])
+@pytest.mark.parametrize("export", [False, True])
 def test_record_probe_after_temporary_builds_are_removed(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
     compiler: str,
     cflags: str,
+    export: bool,
+    export_compiler,
 ) -> None:
+    digest, export_builds, diagnostic = export_compiler
     match_root = tmp_path / "match"
     scratch = match_root / "scratches" / "foo"
     scratch.mkdir(parents=True)
@@ -201,7 +272,10 @@ def test_record_probe_after_temporary_builds_are_removed(
         assert config.directory != scratch
         temporary_directories.append(config.directory)
         source = (config.directory / "scratch.cpp").read_text()
-        return _status(config, 0.5 if source == "baseline source\n" else 0.75, prefix=2)
+        return replace(
+            _status(config, 0.5 if source == "baseline source\n" else 0.75, prefix=2),
+            code_sha256=digest,
+        )
 
     # Exercise real overlay lifetime, result identity, hashing, and CLI recording.
     # Only native compilation/scoring is replaced; no toolchain is needed in CI.
@@ -209,12 +283,13 @@ def test_record_probe_after_temporary_builds_are_removed(
     config = replace(_config(scratch), compiler=compiler, cflags=cflags)
     expected_dependencies = scratch_dependency_sha256(config, match_root)
     expected_epoch = scratch_experiment_epoch(config, match_root, image_path=image_path)
+    destination = tmp_path / "export"
 
     assert main([
         "match", "probe", str(scratch), "--source", str(overlay),
         "--match-root", str(match_root), "--image", str(image_path),
         "--compiler", compiler, "--cflags", cflags, "--record", "--json",
-    ]) == 0
+    ] + (["--export-dir", str(destination)] if export else [])) == 0
 
     payload = json.loads(capsys.readouterr().out)
     record = json.loads((scratch / "experiments.jsonl").read_text())
@@ -228,3 +303,128 @@ def test_record_probe_after_temporary_builds_are_removed(
     assert payload["probe"]["scratch"] == "<shadow>"
     assert (scratch / "scratch.cpp").read_text() == "baseline source\n"
     assert canonical_object.read_bytes() == b"preserve canonical build"
+    if export:
+        assert len(export_builds) == 1
+        assert export_builds[0].compiler == compiler
+        assert export_builds[0].cflags == cflags
+        assert not export_builds[0].directory.exists()
+        assert {path.name for path in destination.iterdir()} == {
+            "candidate.cpp", "source.diff", "assembly.diff", "target.asm",
+            "candidate.asm", "report.json",
+        }
+        assert (destination / "candidate.cpp").read_text() == "alternate source\n"
+        assert (destination / "source.diff").read_text() == (
+            "--- baseline.cpp\n+++ candidate.cpp\n@@ -1 +1 @@\n"
+            "-baseline source\n+alternate source\n"
+        )
+        assert (destination / "assembly.diff").read_text() == (
+            "\n".join(diagnostic.diff_lines) + "\n"
+        )
+        assert (destination / "target.asm").read_text() == "0000  ret\n"
+        assert (destination / "candidate.asm").read_text() == "0000  nop\n0001  ret\n"
+        report = json.loads((destination / "report.json").read_text())
+        assert report["kind"] == "probe-diagnostic"
+        assert report["dependency_sha256"] == expected_dependencies
+        assert report["baseline_epoch"] == expected_epoch
+        assert report["baseline_source_sha256"] == hashlib.sha256(
+            b"baseline source\n"
+        ).hexdigest()
+        assert report["evaluation"] == {
+            key: value for key, value in payload.items()
+            if key not in {"diagnostic_export", "recorded_to"}
+        }
+        assert report["diagnostic"] == matchlib.match_result_payload(diagnostic)
+        assert report["reference_audit"] == {"entries": []}
+        assert report["code_sha256"] == digest
+        assert report["scratch_config"]["compiler"] == compiler
+        assert report["scratch_config"]["cflags"] == cflags
+        assert payload["diagnostic_export"] == str(destination)
+        assert record["diagnostic_export"] == str(destination)
+    else:
+        assert export_builds == []
+        assert not destination.exists()
+
+
+@pytest.mark.parametrize("failure", ["destination", "source", "code", "baseline"])
+def test_probe_export_refuses_incomplete_or_changed_evidence(
+    tmp_path: Path,
+    export_compiler,
+    failure: str,
+) -> None:
+    digest, _builds, _diagnostic = export_compiler
+    config = _config(tmp_path)
+    source = "alternate source\n"
+    result = ProbeResult(
+        baseline=_status(config, 1.0, prefix=10),
+        probe=replace(_status(config, 0.5, prefix=2), code_sha256=digest),
+        source_sha256=hashlib.sha256(source.encode()).hexdigest(),
+        baseline_source_text="baseline source\n",
+    )
+    destination = tmp_path / "export"
+    messages = {
+        "destination": "already exists",
+        "source": "evaluated source identity",
+        "code": "evaluated code identity",
+        "baseline": "missing the evaluated baseline source",
+    }
+    if failure == "destination":
+        destination.mkdir()
+        (destination / "keep").write_text("preserve existing bundle")
+    elif failure == "source":
+        source += "// altered after evaluation\n"
+    elif failure == "code":
+        result = replace(result, probe=replace(result.probe, code_sha256="changed"))
+    else:
+        result = replace(result, baseline_source_text=None)
+    with pytest.raises(ValueError, match=messages[failure]):
+        match_export.export_probe(
+            result, destination, source_text=source, match_root=tmp_path,
+            image_path=tmp_path / "image", manifest=None,
+            baseline_epoch="epoch", dependency_sha256="dependencies",
+        )
+    if failure == "destination":
+        assert {path.name for path in destination.iterdir()} == {"keep"}
+        assert (destination / "keep").read_text() == "preserve existing bundle"
+    else:
+        assert not destination.exists()
+    assert list(tmp_path.glob(".snail-export-*")) == []
+
+
+def test_probe_cli_exports_compile_error_from_stdin_without_recording(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    (tmp_path / "scratch.conf").write_text("FUNCTION=foo\n")
+    config = _config(tmp_path)
+    source = "invalid source\n"
+    result = ProbeResult(
+        baseline=_status(config, 1.0, prefix=10),
+        probe=replace(
+            _status(config, 0.0, prefix=0), ratio=None, error="compiler failed"
+        ),
+        source_sha256=hashlib.sha256(source.encode()).hexdigest(),
+        baseline_source_text="baseline source\n",
+    )
+    monkeypatch.setattr("snail.cli.evaluate_source_probe", lambda *a, **kw: result)
+    monkeypatch.setattr("snail.cli.scratch_dependency_sha256", lambda *a, **kw: "deps")
+    monkeypatch.setattr("snail.cli.scratch_experiment_epoch", lambda *a, **kw: "epoch")
+    monkeypatch.setattr("sys.stdin", io.StringIO(source))
+
+    def unexpected(*_args, **_kwargs):
+        pytest.fail("failed candidate must not be recompiled for export")
+
+    monkeypatch.setattr(matchlib, "compile_scratch", unexpected)
+    destination = tmp_path / "export"
+    assert main([
+        "match", "probe", str(tmp_path), "--stdin", "--export-dir", str(destination),
+    ]) == 2
+    assert f"diagnostic_export={destination}\n" in capsys.readouterr().out
+    assert {path.name for path in destination.iterdir()} == {
+        "candidate.cpp", "source.diff", "report.json",
+    }
+    assert (destination / "candidate.cpp").read_text() == source
+    report = json.loads((destination / "report.json").read_text())
+    assert report["error"] == "compiler failed"
+    assert report["diagnostic"] is None
+    assert not (tmp_path / "experiments.jsonl").exists()

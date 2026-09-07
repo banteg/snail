@@ -150,7 +150,23 @@ Useful analysis helpers:
   controlled hypotheses such as same-TU neighbors or alternate recovered type
   definitions that do not fit one bounded replacement. Add `--record` to
   preserve the source hash and complete result in `experiments.jsonl`;
-  `--stdin` accepts a generated overlay.
+  `--stdin` accepts a generated overlay. Use `--export-dir` to inspect the
+  complete candidate without creating a mutation recipe:
+
+  ```sh
+  uv run snail match probe tools/match/scratches/<function> \
+    --source /tmp/probe.cpp --export-dir /tmp/probe-diagnostic
+  ```
+
+  The destination must be new. A successful compile exports `candidate.cpp`,
+  `source.diff`, `assembly.diff`, `target.asm`, `candidate.asm`, and `report.json`.
+  The report preserves the baseline/probe metrics, source and dependency
+  hashes, baseline epoch, compiler profile, CFG diagnostics, and full reference
+  audit. Export recompilation must reproduce the evaluated function bytes and
+  relocation evidence. A compile failure exports source, its diff, and the error
+  report without assembly; the command still exits with status 2. Export also
+  works with `--stdin` and may be combined with `--record`, which records the
+  bundle path. It does not promote the source or require a score improvement.
 - `uv run snail match mutate <scratch> --spec <plan.json>` evaluates bounded
   source-shape alternatives without editing the tracked scratch. A schema-1
   plan names exact, non-overlapping source spans and their plausible

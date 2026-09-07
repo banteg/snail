@@ -3424,6 +3424,7 @@ class ProbeResult:
     probe: ScratchStatus
     source_sha256: str
     label: str | None = None
+    baseline_source_text: str | None = field(default=None, repr=False)
 
     @property
     def fuzzy_delta_bytes(self) -> float:
@@ -4439,6 +4440,7 @@ def evaluate_source_probe(
         probe=probe,
         source_sha256=hashlib.sha256(source_text.encode()).hexdigest(),
         label=label,
+        baseline_source_text=baseline_source,
     )
 
 

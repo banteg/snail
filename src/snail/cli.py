@@ -948,6 +948,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Short experiment label.",
     )
     match_probe_parser.add_argument(
+        "--export-dir",
+        type=Path,
+        help="Fresh directory for a diagnostic source probe bundle.",
+    )
+    match_probe_parser.add_argument(
         "--record",
         action="store_true",
         help="Append the probe to experiments.jsonl.",
@@ -1821,7 +1826,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             dependency_sha256 = (
                 scratch_dependency_sha256(result.baseline.config, args.match_root)
-                if args.record
+                if args.record or args.export_dir
                 else None
             )
             baseline_epoch = (
@@ -1831,9 +1836,20 @@ def main(argv: Sequence[str] | None = None) -> int:
                     image_path=image_path,
                     manifest_path=args.manifest,
                 )
-                if args.record
+                if args.record or args.export_dir
                 else None
             )
+            if args.export_dir is not None:
+                match_export.export_probe(
+                    result,
+                    args.export_dir,
+                    source_text=source_text,
+                    match_root=args.match_root,
+                    image_path=image_path,
+                    manifest=manifest,
+                    baseline_epoch=baseline_epoch,
+                    dependency_sha256=dependency_sha256,
+                )
         except Exception as error:  # noqa: BLE001
             print(
                 f"probe failed: {str(error).splitlines()[0]}",
@@ -1842,6 +1858,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 2
 
         payload = probe_result_payload(result)
+        if args.export_dir is not None:
+            payload["diagnostic_export"] = str(args.export_dir)
         recorded_to = None
         if args.record:
             record_path = config.directory / "experiments.jsonl"
@@ -1869,6 +1887,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(json.dumps(payload, indent=2, sort_keys=True))
         else:
             print(render_probe_result(result))
+            if args.export_dir is not None:
+                print(f"diagnostic_export={args.export_dir}")
             if recorded_to is not None:
                 print(f"recorded={recorded_to}")
         if result.baseline.state == "error" or result.probe.state == "error":
