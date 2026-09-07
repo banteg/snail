@@ -89,6 +89,11 @@ not an official Microsoft Rich-header specification.
 
 ## Workflow
 
+The [2026-09-08 path pass](path-frontier-and-linking-20260908.md) records the
+current path-family triage, three isolated mesh-loop improvements, and a
+reproducible four-function source-object link check. The latter verifies
+link feasibility only and does not receive executable-reconstruction credit.
+
 1. Create `scratches/<function>/` with:
    - `scratch.cpp` — candidate implementation; use a class member function to
      get thiscall, mirror struct layouts at native offsets
@@ -311,13 +316,13 @@ Useful analysis helpers:
   matches, reference-bearing instructions that sequence alignment could not
   pair are reported separately as `unaudited`; they are not assumed to be
   mismatches. A 100% normalized score is proof-grade only when this audit has
-  no unresolved, mismatched, or unaudited entries.
+  no unresolved, mismatched, or unaudited entries and no unexplained target bytes.
 - `uv run snail match audit --exact-only` groups unresolved/mismatched masked
   operands across all 100% scratches. Use it before editing the reference
   manifest so repeated target addresses and wrong aliases are visible together.
-  Alignment canonicalizes intersecting manifest alias sets before pairing
-  repeated `CALL ADDR` instructions, so a source-spelled relocation stays with
-  its native canonical callee rather than a nearby call of the same shape.
+  Exact sequences compare references at corresponding instruction positions.
+  Diagnostic alignment for partial sequences canonicalizes manifest aliases
+  before pairing repeated `CALL ADDR` instructions.
   Scratches that fail to compile are listed as audit failures and make the
   command exit non-zero; so does `snail match status --check`. Status and audit
   share cached detailed matches, while audit cache misses use the same `-j`
@@ -516,3 +521,20 @@ and is worth less than an honest 60%:
   in the scratch directory rather than forcing source contortions.
 - A matched scratch is the implementation reference for that behavior; link it
   from the relevant analysis note.
+
+### Exact certification and encoded evidence
+
+Normalized-exact candidates use a positional reference audit. Multipass reference
+alignment is diagnostic only for partial instruction sequences. Post-return code
+and undecodable suffix bytes are retained; only untargeted terminal `nop`/`int3`
+instructions can be excluded as padding after decoding. Unknown bytes reject
+exact certification.
+
+JSON diagnostics expose `body_byte_exact`, canonical encoded-body hashes and
+relocation masks, compared/excluded/unexplained target ranges (function-relative),
+and the candidate COFF object's SHA-256 when compiled. Public report evidence
+uses absolute target ranges and grants whole-function credit only if compared
+ranges cover every owned code byte. Its independent code inventory differs from
+the legacy status board's curated address spans. See
+[`analysis/progress/README.md`](../../analysis/progress/README.md) for metric tiers,
+readable report names, scoring epochs and the exported proof summary.

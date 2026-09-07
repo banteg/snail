@@ -100,11 +100,14 @@ def test_portable_validation_rejects_stale_source_and_changed_denominator(monkey
     monkeypatch.setattr(report, "repository_inputs", lambda: {"source": "pinned"})
     monkeypatch.setattr(report, "inventory", lambda: [{k: function[k] for k in fields}])
     evidence = {
-        "schema": 1, "version": report.VERSION, "scope": "full-executable-code",
+        "schema": report.EVIDENCE_SCHEMA, "version": report.VERSION, "scope": "full-executable-code",
         "inputs": {"source": "pinned"}, "functions": [function],
         "external_inputs": {"image": {"path": "artifacts/bin/target.exe", "sha256": "a" * 64},
                             "compilers": {}, "runner": {"sha256": "b" * 64}},
     }
+    evidence["identities"] = report.measurement_identities(evidence["inputs"], evidence["external_inputs"])
+    evidence["verification_mode"] = report.VERIFICATION_MODE
+    evidence["progress_delta"] = report.progress_delta(None, evidence)
     report.validate_evidence(evidence)  # No game executable or compiler in CI.
     changed = deepcopy(evidence)
     changed["functions"][0]["size"] = 99
@@ -160,5 +163,5 @@ def test_ownership_filters_partition_all_code_without_adding_match_credit(monkey
     assert categories["libs"]["matched_code"] == "0"
     assert categories["libs"]["fuzzy_match_percent"] == 0
     assert result["measures"]["matched_code"] == "100"
-    assert result["units"][1]["name"] == "png_known"
+    assert result["units"][1]["functions"][0]["metadata"]["demangled_name"] == "png_known"
     assert result["units"][1]["metadata"]["progress_categories"] == ["libs", "libs.libpng-1.2.5"]

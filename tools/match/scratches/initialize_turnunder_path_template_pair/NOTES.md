@@ -426,3 +426,14 @@ the existing lateral offset. This recovers the native aggregate temporary
 lifetime without changing shared vector definitions or reference rules. The full
 function remains partial; earlier percentages above belong to prior source
 or dependency epochs. Existing reference debt, where present, is unchanged.
+
+## 2026-09-08 isolated face-column scope
+
+The native face preheader initializes the column before the width guard and
+computes row UVs inside that guard. Recovering only that scope raises 56.78%
+to 57.23%, preserving 662/687 instructions, prefix 6 and all 45 clean
+references. The assembly change is confined to the face preheader and UV
+conversion temporary homes; a reverse probe recovers the previous code hash.
+Moving face-index initialization is neutral. Adding both checkerboard branches
+regresses and is not retained. See the
+[family report](../../path-frontier-and-linking-20260908.md).
