@@ -78,3 +78,11 @@ This exact Windows loader independently consumes every cross-port field used
 to justify the name: flags `+0x00`, dimensions `+0x04/+0x08`, path `+0x0c`,
 payload `+0x98`, and mip count `+0xa0`. The type-only promotion preserves the
 exact 216/216 body and all 47 clean operands.
+
+## 2026-09-07 C++ COM dispatch control
+
+The SDK-order virtual-device overlay in
+`sdk-cpp-com-call-controls-20260907.json` produces identical function bytes:
+**216/216 instructions, all 47 references clean**. It serves as an exact
+control for the loading-screen investigation. No shared ABI or source change
+is retained; the loading-screen notes document the isolated view's scope.

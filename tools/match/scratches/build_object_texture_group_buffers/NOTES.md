@@ -144,3 +144,12 @@ Splitting only the visible stores would create a false pointer-to-integer phi
 and would not recover the initial scalar owner. No mutation is retained. The
 typed `index_count_base` register remains the first honest split lifetime, and
 the exact 373/373 matcher result is unchanged.
+
+## 2026-09-07 C++ vertex-buffer dispatch control
+
+The isolated virtual vertex-buffer view in
+`sdk-cpp-com-call-controls-20260907.json` preserves the Lock/Unlock slots at
+0x2c/0x30 and emits identical function bytes: **373/373 instructions, all 29
+references clean**. Index-buffer calls keep their existing ABI view. This is
+an exact control for the loading-screen and refresh-buffer probes; no shared
+header or canonical source changes.

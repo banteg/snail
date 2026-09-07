@@ -49,3 +49,20 @@ Two common texture-loading helper forms are neutral at 83.00%. Both preserve err
 ## 2026-09-05 additional source-shape checks
 
 Three tail-publication forms that chain or scope the loading state are byte-neutral at 83.00%. They do not resolve the receiver/archive register allocation.
+
+## 2026-09-07 C++ COM dispatch controls
+
+`sdk-cpp-com-call-controls-20260907.json` independently replaces device calls,
+vertex-buffer calls, or both with C++ virtual member calls. The isolated ABI
+views use the method order in the archived
+[Direct3D 8 SDK header](https://github.com/apitrace/dxsdk/blob/master/Include/d3d8.h),
+including the inherited slots and stdcall receivers. They retain the project's
+opaque pointer types and flatten the resource slot inheritance; this tests
+virtual dispatch syntax, not a complete SDK migration.
+
+All three variants reproduce the baseline function bytes at **83.00%,
+253/253 instructions, prefix 5, and 54 clean references**. The exact texture
+loader, vertex-buffer factory, and grouped-buffer builder remain byte-identical
+under the corresponding controls. The refresh-buffer partial is also neutral.
+The receiver/archive register split is therefore unchanged by these virtual
+call forms; no shared header or canonical source is modified.

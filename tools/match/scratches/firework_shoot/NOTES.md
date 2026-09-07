@@ -59,3 +59,22 @@ Four loop-vector scope combinations and eight emitter counter/position ownership
 ## 2026-09-05 continued source-shape investigation
 
 Two diagnostic XYZ constructor-body forms are non-improving. XYZ assignment is neutral and reversed assignment regresses. The shared vector header remains unchanged.
+
+## 2026-09-07 borrowed vector and complete random operations
+
+The five independent compiler fixtures in
+`vector-parameter-abi-controls-20260907.md` distinguish the native borrowed
+vector argument from an ordinary by-value vector. Trivial value, explicit
+copy-constructor, destructor, and combined copy/destructor controls all return
+with 0x18 bytes of argument cleanup; a const-reference control returns with
+the native 0x10. No vector parameter or shared type contract changes.
+
+`whole-random-velocity-operations-20260907.json` records eight complete
+random-velocity alternatives: four scalar helper result forms, each used
+directly or through a vector factory. They retain the actual table RNG;
+the separately recovered `SRAND` uses the CRT RNG and is not substituted.
+All eight compile and none improves 95.15%. The float-scaled form falls to
+76.47%, 101/103 instructions, prefix 4, with 21 clean references. Its complete
+diff changes earlier random-value lifetimes and still advances the sprite
+position base too early. The factory boundary does not change each scalar
+form's generated code. Canonical source remains unchanged.

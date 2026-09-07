@@ -86,3 +86,11 @@ are byte-identical exact matches; initializing a separate result owner produces
 changed. The prior analyzer names `create_result` and `next_count` still describe
 distinct machine-value lifetimes; they do not require distinct authored C++
 variables.
+
+## 2026-09-07 C++ COM dispatch control
+
+The SDK-order virtual-device overlay in
+`sdk-cpp-com-call-controls-20260907.json` produces identical function bytes:
+**101/101 instructions, all 11 references clean**. This independently checks
+the creation method's virtual slot and stack receiver while testing the
+loading-screen partial. No shared header or canonical source changes.

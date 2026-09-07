@@ -216,3 +216,12 @@ native source-address register copies remain open.
 
 The committed recipes and hash-bound receipts describe the tested forms; they
 do not establish source exhaustion.
+
+## 2026-09-07 C++ vertex-buffer dispatch control
+
+The SDK-order virtual vertex-buffer overlay in
+`sdk-cpp-com-call-controls-20260907.json` replaces the Lock/Unlock calls while
+preserving their stack receivers and vtable slots. It emits identical function
+bytes at **90.58%, 137/139 instructions, prefix 7, with all four references
+clean**. The exact grouped-buffer builder independently remains exact under
+the same view. No header or source change is retained.
