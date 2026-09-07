@@ -45,3 +45,10 @@ jobs:
           name: win32-reflexive_report
           path: artifacts/decomp/report.json
           if-no-files-found: error
+
+      - name: Upload matching proof summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: win32-reflexive_proof
+          path: artifacts/decomp/proof-summary.json
+          if-no-files-found: error

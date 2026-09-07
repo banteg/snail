@@ -126,8 +126,8 @@ symbol. Our reference audit remains useful additional proof.
   owners are omitted. Every byte is counted once. Five unassigned code runs are
   explicit zero-progress units, without invented function-count credit.
 - **Matched:** an actual source-built scratch with 100% normalized instruction
-  identity and a clean reference audit. Its tested native extent must cover all
-  code assigned to the public function. Library identification, prebuilt objects,
+  identity and a clean positional reference audit. Its decoded, compared ranges
+  must cover all code assigned to the public function, with no unexplained bytes. Library identification, prebuilt objects,
   copied assembly, and generated thunks receive no decompiled credit.
 - **Fuzzy:** `snail match` similarity, weighted by owned original code bytes across
   the full denominator. Code outside the tested scratch extent earns zero.
@@ -159,7 +159,9 @@ Refresh verifies the original SHA-256, recomputes the native inventory, freshly
 compiles every scratch, rejects failures, and stores
 `analysis/progress/win32-reflexive.json`. The evidence includes source/config/
 manifest/reporter hashes, every compiler-bundle file hash, Wibo identity, original
-image identity, owned ranges, reference audit results and measured scores. Build
+image identity, owned and compared ranges, exclusions with reasons, undecodable
+bytes, positional reference audit results, whole candidate-object hashes, encoded
+body hashes and relocation masks, and measured scores. Build
 inputs must remain unchanged throughout the evaluation. Refresh invalidates the
 legacy scratch build/status cache because that cache does not fingerprint every
 compiler backend DLL.
@@ -173,7 +175,8 @@ uv run snail match report
 CI performs this portable validation on pushes to `master` and PRs. It rejects
 added, changed, or deleted scoring/build inputs, verifies the full public
 partition and source/reference/extent credit, runs the SHA-256-pinned objdiff
-parser, and uploads only `report.json` as `win32-reflexive_report`. No game bytes
+parser, and uploads `report.json` as `win32-reflexive_report` plus
+`proof-summary.json` as the separate `win32-reflexive_proof` artifact. No game bytes
 or compiler binaries are uploaded. Unlike Crimson's current workflow, CI does
 not download the reference images: the hashed, byte-verified analyzer snapshots
 are the portable inventory evidence. Present local images/compiler bundles are
@@ -214,3 +217,52 @@ The Ghidra section specification uses `name`, `start`, `end`, `sha256` from a
 PE-verified snapshot. Use a temporary copy of each headless database/project;
 Ghidra accepts `-process SnailMail_unwrapped.exe -noanalysis -readOnly`.
 `snail.code_inventory.snapshot_text` normalizes snapshots for stable diffs.
+
+## Scoring baseline 2
+
+The normalized series remains byte-weighted whole-function credit. Exact
+instruction sequences now audit reference identities, operand slots and kinds
+at the same instruction index; partial candidates retain diagnostic alignment.
+Strict jump-table checks require corresponding destination instructions.
+
+The decoder retains post-return instructions and emits an undecodable suffix as
+`db` bytes. It trims only untargeted terminal `nop`/`int3` instructions, and
+records those exclusions. Raw byte suffixes are never stripped before decoding.
+Every supplied target byte belongs to a compared range, a documented padding
+exclusion, or an unexplained range. Public coverage intersects only compared
+ranges with owned code; an exclusion cannot earn credit even when the matcher
+recognizes it as padding. Embedded tables and other tails are currently retained
+conservatively. Recovering their classification and candidate extent may restore
+credit in a future baseline; arbitrary post-return trimming must not return.
+
+`body_byte_exact` adds identical instruction offsets, sizes and encoded bodies.
+Only positionally audited external relocation fields are masked. Local relative
+relocations are resolved; all other instruction bytes must match. Evidence saves
+the canonical body hashes and masks, and validates the flag from those hashes
+and the strict normalized proof. Terminal padding is outside the body metric.
+This is **relocation-audited encoded-body identity**, not final executable identity.
+
+Report unit and function keys use `SnailMail_unwrapped.exe/<entry-address>`;
+recovered names live in function `demangled_name` metadata. The first migration
+changes report keys once; subsequent renames preserve them.
+
+The proof summary exposes normalized and encoded matched bytes, newly matched
+and regressed bytes, unmatched bytes, and the largest remaining functions.
+Target, inventory, ownership, scoring and toolchain identities are independent.
+A delta across changed measurement identities establishes a new baseline and
+must not be described as source reconstruction progress. The first versioned
+baseline has no prior versioned identities. Source gains are comparable only
+within the same measurement identities. Linked progress remains zero; data and
+final-image identity remain **not measured**.
+
+Verification mode: **Source-bound local compilation evidence; CI checks freshness
+and report consistency.** A clean local rebuild refreshes the evidence; portable
+validation and objdiff parser acceptance do not independently rebuild it.
+
+The 2026-09-08 clean baseline rebuilt 785 scratches. Identified Game & Engine
+has **126,290 / 309,585 bytes (40.79%)** normalized matched; All has
+**126,290 / 596,823 bytes (21.16%)**, across **673 / 2,261** function owners.
+The encoded-body tier covers **120,410 / 596,823 bytes (20.18%)**, across
+**666** owners. Relative to the preceding saved evidence, 25,051 bytes lose
+whole-function credit and 32 gain it; this is a measurement baseline transition,
+not a claim of source regression. The retained native-code denominator is unchanged.

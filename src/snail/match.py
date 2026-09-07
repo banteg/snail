@@ -41,8 +41,6 @@ IMAGE_SYM_CLASS_EXTERNAL = 2
 IMAGE_SYM_CLASS_STATIC = 3
 IMAGE_SCN_CNT_CODE = 0x00000020
 SYM_TYPE_FUNCTION = 0x20
-# int3 between image functions, nop for section alignment inside objects
-PADDING_BYTES = b"\xcc\x90"
 BRANCH_TARGET_RE = re.compile(r"\bL([0-9a-f]+)\b")
 DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH = (
     REPO_ROOT / "analysis/symbols/gameplay-references.json"
@@ -353,6 +351,20 @@ class MatchResult:
     target_disassembly: tuple[DisassemblyLine, ...] = ()
     candidate_disassembly: tuple[DisassemblyLine, ...] = ()
     masked_operand_audit: MaskedOperandAudit = field(default_factory=MaskedOperandAudit)
+    body_byte_exact: bool = False
+    compared_target_ranges: tuple[tuple[int, int], ...] = ()
+    excluded_target_ranges: tuple[tuple[int, int, str], ...] = ()
+    unexplained_target_ranges: tuple[tuple[int, int], ...] = ()
+    candidate_object_sha256: str | None = None
+    encoded_body_proof: dict[str, Any] | None = None
+
+    @property
+    def exact(self) -> bool:
+        return (
+            self.ratio == 1.0
+            and self.masked_operand_audit.problem_count == 0
+            and not self.unexplained_target_ranges
+        )
 
     @property
     def first_target_mismatch(self) -> str | None:
@@ -1080,8 +1092,10 @@ def extract_object_function(
         )
     return ObjectFunction(
         name=target.name,
-        data=section.data[target.value : end].rstrip(PADDING_BYTES),
-        relocation_offsets=frozenset(reference.offset for reference in relocation_references),
+        data=section.data[target.value : end],
+        relocation_offsets=frozenset(
+            reference.offset for reference in relocation_references
+        ),
         relocation_references=tuple(relocation_references),
     )
 
@@ -1104,7 +1118,7 @@ class LoadedImage:
 
     def function_bytes(self, start_va: int, end_va: int) -> bytes:
         data = self.mapped[start_va - self.image_base : end_va - self.image_base]
-        return data.rstrip(PADDING_BYTES)
+        return data
 
     def section_for_va(self, va: int) -> ImageSection | None:
         for section in self.sections:
@@ -1680,27 +1694,40 @@ def disassemble_normalized_function(
                 masked_references=tuple(masked_references),
             )
         )
+    decoded_end = lines[-1].offset + lines[-1].size if lines else 0
+    # Capstone stops at an invalid encoding. Never silently lose its suffix.
+    for offset in range(decoded_end, len(data)):
+        lines.append(
+            DisassemblyLine(
+                offset, base_address + offset, f"db 0x{data[offset]:02x}", size=1
+            )
+        )
     return _strip_trailing_unreferenced_lines(tuple(lines))
 
 
 def _strip_trailing_unreferenced_lines(
     lines: tuple[DisassemblyLine, ...],
 ) -> tuple[DisassemblyLine, ...]:
-    """Drop non-code tail bytes after an untargeted terminal ret."""
-    for index, candidate in enumerate(lines[:-1]):
-        if not candidate.text.startswith("ret"):
-            continue
-        trim_start = index + 1
-        tail_offsets = {line.offset for line in lines[trim_start:]}
-        for line in lines[:trim_start]:
-            targets = {int(match.group(1), 16) for match in BRANCH_TARGET_RE.finditer(line.text)}
-            for reference in line.masked_references:
-                targets.update(reference.jump_table_entries or ())
-            if targets & tail_offsets:
-                break
-        else:
-            return lines[:trim_start]
-    return lines
+    """Trim only recognized, untargeted terminal padding instructions.
+
+    Public credit separately intersects the surviving ranges with owned code;
+    even these padding exclusions cannot silently earn code credit.
+    """
+    trim_start = len(lines)
+    while trim_start and lines[trim_start - 1].text in {"nop", "int3"}:
+        trim_start -= 1
+    if not trim_start or trim_start == len(lines):
+        return lines
+    if lines[trim_start - 1].text.partition(" ")[0] not in {"ret", "retf", "jmp"}:
+        return lines
+    tail_offsets = {line.offset for line in lines[trim_start:]}
+    for line in lines[:trim_start]:
+        targets = {int(m.group(1), 16) for m in BRANCH_TARGET_RE.finditer(line.text)}
+        for reference in line.masked_references:
+            targets.update(reference.jump_table_entries or ())
+        if targets & tail_offsets:
+            return lines
+    return lines[:trim_start]
 
 
 def normalize_function(
@@ -1737,6 +1764,7 @@ def _reference_status(
     target_references: tuple[MaskedReference, ...],
     candidate_references: tuple[MaskedReference, ...],
     *,
+    strict: bool = False,
     aligned_instruction_offsets: frozenset[tuple[int, int]] = frozenset(),
     target_instruction_offsets: frozenset[int] = frozenset(),
     candidate_instruction_offsets: frozenset[int] = frozenset(),
@@ -1780,7 +1808,7 @@ def _reference_status(
             *((candidate.jump_table_entries,) if candidate.jump_table_entries is not None else ()),
             *candidate.alternate_jump_table_entries,
         )
-        if set(target_options) & set(candidate_options):
+        if not strict and set(target_options) & set(candidate_options):
             return True
 
         def is_uniform_instruction_translation(
@@ -1826,14 +1854,15 @@ def _reference_status(
         return any(
             len(target_entries) == len(candidate_entries)
             and all(
-                target_offset == candidate_offset
+                (not strict and target_offset == candidate_offset)
                 or (target_offset, candidate_offset) in aligned_instruction_offsets
                 for target_offset, candidate_offset in zip(
                     target_entries,
                     candidate_entries,
                 )
             )
-            or is_uniform_instruction_translation(
+            or not strict
+            and is_uniform_instruction_translation(
                 target_entries,
                 candidate_entries,
             )
@@ -1940,6 +1969,48 @@ def audit_masked_operands(
     target_disassembly: tuple[DisassemblyLine, ...],
     candidate_disassembly: tuple[DisassemblyLine, ...],
 ) -> MaskedOperandAudit:
+    if tuple(line.text for line in target_disassembly) == tuple(
+        line.text for line in candidate_disassembly
+    ):
+        offsets = frozenset(
+            (a.offset, b.offset)
+            for a, b in zip(target_disassembly, candidate_disassembly)
+        )
+        entries = []
+        for index, (target, candidate) in enumerate(
+            zip(target_disassembly, candidate_disassembly)
+        ):
+            if not target.masked_references and not candidate.masked_references:
+                continue
+            slots_match = tuple(
+                (r.operand_index, r.kind) for r in target.masked_references
+            ) == tuple((r.operand_index, r.kind) for r in candidate.masked_references)
+            status = (
+                _reference_status(
+                    target.masked_references,
+                    candidate.masked_references,
+                    aligned_instruction_offsets=offsets,
+                    strict=True,
+                )
+                if slots_match
+                else "mismatch"
+            )
+            entries.append(
+                MaskedOperandAuditEntry(
+                    index,
+                    index,
+                    target.offset,
+                    candidate.offset,
+                    target.address,
+                    candidate.address,
+                    target.text,
+                    target.masked_references,
+                    candidate.masked_references,
+                    status,
+                )
+            )
+        return MaskedOperandAudit(tuple(entries))
+
     parent: dict[str, str] = {}
 
     def find(key: str) -> str:
@@ -2424,6 +2495,117 @@ def audit_masked_operands(
     return MaskedOperandAudit(tuple(entries))
 
 
+def comparison_ranges(
+    lines: tuple[DisassemblyLine, ...],
+    size: int,
+) -> tuple[
+    tuple[tuple[int, int], ...],
+    tuple[tuple[int, int, str], ...],
+    tuple[tuple[int, int], ...],
+]:
+    """Partition the supplied target span into compared, padding and unknown."""
+    compared: list[tuple[int, int]] = []
+    unknown: list[tuple[int, int]] = []
+    for line in lines:
+        ranges = unknown if line.text.startswith("db ") else compared
+        end = line.offset + line.size
+        if ranges and ranges[-1][1] == line.offset:
+            ranges[-1] = (ranges[-1][0], end)
+        else:
+            ranges.append((line.offset, end))
+    end = lines[-1].offset + lines[-1].size if lines else 0
+    excluded = ((end, size, "terminal-padding"),) if end < size else ()
+    return tuple(compared), excluded, tuple(unknown)
+
+
+def encoded_body_evidence(
+    target_data: bytes,
+    candidate: ObjectFunction,
+    target_lines: tuple[DisassemblyLine, ...],
+    candidate_lines: tuple[DisassemblyLine, ...],
+    audit: MaskedOperandAudit,
+) -> dict[str, Any] | None:
+    """Equal instruction encodings, masking only positionally audited relocations.
+
+    Local relative relocations are resolved to their normalized local label.
+    Terminal padding is outside this body metric; public credit additionally
+    requires every owned code byte to be in the compared target ranges.
+    """
+    import capstone
+
+    if (
+        audit.problem_count
+        or not target_lines
+        or len(target_lines) != len(candidate_lines)
+    ):
+        return None
+    if any(
+        a.text != b.text
+        or a.offset != b.offset
+        or a.size != b.size
+        or a.text.startswith("db ")
+        for a, b in zip(target_lines, candidate_lines)
+    ):
+        return None
+    md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
+    md.detail = True
+    consumed_relocations: set[int] = set()
+    masked_ranges: list[list[int]] = []
+    resolved_local: list[int] = []
+    left_body, right_body = bytearray(), bytearray()
+    for a, b in zip(target_lines, candidate_lines):
+        left = bytearray(target_data[a.offset : a.offset + a.size])
+        right = bytearray(candidate.data[b.offset : b.offset + b.size])
+        target_insn = next(md.disasm(bytes(left), a.offset), None)
+        candidate_insn = next(md.disasm(bytes(right), b.offset), None)
+        if target_insn is None or candidate_insn is None:
+            return None
+        for reference in b.masked_references:
+            if reference.source != "reloc":
+                continue
+            field = "imm" if reference.kind == "imm" else "disp"
+            offset = getattr(candidate_insn, field + "_offset")
+            size = getattr(candidate_insn, field + "_size")
+            if (
+                not size
+                or offset != getattr(target_insn, field + "_offset")
+                or size != getattr(target_insn, field + "_size")
+                or b.offset + offset not in candidate.relocation_offsets
+            ):
+                return None
+            left[offset : offset + size] = right[offset : offset + size] = bytes(size)
+            consumed_relocations.add(b.offset + offset)
+            masked_ranges.append([b.offset + offset, b.offset + offset + size])
+        local_targets = _local_branch_offsets(b)
+        if (
+            local_targets
+            and b.offset + candidate_insn.imm_offset in candidate.relocation_offsets
+        ):
+            if len(local_targets) != 1 or not candidate_insn.imm_size:
+                return None
+            offset, size = candidate_insn.imm_offset, candidate_insn.imm_size
+            displacement = local_targets[0] - b.offset - b.size
+            right[offset : offset + size] = (displacement % (1 << (8 * size))).to_bytes(
+                size, "little"
+            )
+            consumed_relocations.add(b.offset + offset)
+            resolved_local.append(b.offset + offset)
+        left_body.extend(left)
+        right_body.extend(right)
+    body_end = candidate_lines[-1].offset + candidate_lines[-1].size
+    if consumed_relocations != {
+        r for r in candidate.relocation_offsets if r < body_end
+    }:
+        return None
+    return {
+        "target_sha256": hashlib.sha256(left_body).hexdigest(),
+        "candidate_sha256": hashlib.sha256(right_body).hexdigest(),
+        "body_size": body_end,
+        "masked_relocation_ranges": masked_ranges,
+        "resolved_local_relocations": resolved_local,
+    }
+
+
 def match_function(
     target_data: bytes,
     candidate: ObjectFunction,
@@ -2455,14 +2637,27 @@ def match_function(
     candidate_lines = tuple(line.text for line in candidate_disassembly)
     ratio = difflib.SequenceMatcher(a=target_lines, b=candidate_lines, autojunk=False).ratio()
     prefix_instructions = common_prefix_length(target_lines, candidate_lines)
+    audit = audit_masked_operands(target_disassembly, candidate_disassembly)
+    compared, excluded, unexplained = comparison_ranges(
+        target_disassembly, len(target_data)
+    )
+    encoded = encoded_body_evidence(
+        target_data, candidate, target_disassembly, candidate_disassembly, audit
+    )
     return MatchResult(
+        body_byte_exact=encoded is not None
+        and encoded["target_sha256"] == encoded["candidate_sha256"],
+        encoded_body_proof=encoded,
+        compared_target_ranges=compared,
+        excluded_target_ranges=excluded,
+        unexplained_target_ranges=unexplained,
         ratio=ratio,
         prefix_instructions=prefix_instructions,
         target_lines=target_lines,
         candidate_lines=candidate_lines,
         target_disassembly=target_disassembly,
         candidate_disassembly=candidate_disassembly,
-        masked_operand_audit=audit_masked_operands(target_disassembly, candidate_disassembly),
+        masked_operand_audit=audit,
     )
 
 
@@ -3083,7 +3278,15 @@ def match_result_payload(
             }
 
     return {
-        "exact": result.ratio == 1.0 and result.masked_operand_audit.problem_count == 0,
+        "exact": result.exact,
+        "encoded_body_proof": result.encoded_body_proof,
+        "body_byte_exact": result.body_byte_exact,
+        "compared_target_ranges": [list(r) for r in result.compared_target_ranges],
+        "excluded_target_ranges": [list(r) for r in result.excluded_target_ranges],
+        "unexplained_target_ranges": [
+            list(r) for r in result.unexplained_target_ranges
+        ],
+        "candidate_object_sha256": result.candidate_object_sha256,
         "match_ratio": result.ratio,
         "prefix_instructions": result.prefix_instructions,
         "target_instructions": len(result.target_lines),
@@ -3114,8 +3317,8 @@ def resolve_function_extent(
     """Start VA from the manifest; end VA from the next curated function.
 
     The next curated function is an upper bound: uncurated functions may sit
-    in between, so trim padding and pass an explicit end when the diff shows
-    an unrelated tail.
+    in between, so pass an explicit end when the diff shows an unrelated tail.
+    Padding is classified after decoding, never stripped from raw operands.
     """
     by_name = _function_symbols_by_name(manifest)
     if function_name not in by_name:
@@ -3140,7 +3343,8 @@ def run_match(
     symbol_name: str | None = None,
     end_va: int | None = None,
 ) -> MatchResult:
-    obj = parse_coff_object(obj_path.read_bytes())
+    object_data = obj_path.read_bytes()
+    obj = parse_coff_object(object_data)
     reference_manifest = load_default_reference_symbol_manifest()
     candidate = extract_object_function(
         obj,
@@ -3149,13 +3353,16 @@ def run_match(
     )
     start, end = resolve_function_extent(manifest, function_name, end_va)
     image = load_image(image_path, manifest.image_base)
-    return match_function(
+    result = match_function(
         image.function_bytes(start, end),
         candidate,
         image=image,
         target_va=start,
         manifest=manifest,
         reference_manifest=reference_manifest,
+    )
+    return replace(
+        result, candidate_object_sha256=hashlib.sha256(object_data).hexdigest()
     )
 
 
@@ -3247,6 +3454,12 @@ class ScratchStatus:
     first_candidate_mismatch_offset: int | None = None
     error: str | None = None
     code_sha256: str | None = None
+    body_byte_exact: bool = False
+    compared_target_ranges: tuple[tuple[int, int], ...] = ()
+    excluded_target_ranges: tuple[tuple[int, int, str], ...] = ()
+    unexplained_target_ranges: tuple[tuple[int, int], ...] = ()
+    candidate_object_sha256: str | None = None
+    encoded_body_proof: dict[str, Any] | None = None
 
     @property
     def state(self) -> str:
@@ -3257,6 +3470,7 @@ class ScratchStatus:
             and self.masked_unresolved == 0
             and self.masked_mismatches == 0
             and self.masked_unaudited == 0
+            and not self.unexplained_target_ranges
         ):
             return "match"
         if self.ratio == 1.0:
@@ -4378,12 +4592,20 @@ def evaluate_scratch(
                 if result.prefix_instructions < len(result.candidate_disassembly)
                 else None
             ),
+            encoded_body_proof=result.encoded_body_proof,
+            body_byte_exact=result.body_byte_exact,
+            compared_target_ranges=result.compared_target_ranges,
+            excluded_target_ranges=result.excluded_target_ranges,
+            unexplained_target_ranges=result.unexplained_target_ranges,
+            candidate_object_sha256=result.candidate_object_sha256,
             error=None,
-            code_sha256=object_function_fingerprint(extract_object_function(
-                parse_coff_object(obj_path.read_bytes()),
-                config.symbol or config.function,
-                reference_manifest=load_default_reference_symbol_manifest(),
-            )),
+            code_sha256=object_function_fingerprint(
+                extract_object_function(
+                    parse_coff_object(obj_path.read_bytes()),
+                    config.symbol or config.function,
+                    reference_manifest=load_default_reference_symbol_manifest(),
+                )
+            ),
         )
         if on_match is not None:
             on_match(result)
@@ -4489,6 +4711,14 @@ def scratch_status_payload(status: ScratchStatus) -> dict:
 
     return {
         "state": status.state,
+        "body_byte_exact": status.body_byte_exact,
+        "encoded_body_proof": status.encoded_body_proof,
+        "candidate_object_sha256": status.candidate_object_sha256,
+        "compared_target_ranges": [list(r) for r in status.compared_target_ranges],
+        "excluded_target_ranges": [list(r) for r in status.excluded_target_ranges],
+        "unexplained_target_ranges": [
+            list(r) for r in status.unexplained_target_ranges
+        ],
         "code_sha256": status.code_sha256,
         "function": status.config.function,
         "address": status.address,
@@ -4512,11 +4742,7 @@ def scratch_status_payload(status: ScratchStatus) -> dict:
         "compiler": status.config.compiler,
         "cflags": status.config.cflags,
         "recovery": scratch_recovery(status),
-        "residuals": (
-            list(status.config.residuals)
-            if status.state != "match"
-            else []
-        ),
+        "residuals": (list(status.config.residuals) if status.state != "match" else []),
         "scratch": str(status.config.directory),
         "error": status.error,
     }
@@ -4990,7 +5216,7 @@ def compile_idiom_case(
 
 
 # bump when the cache schema changes; matcher source mtime handles scoring edits
-CACHE_VERSION = 11
+CACHE_VERSION = 12
 
 
 def _masked_reference_cache_payload(reference: MaskedReference) -> dict:
@@ -5255,7 +5481,8 @@ def _match_precompiled_scratch_config(
     start, end = resolve_function_extent(manifest, config.function, config.end_va)
     target_data = image.function_bytes(start, end)
     obj_path = config.directory / "build/scratch.obj"
-    obj = parse_coff_object(obj_path.read_bytes())
+    object_data = obj_path.read_bytes()
+    obj = parse_coff_object(object_data)
     candidate = extract_object_function(
         obj,
         config.symbol or config.function,
@@ -5269,12 +5496,20 @@ def _match_precompiled_scratch_config(
         manifest=manifest,
         reference_manifest=reference_manifest,
     )
-    return len(target_data), result
+    return len(target_data), replace(
+        result, candidate_object_sha256=hashlib.sha256(object_data).hexdigest()
+    )
 
 
 def _scratch_status_fields(target_size: int, result: MatchResult) -> dict:
     return {
         "target_size": target_size,
+        "encoded_body_proof": result.encoded_body_proof,
+        "body_byte_exact": result.body_byte_exact,
+        "compared_target_ranges": result.compared_target_ranges,
+        "excluded_target_ranges": result.excluded_target_ranges,
+        "unexplained_target_ranges": result.unexplained_target_ranges,
+        "candidate_object_sha256": result.candidate_object_sha256,
         "ratio": result.ratio,
         "prefix_instructions": result.prefix_instructions,
         "target_instructions": len(result.target_lines),
@@ -6356,7 +6591,7 @@ def manifest_cluster_totals(
     """Separate port-relevant and platform totals over all mapped functions.
 
     Each curated function's extent runs to the next curated address (padding
-    trimmed); the last function ends at the next int3 padding byte.
+    included); the last function ends at the next int3 padding byte.
     """
     image = load_image(image_path, manifest.image_base)
     functions = sorted(manifest.functions, key=lambda symbol: symbol.address)
