@@ -202,6 +202,8 @@ def test_export_nonimproving_candidate_and_refuse_changed_code(tmp_path, monkeyp
     assert source.read_text() == "int foo() { return 1; }"
     assert (destination / "candidate.cpp").read_text() == sweep.best.variant.source_text
     assert "-ret" in (destination / "assembly.diff").read_text()
+    assert not (destination / "baseline.asm").exists()
+    assert not (destination / "baseline.diff").exists()
     assert report["reference_audit"] == {"entries": ()}
     assert (
         json.loads((destination / "report.json").read_text())["baseline_epoch"]

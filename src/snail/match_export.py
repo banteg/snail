@@ -56,11 +56,14 @@ def export_probe(
     baseline_epoch: str,
     dependency_sha256: str,
 ) -> dict:
-    """Export the evaluated overlay, including its captured baseline source."""
+    """Export the overlay with its captured baseline source and assembly."""
     if result.baseline_source_text is None:
         raise ValueError("probe result is missing the evaluated baseline source")
     if hashlib.sha256(source_text.encode()).hexdigest() != result.source_sha256:
         raise ValueError("export source does not reproduce evaluated source identity")
+    baseline_match = result.baseline_match if result.baseline.error is None else None
+    if result.baseline.error is None and baseline_match is None:
+        raise ValueError("probe result is missing the evaluated baseline assembly")
     config = result.baseline.config
     return _export_diagnostic(
         result.probe,
@@ -84,6 +87,7 @@ def export_probe(
         image_path=image_path,
         manifest=manifest,
         baseline_epoch=baseline_epoch,
+        baseline_match=baseline_match,
     )
 
 
@@ -99,6 +103,7 @@ def _export_diagnostic(
     image_path: Path,
     manifest,
     baseline_epoch: str,
+    baseline_match: matchlib.MatchResult | None = None,
 ) -> dict:
     destination = destination.resolve()
     if destination.exists():
@@ -133,6 +138,8 @@ def _export_diagnostic(
             "diagnostic": None,
             "error": status.error,
         }
+        if baseline_match is not None:
+            _write_assembly(bundle / "baseline.asm", baseline_match.candidate_disassembly)
         if status.error is None:
             shadow = Path(temp) / "scratch"
             shadow.mkdir()
@@ -166,15 +173,22 @@ def _export_diagnostic(
             (bundle / "assembly.diff").write_text(
                 "\n".join(result.diff_lines) + "\n", encoding="utf-8"
             )
+            if baseline_match is not None:
+                (bundle / "baseline.diff").write_text(
+                    "\n".join(difflib.unified_diff(
+                        baseline_match.candidate_lines,
+                        result.candidate_lines,
+                        fromfile="baseline",
+                        tofile="candidate",
+                        lineterm="",
+                    )) + "\n",
+                    encoding="utf-8",
+                )
             for name, lines in (
                 ("target", result.target_disassembly),
                 ("candidate", result.candidate_disassembly),
             ):
-                (bundle / f"{name}.asm").write_text(
-                    "\n".join(f"{line.offset:04x}  {line.text}" for line in lines)
-                    + "\n",
-                    encoding="utf-8",
-                )
+                _write_assembly(bundle / f"{name}.asm", lines)
         (bundle / "report.json").write_text(
             json.dumps(
                 report, indent=2, sort_keys=True, default=lambda value: value.hex()
@@ -187,3 +201,10 @@ def _export_diagnostic(
             raise ValueError(f"export destination already exists: {destination}")
         bundle.rename(destination)
     return report
+
+
+def _write_assembly(path: Path, lines: tuple[matchlib.DisassemblyLine, ...]) -> None:
+    path.write_text(
+        "\n".join(f"{line.offset:04x}  {line.text}" for line in lines) + "\n",
+        encoding="utf-8",
+    )

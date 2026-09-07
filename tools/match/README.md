@@ -168,13 +168,20 @@ Useful analysis helpers:
     --source /tmp/probe.cpp --export-dir /tmp/probe-diagnostic
   ```
 
-  The destination must be new. A successful compile exports `candidate.cpp`,
-  `source.diff`, `assembly.diff`, `target.asm`, `candidate.asm`, and `report.json`.
+  The destination must be new. Successful baseline and candidate compilations
+  export `candidate.cpp`, `source.diff`, `assembly.diff`, `baseline.diff`,
+  `target.asm`, `baseline.asm`, `candidate.asm`, and `report.json`.
+  `source.diff` compares baseline C++ to candidate C++; `assembly.diff` compares
+  native target instructions to candidate instructions; `baseline.diff` compares
+  baseline instructions to candidate instructions. Both assembly diffs use the
+  normalized instruction text used by the matcher. `baseline.asm` comes from
+  the original baseline evaluation, so export does not recompile the baseline.
   The report preserves the baseline/probe metrics, source and dependency
   hashes, baseline epoch, compiler profile, CFG diagnostics, and full reference
   audit. Export recompilation must reproduce the evaluated function bytes and
-  relocation evidence. A compile failure exports source, its diff, and the error
-  report without assembly; the command still exits with status 2. Export also
+  relocation evidence. Compile failures keep the source, its diff, error details,
+  and assembly from successful evaluations; no assembly comparison is emitted
+  for an unavailable side. The command still exits with status 2. Export also
   works with `--stdin` and may be combined with `--record`, which records the
   bundle path. It does not promote the source or require a score improvement.
 - `uv run snail match mutate <scratch> --spec <plan.json>` evaluates bounded

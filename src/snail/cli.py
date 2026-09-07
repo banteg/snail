@@ -931,7 +931,7 @@ def build_parser() -> argparse.ArgumentParser:
     match_probe_parser.add_argument(
         "--export-dir",
         type=Path,
-        help="Fresh directory for a diagnostic source probe bundle.",
+        help="Fresh directory for baseline, target, and source probe diagnostics.",
     )
     match_probe_parser.add_argument(
         "--record",

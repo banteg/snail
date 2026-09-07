@@ -17,7 +17,7 @@ import os
 import re
 import struct
 from collections import Counter
-from collections.abc import Collection
+from collections.abc import Callable, Collection
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from dataclasses import asdict, dataclass, field, replace
 from functools import cache
@@ -3425,6 +3425,7 @@ class ProbeResult:
     source_sha256: str
     label: str | None = None
     baseline_source_text: str | None = field(default=None, repr=False)
+    baseline_match: MatchResult | None = field(default=None, repr=False)
 
     @property
     def fuzzy_delta_bytes(self) -> float:
@@ -4324,8 +4325,12 @@ def evaluate_scratch(
     *,
     image_path: Path | None = None,
     manifest: FunctionSymbolManifest | None = None,
+    on_match: Callable[[MatchResult], None] | None = None,
 ) -> ScratchStatus:
-    """Compile and score one explicit scratch configuration."""
+    """Compile and score one explicit scratch configuration.
+
+    ``on_match`` observes the successful result after code identity is computed.
+    """
 
     manifest = manifest or load_function_symbol_manifest(
         DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH
@@ -4351,7 +4356,7 @@ def evaluate_scratch(
             symbol_name=config.symbol,
             end_va=config.end_va,
         )
-        return ScratchStatus(
+        status = ScratchStatus(
             config=config,
             address=address,
             target_size=target_size,
@@ -4380,6 +4385,9 @@ def evaluate_scratch(
                 reference_manifest=load_default_reference_symbol_manifest(),
             )),
         )
+        if on_match is not None:
+            on_match(result)
+        return status
     except Exception as error:
         return ScratchStatus(
             config=config,
@@ -4400,6 +4408,7 @@ def evaluate_source_overlay(
     match_root: Path = DEFAULT_MATCH_ROOT,
     image_path: Path | None = None,
     manifest: FunctionSymbolManifest | None = None,
+    on_match: Callable[[MatchResult], None] | None = None,
 ) -> ScratchStatus:
     """Score a temporary source overlay without touching the tracked scratch."""
 
@@ -4422,6 +4431,7 @@ def evaluate_source_overlay(
             match_root,
             image_path=image_path,
             manifest=manifest,
+            on_match=on_match,
         )
 
 
@@ -4446,12 +4456,14 @@ def evaluate_source_probe(
     baseline_source = (config.directory / "scratch.cpp").read_text(
         encoding="utf-8",
     )
+    baseline_matches: list[MatchResult] = []
     baseline = evaluate_source_overlay(
         baseline_config,
         baseline_source,
         match_root=match_root,
         image_path=image_path,
         manifest=manifest,
+        on_match=baseline_matches.append,
     )
     probe = evaluate_source_overlay(
         baseline_config,
@@ -4468,6 +4480,7 @@ def evaluate_source_probe(
         source_sha256=hashlib.sha256(source_text.encode()).hexdigest(),
         label=label,
         baseline_source_text=baseline_source,
+        baseline_match=baseline_matches[0] if baseline_matches else None,
     )
 
 
