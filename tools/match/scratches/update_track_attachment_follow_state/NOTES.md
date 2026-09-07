@@ -68,3 +68,36 @@ and 65 clean references, but still has only 705/726 instructions and is not
 promoted. Its full diff isolates a large deficit in merged side-exit/clamp
 returns, alongside nonlinear input/output and normal-bank reload lifetimes.
 This remains an active source hypothesis rather than an exact match.
+
+## 2026-09-07 vector results and live sample-array ownership
+
+The vector reconstruction is now retained. The ordinary path uses a complete
+base position, right offset, up offset, and final vector sum. Its source and
+destination values remain distinct from the terminal launch vector. Both
+terminal orientation components read through the live primary sample array;
+the second matrix copy similarly reloads the secondary array after copying
+the first matrix. Direct indexed sample reads replace the extra cached sample
+and cell aliases in the ordinary displacement calculation.
+
+The primary-array reload is the consequential coupling: it restores the native
+input lifetime and all three side-exit return tails in the previously rejected
+vector reconstruction. Changing the clamp is unnecessary. The indexed
+ordinary base then recovers the missing address preparation and removes the
+extra cached-array spill. Together the retained source improves **78.30% to
+97.25%**, recovers the exact **726/726 instruction count**, extends the prefix
+from **145 to 194**, and keeps all **65 references clean**. The separate unused
+nonlinear output scalar is neutral after this recovery. Unused decompiler
+temporaries are removed and the remaining values are named by their role.
+
+Six recipes record 98 compiling forms across the coupled array/input owners,
+nonlinear field and vector publications, vertical/basis phases, coordinate
+snapshots, ordinary vector expressions, and the separate nonlinear output.
+The final cleaned source independently reproduces code SHA-256
+`9f35324208fcafa9d20f8bf7e2a69d7e4dd8f4ab1e870bf646f3422a413ee63c`.
+
+The remaining normalized diff has four regions: the terminal LEA/x87 ordering,
+nonlinear position addressing and X/Y publication, the three ordinary-base
+addition orders, and the right-offset Y multiplication. The terminal and
+right-offset differences also occur in Golb traversal. This is a substantial
+partial recovery, not a new exact match; no shared header, ABI, compiler
+profile, reference rule, or normalization changes.

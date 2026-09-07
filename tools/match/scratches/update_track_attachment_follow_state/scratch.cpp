@@ -8,7 +8,6 @@
 
 typedef Vector3 Vec3;
 
-
 int cRPathFollowGoldy::Traverse(
     float path_factor,
     Vec3& out_position,
@@ -19,26 +18,18 @@ int cRPathFollowGoldy::Traverse(
     AttachmentSample* secondary_samples = initial_template->secondary_samples;
     float* p_delta_length = &secondary_samples[index].delta_length;
     float delta = path_factor * *p_delta_length;
-    float alpha;
-    float out_angle;
-    float arg1;
-    float arg2;
-    float v79;
-    float v82;
-    float v83;
-    float v84;
-    float v85;
+    float ordinary_alpha;
+    float sample_progress;
+    float special_scalar;
+    float nonlinear_x;
+    float lateral_scale;
+    Vec3 base_position;
+    float center_x;
     TransformMatrix transform;
-    float v87;
-    float v88;
-    float v90;
-    float v91;
-    float v92;
-    float v93;
-    TransformMatrix from;
-    TransformMatrix v95;
-    TransformMatrix v96;
-    TransformMatrix to;
+    TransformMatrix nonlinear_from;
+    TransformMatrix ordinary_from;
+    TransformMatrix ordinary_to;
+    TransformMatrix nonlinear_to;
 
     unsigned int current_index;
     Path* current_template;
@@ -84,63 +75,65 @@ int cRPathFollowGoldy::Traverse(
 
     {
         current_index = sample_index;
-        out_angle = delta + progress;
-        progress = out_angle;
+        sample_progress = delta + progress;
+        progress = sample_progress;
         current_template = this->template_record;
         sample_count = current_template->segment_count;
         if (current_index == (unsigned int)(sample_count - 1)) {
-            v85 = current_template->primary_samples[current_index].center_x;
+            center_x = current_template->primary_samples[current_index].center_x;
         } else {
-            v85 = out_angle / current_template->secondary_samples[current_index].delta_length
+            center_x = sample_progress / current_template->secondary_samples[current_index].delta_length
                 * (current_template->primary_samples[current_index + 1].center_x
                     - current_template->primary_samples[current_index].center_x)
                 + current_template->primary_samples[current_index].center_x;
         }
         if (current_index == (unsigned int)(sample_count - 1)) {
-            v79 = current_template->primary_samples[current_index].lateral_scale;
+            lateral_scale = current_template->primary_samples[current_index].lateral_scale;
         } else {
-            v79 = out_angle / current_template->secondary_samples[current_index].delta_length
+            lateral_scale = sample_progress / current_template->secondary_samples[current_index].delta_length
                 * (current_template->primary_samples[current_index + 1].lateral_scale
                     - current_template->primary_samples[current_index].lateral_scale)
                 + current_template->primary_samples[current_index].lateral_scale;
         }
         if (current_index == (unsigned int)(sample_count - 1)) {
-            arg1 = current_template->primary_samples[current_index].special_scalar;
+            special_scalar = current_template->primary_samples[current_index].special_scalar;
         } else {
-            arg1 = out_angle / current_template->secondary_samples[current_index].delta_length
+            special_scalar = sample_progress / current_template->secondary_samples[current_index].delta_length
                 * (current_template->primary_samples[current_index + 1].special_scalar
                     - current_template->primary_samples[current_index].special_scalar)
                 + current_template->primary_samples[current_index].special_scalar;
         }
 
+        float& input_x = out_position.x;
+        Vec3* output = &output_position;
         if (current_template->kind == PATH_TEMPLATE_KIND_NONLINEAR_42) {
-            arg2 = out_position.x - v85;
+            float nonlinear_output;
+            nonlinear_x = input_x - center_x;
             current_template->compute_kind42_attachment_transform(
-                arg1, arg2, 0.49000001f, &transform, &out_angle);
+                special_scalar, nonlinear_x, 0.49000001f, &transform, &nonlinear_output);
             unsigned int active_index = sample_index;
             if (active_index == 0 || active_index == (unsigned int)(this->template_record->segment_count - 1)) {
-                from.Identity();
-                from.position.x = transform.position.x;
-                from.position.y = transform.position.y;
-                from.position.z = transform.position.z;
-                to = transform;
+                nonlinear_from.Identity();
+                nonlinear_from.position.x = transform.position.x;
+                nonlinear_from.position.y = transform.position.y;
+                nonlinear_from.position.z = transform.position.z;
+                nonlinear_to = transform;
                 float blend;
                 if (sample_index == 0)
                     blend = progress;
                 else
                     blend = 1.0f - progress;
-                transform.LinearInterpolate(from, to, blend);
+                transform.LinearInterpolate(nonlinear_from, nonlinear_to, blend);
             }
 
-            Vec3* output = &output_position;
             float y = transform.position.y;
             float z =
                 this->template_record->secondary_samples[sample_index].delta_dir_to_next.z * progress
                 + source_cell->position.z
                 + this->template_record->secondary_samples[sample_index].transform.position.z;
-            transform.basis_right.x *= v79;
-            transform.basis_right.y *= v79;
-            transform.basis_right.z *= v79;
+            transform.basis_right.x *= lateral_scale;
+            transform.basis_right.y *= lateral_scale;
+            transform.basis_right.z *= lateral_scale;
             float vertical = motion->y + vertical_offset;
             output->x = transform.position.x;
             output->y = y;
@@ -152,53 +145,37 @@ int cRPathFollowGoldy::Traverse(
         } else {
             AttachmentSample* secondary = current_template->secondary_samples;
             AttachmentSample* sample = &secondary[current_index];
-            cRSubLoc* anchor = source_cell;
-            float path_x = out_angle * sample->delta_dir_to_next.x;
-            float path_y = out_angle * sample->delta_dir_to_next.y;
-            float path_z = out_angle * sample->delta_dir_to_next.z;
-            v82 = path_x * v79 + anchor->position.x + sample->transform.position.x;
-            v83 = path_y * v79 + anchor->position.y + sample->transform.position.y;
-            v84 = path_z + anchor->position.z + sample->transform.position.z;
+            base_position.x = lateral_scale * (sample_progress * secondary[current_index].delta_dir_to_next.x)
+                + secondary[current_index].transform.position.x + source_cell->position.x;
+            base_position.y = lateral_scale * (sample_progress * secondary[current_index].delta_dir_to_next.y)
+                + secondary[current_index].transform.position.y + source_cell->position.y;
+            base_position.z = sample_progress * secondary[current_index].delta_dir_to_next.z
+                + secondary[current_index].transform.position.z + source_cell->position.z;
             if (current_index == (unsigned int)(sample_count - 1)) {
                 transform.Identity();
             } else {
-                v95 = sample->transform;
-                v96 = secondary[current_index + 1].transform;
-                v95.position.z = 0.0f;
-                v95.position.y = 0.0f;
-                v95.position.x = 0.0f;
-                v96.position.z = 0.0f;
-                v96.position.y = 0.0f;
-                v96.position.x = 0.0f;
-                alpha = out_angle / current_template->secondary_samples[current_index].delta_length;
-                transform.LinearInterpolate(v95, v96, alpha);
+                ordinary_from = sample->transform;
+                ordinary_to = current_template->secondary_samples[current_index + 1].transform;
+                ordinary_from.position.z = 0.0f;
+                ordinary_from.position.y = 0.0f;
+                ordinary_from.position.x = 0.0f;
+                ordinary_to.position.z = 0.0f;
+                ordinary_to.position.y = 0.0f;
+                ordinary_to.position.x = 0.0f;
+                ordinary_alpha = sample_progress / current_template->secondary_samples[current_index].delta_length;
+                transform.LinearInterpolate(ordinary_from, ordinary_to, ordinary_alpha);
             }
 
-            Vec3* output = &output_position;
-            transform.basis_right.x *= v79;
-            transform.basis_right.y *= v79;
-            transform.basis_right.z *= v79;
+            transform.basis_right.x *= lateral_scale;
+            transform.basis_right.y *= lateral_scale;
+            transform.basis_right.z *= lateral_scale;
             float vertical = motion->y + vertical_offset;
             vertical_offset = vertical;
-            Vec3 up_offset(
-                transform.basis_up.x * vertical,
-                transform.basis_up.y * vertical,
-                transform.basis_up.z * vertical);
-            float local_x = out_position.x - v85;
-            Vec3 right_offset(
-                local_x * transform.basis_right.x,
-                transform.basis_right.y * local_x,
-                local_x * transform.basis_right.z);
-            v90 = right_offset.x + v82;
-            v91 = right_offset.y + v83;
-            float right_z = right_offset.z + v84;
-            v82 = v90 + up_offset.x;
-            float out_y = v91 + up_offset.y;
-            output->x = v82;
-            v83 = out_y;
-            output->y = v83;
-            v84 = right_z + up_offset.z;
-            output->z = v84;
+            Vec3 up_offset = transform.basis_up * vertical;
+            float local_x = input_x - center_x;
+            Vec3 right_offset = transform.basis_right * local_x;
+            Vec3 result = (right_offset + base_position) + up_offset;
+            *output = result;
             g_game->subgame.player.transform.basis_right = transform.basis_right;
             g_game->subgame.player.transform.basis_up = transform.basis_up;
             g_game->subgame.player.transform.basis_forward = transform.basis_forward;
@@ -208,12 +185,9 @@ int cRPathFollowGoldy::Traverse(
 
         Path* orient_template = this->template_record;
         unsigned int orient_index = sample_index;
-        int offset = 0xa8 * orient_index;
         if (orient_index == (unsigned int)(orient_template->segment_count - 1)) {
-            AttachmentSample* last_sample =
-                (AttachmentSample*)((char*)orient_template->primary_samples + offset);
-            orientation_b = last_sample->rotation_scalar_98;
-            orientation_a = last_sample->rotation_scalar_94;
+            orientation_b = orient_template->primary_samples[orient_index].rotation_scalar_98;
+            orientation_a = orient_template->primary_samples[orient_index].rotation_scalar_94;
         } else {
             float delta_b =
                 orient_template->primary_samples[orient_index + 1].rotation_scalar_98
@@ -248,18 +222,18 @@ int cRPathFollowGoldy::Traverse(
             / (float)(int)orient_template->segment_count;
 
         if (player->sub_hover.state != SUB_HOVER_STATE_ACTIVE) {
-            float abs_lateral = out_position.x - v85;
+            float abs_lateral = input_x - center_x;
             if (abs_lateral < 0.0f)
                 abs_lateral = -abs_lateral;
             if (abs_lateral > (float)(int)orient_template->width_cells * 0.5f + 0.30000001f
                 && vertical_offset <= 0.0f) {
-                out_position = output_position;
+                out_position = *output;
                 player->heading_roll =
                     this->template_record->installed_heading_delta + player->heading_roll;
-                float clamped_x = out_position.x < -4.0f
+                float clamped_x = input_x < -4.0f
                     ? -4.0f
-                    : (out_position.x > 4.0f ? 4.0f : out_position.x);
-                out_position.x = clamped_x;
+                    : (input_x > 4.0f ? 4.0f : input_x);
+                input_x = clamped_x;
                 return this->template_record->side_exit_mode == 0;
             }
         }
@@ -318,5 +292,4 @@ terminal_path:
             this->template_record->installed_heading_delta + player->heading_roll;
         return 3;
     }
-
 }
