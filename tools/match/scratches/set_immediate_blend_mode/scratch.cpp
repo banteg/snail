@@ -21,15 +21,15 @@ void set_immediate_blend_mode(int blend_mode)
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);
         return;
 
-    case 4:
-        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);
-        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 5);
-        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);
-        return;
-
     case 14:
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 10);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);
+        return;
+
+    case 4:
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 5);
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);
         return;
 

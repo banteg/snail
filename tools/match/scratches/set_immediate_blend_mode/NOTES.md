@@ -15,7 +15,7 @@ Recovered behavior:
 
 The native switch table lives at `0x412fe8` and has 16 entries.
 
-Current focused result: `85.50%`, `126/136` candidate/target instructions,
+Initial focused result: `85.50%`, `126/136` candidate/target instructions,
 `19 ok`, `0 unresolved`, `1 mismatch`.
 
 Source-shape notes:
@@ -114,3 +114,26 @@ no interface header or call wrapper is retained.
 
 The committed recipes and hash-bound receipts describe the tested forms; they
 do not establish source exhaustion.
+
+
+## 2026-09-07 platform continuation
+
+The 150-form `preset-order-and-partition-interaction-20260907.json` pairs the
+better case order with every previously tested equal-effect group partition.
+It reproduces, but does not improve, the 89.30% ordering seed. The canonical
+source now retains the smallest form: place mode 14 immediately after mode 2,
+with every case body and state value unchanged. This keeps the improvement
+visible as a partial: 135/136 instructions instead of 126/136, prefix 2/136,
+21 clean references instead of 20, one target-only load instead of two, and
+the existing mismatched switch table. Duplicate blocks and shared suffixes
+still differ; this is not an exact match.
+
+The executable's independently verified VC6 8168 C++ contribution motivated
+six unchanged adjacent render controls under both standard C++ profiles.
+`initialize_direct3d_renderer`, `set_blend_mode`, `render_game_frame_scene`,
+`present_backbuffer`, `configure_sprite_render_state`, and `bind_texture_ref`
+all remain exact under both msvc6.5 and msvc6.0: 308 native instructions in
+aggregate, full prefixes, and clean references. The immediate blend helper
+and textured quad are also byte-neutral between those profiles. These controls
+do not distinguish the render compiler profile, so no profile override is
+retained. Each comparison has a receipt in the corresponding scratch ledger.
