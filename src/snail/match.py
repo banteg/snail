@@ -3455,6 +3455,33 @@ class ScratchAuditFailure:
     error: str
 
 
+def resolve_scratch_directory(
+    directory: str | Path,
+    match_root: Path = DEFAULT_MATCH_ROOT,
+) -> Path:
+    """Resolve a path or a short scratch basename without guessing aliases.
+
+    Preserve the CLI's raw string so ``./name`` and ``name/`` stay explicit.
+    Path objects are always treated as explicit paths.
+    """
+    supplied = Path(directory)
+    short_name = (
+        isinstance(directory, str)
+        and directory not in {"", ".", ".."}
+        and directory == supplied.name
+    )
+    path = supplied
+    if short_name and not supplied.exists() and not supplied.is_symlink():
+        path = match_root / "scratches" / supplied
+        if not path.exists():
+            raise FileNotFoundError(
+                f"unknown scratch {directory!r}; expected directory {path.resolve()}"
+            )
+    if not path.is_dir():
+        raise NotADirectoryError(f"scratch directory not found: {path.resolve()}")
+    return path.resolve()
+
+
 def load_scratch_config(directory: Path) -> ScratchConfig:
     import shlex
 

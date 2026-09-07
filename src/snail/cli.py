@@ -48,6 +48,7 @@ from .match import (
     render_status_table,
     render_triage_summary,
     render_triage_table,
+    resolve_scratch_directory,
     run_match,
     run_match_dump,
     run_scratch_match,
@@ -331,6 +332,20 @@ def _print_mobile_backed_pending(rows, *, limit: int) -> None:
             f"{bodies:6}  {confidence:10}  {source_object:18}  "
             f"{function}"
         )
+
+
+def _add_scratch_directory_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "directory",
+        help="Scratch directory path, or its basename under --match-root/scratches.",
+    )
+    parser.add_argument(
+        "--match-root",
+        type=Path,
+        default=DEFAULT_MATCH_ROOT,
+        help="Path to the tools/match root.",
+    )
+    parser.set_defaults(_scratch_directory=True)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -781,11 +796,7 @@ def build_parser() -> argparse.ArgumentParser:
         "scratch",
         help="Compile and diff one scratch through the canonical matching pipeline.",
     )
-    match_scratch_parser.add_argument(
-        "directory",
-        type=Path,
-        help="Scratch directory containing scratch.cpp and scratch.conf.",
-    )
+    _add_scratch_directory_arguments(match_scratch_parser)
     match_scratch_parser.add_argument(
         "--image",
         type=Path,
@@ -823,17 +834,7 @@ def build_parser() -> argparse.ArgumentParser:
         "inspect",
         help="Report structural and stack diagnostics for one scratch.",
     )
-    match_inspect_parser.add_argument(
-        "directory",
-        type=Path,
-        help="Scratch directory containing scratch.cpp and scratch.conf.",
-    )
-    match_inspect_parser.add_argument(
-        "--match-root",
-        type=Path,
-        default=DEFAULT_MATCH_ROOT,
-        help="Path to the tools/match root.",
-    )
+    _add_scratch_directory_arguments(match_inspect_parser)
     match_inspect_parser.add_argument(
         "--image",
         type=Path,
@@ -874,17 +875,7 @@ def build_parser() -> argparse.ArgumentParser:
         "listing",
         help="Generate a proven-equivalent VC mixed source/assembly listing.",
     )
-    match_listing_parser.add_argument(
-        "directory",
-        type=Path,
-        help="Scratch directory containing scratch.cpp and scratch.conf.",
-    )
-    match_listing_parser.add_argument(
-        "--match-root",
-        type=Path,
-        default=DEFAULT_MATCH_ROOT,
-        help="Path to the tools/match root.",
-    )
+    _add_scratch_directory_arguments(match_listing_parser)
     match_listing_parser.add_argument(
         "--output",
         type=Path,
@@ -900,11 +891,7 @@ def build_parser() -> argparse.ArgumentParser:
         "probe",
         help="Compare a source overlay without editing the scratch.",
     )
-    match_probe_parser.add_argument(
-        "directory",
-        type=Path,
-        help="Scratch directory containing scratch.cpp and scratch.conf.",
-    )
+    _add_scratch_directory_arguments(match_probe_parser)
     match_probe_source = match_probe_parser.add_mutually_exclusive_group(
         required=True
     )
@@ -917,12 +904,6 @@ def build_parser() -> argparse.ArgumentParser:
         "--stdin",
         action="store_true",
         help="Read temporary replacement source from stdin.",
-    )
-    match_probe_parser.add_argument(
-        "--match-root",
-        type=Path,
-        default=DEFAULT_MATCH_ROOT,
-        help="Path to the tools/match root.",
     )
     match_probe_parser.add_argument(
         "--image",
@@ -967,22 +948,12 @@ def build_parser() -> argparse.ArgumentParser:
         "mutate",
         help="Compile and rank bounded source mutations without editing the scratch.",
     )
-    match_mutate_parser.add_argument(
-        "directory",
-        type=Path,
-        help="Scratch directory containing scratch.cpp and scratch.conf.",
-    )
+    _add_scratch_directory_arguments(match_mutate_parser)
     match_mutate_parser.add_argument(
         "--spec",
         type=Path,
         required=True,
         help="JSON mutation plan.",
-    )
-    match_mutate_parser.add_argument(
-        "--match-root",
-        type=Path,
-        default=DEFAULT_MATCH_ROOT,
-        help="Path to the tools/match root.",
     )
     match_mutate_parser.add_argument(
         "--image",
@@ -1070,7 +1041,7 @@ def build_parser() -> argparse.ArgumentParser:
     match_mutate_parser.add_argument("--export-dir", type=Path, help="Fresh directory for a diagnostic candidate bundle.")
 
     contracts_parser = match_subparsers.add_parser("contracts", help="Read-only native return-contract evidence.")
-    contracts_parser.add_argument("directory", type=Path)
+    _add_scratch_directory_arguments(contracts_parser)
     contracts_parser.add_argument("--manifest", type=Path, default=DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH)
     contracts_parser.add_argument("--image", type=Path)
     contracts_parser.add_argument("--mobile-crosswalk", type=Path, default=REPO_ROOT / "analysis/symbols/windows-mobile-gameplay-crosswalk.json")
@@ -1147,11 +1118,7 @@ def build_parser() -> argparse.ArgumentParser:
         "experiment-audit",
         help="Audit reviewed invalid-plan errors in a mutation sweep.",
     )
-    match_experiment_audit_parser.add_argument(
-        "directory",
-        type=Path,
-        help="Scratch directory containing experiments.jsonl.",
-    )
+    _add_scratch_directory_arguments(match_experiment_audit_parser)
     match_experiment_audit_parser.add_argument(
         "--record",
         action="append",
@@ -1163,12 +1130,6 @@ def build_parser() -> argparse.ArgumentParser:
         "--reason",
         required=True,
         help="Why the compile failures came from an invalid mutation plan.",
-    )
-    match_experiment_audit_parser.add_argument(
-        "--match-root",
-        type=Path,
-        default=DEFAULT_MATCH_ROOT,
-        help="Path to the tools/match root.",
     )
     match_experiment_audit_parser.add_argument(
         "--image",
@@ -1442,6 +1403,21 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+
+    if args.command == "match" and args.match_command == "mutate":
+        if bool(args.export_candidate) != bool(args.export_dir):
+            parser.error("--export-candidate and --export-dir must be supplied together")
+        if args.time_budget is not None and args.time_budget <= 0:
+            parser.error("--time-budget must be positive")
+        if args.min_changes > args.max_changes:
+            parser.error("--min-changes cannot exceed --max-changes")
+
+    if getattr(args, "_scratch_directory", False):
+        try:
+            args.directory = resolve_scratch_directory(args.directory, args.match_root)
+        except (OSError, ValueError) as error:
+            print(f"scratch resolution failed: {error}", file=sys.stderr)
+            return 2
 
     if args.command == "inspect":
         report = inspect_path(Path(args.path), signature_limit=args.limit)
@@ -1806,7 +1782,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if args.command == "match" and args.match_command == "probe":
         try:
-            config = load_scratch_config(args.directory.resolve())
+            config = load_scratch_config(args.directory)
             source_text = (
                 sys.stdin.read()
                 if args.stdin
@@ -1896,14 +1872,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
 
     if args.command == "match" and args.match_command == "mutate":
-        if bool(args.export_candidate) != bool(args.export_dir):
-            parser.error("--export-candidate and --export-dir must be supplied together")
-        if args.time_budget is not None and args.time_budget <= 0:
-            parser.error("--time-budget must be positive")
-        if args.min_changes > args.max_changes:
-            parser.error("--min-changes cannot exceed --max-changes")
         try:
-            config = load_scratch_config(args.directory.resolve())
+            config = load_scratch_config(args.directory)
             mutation_spec = match_mutation.load_mutation_spec(
                 args.spec.resolve()
             )
@@ -2040,7 +2010,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         try:
             if len(args.record) != len(set(args.record)):
                 raise ValueError("--record values must be unique")
-            config = load_scratch_config(args.directory.resolve())
+            config = load_scratch_config(args.directory)
             path = config.directory / match_experiments.EXPERIMENT_FILE
             current_epoch = scratch_experiment_epoch(
                 config,
@@ -2087,7 +2057,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if args.command == "match" and args.match_command == "contracts":
         try:
-            config = load_scratch_config(args.directory.resolve())
+            config = load_scratch_config(args.directory)
             manifest = load_function_symbol_manifest(args.manifest)
             payload = match_contracts.audit_contract(
                 config, image_path=args.image or REPO_ROOT / manifest.primary_target,
@@ -2396,7 +2366,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if args.command == "match" and args.match_command == "listing":
         try:
-            config = load_scratch_config(args.directory.resolve())
+            config = load_scratch_config(args.directory)
             result = generate_compiler_listing(
                 config,
                 args.match_root,
@@ -2419,14 +2389,14 @@ def main(argv: Sequence[str] | None = None) -> int:
             manifest = load_function_symbol_manifest(args.manifest)
             image_path = args.image or REPO_ROOT / manifest.primary_target
             result = run_scratch_match(
-                directory=args.directory.resolve(),
+                directory=args.directory,
                 image_path=image_path,
                 manifest=manifest,
                 match_root=args.match_root,
             )
             listing = None
             if args.source_lines:
-                config = load_scratch_config(args.directory.resolve())
+                config = load_scratch_config(args.directory)
                 listing = generate_compiler_listing(config, args.match_root)
             payload = match_result_payload(
                 result,
@@ -2558,9 +2528,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         image_path = args.image or REPO_ROOT / manifest.primary_target
         if args.match_command == "scratch":
             result = run_scratch_match(
-                directory=args.directory.resolve(),
+                directory=args.directory,
                 image_path=image_path,
                 manifest=manifest,
+                match_root=args.match_root,
             )
         else:
             result = run_match(

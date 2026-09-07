@@ -101,6 +101,16 @@ not an official Microsoft Rich-header specification.
    extent resolution, normalization, and operand audit as the status sweep.
 3. Iterate the source until the diff is empty. Exit code 0 means 100%.
 
+The `scratch`, `inspect`, `listing`, `probe`, `mutate`, `contracts`, and
+`experiment-audit` CLI commands accept a scratch directory path or its short
+directory name. For example, `uv run snail match inspect
+initialize_sbend_path_template_pair` resolves the directory under
+`tools/match/scratches`. Use `--match-root /path/to/tools/match` to select another
+scratch collection and compiler root. An existing path in the current directory
+takes precedence; explicit paths such as `./name`, `name/`, or absolute paths
+never fall back to the scratch collection. Short names are directory basenames;
+manifest function aliases are not searched.
+
 Useful analysis helpers:
 
 - `uv run snail match mobile <function>` prints the Binary Ninja Windows
