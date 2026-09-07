@@ -34,7 +34,36 @@ def test_full_scope_weighting_and_no_prebuilt_or_unassigned_credit():
     assert m["complete_code"] == "0"
     assert result["units"][-1]["functions"] == []
     assert result["units"][2]["functions"][0]["fuzzy_match_percent"] == 0
-    assert "categories" not in result
+    assert result["categories"][0]["measures"]["total_code"] == "0"
+
+
+def test_game_category_keeps_platform_and_unrecovered_game_but_excludes_unknown_and_libraries(monkeypatch):
+    monkeypatch.setattr(report, "load_function_symbol_manifest", lambda _: SimpleNamespace(functions=[
+        SimpleNamespace(address=1, port_scope="core"),
+        SimpleNamespace(address=200, port_scope="boundary"),
+        SimpleNamespace(address=600, port_scope="replaceable-platform"),
+        SimpleNamespace(address=1200, port_scope="third-party"),
+    ]))
+    result = report.build_report([
+        row(size=100), row(200, 300, ratio=0.5, matched=False),
+        row(600, 500, candidate=None, source=None, ratio=0, matched=False),
+        row(1200, 100), row(1400, 200),
+        row(1800, 50, candidate=None, source=None, ratio=0, matched=False, is_function=False),
+    ])
+    category, = result["categories"]
+    assert (category["id"], category["name"]) == ("game", "Game & Engine")
+    m = category["measures"]
+    assert m["total_code"] == "900"
+    assert m["matched_code"] == "100"
+    assert m["fuzzy_match_percent"] == pytest.approx(250 / 900 * 100)
+    assert m["total_functions"] == m["total_units"] == 3
+    assert m["matched_functions"] == 1
+    assert m["complete_code"] == "0"
+    assert [u["metadata"]["progress_categories"] for u in result["units"]] == [
+        ["game"], ["game"], ["game"], [], [], [],
+    ]
+    assert result["measures"]["total_code"] == "1250"
+    assert result["measures"]["matched_code"] == "400"
 
 
 def test_reference_pending_perfect_ratio_stays_visibly_partial():

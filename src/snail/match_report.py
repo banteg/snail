@@ -267,7 +267,9 @@ def publish(*, refresh: bool = False, output: Path = DEFAULT_REPORT, jobs: int =
 
 
 def build_report(functions: list[dict[str, Any]]) -> dict[str, Any]:
-    """One public function or unassigned range per unit; no scope filters."""
+    """Full-executable totals with an optional identified Game & Engine view."""
+    manifest = load_function_symbol_manifest(REPO_ROOT / "analysis/symbols/gameplay-functions.json")
+    game_addresses = {f.address for f in manifest.functions if f.port_scope != "third-party"}
     names = Counter(row["name"] for row in functions)
     seen: set[int] = set()
     units: list[dict[str, Any]] = []
@@ -302,7 +304,10 @@ def build_report(functions: list[dict[str, Any]]) -> dict[str, Any]:
             int(is_complete),
         )
         name = row["name"] if names[row["name"]] == 1 else f"{row['name']}@{row['address']:08x}"
-        metadata: dict[str, Any] = {"complete": is_complete}
+        metadata: dict[str, Any] = {
+            "complete": is_complete,
+            "progress_categories": ["game"] if row["is_function"] and key in game_addresses else [],
+        }
         if row["source"]:
             metadata["source_path"] = row["source"]
         if not row["is_function"] or row["candidate"] in {"archive", "import-thunk"}:
@@ -341,8 +346,28 @@ def build_report(functions: list[dict[str, Any]]) -> dict[str, Any]:
             complete_units,
         ),
         "units": units,
-
+        "categories": [{
+            "id": "game",
+            "name": "Game & Engine",
+            "measures": _sum_measures([
+                unit["measures"] for unit in units if "game" in unit["metadata"]["progress_categories"]
+            ]),
+        }],
     }
+
+
+def _sum_measures(measures: list[dict[str, Any]]) -> dict[str, Any]:
+    total = sum(int(m["total_code"]) for m in measures)
+    return _measures(
+        total,
+        sum(int(m["matched_code"]) for m in measures),
+        sum(int(m["complete_code"]) for m in measures),
+        sum(int(m["total_code"]) * m["fuzzy_match_percent"] for m in measures) / total if total else 0.0,
+        sum(m["total_functions"] for m in measures),
+        sum(m["matched_functions"] for m in measures),
+        sum(m["total_units"] for m in measures),
+        sum(m["complete_units"] for m in measures),
+    )
 
 
 def _measures(

@@ -6,6 +6,20 @@ Windows gameplay executable as `win32-reflexive`. This integration follows
 The comparison is performed by `snail match`, not objdiff; objdiff v3.8.1 validates
 the v2 report format. Library recovery remains separate work.
 
+## Game & Engine view
+
+The optional [Game & Engine category](https://decomp.dev/banteg/snail?category=game)
+filters the treemap to curated functions in `analysis/symbols/gameplay-functions.json`
+whose `port_scope` is not `third-party`. Like Crimson, it includes original Windows
+platform code as well as core and boundary functions, regardless of whether they
+have a source candidate. The initial category contains 782 function owners.
+It uses their existing disjoint native code ranges and the same matching rules.
+
+This is identified game/engine ownership, not a claim that every remaining byte
+is library code. Uncurated functions, explicit third-party functions and unassigned
+code remain in **All**, which retains the full-executable denominator and default
+view. Category attribution is pinned by the existing manifest input hash.
+
 ## Target and native evidence
 
 The target is the unwrapped gameplay executable, not the Reflexive launcher,

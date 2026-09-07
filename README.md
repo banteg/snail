@@ -1,6 +1,7 @@
 # Snail Mail
 
-[Full-executable decompilation progress](https://decomp.dev/banteg/snail) ·
+[Game & Engine progress](https://decomp.dev/banteg/snail?category=game) ·
+[Full-executable progress](https://decomp.dev/banteg/snail) ·
 [Public reporting policy](analysis/progress/README.md)
 
 Reverse-engineering workspace for Snail Mail and the original Windows artifacts
