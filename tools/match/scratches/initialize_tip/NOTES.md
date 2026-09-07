@@ -200,3 +200,18 @@ recorded against the current source; they reproduce 80.78%, 80.78%, 80.00%,
 79.35%, 68.81% and 61.29%, with 27 clean references apiece. None improves the
 canonical 84.42%, 154/154, prefix-19 result. This fixes the runnable recipe
 without changing or retroactively rewriting the prior experimental evidence.
+
+## 2026-09-07 verified colour-constructor temporaries
+
+The four-float constructor mapping is already closed by its exact callee and
+Windows/mobile caller roles. This local `sprite.h` shadow adds the real C++
+constructors and converts all affected expressions to constructor temporaries,
+without introducing default construction or changing the Windows pointer
+parameter contracts. Both mobile Tip initializers independently construct one
+colour temporary for each widget call.
+
+Both the compatibility-ABI expression temporaries and real C++ temporaries
+remain 84.42%, 154/154 instructions, prefix 19, with 27 clean references.
+The two exact widget initializers therefore control the conversion, but it
+does not close either partial caller. The recipe and receipts retain the
+whole overlays; no shared header or canonical source is changed.

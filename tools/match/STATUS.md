@@ -12,7 +12,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 **69** non-exact scratch-backed functions hold **29147 fuzzy-gap bytes**. The top 5 hold **31.1%** of that gap; the top 10 hold **45.3%**.
 
-Current-baseline experiments cover **9 functions / 429 gap bytes**; **60 / 28718** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **11 functions / 655 gap bytes**; **58 / 28492** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -57,13 +57,13 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 37 | initialize_snake_path_template_pair | 288 | semantic-complete | analysis | historical-only | 0/63 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 38 | initialize_start_path_template_pair | 268 | incomplete | analysis | historical-only | 0/67 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 39 | set_snail_weapon | 254 | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
-| 40 | initialize_intro_screen | 206 | semantic-complete | analysis | historical-only | 0/9 | repeated-variants,variant-errors,historical-only,stale-dependencies |
+| 40 | initialize_intro_screen | 206 | semantic-complete | analysis | current-active | 2/11 | repeated-variants,variant-errors,stale-dependencies |
 | 41 | initialize_sbend_path_template_pair | 184 | semantic-complete | analysis | current-active | 3/66 | repeated-specs,metric-tradeoffs,stale-dependencies |
 | 42 | initialize_loading_screen | 129 | semantic-complete | analysis | historical-only | 0/7 | variant-errors,historical-only |
 | 43 | register_font_texture_sheet | 120 | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
 | 44 | place_challenge_parcels_on_track | 115 | semantic-complete | analysis,references | historical-only | 0/9 | historical-only,stale-dependencies |
 | 45 | update_frontend_widget_interaction | 112 | semantic-complete | analysis,references | historical-only | 0/14 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 46 | initialize_tip | 80 | semantic-complete | analysis | current-active | 1/9 | repeated-variants,stale-dependencies |
+| 46 | initialize_tip | 80 | semantic-complete | analysis | current-active | 2/10 | repeated-variants,stale-dependencies |
 | 47 | update_track_attachment_follow_state | 76 | semantic-complete | analysis | current-active | 2/24 | repeated-variants,metric-tradeoffs,variant-errors,stale-dependencies |
 | 48 | sample_smtrack_heightmap | 75 | semantic-complete | analysis | historical-only | 0/7 | repeated-variants,historical-only,stale-dependencies |
 | 49 | add_object_edge | 65 | semantic-complete | analysis,references | historical-only | 0/16 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
@@ -75,7 +75,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 55 | play_subgoldy_shoot_sfx | 36 | semantic-complete | analysis,references | historical-only | 0/12 | repeated-variants,variant-errors,historical-only,stale-dependencies |
 | 56 | try_enter_track_attachment_from_swept_motion | 34 | semantic-complete | analysis | current-active | 1/11 | stale-dependencies |
 | 57 | set_snail_jetpack | 26 | semantic-complete | analysis | historical-only | 0/9 | repeated-variants,historical-only,stale-dependencies |
-| 58 | create_golb | 20 | semantic-complete | analysis | historical-only | 0/23 | variant-errors,historical-only,stale-dependencies |
+| 58 | create_golb | 20 | semantic-complete | analysis | current-active | 1/24 | variant-errors,stale-dependencies |
 | 59 | firework_shoot | 19 | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
 | 60 | extract_snail_local_hotspots | 18 | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,variant-errors,historical-only,stale-dependencies |
 | 61 | initialize_star_field | 14 | semantic-complete | analysis | current-active | 1/20 | repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |

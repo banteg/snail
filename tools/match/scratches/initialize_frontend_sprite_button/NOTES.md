@@ -20,3 +20,18 @@ the colour-copy block and computes the adjusted anchor before the final layout
 stores. The stable matcher identity remains
 `initialize_frontend_sprite_button`; source and relocations now use the
 authored overload name.
+
+## 2026-09-07 verified colour-constructor temporaries
+
+The four-float constructor mapping is already closed by its exact callee and
+Windows/mobile caller roles. This local `sprite.h` shadow adds the real C++
+constructors and converts all affected expressions to constructor temporaries,
+without introducing default construction or changing the Windows pointer
+parameter contracts. Both mobile Tip initializers independently construct one
+colour temporary for each widget call.
+
+Both expression-temporary controls retain the complete 157/157 match and
+all ten clean references.
+The two exact widget initializers therefore control the conversion, but it
+does not close either partial caller. The recipe and receipts retain the
+whole overlays; no shared header or canonical source is changed.

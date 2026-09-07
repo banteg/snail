@@ -37,3 +37,18 @@ references clean. Replaying the old named-local source records the expected
 The four color-slot mutation plans are retired because they target the removed
 synthetic locals; their append-only ledger entries remain as historical
 evidence.
+
+## 2026-09-07 verified colour-constructor temporaries
+
+The four-float constructor mapping is already closed by its exact callee and
+Windows/mobile caller roles. This local `sprite.h` shadow adds the real C++
+constructors and converts all affected expressions to constructor temporaries,
+without introducing default construction or changing the Windows pointer
+parameter contracts. Both mobile Tip initializers independently construct one
+colour temporary for each widget call.
+
+The real C++ constructor control retains the complete 429/429 match and
+all 50 clean references.
+The two exact widget initializers therefore control the conversion, but it
+does not close either partial caller. The recipe and receipts retain the
+whole overlays; no shared header or canonical source is changed.

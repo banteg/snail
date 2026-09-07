@@ -271,3 +271,14 @@ and all 66 clean references. The five-function batch also includes
 exact formatted-output controls. C++-to-C symbol spelling may change the raw
 COFF digest while leaving normalized instructions and audited references
 unchanged. No compiler or source declaration change is retained.
+
+## 2026-09-07 verified matrix-constructor result
+
+Both mobile Logo initializers call the sixteen-float `tMatrix` constructor,
+and the shared Windows declaration already provides that verified overload.
+Replacing the explicit-return compatibility call with a constructor temporary
+assigned to the player transform regresses 88.89% to 87.74%, preserving
+523/521 instructions and 66 clean references but losing the 88-instruction
+prefix. The real constructor expression therefore does not recover this
+caller's frame lifetime; no canonical source or header is changed. The
+standalone probe and recipe preserve the tested complete source.
