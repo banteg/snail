@@ -252,3 +252,12 @@ No source change is retained. The clear 89.13%, 96/88-instruction baseline and
 its two explicitly unaudited duplicate-tail references remain preferable to a
 globally worse instruction-count or reference-only tradeoff. These probes bound
 the recorded joins and clamp interactions without establishing exhaustion.
+
+## 2026-09-07 continuation: composed volume bounds
+
+Sixteen ordinary min/max operations combine value/reference operands,
+expression/branch definitions, clamp order, and the existing scoped playback
+join. The strict comparisons retain the current NaN behavior. None improves
+89.13%; the best is 84.92%, 91/88 instructions, prefix 26, with 19 clean and
+one unaudited reference. No helper or source change is retained. The duplicated
+playback tail remains unresolved.

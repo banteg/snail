@@ -135,3 +135,15 @@ The 73.87% source is reproducible from
 unused cursor declarations without changing codegen. Keep the actual Windows
 payload layout, signed remainder behavior, and missing PNG-free behavior; do
 not import differing iOS allocation or cleanup behavior.
+
+## 2026-09-07 continuation: local scopes and compiler controls
+
+Eight grouped, first-use, and PNG-arm-local declaration forms are byte-neutral
+against the existing 73.87%, 231/232-instruction C++ diagnostic seed. The
+sweep's apparent improvement is relative to its uncorrected C++ baseline,
+not a new gain over that seed or a complete improvement over the canonical
+66.38%, 232/232 result. No source change is retained.
+
+The [unchanged-source compiler controls](profile-controls-20260907.md) record
+the actual 8447 components, all six platform comparisons, twelve exact
+neighbors, and three core comparisons. None resolves the current residuals.

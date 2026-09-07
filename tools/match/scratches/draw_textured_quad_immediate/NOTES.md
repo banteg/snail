@@ -150,3 +150,13 @@ references). This quad also produces identical output under both profiles.
 The receipts are in each helper's ledger, with the shared control rationale
 in set_immediate_blend_mode/NOTES.md. No compiler override is retained; the
 half-height spill/reload and later vertex scheduling residual remain open.
+
+## 2026-09-07 continuation: literal precision and color ownership
+
+Twenty-three radius-literal and color-parameter forms pair float/double
+half-size and diagonal-factor expressions with the mobile `tColour&`
+contract. The best forms are byte-neutral at 98.34%, 331/332 instructions,
+prefix 111, with all 26 references clean. Double literals regress and can add
+constant-reference debt; the reference parameter alone is neutral. No source,
+parameter, or compiler setting changes. The alternate compiler is also neutral;
+see the [profile controls](../rebuild_game_archive_if_needed/profile-controls-20260907.md).

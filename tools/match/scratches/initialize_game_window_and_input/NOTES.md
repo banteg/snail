@@ -131,3 +131,12 @@ the 1024-pixel width during constant reuse. Every form is neutral at 92.48%,
 266/266 instructions, prefix 6, and all 57 references clean. No cast, local
 type change, or shared-header edit is retained. Native still loads the width
 constant in its resolution case; the candidate hoists it into the mask setup.
+
+## 2026-09-07 continuation: resolution dimensions
+
+Eleven resolution-selection forms test paired authored/selected dimensions
+and equivalent 4:3 extent derivation. None improves 92.48%. The best changed
+form reaches 91.67% with 262/266 instructions and a mismatched reference, so
+no dimension owner or expression change is retained. The unchanged-source
+8447 control is neutral; see the
+[profile controls](../rebuild_game_archive_if_needed/profile-controls-20260907.md).

@@ -137,3 +137,14 @@ aggregate, full prefixes, and clean references. The immediate blend helper
 and textured quad are also byte-neutral between those profiles. These controls
 do not distinguish the render compiler profile, so no profile override is
 retained. Each comparison has a receipt in the corresponding scratch ledger.
+
+## 2026-09-07 continuation: numeric preset grouping
+
+All 300 numeric-order/reverse-order partitions of the equivalent preset groups
+were evaluated in two receipts: the first budget covered 256 forms, and the
+remaining recipe covers the other 44 without repeating candidates. None
+improves the current 89.30%, 135/136-instruction source or resolves its jump-table reference mismatch. The unchanged-source 8447 comparison is neutral;
+see the [profile controls](../rebuild_game_archive_if_needed/profile-controls-20260907.md).
+
+The recipes bound these case-grouping hypotheses; they do not establish source
+exhaustion. No source or compiler setting changes.

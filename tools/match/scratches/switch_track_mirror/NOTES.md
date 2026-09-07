@@ -104,3 +104,10 @@ program property, so no source change is retained.
 ## 2026-09-05 additional operation-boundary probes
 
 Four forced-inversion operation forms preserve both reset and inversion with game or field ownership. All are byte-neutral at 91.23%; no helper is retained.
+
+## 2026-09-07 continuation: unchanged-source compiler comparison
+
+Recorded msvc6.0 and msvc6.3 probes preserve the current extracted code and
+comparison metrics. No compiler setting or source change is retained. See the
+[profile controls](../rebuild_game_archive_if_needed/profile-controls-20260907.md)
+for component provenance, exact neighbors, and the limits of this comparison.

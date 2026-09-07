@@ -67,3 +67,12 @@ No source or image layout change is retained.
 
 The committed recipes and hash-bound receipts describe the tested forms; they
 do not establish source exhaustion.
+
+## 2026-09-07 continuation: row conversion and loop formation
+
+Seventeen paired probes vary the converted row's scope, for/while/guarded-do
+outer traversal, and placement of the width-scaled row term. They preserve
+float bounds and row-before-column conversion. The best forms are byte-neutral
+at 79.26%, 108/109 instructions, prefix 37, with all 13 references clean.
+Deferred row arithmetic still changes broader allocation; no source change is
+retained. These receipts bound the tested combinations only.

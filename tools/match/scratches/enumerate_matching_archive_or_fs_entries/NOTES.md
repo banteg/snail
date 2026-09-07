@@ -155,3 +155,10 @@ RstrASC call and spill its folded-name result. The current compiler preserves
 the folded-name result and spills the pattern byte. Instruction count remains
 182/182, prefix 9/182, and all 26 references are clean. No shared byte variable,
 extra cast, helper, or scope change is retained solely for register allocation.
+
+## 2026-09-07 continuation: unchanged-source compiler comparison
+
+Recorded msvc6.3 probes preserve the current extracted code and
+comparison metrics. No compiler setting or source change is retained. See the
+[profile controls](../rebuild_game_archive_if_needed/profile-controls-20260907.md)
+for component provenance, exact neighbors, and the limits of this comparison.
