@@ -1,0 +1,971 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "edge-publication",
+      "find": "    int result = current_buttons;\n    int changed = previous_buttons ^ result;\n    previous_buttons = result;\n    pressed_buttons = changed & result;\n    result = ~result;\n    inverse_current_buttons = result;\n    current_buttons = 0;\n    released_buttons = changed & result;",
+      "replacements": [
+        {
+          "name": "fields-old-press-inverse-clear-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-old-press-inverse-clear-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-old-press-inverse-release-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-old-press-inverse-release-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-old-press-clear-inverse-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-old-press-clear-inverse-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-old-press-clear-release-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-old-press-clear-release-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-old-press-release-inverse-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-old-press-release-inverse-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-old-press-release-clear-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-old-press-release-clear-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-old-inverse-press-clear-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-old-inverse-press-clear-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-old-inverse-press-release-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-old-inverse-press-release-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-old-inverse-clear-press-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-old-inverse-clear-press-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-old-inverse-clear-release-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-old-inverse-clear-release-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-old-inverse-release-press-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-old-inverse-release-press-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-old-inverse-release-clear-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-old-inverse-release-clear-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-old-clear-press-inverse-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-old-clear-press-inverse-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-old-clear-press-release-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-old-clear-press-release-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-old-clear-inverse-press-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-old-clear-inverse-press-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-old-clear-inverse-release-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-old-clear-inverse-release-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-old-clear-release-press-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-old-clear-release-press-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-old-clear-release-inverse-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-old-clear-release-inverse-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-old-release-press-inverse-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-old-release-press-inverse-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-old-release-press-clear-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-old-release-press-clear-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-old-release-inverse-press-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-old-release-inverse-press-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-old-release-inverse-clear-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-old-release-inverse-clear-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-old-release-clear-press-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-old-release-clear-press-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-old-release-clear-inverse-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-old-release-clear-inverse-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-press-old-inverse-clear-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-press-old-inverse-clear-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-press-old-inverse-release-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-press-old-inverse-release-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-press-old-clear-inverse-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    previous_buttons = current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-press-old-clear-inverse-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-press-old-clear-release-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    previous_buttons = current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-press-old-clear-release-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-press-old-release-inverse-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    previous_buttons = current;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-press-old-release-inverse-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-press-old-release-clear-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    previous_buttons = current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-press-old-release-clear-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-press-inverse-old-clear-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-press-inverse-old-clear-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-press-inverse-old-release-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-press-inverse-old-release-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-press-inverse-clear-old-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;\n    previous_buttons = current;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-press-inverse-clear-old-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-press-inverse-clear-release-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-press-inverse-clear-release-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-press-inverse-release-old-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;\n    previous_buttons = current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-press-inverse-release-old-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-press-inverse-release-clear-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-press-inverse-release-clear-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-press-clear-old-inverse-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-press-clear-old-inverse-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-press-clear-old-release-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;\n    previous_buttons = current;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-press-clear-old-release-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-press-clear-inverse-old-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-press-clear-inverse-old-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-press-clear-inverse-release-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-press-clear-inverse-release-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-press-clear-release-old-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-press-clear-release-old-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-press-clear-release-inverse-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-press-clear-release-inverse-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-press-release-old-inverse-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-press-release-old-inverse-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-press-release-old-clear-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;\n    previous_buttons = current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-press-release-old-clear-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-press-release-inverse-old-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-press-release-inverse-old-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-press-release-inverse-clear-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-press-release-inverse-clear-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-press-release-clear-old-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-press-release-clear-old-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-press-release-clear-inverse-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-press-release-clear-inverse-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-inverse-old-press-clear-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-inverse-old-press-clear-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-inverse-old-press-release-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-inverse-old-press-release-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-inverse-old-clear-press-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-inverse-old-clear-press-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-inverse-old-clear-release-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-inverse-old-clear-release-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-inverse-old-release-press-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-inverse-old-release-press-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-inverse-old-release-clear-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-inverse-old-release-clear-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-inverse-press-old-clear-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;\n    previous_buttons = current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-inverse-press-old-clear-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-inverse-press-old-release-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;\n    previous_buttons = current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-inverse-press-old-release-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-inverse-press-clear-old-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;\n    previous_buttons = current;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-inverse-press-clear-old-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-inverse-press-clear-release-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-inverse-press-clear-release-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-inverse-press-release-old-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;\n    previous_buttons = current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-inverse-press-release-old-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-inverse-press-release-clear-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-inverse-press-release-clear-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-inverse-clear-old-press-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;\n    previous_buttons = current;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-inverse-clear-old-press-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-inverse-clear-old-release-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;\n    previous_buttons = current;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-inverse-clear-old-release-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-inverse-clear-press-old-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;\n    previous_buttons = current;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-inverse-clear-press-old-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-inverse-clear-press-release-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-inverse-clear-press-release-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-inverse-clear-release-old-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;\n    previous_buttons = current;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-inverse-clear-release-old-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-inverse-clear-release-press-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-inverse-clear-release-press-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-inverse-release-old-press-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;\n    previous_buttons = current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-inverse-release-old-press-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-inverse-release-old-clear-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;\n    previous_buttons = current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-inverse-release-old-clear-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-inverse-release-press-old-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;\n    previous_buttons = current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-inverse-release-press-old-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-inverse-release-press-clear-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-inverse-release-press-clear-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-inverse-release-clear-old-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;\n    previous_buttons = current;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-inverse-release-clear-old-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-inverse-release-clear-press-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-inverse-release-clear-press-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-clear-old-press-inverse-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    previous_buttons = current;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-clear-old-press-inverse-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-clear-old-press-release-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    previous_buttons = current;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-clear-old-press-release-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-clear-old-inverse-press-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-clear-old-inverse-press-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-clear-old-inverse-release-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-clear-old-inverse-release-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-clear-old-release-press-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    previous_buttons = current;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-clear-old-release-press-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-clear-old-release-inverse-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    previous_buttons = current;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-clear-old-release-inverse-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-clear-press-old-inverse-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-clear-press-old-inverse-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-clear-press-old-release-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;\n    previous_buttons = current;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-clear-press-old-release-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-clear-press-inverse-old-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-clear-press-inverse-old-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-clear-press-inverse-release-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-clear-press-inverse-release-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-clear-press-release-old-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-clear-press-release-old-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-clear-press-release-inverse-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-clear-press-release-inverse-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-clear-inverse-old-press-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-clear-inverse-old-press-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-clear-inverse-old-release-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-clear-inverse-old-release-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-clear-inverse-press-old-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;\n    previous_buttons = current;\n    released_buttons = changed & ~current;"
+        },
+        {
+          "name": "locals-clear-inverse-press-old-release",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;\n    int release = changed & ~current;\n    released_buttons = release;"
+        },
+        {
+          "name": "fields-clear-inverse-press-release-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;\n    released_buttons = changed & ~current;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-clear-inverse-press-release-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-clear-inverse-release-old-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;\n    previous_buttons = current;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-clear-inverse-release-old-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-clear-inverse-release-press-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-clear-inverse-release-press-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-clear-release-old-press-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;\n    previous_buttons = current;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-clear-release-old-press-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-clear-release-old-inverse-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-clear-release-old-inverse-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-clear-release-press-old-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-clear-release-press-old-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-clear-release-press-inverse-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-clear-release-press-inverse-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-clear-release-inverse-old-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-clear-release-inverse-old-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-clear-release-inverse-press-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-clear-release-inverse-press-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    current_buttons = 0;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-release-old-press-inverse-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    previous_buttons = current;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-release-old-press-inverse-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-release-old-press-clear-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    previous_buttons = current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-release-old-press-clear-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-release-old-inverse-press-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-release-old-inverse-press-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-release-old-inverse-clear-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-release-old-inverse-clear-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-release-old-clear-press-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    previous_buttons = current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-release-old-clear-press-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-release-old-clear-inverse-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    previous_buttons = current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-release-old-clear-inverse-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    previous_buttons = current;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-release-press-old-inverse-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-release-press-old-inverse-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-release-press-old-clear-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;\n    previous_buttons = current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-release-press-old-clear-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-release-press-inverse-old-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-release-press-inverse-old-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-release-press-inverse-clear-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-release-press-inverse-clear-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-release-press-clear-old-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-release-press-clear-old-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-release-press-clear-inverse-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-release-press-clear-inverse-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-release-inverse-old-press-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-release-inverse-old-press-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-release-inverse-old-clear-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-release-inverse-old-clear-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-release-inverse-press-old-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;\n    previous_buttons = current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "locals-release-inverse-press-old-clear",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;\n    current_buttons = 0;"
+        },
+        {
+          "name": "fields-release-inverse-press-clear-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;\n    current_buttons = 0;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-release-inverse-press-clear-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;\n    current_buttons = 0;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-release-inverse-clear-old-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;\n    previous_buttons = current;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-release-inverse-clear-old-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-release-inverse-clear-press-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    inverse_current_buttons = ~current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-release-inverse-clear-press-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-release-clear-old-press-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;\n    previous_buttons = current;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-release-clear-old-press-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-release-clear-old-inverse-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-release-clear-old-inverse-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-release-clear-press-old-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;\n    previous_buttons = current;\n    inverse_current_buttons = ~current;"
+        },
+        {
+          "name": "locals-release-clear-press-old-inverse",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;"
+        },
+        {
+          "name": "fields-release-clear-press-inverse-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;\n    pressed_buttons = changed & current;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-release-clear-press-inverse-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;\n    int press = changed & current;\n    pressed_buttons = press;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;"
+        },
+        {
+          "name": "fields-release-clear-inverse-old-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;\n    previous_buttons = current;\n    pressed_buttons = changed & current;"
+        },
+        {
+          "name": "locals-release-clear-inverse-old-press",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    previous_buttons = current;\n    int press = changed & current;\n    pressed_buttons = press;"
+        },
+        {
+          "name": "fields-release-clear-inverse-press-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    released_buttons = changed & ~current;\n    current_buttons = 0;\n    inverse_current_buttons = ~current;\n    pressed_buttons = changed & current;\n    previous_buttons = current;"
+        },
+        {
+          "name": "locals-release-clear-inverse-press-old",
+          "text": "    int current = current_buttons;\n    int changed = previous_buttons ^ current;\n    int release = changed & ~current;\n    released_buttons = release;\n    current_buttons = 0;\n    int inverse = ~current;\n    inverse_current_buttons = inverse;\n    int press = changed & current;\n    pressed_buttons = press;\n    previous_buttons = current;"
+        }
+      ]
+    }
+  ]
+}

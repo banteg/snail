@@ -4,12 +4,14 @@
 
 void cRInput::Update()
 {
-    int result = current_buttons;
-    int changed = previous_buttons ^ result;
-    previous_buttons = result;
-    pressed_buttons = changed & result;
-    result = ~result;
-    inverse_current_buttons = result;
+    int current = current_buttons;
+    int changed = previous_buttons ^ current;
+    int press = changed & current;
+    pressed_buttons = press;
+    int release = changed & ~current;
+    released_buttons = release;
+    previous_buttons = current;
+    int inverse = ~current;
+    inverse_current_buttons = inverse;
     current_buttons = 0;
-    released_buttons = changed & result;
 }
