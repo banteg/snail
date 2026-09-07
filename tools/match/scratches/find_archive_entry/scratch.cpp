@@ -2,6 +2,13 @@
 
 #include "archive_index.h"
 
+static __inline unsigned char fold_archive_request(char value)
+{
+    if (value >= 'a' && value <= 'z')
+        return value - ('a' - 'A');
+    return value;
+}
+
 ArchiveEntry* find_archive_entry(char* path)
 {
     ArchiveIndex* index = g_archive_index_records;
@@ -9,6 +16,7 @@ ArchiveEntry* find_archive_entry(char* path)
     int entry_index;
     char* requested_path;
     ArchiveEntry* entry;
+    int found_entry = 0;
 
     if (index == 0) {
         goto not_found;
@@ -23,8 +31,7 @@ ArchiveEntry* find_archive_entry(char* path)
     requested_path = path;
     entry = index->entries;
 
-scan_entry:
-    {
+    do {
         char* requested_cursor = requested_path;
         char* archive_cursor = entry->path;
         while (*archive_cursor != 0) {
@@ -33,9 +40,7 @@ scan_entry:
                 break;
             }
 
-            if (requested_char >= 'a' && requested_char <= 'z') {
-                requested_char = requested_char - 32;
-            }
+            requested_char = (char)fold_archive_request(requested_char);
 
             if (*archive_cursor != requested_char) {
                 break;
@@ -46,19 +51,17 @@ scan_entry:
         }
 
         if (*archive_cursor == 0 && *requested_cursor == 0) {
-            goto found;
+            found_entry = 1;
+            break;
         }
-    }
+        ++entry_index;
+        ++entry;
+    } while (entry_index < count);
 
-    ++entry_index;
-    ++entry;
-    if (entry_index < count) {
-        goto scan_entry;
-    }
+    if (found_entry == 0)
+        goto not_found;
+    return &g_archive_index_records->entries[entry_index];
 
 not_found:
     return 0;
-
-found:
-    return &g_archive_index_records->entries[entry_index];
 }

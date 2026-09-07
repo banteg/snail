@@ -73,3 +73,29 @@ Early-exit do loops with a char expression or inline char conversion are
 byte-identical to the baseline. The other tested forms regress. The recipe
 is `lookup-loop-operation-20260907.json`; this does not establish source-shape
 exhaustion or compiler provenance.
+
+## 2026-09-07 complete search-result ownership
+
+Current result: **100.00%, 60/60 instructions, prefix 60**, with both global
+reference operands clean. The existing VC6 C profile is unchanged.
+
+The scan now produces an explicit found/not-found fact and leaves entry-address
+publication after the loop. Testing the failed result before returning the
+entry lets VC6 place the shared missing-index, empty-index, and exhausted-search
+return before the success return, exactly as native. Both integer and byte
+found-state locals match; an entry-pointer result instead introduces extra
+instructions and is rejected.
+
+The case-fold operation accepts the signed input character, preserves the
+original signed ASCII range guards, and returns the folded byte as unsigned.
+The comparison converts that byte back to char. This recovers native's
+`sub al, 0x20` while preserving every input byte, including non-ASCII values;
+changing the input to unsigned would incorrectly change the range guards.
+No register constraint or arithmetic barrier is used.
+
+`structured-lookup-byte-result-20260907.json` separates loop shape and folded
+result ownership. `search-result-fallthrough-20260907.json` records all 18
+found-state/loop/return alternatives, including the two exact forms. A standard
+C++ profile control does not independently fix the return placement. These
+results supersede the earlier claim that the block order could only be retained
+as compiler residue.
