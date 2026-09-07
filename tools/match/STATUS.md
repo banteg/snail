@@ -12,7 +12,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 **69** non-exact scratch-backed functions hold **29147 fuzzy-gap bytes**. The top 5 hold **31.1%** of that gap; the top 10 hold **45.3%**.
 
-Current-baseline experiments cover **11 functions / 655 gap bytes**; **58 / 28492** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **12 functions / 662 gap bytes**; **57 / 28485** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -85,8 +85,8 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 65 | read_repeating_text_input_key_code | 9 | semantic-complete | analysis | historical-only | 0/15 | variant-errors,historical-only,stale-dependencies |
 | 66 | border_mouse_test | 7 | semantic-complete | analysis | historical-only | 0/13 | variant-errors,historical-only,stale-dependencies |
 | 67 | switch_track_mirror | 7 | semantic-complete | analysis | historical-only | 0/6 | historical-only,stale-dependencies |
-| 68 | load_galaxy_layout | 7 | semantic-complete | analysis | historical-only | 0/32 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 69 | draw_frontend_widget | 7 | semantic-complete | analysis | current-active | 1/19 | stale-dependencies |
+| 68 | load_galaxy_layout | 7 | semantic-complete | analysis | current-active | 1/33 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
+| 69 | draw_frontend_widget | 7 | semantic-complete | analysis | current-active | 2/20 | stale-dependencies |
 
 
 ## Proof Grade (593)

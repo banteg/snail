@@ -67,3 +67,19 @@ Twelve paired normal/shadow dimension forms test whole-operation lifetimes: sepa
 The remaining native difference is still the shadow call's `fld [esi+0x258]; fadd [esi+0x250]` versus the reversed source loads. The original sprite/frame recovery remains intact at 99.72%.
 
 The receipts bound these hypotheses only. No new exact match or unsupported ownership/return contract was inferred.
+
+## 2026-09-07 complete sprite and shadow operations
+
+`whole-sprite-shadow-operations-20260907.json` tests the shadow body, the
+complete guarded shadow operation, and the paired ordinary-sprite/shadow
+operation with pointer and reference widget owners. Unlike earlier helpers
+limited to dimension arithmetic, these preserve and move each complete draw
+operation, including its color lifetime and live geometry reads. All six are
+byte-neutral at 99.72%, 712/712 instructions, prefix 253, with 68 clean
+references. No helper is retained.
+
+The new direct `probe --export-dir` path was also exercised on the shadow-body
+pointer form. Its captured baseline and candidate source hashes, reproduced
+code identity, six complete artifacts, and two-instruction shadow-width diff
+were verified. This export supports inspection without creating an otherwise
+unnecessary mutation plan; it does not change the match or audit standard.

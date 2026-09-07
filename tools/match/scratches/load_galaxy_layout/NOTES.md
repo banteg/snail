@@ -402,3 +402,15 @@ unchanged. No compiler or source declaration change is retained.
 ## 2026-09-07 coordinate publication types
 
 Seven combinations use the owned float coordinate fields instead of bitwise integer views when publishing route labels, stars, and the origin. All preserve the current 99.14%, 233/233 instructions, prefix 194, and 42 clean references. These typed accesses do not affect the two remaining loop-latch scheduling differences; no neutral source churn is retained.
+
+## 2026-09-07 counter-entry replay after parser recovery
+
+`counter-entry-after-parser-recovery-20260907.json` revisits the six earlier
+counter-entry lifetimes after the owned point bound and per-route star-counter
+reset recovered the full instruction count. Each is coupled with four marker
+and missing-label buffer scopes, for 24 valid variants. Moving only the star
+counter is byte-neutral in all 12 combinations at 99.14%, 233/233 instructions,
+prefix 194, and 42 clean references. Moving all three counters before file
+acquisition or owner publication gives 98.28%; moving them to entry gives
+92.70%. Buffer scope is neutral within every counter group. The two latch
+swaps remain; no source change is retained.
