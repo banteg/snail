@@ -97,3 +97,35 @@ to `RShellDatFind`, so it corroborates the same service boundary without
 constraining the Windows loop shape. The remaining Windows difference is still
 compiler block placement plus the lowercase and `_getcwd` cleanup encodings;
 the cleanup is semantic, not a score-only rewrite.
+
+## 2026-09-07 exact platform loader recovery
+
+Retained **100%, 206/206 instructions, full prefix, and 36 clean reference
+operands**, up from 79.23%, 208/206, prefix 10. A normal `for` loop owns the
+count guard and reads `archive_index->entries[entry_index].path` directly.
+This removes the separately advanced path-field cursor and recovers the native
+filesystem-failure placement. The inline archive-hit body remains structured;
+no found flag or dispatch labels are retained.
+
+The signed-input, unsigned-byte-result case fold transfers from the exact
+archive lookup and fixed-size loader. The result is converted back to `char`
+for the original comparison, preserving high-byte behavior. Allocation, size
+publication, sentinel returns, seeks, reads, and decoding remain unchanged.
+
+VC6 8168 C++ reproduces all native instructions. The same source under the
+standard SP5-style C++ profile reaches 94.92%, 207/206, prefix 41, with all
+36 references clean. Compiler selection is supported by the independently
+verified RShell sibling evidence in
+[the fixed-size loader profile record](../load_file_bytes_fixed_size_from_archive_or_fs/profile-evidence-20260907.md):
+the executable has valid 8168 C++ contributions, and twelve unchanged nearby
+controls match under that profile, six distinguishing it from SP5-style C++.
+Both verified mobile ports name this contract `RShellLoadFile(char*, void*,
+int*)` in `RShell.o`. These establish a supported reproduction profile and
+C++ service relationship, not a proven original Windows object/build mapping.
+
+Three source layouts using direct indexing are exact: inline hit handling and
+two explicit continuation layouts. The simplest inline form is retained.
+Independently advanced cursors, flat guards, search-result flags, structured
+backend decisions, and explicit filesystem-success branches were insufficient
+before changing the loop's entry ownership. Their hash-bound receipts remain
+available as bounded negative controls.
