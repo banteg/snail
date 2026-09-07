@@ -342,3 +342,29 @@ Moving only the star counter before acquisition is neutral; earlier group
 lifetimes disturb the native opening. All 42 references stay clean. No source
 change is retained; the parser's first zero comparison and later loop/exit
 publication remain unresolved.
+
+## 2026-09-07 bounded parser and star-counter ownership
+
+Retained improvement: **99.14%, 233/233 instructions, prefix 194, all 42
+references clean**, from 89.74%, 235/233, prefix 62. Resetting the star counter
+before each route's star expansion recovers the native shared zero and the
+complete inner loop. A structured outer loop bounded by the authored point
+bank removes the misplaced error tail and extra branch. Its bound must be
+expressed from the same point bank: an unrelated absolute address prevents
+VC6 from proving the initial range relationship and changes loop formation.
+
+The native y-field cursor ends at `0x4a1ca0 = 0x4a1c4c + 10*8 + 4`. The
+reference manifest permits precisely that `+0x54` postbase operand, using the
+existing narrow cursor-sentinel support. The ten-record storage extent remains
+`0x50`; neither neighboring addresses nor extra records are admitted. The
+previously unresolved compiler relocation now audits against the exact native
+sentinel, rather than a loose symbol-name exception.
+
+Recorded products cover outer-loop/error structure, scalar and record cursor
+ownership, the named bound, and induction publication order. The remaining
+full diff has only two instruction swaps in the outer-loop latch: the
+compiler advances the route-name cursor before the group offset and spills
+the group offset before the point cursor. Staged next values and a separately
+indexed or borrowed route-name record do not remove those swaps without
+regressing other instructions. This is a verified partial improvement and is
+not counted as another exact match.

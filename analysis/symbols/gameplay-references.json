@@ -7267,7 +7267,10 @@
         "data_4a1c50"
       ],
       "size": "0x50",
-      "description": "Ten authored GalaxyPoint group anchors rescaled by load_galaxy_layout and copied into the ten GalaxyRouteNameRecord entries. Native cursors address each point's y field at record +0x4."
+      "allowed_postbase_offsets": [
+        "0x54"
+      ],
+      "description": "Ten authored GalaxyPoint group anchors rescaled by load_galaxy_layout and copied into the ten GalaxyRouteNameRecord entries. Native cursors address each point's y field at record +0x4. The explicit +0x54 reference is the y-field cursor sentinel at 0x4a1ca0: 0x4a1c4c + 10*8 + 4. It is a loop bound, not additional point storage."
     },
     {
       "address": "0x4a1ca0",

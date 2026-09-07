@@ -47,12 +47,12 @@ void cRGalaxy::Open()
     int star_group_offset = 0;
     int star_index = 0;
     float* current_galaxy_point = &g_galaxy_group_points[0].y;
-    while (1) {
+    while ((int)current_galaxy_point < (int)((char*)g_galaxy_group_points + sizeof(g_galaxy_group_points) + offsetof(GalaxyPoint, y))) {
         char marker[64];
         sprintf(marker, "Galaxy%i:", galaxy_index);
 
-        char* cursor;
-        if ((cursor = Rstrfind(marker, file_text)) == (char*)0)
+        char* cursor = Rstrfind(marker, file_text);
+        if (cursor == 0)
             goto missing_galaxy;
 
         cursor = Rstrfind(":", cursor) + 1;
@@ -79,6 +79,7 @@ void cRGalaxy::Open()
             *(int*)&current_galaxy_point[-1];
         route_names[galaxy_index].map_y_bits =
             *(int*)&current_galaxy_point[0];
+        star_index = 0;
         route_names[galaxy_index].map_z_bits = star_index;
 
         for (; star_index < route_names[galaxy_index].star_count; ++star_index) {
@@ -105,22 +106,18 @@ void cRGalaxy::Open()
             ++record_count;
         }
 
-        star_index = 0;
-
-        current_galaxy_point += 2;
         ++galaxy_index;
         star_group_offset += 10;
-        if ((int)current_galaxy_point < 0x4a1ca0)
-            continue;
-
-        route_slots[0].record.route_name_index = 0;
-        route_slots[0].record.map_x_bits = g_galaxy_route_points[0].x_bits;
-        route_slots[0].record.map_y_bits = g_galaxy_route_points[0].y_bits;
-        route_slots[0].record.map_z_bits = 0;
-        route_slots[0].record.detail_text[0] = 0;
-        route_slots[0].record.description_text[0] = 0;
-        return;
+        current_galaxy_point += 2;
     }
+
+    route_slots[0].record.route_name_index = 0;
+    route_slots[0].record.map_x_bits = g_galaxy_route_points[0].x_bits;
+    route_slots[0].record.map_y_bits = g_galaxy_route_points[0].y_bits;
+    route_slots[0].record.map_z_bits = 0;
+    route_slots[0].record.detail_text[0] = 0;
+    route_slots[0].record.description_text[0] = 0;
+    return;
 
 missing_galaxy:
     report_errorf("Cannot find Galaxy %i in _Galaxy.txt");
