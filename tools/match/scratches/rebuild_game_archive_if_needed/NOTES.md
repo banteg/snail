@@ -98,3 +98,40 @@ cursor, while Windows remains authoritative for layout and code generation.
 A source `switch` for the extension class was also tested because native
 decrements the classifier result before its branch; VC6 regressed to 55.41%,
 so the semantic TGA comparison remains.
+
+
+## 2026-09-07 serialized archive ownership investigation
+
+Eight recorded recipes (129 source forms) test actual source/output record
+ownership, loop initialization, extension dispatch, signed remainder, and PNG
+result lifetimes. The iOS `DatBuild()` body at 0x986c corroborates the archive
+rebuilding responsibility and C++ language, but the current mobile crosswalk
+still reports this Windows target as unverified. The port is contract evidence,
+not proof of the Windows object compiler or exact pixel-buffer behavior.
+
+A plain C++ control initially falls to 25.22% because the handwritten libc
+prototypes introduce C++ overloads instead of the genuine C declarations.
+Including stdlib.h/string.h, or explicitly restoring C linkage, returns to the
+canonical 66.38%, 232/232 instructions, prefix 5, and 22 clean references.
+This separates declaration correctness from compiler version. No compiler
+version is selected from that diagnostic.
+
+The useful new seed keeps source and output SerializedArchiveEntry arrays,
+uses a counted loop and an extension switch, and writes the native unusual
+alignment as `payload_end + (int)payload_end % 4`. Those changes together
+recover the early source-entry base, decrement-based extension dispatch, and
+signed-remainder branch, reaching 73.43%. Shortening the output-entry base
+lifetime with a positive-count guard reaches 73.87%, 231/232 instructions,
+prefix 5, and all 22 references clean. Allocation-owner simplification and
+removal of obsolete cursor locals are neutral at that seed. Earlier PNG-result
+initialization reaches 74.03%, but shrinks the body again to 230 instructions.
+
+These are retained diagnostic seeds, not promoted score-only gains: the
+canonical source has no instruction-count gap, while the new forms omit one
+or two native instructions and still allocate several live locals differently.
+The 73.87% source is reproducible from
+`output-entry-base-and-header-copy-lifetimes-20260907.json`, candidate
+`output-base/before-loop-guarded-for`; the subsequent cleanup recipe removes
+unused cursor declarations without changing codegen. Keep the actual Windows
+payload layout, signed remainder behavior, and missing PNG-free behavior; do
+not import differing iOS allocation or cleanup behavior.

@@ -135,3 +135,18 @@ schedule open. No auxiliary point type or parameter reuse is retained.
 
 The committed recipes and hash-bound receipts describe the tested forms; they
 do not establish source exhaustion.
+
+
+## 2026-09-07 vertex publication and render-profile controls
+
+Ninety-three recorded forms combine natural Z/UV/color publication orders
+with direct versus cached coordinates in the earlier unrotated rectangle
+branch. None improve 98.34%, 331/332 instructions, prefix 111, with all 26
+references clean. The retained attribute order remains unchanged.
+
+Six unchanged adjacent render helpers are exact under both standard msvc6.5
+and msvc6.0 C++ profiles (308 native instructions, complete prefixes and clean
+references). This quad also produces identical output under both profiles.
+The receipts are in each helper's ledger, with the shared control rationale
+in set_immediate_blend_mode/NOTES.md. No compiler override is retained; the
+half-height spill/reload and later vertex scheduling residual remain open.

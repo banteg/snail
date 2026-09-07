@@ -120,3 +120,14 @@ are neutral here, and shared declarations remain unchanged.
 
 The committed recipes and hash-bound receipts describe the tested forms; they
 do not establish source exhaustion.
+
+
+## 2026-09-07 Win32 mask and dimension type controls
+
+Thirty-two recorded forms vary int/unsigned-int/long/unsigned-long expression
+types for the render-flag mask, paired with int or long width owners. These
+check whether ordinary Win32 bitmask types distinguish the 0x400 mask from
+the 1024-pixel width during constant reuse. Every form is neutral at 92.48%,
+266/266 instructions, prefix 6, and all 57 references clean. No cast, local
+type change, or shared-header edit is retained. Native still loads the width
+constant in its resolution case; the candidate hoists it into the mask setup.

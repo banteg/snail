@@ -136,3 +136,22 @@ These results leave the remaining source explanation open.
 Four direct folded-call comparison forms also regress to 76.03%, 181/182
 instructions, and prefix 2. Reversing equality operands does not recover the
 native temporary; the retained named result remains the stronger source.
+
+
+## 2026-09-07 remaining wildcard allocation controls
+
+Four additional recorded recipes preserve the accepted 92.31% source. Fifteen
+input/result initialization forms and five direct-index loop transfers from
+the now-exact allocating loader do not improve it. Thirty-three signed and
+unsigned pattern/result temporary forms retain signed-char conversion at each
+RstrASC boundary; explicit reloads and local wildcard checks do not improve
+it either. The local-check forms rely on the already recovered RstrASC body
+being only an ASCII character transform, and none are promoted. Eight forms
+reuse one character temporary across prefix matching and wildcard matching,
+with entry or function scope, and are all neutral.
+
+The remaining native choice is to preserve the pattern byte across the first
+RstrASC call and spill its folded-name result. The current compiler preserves
+the folded-name result and spills the pattern byte. Instruction count remains
+182/182, prefix 9/182, and all 26 references are clean. No shared byte variable,
+extra cast, helper, or scope change is retained solely for register allocation.
