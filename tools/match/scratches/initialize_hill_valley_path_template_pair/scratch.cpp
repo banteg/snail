@@ -108,10 +108,8 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                 PathTemplateSample* sample = &path->primary_samples[row];
                 Vector3 lateral_offset =
                     sample->transform.basis_right * lateral;
-                Vector3 generated_position(
-                    sample->transform.position.x + lateral_offset.x,
-                    sample->transform.position.y + lateral_offset.y,
-                    sample->transform.position.z + lateral_offset.z);
+                Vector3 generated_position =
+                    sample->transform.position + lateral_offset;
                 Vector3* vertex =
                     &vertices[column + row * (path->width_cells + 1)];
                 *vertex = generated_position;
@@ -119,10 +117,8 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                 PathTemplateSample* sample = &path->primary_samples[row];
                 Vector3 lateral_offset =
                     sample[-1].transform.basis_right * lateral;
-                Vector3 endpoint;
-                endpoint.x = sample[-1].transform.position.x;
-                endpoint.y = sample[-1].transform.position.y;
-                endpoint.z = sample[-1].transform.position.z + 1.0f;
+                Vector3 endpoint = sample[-1].transform.position
+                    + Vector3(0.0f, 0.0f, 1.0f);
                 Vector3 generated_position(
                     endpoint.x + lateral_offset.x,
                     endpoint.y + lateral_offset.y,

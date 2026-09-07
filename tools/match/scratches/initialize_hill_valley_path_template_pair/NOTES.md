@@ -364,3 +364,31 @@ seven component operand-order combinations are byte-neutral. The checked
 ledger now contains 34 records and 118 unique variants. Together with the
 earlier endpoint, mesh-cursor, height-order, and curve-index sweeps, these
 results close the current evidence-backed Hill Valley neighborhood.
+
+## 2026-09-07 common-mesh vector construction recovery
+
+Replaying the complete S-bend mesh improves 83.02% to 83.77%, but a 23-form
+interaction recipe isolates a smaller and better recovery at **83.92%**.
+The ordinary vertex uses the existing `Vector3` addition operator. The
+terminal endpoint is a complete previous-position-plus-unit-Z vector; its
+final generated position retains the component construction already present
+in this caller. The ordinary addition alone gives 83.17%, and the complete
+endpoint alone gives 83.77%.
+
+The native ordinary Z-result spill precedes destination indexing at
+`0x42dbfe`. Its terminal X addition consumes the live endpoint value directly,
+and Y loads the endpoint before adding the lateral component. The retained
+endpoint also restores the native final x87 pop after loading the final Z
+result. Full before/after assembly localizes the changes to those two vertex branches.
+Moving to a guarded sample cursor is neutral across all 12 corresponding
+vector combinations; applying `operator+` to the final terminal position is
+worse than the retained component construction.
+
+The candidate remains 669/668 instructions with prefix 21 and 41 clean
+references. The shared vector definitions remain unchanged; the two recovered
+constructions are local to this scratch. A recorded reverse probe restores
+the original code hash and 83.02%; the formatted
+canonical source has the evaluated 83.92% candidate hash.
+
+Recipes: `common-mesh-next-family-20260907.json` and
+`common-mesh-recovery-interactions-20260907.json`.

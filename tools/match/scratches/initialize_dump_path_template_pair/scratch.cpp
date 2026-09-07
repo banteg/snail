@@ -672,13 +672,12 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                         &vertices[mesh_column + mesh_row * (width_cells + 1)];
                     *vertex = generated_position;
                 } else {
-                    PathAttachmentSample* previous =
+                    PathAttachmentSample* sample =
                         (PathAttachmentSample*)((char*)primary_samples
-                            + mesh_sample_offset)
-                        - 1;
+                            + mesh_sample_offset);
                     Vector3 lateral_offset =
-                        previous->transform.basis_right * lateral;
-                    Vector3 endpoint = previous->transform.position
+                        sample[-1].transform.basis_right * lateral;
+                    Vector3 endpoint = sample[-1].transform.position
                         + Vector3(0.0f, 0.0f, 1.0f);
                     Vector3 generated_position =
                         endpoint + lateral_offset;
@@ -693,10 +692,10 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     }
 
     for (mesh_row = 0; mesh_row < segment_count; ++mesh_row) {
+        mesh_column = 0;
         if (width_cells > 0) {
             float v0 = (float)(mesh_row % 8) * 0.125f;
             float v1 = (float)(mesh_row % 8 + 1) * 0.125f;
-            mesh_column = 0;
             int next_column;
             do {
                 next_column = mesh_column + 1;

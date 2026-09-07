@@ -6,7 +6,7 @@ and paired quads, generate ordinary and terminal vertices, assign each side's
 indices and texture, and publish the UV corners. An original common source
 structure that reproduces this body across the family has not been established.
 
-The current dashboard has 29 partial path builders with about 17.1k fuzzy-gap
+The current dashboard has 29 partial path builders with about 17k fuzzy-gap
 bytes. That includes their individual path calculations; it is not a measurement
 of the shared mesh tail alone. These builders remain within the existing
 662-function core scope.
@@ -85,3 +85,55 @@ Reproducible recipes live in each of the seven scratch directories:
 `whole-mesh-inline-member-ownership-20260907.json`. Sweep's minimal recovery is
 isolated in `common-mesh-scope-interactions-20260907.json`. Their hash-bound
 receipts and reverse controls are retained in the corresponding ledgers.
+
+## Expanded family and minimal recoveries
+
+The next complete-body comparison adds Dump, Hill/Valley, Invert, and Wibble.
+All four use the same terminal previous-position-plus-unit-Z geometry. Five
+variants include a separate extraction control for Dump's previously inline
+mesh. Each compiles with a clean reference audit.
+
+| Builder | Before | Complete S-bend mesh | Retained minimal recovery | Candidate / native instructions | Prefix | Clean references |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Dump | 80.93% | 82.81% | 82.81% | 689 / 690 | 20 | 43 |
+| Hill/Valley | 83.02% | 83.77% | 83.92% | 669 / 668 | 21 | 41 |
+| Invert | 83.13% | 65.78% | unchanged | 603 / 600 | 120 | 35 |
+| Wibble | 78.62% | 78.78% | 80.10% | 608 / 608 | 85 | 39 |
+
+Fifty-three interaction variants decompose the three gains. Dump needs the
+current sample with `sample[-1]` terminal accesses and face-column
+initialization before the width guard. These restore the native negative
+sample-field displacements and row-UV temporary homes. Wibble needs only the
+guarded face loop, including the column initialization before the guard and
+row-UV calculation inside it. Hill/Valley benefits from ordinary vector
+addition and a complete terminal endpoint vector; its final terminal position
+still uses the existing component construction. Transferring all of S-bend's
+vector expressions is less accurate there.
+
+The retained changes preserve instruction counts, prefixes, and every audited
+reference. Full before/after assembly localizes the changes to the stated
+vertex branches and face preheaders. Recorded reverse probes restore all
+three preceding code hashes. None establishes a recovered common helper;
+the narrower per-builder changes are committed in their existing bodies.
+
+Recipes live in the four added scratch directories as
+`common-mesh-next-family-20260907.json`, with the three successful callers'
+`common-mesh-recovery-interactions-20260907.json` decompositions. The broader
+comparison now covers eleven builders while preserving the 662-function scope.
+
+## Separately passed mesh inputs
+
+Thirty controls in S-bend, Slalom, and Sweep pass dimensions, sample banks,
+and mesh objects separately through the whole operation. Seven combinations
+use field references; three controls pass value snapshots. Reference forms
+are neutral or worse, and the value forms change native reload/allocation
+patterns without improving any caller. All 39, 40, and 37 references,
+respectively, remain clean. No input interface is promoted. These controls
+are recorded in `whole-mesh-field-input-owners-20260907.json` in each scratch.
+
+The mobile `cRObject::ApplyUVPath` symbol does not identify this Windows mesh
+body. The [Android body](../../analysis/decompile/android/functions/0002d0e8-_ZN8cRObject11ApplyUVPathEfff.c)
+and [iOS body](../../analysis/decompile/ios/functions/00011c60-_ZN8cRObject11ApplyUVPathEfff.c)
+scale existing U coordinates and add a per-side offset. The SuperTramp
+variant adds a special final-face offset. These routines neither allocate
+the banks nor generate the vertices, winding indices, or initial UV values.

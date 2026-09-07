@@ -410,3 +410,30 @@ the existing lateral offset. This recovers the native aggregate temporary
 lifetime without changing shared vector definitions or reference rules. The full
 function remains partial; earlier percentages above belong to prior source
 or dependency epochs. Existing reference debt, where present, is unchanged.
+
+## 2026-09-07 common-mesh sample and face-counter recovery
+
+A whole S-bend mesh replay improves the current 80.93% baseline to 82.81%.
+Extracting Dump's existing mesh into the same inline-helper boundary is
+byte-neutral, so extraction alone does not explain the gain. The subsequent
+15-form interaction recipe separates terminal sample ownership, face-counter
+initialization, guarded vertex traversal, and nested terminal arithmetic.
+
+Only two changes contribute. Accessing the terminal predecessor through the
+current sample's `sample[-1]` restores native `add eax, ebx` followed by the
+negative field displacements at `0x41e152..0x41e180`; retaining a pointer to the
+predecessor emits one adjusted base with positive displacements instead.
+Initializing `mesh_column` before the width guard restores the native zero
+and row-UV conversion temporaries at `0x41e203..0x41e243`. Their separate
+results are 81.94% and 81.80%, and together they reproduce the complete-body
+82.81% result. The other two axes are neutral in every tested combination.
+
+The canonical change keeps Dump's existing loop bodies and vector expressions.
+It remains partial at 689/690 instructions, prefix 20, and 43 clean references.
+The complete before/after assembly differs only in the terminal addressing,
+face preheader, and consequent branch offsets. A recorded reverse probe
+reproduces the preceding code hash and 80.93% result; the formatted retained
+source reproduces the evaluated candidate hash.
+
+Recipes: `common-mesh-next-family-20260907.json` and
+`common-mesh-recovery-interactions-20260907.json`.

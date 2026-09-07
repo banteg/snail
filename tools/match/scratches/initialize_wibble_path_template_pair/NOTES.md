@@ -364,3 +364,27 @@ publication. Earlier non-improving results belong to different dependencies.
 Four additional complete delta-loop forms reuse either caller counter through
 a reference or an expanded loop body. All are byte-neutral; no counter/helper
 change is retained. Native delta-loop index allocation remains open.
+
+## 2026-09-07 guarded shared face-loop recovery
+
+The complete S-bend mesh is only a small gain, 78.62% to 78.78%. Decomposing
+it into 15 combinations of ordinary/terminal vertex destinations, nested
+terminal arithmetic, and the face guard finds the stronger minimal change:
+**80.10%** with only the guarded face traversal.
+
+The native body at `0x428ff1..0x429051` zeroes the column and checks width
+before computing the row's two V coordinates. Initializing the column before
+that guard and using its guarded do-loop restores this schedule, including
+the row-UV integer conversion temporary at stack offset `0x24`. Every tested
+variant with this guard gives the same metrics; the seven without it remain
+at 78.62%. The destination-pointer and nested-expression changes are not
+retained.
+
+Full before/after assembly changes only the face preheader. The earlier curve,
+vertex code, complete face bodies, and all call references remain unchanged.
+The candidate is still 608/608 instructions, prefix 85, and 39 clean
+references. A recorded reverse probe restores the old code hash and 78.62%,
+and the formatted retained source reproduces the evaluated candidate hash.
+
+Recipes: `common-mesh-next-family-20260907.json` and
+`common-mesh-recovery-interactions-20260907.json`.
