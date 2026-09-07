@@ -150,13 +150,13 @@ def test_coverage_excludes_owned_padding_and_unknown_bytes():
         report.validate_comparison_ranges(row)
 
 
-def test_report_names_survive_renaming():
+def test_report_uses_readable_names_for_treemap():
     from test_match_report import row
 
     before = report.build_report([row(name="old")])["units"][0]
     after = report.build_report([row(name="recovered")])["units"][0]
-    assert before["name"] == after["name"] == "SnailMail_unwrapped.exe/00000001"
-    assert before["functions"][0]["name"] == after["functions"][0]["name"]
+    assert before["name"] == before["functions"][0]["name"] == "old"
+    assert after["name"] == after["functions"][0]["name"] == "recovered"
     assert after["functions"][0]["metadata"]["demangled_name"] == "recovered"
 
 

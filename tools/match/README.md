@@ -537,4 +537,4 @@ uses absolute target ranges and grants whole-function credit only if compared
 ranges cover every owned code byte. Its independent code inventory differs from
 the legacy status board's curated address spans. See
 [`analysis/progress/README.md`](../../analysis/progress/README.md) for metric tiers,
-stable native IDs, scoring epochs and the exported proof summary.
+readable report names, scoring epochs and the exported proof summary.

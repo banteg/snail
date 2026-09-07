@@ -242,9 +242,10 @@ the canonical body hashes and masks, and validates the flag from those hashes
 and the strict normalized proof. Terminal padding is outside the body metric.
 This is **relocation-audited encoded-body identity**, not final executable identity.
 
-Report unit and function keys use `SnailMail_unwrapped.exe/<entry-address>`;
-recovered names live in function `demangled_name` metadata. The first migration
-changes report keys once; subsequent renames preserve them.
+Report units and functions use recovered names so the decomp.dev treemap remains
+readable. Duplicate unit names receive an address suffix. Address identities
+remain in evidence and the proof summary; they are not treemap labels. Renames
+can therefore appear as report-unit replacement in objdiff history.
 
 The proof summary exposes normalized and encoded matched bytes, newly matched
 and regressed bytes, unmatched bytes, and the largest remaining functions.

@@ -14,6 +14,7 @@ import os
 import platform
 import shutil
 import subprocess
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -598,6 +599,7 @@ def build_report(functions: list[dict[str, Any]]) -> dict[str, Any]:
     attribution = _load_attribution()
     game_addresses.update(a for a, r in attribution.items() if r["component"] == "game-init")
     display_names = {r["address"]: attribution.get(r["address"], {}).get("name", r["name"]) for r in functions}
+    names = Counter(display_names.values())
     seen: set[int] = set()
     units: list[dict[str, Any]] = []
     total = matched = complete = matched_functions = complete_units = 0
@@ -631,7 +633,7 @@ def build_report(functions: list[dict[str, Any]]) -> dict[str, Any]:
             int(is_complete),
         )
         display_name = display_names[key]
-        name = native_id(row["address"])
+        name = display_name if names[display_name] == 1 else f"{display_name}@{row['address']:08x}"
         owner = attribution.get(key)
         categories = ["other"]
         if row["is_function"] and key in game_addresses:
@@ -652,7 +654,7 @@ def build_report(functions: list[dict[str, Any]]) -> dict[str, Any]:
                 "measures": measures,
                 "functions": [
                     {
-                        "name": name,
+                        "name": display_name,
                         "size": str(size),
                         "fuzzy_match_percent": percent,
                         "metadata": {
