@@ -185,3 +185,13 @@ tail at `+0x43`. There is no missing shared symbol to curate. Source/default
 lifetime remains the technical residual; the failed mobile-inspired guard
 transfer does not establish that all standard-profile source forms are ruled
 out. Scratch configuration and semantic-complete classification are unchanged.
+
+## 2026-09-07 version-verified VC6 controls
+
+Unchanged-source probes under the coherent `msvc6.0` and `msvc6.3` component
+sets preserve this function's current normalized instructions and reference
+state. The seven-function batch pairs the selector/search residuals with four
+exact neighboring controls. No compiler override or source change follows
+from this comparison. Component versions, hashes, measured results and the
+separate mislabeled VC7-archive check are recorded in
+[the compiler-control report](../../compiler-profile-controls-20260907.md).

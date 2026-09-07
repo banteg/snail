@@ -410,3 +410,27 @@ Pointer and reference forms agree; moving the flat index into the winding
 branches gives 76.00% and adds instructions. This tests the relevant recovered
 terminal/face lifetime interaction without changing shared operators, field
 layouts, or the native per-winding texture parameters. No source is retained.
+
+## 2026-09-07 shared vector width and array-loop controls
+
+The six-function batch tests the two traversal methods, slug burst, S-bend,
+and both exact fringe builders. Its double-value and const-double-reference
+formals preserve the XYZ result body; its array-backed controls separate the
+storage view from forward/reverse three-lane arithmetic loops. All retain the
+12-byte vector layout and every out-of-line call contract. These are diagnostic
+header shadows; no shared header is changed.
+
+| Control | Match | Candidate instructions | Prefix | References ok / mismatch / unaudited |
+| --- | ---: | ---: | ---: | --- |
+| double | 86.95% | 578 | 167 | 36 / 0 / 6 |
+| const-double-ref | 86.95% | 578 | 167 | 36 / 0 / 6 |
+| array-owner-explicit-components | 91.10% | 578 | 443 | 39 / 0 / 0 |
+| array-owner-forward-loop | 71.74% | 603 | 67 | 37 / 0 / 2 |
+| array-owner-reverse-loop | 70.11% | 602 | 67 | 37 / 0 / 2 |
+
+The storage-only array view is neutral; both arithmetic loops regress every
+member. Wider shared formals regress both exact fringe controls, so the slug
+instruction-count gain cannot justify changing the shared operator. Only the
+slug's independently tested local-result follow-up is retained; this canonical
+source remains unchanged. The receipts preserve the full compiled identities
+and reference debt rather than interpreting an unchanged score as exact code.

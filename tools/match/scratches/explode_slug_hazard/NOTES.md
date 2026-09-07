@@ -1,4 +1,4 @@
-# Structure-first scratch - 97.61%, 146/147 insns
+# Structure-first scratch - 97.96%, 147/147 insns
 
 `explode_slug_hazard` is recovered as the 70-particle slug goo burst spawned
 by `kill_slug_hazard`. Each iteration allocates sprite texture `129`, sets
@@ -211,3 +211,55 @@ layout, and all out-of-line call contracts. All four forms are byte-neutral
 in this caller. The five-function batch covers Golb traversal, slug explosion,
 S-bend, and both exact fringe builders; no shared-header change is retained.
 The recurring x87 operand choices remain open.
+
+## 2026-09-07 local wide-rate and complete velocity result
+
+The retained source uses a local `double speed` and explicit XYZ products in a
+named `Vector3` result, followed by one aggregate sprite publication. This
+improves 97.61%, 146/147 instructions to **97.96%, 147/147**, retaining prefix
+79 and all 32 clean references. The extra native `FXCH` and the Y-product
+form are recovered. The owner load still occurs after the up-draw arithmetic
+instead of before its integer-to-float conversion; the remaining commutative
+product difference moves from Y to X. The full comparison is still partial.
+
+The change is local: the stored game rate remains a float and the shared vector
+operator, layouts, signatures, constants and RNG call order are unchanged.
+The compiler keeps the converted rate in x87 across the complete result. This
+is a measured source-lifetime improvement, not proof of the authored local's
+exact spelling or of a double formal on the shared vector operator.
+
+The shared double-formal diagnostic first exposed the missing-instruction
+recovery, but it regresses both exact fringe controls and S-bend. It is not
+promoted. Nine coupled constructor/copy/local-result controls isolate the gain
+to explicit local double products with a named result: float local fields and
+float constructor results are neutral, constructor forms with double products
+emit 148 instructions, and copy/compound or direct sprite stores regress.
+Twelve subsequent controls couple the local result with the up-seed/owner
+boundary or the other five component orders. None improves the retained form;
+the equal-score earlier owner borrow shortens the prefix to 72 and is rejected.
+The recipes and probe retain source, code and reference evidence, including
+the pre-promotion code hash `f3748a30ab066f8a3aa360f2826de3a8fb9f586399ab83e0d5cabba998745818`.
+
+## 2026-09-07 shared vector width and array-loop controls
+
+The six-function batch tests the two traversal methods, slug burst, S-bend,
+and both exact fringe builders. Its double-value and const-double-reference
+formals preserve the XYZ result body; its array-backed controls separate the
+storage view from forward/reverse three-lane arithmetic loops. All retain the
+12-byte vector layout and every out-of-line call contract. These are diagnostic
+header shadows; no shared header is changed.
+
+| Control | Match | Candidate instructions | Prefix | References ok / mismatch / unaudited |
+| --- | ---: | ---: | ---: | --- |
+| double | 97.96% | 147 | 79 | 32 / 0 / 0 |
+| const-double-ref | 97.96% | 147 | 79 | 32 / 0 / 0 |
+| array-owner-explicit-components | 97.61% | 146 | 79 | 32 / 0 / 0 |
+| array-owner-forward-loop | 83.96% | 146 | 30 | 32 / 0 / 0 |
+| array-owner-reverse-loop | 83.11% | 149 | 30 | 32 / 0 / 0 |
+
+The storage-only array view is neutral; both arithmetic loops regress every
+member. Wider shared formals regress both exact fringe controls, so the slug
+instruction-count gain cannot justify changing the shared operator. Slug's
+separate local-result follow-up is documented above; the other canonical
+sources remain unchanged. The receipts preserve the full compiled identities
+and reference debt rather than interpreting an unchanged score as exact code.

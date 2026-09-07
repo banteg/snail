@@ -18,3 +18,13 @@ meaningful return contract for the authored method.
 
 The stable matcher identity remains `calc_path_length_z`; the exact body and
 ordinary native relocations now use the authored member name.
+
+## 2026-09-07 version-verified VC6 controls
+
+Unchanged-source probes under the coherent `msvc6.0` and `msvc6.3` component
+sets preserve this function's current normalized instructions and reference
+state. The seven-function batch pairs the selector/search residuals with four
+exact neighboring controls. No compiler override or source change follows
+from this comparison. Component versions, hashes, measured results and the
+separate mislabeled VC7-archive check are recorded in
+[the compiler-control report](../../compiler-profile-controls-20260907.md).

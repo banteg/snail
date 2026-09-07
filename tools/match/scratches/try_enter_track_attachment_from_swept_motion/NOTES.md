@@ -203,3 +203,29 @@ together. Five are neutral at 95.78%; replacing the copied cell anchor with
 three direct scalar loads regresses to 79.10%. All retain 47 clean references.
 No source change is retained, and these scopes do not explain the missing
 native exhausted-loop epilogue.
+
+## 2026-09-07 coupled vector arguments and search exits
+
+Ten complete source controls combine the independently supported vector-value
+argument grouping with the mobile-style nested scan, explicit miss returns,
+break-on-exhaustion, complete anchor-vector additions, and a complete accepted
+handoff helper borrowing the local probe. The older exit experiments used the
+six-scalar compatibility declaration; these controls test the interaction.
+
+All compile with 199/204 instructions, prefix 16, and 47 clean references.
+The seven vector-argument forms remain 94.79%; the three scalar-argument
+controls remain 95.78%. Neither argument grouping changes the missing native
+miss epilogue. Complete anchor-vector expressions and the borrowed-probe
+handoff helper do not improve either grouping. The recipe and current-epoch
+receipt retain every tested source; no shared declaration or canonical source
+is changed.
+
+## 2026-09-07 version-verified VC6 controls
+
+Unchanged-source probes under the coherent `msvc6.0` and `msvc6.3` component
+sets preserve this function's current normalized instructions and reference
+state. The seven-function batch pairs the selector/search residuals with four
+exact neighboring controls. No compiler override or source change follows
+from this comparison. Component versions, hashes, measured results and the
+separate mislabeled VC7-archive check are recorded in
+[the compiler-control report](../../compiler-profile-controls-20260907.md).

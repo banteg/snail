@@ -224,3 +224,27 @@ layout, and all out-of-line call contracts. All four forms are byte-neutral
 in this caller. The five-function batch covers Golb traversal, slug explosion,
 S-bend, and both exact fringe builders; no shared-header change is retained.
 The recurring x87 operand choices remain open.
+
+## 2026-09-07 shared vector width and array-loop controls
+
+The six-function batch tests the two traversal methods, slug burst, S-bend,
+and both exact fringe builders. Its double-value and const-double-reference
+formals preserve the XYZ result body; its array-backed controls separate the
+storage view from forward/reverse three-lane arithmetic loops. All retain the
+12-byte vector layout and every out-of-line call contract. These are diagnostic
+header shadows; no shared header is changed.
+
+| Control | Match | Candidate instructions | Prefix | References ok / mismatch / unaudited |
+| --- | ---: | ---: | ---: | --- |
+| double | 98.11% | 318 | 113 | 17 / 0 / 12 |
+| const-double-ref | 98.11% | 318 | 113 | 17 / 0 / 12 |
+| array-owner-explicit-components | 100.00% | 318 | 318 | 23 / 0 / 0 |
+| array-owner-forward-loop | 84.91% | 318 | 46 | 19 / 0 / 4 |
+| array-owner-reverse-loop | 84.11% | 324 | 46 | 19 / 0 / 4 |
+
+The storage-only array view is neutral; both arithmetic loops regress every
+member. Wider shared formals regress both exact fringe controls, so the slug
+instruction-count gain cannot justify changing the shared operator. Only the
+slug's independently tested local-result follow-up is retained; this canonical
+source remains unchanged. The receipts preserve the full compiled identities
+and reference debt rather than interpreting an unchanged score as exact code.

@@ -46,8 +46,12 @@ void cRSlug::Explode()
         random_velocity.z =
             (float)gRMathRand2() * spread * 0.000030517578f
             + game->player.velocity.z;
-        float speed = game->subgame_rate;
-        sprite->velocity = random_velocity * speed;
+        double speed = game->subgame_rate;
+        Vector3 scaled_velocity;
+        scaled_velocity.x = random_velocity.x * speed;
+        scaled_velocity.y = random_velocity.y * speed;
+        scaled_velocity.z = random_velocity.z * speed;
+        sprite->velocity = scaled_velocity;
 
         Vector3* velocity = &sprite->velocity;
         float position_scale =
