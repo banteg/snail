@@ -77,3 +77,30 @@ scratch remains 92.84%, 189/188 instructions, with a 9-instruction prefix and
 The remaining mismatch is confined to equivalent ASCII-fold encoding, fallback
 block layout, and the early `_getcwd` argument cleanup. No register forcing,
 volatile access, or fake alias was introduced.
+
+## 2026-09-07 exact loader and supported VC6 profile
+
+Current result: **100.00%, 188/188 instructions, prefix 188**, with all 32
+reference operands clean, using `msvc6.0 /O2 /G5 /W3` in C++ mode.
+
+A structured lookup loop now exits to the complete selected-entry read
+operation. This recovers native's bottom-tested scan and filesystem fallback.
+The signed input character is folded through an unsigned-byte result, then
+converted back to char for the comparison, matching the exact lookup helper's
+recovered ASCII operation. Buffer-sentinel behavior, relative seeks, decrypt
+seeds, allocation, and error reporting remain native-derived.
+
+On the standard SP5-style C++ profile, that source reaches 97.08% with one
+extra `_getcwd` argument cleanup. Directory-buffer scopes, complete report
+operations, expression sequencing, and C report linkage leave that gap intact.
+The 8168 C++ profile coalesces cleanup exactly as native. This profile selection
+has independent support: the executable's checksum-valid Rich header includes
+C++ build 8168, both mobile symbols retain the C++ `RShellLoadFileHeader`
+contract in `RShell.o`, and all twelve adjacent archive/file/report controls
+match under the same 8168 C++ profile. Six controls distinguish it from the
+SP5-style C++ profile through native instruction/cleanup differences.
+
+See [the profile evidence](profile-evidence-20260907.md) for the exact control
+matrix and component identities. This establishes a supported reproduction
+profile; the Rich header does not map an individual object to this address.
+The project-wide default and neighboring scratch configurations are unchanged.

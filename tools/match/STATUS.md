@@ -4,7 +4,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 **593/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **137047/294937** bytes (**46.47%**) are proof-grade, and overall fuzzy is **88.07%**.
 
-**112/120** platform helpers matched, **120/120** have a scratch, **15780/22103** bytes (**71.39%**) are proof-grade, and overall fuzzy is **95.00%**. Platform progress is tracked separately from port-relevant totals.
+**113/120** platform helpers matched, **120/120** have a scratch, **16316/22103** bytes (**73.82%**) are proof-grade, and overall fuzzy is **95.17%**. Platform progress is tracked separately from port-relevant totals.
 
 **3** third-party functions (**8104** curated-extent bytes) remain visible for context and are excluded from both progress totals.
 
@@ -833,7 +833,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🖥 | uninitialize_game_data_archive | 0x430ef0 | 49 | 13/13 | 100.00% | 13/13 | 6 ok |  | replaceable-platform |
 | 🖥 | set_current_directory_with_drive_fallback | 0x430f30 | 151 | 48/48 | 100.00% | 48/48 | 6 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
 | 🖥 | archive_or_file_exists | 0x430fd0 | 92 | 36/36 | 100.00% | 36/36 | 7 ok |  | replaceable-platform |
-| 🖥 | load_file_bytes_fixed_size_from_archive_or_fs | 0x431030 | 536 | 189/188 | 92.84% | 9/188 | 32 ok |  | replaceable-platform |
+| 🖥 | load_file_bytes_fixed_size_from_archive_or_fs | 0x431030 | 536 | 188/188 | 100.00% | 188/188 | 32 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
 | 🖥 | find_archive_entry | 0x431250 | 122 | 60/60 | 100.00% | 60/60 | 2 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
 | 🖥 | load_file_bytes_from_archive_or_fs | 0x4312d0 | 577 | 208/206 | 79.23% | 10/206 | 36 ok |  | replaceable-platform |
 | 🖥 | load_file_bytes | 0x431520 | 21 | 8/8 | 100.00% | 8/8 | 1 ok |  | replaceable-platform |

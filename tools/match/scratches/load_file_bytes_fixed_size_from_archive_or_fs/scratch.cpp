@@ -10,6 +10,13 @@ void* allocate_tracked_memory(int size, char* name);
 void xor_archive_bytes_in_place(int start_offset, char* bytes, int count);
 int report_messagef(char* format, ...);
 
+static inline unsigned char fold_archive_request(char value)
+{
+    if (value >= 'a' && value <= 'z')
+        return value - ('a' - 'A');
+    return value;
+}
+
 char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(
     char* file_name, char* buffer, int byte_count)
 {
@@ -29,7 +36,7 @@ char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(
         entry_index = 0;
         if (count > 0) {
             entry_path = &archive_index->entries[0].path;
-            do {
+            while (entry_index < count) {
                 char* archive_cursor = *entry_path;
                 char* request_cursor = file_name;
 
@@ -40,9 +47,7 @@ char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(
                         break;
                     }
 
-                    if (request_char >= 'a' && request_char <= 'z') {
-                        request_char = request_char - 32;
-                    }
+                    request_char = (char)fold_archive_request(request_char);
 
                     if (archive_char != request_char) {
                         break;
@@ -52,45 +57,50 @@ char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(
                     ++archive_cursor;
                 }
 
-                if (*archive_cursor == 0 && *request_cursor == 0) {
-                    if (buffer == (char*)-1) {
-                        return (char*)g_archive_index_records->entries[entry_index].data_offset;
-                    }
-
-                    if (buffer == 0) {
-                        char* allocated = (char*)allocate_tracked_memory(byte_count, file_name);
-                        int current_offset = ftell(g_archive_file);
-                        fseek(g_archive_file,
-                            g_archive_index_records->entries[entry_index].data_offset
-                                - current_offset,
-                            SEEK_CUR);
-                        fread(allocated, 1, byte_count, g_archive_file);
-                        xor_archive_bytes_in_place(
-                            g_archive_index_records->entries[entry_index].data_offset,
-                            allocated,
-                            byte_count);
-                        return allocated;
-                    } else {
-                        int current_offset = ftell(g_archive_file);
-                        fseek(g_archive_file,
-                            g_archive_index_records->entries[entry_index].data_offset
-                                - current_offset,
-                            SEEK_CUR);
-                        fread(buffer, 1, byte_count, g_archive_file);
-                        xor_archive_bytes_in_place(
-                            g_archive_index_records->entries[entry_index].data_offset,
-                            buffer,
-                            byte_count);
-                        return buffer;
-                    }
-                }
+                if (*archive_cursor == 0 && *request_cursor == 0)
+                    goto found_archive_entry;
 
                 ++entry_index;
                 entry_path += 3;
-            } while (entry_index < count);
+            }
         }
     }
 
+    goto filesystem_entry;
+
+found_archive_entry:
+    if (buffer == (char*)-1) {
+        return (char*)g_archive_index_records->entries[entry_index].data_offset;
+    }
+
+    if (buffer == 0) {
+        char* allocated = (char*)allocate_tracked_memory(byte_count, file_name);
+        int current_offset = ftell(g_archive_file);
+        fseek(g_archive_file,
+            g_archive_index_records->entries[entry_index].data_offset
+                - current_offset,
+            SEEK_CUR);
+        fread(allocated, 1, byte_count, g_archive_file);
+        xor_archive_bytes_in_place(
+            g_archive_index_records->entries[entry_index].data_offset,
+            allocated,
+            byte_count);
+        return allocated;
+    } else {
+        int current_offset = ftell(g_archive_file);
+        fseek(g_archive_file,
+            g_archive_index_records->entries[entry_index].data_offset
+                - current_offset,
+            SEEK_CUR);
+        fread(buffer, 1, byte_count, g_archive_file);
+        xor_archive_bytes_in_place(
+            g_archive_index_records->entries[entry_index].data_offset,
+            buffer,
+            byte_count);
+        return buffer;
+    }
+
+filesystem_entry:
     file = fopen(file_name, "rb");
     if (file == 0) {
         getcwd(current_directory, 512);
