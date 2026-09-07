@@ -482,3 +482,35 @@ instruction stream and reference audit. The hash-bound receipts are in
 `experiments.jsonl`; the shared evidence and limits are recorded in
 [the compiler controls](../../compiler-profile-controls-20260907.md#path-builder-controls).
 No compiler override is retained.
+
+
+## 2026-09-07 shared mesh and checkerboard ownership
+
+The seven-builder comparison tests the complete mesh operation with four
+independent even/odd texture formals, one common S-bend mesh body, and an
+inline `cRPath` member boundary. It preserves the native texture values by
+passing each side's texture for both parities. The member declaration is a
+diagnostic header overlay, not an established original method name or a
+shared-header change.
+
+The full recipes and receipts are retained here. Results, the accepted Sweep
+counter recovery, and the remaining cross-builder differences are recorded in
+[the shared mesh report](../../shared-path-mesh-recovery-20260907.md).
+No common body or extra texture interface is promoted from this comparison.
+
+
+## 2026-09-07 native face-counter scope
+
+Transferring the complete S-bend mesh body exposed an improvement. A 15-form
+interaction sweep separates four source changes: column initialization before
+the width guard, a nested terminal vector expression, a direct column
+increment, and paired parity inversion. Only the first change contributes the
+gain; it is retained alone. The other three axes preserve the comparison
+metrics, although parity inversion changes conditional branch opcodes.
+
+The result improves **84.66% to 85.58%**, retaining **652/652 instructions**,
+**prefix 32**, and all **37 clean references**. The full before/after diff is
+confined to the face preheader: the column's zero initialization moves before
+the width guard and the row-UV conversions use the native stack temporary.
+The vertex phase, face bodies, and remainder are unchanged. A recorded reverse
+probe restores 84.66%. The broader common-body candidate is not promoted.

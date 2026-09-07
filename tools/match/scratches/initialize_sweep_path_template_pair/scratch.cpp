@@ -69,10 +69,10 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
     }
 
     for (row = 0; row < path->segment_count; ++row) {
+        column = 0;
         if (path->width_cells > 0) {
             float v0 = (float)(row % 8) * 0.125f;
             float v1 = (float)(row % 8 + 1) * 0.125f;
-            column = 0;
             int next_column;
             do {
                 next_column = column + 1;

@@ -477,3 +477,18 @@ The native branch-local face-index multiplication and cold parity continuations
 remain unresolved. The mobile builders do not contain this Windows mesh tail,
 so they do not establish its original control-flow spelling. No source change
 is retained from these diagnostic label forms.
+
+
+## 2026-09-07 shared mesh and checkerboard ownership
+
+The seven-builder comparison tests the complete mesh operation with four
+independent even/odd texture formals, one common S-bend mesh body, and an
+inline `cRPath` member boundary. It preserves the native texture values by
+passing each side's texture for both parities. The member declaration is a
+diagnostic header overlay, not an established original method name or a
+shared-header change.
+
+The full recipes and receipts are retained here. Results, the accepted Sweep
+counter recovery, and the remaining cross-builder differences are recorded in
+[the shared mesh report](../../shared-path-mesh-recovery-20260907.md).
+No common body or extra texture interface is promoted from this comparison.
