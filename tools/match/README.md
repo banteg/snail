@@ -93,6 +93,9 @@ The [2026-09-08 path pass](path-frontier-and-linking-20260908.md) records the
 current path-family triage, three isolated mesh-loop improvements, and a
 reproducible four-function source-object link check. The latter verifies
 link feasibility only and does not receive executable-reconstruction credit.
+The subsequent [math storage pass](rmath-storage-and-runtime-20260908.md)
+adds coherent table definitions and an executable integration harness with
+positive and negative runtime controls.
 
 1. Create `scratches/<function>/` with:
    - `scratch.cpp` — candidate implementation; use a class member function to

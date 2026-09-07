@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "canonical-array-loop",
+      "find": "// RMathInit @ 0x44c930 (cdecl)\n\n#include \"rmath_random.h\"\n\nextern \"C\" double __cdecl cos(double value);\nextern \"C\" double __cdecl sin(double value);\n\nextern float g_cosine_table_init_base[]; // 0x777f38, one element before g_cosine_table\nextern float g_sine_table_init_base[]; // 0x77ff88, one element before g_sine_table\n\nvoid RMathInit()\n{\n    int index = 0;\n    int source_index = 0;\n\n    do {\n        float source_angle = (float)source_index;\n        source_index = ++index;\n        float angle = source_angle * 0.00012207031f;\n        angle = angle * 6.2831855f;\n        g_cosine_table_init_base[index] = (float)cos(angle);\n        g_sine_table_init_base[index] = (float)sin(angle);\n    } while (index < 0x2000);\n\n    gRMathRand2Init();\n}\n",
+      "replacements": [
+        {
+          "name": "indexed-for",
+          "text": "#include \"rmath_random.h\"\n\nextern \"C\" double __cdecl cos(double value);\nextern \"C\" double __cdecl sin(double value);\nextern float g_cosine_table[8192];\nextern float g_sine_table[8192];\n\nvoid RMathInit()\n{\n    for (int index = 0; index < 8192; ++index) {\n        float angle = (float)index * 0.00012207031f;\n        angle = angle * 6.2831855f;\n        g_cosine_table[index] = (float)cos(angle);\n        g_sine_table[index] = (float)sin(angle);\n    }\n    gRMathRand2Init();\n}\n"
+        },
+        {
+          "name": "indexed-do",
+          "text": "#include \"rmath_random.h\"\n\nextern \"C\" double __cdecl cos(double value);\nextern \"C\" double __cdecl sin(double value);\nextern float g_cosine_table[8192];\nextern float g_sine_table[8192];\n\nvoid RMathInit()\n{\n    int index = 0;\n    do {\n        float angle = (float)index * 0.00012207031f;\n        angle = angle * 6.2831855f;\n        g_cosine_table[index] = (float)cos(angle);\n        g_sine_table[index] = (float)sin(angle);\n        ++index;\n    } while (index < 8192);\n    gRMathRand2Init();\n}\n"
+        }
+      ]
+    }
+  ]
+}

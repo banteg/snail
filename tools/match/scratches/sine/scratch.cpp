@@ -1,6 +1,6 @@
 // Sin @ 0x44c9d0 (cdecl)
 
-extern float g_sine_table[]; // data_77ff8c
+#include "rmath_tables.h"
 
 float Sin(float angle)
 {

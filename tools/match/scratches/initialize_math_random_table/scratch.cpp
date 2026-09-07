@@ -4,8 +4,7 @@
 
 extern "C" int __cdecl rand();
 
-extern int g_math_random_index; // 0x77ff3c
-extern int g_math_random_table[]; // 0x787f8c
+#include "rmath_tables.h"
 
 void gRMathRand2Init()
 {
@@ -15,7 +14,7 @@ void gRMathRand2Init()
     do {
         result = rand();
         *cursor++ = result;
-    } while ((int)cursor < (int)&g_math_random_table[0x1fff]);
+    } while ((int)cursor < (int)&g_math_random_table[RMATH_RANDOM_TABLE_COUNT]);
 
     g_math_random_index = 0;
 }

@@ -24,3 +24,15 @@ The sole Windows caller discards EAX. Restoring the void outer and inner
 initializer contracts remains byte-identical: this body is 18/18 instructions
 with five clean operands, and `gRMathRand2Init` is 10/10 with four clean
 operands.
+
+## 2026-09-08 canonical array ownership
+
+The retained zero-based for-loop names the actual arrays directly and remains
+18/18 with five clean references. VC6 schedules the increment before the stores
+and emits the native -4 relocation addends itself. Separate biased-array externs
+are no longer needed. The manifest retains those old names as historical offset
+identities and records the verified extents/prebase displacement on the owners.
+
+The resulting arrays also link and run with the exact lookup/random helpers.
+See [the storage and executable report](../../rmath-storage-and-runtime-20260908.md)
+for the native bounds, rejected two-index rewrite, and runtime controls.

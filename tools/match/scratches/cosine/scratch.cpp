@@ -2,7 +2,7 @@
 
 extern "C" double __cdecl cos(double value);
 
-extern float g_cosine_table[]; // data_777f3c
+#include "rmath_tables.h"
 
 float Cos(float angle)
 {

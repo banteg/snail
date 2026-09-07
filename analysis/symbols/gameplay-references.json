@@ -9313,7 +9313,11 @@
       "aliases": [
         "data_77ff8c"
       ],
-      "description": "Trigonometry sine lookup table initialized at startup and read by sine."
+      "size": "0x8000",
+      "allowed_prebase_offsets": [
+        "0x4"
+      ],
+      "description": "8192-float sine lookup array. RMathInit at 0x44c95e stores indices 0..8191 using an incremented index and an encoded -4-byte relocation addend; 0x77ff88 is a compiler address base, not a second storage owner."
     },
     {
       "address": "0x777f3c",
@@ -9322,7 +9326,11 @@
       "aliases": [
         "data_777f3c"
       ],
-      "description": "Trigonometry cosine lookup table initialized at startup and read by cosine."
+      "size": "0x8000",
+      "allowed_prebase_offsets": [
+        "0x4"
+      ],
+      "description": "8192-float cosine lookup array. RMathInit at 0x44c955 stores indices 0..8191 using an incremented index and an encoded -4-byte relocation addend; 0x777f38 is a compiler address base, not a second storage owner."
     },
     {
       "address": "0x787f8c",

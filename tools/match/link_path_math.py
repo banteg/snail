@@ -23,12 +23,28 @@ from snail.match import (
 )
 from snail.symbols import REPO_ROOT
 
-FUNCTIONS = (
+PATH_MATH_FUNCTIONS = (
     "calc_path_length_z",
     "cross_vectors",
     "dot_vector",
     "invert_matrix_from_source",
 )
+GROUPS = {
+    "path-math": PATH_MATH_FUNCTIONS,
+    "rmath": PATH_MATH_FUNCTIONS
+    + (
+        "initialize_trigonometry_tables",
+        "initialize_math_random_table",
+        "next_math_random_value",
+        "cosine",
+        "sine",
+        "square_root",
+        "dot_vectors",
+        "normalize_vector",
+        "normalize_vector_from_source",
+        "set_matrix_identity",
+    ),
+}
 
 
 def sha(path: Path) -> str:
@@ -37,6 +53,12 @@ def sha(path: Path) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--group", choices=GROUPS, default="path-math")
+    parser.add_argument(
+        "--run",
+        action="store_true",
+        help="Build the rmath integration executable and run positive/negative controls",
+    )
     parser.add_argument(
         "--runtime-library",
         type=Path,
@@ -47,6 +69,8 @@ def main() -> None:
         "--out", type=Path, default=REPO_ROOT / "artifacts/match/path-math"
     )
     args = parser.parse_args()
+    if args.run and args.group != "rmath":
+        parser.error("--run requires --group rmath")
     runtime = args.runtime_library.resolve(strict=True)
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -56,7 +80,7 @@ def main() -> None:
     objects = []
     records = []
     functions = []
-    for name in FUNCTIONS:
+    for name in GROUPS[args.group]:
         config = load_scratch_config(DEFAULT_MATCH_ROOT / "scratches" / name)
         if config.compiler != "msvc6.5":
             raise ValueError(f"{name}: expected the canonical VC6 profile")
@@ -88,6 +112,43 @@ def main() -> None:
             }
         )
 
+    support = []
+    support_names = ["rmath_storage"] if args.group == "rmath" else []
+    if args.run:
+        support_names.append("rmath_smoke")
+    for name in support_names:
+        source = DEFAULT_MATCH_ROOT / f"link/{name}.cpp"
+        obj = out / f"{name}.obj"
+        obj.unlink(missing_ok=True)
+        compiled = subprocess.run(
+            [
+                str(DEFAULT_MATCH_ROOT / "cl.sh"),
+                "/c",
+                "/O2",
+                "/G5",
+                "/W3",
+                f"/FoZ:{obj}",
+                f"Z:{source}",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+            env={**os.environ, "MSVC_VER": "msvc6.5"},
+        )
+        (out / f"{name}.compile.log").write_text(compiled.stdout + compiled.stderr)
+        if compiled.returncode:
+            raise RuntimeError(
+                f"support compile failed; see {out / (name + '.compile.log')}"
+            )
+        objects.append(obj)
+        support.append(
+            {
+                "source": str(source.relative_to(REPO_ROOT)),
+                "source_sha256": sha(source),
+                "object_sha256": sha(obj),
+            }
+        )
+
     linker = DEFAULT_MATCH_ROOT / "compilers/msvc6.5/Bin/LINK.EXE"
     runner = os.environ.get("WIBO") or str(DEFAULT_MATCH_ROOT / "bin/wibo")
     if not Path(runner).is_file():
@@ -95,14 +156,17 @@ def main() -> None:
     if not runner:
         raise FileNotFoundError("Wibo is required, as for the regular matcher")
 
-    dll = out / "path-math.dll"
-    map_path = out / "path-math.map"
+    dll = out / ("rmath-smoke.exe" if args.run else f"{args.group}.dll")
+    map_path = dll.with_suffix(".map")
     dll.unlink(missing_ok=True)
     map_path.unlink(missing_ok=True)
     options = [
         "/nologo",
-        "/dll",
-        "/noentry",
+        *(
+            ["/subsystem:console", "/entry:mainCRTStartup"]
+            if args.run
+            else ["/dll", "/noentry"]
+        ),
         "/nodefaultlib",
         "/opt:noref",
         f"/out:Z:{dll}",
@@ -154,14 +218,34 @@ def main() -> None:
         symbol = next(s for s in obj.symbols if s.name == function.name)
         by_index = {s.raw_index: s for s in obj.symbols}
         calls = []
+        data_references = []
+        local_data_references = []
         for relocation in obj.sections[symbol.section_number - 1].relocations:
             relative = relocation.virtual_address - symbol.value
-            if (
-                not (0 <= relative < len(function.data))
-                or relocation.relocation_type != 0x14
-            ):
+            if not (0 <= relative < len(function.data)):
                 continue
             target = by_index[relocation.symbol_index].name
+            if relocation.relocation_type == 0x06:
+                actual = struct.unpack_from("<I", linked, relative)[0]
+                addend = struct.unpack_from("<i", function.data, relative)[0]
+                if target in symbols:
+                    if actual != (symbols[target] + addend) & 0xFFFFFFFF:
+                        raise ValueError(f"wrong linked data address for {target}")
+                    data_references.append(
+                        {
+                            "offset": relative,
+                            "symbol": target,
+                            "addend": addend,
+                            "address": actual,
+                        }
+                    )
+                else:
+                    local_data_references.append({"offset": relative, "symbol": target})
+                continue
+            if relocation.relocation_type != 0x14:
+                raise ValueError(
+                    f"unsupported function relocation {relocation.relocation_type:#x}"
+                )
             if target not in symbols:
                 raise ValueError(f"missing linked call target {target}")
             addend = struct.unpack_from("<i", function.data, relative)[0]
@@ -179,6 +263,8 @@ def main() -> None:
                 "object_body_bytes": len(function.data),
                 "non_relocation_bytes_preserved": True,
                 "verified_rel32_calls": calls,
+                "verified_named_data_references": data_references,
+                "local_data_references_not_map_verified": local_data_references,
             }
         )
     imports = [
@@ -191,11 +277,48 @@ def main() -> None:
         }
         for entry in getattr(pe, "DIRECTORY_ENTRY_IMPORT", [])
     ]
+    runs = []
+    if args.run:
+        for label, extra, expected in [
+            ("positive", [], 0),
+            ("negative", ["!corrupt-table"], 1),
+        ]:
+            run = subprocess.run(
+                [runner, str(dll), *extra],
+                capture_output=True,
+                text=True,
+                timeout=20,
+                check=False,
+            )
+            (out / f"{label}.log").write_text(run.stdout + run.stderr)
+            summary = re.search(r"rmath checks=(\d+) failures=(\d+)", run.stdout)
+            if (
+                run.returncode != expected
+                or not summary
+                or int(summary[1]) != 23
+                or bool(int(summary[2])) != bool(expected)
+            ):
+                raise ValueError(
+                    f"{label} runtime control failed; see {out / (label + '.log')}"
+                )
+            runs.append(
+                {
+                    "label": label,
+                    "exit_code": run.returncode,
+                    "checks": int(summary[1]),
+                    "failures": int(summary[2]),
+                    "stdout": run.stdout,
+                }
+            )
     receipt = {
         "schema": 1,
-        "purpose": "CalcLengthZ source-object link feasibility; not an executable reconstruction",
+        "purpose": "Source-object link feasibility; not an executable reconstruction",
+        "group": args.group,
+        "support": support,
         "entry_point": pe.OPTIONAL_HEADER.AddressOfEntryPoint,
-        "runtime_execution_tested": False,
+        "runtime_execution_tested": bool(args.run),
+        "runtime_scope": "Selected math operations; CalcLengthZ is linked but not exercised",
+        "runs": runs,
         "public_linked_credit": False,
         "linker_sha256": sha(linker),
         "runtime_library": str(runtime),
