@@ -34,18 +34,14 @@ char initialize_game_data_archive()
         (char*)allocate_tracked_memory(
             RSHELL_MUSIC_MEMORY_BUFFER_SIZE, "Music Memory Buffer");
 
-    int authored_x = 0x43a00000;
-    int authored_y = 0x43700000;
-    char* slot_axis_y = (char*)g_input_slot0_buttons - 4;
-    do {
-        *(int*)(slot_axis_y - 4) = 0;
-        *(int*)slot_axis_y = 0;
-        *(int*)(slot_axis_y + 4) = 0;
-        *(int*)(slot_axis_y + 0x10) = authored_x;
-        *(int*)(slot_axis_y + 0x14) = authored_y;
-        *(int*)(slot_axis_y + 0x18) = 0;
-        slot_axis_y += 0x38;
-    } while ((int)slot_axis_y < 0x5033b0);
+    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {
+        input_controller_slot(i).axis_x = 0.0f;
+        input_controller_slot(i).axis_y = 0.0f;
+        input_controller_slot(i).buttons = 0;
+        input_controller_slot(i).authored_x = 320.0f;
+        input_controller_slot(i).authored_y = 240.0f;
+        input_controller_slot(i).pointer_value = 0.0f;
+    }
 
     GetClipCursor(&clip_rect);
     return 1;

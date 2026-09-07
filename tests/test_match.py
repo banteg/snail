@@ -348,6 +348,8 @@ def test_default_reference_symbol_manifest_loads_curated_gameplay_refs() -> None
     assert by_name["g_player_block"].size == 0x4364
     assert by_name["g_math_random_table"].size == 0x7FFC
     assert by_name["g_math_random_table"].allow_one_past is True
+    assert by_name["g_input_controller_slot0"].size == 0x20
+    assert by_name["g_input_controller_slot0"].allowed_postbase_offsets == (0x74,)
     assert by_name["g_zero_parcel_buckets"].allowed_prebase_offsets == (
         0x8,
         0xC,
@@ -581,6 +583,88 @@ def test_reference_symbol_manifest_rejects_prebase_offsets_without_size(
     )
     with pytest.raises(ValueError, match="allowed_prebase_offsets requires size"):
         load_reference_symbol_manifest(manifest_path)
+
+
+@pytest.mark.parametrize(
+    ("size", "offsets", "error"),
+    [
+        (None, ["0x74"], "requires size"),
+        ("0x20", "0x74", "must be a list"),
+        ("0x20", ["0x20"], "must exceed size"),
+        ("0x20", ["0x10"], "must exceed size"),
+        ("0x20", [-1], "must exceed size"),
+        ("0x20", ["0x74", 116], "must be unique"),
+    ],
+)
+def test_reference_symbol_manifest_rejects_invalid_postbase_offsets(
+    tmp_path: Path,
+    size: str | None,
+    offsets: object,
+    error: str,
+) -> None:
+    symbol = {
+        "address": "0x402000",
+        "name": "g_table",
+        "kind": "global",
+        "allowed_postbase_offsets": offsets,
+    }
+    if size is not None:
+        symbol["size"] = size
+    manifest_path = tmp_path / "references.json"
+    manifest_path.write_text(json.dumps({"name": "test", "symbols": [symbol]}))
+    with pytest.raises(ValueError, match=f"allowed_postbase_offsets {error}"):
+        load_reference_symbol_manifest(manifest_path)
+
+
+@pytest.mark.parametrize(
+    ("target_offset", "candidate_offset", "accepted"),
+    [
+        (0x74, 0x74, True),
+        (0x70, 0x70, False),
+        (0x75, 0x75, False),
+        (0x73, 0x74, False),
+        (0x74, 0x73, False),
+    ],
+)
+def test_masked_operand_audit_limits_postbase_reference_to_exact_offset(
+    target_offset: int,
+    candidate_offset: int,
+    accepted: bool,
+) -> None:
+    manifest = ReferenceSymbolManifest(
+        name="strided payload sentinel",
+        symbols=(
+            ReferenceSymbol(
+                address=0x402000,
+                name="g_table",
+                kind="global",
+                size=0x20,
+                allowed_postbase_offsets=(0x74,),
+            ),
+            ReferenceSymbol(address=0x402074, name="g_end", kind="offset"),
+        ),
+    )
+    code = b"\xb8" + struct.pack("<I", candidate_offset) + b"\xc3"
+    obj = parse_coff_object(build_object(code, [("_foo", 0), ("_g_table", 0)], [(1, 1)]))
+    candidate = extract_object_function(obj, "foo", reference_manifest=manifest)
+    assert candidate.relocation_references[0].explained == (candidate_offset == 0x74)
+    result = match_function(
+        b"\xb8" + struct.pack("<I", 0x402000 + target_offset) + b"\xc3",
+        candidate,
+        image=LoadedImage(
+            mapped=b"\x00" * 0x3000,
+            image_base=0x400000,
+            size_of_image=0x3000,
+        ),
+        target_va=0x401000,
+        reference_manifest=manifest,
+    )
+    assert result.ratio == 1.0
+    assert (result.masked_operand_audit.problem_count == 0) == accepted
+    if accepted:
+        reference = result.masked_operand_audit.entries[0].target_references[0]
+        assert reference.key == "ref:g_end"
+        assert reference.alternate_keys == ("ref:g_table+0x74",)
 
 
 def relocated_candidate(symbol_name: str, key: str) -> ObjectFunction:

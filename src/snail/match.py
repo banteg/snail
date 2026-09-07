@@ -107,6 +107,7 @@ class ReferenceSymbol:
     size: int | None = None
     allow_one_past: bool = False
     allowed_prebase_offsets: tuple[int, ...] = ()
+    allowed_postbase_offsets: tuple[int, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -195,6 +196,30 @@ def load_reference_symbol_manifest(path: Path) -> ReferenceSymbolManifest:
             raise ValueError(
                 f"symbols[{index}].allowed_prebase_offsets requires size"
             )
+        postbase_offsets_value = raw_symbol.get("allowed_postbase_offsets", [])
+        if not isinstance(postbase_offsets_value, list):
+            raise ValueError(
+                f"symbols[{index}].allowed_postbase_offsets must be a list"
+            )
+        postbase_offsets = tuple(
+            _parse_hex_or_int(
+                offset,
+                field_name=f"symbols[{index}].allowed_postbase_offsets",
+            )
+            for offset in postbase_offsets_value
+        )
+        if postbase_offsets and size is None:
+            raise ValueError(
+                f"symbols[{index}].allowed_postbase_offsets requires size"
+            )
+        if size is not None and any(offset <= size for offset in postbase_offsets):
+            raise ValueError(
+                f"symbols[{index}].allowed_postbase_offsets must exceed size"
+            )
+        if len(set(postbase_offsets)) != len(postbase_offsets):
+            raise ValueError(
+                f"symbols[{index}].allowed_postbase_offsets must be unique"
+            )
         for raw_name in (name_value, *aliases_value):
             checked_names = {raw_name}
             # A fully decorated C++ name carries its overload signature. Its
@@ -231,6 +256,7 @@ def load_reference_symbol_manifest(path: Path) -> ReferenceSymbolManifest:
                 size=size,
                 allow_one_past=allow_one_past,
                 allowed_prebase_offsets=prebase_offsets,
+                allowed_postbase_offsets=postbase_offsets,
             )
         )
     return ReferenceSymbolManifest(name=name, symbols=tuple(symbols))
@@ -752,6 +778,7 @@ def _reference_offsets_for_address(
         if (
             0 < offset < symbol.size
             or (symbol.allow_one_past and offset == symbol.size)
+            or (offset > symbol.size and offset in symbol.allowed_postbase_offsets)
             or (
                 offset < 0
                 and -offset in symbol.allowed_prebase_offsets
@@ -854,6 +881,10 @@ def _resolve_object_relocation(
             reference_symbol.size is not None
             and offset < 0
             and -offset in reference_symbol.allowed_prebase_offsets
+        ) or (
+            reference_symbol.size is not None
+            and offset > reference_symbol.size
+            and offset in reference_symbol.allowed_postbase_offsets
         )
         if offset != 0:
             key = _format_reference_key(reference_symbol, offset)

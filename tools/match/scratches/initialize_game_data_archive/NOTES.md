@@ -1,5 +1,33 @@
 # initialize_game_data_archive
 
+## 2026-09-07 exact controller reset recovery
+
+The retained source matches **47/47 instructions**, a complete prefix, and
+**all 20 reference operands** under `msvc6.5 /O2 /G5 /W3`.
+
+An ordinary two-iteration loop now resets the six fields through
+`input_controller_slot(i)` directly. This recovers the native axis-y cursor,
+its materialization after allocator stack cleanup, and the complete store
+sequence. It removes the manually chosen byte cursor, bit-pattern center
+constants, and absolute-address loop bound. A per-iteration `slot` reference
+still changes VC6's induction-variable selection; the indexed field operations
+must be recovered together with the loop instead of adjusting the cursor alone.
+The three for/do index-lifetime spellings all compile exactly with clean audits.
+
+The compiler derives its terminal cursor from `g_input_controller_slot0+0x74`:
+`0x50333c + 2*0x38 + offsetof(InputControllerSlot, axis_y) = 0x5033b0`.
+Native compares that address at `0x430ed7`; it is the existing
+`g_input_slot_axis_y_end` sentinel. The reference manifest now permits only this
+explicit postbase offset. The payload remains 0x20 bytes, the selection stride
+remains 0x38, and independently owned repeat globals in the gap are unchanged.
+Matcher regression checks reject neighboring offsets and wrong-address pairs.
+
+The ownership, publication, and whole-operation recipes record the preceding
+48-, 20-, and 18-form probes plus a final 18-form replay with the explicit
+sentinel audit. This supersedes the earlier partial metrics and compiler-
+residual attribution below. The archive load, allocations, two controller
+resets, and final `GetClipCursor` call retain their native behavior.
+
 - Resets archive/input startup globals, the tracked allocation counters, the
   text-input repeat state, and the registered sound-sample count.
 - Loads `SnailMail.dat`, allocates the shared archive scratch pad and music

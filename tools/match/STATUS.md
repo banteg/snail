@@ -10,7 +10,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 **72** non-exact scratch-backed functions hold **30466 fuzzy-gap bytes**. The top 5 hold **29.7%** of that gap; the top 10 hold **43.4%**.
 
-Current-baseline experiments cover **3 functions / 87 gap bytes**; **69 / 30378** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **0 functions / 0 gap bytes**; **72 / 30466** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -71,9 +71,9 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 53 | initialize_quaternion_from_matrix | 44 | semantic-complete | analysis | historical-only | 0/9 | historical-only |
 | 54 | load_frontend_level_by_mode_and_index | 41 | semantic-complete | analysis,references | historical-only | 0/5 | historical-only |
 | 55 | release_snail_weapons | 40 | semantic-complete | analysis | historical-only | 0/12 | variant-errors,historical-only |
-| 56 | select_level_track_texture_set | 37 | semantic-complete | analysis,references | current-active | 1/7 | variant-errors |
+| 56 | select_level_track_texture_set | 37 | semantic-complete | analysis,references | historical-only | 0/7 | variant-errors,historical-only |
 | 57 | refresh_object_vertex_buffer | 37 | semantic-complete | analysis | historical-only | 0/8 | historical-only |
-| 58 | play_subgoldy_shoot_sfx | 36 | semantic-complete | analysis,references | current-active | 2/10 | repeated-variants,variant-errors,stale-dependencies |
+| 58 | play_subgoldy_shoot_sfx | 36 | semantic-complete | analysis,references | historical-only | 0/10 | repeated-variants,variant-errors,historical-only,stale-dependencies |
 | 59 | remove_sub_loc | 35 | semantic-complete | analysis | historical-only | 0/7 | historical-only,stale-dependencies |
 | 60 | try_enter_track_attachment_from_swept_motion | 34 | semantic-complete | analysis | historical-only | 0/8 | historical-only,stale-dependencies |
 | 61 | set_snail_jetpack | 26 | semantic-complete | analysis | historical-only | 0/7 | repeated-variants,historical-only |
@@ -81,7 +81,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 63 | create_golb | 20 | semantic-complete | analysis | historical-only | 0/22 | variant-errors,historical-only,stale-dependencies |
 | 64 | firework_shoot | 19 | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
 | 65 | extract_snail_local_hotspots | 18 | semantic-complete | analysis | historical-only | 0/7 | repeated-variants,variant-errors,historical-only |
-| 66 | initialize_star_field | 14 | semantic-complete | analysis | current-active | 1/18 | repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
+| 66 | initialize_star_field | 14 | semantic-complete | analysis | historical-only | 0/18 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 67 | explode_slug_hazard | 13 | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,variant-errors,historical-only,stale-dependencies |
 | 68 | traverse_path_follow_golb | 11 | semantic-complete | analysis | historical-only | 0/31 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 69 | read_repeating_text_input_key_code | 9 | semantic-complete | analysis | historical-only | 0/14 | variant-errors,historical-only,stale-dependencies |
@@ -830,7 +830,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🖥 | load_png_image | 0x42f0a0 | 965 | 371/371 | 100.00% | 371/371 | 78 ok |  | replaceable-platform |
 | 🖥 | initialize_tracked_allocation_depth_thunk | 0x430e20 | 5 | 1/1 | 100.00% | 1/1 | 1 ok |  | replaceable-platform |
 | 🖥 | initialize_tracked_allocation_depth | 0x430e30 | 11 | 2/2 | 100.00% | 2/2 | 1 ok |  | replaceable-platform |
-| 🖥 | initialize_game_data_archive | 0x430e40 | 176 | 48/47 | 94.74% | 27/47 | 2 unaudited, 19 ok |  | replaceable-platform |
+| 🖥 | initialize_game_data_archive | 0x430e40 | 176 | 47/47 | 100.00% | 47/47 | 20 ok |  | replaceable-platform |
 | 🖥 | uninitialize_game_data_archive | 0x430ef0 | 49 | 13/13 | 100.00% | 13/13 | 6 ok |  | replaceable-platform |
 | 🖥 | set_current_directory_with_drive_fallback | 0x430f30 | 151 | 48/48 | 100.00% | 48/48 | 6 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
 | 🖥 | archive_or_file_exists | 0x430fd0 | 92 | 36/36 | 100.00% | 36/36 | 7 ok |  | replaceable-platform |

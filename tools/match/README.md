@@ -318,6 +318,10 @@ Useful analysis helpers:
   displacements when compiler-generated affine indexing deliberately relocates
   against addresses before that recovered object. It requires `"size"` and
   permits only the listed offsets, never the intervening range.
+  Likewise, `"allowed_postbase_offsets"` permits explicitly evidenced offsets
+  beyond `"size"`, such as a compiler-derived sentinel across separately owned
+  strided payloads. Each offset must exceed the recovered size; it does not
+  extend object ownership or permit other addresses in the gap.
 - Use a gameplay function entry's `aliases` list when one native range has
   multiple stable source-level names, such as compiler-folded methods or an
   older scratch name retained during an ownership rename. Aliases resolve

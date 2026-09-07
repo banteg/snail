@@ -8052,7 +8052,10 @@
         "RShellInput"
       ],
       "size": "0x20",
-      "description": "First proved Windows RShellInput payload. Eight consumed fields occupy +0x00..+0x1f; RShellInputRetrieve exports exactly those eight outputs on Windows, whereas Android and iOS add two mobile-only mouse-extra floats and use a 0x40 stride. The second Windows payload begins at 0x503374, establishing a distinct 0x38-byte selection stride without assigning the xref-free gap to either slot."
+      "allowed_postbase_offsets": [
+        "0x74"
+      ],
+      "description": "First proved Windows RShellInput payload. Eight consumed fields occupy +0x00..+0x1f; RShellInputRetrieve exports exactly those eight outputs on Windows, whereas Android and iOS add two mobile-only mouse-extra floats and use a 0x40 stride. The second Windows payload begins at 0x503374, establishing a distinct 0x38-byte selection stride without assigning the xref-free gap to either slot. The explicit +0x74 reference is only the startup loop's axis-y cursor sentinel: 0x50333c + 2*0x38 + 0x04 = 0x5033b0, compared at 0x430ed7. It does not extend this payload's ownership."
     },
     {
       "address": "0x503340",

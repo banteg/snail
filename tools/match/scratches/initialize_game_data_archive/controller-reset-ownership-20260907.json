@@ -1,0 +1,203 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "slot-reset",
+      "find": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    char* slot_axis_y = (char*)g_input_slot0_buttons - 4;\n    do {\n        *(int*)(slot_axis_y - 4) = 0;\n        *(int*)slot_axis_y = 0;\n        *(int*)(slot_axis_y + 4) = 0;\n        *(int*)(slot_axis_y + 0x10) = authored_x;\n        *(int*)(slot_axis_y + 0x14) = authored_y;\n        *(int*)(slot_axis_y + 0x18) = 0;\n        slot_axis_y += 0x38;\n    } while ((int)slot_axis_y < 0x5033b0);\n",
+      "replacements": [
+        {
+          "name": "float-float-x-y-buttons",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    float* slot_axis_y = g_input_slot0_axis_y;\n    do {\n        slot_axis_y[-1] = 0.0f;\n        slot_axis_y[0] = 0.0f;\n        *(int*)&slot_axis_y[1] = 0;\n        slot_axis_y[4] = authored_x;\n        slot_axis_y[5] = authored_y;\n        slot_axis_y[6] = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE / sizeof(float);\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "float-float-x-buttons-y",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    float* slot_axis_y = g_input_slot0_axis_y;\n    do {\n        slot_axis_y[-1] = 0.0f;\n        *(int*)&slot_axis_y[1] = 0;\n        slot_axis_y[0] = 0.0f;\n        slot_axis_y[4] = authored_x;\n        slot_axis_y[5] = authored_y;\n        slot_axis_y[6] = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE / sizeof(float);\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "float-float-y-x-buttons",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    float* slot_axis_y = g_input_slot0_axis_y;\n    do {\n        slot_axis_y[0] = 0.0f;\n        slot_axis_y[-1] = 0.0f;\n        *(int*)&slot_axis_y[1] = 0;\n        slot_axis_y[4] = authored_x;\n        slot_axis_y[5] = authored_y;\n        slot_axis_y[6] = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE / sizeof(float);\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "float-float-y-buttons-x",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    float* slot_axis_y = g_input_slot0_axis_y;\n    do {\n        slot_axis_y[0] = 0.0f;\n        *(int*)&slot_axis_y[1] = 0;\n        slot_axis_y[-1] = 0.0f;\n        slot_axis_y[4] = authored_x;\n        slot_axis_y[5] = authored_y;\n        slot_axis_y[6] = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE / sizeof(float);\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "float-float-buttons-x-y",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    float* slot_axis_y = g_input_slot0_axis_y;\n    do {\n        *(int*)&slot_axis_y[1] = 0;\n        slot_axis_y[-1] = 0.0f;\n        slot_axis_y[0] = 0.0f;\n        slot_axis_y[4] = authored_x;\n        slot_axis_y[5] = authored_y;\n        slot_axis_y[6] = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE / sizeof(float);\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "float-float-buttons-y-x",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    float* slot_axis_y = g_input_slot0_axis_y;\n    do {\n        *(int*)&slot_axis_y[1] = 0;\n        slot_axis_y[0] = 0.0f;\n        slot_axis_y[-1] = 0.0f;\n        slot_axis_y[4] = authored_x;\n        slot_axis_y[5] = authored_y;\n        slot_axis_y[6] = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE / sizeof(float);\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "float-int-x-y-buttons",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    float* slot_axis_y = g_input_slot0_axis_y;\n    do {\n        slot_axis_y[-1] = 0.0f;\n        slot_axis_y[0] = 0.0f;\n        *(int*)&slot_axis_y[1] = 0;\n        *(int*)&(slot_axis_y[4]) = authored_x;\n        *(int*)&(slot_axis_y[5]) = authored_y;\n        slot_axis_y[6] = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE / sizeof(float);\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "float-int-x-buttons-y",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    float* slot_axis_y = g_input_slot0_axis_y;\n    do {\n        slot_axis_y[-1] = 0.0f;\n        *(int*)&slot_axis_y[1] = 0;\n        slot_axis_y[0] = 0.0f;\n        *(int*)&(slot_axis_y[4]) = authored_x;\n        *(int*)&(slot_axis_y[5]) = authored_y;\n        slot_axis_y[6] = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE / sizeof(float);\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "float-int-y-x-buttons",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    float* slot_axis_y = g_input_slot0_axis_y;\n    do {\n        slot_axis_y[0] = 0.0f;\n        slot_axis_y[-1] = 0.0f;\n        *(int*)&slot_axis_y[1] = 0;\n        *(int*)&(slot_axis_y[4]) = authored_x;\n        *(int*)&(slot_axis_y[5]) = authored_y;\n        slot_axis_y[6] = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE / sizeof(float);\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "float-int-y-buttons-x",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    float* slot_axis_y = g_input_slot0_axis_y;\n    do {\n        slot_axis_y[0] = 0.0f;\n        *(int*)&slot_axis_y[1] = 0;\n        slot_axis_y[-1] = 0.0f;\n        *(int*)&(slot_axis_y[4]) = authored_x;\n        *(int*)&(slot_axis_y[5]) = authored_y;\n        slot_axis_y[6] = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE / sizeof(float);\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "float-int-buttons-x-y",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    float* slot_axis_y = g_input_slot0_axis_y;\n    do {\n        *(int*)&slot_axis_y[1] = 0;\n        slot_axis_y[-1] = 0.0f;\n        slot_axis_y[0] = 0.0f;\n        *(int*)&(slot_axis_y[4]) = authored_x;\n        *(int*)&(slot_axis_y[5]) = authored_y;\n        slot_axis_y[6] = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE / sizeof(float);\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "float-int-buttons-y-x",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    float* slot_axis_y = g_input_slot0_axis_y;\n    do {\n        *(int*)&slot_axis_y[1] = 0;\n        slot_axis_y[0] = 0.0f;\n        slot_axis_y[-1] = 0.0f;\n        *(int*)&(slot_axis_y[4]) = authored_x;\n        *(int*)&(slot_axis_y[5]) = authored_y;\n        slot_axis_y[6] = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE / sizeof(float);\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "byte-float-x-y-buttons",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    char* slot_axis_y = (char*)g_input_slot0_axis_y;\n    do {\n        *(float*)(slot_axis_y - 4) = 0.0f;\n        *(float*)slot_axis_y = 0.0f;\n        *(int*)(slot_axis_y + 4) = 0;\n        *(float*)(slot_axis_y + 0x10) = authored_x;\n        *(float*)(slot_axis_y + 0x14) = authored_y;\n        *(float*)(slot_axis_y + 0x18) = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE;\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "byte-float-x-buttons-y",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    char* slot_axis_y = (char*)g_input_slot0_axis_y;\n    do {\n        *(float*)(slot_axis_y - 4) = 0.0f;\n        *(int*)(slot_axis_y + 4) = 0;\n        *(float*)slot_axis_y = 0.0f;\n        *(float*)(slot_axis_y + 0x10) = authored_x;\n        *(float*)(slot_axis_y + 0x14) = authored_y;\n        *(float*)(slot_axis_y + 0x18) = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE;\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "byte-float-y-x-buttons",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    char* slot_axis_y = (char*)g_input_slot0_axis_y;\n    do {\n        *(float*)slot_axis_y = 0.0f;\n        *(float*)(slot_axis_y - 4) = 0.0f;\n        *(int*)(slot_axis_y + 4) = 0;\n        *(float*)(slot_axis_y + 0x10) = authored_x;\n        *(float*)(slot_axis_y + 0x14) = authored_y;\n        *(float*)(slot_axis_y + 0x18) = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE;\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "byte-float-y-buttons-x",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    char* slot_axis_y = (char*)g_input_slot0_axis_y;\n    do {\n        *(float*)slot_axis_y = 0.0f;\n        *(int*)(slot_axis_y + 4) = 0;\n        *(float*)(slot_axis_y - 4) = 0.0f;\n        *(float*)(slot_axis_y + 0x10) = authored_x;\n        *(float*)(slot_axis_y + 0x14) = authored_y;\n        *(float*)(slot_axis_y + 0x18) = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE;\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "byte-float-buttons-x-y",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    char* slot_axis_y = (char*)g_input_slot0_axis_y;\n    do {\n        *(int*)(slot_axis_y + 4) = 0;\n        *(float*)(slot_axis_y - 4) = 0.0f;\n        *(float*)slot_axis_y = 0.0f;\n        *(float*)(slot_axis_y + 0x10) = authored_x;\n        *(float*)(slot_axis_y + 0x14) = authored_y;\n        *(float*)(slot_axis_y + 0x18) = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE;\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "byte-float-buttons-y-x",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    char* slot_axis_y = (char*)g_input_slot0_axis_y;\n    do {\n        *(int*)(slot_axis_y + 4) = 0;\n        *(float*)slot_axis_y = 0.0f;\n        *(float*)(slot_axis_y - 4) = 0.0f;\n        *(float*)(slot_axis_y + 0x10) = authored_x;\n        *(float*)(slot_axis_y + 0x14) = authored_y;\n        *(float*)(slot_axis_y + 0x18) = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE;\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "byte-int-x-y-buttons",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    char* slot_axis_y = (char*)g_input_slot0_axis_y;\n    do {\n        *(float*)(slot_axis_y - 4) = 0.0f;\n        *(float*)slot_axis_y = 0.0f;\n        *(int*)(slot_axis_y + 4) = 0;\n        *(int*)&(*(float*)(slot_axis_y + 0x10)) = authored_x;\n        *(int*)&(*(float*)(slot_axis_y + 0x14)) = authored_y;\n        *(float*)(slot_axis_y + 0x18) = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE;\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "byte-int-x-buttons-y",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    char* slot_axis_y = (char*)g_input_slot0_axis_y;\n    do {\n        *(float*)(slot_axis_y - 4) = 0.0f;\n        *(int*)(slot_axis_y + 4) = 0;\n        *(float*)slot_axis_y = 0.0f;\n        *(int*)&(*(float*)(slot_axis_y + 0x10)) = authored_x;\n        *(int*)&(*(float*)(slot_axis_y + 0x14)) = authored_y;\n        *(float*)(slot_axis_y + 0x18) = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE;\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "byte-int-y-x-buttons",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    char* slot_axis_y = (char*)g_input_slot0_axis_y;\n    do {\n        *(float*)slot_axis_y = 0.0f;\n        *(float*)(slot_axis_y - 4) = 0.0f;\n        *(int*)(slot_axis_y + 4) = 0;\n        *(int*)&(*(float*)(slot_axis_y + 0x10)) = authored_x;\n        *(int*)&(*(float*)(slot_axis_y + 0x14)) = authored_y;\n        *(float*)(slot_axis_y + 0x18) = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE;\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "byte-int-y-buttons-x",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    char* slot_axis_y = (char*)g_input_slot0_axis_y;\n    do {\n        *(float*)slot_axis_y = 0.0f;\n        *(int*)(slot_axis_y + 4) = 0;\n        *(float*)(slot_axis_y - 4) = 0.0f;\n        *(int*)&(*(float*)(slot_axis_y + 0x10)) = authored_x;\n        *(int*)&(*(float*)(slot_axis_y + 0x14)) = authored_y;\n        *(float*)(slot_axis_y + 0x18) = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE;\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "byte-int-buttons-x-y",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    char* slot_axis_y = (char*)g_input_slot0_axis_y;\n    do {\n        *(int*)(slot_axis_y + 4) = 0;\n        *(float*)(slot_axis_y - 4) = 0.0f;\n        *(float*)slot_axis_y = 0.0f;\n        *(int*)&(*(float*)(slot_axis_y + 0x10)) = authored_x;\n        *(int*)&(*(float*)(slot_axis_y + 0x14)) = authored_y;\n        *(float*)(slot_axis_y + 0x18) = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE;\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "byte-int-buttons-y-x",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    char* slot_axis_y = (char*)g_input_slot0_axis_y;\n    do {\n        *(int*)(slot_axis_y + 4) = 0;\n        *(float*)slot_axis_y = 0.0f;\n        *(float*)(slot_axis_y - 4) = 0.0f;\n        *(int*)&(*(float*)(slot_axis_y + 0x10)) = authored_x;\n        *(int*)&(*(float*)(slot_axis_y + 0x14)) = authored_y;\n        *(float*)(slot_axis_y + 0x18) = 0.0f;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE;\n    } while ((int)slot_axis_y < 0x5033b0);\n"
+        },
+        {
+          "name": "record-float-x-y-buttons",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    InputControllerSlot* slot = &g_input_controller_slot0;\n    do {\n        slot->axis_x = 0.0f;\n        slot->axis_y = 0.0f;\n        slot->buttons = 0;\n        slot->authored_x = authored_x;\n        slot->authored_y = authored_y;\n        slot->pointer_value = 0.0f;\n        slot = (InputControllerSlot*)((char*)slot + INPUT_CONTROLLER_SLOT_STRIDE);\n    } while ((int)slot < (int)&g_input_controller_slot1 + INPUT_CONTROLLER_SLOT_STRIDE);\n"
+        },
+        {
+          "name": "record-float-x-buttons-y",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    InputControllerSlot* slot = &g_input_controller_slot0;\n    do {\n        slot->axis_x = 0.0f;\n        slot->buttons = 0;\n        slot->axis_y = 0.0f;\n        slot->authored_x = authored_x;\n        slot->authored_y = authored_y;\n        slot->pointer_value = 0.0f;\n        slot = (InputControllerSlot*)((char*)slot + INPUT_CONTROLLER_SLOT_STRIDE);\n    } while ((int)slot < (int)&g_input_controller_slot1 + INPUT_CONTROLLER_SLOT_STRIDE);\n"
+        },
+        {
+          "name": "record-float-y-x-buttons",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    InputControllerSlot* slot = &g_input_controller_slot0;\n    do {\n        slot->axis_y = 0.0f;\n        slot->axis_x = 0.0f;\n        slot->buttons = 0;\n        slot->authored_x = authored_x;\n        slot->authored_y = authored_y;\n        slot->pointer_value = 0.0f;\n        slot = (InputControllerSlot*)((char*)slot + INPUT_CONTROLLER_SLOT_STRIDE);\n    } while ((int)slot < (int)&g_input_controller_slot1 + INPUT_CONTROLLER_SLOT_STRIDE);\n"
+        },
+        {
+          "name": "record-float-y-buttons-x",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    InputControllerSlot* slot = &g_input_controller_slot0;\n    do {\n        slot->axis_y = 0.0f;\n        slot->buttons = 0;\n        slot->axis_x = 0.0f;\n        slot->authored_x = authored_x;\n        slot->authored_y = authored_y;\n        slot->pointer_value = 0.0f;\n        slot = (InputControllerSlot*)((char*)slot + INPUT_CONTROLLER_SLOT_STRIDE);\n    } while ((int)slot < (int)&g_input_controller_slot1 + INPUT_CONTROLLER_SLOT_STRIDE);\n"
+        },
+        {
+          "name": "record-float-buttons-x-y",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    InputControllerSlot* slot = &g_input_controller_slot0;\n    do {\n        slot->buttons = 0;\n        slot->axis_x = 0.0f;\n        slot->axis_y = 0.0f;\n        slot->authored_x = authored_x;\n        slot->authored_y = authored_y;\n        slot->pointer_value = 0.0f;\n        slot = (InputControllerSlot*)((char*)slot + INPUT_CONTROLLER_SLOT_STRIDE);\n    } while ((int)slot < (int)&g_input_controller_slot1 + INPUT_CONTROLLER_SLOT_STRIDE);\n"
+        },
+        {
+          "name": "record-float-buttons-y-x",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    InputControllerSlot* slot = &g_input_controller_slot0;\n    do {\n        slot->buttons = 0;\n        slot->axis_y = 0.0f;\n        slot->axis_x = 0.0f;\n        slot->authored_x = authored_x;\n        slot->authored_y = authored_y;\n        slot->pointer_value = 0.0f;\n        slot = (InputControllerSlot*)((char*)slot + INPUT_CONTROLLER_SLOT_STRIDE);\n    } while ((int)slot < (int)&g_input_controller_slot1 + INPUT_CONTROLLER_SLOT_STRIDE);\n"
+        },
+        {
+          "name": "record-int-x-y-buttons",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    InputControllerSlot* slot = &g_input_controller_slot0;\n    do {\n        slot->axis_x = 0.0f;\n        slot->axis_y = 0.0f;\n        slot->buttons = 0;\n        *(int*)&(slot->authored_x) = authored_x;\n        *(int*)&(slot->authored_y) = authored_y;\n        slot->pointer_value = 0.0f;\n        slot = (InputControllerSlot*)((char*)slot + INPUT_CONTROLLER_SLOT_STRIDE);\n    } while ((int)slot < (int)&g_input_controller_slot1 + INPUT_CONTROLLER_SLOT_STRIDE);\n"
+        },
+        {
+          "name": "record-int-x-buttons-y",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    InputControllerSlot* slot = &g_input_controller_slot0;\n    do {\n        slot->axis_x = 0.0f;\n        slot->buttons = 0;\n        slot->axis_y = 0.0f;\n        *(int*)&(slot->authored_x) = authored_x;\n        *(int*)&(slot->authored_y) = authored_y;\n        slot->pointer_value = 0.0f;\n        slot = (InputControllerSlot*)((char*)slot + INPUT_CONTROLLER_SLOT_STRIDE);\n    } while ((int)slot < (int)&g_input_controller_slot1 + INPUT_CONTROLLER_SLOT_STRIDE);\n"
+        },
+        {
+          "name": "record-int-y-x-buttons",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    InputControllerSlot* slot = &g_input_controller_slot0;\n    do {\n        slot->axis_y = 0.0f;\n        slot->axis_x = 0.0f;\n        slot->buttons = 0;\n        *(int*)&(slot->authored_x) = authored_x;\n        *(int*)&(slot->authored_y) = authored_y;\n        slot->pointer_value = 0.0f;\n        slot = (InputControllerSlot*)((char*)slot + INPUT_CONTROLLER_SLOT_STRIDE);\n    } while ((int)slot < (int)&g_input_controller_slot1 + INPUT_CONTROLLER_SLOT_STRIDE);\n"
+        },
+        {
+          "name": "record-int-y-buttons-x",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    InputControllerSlot* slot = &g_input_controller_slot0;\n    do {\n        slot->axis_y = 0.0f;\n        slot->buttons = 0;\n        slot->axis_x = 0.0f;\n        *(int*)&(slot->authored_x) = authored_x;\n        *(int*)&(slot->authored_y) = authored_y;\n        slot->pointer_value = 0.0f;\n        slot = (InputControllerSlot*)((char*)slot + INPUT_CONTROLLER_SLOT_STRIDE);\n    } while ((int)slot < (int)&g_input_controller_slot1 + INPUT_CONTROLLER_SLOT_STRIDE);\n"
+        },
+        {
+          "name": "record-int-buttons-x-y",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    InputControllerSlot* slot = &g_input_controller_slot0;\n    do {\n        slot->buttons = 0;\n        slot->axis_x = 0.0f;\n        slot->axis_y = 0.0f;\n        *(int*)&(slot->authored_x) = authored_x;\n        *(int*)&(slot->authored_y) = authored_y;\n        slot->pointer_value = 0.0f;\n        slot = (InputControllerSlot*)((char*)slot + INPUT_CONTROLLER_SLOT_STRIDE);\n    } while ((int)slot < (int)&g_input_controller_slot1 + INPUT_CONTROLLER_SLOT_STRIDE);\n"
+        },
+        {
+          "name": "record-int-buttons-y-x",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    InputControllerSlot* slot = &g_input_controller_slot0;\n    do {\n        slot->buttons = 0;\n        slot->axis_y = 0.0f;\n        slot->axis_x = 0.0f;\n        *(int*)&(slot->authored_x) = authored_x;\n        *(int*)&(slot->authored_y) = authored_y;\n        slot->pointer_value = 0.0f;\n        slot = (InputControllerSlot*)((char*)slot + INPUT_CONTROLLER_SLOT_STRIDE);\n    } while ((int)slot < (int)&g_input_controller_slot1 + INPUT_CONTROLLER_SLOT_STRIDE);\n"
+        },
+        {
+          "name": "indexed-float-x-y-buttons",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_x = 0.0f;\n        slot.axis_y = 0.0f;\n        slot.buttons = 0;\n        slot.authored_x = authored_x;\n        slot.authored_y = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "indexed-float-x-buttons-y",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_x = 0.0f;\n        slot.buttons = 0;\n        slot.axis_y = 0.0f;\n        slot.authored_x = authored_x;\n        slot.authored_y = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "indexed-float-y-x-buttons",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_y = 0.0f;\n        slot.axis_x = 0.0f;\n        slot.buttons = 0;\n        slot.authored_x = authored_x;\n        slot.authored_y = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "indexed-float-y-buttons-x",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_y = 0.0f;\n        slot.buttons = 0;\n        slot.axis_x = 0.0f;\n        slot.authored_x = authored_x;\n        slot.authored_y = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "indexed-float-buttons-x-y",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.buttons = 0;\n        slot.axis_x = 0.0f;\n        slot.axis_y = 0.0f;\n        slot.authored_x = authored_x;\n        slot.authored_y = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "indexed-float-buttons-y-x",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.buttons = 0;\n        slot.axis_y = 0.0f;\n        slot.axis_x = 0.0f;\n        slot.authored_x = authored_x;\n        slot.authored_y = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "indexed-int-x-y-buttons",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_x = 0.0f;\n        slot.axis_y = 0.0f;\n        slot.buttons = 0;\n        *(int*)&(slot.authored_x) = authored_x;\n        *(int*)&(slot.authored_y) = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "indexed-int-x-buttons-y",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_x = 0.0f;\n        slot.buttons = 0;\n        slot.axis_y = 0.0f;\n        *(int*)&(slot.authored_x) = authored_x;\n        *(int*)&(slot.authored_y) = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "indexed-int-y-x-buttons",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_y = 0.0f;\n        slot.axis_x = 0.0f;\n        slot.buttons = 0;\n        *(int*)&(slot.authored_x) = authored_x;\n        *(int*)&(slot.authored_y) = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "indexed-int-y-buttons-x",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_y = 0.0f;\n        slot.buttons = 0;\n        slot.axis_x = 0.0f;\n        *(int*)&(slot.authored_x) = authored_x;\n        *(int*)&(slot.authored_y) = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "indexed-int-buttons-x-y",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.buttons = 0;\n        slot.axis_x = 0.0f;\n        slot.axis_y = 0.0f;\n        *(int*)&(slot.authored_x) = authored_x;\n        *(int*)&(slot.authored_y) = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "indexed-int-buttons-y-x",
+          "text": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.buttons = 0;\n        slot.axis_y = 0.0f;\n        slot.axis_x = 0.0f;\n        *(int*)&(slot.authored_x) = authored_x;\n        *(int*)&(slot.authored_y) = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        }
+      ]
+    }
+  ]
+}

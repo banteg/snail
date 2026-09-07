@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "slot-reset",
+      "find": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    char* slot_axis_y = (char*)g_input_slot0_buttons - 4;\n    do {\n        *(int*)(slot_axis_y - 4) = 0;\n        *(int*)slot_axis_y = 0;\n        *(int*)(slot_axis_y + 4) = 0;\n        *(int*)(slot_axis_y + 0x10) = authored_x;\n        *(int*)(slot_axis_y + 0x14) = authored_y;\n        *(int*)(slot_axis_y + 0x18) = 0;\n        slot_axis_y += 0x38;\n    } while ((int)slot_axis_y < 0x5033b0);\n",
+      "replacements": [
+        {
+          "name": "zero-1-named",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_x = slot.axis_y = 0.0f;\n        slot.buttons = 0;\n        slot.authored_x = authored_x;\n        slot.authored_y = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-1-literal",
+          "text": "    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_x = slot.axis_y = 0.0f;\n        slot.buttons = 0;\n        slot.authored_x = 320.0f;\n        slot.authored_y = 240.0f;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-2-named",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_y = slot.axis_x = 0.0f;\n        slot.buttons = 0;\n        slot.authored_x = authored_x;\n        slot.authored_y = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-2-literal",
+          "text": "    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_y = slot.axis_x = 0.0f;\n        slot.buttons = 0;\n        slot.authored_x = 320.0f;\n        slot.authored_y = 240.0f;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-3-named",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.buttons = 0;\n        slot.axis_x = slot.axis_y = 0.0f;\n        slot.authored_x = authored_x;\n        slot.authored_y = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-3-literal",
+          "text": "    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.buttons = 0;\n        slot.axis_x = slot.axis_y = 0.0f;\n        slot.authored_x = 320.0f;\n        slot.authored_y = 240.0f;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-4-named",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.buttons = 0;\n        slot.axis_y = slot.axis_x = 0.0f;\n        slot.authored_x = authored_x;\n        slot.authored_y = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-4-literal",
+          "text": "    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.buttons = 0;\n        slot.axis_y = slot.axis_x = 0.0f;\n        slot.authored_x = 320.0f;\n        slot.authored_y = 240.0f;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-5-named",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_x = 0.0f;\n        slot.buttons = 0;\n        slot.axis_y = slot.axis_x;\n        slot.authored_x = authored_x;\n        slot.authored_y = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-5-literal",
+          "text": "    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_x = 0.0f;\n        slot.buttons = 0;\n        slot.axis_y = slot.axis_x;\n        slot.authored_x = 320.0f;\n        slot.authored_y = 240.0f;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-6-named",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_x = 0.0f;\n        slot.axis_y = slot.axis_x;\n        slot.buttons = 0;\n        slot.authored_x = authored_x;\n        slot.authored_y = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-6-literal",
+          "text": "    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_x = 0.0f;\n        slot.axis_y = slot.axis_x;\n        slot.buttons = 0;\n        slot.authored_x = 320.0f;\n        slot.authored_y = 240.0f;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-7-named",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_x = slot.axis_y = (float)(slot.buttons = 0);\n        slot.authored_x = authored_x;\n        slot.authored_y = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-7-literal",
+          "text": "    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_x = slot.axis_y = (float)(slot.buttons = 0);\n        slot.authored_x = 320.0f;\n        slot.authored_y = 240.0f;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-8-named",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.buttons = (int)(slot.axis_y = slot.axis_x = 0.0f);\n        slot.authored_x = authored_x;\n        slot.authored_y = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-8-literal",
+          "text": "    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.buttons = (int)(slot.axis_y = slot.axis_x = 0.0f);\n        slot.authored_x = 320.0f;\n        slot.authored_y = 240.0f;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-9-named",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.buttons = (int)(slot.axis_x = slot.axis_y = 0.0f);\n        slot.authored_x = authored_x;\n        slot.authored_y = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-9-literal",
+          "text": "    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.buttons = (int)(slot.axis_x = slot.axis_y = 0.0f);\n        slot.authored_x = 320.0f;\n        slot.authored_y = 240.0f;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-10-named",
+          "text": "    float authored_x = 320.0f;\n    float authored_y = 240.0f;\n    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_x = slot.axis_y = 0;\n        slot.buttons = 0;\n        slot.authored_x = authored_x;\n        slot.authored_y = authored_y;\n        slot.pointer_value = 0.0f;\n    }\n"
+        },
+        {
+          "name": "zero-10-literal",
+          "text": "    for (int i = 0; i < INPUT_CONTROLLER_SLOT_COUNT; ++i) {\n        InputControllerSlot& slot = input_controller_slot(i);\n        slot.axis_x = slot.axis_y = 0;\n        slot.buttons = 0;\n        slot.authored_x = 320.0f;\n        slot.authored_y = 240.0f;\n        slot.pointer_value = 0.0f;\n    }\n"
+        }
+      ]
+    }
+  ]
+}
