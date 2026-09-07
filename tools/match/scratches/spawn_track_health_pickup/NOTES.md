@@ -342,3 +342,15 @@ or normalization changes. Removing its now-unused DWORD typedef is byte-neutral.
 The three obsolete `cell-lifetime`, `slot-offset`, and `slot-owner` mutation
 plans depended on the removed shifted-parent source. They are retired; their
 historical experiment receipts remain unchanged in the ledger.
+
+## 2026-09-07 broader core controls
+
+`authored-list-node-reference-20260907.json` tests the mobile-authored
+`cLinkedList<cRBod>::Add(cRBod&)` argument contract, using either a direct
+reference call or a pointer compatibility wrapper. The source overlay retains
+the Windows link-publication and flag order; the shared header is unchanged.
+
+Both forms preserve 100.00%, 122/122 instructions, prefix 122, and all 7
+clean references. The complete batch includes seven functions; only the
+pointer-wrapper variant of `initialize_game_assets_and_world` regresses.
+No shared declaration change is supported by this experiment.

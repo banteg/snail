@@ -70,3 +70,13 @@ promotable local duplicate.
   `Skill`, `Memory`, and `Mile`; the remaining 45 table entries are null in
   that build. This is initialization evidence, not a claim that the Windows
   build runs the same initializer.
+
+## 2026-09-07 broader core controls
+
+`crt-sprintf-declaration-20260907.json` replaces the hand-written `sprintf`
+declaration with the bundled compiler's `<stdio.h>` declaration. This tests the independently identified
+static CRT callee at `0x48b32c`. All variants preserve 100.00%, 36/36 instructions, prefix 36,
+and all 12 clean references. The five-function batch also includes
+exact formatted-output controls. C++-to-C symbol spelling may change the raw
+COFF digest while leaving normalized instructions and audited references
+unchanged. No compiler or source declaration change is retained.

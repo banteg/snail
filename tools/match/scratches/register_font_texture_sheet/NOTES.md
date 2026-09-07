@@ -150,3 +150,11 @@ no source change is retained.
 
 The committed recipes and hash-bound receipts describe the tested forms; they
 do not establish source exhaustion.
+
+## 2026-09-07 broader core controls
+
+`glyph-marker-and-sheet-dispatch-20260907.json` tests single-case dispatch
+for the white glyph marker, the 2048-pixel split-sheet boundary, and both
+together. All three forms compile byte-identically to the current candidate:
+88.32%, 274/274 instructions, prefix 55, and all 57 references clean. The
+remaining glyph-index/x/conversion stack-slot allocation remains open.

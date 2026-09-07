@@ -118,3 +118,15 @@ No shared header or caller-specific operator implementation is changed.
 Ten paired launch-position/velocity forms test snapshots for the fallback, positive spread, negative spread, both spread branches, or all three, and either final publication order. All regress to 68.51–88.59% from 99.14% and differ from instruction zero. Eight also introduce one unaudited reference; the other two retain all 48 clean references. Whole-position snapshots therefore do not recover the residual scalar/store interleaving in these forms. No source, type, or reference-manifest change is retained.
 
 The receipts bound these hypotheses only. No new exact match or unsupported ownership/return contract was inferred.
+
+## 2026-09-07 broader core controls
+
+`authored-list-node-reference-20260907.json` tests the mobile-authored
+`cLinkedList<cRBod>::Add(cRBod&)` argument contract, using either a direct
+reference call or a pointer compatibility wrapper. The source overlay retains
+the Windows link-publication and flag order; the shared header is unchanged.
+
+Both forms preserve 99.14%, 582/582 instructions, prefix 156, and all 48
+clean references. The complete batch includes seven functions; only the
+pointer-wrapper variant of `initialize_game_assets_and_world` regresses.
+No shared declaration change is supported by this experiment.

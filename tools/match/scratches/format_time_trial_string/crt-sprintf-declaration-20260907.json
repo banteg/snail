@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "crt-sprintf",
+      "find": "// cRTimeTrial::TimeString / format_time_trial_string @ 0x448960 (ret 0x4)\n\ntypedef struct TimeTrialTimeCView {\n    float total_seconds;        // +0x00\n    int minutes;                // +0x04\n    int seconds;                // +0x08, seconds within the current minute\n    int display_hundredths;     // +0x0c\n    int display_thousandths;    // +0x10\n    float second_fraction;      // +0x14\n} TimeTrialTimeCView;\n\nint sprintf(char* buffer, char* format, ...);\n\nextern char g_time_trial_string[]; // 0x751478\n\nchar* __stdcall format_time_trial_string(TimeTrialTimeCView* timer)\n{\n    if (timer->total_seconds == 0.0f) {\n        sprintf(g_time_trial_string, \"-:--:--\");\n    } else {\n        sprintf(\n            g_time_trial_string,\n            \"%1i:%02i:%03i\",\n            timer->minutes,\n            timer->seconds,\n            timer->display_thousandths);\n        sprintf(\n            g_time_trial_string,\n            \"%1i:%02i:%02i\",\n            timer->minutes,\n            timer->seconds,\n            timer->display_hundredths);\n    }\n\n    return g_time_trial_string;\n}\n",
+      "replacements": [
+        {
+          "name": "standard-header",
+          "text": "// cRTimeTrial::TimeString / format_time_trial_string @ 0x448960 (ret 0x4)\n\ntypedef struct TimeTrialTimeCView {\n    float total_seconds;        // +0x00\n    int minutes;                // +0x04\n    int seconds;                // +0x08, seconds within the current minute\n    int display_hundredths;     // +0x0c\n    int display_thousandths;    // +0x10\n    float second_fraction;      // +0x14\n} TimeTrialTimeCView;\n\n#include <stdio.h>\n\nextern char g_time_trial_string[]; // 0x751478\n\nchar* __stdcall format_time_trial_string(TimeTrialTimeCView* timer)\n{\n    if (timer->total_seconds == 0.0f) {\n        sprintf(g_time_trial_string, \"-:--:--\");\n    } else {\n        sprintf(\n            g_time_trial_string,\n            \"%1i:%02i:%03i\",\n            timer->minutes,\n            timer->seconds,\n            timer->display_thousandths);\n        sprintf(\n            g_time_trial_string,\n            \"%1i:%02i:%02i\",\n            timer->minutes,\n            timer->seconds,\n            timer->display_hundredths);\n    }\n\n    return g_time_trial_string;\n}\n"
+        }
+      ]
+    }
+  ]
+}

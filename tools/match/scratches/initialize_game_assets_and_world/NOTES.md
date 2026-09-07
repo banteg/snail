@@ -1483,3 +1483,16 @@ identity. The preceding experiments therefore become historical on the
 regenerated board, even though the full matching check confirms unchanged
 scores and instruction counts. Their recorded input hashes and reproducible
 pool mutation spec preserve the distinction.
+
+## 2026-09-07 broader core controls
+
+`authored-list-node-reference-20260907.json` tests the mobile-authored
+`cLinkedList<cRBod>::Add(cRBod&)` argument contract, using either a direct
+reference call or a pointer compatibility wrapper. The source overlay retains
+the Windows link-publication and flag order; the shared header is unchanged.
+
+The direct reference form preserves 81.34%, 5405/5411 instructions, prefix 0,
+1880 clean references and two unaudited references. The pointer wrapper
+regresses to 72.73%, 5383 instructions, 1872 clean references and 17 unaudited
+references. Neither is retained. The six other functions in this control
+batch are neutral, including both exact pickup spawners.

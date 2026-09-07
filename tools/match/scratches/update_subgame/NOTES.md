@@ -799,3 +799,15 @@ than merely sharing a fuzzy score. The copied list code and padded owner view
 are retired without a shared-header, ABI, compiler-profile, or audit change.
 Four recipes record twelve compiling variants; they do not establish closure
 of the remaining gameplay matching work.
+
+## 2026-09-07 broader core controls
+
+`authored-list-node-reference-20260907.json` tests the mobile-authored
+`cLinkedList<cRBod>::Add(cRBod&)` argument contract, using either a direct
+reference call or a pointer compatibility wrapper. The source overlay retains
+the Windows link-publication and flag order; the shared header is unchanged.
+
+Both forms preserve 79.94%, 1036/1033 instructions, prefix 9, and all 129
+clean references. The complete batch includes seven functions; only the
+pointer-wrapper variant of `initialize_game_assets_and_world` regresses.
+No shared declaration change is supported by this experiment.

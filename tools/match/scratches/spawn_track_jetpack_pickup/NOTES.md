@@ -264,3 +264,15 @@ reproduces this exact output. It replaces the manually shifted DWORD pointer
 and fictitious shifted cRSubGame receiver; the parent still owns its one inline
 JetPack, while its visual remains allocated by SpriteManager. No shared layout,
 compiler flag, or reference normalization changed.
+
+## 2026-09-07 broader core controls
+
+`authored-list-node-reference-20260907.json` tests the mobile-authored
+`cLinkedList<cRBod>::Add(cRBod&)` argument contract, using either a direct
+reference call or a pointer compatibility wrapper. The source overlay retains
+the Windows link-publication and flag order; the shared header is unchanged.
+
+Both forms preserve 100.00%, 144/144 instructions, prefix 144, and all 9
+clean references. The complete batch includes seven functions; only the
+pointer-wrapper variant of `initialize_game_assets_and_world` regresses.
+No shared declaration change is supported by this experiment.

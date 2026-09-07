@@ -724,3 +724,24 @@ backlink-only `Banner*` remains the narrow correct lifetime. Further row work
 would require repeating long owners or compiler-coercion experiments already
 rejected, so the completion pre-mask delta is also closed as a compiler
 scheduler boundary.
+
+## 2026-09-07 broader core controls
+
+`authored-list-node-reference-20260907.json` tests the mobile-authored
+`cLinkedList<cRBod>::Add(cRBod&)` argument contract, using either a direct
+reference call or a pointer compatibility wrapper. The source overlay retains
+the Windows link-publication and flag order; the shared header is unchanged.
+
+Both forms preserve 85.95%, 555/555 instructions, prefix 177, and all 108
+clean references. The complete batch includes seven functions; only the
+pointer-wrapper variant of `initialize_game_assets_and_world` regresses.
+No shared declaration change is supported by this experiment.
+
+`crt-sprintf-declaration-20260907.json` replaces the hand-written `sprintf`
+declaration with the bundled compiler's `<stdio.h>` declaration or explicit
+C linkage and a const format parameter. This tests the independently identified
+static CRT callee at `0x48b32c`. All variants preserve 85.95%, 555/555 instructions, prefix 177,
+and all 108 clean references. The five-function batch also includes
+exact formatted-output controls. C++-to-C symbol spelling may change the raw
+COFF digest while leaving normalized instructions and audited references
+unchanged. No compiler or source declaration change is retained.

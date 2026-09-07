@@ -387,3 +387,14 @@ Recorded msvc6.0 and msvc6.3 probes preserve the current extracted code and
 comparison metrics. No compiler setting or source change is retained. See the
 [profile controls](../rebuild_game_archive_if_needed/profile-controls-20260907.md)
 for component provenance, exact neighbors, and the limits of this comparison.
+
+## 2026-09-07 broader core controls
+
+`crt-sprintf-declaration-20260907.json` replaces the hand-written `sprintf`
+declaration with the bundled compiler's `<stdio.h>` declaration or explicit
+C linkage and a const format parameter. This tests the independently identified
+static CRT callee at `0x48b32c`. All variants preserve 99.14%, 233/233 instructions, prefix 194,
+and all 42 clean references. The five-function batch also includes
+exact formatted-output controls. C++-to-C symbol spelling may change the raw
+COFF digest while leaving normalized instructions and audited references
+unchanged. No compiler or source declaration change is retained.

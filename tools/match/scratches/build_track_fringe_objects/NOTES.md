@@ -410,3 +410,23 @@ operations, eight row/edge scope combinations and six selector lifetimes are
 recorded. No emission helper, family helper, local constructor copy, or wider
 selector scope is retained. The remaining receiver/edge-selector register and
 stack lifetimes remain open.
+
+## 2026-09-07 broader core controls
+
+Fresh native comparison locates the large repeated difference after the
+already matching edge/tile classification: native borrows the receiver's
+register for `edge_b`, while the candidate keeps the receiver live and spills
+the second edge selector. Native's four distinct color buffers are preserved.
+
+`edge-selector-and-color-lifetimes-20260907.json` records 11 coupled forms:
+a named edge pair at entry or per cell, a conditional second-edge expression,
+and direct color assignment or an inline value-returning color wrapper. The
+wrapper retains the existing pointer-returning callee ABI; it does not change
+`GetSkirtColour`'s declaration or receiver.
+
+Direct color assignment and conditional selection are neutral at 64.45%,
+498/495 instructions, prefix 0, with all 53 references clean. A paired selector
+at entry falls to 62.84%; a per-cell pair reaches only 57.86% despite reducing
+the instruction count to 497. The value wrapper regresses to 43.98-48.75% and
+501-502 instructions. No source change is retained. These are bounded
+negative results, not evidence that the remaining source shape is exhausted.

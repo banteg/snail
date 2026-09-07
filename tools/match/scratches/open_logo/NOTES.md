@@ -100,3 +100,14 @@ MSVC symbol `?Open@cRLogo@@QAEXXZ`. Android declares the method void, and the
 sole Windows call at `0x40af0d` immediately pushes an unrelated string without
 reading EAX. Removing the synthetic integer return is codegen-neutral: focused
 matching remains 100.00%, 60/60, prefix 60/60, with all 13 references clean.
+
+## 2026-09-07 broader core controls
+
+`crt-sprintf-declaration-20260907.json` replaces the hand-written `sprintf`
+declaration with the bundled compiler's `<stdio.h>` declaration or explicit
+C linkage and a const format parameter. This tests the independently identified
+static CRT callee at `0x48b32c`. All variants preserve 100.00%, 60/60 instructions, prefix 60,
+and all 13 clean references. The five-function batch also includes
+exact formatted-output controls. C++-to-C symbol spelling may change the raw
+COFF digest while leaving normalized instructions and audited references
+unchanged. No compiler or source declaration change is retained.

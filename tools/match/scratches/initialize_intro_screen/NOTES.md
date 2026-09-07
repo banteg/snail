@@ -250,3 +250,24 @@ layout or deferred parser-call cleanup. No source change is retained.
 
 The committed recipes and hash-bound receipts describe the tested forms; they
 do not establish source exhaustion.
+
+## 2026-09-07 broader core controls
+
+`authored-list-node-reference-20260907.json` tests the mobile-authored
+`cLinkedList<cRBod>::Add(cRBod&)` argument contract, using either a direct
+reference call or a pointer compatibility wrapper. The source overlay retains
+the Windows link-publication and flag order; the shared header is unchanged.
+
+Both forms preserve 88.89%, 523/521 instructions, prefix 88, and all 66
+clean references. The complete batch includes seven functions; only the
+pointer-wrapper variant of `initialize_game_assets_and_world` regresses.
+No shared declaration change is supported by this experiment.
+
+`crt-sprintf-declaration-20260907.json` replaces the hand-written `sprintf`
+declaration with the bundled compiler's `<stdio.h>` declaration or explicit
+C linkage and a const format parameter. This tests the independently identified
+static CRT callee at `0x48b32c`. All variants preserve 88.89%, 523/521 instructions, prefix 88,
+and all 66 clean references. The five-function batch also includes
+exact formatted-output controls. C++-to-C symbol spelling may change the raw
+COFF digest while leaving normalized instructions and audited references
+unchanged. No compiler or source declaration change is retained.
