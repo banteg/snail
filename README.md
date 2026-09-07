@@ -1,5 +1,8 @@
 # Snail Mail
 
+[Full-executable decompilation progress](https://decomp.dev/banteg/snail) ·
+[Public reporting policy](analysis/progress/README.md)
+
 Reverse-engineering workspace for Snail Mail and the original Windows artifacts
 in [`artifacts/bin`](artifacts/bin).
 

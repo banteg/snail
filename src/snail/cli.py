@@ -17,6 +17,7 @@ from . import (
     match_export,
     match_history,
     match_mutation,
+    match_report,
 )
 from .archive import extract_archive, parse_archive_index, summarize_archive
 from .formats import parse_text_asset
@@ -1254,6 +1255,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Only print instructions before this function-relative offset.",
     )
 
+    match_report_parser = match_subparsers.add_parser("report", help="Validate source-bound evidence and export full-executable decomp.dev progress.")
+    match_report_parser.add_argument("--refresh", action="store_true", help="Re-evaluate sources with the local reference image and compilers.")
+    match_report_parser.add_argument("--out", type=Path, default=match_report.DEFAULT_REPORT)
+    match_report_parser.add_argument("-j", "--jobs", type=_positive_int, default=DEFAULT_MATCH_JOBS)
+
     match_status_parser = match_subparsers.add_parser(
         "status",
         help="Compile all scratches and print a match dashboard.",
@@ -2155,6 +2161,21 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         if mutation_specs is not None and mutation_specs["errors"]:
             return 1
+        return 0
+
+    if args.command == "match" and args.match_command == "report":
+        try:
+            report = match_report.publish(refresh=args.refresh, output=args.out, jobs=args.jobs)
+        except (ValueError, KeyError, TypeError, OSError, RuntimeError) as exc:
+            print(f"decomp.dev report failed: {exc}", file=sys.stderr)
+            return 1
+        measures = report["measures"]
+        print(
+            f"{match_report.VERSION}: {measures['matched_functions']}/{measures['total_functions']} functions; "
+            f"{measures['matched_code']}/{measures['total_code']} code bytes matched "
+            f"({measures['matched_code_percent']:.2f}%); fuzzy={measures['fuzzy_match_percent']:.2f}%; "
+            f"linked={measures['complete_code_percent']:.2f}%; report={args.out}"
+        )
         return 0
 
     if args.command == "match" and args.match_command == "status":
