@@ -102,3 +102,37 @@ Rejected probes:
 - changing the function to return `int` and adding explicit incidental returns regressed to 48.26%;
 - keeping `pattern_char` live across the full wildcard loop regressed to 50.41% and expanded the frame to `0x328`;
 - default C++ mode emitted the same code as explicit `/TC`, so the scratch keeps the clearer C-mode build.
+
+## 2026-09-07 platform closure: wildcard loop ownership
+
+Retained **92.31%, 182/182 instructions, prefix 9**, with all 26 reference
+operands clean, from 81.52%, 186/182, prefix 7, and five call-reference
+mismatches in the current strict audit. The signed-input, unsigned-byte-result
+ASCII fold transfers from the exact archive lookup and fixed-size loader. A
+structured `while` for the wildcard body prevents the non-native peeled tail
+that duplicated the pattern load and branch in the previous `do` loop.
+
+The function now uses the standard C++ profile. The verified iOS public
+`RShellReadDirectory(char*, char*, int*, char (*)[128])` signature and the exact
+shared `RstrASC(char)`/`Rstrcpy` C++ symbols support that language contract.
+Removing `/TC` resolves those decorated call identities without adding aliases
+or changing their declarations. The recovered source is identical at 92.31%
+under VC6 8168 and the standard SP5-style C++ profile; no compiler-version
+override is retained.
+
+The full diff is now confined to the swapped ownership of the pattern byte
+and folded basename result across the two `RstrASC` calls, plus the stack
+slots reused by the entry offset and index. Both complete loop alternatives
+(`while` and `for`) reach the same result. Character-comparison wrappers,
+variable scopes, byte promotions, and positive pattern-byte branches do not
+close this residual. No comparison wrapper or extra local is retained.
+
+The recipes and hash-bound receipts preserve the bounded controls. Unsigned
+result temporaries compared directly against signed results in the first
+diagnostic grid are not equivalent for high bytes and are excluded from
+source acceptance. The retained character comparison preserves all byte values.
+These results leave the remaining source explanation open.
+
+Four direct folded-call comparison forms also regress to 76.03%, 181/182
+instructions, and prefix 2. Reversing equality operands does not recover the
+native temporary; the retained named result remains the stronger source.

@@ -1,4 +1,4 @@
-// enumerate_matching_archive_or_fs_entries @ 0x431740 (cdecl, C mode)
+// enumerate_matching_archive_or_fs_entries @ 0x431740 (cdecl)
 
 #include "archive_index.h"
 #include "rstring.h"
@@ -9,6 +9,13 @@
 extern int g_enumerated_entry_count; // data_503320
 
 int set_current_directory_with_drive_fallback(char* path);
+
+static __inline unsigned char fold_archive_request(char value)
+{
+    if (value >= 'a' && value <= 'z')
+        return value - ('a' - 'A');
+    return value;
+}
 
 void __cdecl enumerate_matching_archive_or_fs_entries(
     char* directory, char* pattern, int* out_count, DirectoryEntryName* names)
@@ -36,9 +43,7 @@ void __cdecl enumerate_matching_archive_or_fs_entries(
                         break;
                     }
 
-                    if (directory_char >= 'a' && directory_char <= 'z') {
-                        directory_char = directory_char - 32;
-                    }
+                    directory_char = (char)fold_archive_request(directory_char);
 
                     if (*archive_cursor != directory_char) {
                         break;
@@ -55,7 +60,7 @@ void __cdecl enumerate_matching_archive_or_fs_entries(
                     char first_name_char = *basename;
 
                     if (first_name_char != 0) {
-                        do {
+                        while (basename[name_index] != 0) {
                             char pattern_char = pattern[pattern_index];
                             char upper_name;
                             if (pattern_char == 0) {
@@ -78,7 +83,7 @@ void __cdecl enumerate_matching_archive_or_fs_entries(
                             if (pattern[pattern_index] != '*') {
                                 ++pattern_index;
                             }
-                        } while (basename[name_index] != 0);
+                        }
                     }
 
                     if (basename[name_index] == 0) {

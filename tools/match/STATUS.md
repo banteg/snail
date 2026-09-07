@@ -4,7 +4,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 **593/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **137047/294937** bytes (**46.47%**) are proof-grade, and overall fuzzy is **88.07%**.
 
-**113/120** platform helpers matched, **120/120** have a scratch, **16316/22103** bytes (**73.82%**) are proof-grade, and overall fuzzy is **96.54%**. Platform progress is tracked separately from port-relevant totals.
+**113/120** platform helpers matched, **120/120** have a scratch, **16316/22103** bytes (**73.82%**) are proof-grade, and overall fuzzy is **96.82%**. Platform progress is tracked separately from port-relevant totals.
 
 **3** third-party functions (**8104** curated-extent bytes) remain visible for context and are excluded from both progress totals.
 
@@ -839,7 +839,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🖥 | load_file_bytes | 0x431520 | 21 | 8/8 | 100.00% | 8/8 | 1 ok |  | replaceable-platform |
 | 🖥 | delete_file_path_with_directory_walk | 0x431540 | 264 | 84/84 | 100.00% | 84/84 | 14 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
 | 🖥 | write_file_bytes | 0x431650 | 229 | 74/74 | 100.00% | 74/74 | 10 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
-| 🖥 | enumerate_matching_archive_or_fs_entries | 0x431740 | 570 | 186/182 | 81.52% | 7/182 | 5 mismatch, 21 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
+| 🖥 | enumerate_matching_archive_or_fs_entries | 0x431740 | 570 | 182/182 | 92.31% | 9/182 | 26 ok |  | replaceable-platform |
 | 🖥 | xor_archive_bytes_in_place | 0x431980 | 55 | 27/27 | 100.00% | 27/27 | - |  | replaceable-platform |
 | 🖥 | load_archive_index | 0x4319c0 | 187 | 67/67 | 100.00% | 67/67 | 14 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
 | 🖥 | is_archive_index_loaded | 0x431a80 | 11 | 4/4 | 100.00% | 4/4 | 1 ok |  | replaceable-platform |
