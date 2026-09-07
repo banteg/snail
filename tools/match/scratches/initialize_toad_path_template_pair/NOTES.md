@@ -571,3 +571,14 @@ being widened with unsupported aliasing or volatile qualifiers.
 65.46% baseline. No source change is retained. The Twister result does not
 transfer uniformly across this family; these receipts describe only the
 examined aggregate and lateral lifetimes.
+
+## 2026-09-08 isolated face-column scope
+
+Initializing the face column before the width guard and computing row UVs
+inside that guard raises 65.46% to 66.82%, preserving 663/663 instructions,
+prefix 89 and all 33 clean references. Native instruction order supports
+the scope, and the whole-function difference is confined to the face
+preheader and UV conversion temporaries. A reverse probe reproduces the
+previous code hash. See the
+[family report](../../path-frontier-and-linking-20260908.md) for the controls
+and link milestone.

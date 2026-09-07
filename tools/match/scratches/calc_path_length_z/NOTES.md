@@ -19,6 +19,18 @@ meaningful return contract for the authored method.
 The stable matcher identity remains `calc_path_length_z`; the exact body and
 ordinary native relocations now use the authored member name.
 
+## 2026-09-08 shared Cross link closure
+
+The `cross_vectors` pointer-ABI compatibility call compiled exactly but could
+not link to the recovered `tVector::Cross(const tVector&, const tVector&)`
+definition. The caller now uses that authored method directly. It remains
+113/113 with nine clean native references. A four-object link with Cross, Dot
+and matrix Invert now succeeds; complete non-relocation bytes and all six
+relative call destinations are verified in the linked image.
+
+See [the path linking report](../../path-frontier-and-linking-20260908.md)
+for reproduction and limits. This is not a runnable game or public linked credit.
+
 ## 2026-09-07 version-verified VC6 controls
 
 Unchanged-source probes under the coherent `msvc6.0` and `msvc6.3` component

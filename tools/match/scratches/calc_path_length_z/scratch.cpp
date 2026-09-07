@@ -39,10 +39,10 @@ void __fastcall cRPath::CalcLengthZ()
         int sample_offset = 0;
         do {
             Vector3 cross;
-            cross.cross_vectors(
-                &((AttachmentSample*)((char*)this->primary_samples
+            cross.Cross(
+                ((AttachmentSample*)((char*)this->primary_samples
                     + sample_offset))->transform.basis_forward,
-                &((AttachmentSample*)((char*)this->primary_samples
+                ((AttachmentSample*)((char*)this->primary_samples
                     + sample_offset + sizeof(AttachmentSample)))->transform.basis_forward);
 
             *(float*)((char*)this->primary_samples + sample_offset

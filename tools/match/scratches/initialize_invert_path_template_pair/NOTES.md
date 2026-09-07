@@ -309,3 +309,14 @@ lifetime without changing shared vector definitions or reference rules. Invert a
 operations, reproducing the Twister x87 lifetime recovery. The full
 function remains partial; earlier percentages above belong to prior source
 or dependency epochs. Existing reference debt, where present, is unchanged.
+
+## 2026-09-08 isolated face-column scope
+
+Initializing the face column before the width guard and computing row UVs
+inside that guard raises 83.13% to 84.46%, preserving 603/600 instructions,
+prefix 120 and all 35 clean references. Native instruction order supports
+the scope, and the whole-function difference is confined to the face
+preheader and UV conversion temporaries. A reverse probe reproduces the
+previous code hash. See the
+[family report](../../path-frontier-and-linking-20260908.md) for the controls
+and link milestone.

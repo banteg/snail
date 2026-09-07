@@ -89,6 +89,11 @@ not an official Microsoft Rich-header specification.
 
 ## Workflow
 
+The [2026-09-08 path pass](path-frontier-and-linking-20260908.md) records the
+current path-family triage, three isolated mesh-loop improvements, and a
+reproducible four-function source-object link check. The latter verifies
+link feasibility only and does not receive executable-reconstruction credit.
+
 1. Create `scratches/<function>/` with:
    - `scratch.cpp` — candidate implementation; use a class member function to
      get thiscall, mirror struct layouts at native offsets
