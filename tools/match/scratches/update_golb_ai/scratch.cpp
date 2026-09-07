@@ -61,7 +61,7 @@ void cRSubGolb::AI()
     } else {
         Vec3* current_position = &flight_transform.position;
         Vec3* movement = &velocity;
-        *current_position += *movement;
+        flight_transform.position += velocity;
         if (kind == 0) {
             if (flight_transform.position.y > 0.49000001f || flight_transform.position.y < 0.0f) {
                 velocity.y = velocity.y - game->subgame_rate * 0.017000001f;
@@ -159,7 +159,8 @@ void cRSubGolb::AI()
             && bounds_player->transform.position.z + 46.0f >= flight_transform.position.z) {
             cRSubGarbage* garbage = game->garbage_hazards.active_head;
             while (garbage) {
-                if (garbage->state == SUB_GARBAGE_STATE_ACTIVE) {
+                switch (garbage->state) {
+                case SUB_GARBAGE_STATE_ACTIVE: {
                     Vec3 collision_delta;
                     collision_delta.x =
                         garbage->transform.position.x - new_output->x;
@@ -186,6 +187,10 @@ void cRSubGolb::AI()
                                 goto garbage_hit;
                         }
                     }
+                    break;
+                }
+                default:
+                    break;
                 }
                 garbage = garbage->next_active;
             }

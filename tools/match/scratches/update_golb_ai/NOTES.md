@@ -13,11 +13,11 @@ only by the kind-zero trail path and becomes each trail Sprite's opaque object
 reference; impact sprites deliberately retain the allocator sentinel.
 
 The scratch exports `?AI@cRSubGolb@@QAEXXZ`. Its current result is
-93.01%, 693/694 instructions, prefix 9, with all 71 references clean.
-The remaining differences include constant lifetimes through the garbage
-collision branches and two floating-point operand orders. Their source shape
-is still unresolved. The persistent collision-side carrier previously tested
-is behaviorally wrong and is not retained.
+99.50%, 695/694 instructions, prefix 417, with all 71 references clean.
+The remaining differences are the direct active-state comparison and one
+deflection-product operand order. Their source shape is still unresolved.
+The persistent collision-side carrier previously tested is behaviorally wrong
+and is not retained.
 
 ## 2026-09-05 borrowed slug slots and vector subtraction
 
@@ -72,3 +72,33 @@ compiler flag, return contract, or artificial collision-side dependency changed.
 ## 2026-09-05 additional coupled source controls
 
 Four complete active-state forms test an if guard, enclosing if, enclosing switch, and a skip-tick else branch. The enclosing switch is neutral at 93.01%; the if forms regress to 88.46%. All 71 references remain clean, and source is unchanged.
+
+## 2026-09-07 direct hazard state dispatch
+
+The direct garbage-collision handler is now a switch over the owned hazard
+state, with one active-state body and an empty default. It preserves the
+previous behavior for every state and keeps traversal, scoring, collision-side
+publication, and the non-kind-one exit unchanged. This ordinary state-machine
+structure recovers native's early burst-state constant and its transitions
+through the collision branches, improving 93.01% to 99.21%.
+
+Replaying vector-expression forms after that recovery finds a coupled gain:
+`flight_transform.position += velocity` recovers the native Y-add operand
+order. The existing position/velocity borrows still serve the homing path.
+The final source reaches **99.50%, 695/694 instructions, prefix 417, all 71
+references clean**. Instruction-count distance remains one, while fuzzy
+agreement and the exact prefix improve. This supersedes the old constant-
+lifetime attribution; no synthetic state carrier is needed.
+
+Five recipes retain 78 evaluated forms covering the paired state gates,
+selector structure, vector operand orders, active-state control flow, and
+reflection-result lifetimes. The remaining normalized diff is precisely:
+
+- native compares the state memory operand with 1; the candidate loads and
+  decrements it before the same branch, adding one instruction;
+- native loads deflection speed before multiplying by probe Z; the candidate
+  commutes those two floating-point operands.
+
+The follow-up forms do not resolve either difference. No ABI, shared header,
+compiler profile, float comparison, or field meaning changes, and this partial
+improvement is not counted as an exact match.

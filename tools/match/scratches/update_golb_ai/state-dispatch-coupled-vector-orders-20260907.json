@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "straight-flight-integration",
+      "find": "        Vec3* current_position = &flight_transform.position;\n        Vec3* movement = &velocity;\n        *current_position += *movement;",
+      "replacements": [
+        {
+          "name": "movement-first-pointers",
+          "text": "        Vec3* movement = &velocity;\n        Vec3* current_position = &flight_transform.position;\n        *current_position += *movement;"
+        },
+        {
+          "name": "direct-member-add",
+          "text": "        Vec3* current_position = &flight_transform.position;\n        Vec3* movement = &velocity;\n        flight_transform.position += velocity;"
+        },
+        {
+          "name": "reference-add",
+          "text": "        Vec3& current_position_ref = flight_transform.position;\n        Vec3& movement_ref = velocity;\n        Vec3* current_position = &current_position_ref;\n        Vec3* movement = &movement_ref;\n        current_position_ref += movement_ref;"
+        },
+        {
+          "name": "explicit-current-first-components",
+          "text": "        Vec3* current_position = &flight_transform.position;\n        Vec3* movement = &velocity;\n        current_position->x = current_position->x + movement->x;\n        current_position->y = current_position->y + movement->y;\n        current_position->z = current_position->z + movement->z;"
+        },
+        {
+          "name": "explicit-movement-first-components",
+          "text": "        Vec3* current_position = &flight_transform.position;\n        Vec3* movement = &velocity;\n        current_position->x = movement->x + current_position->x;\n        current_position->y = movement->y + current_position->y;\n        current_position->z = movement->z + current_position->z;"
+        },
+        {
+          "name": "stage-y-before-store",
+          "text": "        Vec3* current_position = &flight_transform.position;\n        Vec3* movement = &velocity;\n        current_position->x = movement->x + current_position->x;\n        float next_y = movement->y + current_position->y;\n        current_position->z = movement->z + current_position->z;\n        current_position->y = next_y;"
+        }
+      ]
+    },
+    {
+      "name": "slug-deflection-vector",
+      "find": "                            delta.x = -(deflect_speed * probe.x);\n                            delta.y = 0.0f;\n                            delta.z = -(deflect_speed * probe.z);\n                            velocity = delta;",
+      "replacements": [
+        {
+          "name": "commute-z-product",
+          "text": "                            delta.x = -(deflect_speed * probe.x);\n                            delta.y = 0.0f;\n                            delta.z = -(probe.z * deflect_speed);\n                            velocity = delta;"
+        },
+        {
+          "name": "named-z-result",
+          "text": "                            delta.x = -(deflect_speed * probe.x);\n                            delta.y = 0.0f;\n                            float deflected_z = -(deflect_speed * probe.z);\n                            delta.z = deflected_z;\n                            velocity = delta;"
+        },
+        {
+          "name": "named-z-product",
+          "text": "                            delta.x = -(deflect_speed * probe.x);\n                            delta.y = 0.0f;\n                            float deflected_z_product =\n                                deflect_speed * probe.z;\n                            delta.z = -deflected_z_product;\n                            velocity = delta;"
+        },
+        {
+          "name": "x-z-y-order",
+          "text": "                            delta.x = -(deflect_speed * probe.x);\n                            delta.z = -(deflect_speed * probe.z);\n                            delta.y = 0.0f;\n                            velocity = delta;"
+        },
+        {
+          "name": "y-x-z-order",
+          "text": "                            delta.y = 0.0f;\n                            delta.x = -(deflect_speed * probe.x);\n                            delta.z = -(deflect_speed * probe.z);\n                            velocity = delta;"
+        }
+      ]
+    }
+  ]
+}
