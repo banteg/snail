@@ -452,3 +452,28 @@ nested terminal-vector expression recovered the prefix from 373 to 443. All
 91.10%, 578/579 instructions, prefix 443, and 39 clean references. This checks
 the relevant later terminal/face interaction; the older 90.06% receipt alone
 could not establish its result on the current source.
+
+
+## 2026-09-07 current-source VC6 controls
+
+Unchanged-source probes with the independently identified `msvc6.0` and
+`msvc6.3` profiles preserve the default profile's complete normalized
+instruction stream and reference audit. The hash-bound receipts are in
+`experiments.jsonl`; the shared evidence and limits are recorded in
+[the compiler controls](../../compiler-profile-controls-20260907.md#path-builder-controls).
+No compiler override is retained.
+
+
+## 2026-09-07 parity-call continuation controls
+
+Nine explicit continuation forms preserve both parity branches and all eight
+UV publications while placing the alternate texture call before or after the
+UV block. Each complete form is tested on the front side, back side, and both.
+All compile with 39 clean references; none improves 91.10%, 578/579
+instructions, prefix 443. The three back-only forms are byte-neutral; front
+and paired forms give 90.92%. The exact sample and vertex prefix is unchanged.
+
+The native branch-local face-index multiplication and cold parity continuations
+remain unresolved. The mobile builders do not contain this Windows mesh tail,
+so they do not establish its original control-flow spelling. No source change
+is retained from these diagnostic label forms.

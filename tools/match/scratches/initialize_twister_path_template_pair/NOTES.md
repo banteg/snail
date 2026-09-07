@@ -445,3 +445,33 @@ improves the retained form. Three authored Identity member-call spellings
 are byte-neutral. The remaining differences include interior receiver
 formation, ordinary vertex destination allocation, and face-loop scheduling;
 these experiments do not establish source exhaustion.
+
+
+## 2026-09-07 face-column scope and terminal controls
+
+Seven complete combinations test the face column's initialization before the
+width guard with a guarded do-loop, a nested terminal vector expression, and
+a named destination borrow. Every combination containing the face-loop change
+improves **85.78% to 86.94%**, reducing **680 to 678 instructions** against
+677 native. Prefix remains 129 and all 49 references remain clean. The other
+three combinations are byte-neutral. Only the face-loop change is retained.
+
+Native initializes the column before the width test and enters the inner loop
+without a second width check. The complete before/after assembly comparison
+shows unchanged code before the face preheader and unchanged face-body
+operations afterward, allowing for the shifted branch offsets. The new
+preheader removes the redundant test/exit and restores native row-UV stack
+homes. It does not change the interior receiver or mesh-vertex residuals.
+Both Twister builders independently reproduce this result. A reverse probe
+retains the predecessor as a control. The recipe's `face-countdown` label names
+this forward column counter; the source increments it.
+
+
+## 2026-09-07 current-source VC6 controls
+
+Unchanged-source probes with the independently identified `msvc6.0` and
+`msvc6.3` profiles preserve the default profile's complete normalized
+instruction stream and reference audit. The hash-bound receipts are in
+`experiments.jsonl`; the shared evidence and limits are recorded in
+[the compiler controls](../../compiler-profile-controls-20260907.md#path-builder-controls).
+No compiler override is retained.

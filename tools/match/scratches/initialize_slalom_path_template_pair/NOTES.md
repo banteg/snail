@@ -664,3 +664,13 @@ the existing lateral offset. This recovers the native aggregate temporary
 lifetime without changing shared vector definitions or reference rules. The full
 function remains partial; earlier percentages above belong to prior source
 or dependency epochs. Existing reference debt, where present, is unchanged.
+
+
+## 2026-09-07 current-source VC6 controls
+
+Unchanged-source probes with the independently identified `msvc6.0` and
+`msvc6.3` profiles preserve the default profile's complete normalized
+instruction stream and reference audit. The hash-bound receipts are in
+`experiments.jsonl`; the shared evidence and limits are recorded in
+[the compiler controls](../../compiler-profile-controls-20260907.md#path-builder-controls).
+No compiler override is retained.

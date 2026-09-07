@@ -28,3 +28,13 @@ exact neighboring controls. No compiler override or source change follows
 from this comparison. Component versions, hashes, measured results and the
 separate mislabeled VC7-archive check are recorded in
 [the compiler-control report](../../compiler-profile-controls-20260907.md).
+
+
+## 2026-09-07 current-source VC6 controls
+
+Unchanged-source probes with the independently identified `msvc6.0` and
+`msvc6.3` profiles preserve the default profile's complete normalized
+instruction stream and reference audit. The hash-bound receipts are in
+`experiments.jsonl`; the shared evidence and limits are recorded in
+[the compiler controls](../../compiler-profile-controls-20260907.md#path-builder-controls).
+No compiler override is retained.

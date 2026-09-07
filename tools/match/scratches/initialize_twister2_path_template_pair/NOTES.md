@@ -443,3 +443,23 @@ sample-Z initialization after the Y expression's Sin calls. The paired full
 diffs recover the same x87, saved vertex-bank, and sample-Z stack lifetimes.
 Older percentages above describe earlier shared-header epochs. No header,
 ABI, or compiler-setting change is retained. The function remains partial.
+
+
+## 2026-09-07 face-column scope and terminal controls
+
+Seven complete combinations test the face column's initialization before the
+width guard with a guarded do-loop, a nested terminal vector expression, and
+a named destination borrow. Every combination containing the face-loop change
+improves **85.78% to 86.94%**, reducing **680 to 678 instructions** against
+677 native. Prefix remains 129 and all 49 references remain clean. The other
+three combinations are byte-neutral. Only the face-loop change is retained.
+
+Native initializes the column before the width test and enters the inner loop
+without a second width check. The complete before/after assembly comparison
+shows unchanged code before the face preheader and unchanged face-body
+operations afterward, allowing for the shifted branch offsets. The new
+preheader removes the redundant test/exit and restores native row-UV stack
+homes. It does not change the interior receiver or mesh-vertex residuals.
+Both Twister builders independently reproduce this result. A reverse probe
+retains the predecessor as a control. The recipe's `face-countdown` label names
+this forward column counter; the source increments it.

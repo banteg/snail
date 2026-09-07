@@ -131,10 +131,11 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
     }
 
     for (row = 0; row < path->segment_count; ++row) {
+        column = 0;
         if (path->width_cells > 0) {
             float v0 = (float)(row % 8) * 0.125f;
             float v1 = (float)(row % 8 + 1) * 0.125f;
-            for (column = 0; column < path->width_cells; ++column) {
+            do {
                 float u0 = (float)column * 0.125f;
                 float u1 = (float)(column + 1) * 0.125f;
                 int face_index;
@@ -188,7 +189,8 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                         facequads[face_offset].uv[3].v = v1;
                     }
                 }
-            }
+                ++column;
+            } while (column < path->width_cells);
         }
     }
 }

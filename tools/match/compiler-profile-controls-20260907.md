@@ -1,7 +1,8 @@
 # 2026-09-07 selector/search compiler controls
 
-The canonical image has a checksum-valid Rich header with ordinary VC6 C++
-records for build families 8168, 8447 and 8966. That motivates this bounded
+The canonical image has a checksum-valid Rich header with ordinary VC6
+records for 10 C++ contributions from build 8168, 56 C++ contributions from
+build 8447, and 23 C contributions from build 8966. That motivates this bounded
 unchanged-source comparison after the source-lifetime probes; it does not
 assign a compiler build to an authored translation unit. The current default
 remains `msvc6.5 /O2 /G5 /W3`. The earlier platform/three-core controls are
@@ -41,6 +42,29 @@ Full comparisons against the default profile confirm identical normalized
 instruction streams for all three partials. The texture selector's private
 COFF jump-table name differs (`$L1232` versus `$L1181`), but its same default
 destination mismatch remains exposed by the reference audit.
+
+## Path-builder controls
+
+An unchanged-source comparison also covers five partial path builders and two
+exact path controls. Each was compiled with the default profile and the same
+two independently identified VC6 profiles above, using `/O2 /G5 /W3`.
+
+| Function | Match under all three profiles | Candidate / native instructions | Prefix | Clean references |
+| --- | ---: | ---: | ---: | ---: |
+| initialize_sbend_path_template_pair | 91.10% | 578 / 579 | 443 | 39 |
+| initialize_snake_path_template_pair | 88.19% | 652 / 652 | 387 | 40 |
+| initialize_sweep_path_template_pair | 84.66% | 652 / 652 | 32 | 37 |
+| initialize_slalom_path_template_pair | 80.66% | 695 / 696 | 48 | 40 |
+| initialize_twister_path_template_pair | 85.78% | 680 / 677 | 129 | 49 |
+| calc_path_length_z | 100.00% | 113 / 113 | 113 | 9 |
+| get_path_nodes | 100.00% | 23 / 23 | 23 | 4 |
+
+All seven normalized instruction streams are identical across the three
+profiles. The extracted-code hashes also agree except for Twister, whose
+complete normalized disassembly was compared separately. Twister's row is the
+source before the subsequent face-column scope recovery. The exact controls
+cover 136 native instructions. No compiler override is retained; these results
+do not identify the compiler of an individual original translation unit.
 
 ## Preserved VC7 archive identity
 

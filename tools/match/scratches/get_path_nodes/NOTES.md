@@ -16,3 +16,13 @@ claimed for the narrower Windows allocator.
 
 The stable matcher identity remains `get_path_nodes`; the scratch and native
 relocations now use the authored member name.
+
+
+## 2026-09-07 current-source VC6 controls
+
+Unchanged-source probes with the independently identified `msvc6.0` and
+`msvc6.3` profiles preserve the default profile's complete normalized
+instruction stream and reference audit. The hash-bound receipts are in
+`experiments.jsonl`; the shared evidence and limits are recorded in
+[the compiler controls](../../compiler-profile-controls-20260907.md#path-builder-controls).
+No compiler override is retained.
