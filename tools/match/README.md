@@ -289,7 +289,10 @@ Useful analysis helpers:
   worker bound as status.
 - `uv run snail match status -j 8` bounds concurrent scratch compilation and
   matching (the default is the smaller of 8 and the host CPU count; use
-  `-j 1` for a sequential diagnostic run). Build keys follow each scratch's
+  `-j 1` for a sequential diagnostic run). Terminal and Markdown summaries
+  track port-relevant functions and platform helpers separately, each with
+  proof-grade matches, scratch coverage, proof-grade bytes, and weighted fuzzy
+  progress. Third-party functions remain outside both totals. Build keys follow each scratch's
   transitive local includes, so editing one shared header rebuilds only its
   consumers instead of all scratches. Match-only `scratch.conf` changes reuse
   the compiled object while invalidating the detailed match through the parsed

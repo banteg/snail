@@ -4,7 +4,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 **590/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **134963/294937** bytes (**45.76%**) are proof-grade, and overall fuzzy is **87.87%**.
 
-**120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
+**111/120** platform helpers matched, **120/120** have a scratch, **15658/22103** bytes (**70.84%**) are proof-grade, and overall fuzzy is **94.89%**. Platform progress is tracked separately from port-relevant totals.
+
+**3** third-party functions (**8104** curated-extent bytes) remain visible for context and are excluded from both progress totals.
 
 ## Residual frontier
 
@@ -772,7 +774,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | set_snail_weapon | 0x445920 | 940 | 245/248 | 73.02% | 1/248 | 24 ok |  | core |
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 560/571 | 68.44% | 7/571 | 91 ok |  | core |
 
-## Excluded: Replaceable Platform (120)
+## Platform Helpers (120)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|

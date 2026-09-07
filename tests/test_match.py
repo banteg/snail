@@ -3676,6 +3676,10 @@ def test_non_portable_scopes_stay_visible_but_do_not_affect_port_totals(
         fuzzy_weighted_bytes=4.0,
         replaceable_platform_functions=1,
         replaceable_platform_bytes=4,
+        replaceable_platform_matched_functions=1,
+        replaceable_platform_matched_bytes=4,
+        replaceable_platform_scratched_functions=1,
+        replaceable_platform_fuzzy_weighted_bytes=4.0,
         third_party_functions=1,
         third_party_bytes=4,
     )
@@ -3694,18 +3698,84 @@ def test_non_portable_scopes_stay_visible_but_do_not_affect_port_totals(
     assert rows[3][10] == "third-party implementation; no scratch"
 
     table = render_status_table(statuses, totals, manifest=manifest, image=image)
-    assert "Excluded: Replaceable Platform (1)" in table
+    assert "Platform Helpers (1)" in table
     assert "Excluded: Third-party (1)" in table
     assert "2/2 scratches at proof-grade 100%" in table
-    assert "1 replaceable-platform functions (4 curated-extent bytes) excluded" in table
+    assert "platform: 1/1 helpers proof-grade, 4/4 bytes (100.00%) proof-grade" in table
+    assert "1/1 helpers have scratches; overall fuzzy 100.00%" in table
     assert "1 third-party functions (4 curated-extent bytes) excluded" in table
 
     markdown = render_status_markdown(statuses, totals, manifest=manifest, image=image)
     assert "**2/3** port-relevant functions matched" in markdown
-    assert "**1** replaceable-platform functions" in markdown
+    assert "**1/1** platform helpers matched, **1/1** have a scratch" in markdown
+    assert "**4/4** bytes (**100.00%**) are proof-grade" in markdown
     assert "**1** third-party functions" in markdown
-    assert "## Excluded: Replaceable Platform (1)" in markdown
+    assert "## Platform Helpers (1)" in markdown
     assert "## Excluded: Third-party (1)" in markdown
+
+
+def test_platform_progress_counts_unique_functions_and_requires_clean_audits(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import snail.match as match_module
+
+    names = ["core", "platform", "audit", "partial", "error", "missing", "library"]
+    functions = tuple(
+        FunctionSymbol(
+            address=0x1000 + 4 * index,
+            name=name,
+            aliases=("platform_alias",) if name == "platform" else (),
+            port_scope=(
+                "core" if name == "core" else
+                "third-party" if name == "library" else "replaceable-platform"
+            ),
+        )
+        for index, name in enumerate(names)
+    )
+    manifest = FunctionSymbolManifest(
+        name="test", primary_target="test.exe", reference_target="test.exe",
+        image_base=0x1000, unwrapped_sha256="0" * 64, source_database=None,
+        functions=functions,
+    )
+    image = LoadedImage(
+        mapped=b"\x90\x90\x90\xc3" * len(names) + b"\xcc",
+        image_base=0x1000, size_of_image=4 * len(names) + 1,
+    )
+    monkeypatch.setattr(match_module, "load_image", lambda *_args: image)
+    statuses = [
+        ScratchStatus(
+            config=ScratchConfig(
+                directory=tmp_path / name, function=name,
+                compiler="msvc6.5", cflags="/O2 /G5 /W3", end_va=None, symbol=None,
+            ),
+            address=0x1004 if name == "platform_alias" else functions[names.index(name)].address,
+            target_size=4, ratio=ratio, prefix_instructions=0,
+            target_instructions=4, candidate_instructions=4,
+            error="compile failed" if name == "error" else None,
+            masked_unresolved=1 if name == "audit" else 0,
+        )
+        for name, ratio in [
+            ("core", 1.0), ("platform", 1.0), ("platform_alias", 1.0),
+            ("audit", 1.0), ("partial", 0.5), ("error", None), ("library", 1.0),
+        ]
+    ]
+
+    totals = manifest_cluster_totals(manifest, tmp_path / "test.exe", statuses)
+
+    assert totals.function_count == totals.matched_functions == totals.scratched_functions == 1
+    assert totals.matched_bytes == totals.byte_total == 4
+    assert totals.replaceable_platform_functions == 5
+    assert totals.replaceable_platform_bytes == 20
+    assert totals.replaceable_platform_matched_functions == 1
+    assert totals.replaceable_platform_matched_bytes == 4
+    assert totals.replaceable_platform_scratched_functions == 4
+    assert totals.replaceable_platform_fuzzy_weighted_bytes == 10.0
+    assert totals.replaceable_platform_byte_percentage == pytest.approx(0.2)
+    assert totals.replaceable_platform_fuzzy_percentage == pytest.approx(0.5)
+
+    markdown = render_status_markdown(statuses, totals, manifest=manifest, image=image)
+    assert "**1/5** platform helpers matched, **4/5** have a scratch" in markdown
+    assert "**4/20** bytes (**20.00%**) are proof-grade, and overall fuzzy is **50.00%**" in markdown
 
 
 def test_render_status_markdown_splits_progress_sections() -> None:
@@ -3826,6 +3896,8 @@ def test_render_status_outputs_scratch_and_fuzzy_summary() -> None:
 
     assert totals.scratch_percentage == pytest.approx(0.5)
     assert totals.fuzzy_percentage == pytest.approx(0.4)
+    assert totals.replaceable_platform_byte_percentage == 0.0
+    assert totals.replaceable_platform_fuzzy_percentage == 0.0
 
     status_table = render_status_table(statuses, totals)
     assert "1/4 functions proof-grade" in status_table

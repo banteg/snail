@@ -6276,6 +6276,10 @@ class ClusterTotals:
     replaceable_platform_bytes: int = 0
     third_party_functions: int = 0
     third_party_bytes: int = 0
+    replaceable_platform_matched_functions: int = 0
+    replaceable_platform_matched_bytes: int = 0
+    replaceable_platform_scratched_functions: int = 0
+    replaceable_platform_fuzzy_weighted_bytes: float = 0.0
 
     @property
     def byte_percentage(self) -> float:
@@ -6289,13 +6293,25 @@ class ClusterTotals:
     def fuzzy_percentage(self) -> float:
         return self.fuzzy_weighted_bytes / self.byte_total if self.byte_total else 0.0
 
+    @property
+    def replaceable_platform_byte_percentage(self) -> float:
+        if not self.replaceable_platform_bytes:
+            return 0.0
+        return self.replaceable_platform_matched_bytes / self.replaceable_platform_bytes
+
+    @property
+    def replaceable_platform_fuzzy_percentage(self) -> float:
+        if not self.replaceable_platform_bytes:
+            return 0.0
+        return self.replaceable_platform_fuzzy_weighted_bytes / self.replaceable_platform_bytes
+
 
 def manifest_cluster_totals(
     manifest: FunctionSymbolManifest,
     image_path: Path,
     statuses: list[ScratchStatus],
 ) -> ClusterTotals:
-    """Totals over the mapped port-relevant cluster, not just touched scratches.
+    """Separate port-relevant and platform totals over all mapped functions.
 
     Each curated function's extent runs to the next curated address (padding
     trimmed); the last function ends at the next int3 padding byte.
@@ -6303,6 +6319,10 @@ def manifest_cluster_totals(
     image = load_image(image_path, manifest.image_base)
     functions = sorted(manifest.functions, key=lambda symbol: symbol.address)
     functions_by_name = _function_symbols_by_name(manifest)
+    port_functions = {symbol.name for symbol in functions if symbol.is_port_relevant}
+    platform_functions = {
+        symbol.name for symbol in functions if symbol.port_scope == "replaceable-platform"
+    }
     byte_total = 0
     replaceable_platform_bytes = 0
     third_party_bytes = 0
@@ -6325,7 +6345,6 @@ def manifest_cluster_totals(
         functions_by_name[status.config.function].name
         for status in statuses
         if status.config.function in functions_by_name
-        and functions_by_name[status.config.function].is_port_relevant
     }
     matched_bytes_by_function: dict[str, int] = {}
     fuzzy_bytes_by_function: dict[str, float] = {}
@@ -6334,7 +6353,7 @@ def manifest_cluster_totals(
         if requested_function not in functions_by_name:
             continue
         symbol = functions_by_name[requested_function]
-        if not symbol.is_port_relevant:
+        if not symbol.is_port_relevant and symbol.port_scope != "replaceable-platform":
             continue
         function = symbol.name
         if status.state == "match":
@@ -6348,17 +6367,22 @@ def manifest_cluster_totals(
                 fuzzy_bytes_by_function.get(function, 0.0),
             )
     return ClusterTotals(
-        function_count=sum(
-            symbol.is_port_relevant for symbol in manifest.functions
-        ),
+        function_count=len(port_functions),
         byte_total=byte_total,
-        matched_functions=len(matched_bytes_by_function),
-        matched_bytes=sum(matched_bytes_by_function.values()),
-        scratched_functions=len(scratched_functions),
-        fuzzy_weighted_bytes=sum(fuzzy_bytes_by_function.values()),
-        replaceable_platform_functions=sum(
-            symbol.port_scope == "replaceable-platform"
-            for symbol in manifest.functions
+        matched_functions=len(port_functions & matched_bytes_by_function.keys()),
+        matched_bytes=sum(matched_bytes_by_function.get(name, 0) for name in port_functions),
+        scratched_functions=len(port_functions & scratched_functions),
+        fuzzy_weighted_bytes=sum(fuzzy_bytes_by_function.get(name, 0.0) for name in port_functions),
+        replaceable_platform_functions=len(platform_functions),
+        replaceable_platform_matched_functions=len(
+            platform_functions & matched_bytes_by_function.keys()
+        ),
+        replaceable_platform_matched_bytes=sum(
+            matched_bytes_by_function.get(name, 0) for name in platform_functions
+        ),
+        replaceable_platform_scratched_functions=len(platform_functions & scratched_functions),
+        replaceable_platform_fuzzy_weighted_bytes=sum(
+            fuzzy_bytes_by_function.get(name, 0.0) for name in platform_functions
         ),
         replaceable_platform_bytes=replaceable_platform_bytes,
         third_party_functions=sum(
@@ -6382,7 +6406,7 @@ STATUS_SECTION_ORDER = (
     "Zero Match (0%)",
     "No Scratch (0%)",
     "Errors",
-    "Excluded: Replaceable Platform",
+    "Platform Helpers",
     "Excluded: Third-party",
 )
 # Build column stays empty unless a scratch deviates from the project-standard
@@ -6577,7 +6601,7 @@ def _row_match_ratio(row: tuple[str, ...]) -> float | None:
 def _status_row_section(row: tuple[str, ...]) -> str:
     port_scope = row[9]
     if port_scope == "replaceable-platform":
-        return "Excluded: Replaceable Platform"
+        return "Platform Helpers"
     if port_scope == "third-party":
         return "Excluded: Third-party"
     icon = row[0]
@@ -6644,12 +6668,17 @@ def _cluster_summary(
     )
     if totals.replaceable_platform_functions:
         summary += (
-            f"; {totals.replaceable_platform_functions} replaceable-platform functions "
-            f"({totals.replaceable_platform_bytes} curated-extent bytes) excluded"
+            f"\nplatform: {totals.replaceable_platform_matched_functions}/"
+            f"{totals.replaceable_platform_functions} helpers proof-grade, "
+            f"{totals.replaceable_platform_matched_bytes}/{totals.replaceable_platform_bytes} "
+            f"bytes ({totals.replaceable_platform_byte_percentage:.2%}) proof-grade; "
+            f"{totals.replaceable_platform_scratched_functions}/"
+            f"{totals.replaceable_platform_functions} helpers have scratches; "
+            f"overall fuzzy {totals.replaceable_platform_fuzzy_percentage:.2%}"
         )
     if totals.third_party_functions:
         summary += (
-            f"; {totals.third_party_functions} third-party functions "
+            f"\n{totals.third_party_functions} third-party functions "
             f"({totals.third_party_bytes} curated-extent bytes) excluded"
         )
     return summary
@@ -6704,25 +6733,28 @@ def render_status_markdown(
             f"fuzzy is **{totals.fuzzy_percentage:.2%}**."
         ),
     ]
-    if totals.replaceable_platform_functions or totals.third_party_functions:
-        exclusions: list[str] = []
-        if totals.replaceable_platform_functions:
-            exclusions.append(
-                f"**{totals.replaceable_platform_functions}** replaceable-platform "
-                "functions "
-                f"(**{totals.replaceable_platform_bytes}** curated-extent bytes)"
-            )
-        if totals.third_party_functions:
-            exclusions.append(
-                f"**{totals.third_party_functions}** third-party functions "
-                f"(**{totals.third_party_bytes}** curated-extent bytes)"
-            )
+    if totals.replaceable_platform_functions:
         lines.extend(
             [
                 "",
-                " and ".join(exclusions)
-                + " remain visible for contract, semantic, and extent context but "
-                "are excluded from port-relevant totals.",
+                f"**{totals.replaceable_platform_matched_functions}/"
+                f"{totals.replaceable_platform_functions}** platform helpers matched, "
+                f"**{totals.replaceable_platform_scratched_functions}/"
+                f"{totals.replaceable_platform_functions}** have a scratch, "
+                f"**{totals.replaceable_platform_matched_bytes}/"
+                f"{totals.replaceable_platform_bytes}** bytes "
+                f"(**{totals.replaceable_platform_byte_percentage:.2%}**) are proof-grade, "
+                f"and overall fuzzy is **{totals.replaceable_platform_fuzzy_percentage:.2%}**. "
+                "Platform progress is tracked separately from port-relevant totals.",
+            ]
+        )
+    if totals.third_party_functions:
+        lines.extend(
+            [
+                "",
+                f"**{totals.third_party_functions}** third-party functions "
+                f"(**{totals.third_party_bytes}** curated-extent bytes) remain visible "
+                "for context and are excluded from both progress totals.",
             ]
         )
     frontier_lines = render_residual_frontier_markdown(
