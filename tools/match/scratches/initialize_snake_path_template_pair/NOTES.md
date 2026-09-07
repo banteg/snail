@@ -612,3 +612,14 @@ direct face publication, parity versus row/column arguments, value/reference
 texture parameters, and both predicate orientations. All are neutral at
 88.19%, prefix 387, with all 40 references clean. No helper is retained, and
 the face address/UV schedule remains an open source reconstruction problem.
+
+## 2026-09-07 face-index array ownership control
+
+`diagnostic-face-index-array-20260907.json` shadows the complete render-type
+header with a four-element unsigned-short view of the contiguous winding
+indices. Its storage-only and indexed-access forms preserve every field offset
+and the 0x30-byte face record. Both are byte-neutral in all three partial path
+builders (S-bend, Snake, Sweep) and both exact fringe builders, with unchanged
+instruction counts, prefixes, and clean references. No shared header or
+canonical source is changed; this layout view does not resolve the face-tail
+schedule.

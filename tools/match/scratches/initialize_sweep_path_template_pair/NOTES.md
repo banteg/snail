@@ -461,3 +461,14 @@ the existing lateral offset. This recovers the native aggregate temporary
 lifetime without changing shared vector definitions or reference rules. The full
 function remains partial; earlier percentages above belong to prior source
 or dependency epochs. Existing reference debt, where present, is unchanged.
+
+## 2026-09-07 face-index array ownership control
+
+`diagnostic-face-index-array-20260907.json` shadows the complete render-type
+header with a four-element unsigned-short view of the contiguous winding
+indices. Its storage-only and indexed-access forms preserve every field offset
+and the 0x30-byte face record. Both are byte-neutral in all three partial path
+builders (S-bend, Snake, Sweep) and both exact fringe builders, with unchanged
+instruction counts, prefixes, and clean references. No shared header or
+canonical source is changed; this layout view does not resolve the face-tail
+schedule.

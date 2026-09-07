@@ -434,3 +434,21 @@ instruction-count gain cannot justify changing the shared operator. Only the
 slug's independently tested local-result follow-up is retained; this canonical
 source remains unchanged. The receipts preserve the full compiled identities
 and reference debt rather than interpreting an unchanged score as exact code.
+
+## 2026-09-07 face-index array ownership control
+
+`diagnostic-face-index-array-20260907.json` shadows the complete render-type
+header with a four-element unsigned-short view of the contiguous winding
+indices. Its storage-only and indexed-access forms preserve every field offset
+and the 0x30-byte face record. Both are byte-neutral in all three partial path
+builders (S-bend, Snake, Sweep) and both exact fringe builders, with unchanged
+instruction counts, prefixes, and clean references. No shared header or
+canonical source is changed; this layout view does not resolve the face-tail
+schedule.
+
+The existing `face-indexed-parity-mutations.json` was also replayed after the
+nested terminal-vector expression recovered the prefix from 373 to 443. All
+24 single-site and paired front/back predicate forms are byte-neutral at
+91.10%, 578/579 instructions, prefix 443, and 39 clean references. This checks
+the relevant later terminal/face interaction; the older 90.06% receipt alone
+could not establish its result on the current source.
