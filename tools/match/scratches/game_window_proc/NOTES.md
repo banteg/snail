@@ -1,6 +1,27 @@
 # game_window_proc
 
-First scratch for `game_window_proc @ 0x4074b0`.
+## 2026-09-07 exact message-dispatch recovery
+
+The ordinary single `switch (message)` now matches **141/141 instructions**,
+with the complete prefix and **all 39 reference operands clean**, under the
+standard `msvc6.5 /O2 /G5 /W3` build.
+
+The old source manually reproduced the decompiled `message <= 0x200` dispatch
+split and moved mouse-wheel handling to an external label. Keeping one switch
+and the shared `0x200`/`0x20a` body inside its cases lets VC6 recover the native
+range tree, local size-message return target, and right-button-up zero-result
+schedule together. No message behavior or return contract changed, including
+the original WM_MOUSEMOVE/high-word quirk.
+
+The nine-form `message-dispatch-ownership-20260907.json` receipt also tests
+mouse-first source ordering, external wheel handling, and an early size-message
+exit. Four forms are instruction-exact, but only the retained low-messages-first
+switch with case-owned wheel handling has clean lookup and jump-table contents.
+The other forms are not accepted merely for their normalized 100% score.
+
+This supersedes the earlier compiler-residual attribution and partial metrics
+below. Native control-flow evidence remains in
+`analysis/decompile/binja/functions/004074b0-game_window_proc.c`.
 
 The function is the main Win32 window procedure. It handles:
 

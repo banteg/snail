@@ -788,7 +788,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🖥 | show_and_focus_game_window | 0x4073b0 | 141 | 33/33 | 100.00% | 33/33 | 19 ok |  | replaceable-platform |
 | 🖥 | handle_game_window_deactivate | 0x407440 | 69 | 18/18 | 100.00% | 18/18 | 9 ok |  | replaceable-platform |
 | 🖥 | minimize_game_window | 0x407490 | 32 | 10/10 | 100.00% | 10/10 | 4 ok |  | replaceable-platform |
-| 🖥 | game_window_proc | 0x4074b0 | 828 | 141/141 | 94.33% | 4/141 | 1 mismatch, 38 ok |  | replaceable-platform |
+| 🖥 | game_window_proc | 0x4074b0 | 828 | 141/141 | 100.00% | 141/141 | 39 ok |  | replaceable-platform |
 | 🖥 | snapshot_current_display_mode | 0x407850 | 16 | 5/5 | 100.00% | 5/5 | 2 ok |  | replaceable-platform |
 | 🖥 | restore_desktop_display_mode | 0x407860 | 19 | 6/6 | 100.00% | 6/6 | 2 ok |  | replaceable-platform |
 | 🖥 | probe_display_mode_count | 0x407880 | 40 | 17/17 | 100.00% | 17/17 | 1 ok |  | replaceable-platform |
