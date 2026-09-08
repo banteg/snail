@@ -99,6 +99,10 @@ positive and negative runtime controls.
 The [allocator and mesh pass](allocator-mesh-and-path-runtime-20260908.md)
 closes the reporting ABI, exercises mesh storage, and runs recovered path-node
 allocation through `CalcLengthZ` and cleanup in a 31-function linked group.
+The [S-bend runtime pass](sbend-runtime-and-native-oracle-20260908.md) adds
+real texture registration and compares four generated meshes byte for byte
+with an isolated original-code oracle. S-bend remains a partial instruction
+match; its diagnostic build does not receive exact or linked credit.
 
 1. Create `scratches/<function>/` with:
    - `scratch.cpp` — candidate implementation; use a class member function to

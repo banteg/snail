@@ -1,5 +1,21 @@
 # initialize_sbend_path_template_pair
 
+## 2026-09-08 linked builder and native output comparison
+
+The builder now links through the authored `tMatrix::Identity` calls and real
+texture registration. It remains 91.10%, 578/579 instructions, prefix 443,
+with 39 clean references; the identity-call reverse probe is neutral.
+Four fixtures pass 60 runtime checks and produce the same 18,204 serialized
+geometry bytes as an isolated original-code oracle. This does not award exact
+matching credit or prove behavior outside the tested inputs.
+
+Twelve sweeps record 90 new variants spanning face indices, winding/UV
+lifetimes, paired banks, initializer operations, nested texture selection,
+and real Path translation-unit context. No face-body change is retained.
+The 91.36% reversed continuation has a worse prefix and is rejected.
+See [the complete evidence and reproduction instructions](../../sbend-runtime-and-native-oracle-20260908.md).
+
+
 Current recovery: semantic-complete (`compiler` residual). The verified
 Android/iOS builder bodies establish the portable sample/control graph; the
 live Windows body and scratch additionally cover the native mesh/face tail.

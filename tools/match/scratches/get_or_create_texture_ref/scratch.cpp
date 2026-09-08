@@ -3,7 +3,7 @@
 #include "sprite.h"
 #include "rtext.h"
 
-void report_errorf(char* format, ...);
+#include "rdebug.h"
 
 cRTexture* cRTextures::Add(
     char* texture_path, void* payload, int flags)

@@ -204,12 +204,12 @@ void cRPath::initialize_sbend_path_template_pair(
     primary_samples[0].rotation_scalar_94 = 0.0f;
     primary_samples[0].special_scalar = 0.0f;
     primary_samples[0].lateral_scale = 1.0f;
-    set_matrix_identity(&primary_samples[0].transform);
+    primary_samples[0].transform.Identity();
     primary_samples[0].transform.position.x = primary_samples[0].center_x;
     primary_samples[0].transform.position.y = 0.0f;
     primary_samples[0].transform.position.z = 0.0f;
 
-    set_matrix_identity(&secondary_samples[0].transform);
+    secondary_samples[0].transform.Identity();
     secondary_samples[0].transform.position.x = primary_samples[0].center_x;
     secondary_samples[0].transform.position.y = 0.49000001f;
     secondary_samples[0].transform.position.z = 0.0f;
@@ -231,9 +231,8 @@ void cRPath::initialize_sbend_path_template_pair(
                 ->special_scalar = 0.0f;
             ((PathTemplateSample*)((char*)primary_samples + sample_offset))
                 ->lateral_scale = 1.0f;
-            set_matrix_identity(
-                &((PathTemplateSample*)((char*)primary_samples + sample_offset))
-                    ->transform);
+            ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                    ->transform.Identity();
             ((PathTemplateSample*)((char*)primary_samples + sample_offset))
                 ->transform.position.x =
                 ((PathTemplateSample*)((char*)primary_samples + sample_offset))

@@ -108,6 +108,25 @@ RUN_CONFIG = {
         "GetNodes through CalcLengthZ on a constructed two-sample fixture; no template generator or rendering",
     ),
 }
+SBEND_FUNCTION = "initialize_sbend_path_template_pair"
+GROUPS["sbend"] = tuple(
+    dict.fromkeys(
+        GROUPS["path-nodes"]
+        + GROUPS["rmath"]
+        + (
+            "initialize_texture_list",
+            "get_or_create_texture_ref",
+            "copy_c_string",
+            "strings_equal_case_insensitive",
+            SBEND_FUNCTION,
+        )
+    )
+)
+RUN_CONFIG["sbend"] = (
+    60,
+    "!corrupt-face",
+    "S-bend builder on four CPU geometry fixtures including UV wrap; no rendering",
+)
 
 
 def sha(path: Path) -> str:
@@ -123,6 +142,11 @@ def main() -> None:
         help="Build an integration executable and run positive/negative controls",
     )
     parser.add_argument(
+        "--diagnostic-sbend",
+        action="store_true",
+        help="Allow only S-bend's reference-clean partial body for behavioral diagnostics; no exactness credit",
+    )
+    parser.add_argument(
         "--runtime-library",
         type=Path,
         required=True,
@@ -132,6 +156,8 @@ def main() -> None:
         "--out", type=Path, default=REPO_ROOT / "artifacts/match/path-math"
     )
     args = parser.parse_args()
+    if args.diagnostic_sbend and args.group != "sbend":
+        parser.error("--diagnostic-sbend requires --group sbend")
     if args.run and args.group not in RUN_CONFIG:
         parser.error("--run requires a group with a runtime harness")
     runtime = args.runtime_library.resolve(strict=True)
@@ -148,7 +174,15 @@ def main() -> None:
         if config.compiler != "msvc6.5":
             raise ValueError(f"{name}: expected the canonical VC6 profile")
         status = evaluate_scratch(config)
-        if status.state != "match":
+        diagnostic = (
+            args.diagnostic_sbend
+            and name == SBEND_FUNCTION
+            and status.state == "wip"
+            and not status.masked_unresolved
+            and not status.masked_mismatches
+            and not status.masked_unaudited
+        )
+        if status.state != "match" and not diagnostic:
             raise ValueError(
                 f"{name}: requires an exact, reference-clean scratch: {status}"
             )
@@ -170,7 +204,8 @@ def main() -> None:
                 "object_sha256": sha(copied),
                 "source_sha256": sha(config.directory / "scratch.cpp"),
                 "code_identity_sha256": status.code_sha256,
-                "normalized_exact": True,
+                "normalized_exact": status.state == "match",
+                "native_match_ratio": status.ratio,
                 "native_references_ok": status.masked_ok,
             }
         )
@@ -181,6 +216,7 @@ def main() -> None:
         "allocator": ["allocator"],
         "mesh-storage": ["allocator"],
         "path-nodes": ["allocator", "path-nodes"],
+        "sbend": ["allocator", "path-nodes", "rmath", "texture"],
     }
     support_names = [f"{group}_storage" for group in storage_groups.get(args.group, [])]
     if args.run:
@@ -269,7 +305,7 @@ def main() -> None:
     mapped = pe.get_memory_mapped_image()
     image_base = pe.OPTIONAL_HEADER.ImageBase
     data_tables = []
-    if args.group == "path-nodes":
+    if args.group in ("path-nodes", "sbend"):
         manifest = load_function_symbol_manifest(DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH)
         native = pefile.PE(str(REPO_ROOT / manifest.primary_target))
         for table, native_address in [
@@ -413,6 +449,9 @@ def main() -> None:
         "schema": 1,
         "purpose": "Source-object link feasibility; not an executable reconstruction",
         "group": args.group,
+        "diagnostic_partial_functions": [
+            r["function"] for r in records if not r["normalized_exact"]
+        ],
         "support": support,
         "entry_point": pe.OPTIONAL_HEADER.AddressOfEntryPoint,
         "runtime_execution_tested": bool(args.run),
@@ -428,7 +467,13 @@ def main() -> None:
         "verified_callback_tables": data_tables,
     }
     receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
-    print(f"Linked and verified {len(records)} recovered functions: {receipt_path}")
+    partial_count = sum(not record["normalized_exact"] for record in records)
+    if partial_count:
+        print(
+            f"Linked {len(records) - partial_count} exact functions and {partial_count} diagnostic partial: {receipt_path}"
+        )
+    else:
+        print(f"Linked and verified {len(records)} recovered functions: {receipt_path}")
 
 
 if __name__ == "__main__":
