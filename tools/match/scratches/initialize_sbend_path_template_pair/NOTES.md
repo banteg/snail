@@ -9,17 +9,20 @@ Four fixtures pass 60 runtime checks and produce the same 18,204 serialized
 geometry bytes as an isolated original-code oracle. This does not award exact
 matching credit or prove behavior outside the tested inputs.
 
-Twelve sweeps record 90 new variants spanning face indices, winding/UV
+Fifteen sweeps record 125 new variants spanning face indices, winding/UV
 lifetimes, paired banks, initializer operations, nested texture selection,
-and real Path translation-unit context. No face-body change is retained.
+real Path translation-unit context, shared UV tails, branch-local index
+conversions, and checkerboard geometry ownership. No face-body change is retained.
 The 91.36% reversed continuation has a worse prefix and is rejected.
 See [the complete evidence and reproduction instructions](../../sbend-runtime-and-native-oracle-20260908.md).
 
 
-Current recovery: semantic-complete (`compiler` residual). The verified
+Current recovery is classified as semantic-complete. The verified
 Android/iOS builder bodies establish the portable sample/control graph; the
 live Windows body and scratch additionally cover the native mesh/face tail.
-All references are clean, and the remaining differences are code layout.
+All references are clean. The remaining differences involve face-address
+formation, texture-call continuations, and UV register allocation; the
+original source structure that produced them remains unresolved.
 
 Starter reconstruction for `initialize_sbend_path_template_pair @ 0x42df00`.
 

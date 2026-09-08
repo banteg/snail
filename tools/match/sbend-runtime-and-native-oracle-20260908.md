@@ -93,7 +93,7 @@ earlier path-constructor projection and BSS ownership limits still apply.
 
 ## Matching experiments retained as evidence
 
-Twelve bounded sweeps record 90 variants, plus the identity-call reverse
+Fifteen bounded sweeps record 125 variants, plus the identity-call reverse
 probe. No face-body variant was retained. The tested hypotheses cover:
 
 - signedness and byte/row indexing of the face bank;
@@ -104,13 +104,24 @@ probe. No face-body variant was retained. The tested hypotheses cover:
   including an explicit-inline-only compiler control;
 - nested mesh/texture-choice operation boundaries;
 - face initialization through an inline method, explicit constructor, and
-  placement construction.
+  placement construction;
+- UV publication shared after the winding branch;
+- branch-local face-index conversions;
+- complete checkerboard arms with repeated geometry prefixes.
 
 One reversed winding continuation reaches 579 instructions and 91.36%, but
 moves the prefix from 443 to 405 and reverses the face-block layout; it is not
 accepted as progress. Other controls are neutral or regress. These receipts
 bound those hypotheses; they do not establish that the face tail is exhausted
 or that the remaining differences are compiler-only.
+
+The final three sweeps add 35 variants. Five common UV-tail forms regress to
+58.68–78.04%. Nine branch-local unsigned/long/negated index forms are byte-neutral;
+the three short-index controls regress and would additionally require native
+range evidence before use because they truncate large indices. Eighteen forms
+that duplicate some or all geometry into the checkerboard arms regress to
+65.84–87.80%. All compile with 39 clean references. None changes the retained
+source, and none supplies the missing native face-tail structure.
 
 ## Reproduce
 
