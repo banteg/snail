@@ -4488,6 +4488,47 @@ def test_scratch_include_resolver_reuses_shared_header_parses(
     assert header_reads == {shared: 1, leaf: 1}
 
 
+def test_scratch_headers_follow_compiler_precedence_and_include_delimiters(
+    tmp_path: Path,
+) -> None:
+    from dataclasses import replace
+
+    from snail.match import (
+        ScratchConfig,
+        _scratch_include_headers,
+        _ScratchIncludeResolver,
+    )
+
+    match_root = tmp_path / "match"
+    scratch = match_root / "scratches/foo"
+    project = match_root / "include"
+    scratch.mkdir(parents=True)
+    project.mkdir()
+    (scratch / "scratch.cpp").write_text('#include "shared.h"\n')
+    shared = project / "shared.h"
+    shared.write_text('#include <stddef.h>\n#include "local.h"\n')
+    project_stddef = project / "stddef.h"
+    project_stddef.write_text("// must lose to compiler INCLUDE\n")
+    local = project / "local.h"
+    local.write_text("// quoted header-relative include\n")
+    for name in ("first", "second"):
+        headers = match_root / "compilers" / name / "Include"
+        headers.mkdir(parents=True)
+        (headers / "stddef.h").write_text("#include <nested.h>\n")
+        (headers / "nested.h").write_text(f"// {name}\n")
+        (headers / "local.h").write_text("// must lose to quoted local include\n")
+    config = ScratchConfig(scratch, "foo", "first", "/O2", None, None)
+    resolver = _ScratchIncludeResolver(match_root)
+    for name in ("first", "second"):
+        headers = match_root / "compilers" / name / "Include"
+        assert set(
+            _scratch_include_headers(
+                replace(config, compiler=name), match_root, resolver=resolver
+            )
+        ) == {shared, local, headers / "stddef.h", headers / "nested.h"}
+
+
+
 def test_scratch_include_resolver_serializes_parallel_cache_misses(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -4932,6 +4973,53 @@ def test_scratch_object_current_tracks_build_inputs(tmp_path: Path) -> None:
         symbol="candidate",
     )
     assert _scratch_object_is_current(obj_path, changed_match_config, match_root)
+
+
+@pytest.mark.parametrize(
+    "changed_input", ["Bin/C2.DLL", "Bin/C1XX.DLL", "Include/stddef.h"]
+)
+def test_compiler_components_invalidate_objects_and_dependency_receipts(
+    tmp_path: Path, changed_input: str
+) -> None:
+    import os
+
+    from snail.match import (
+        ScratchConfig,
+        _scratch_object_is_current,
+        _store_scratch_build_key,
+        scratch_dependency_sha256,
+    )
+
+    scratch = tmp_path / "scratches/foo"
+    compiler = tmp_path / "compilers/msvc6.5"
+    scratch.mkdir(parents=True)
+    (compiler / "Bin").mkdir(parents=True)
+    (compiler / "Include").mkdir()
+    (tmp_path / "cl.sh").write_text("launcher\n")
+    (compiler / "Bin/CL.EXE").write_bytes(b"same driver")
+    (compiler / "Bin/C1XX.DLL").write_bytes(b"frontend")
+    (compiler / "Bin/C2.DLL").write_bytes(b"backend")
+    (compiler / "Include/stddef.h").write_text("typedef unsigned int size_t;\n")
+    (scratch / "scratch.cpp").write_text(
+        "#include <stddef.h>\nint foo() { return 1; }\n"
+    )
+    obj = scratch / "scratch.obj"
+    obj.write_bytes(b"compiled")
+    config = ScratchConfig(scratch, "foo", "msvc6.5", "/O2", None, None)
+    _store_scratch_build_key(obj, config, tmp_path)
+    original_digest = scratch_dependency_sha256(config, tmp_path)
+    assert _scratch_object_is_current(obj, config, tmp_path)
+
+    changed = compiler / changed_input
+    previous_stat = changed.stat()
+    changed.write_bytes(changed.read_bytes() + b"changed")
+    os.utime(
+        changed, ns=(previous_stat.st_atime_ns, previous_stat.st_mtime_ns + 1_000_000)
+    )
+    assert not _scratch_object_is_current(obj, config, tmp_path)
+    assert scratch_dependency_sha256(config, tmp_path) != original_digest
+    assert (compiler / "Bin/CL.EXE").read_bytes() == b"same driver"
+
 
 
 def test_compile_scratch_removes_stale_object_before_vc6(

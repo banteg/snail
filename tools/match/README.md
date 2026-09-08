@@ -50,6 +50,12 @@ When a function refuses to match, pursue native-backed source shape before
 flags. An alternate profile needs independent provenance, ABI, or language
 evidence; a better fuzzy score is not compiler provenance.
 
+The [verified XP SP1 DDK control](ddk9178-compiler-and-cache-20260908.md)
+adds a genuine build-9178 profile and reproduces its C++ component ID. It
+regresses the path builders; a compatible D3DX8 member closure explains all
+67 C++ contributions of that build. The same investigation fixes cache and
+experiment dependencies to include compiler DLLs and compiler headers.
+
 Reference basis: the [Microsoft PE/COFF specification](https://learn.microsoft.com/en-us/windows/win32/debug/pe-format),
 the [Rich-header object aggregation study](https://www.virusbulletin.com/virusbulletin/2020/01/vb2019-paper-rich-headers-leveraging-mysterious-artifact-pe-format/),
 the community-maintained [component/build table](https://github.com/dishather/richprint/blob/master/comp_id.txt),

@@ -49,7 +49,9 @@ DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH = (
 )
 CONTENT_AUDITED_REFERENCE_KINDS = frozenset(("data_blob", "lookup_table"))
 DEFAULT_MATCH_JOBS = min(8, max(1, os.cpu_count() or 1))
-LOCAL_INCLUDE_RE = re.compile(r'^\s*#\s*include\s*"([^"\r\n]+)"', re.MULTILINE)
+SOURCE_INCLUDE_RE = re.compile(
+    r'^\s*#\s*include\s*(?:"([^"\r\n]+)"|<([^>\r\n]+)>)', re.MULTILINE
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -3569,17 +3571,22 @@ def _mtime_ns(path: Path) -> int | None:
 
 
 class _ScratchIncludeResolver:
-    """Resolve each local include edge once during a status or audit sweep."""
+    """Resolve literal include edges once per compiler during a sweep."""
 
     def __init__(self, match_root: Path) -> None:
+        self.match_root = match_root
         self.include_dir = match_root / "include"
-        self._direct_dependencies: dict[tuple[Path, bool], tuple[Path, ...]] = {}
+        self._direct_dependencies: dict[tuple[Path, bool, str], tuple[Path, ...]] = {}
         self._lock = Lock()
 
     def direct_dependencies(
-        self, including_path: Path, *, source: bool
+        self,
+        including_path: Path,
+        *,
+        source: bool,
+        compiler: str = DEFAULT_SCRATCH_COMPILER,
     ) -> tuple[Path, ...]:
-        cache_key = (including_path, source)
+        cache_key = (including_path, source, compiler)
         if cache_key in self._direct_dependencies:
             return self._direct_dependencies[cache_key]
 
@@ -3598,14 +3605,18 @@ class _ScratchIncludeResolver:
 
             dependencies: list[Path] = []
             seen: set[Path] = set()
-            for match in LOCAL_INCLUDE_RE.finditer(text):
-                include_name = Path(match.group(1).replace("\\", "/"))
-                candidates = [self.include_dir / include_name]
-                if not source:
+            for match in SOURCE_INCLUDE_RE.finditer(text):
+                quoted_name, angled_name = match.groups()
+                include_name = Path((quoted_name or angled_name).replace("\\", "/"))
+                # Keep the INCLUDE order used by cl.sh. Only quoted includes
+                # search beside an included header before those directories.
+                candidates = [
+                    self.match_root / "compilers" / compiler / "Include" / include_name,
+                    self.include_dir / include_name,
+                ]
+                if quoted_name is not None and not source:
                     candidates.insert(0, including_path.parent / include_name)
-                dependency = next(
-                    (path for path in candidates if path.is_file()), None
-                )
+                dependency = next((path for path in candidates if path.is_file()), None)
                 if dependency is None:
                     continue
                 dependency = dependency.resolve()
@@ -3625,11 +3636,12 @@ def _scratch_include_headers(
     *,
     resolver: _ScratchIncludeResolver | None = None,
 ) -> tuple[Path, ...]:
-    """Return only local headers transitively included by one scratch.
+    """Return project and compiler headers transitively included by a scratch.
 
-    VC6 searches the directory of an included header before the configured
-    project include directory. The scratch source itself is copied into its
-    build directory, so its project headers resolve through ``match/include``.
+    Quoted includes search beside an included header first. The scratch source
+    itself is copied into its build directory; its headers resolve through the
+    compiler and project INCLUDE directories in cl.sh order. Conditional
+    literal includes are conservatively tracked without preprocessing.
     """
     resolver = resolver or _ScratchIncludeResolver(match_root)
     source = config.directory / "scratch.cpp"
@@ -3640,7 +3652,7 @@ def _scratch_include_headers(
     while pending:
         including_path = pending.pop()
         for dependency in resolver.direct_dependencies(
-            including_path, source=including_path == source
+            including_path, source=including_path == source, compiler=config.compiler
         ):
             if dependency in visited:
                 continue
@@ -3668,11 +3680,17 @@ def _scratch_build_dependencies(
     *,
     include_resolver: _ScratchIncludeResolver | None = None,
 ) -> tuple[Path, ...]:
-    compiler_exe = match_root / "compilers" / config.compiler / "Bin" / "CL.EXE"
+    compiler_bin = match_root / "compilers" / config.compiler / "Bin"
+    # CL delegates compilation to C1/C1XX and C2, which load the bundled PDB
+    # and runtime DLLs. The driver can stay identical across servicing builds.
+    compiler_dlls = tuple(
+        sorted(path for path in compiler_bin.glob("*") if path.suffix.lower() == ".dll")
+    )
     return (
         config.directory / "scratch.cpp",
         match_root / "cl.sh",
-        compiler_exe,
+        compiler_bin / "CL.EXE",
+        *compiler_dlls,
         *_scratch_include_headers(config, match_root, resolver=include_resolver),
     )
 

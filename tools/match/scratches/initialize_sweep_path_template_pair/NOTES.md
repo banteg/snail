@@ -1,5 +1,13 @@
 # initialize_sweep_path_template_pair
 
+## 2026-09-08 genuine DDK and mesh-owner interaction
+
+The verified XP SP1 DDK regresses unchanged source from 85.58% to 65.39%.
+Seven default-compiler variants couple typed vertex indices with branch or
+loop face owners. All regress with 37 clean references; the best is typed
+vertex indexing alone at 84.97%, prefix 32. No source or compiler override is
+retained. See [the complete controls](../../ddk9178-compiler-and-cache-20260908.md).
+
 Current recovery: semantic-complete (`compiler` residual). The verified
 Android/iOS builder bodies establish the portable sample/control graph; the
 live Windows body and scratch additionally cover the native mesh/face tail.

@@ -1,0 +1,958 @@
+{
+  "schema": 1,
+  "target_sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5",
+  "archive_sha256": "39a8e21889a7c1f0b966f04a9e7d392de14ddebb3e091dfa1e5ce3e19564fc28",
+  "attribution_sha256": "f0210b6093fac3ca9843005684c220ea7fff73bb89950b7d086315dcfdde758e",
+  "interpretation": "Compatible archive members and whole-member symbol closure, not proof of the original linker selection or a function-to-compiler assignment. Closure includes references from unmatched or discarded member functions.",
+  "unique_compatible_member_count": 74,
+  "unique_compatible_compiler_counts": {
+    "0x1220fc": 1,
+    "0x1d23da": 66
+  },
+  "whole_member_closure_count": 77,
+  "whole_member_closure_compiler_counts": {
+    "0x1220fc": 1,
+    "0x1c23da": 1,
+    "0x1d23da": 67
+  },
+  "added_members": [
+    "obj\\i386\\cd3dxresource.obj",
+    "obj\\i386\\init.obj",
+    "objf\\i386\\ssefasttable.obj"
+  ],
+  "added_dependency_edges": [
+    {
+      "from": "obj\\i386\\cd3dxlock.obj",
+      "symbol": "_IID_IDirect3DTexture8",
+      "to": "obj\\i386\\init.obj"
+    },
+    {
+      "from": "obj\\i386\\cd3dxlock.obj",
+      "symbol": "_IID_IDirect3DBaseTexture8",
+      "to": "obj\\i386\\init.obj"
+    },
+    {
+      "from": "obj\\i386\\cd3dxlock.obj",
+      "symbol": "_IID_IDirect3DVolumeTexture8",
+      "to": "obj\\i386\\init.obj"
+    },
+    {
+      "from": "obj\\i386\\cpudetect.obj",
+      "symbol": "?sse_D3DXInitFastTable@@YAXPAUD3DXFASTTABLE@@@Z",
+      "to": "objf\\i386\\ssefasttable.obj"
+    },
+    {
+      "from": "obj\\i386\\d3dx8tex.obj",
+      "symbol": "??1CD3DXResource@@QAE@XZ",
+      "to": "obj\\i386\\cd3dxresource.obj"
+    },
+    {
+      "from": "obj\\i386\\d3dx8tex.obj",
+      "symbol": "?Open@CD3DXResource@@QAEJPAUHINSTANCE__@@PBXHH@Z",
+      "to": "obj\\i386\\cd3dxresource.obj"
+    },
+    {
+      "from": "obj\\i386\\d3dx8tex.obj",
+      "symbol": "??0CD3DXResource@@QAE@XZ",
+      "to": "obj\\i386\\cd3dxresource.obj"
+    }
+  ],
+  "members": [
+    {
+      "member": ".\\Release\\math.obj",
+      "compiler_ids": [
+        "0x1220fc"
+      ],
+      "native_anchor_count": 11,
+      "representative_native_anchor": {
+        "address": "0x472540",
+        "symbol": "_a_pow",
+        "size": 408
+      }
+    },
+    {
+      "member": "obj\\i386\\adler32.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 1,
+      "representative_native_anchor": {
+        "address": "0x478850",
+        "symbol": "?adler32@D3DX@@YAKKPBEI@Z",
+        "size": 281
+      }
+    },
+    {
+      "member": "obj\\i386\\cd3dxblt.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 36,
+      "representative_native_anchor": {
+        "address": "0x45825a",
+        "symbol": "?BltLinear3D@CD3DXBlt@@IAEJXZ",
+        "size": 1841
+      }
+    },
+    {
+      "member": "obj\\i386\\cd3dxcodec.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 114,
+      "representative_native_anchor": {
+        "address": "0x45e231",
+        "symbol": "?Create@CD3DXCodec@@SAPAV1@PAUD3DX_BLT@@@Z",
+        "size": 1824
+      }
+    },
+    {
+      "member": "obj\\i386\\cd3dxfile.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 4,
+      "representative_native_anchor": {
+        "address": "0x45e9dc",
+        "symbol": "?Open@CD3DXFile@@QAEJPBXH@Z",
+        "size": 272
+      }
+    },
+    {
+      "member": "obj\\i386\\cd3dximage.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 15,
+      "representative_native_anchor": {
+        "address": "0x453951",
+        "symbol": "?LoadDIB@CD3DXImage@@AAEJPBXK@Z",
+        "size": 1814
+      }
+    },
+    {
+      "member": "obj\\i386\\cd3dxlock.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 8,
+      "representative_native_anchor": {
+        "address": "0x458ee1",
+        "symbol": "?Lock@CD3DXLockSurface@@QAEJPAUD3DX_BLT@@PAUIDirect3DSurface8@@PBUtagPALETTEENTRY@@PBUtagRECT@@KK@Z",
+        "size": 1043
+      }
+    },
+    {
+      "member": "obj\\i386\\cd3dxresource.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 0,
+      "representative_native_anchor": null
+    },
+    {
+      "member": "obj\\i386\\cpudetect.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 6,
+      "representative_native_anchor": {
+        "address": "0x453683",
+        "symbol": "?D3DXIsProcessorFeaturePresent@@YAHI@Z",
+        "size": 180
+      }
+    },
+    {
+      "member": "obj\\i386\\crc32.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 1,
+      "representative_native_anchor": {
+        "address": "0x471537",
+        "symbol": "?crc32@D3DX@@YAKKPBEI@Z",
+        "size": 265
+      }
+    },
+    {
+      "member": "obj\\i386\\d3dx8dbg.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 1,
+      "representative_native_anchor": {
+        "address": "0x453833",
+        "symbol": "?D3DXDebugMute@@YAXH@Z",
+        "size": 144
+      }
+    },
+    {
+      "member": "obj\\i386\\d3dx8tex.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 14,
+      "representative_native_anchor": {
+        "address": "0x452d51",
+        "symbol": "?CreateTextureFromFileInMemoryEx@@YAJPAUIDirect3DDevice8@@PBXIIIIIKW4_D3DFORMAT@@W4_D3DPOOL@@KKKPAU_D3DXIMAGE_INFO@@PAUtagPALETTEENTRY@@W4_D3DRESOURCETYPE@@PAPAUIDirect3DBaseTexture8@@@Z",
+        "size": 1651
+      }
+    },
+    {
+      "member": "obj\\i386\\d3dxmath.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 74,
+      "representative_native_anchor": {
+        "address": "0x451dba",
+        "symbol": "?c_D3DXQuaternionSquadSetup@@YGXPAUD3DXQUATERNION@@00PBU1@111@Z",
+        "size": 986
+      }
+    },
+    {
+      "member": "obj\\i386\\d3dxmathx86.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 9,
+      "representative_native_anchor": {
+        "address": "0x45f344",
+        "symbol": "?x86_D3DXMatrixMultiply@@YGPAUD3DXMATRIX@@PAU1@PBU1@1@Z",
+        "size": 227
+      }
+    },
+    {
+      "member": "obj\\i386\\dxtn.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 17,
+      "representative_native_anchor": {
+        "address": "0x4642bc",
+        "symbol": "?EncodeDXT1@@YAJPAEPBUD3DXCOLOR@@H@Z",
+        "size": 2052
+      }
+    },
+    {
+      "member": "obj\\i386\\infblock.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 4,
+      "representative_native_anchor": {
+        "address": "0x478081",
+        "symbol": "?inflate_blocks@D3DX@@YAHPAUinflate_blocks_state@1@PAUz_stream_s@1@H@Z",
+        "size": 1907
+      }
+    },
+    {
+      "member": "obj\\i386\\infcodes.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 3,
+      "representative_native_anchor": {
+        "address": "0x479336",
+        "symbol": "?inflate_codes@D3DX@@YAHPAUinflate_blocks_state@1@PAUz_stream_s@1@H@Z",
+        "size": 1340
+      }
+    },
+    {
+      "member": "obj\\i386\\inffast.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 1,
+      "representative_native_anchor": {
+        "address": "0x47bb3e",
+        "symbol": "?inflate_fast@D3DX@@YAHIIPAUinflate_huft_s@1@0PAUinflate_blocks_state@1@PAUz_stream_s@1@@Z",
+        "size": 693
+      }
+    },
+    {
+      "member": "obj\\i386\\inflate.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 5,
+      "representative_native_anchor": {
+        "address": "0x46fe12",
+        "symbol": "?inflate@D3DX@@YAHPAUz_stream_s@1@H@Z",
+        "size": 815
+      }
+    },
+    {
+      "member": "obj\\i386\\inftrees.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 4,
+      "representative_native_anchor": {
+        "address": "0x4798ab",
+        "symbol": "?huft_build@D3DX@@YAHPAIIIPBI1PAPAUinflate_huft_s@1@0PAU21@00@Z",
+        "size": 901
+      }
+    },
+    {
+      "member": "obj\\i386\\infutil.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 1,
+      "representative_native_anchor": {
+        "address": "0x479de1",
+        "symbol": "?inflate_flush@D3DX@@YAHPAUinflate_blocks_state@1@PAUz_stream_s@1@H@Z",
+        "size": 277
+      }
+    },
+    {
+      "member": "obj\\i386\\init.obj",
+      "compiler_ids": [
+        "0x1c23da"
+      ],
+      "native_anchor_count": 0,
+      "representative_native_anchor": null
+    },
+    {
+      "member": "obj\\i386\\jcomapi.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 4,
+      "representative_native_anchor": {
+        "address": "0x46f62a",
+        "symbol": "?jpeg_abort@D3DX@@YAXPAUjpeg_common_struct@1@@Z",
+        "size": 34
+      }
+    },
+    {
+      "member": "obj\\i386\\jdapimin.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 6,
+      "representative_native_anchor": {
+        "address": "0x45f5b6",
+        "symbol": "?default_decompress_parms@D3DX@@YAXPAUjpeg_decompress_struct@1@@Z",
+        "size": 371
+      }
+    },
+    {
+      "member": "obj\\i386\\jdapistd.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 3,
+      "representative_native_anchor": {
+        "address": "0x45f9fa",
+        "symbol": "?jpeg_start_decompress@D3DX@@YAEPAUjpeg_decompress_struct@1@@Z",
+        "size": 193
+      }
+    },
+    {
+      "member": "obj\\i386\\jdcoefct.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 10,
+      "representative_native_anchor": {
+        "address": "0x47332f",
+        "symbol": "?decompress_smooth_data@D3DX@@YAHPAUjpeg_decompress_struct@1@PAPAPAE@Z",
+        "size": 1309
+      }
+    },
+    {
+      "member": "obj\\i386\\jdcolor.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 7,
+      "representative_native_anchor": {
+        "address": "0x475ce4",
+        "symbol": "?ycc_rgb_convert@D3DX@@YAXPAUjpeg_decompress_struct@1@PAPAPAEIPAPAEH@Z",
+        "size": 542
+      }
+    },
+    {
+      "member": "obj\\i386\\jddctmgr.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 2,
+      "representative_native_anchor": {
+        "address": "0x474e66",
+        "symbol": "?start_pass@D3DX@@YAXPAUjpeg_decompress_struct@1@@Z",
+        "size": 439
+      }
+    },
+    {
+      "member": "obj\\i386\\jdhuff.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 7,
+      "representative_native_anchor": {
+        "address": "0x473d5b",
+        "symbol": "?decode_mcu@D3DX@@YAEPAUjpeg_decompress_struct@1@PAPAY0EA@F@Z",
+        "size": 973
+      }
+    },
+    {
+      "member": "obj\\i386\\jdinput.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 8,
+      "representative_native_anchor": {
+        "address": "0x46e6e8",
+        "symbol": "?initial_setup@D3DX@@YAXPAUjpeg_decompress_struct@1@@Z",
+        "size": 443
+      }
+    },
+    {
+      "member": "obj\\i386\\jdmainct.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 9,
+      "representative_native_anchor": {
+        "address": "0x4727b2",
+        "symbol": "?make_funny_pointers@D3DX@@YAXPAUjpeg_decompress_struct@1@@Z",
+        "size": 305
+      }
+    },
+    {
+      "member": "obj\\i386\\jdmarker.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 17,
+      "representative_native_anchor": {
+        "address": "0x45fb49",
+        "symbol": "?get_sof@D3DX@@YAEPAUjpeg_decompress_struct@1@EE@Z",
+        "size": 763
+      }
+    },
+    {
+      "member": "obj\\i386\\jdmaster.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 7,
+      "representative_native_anchor": {
+        "address": "0x46f710",
+        "symbol": "?jpeg_calc_output_dimensions@D3DX@@YAXPAUjpeg_decompress_struct@1@@Z",
+        "size": 495
+      }
+    },
+    {
+      "member": "obj\\i386\\jdmerge.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 7,
+      "representative_native_anchor": {
+        "address": "0x476315",
+        "symbol": "?h2v2_merged_upsample@D3DX@@YAXPAUjpeg_decompress_struct@1@PAPAPAEIPAPAE@Z",
+        "size": 486
+      }
+    },
+    {
+      "member": "obj\\i386\\jdphuff.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 7,
+      "representative_native_anchor": {
+        "address": "0x4747f4",
+        "symbol": "?decode_mcu_AC_refine@D3DX@@YAEPAUjpeg_decompress_struct@1@PAPAY0EA@F@Z",
+        "size": 878
+      }
+    },
+    {
+      "member": "obj\\i386\\jdpostct.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 5,
+      "representative_native_anchor": {
+        "address": "0x475212",
+        "symbol": "?start_pass_dpost@D3DX@@YAXPAUjpeg_decompress_struct@1@W4J_BUF_MODE@1@@Z",
+        "size": 166
+      }
+    },
+    {
+      "member": "obj\\i386\\jdsample.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 10,
+      "representative_native_anchor": {
+        "address": "0x475777",
+        "symbol": "?jinit_upsampler@D3DX@@YAXPAUjpeg_decompress_struct@1@@Z",
+        "size": 449
+      }
+    },
+    {
+      "member": "obj\\i386\\jerror.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 4,
+      "representative_native_anchor": {
+        "address": "0x46120b",
+        "symbol": "?format_message@D3DX@@YAXPAUjpeg_common_struct@1@PAD@Z",
+        "size": 151
+      }
+    },
+    {
+      "member": "obj\\i386\\jidctflt.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 1,
+      "representative_native_anchor": {
+        "address": "0x478f21",
+        "symbol": "?jpeg_idct_float@D3DX@@YAXPAUjpeg_decompress_struct@1@PAUjpeg_component_info@1@PAFPAPAEI@Z",
+        "size": 993
+      }
+    },
+    {
+      "member": "obj\\i386\\jidctfst.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 1,
+      "representative_native_anchor": {
+        "address": "0x478ed5",
+        "symbol": "?jpeg_idct_ifast@D3DX@@YAXPAUjpeg_decompress_struct@1@PAUjpeg_component_info@1@PAFPAPAEI@Z",
+        "size": 76
+      }
+    },
+    {
+      "member": "obj\\i386\\jidctint.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 1,
+      "representative_native_anchor": {
+        "address": "0x478e89",
+        "symbol": "?jpeg_idct_islow@D3DX@@YAXPAUjpeg_decompress_struct@1@PAUjpeg_component_info@1@PAFPAPAEI@Z",
+        "size": 76
+      }
+    },
+    {
+      "member": "obj\\i386\\jidctred.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 3,
+      "representative_native_anchor": {
+        "address": "0x478979",
+        "symbol": "?jpeg_idct_4x4@D3DX@@YAXPAUjpeg_decompress_struct@1@PAUjpeg_component_info@1@PAFPAPAEI@Z",
+        "size": 789
+      }
+    },
+    {
+      "member": "obj\\i386\\jmemmgr.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 15,
+      "representative_native_anchor": {
+        "address": "0x46ef92",
+        "symbol": "?realize_virt_arrays@D3DX@@YAXPAUjpeg_common_struct@1@@Z",
+        "size": 383
+      }
+    },
+    {
+      "member": "obj\\i386\\jmemnobs.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 3,
+      "representative_native_anchor": {
+        "address": "0x4726f3",
+        "symbol": "?jpeg_open_backing_store@D3DX@@YAXPAUjpeg_common_struct@1@PAUbacking_store_struct@1@J@Z",
+        "size": 20
+      }
+    },
+    {
+      "member": "obj\\i386\\jquant1.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 13,
+      "representative_native_anchor": {
+        "address": "0x477c6a",
+        "symbol": "?quantize_fs_dither@D3DX@@YAXPAUjpeg_decompress_struct@1@PAPAE1H@Z",
+        "size": 388
+      }
+    },
+    {
+      "member": "obj\\i386\\jquant2.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 15,
+      "representative_native_anchor": {
+        "address": "0x4765dc",
+        "symbol": "?update_box@D3DX@@YAXPAUjpeg_decompress_struct@1@PAUbox@1@@Z",
+        "size": 824
+      }
+    },
+    {
+      "member": "obj\\i386\\jutils.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 6,
+      "representative_native_anchor": {
+        "address": "0x46e632",
+        "symbol": "?jcopy_sample_rows@D3DX@@YAXPAPAEH0HHI@Z",
+        "size": 71
+      }
+    },
+    {
+      "member": "obj\\i386\\mifst.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 1,
+      "representative_native_anchor": {
+        "address": "0x47ad6b",
+        "symbol": "?midct8x8aan@D3DX@@YAXPAF00PAPAEIPAE@Z",
+        "size": 3539
+      }
+    },
+    {
+      "member": "obj\\i386\\miint.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 1,
+      "representative_native_anchor": {
+        "address": "0x47a358",
+        "symbol": "?midct8x8llm@D3DX@@YAXPAF00PAPAEIPAE@Z",
+        "size": 1720
+      }
+    },
+    {
+      "member": "obj\\i386\\pifst.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 1,
+      "representative_native_anchor": {
+        "address": "0x47aa10",
+        "symbol": "?pidct8x8aan@D3DX@@YAXPAF00PAPAEIPAE@Z",
+        "size": 859
+      }
+    },
+    {
+      "member": "obj\\i386\\piint.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 1,
+      "representative_native_anchor": {
+        "address": "0x479ef6",
+        "symbol": "?pidct8x8llm@D3DX@@YAXPAF00PAPAEIPAE@Z",
+        "size": 1122
+      }
+    },
+    {
+      "member": "obj\\i386\\png.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 7,
+      "representative_native_anchor": {
+        "address": "0x463752",
+        "symbol": "?png_zalloc@D3DX@@YAPAXPAXII@Z",
+        "size": 83
+      }
+    },
+    {
+      "member": "obj\\i386\\pngerror.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 5,
+      "representative_native_anchor": {
+        "address": "0x4612ff",
+        "symbol": "?png_format_buffer@D3DX@@YAXPAUpng_struct_def@1@PADPBD@Z",
+        "size": 135
+      }
+    },
+    {
+      "member": "obj\\i386\\pngget.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 6,
+      "representative_native_anchor": {
+        "address": "0x461c9b",
+        "symbol": "?png_get_IHDR@D3DX@@YAKPAUpng_struct_def@1@PAUpng_info_struct@1@PAK2PAH3333@Z",
+        "size": 209
+      }
+    },
+    {
+      "member": "obj\\i386\\pngmem.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 5,
+      "representative_native_anchor": {
+        "address": "0x470179",
+        "symbol": "?png_create_struct@D3DX@@YAPAXH@Z",
+        "size": 66
+      }
+    },
+    {
+      "member": "obj\\i386\\pngread.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 7,
+      "representative_native_anchor": {
+        "address": "0x461699",
+        "symbol": "?png_read_row@D3DX@@YAXPAUpng_struct_def@1@PAE1@Z",
+        "size": 935
+      }
+    },
+    {
+      "member": "obj\\i386\\pngrio.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 2,
+      "representative_native_anchor": {
+        "address": "0x4636cb",
+        "symbol": "?png_set_read_fn@D3DX@@YAXPAUpng_struct_def@1@PAXP6AX0PAEI@Z@Z",
+        "size": 63
+      }
+    },
+    {
+      "member": "obj\\i386\\pngrtran.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 13,
+      "representative_native_anchor": {
+        "address": "0x462b0f",
+        "symbol": "?png_do_expand@D3DX@@YAXPAUpng_row_info_struct@1@PAEPAUpng_color_16_struct@1@@Z",
+        "size": 850
+      }
+    },
+    {
+      "member": "obj\\i386\\pngrutil.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 16,
+      "representative_native_anchor": {
+        "address": "0x470542",
+        "symbol": "?png_do_read_interlace@D3DX@@YAXPAUpng_row_info_struct@1@PAEHK@Z",
+        "size": 713
+      }
+    },
+    {
+      "member": "obj\\i386\\pngset.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 5,
+      "representative_native_anchor": {
+        "address": "0x46355e",
+        "symbol": "?png_set_IHDR@D3DX@@YAXPAUpng_struct_def@1@PAUpng_info_struct@1@KKHHHHH@Z",
+        "size": 161
+      }
+    },
+    {
+      "member": "obj\\i386\\pngtrans.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 7,
+      "representative_native_anchor": {
+        "address": "0x461ecd",
+        "symbol": "?png_do_bgr@D3DX@@YAXPAUpng_row_info_struct@1@PAE@Z",
+        "size": 191
+      }
+    },
+    {
+      "member": "obj\\i386\\zutil.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 1,
+      "representative_native_anchor": {
+        "address": "0x478969",
+        "symbol": "?zcalloc@D3DX@@YAPAXPAXII@Z",
+        "size": 16
+      }
+    },
+    {
+      "member": "objd\\i386\\d3dxmathx3d.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 1,
+      "representative_native_anchor": {
+        "address": "0x45ee33",
+        "symbol": "?x3d_D3DXInitFastTable@@YAXPAUD3DXFASTTABLE@@@Z",
+        "size": 550
+      }
+    },
+    {
+      "member": "objd\\i386\\x3d_matx.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 21,
+      "representative_native_anchor": {
+        "address": "0x469c92",
+        "symbol": "?x3d_D3DXMatrixTransformation@@YGPAUD3DXMATRIX@@PAU1@PBUD3DXVECTOR3@@PBUD3DXQUATERNION@@1121@Z",
+        "size": 4504
+      }
+    },
+    {
+      "member": "objd\\i386\\x3d_plane.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 5,
+      "representative_native_anchor": {
+        "address": "0x46e386",
+        "symbol": "?x3d_D3DXPlaneFromPoints@@YGPAUD3DXPLANE@@PAU1@PBUD3DXVECTOR3@@11@Z",
+        "size": 228
+      }
+    },
+    {
+      "member": "objd\\i386\\x3d_quat.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 13,
+      "representative_native_anchor": {
+        "address": "0x468049",
+        "symbol": "?x3d_D3DXQuaternionRotationMatrix@@YGPAUD3DXQUATERNION@@PAU1@PBUD3DXMATRIX@@@Z",
+        "size": 540
+      }
+    },
+    {
+      "member": "objd\\i386\\x3d_vec2.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 7,
+      "representative_native_anchor": {
+        "address": "0x46de6e",
+        "symbol": "?x3d_D3DXVec2CatmullRom@@YGPAUD3DXVECTOR2@@PAU1@PBU1@111M@Z",
+        "size": 171
+      }
+    },
+    {
+      "member": "objd\\i386\\x3d_vec3.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 12,
+      "representative_native_anchor": {
+        "address": "0x46d8df",
+        "symbol": "?x3d_D3DXVec3Unproject@@YGPAUD3DXVECTOR3@@PAU1@PBU1@PBU_D3DVIEWPORT8@@PBUD3DXMATRIX@@33@Z",
+        "size": 518
+      }
+    },
+    {
+      "member": "objd\\i386\\x3d_vec4.obj",
+      "compiler_ids": [
+        "0x1d23da"
+      ],
+      "native_anchor_count": 6,
+      "representative_native_anchor": {
+        "address": "0x46dffa",
+        "symbol": "?x3d_D3DXVec4Cross@@YGPAUD3DXVECTOR4@@PAU1@PBU1@11@Z",
+        "size": 306
+      }
+    },
+    {
+      "member": "objf\\i386\\d3dxmathsse.obj",
+      "compiler_ids": [],
+      "native_anchor_count": 14,
+      "representative_native_anchor": {
+        "address": "0x466440",
+        "symbol": "?sse_D3DXPlaneIntersectLine@@YGPAUD3DXVECTOR3@@PAU1@PBUD3DXPLANE@@PBU1@2@Z",
+        "size": 190
+      }
+    },
+    {
+      "member": "objf\\i386\\d3dxmathsse2.obj",
+      "compiler_ids": [],
+      "native_anchor_count": 18,
+      "representative_native_anchor": {
+        "address": "0x4672a0",
+        "symbol": "?sse2_D3DXMatrixInverse@@YGPAUD3DXMATRIX@@PAU1@PAMPBU1@@Z",
+        "size": 697
+      }
+    },
+    {
+      "member": "objf\\i386\\d3dxquatsse.obj",
+      "compiler_ids": [],
+      "native_anchor_count": 1,
+      "representative_native_anchor": {
+        "address": "0x466970",
+        "symbol": "?sse_D3DXQuaternionNormalize@@YGPAUD3DXQUATERNION@@PAU1@PBU1@@Z",
+        "size": 156
+      }
+    },
+    {
+      "member": "objf\\i386\\d3dxquatsse2.obj",
+      "compiler_ids": [],
+      "native_anchor_count": 3,
+      "representative_native_anchor": {
+        "address": "0x467cb0",
+        "symbol": "?sse2_D3DXQuaternionRotationMatrix@@YGPAUD3DXQUATERNION@@PAU1@PBUD3DXMATRIX@@@Z",
+        "size": 276
+      }
+    },
+    {
+      "member": "objf\\i386\\d3dxtrigsse.obj",
+      "compiler_ids": [],
+      "native_anchor_count": 1,
+      "representative_native_anchor": {
+        "address": "0x471640",
+        "symbol": "?sse_SinCos4@@YAXQBMQAM1@Z",
+        "size": 492
+      }
+    },
+    {
+      "member": "objf\\i386\\d3dxtrigsse2.obj",
+      "compiler_ids": [],
+      "native_anchor_count": 2,
+      "representative_native_anchor": {
+        "address": "0x471920",
+        "symbol": "?sse2_SinCos4@@YAXQBMQAM1@Z",
+        "size": 329
+      }
+    },
+    {
+      "member": "objf\\i386\\ssefasttable.obj",
+      "compiler_ids": [],
+      "native_anchor_count": 0,
+      "representative_native_anchor": null
+    },
+    {
+      "member": "objf\\i386\\ssefasttable2.obj",
+      "compiler_ids": [],
+      "native_anchor_count": 1,
+      "representative_native_anchor": {
+        "address": "0x45ec50",
+        "symbol": "?sse2_D3DXInitFastTable@@YAXPAUD3DXFASTTABLE@@@Z",
+        "size": 266
+      }
+    }
+  ]
+}

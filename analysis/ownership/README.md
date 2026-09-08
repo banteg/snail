@@ -23,6 +23,11 @@ because the existing disjoint partition assigns their shared bytes elsewhere.
 database**, with provenance comments, verified readback and a saved snapshot.
 The other existing meaningful names were preserved. No prototypes were changed.
 
+The [D3DX8 Rich component coverage](rich-d3dx8-coverage.json) records native
+member anchors and a whole-member dependency closure compatible with all 67
+build-9178 C++ contributions. This is not proof of linker selection or compiler
+identity for Path.o; see the [verified DDK controls](../../tools/match/ddk9178-compiler-and-cache-20260908.md).
+
 ## What was found
 
 - **DirectX 8.1's D3DX8 static library** accounts for most of the former unknown

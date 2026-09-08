@@ -1,5 +1,17 @@
 # initialize_sbend_path_template_pair
 
+## 2026-09-08 genuine DDK and coupled phase ownership
+
+The verified XP SP1 DDK emits the native Rich component ID `0x001d23da`, but
+the unchanged builder regresses to 57.19%, 582/579 instructions, prefix 0.
+VC6 `/G6` also regresses; `/GB` is byte-identical to default `/G5`.
+Thirty-one source variants couple typed sample/delta/vertex indices with
+branch or loop face owners. Typed delta indexing alone has identical normalized
+assembly but a different raw-byte/relocation fingerprint;
+all other variants regress. All 31 have 39 clean references. No source or
+compiler override is retained. The cache dependency repair and D3DX8 member
+coverage are detailed in [the compiler and source controls](../../ddk9178-compiler-and-cache-20260908.md).
+
 ## 2026-09-08 linked builder and native output comparison
 
 The builder now links through the authored `tMatrix::Identity` calls and real
