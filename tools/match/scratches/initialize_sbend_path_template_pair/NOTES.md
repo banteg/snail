@@ -1,5 +1,22 @@
 # initialize_sbend_path_template_pair
 
+## 2026-09-08 texture-call continuation ownership
+
+The complete native scan finds 55 alternate texture-argument continuations in
+28 path builders. All 83 diagnostic builds fail to reproduce that pattern.
+Partial UV publication, repeated or staggered parity scopes, and specialized
+texture/UV helpers either remove the branches, duplicate calls, or retain
+different joins. The branch-destination recognizer also covers conditions
+lowered to register tests rather than `test register, 1`.
+
+Thirty-three complete-source representatives cover all distinct object-code
+identities from 38 controls. Every result regresses to 30.11–78.94%, prefix
+0, 7 or 67. Twelve have clean audits; 21 add two or four unaudited references
+with their duplicated calls. No source is retained: baseline 91.10%, 578/579,
+prefix 443, with 39 clean references. The tested models remain negative
+evidence, not an exhaustion claim.
+See [the continuation report and receipts](../../texture-continuation-ownership-20260908.md).
+
 ## 2026-09-08 face-emission context reduction
 
 The unchanged face loop emits branch-local stride calculation in isolation;

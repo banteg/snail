@@ -134,6 +134,11 @@ manifest function aliases are not searched.
 
 Useful analysis helpers:
 
+- `uv run tools/match/probe_texture_continuations.py` reproduces the
+  [texture-call continuation diagnostics](texture-continuation-ownership-20260908.md)
+  and the broader native path-family scan. Its reduced and independent-input
+  bodies carry no source-matching or runtime credit.
+
 - `uv run tools/match/probe_face_emission_context.py` reproduces the
   [S-bend face-emission reductions](face-emission-context-20260908.md) and six
   native controls. Reduced functions are compiler diagnostics and carry no
