@@ -6300,6 +6300,7 @@
       "address": "0x497334",
       "name": "g_path_template_record_vtable",
       "kind": "vtable",
+      "size": "0x4",
       "aliases": [
         "off_497334",
         "data_497334"
@@ -6445,6 +6446,7 @@
       "address": "0x4974fc",
       "name": "g_bod_base_vtable",
       "kind": "vtable",
+      "size": "0x4",
       "aliases": [
         "off_4974fc",
         "data_4974fc",
@@ -7305,7 +7307,10 @@
         "dword_4a1d20"
       ],
       "size": "0x328",
-      "description": "101 authored GalaxyPoint route coordinates rescaled in place by load_galaxy_layout. Entry zero seeds route slot zero; subsequent entries seed generated missing-level route slots."
+      "allowed_postbase_offsets": [
+        "0x32c"
+      ],
+      "description": "101 authored GalaxyPoint route coordinates rescaled in place by load_galaxy_layout. Entry zero seeds route slot zero; subsequent entries seed generated missing-level route slots. The explicit +0x32c reference is the y-field cursor sentinel at 0x4a2040: 0x4a1d14 + 101*8 + 4. Native 0x408907 compares the advancing y-field cursor against this bound; it is not additional point storage."
     },
     {
       "address": "0x4a4aa0",
@@ -8268,8 +8273,8 @@
         "g_tracked_allocation_depth",
         "data_5108c0"
       ],
-      "size": "0xc",
-      "description": "Global tracked-allocation stack owner. Its recovered header contains the current depth at +0x00, the saved unwind bookmark at +0x04, and one still-unknown word at +0x08; allocation records follow at +0x0c. The bounded manifest size covers only that proven header because the native 15000-entry overflow edge reaches the adjacent music-buffer address."
+      "size": "0x2bf28",
+      "description": "Windows RShell allocation owner: depth and bookmark form an 8-byte header, followed by 15000 12-byte records with an unused first word, pointer at record +4 and guarded size at +8. Native pointer/size accesses at owner +0xc/+0x10 and stride 12, the adjacent music buffer at 0x53c7e8, and both Android ELF owner sizes (0x2bf2c with an extra high-water header word) establish the 0x2bf28 Windows extent. The unknown record word is not assigned a semantic role; the native post-store overflow check is preserved."
     },
     {
       "address": "0x5108c4",
@@ -9269,6 +9274,7 @@
       "address": "0x77ff3c",
       "name": "g_math_random_index",
       "kind": "global",
+      "size": "0x4",
       "aliases": [
         "data_77ff3c"
       ],

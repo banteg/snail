@@ -95,6 +95,14 @@ not an official Microsoft Rich-header specification.
 
 ## Workflow
 
+The [source ownership and linking pass](matching-unblock-20260908.md) closes
+reporting/transform ABI boundaries, proves allocator and selected native data
+extents, and verifies all linked code/data sections in seven runtime groups.
+It keeps normalized matching, native initial storage, source integration,
+behavioral diagnostics, and original TU/layout claims separate.
+Run `uv run tools/match/link_frontier.py` to inventory remaining source-object
+ABI and storage edges without mistaking native address aliases for linked symbols.
+
 The [2026-09-08 path pass](path-frontier-and-linking-20260908.md) records the
 current path-family triage, three isolated mesh-loop improvements, and a
 reproducible four-function source-object link check. The latter verifies

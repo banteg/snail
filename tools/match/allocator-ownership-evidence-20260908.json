@@ -1,0 +1,858 @@
+{
+  "format_version": 1,
+  "scope": "Independent allocator storage ownership evidence; runtime integration and original-image placement remain separate measures",
+  "native_image": {
+    "path": "artifacts/bin/SnailMail_unwrapped.exe",
+    "sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5"
+  },
+  "windows": [
+    {
+      "function": "push_tracked_allocation",
+      "address": "0x431af0",
+      "size": 54,
+      "bytes": "8b018b54240c8d0440895481108b018b542408408d04408914818b11428bc289113d983a00007e0b6844484a00e89e01000059c20c00",
+      "sha256": "dfcd7ba41482c7a1569e2ccb037c00bf4357d9758945cee17e505cfe049181bf",
+      "instructions": [
+        {
+          "address": "0x431af0",
+          "text": "mov eax, dword ptr [ecx]"
+        },
+        {
+          "address": "0x431af2",
+          "text": "mov edx, dword ptr [esp + 0xc]"
+        },
+        {
+          "address": "0x431af6",
+          "text": "lea eax, [eax + eax*2]"
+        },
+        {
+          "address": "0x431af9",
+          "text": "mov dword ptr [ecx + eax*4 + 0x10], edx"
+        },
+        {
+          "address": "0x431afd",
+          "text": "mov eax, dword ptr [ecx]"
+        },
+        {
+          "address": "0x431aff",
+          "text": "mov edx, dword ptr [esp + 8]"
+        },
+        {
+          "address": "0x431b03",
+          "text": "inc eax"
+        },
+        {
+          "address": "0x431b04",
+          "text": "lea eax, [eax + eax*2]"
+        },
+        {
+          "address": "0x431b07",
+          "text": "mov dword ptr [ecx + eax*4], edx"
+        },
+        {
+          "address": "0x431b0a",
+          "text": "mov edx, dword ptr [ecx]"
+        },
+        {
+          "address": "0x431b0c",
+          "text": "inc edx"
+        },
+        {
+          "address": "0x431b0d",
+          "text": "mov eax, edx"
+        },
+        {
+          "address": "0x431b0f",
+          "text": "mov dword ptr [ecx], edx"
+        },
+        {
+          "address": "0x431b11",
+          "text": "cmp eax, 0x3a98"
+        },
+        {
+          "address": "0x431b16",
+          "text": "jle 0x431b23"
+        },
+        {
+          "address": "0x431b18",
+          "text": "push 0x4a4844"
+        },
+        {
+          "address": "0x431b1d",
+          "text": "call 0x431cc0"
+        },
+        {
+          "address": "0x431b22",
+          "text": "pop ecx"
+        },
+        {
+          "address": "0x431b23",
+          "text": "ret 0xc"
+        }
+      ],
+      "normalized_exact": true,
+      "clean_references": 2
+    },
+    {
+      "function": "pop_tracked_allocation",
+      "address": "0x431b30",
+      "size": 44,
+      "bytes": "8b01568b7424084889018d544003393491741533d285c07e0f83c10c393174084283c10c3bd07cf45ec20400",
+      "sha256": "27648fc64298a839526cf4a03d87dbe6fcfd2af7a26194c0ad9db87c8cecd68f",
+      "instructions": [
+        {
+          "address": "0x431b30",
+          "text": "mov eax, dword ptr [ecx]"
+        },
+        {
+          "address": "0x431b32",
+          "text": "push esi"
+        },
+        {
+          "address": "0x431b33",
+          "text": "mov esi, dword ptr [esp + 8]"
+        },
+        {
+          "address": "0x431b37",
+          "text": "dec eax"
+        },
+        {
+          "address": "0x431b38",
+          "text": "mov dword ptr [ecx], eax"
+        },
+        {
+          "address": "0x431b3a",
+          "text": "lea edx, [eax + eax*2 + 3]"
+        },
+        {
+          "address": "0x431b3e",
+          "text": "cmp dword ptr [ecx + edx*4], esi"
+        },
+        {
+          "address": "0x431b41",
+          "text": "je 0x431b58"
+        },
+        {
+          "address": "0x431b43",
+          "text": "xor edx, edx"
+        },
+        {
+          "address": "0x431b45",
+          "text": "test eax, eax"
+        },
+        {
+          "address": "0x431b47",
+          "text": "jle 0x431b58"
+        },
+        {
+          "address": "0x431b49",
+          "text": "add ecx, 0xc"
+        },
+        {
+          "address": "0x431b4c",
+          "text": "cmp dword ptr [ecx], esi"
+        },
+        {
+          "address": "0x431b4e",
+          "text": "je 0x431b58"
+        },
+        {
+          "address": "0x431b50",
+          "text": "inc edx"
+        },
+        {
+          "address": "0x431b51",
+          "text": "add ecx, 0xc"
+        },
+        {
+          "address": "0x431b54",
+          "text": "cmp edx, eax"
+        },
+        {
+          "address": "0x431b56",
+          "text": "jl 0x431b4c"
+        },
+        {
+          "address": "0x431b58",
+          "text": "pop esi"
+        },
+        {
+          "address": "0x431b59",
+          "text": "ret 4"
+        }
+      ],
+      "normalized_exact": true,
+      "clean_references": 0
+    },
+    {
+      "function": "get_tracked_allocation_size",
+      "address": "0x431ab0",
+      "size": 61,
+      "bytes": "568b3133c085f6577e138b7c240c8d510c393a741c4083c20c3bc67cf4682c484a00e8e901000083c40433c05f5ec204008d04405f5e8b448110c20400",
+      "sha256": "ffe5ce4758a656d7b824b908429b8a00b714fe68ffb9ea763617a66181494ed1",
+      "instructions": [
+        {
+          "address": "0x431ab0",
+          "text": "push esi"
+        },
+        {
+          "address": "0x431ab1",
+          "text": "mov esi, dword ptr [ecx]"
+        },
+        {
+          "address": "0x431ab3",
+          "text": "xor eax, eax"
+        },
+        {
+          "address": "0x431ab5",
+          "text": "test esi, esi"
+        },
+        {
+          "address": "0x431ab7",
+          "text": "push edi"
+        },
+        {
+          "address": "0x431ab8",
+          "text": "jle 0x431acd"
+        },
+        {
+          "address": "0x431aba",
+          "text": "mov edi, dword ptr [esp + 0xc]"
+        },
+        {
+          "address": "0x431abe",
+          "text": "lea edx, [ecx + 0xc]"
+        },
+        {
+          "address": "0x431ac1",
+          "text": "cmp dword ptr [edx], edi"
+        },
+        {
+          "address": "0x431ac3",
+          "text": "je 0x431ae1"
+        },
+        {
+          "address": "0x431ac5",
+          "text": "inc eax"
+        },
+        {
+          "address": "0x431ac6",
+          "text": "add edx, 0xc"
+        },
+        {
+          "address": "0x431ac9",
+          "text": "cmp eax, esi"
+        },
+        {
+          "address": "0x431acb",
+          "text": "jl 0x431ac1"
+        },
+        {
+          "address": "0x431acd",
+          "text": "push 0x4a482c"
+        },
+        {
+          "address": "0x431ad2",
+          "text": "call 0x431cc0"
+        },
+        {
+          "address": "0x431ad7",
+          "text": "add esp, 4"
+        },
+        {
+          "address": "0x431ada",
+          "text": "xor eax, eax"
+        },
+        {
+          "address": "0x431adc",
+          "text": "pop edi"
+        },
+        {
+          "address": "0x431add",
+          "text": "pop esi"
+        },
+        {
+          "address": "0x431ade",
+          "text": "ret 4"
+        },
+        {
+          "address": "0x431ae1",
+          "text": "lea eax, [eax + eax*2]"
+        },
+        {
+          "address": "0x431ae4",
+          "text": "pop edi"
+        },
+        {
+          "address": "0x431ae5",
+          "text": "pop esi"
+        },
+        {
+          "address": "0x431ae6",
+          "text": "mov eax, dword ptr [ecx + eax*4 + 0x10]"
+        },
+        {
+          "address": "0x431aea",
+          "text": "ret 4"
+        }
+      ],
+      "normalized_exact": true,
+      "clean_references": 2
+    },
+    {
+      "function": "initialize_tracked_allocation_depth",
+      "address": "0x430e30",
+      "size": 11,
+      "bytes": "c705c008510000000000c3",
+      "sha256": "838c8f5fe18a003c31d2ffd98fe18f1241a1a2893f5401910136fe7d96a9fe29",
+      "instructions": [
+        {
+          "address": "0x430e30",
+          "text": "mov dword ptr [0x5108c0], 0"
+        },
+        {
+          "address": "0x430e3a",
+          "text": "ret "
+        }
+      ],
+      "normalized_exact": true,
+      "clean_references": 1
+    },
+    {
+      "function": "set_tracked_allocation_mark",
+      "address": "0x431cb0",
+      "size": 11,
+      "bytes": "a1c0085100a3c4085100c3",
+      "sha256": "f7ffdc8dc388ae55d64f3ed8e013810532fdd2b697f150c4c8c0829d58589e83",
+      "instructions": [
+        {
+          "address": "0x431cb0",
+          "text": "mov eax, dword ptr [0x5108c0]"
+        },
+        {
+          "address": "0x431cb5",
+          "text": "mov dword ptr [0x5108c4], eax"
+        },
+        {
+          "address": "0x431cba",
+          "text": "ret "
+        }
+      ],
+      "normalized_exact": true,
+      "clean_references": 2
+    },
+    {
+      "function": "free_tracked_allocations_to_mark",
+      "address": "0x431c70",
+      "size": 53,
+      "bytes": "a1c00851008b0dc40851003bc17e258d04408b0c85c008510083c10451e85effffffa1c00851008b0dc408510083c4043bc17fdbc3",
+      "sha256": "9e7f5aeca8766a4ce9457444d164ad331a7f7edbaa4e76a71b752477bb529f67",
+      "instructions": [
+        {
+          "address": "0x431c70",
+          "text": "mov eax, dword ptr [0x5108c0]"
+        },
+        {
+          "address": "0x431c75",
+          "text": "mov ecx, dword ptr [0x5108c4]"
+        },
+        {
+          "address": "0x431c7b",
+          "text": "cmp eax, ecx"
+        },
+        {
+          "address": "0x431c7d",
+          "text": "jle 0x431ca4"
+        },
+        {
+          "address": "0x431c7f",
+          "text": "lea eax, [eax + eax*2]"
+        },
+        {
+          "address": "0x431c82",
+          "text": "mov ecx, dword ptr [eax*4 + 0x5108c0]"
+        },
+        {
+          "address": "0x431c89",
+          "text": "add ecx, 4"
+        },
+        {
+          "address": "0x431c8c",
+          "text": "push ecx"
+        },
+        {
+          "address": "0x431c8d",
+          "text": "call 0x431bf0"
+        },
+        {
+          "address": "0x431c92",
+          "text": "mov eax, dword ptr [0x5108c0]"
+        },
+        {
+          "address": "0x431c97",
+          "text": "mov ecx, dword ptr [0x5108c4]"
+        },
+        {
+          "address": "0x431c9d",
+          "text": "add esp, 4"
+        },
+        {
+          "address": "0x431ca0",
+          "text": "cmp eax, ecx"
+        },
+        {
+          "address": "0x431ca2",
+          "text": "jg 0x431c7f"
+        },
+        {
+          "address": "0x431ca4",
+          "text": "ret "
+        }
+      ],
+      "normalized_exact": true,
+      "clean_references": 6
+    }
+  ],
+  "adjacent_owner": {
+    "owner": "g_music_memory_buffer",
+    "address": "0x53c7e8",
+    "initializer_window": {
+      "address": "0x430e98",
+      "bytes": "6878474a006800400600a3ecc75300e8b40c0000a3e8c7530083c410",
+      "instructions": [
+        {
+          "address": "0x430e98",
+          "text": "push 0x4a4778"
+        },
+        {
+          "address": "0x430e9d",
+          "text": "push 0x64000"
+        },
+        {
+          "address": "0x430ea2",
+          "text": "mov dword ptr [0x53c7ec], eax"
+        },
+        {
+          "address": "0x430ea7",
+          "text": "call 0x431b60"
+        },
+        {
+          "address": "0x430eac",
+          "text": "mov dword ptr [0x53c7e8], eax"
+        },
+        {
+          "address": "0x430eb1",
+          "text": "add esp, 0x10"
+        }
+      ]
+    },
+    "allocation_label": {
+      "address": "0x4a4778",
+      "value": "Music Memory Buffer"
+    }
+  },
+  "android": [
+    {
+      "path": "artifacts/android/unpacked/com.sandlotgames.snailmail.1/lib/armeabi/libsnailmail.so",
+      "sha256": "96dbeaeb20c60d687301ca769656727467371489db5e3ed744a93248bc8d8136",
+      "dynamic_symbols": {
+        "RShellMemory": {
+          "address": "0xde7d0",
+          "size": 180012
+        },
+        "_Z20RShellMemoryBookmarkv": {
+          "address": "0x1b9d0",
+          "size": 36,
+          "bytes": "14309fe514209fe503308fe0022093e7003092e5083082e51eff2fe128880700c4010000",
+          "instructions": [
+            {
+              "address": "0x1b9d0",
+              "text": "ldr r3, [pc, #0x14]"
+            },
+            {
+              "address": "0x1b9d4",
+              "text": "ldr r2, [pc, #0x14]"
+            },
+            {
+              "address": "0x1b9d8",
+              "text": "add r3, pc, r3"
+            },
+            {
+              "address": "0x1b9dc",
+              "text": "ldr r2, [r3, r2]"
+            },
+            {
+              "address": "0x1b9e0",
+              "text": "ldr r3, [r2]"
+            },
+            {
+              "address": "0x1b9e4",
+              "text": "str r3, [r2, #8]"
+            },
+            {
+              "address": "0x1b9e8",
+              "text": "bx lr"
+            },
+            {
+              "address": "0x1b9ec",
+              "text": "andeq r8, r7, r8, lsr #16"
+            },
+            {
+              "address": "0x1b9f0",
+              "text": "andeq r0, r0, r4, asr #3"
+            }
+          ]
+        },
+        "_ZN13cRShellMemory4InitEv": {
+          "address": "0x1b8c8",
+          "size": 16,
+          "bytes": "0030a0e3043080e5003080e51eff2fe1",
+          "instructions": [
+            {
+              "address": "0x1b8c8",
+              "text": "mov r3, #0"
+            },
+            {
+              "address": "0x1b8cc",
+              "text": "str r3, [r0, #4]"
+            },
+            {
+              "address": "0x1b8d0",
+              "text": "str r3, [r0]"
+            },
+            {
+              "address": "0x1b8d4",
+              "text": "bx lr"
+            }
+          ]
+        },
+        "_ZN13cRShellMemory6MallocEPcii": {
+          "address": "0x1d4dc",
+          "size": 112,
+          "bytes": "10402de9004090e50cc0a0e354109fe59c0424e001108fe0143084e5003090e5930c2ce010208ce5003090e5042090e5013083e2020053e1ea2da0e3172082e2043080c5020053e1003080e5040000da14009fe5000081e087ffffeb0030a0e30030c3e51080bde8106d0700d861ffff",
+          "instructions": [
+            {
+              "address": "0x1d4dc",
+              "text": "push {r4, lr}"
+            },
+            {
+              "address": "0x1d4e0",
+              "text": "ldr r4, [r0]"
+            },
+            {
+              "address": "0x1d4e4",
+              "text": "mov ip, #0xc"
+            },
+            {
+              "address": "0x1d4e8",
+              "text": "ldr r1, [pc, #0x54]"
+            },
+            {
+              "address": "0x1d4ec",
+              "text": "mla r4, ip, r4, r0"
+            },
+            {
+              "address": "0x1d4f0",
+              "text": "add r1, pc, r1"
+            },
+            {
+              "address": "0x1d4f4",
+              "text": "str r3, [r4, #0x14]"
+            },
+            {
+              "address": "0x1d4f8",
+              "text": "ldr r3, [r0]"
+            },
+            {
+              "address": "0x1d4fc",
+              "text": "mla ip, r3, ip, r0"
+            },
+            {
+              "address": "0x1d500",
+              "text": "str r2, [ip, #0x10]"
+            },
+            {
+              "address": "0x1d504",
+              "text": "ldr r3, [r0]"
+            },
+            {
+              "address": "0x1d508",
+              "text": "ldr r2, [r0, #4]"
+            },
+            {
+              "address": "0x1d50c",
+              "text": "add r3, r3, #1"
+            },
+            {
+              "address": "0x1d510",
+              "text": "cmp r3, r2"
+            },
+            {
+              "address": "0x1d514",
+              "text": "mov r2, #0x3a80"
+            },
+            {
+              "address": "0x1d518",
+              "text": "add r2, r2, #0x17"
+            },
+            {
+              "address": "0x1d51c",
+              "text": "strgt r3, [r0, #4]"
+            },
+            {
+              "address": "0x1d520",
+              "text": "cmp r3, r2"
+            },
+            {
+              "address": "0x1d524",
+              "text": "str r3, [r0]"
+            },
+            {
+              "address": "0x1d528",
+              "text": "ble #0x1d540"
+            },
+            {
+              "address": "0x1d52c",
+              "text": "ldr r0, [pc, #0x14]"
+            },
+            {
+              "address": "0x1d530",
+              "text": "add r0, r1, r0"
+            },
+            {
+              "address": "0x1d534",
+              "text": "bl #0x1d358"
+            },
+            {
+              "address": "0x1d538",
+              "text": "mov r3, #0"
+            },
+            {
+              "address": "0x1d53c",
+              "text": "strb r3, [r3]"
+            },
+            {
+              "address": "0x1d540",
+              "text": "pop {r4, pc}"
+            },
+            {
+              "address": "0x1d544",
+              "text": "andeq r6, r7, r0, lsl sp"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "path": "artifacts/android/unpacked/com.sandlotgames.snailmail.1/lib/armeabi-v7a/libsnailmail.so",
+      "sha256": "e43bc913e9ba99abd2fed4d2cee40d4a33a951ecbcf8ca154d099cc8cabaa466",
+      "dynamic_symbols": {
+        "RShellMemory": {
+          "address": "0xd54d8",
+          "size": 180012
+        },
+        "_Z20RShellMemoryBookmarkv": {
+          "address": "0x19bf8",
+          "size": 36,
+          "bytes": "14309fe514209fe503308fe0023093e7002093e5082083e51eff2fe108130700c4010000",
+          "instructions": [
+            {
+              "address": "0x19bf8",
+              "text": "ldr r3, [pc, #0x14]"
+            },
+            {
+              "address": "0x19bfc",
+              "text": "ldr r2, [pc, #0x14]"
+            },
+            {
+              "address": "0x19c00",
+              "text": "add r3, pc, r3"
+            },
+            {
+              "address": "0x19c04",
+              "text": "ldr r3, [r3, r2]"
+            },
+            {
+              "address": "0x19c08",
+              "text": "ldr r2, [r3]"
+            },
+            {
+              "address": "0x19c0c",
+              "text": "str r2, [r3, #8]"
+            },
+            {
+              "address": "0x19c10",
+              "text": "bx lr"
+            },
+            {
+              "address": "0x19c14",
+              "text": "andeq r1, r7, r8, lsl #6"
+            },
+            {
+              "address": "0x19c18",
+              "text": "andeq r0, r0, r4, asr #3"
+            }
+          ]
+        },
+        "_ZN13cRShellMemory4InitEv": {
+          "address": "0x19af4",
+          "size": 16,
+          "bytes": "0030a0e3043080e5003080e51eff2fe1",
+          "instructions": [
+            {
+              "address": "0x19af4",
+              "text": "mov r3, #0"
+            },
+            {
+              "address": "0x19af8",
+              "text": "str r3, [r0, #4]"
+            },
+            {
+              "address": "0x19afc",
+              "text": "str r3, [r0]"
+            },
+            {
+              "address": "0x19b00",
+              "text": "bx lr"
+            }
+          ]
+        },
+        "_ZN13cRShellMemory6MallocEPcii": {
+          "address": "0x1b5b4",
+          "size": 112,
+          "bytes": "00c090e55c109fe510402de98cc08ce001108fe00cc180e014308ce5003090e5833083e0033180e0102083e5003090e5042090e5013083e2003080e5020053e1972a03e3043080c5020053e11080bdd814009fe5000081e087ffffeb0030a0e30030c3e51080bde844f906002c63ffff",
+          "instructions": [
+            {
+              "address": "0x1b5b4",
+              "text": "ldr ip, [r0]"
+            },
+            {
+              "address": "0x1b5b8",
+              "text": "ldr r1, [pc, #0x5c]"
+            },
+            {
+              "address": "0x1b5bc",
+              "text": "push {r4, lr}"
+            },
+            {
+              "address": "0x1b5c0",
+              "text": "add ip, ip, ip, lsl #1"
+            },
+            {
+              "address": "0x1b5c4",
+              "text": "add r1, pc, r1"
+            },
+            {
+              "address": "0x1b5c8",
+              "text": "add ip, r0, ip, lsl #2"
+            },
+            {
+              "address": "0x1b5cc",
+              "text": "str r3, [ip, #0x14]"
+            },
+            {
+              "address": "0x1b5d0",
+              "text": "ldr r3, [r0]"
+            },
+            {
+              "address": "0x1b5d4",
+              "text": "add r3, r3, r3, lsl #1"
+            },
+            {
+              "address": "0x1b5d8",
+              "text": "add r3, r0, r3, lsl #2"
+            },
+            {
+              "address": "0x1b5dc",
+              "text": "str r2, [r3, #0x10]"
+            },
+            {
+              "address": "0x1b5e0",
+              "text": "ldr r3, [r0]"
+            },
+            {
+              "address": "0x1b5e4",
+              "text": "ldr r2, [r0, #4]"
+            },
+            {
+              "address": "0x1b5e8",
+              "text": "add r3, r3, #1"
+            },
+            {
+              "address": "0x1b5ec",
+              "text": "str r3, [r0]"
+            },
+            {
+              "address": "0x1b5f0",
+              "text": "cmp r3, r2"
+            },
+            {
+              "address": "0x1b5f4",
+              "text": "movw r2, #0x3a97"
+            },
+            {
+              "address": "0x1b5f8",
+              "text": "strgt r3, [r0, #4]"
+            },
+            {
+              "address": "0x1b5fc",
+              "text": "cmp r3, r2"
+            },
+            {
+              "address": "0x1b600",
+              "text": "pople {r4, pc}"
+            },
+            {
+              "address": "0x1b604",
+              "text": "ldr r0, [pc, #0x14]"
+            },
+            {
+              "address": "0x1b608",
+              "text": "add r0, r1, r0"
+            },
+            {
+              "address": "0x1b60c",
+              "text": "bl #0x1b430"
+            },
+            {
+              "address": "0x1b610",
+              "text": "mov r3, #0"
+            },
+            {
+              "address": "0x1b614",
+              "text": "strb r3, [r3]"
+            },
+            {
+              "address": "0x1b618",
+              "text": "pop {r4, pc}"
+            },
+            {
+              "address": "0x1b61c",
+              "text": "andeq pc, r6, r4, asr #18"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "derived_layout": {
+    "record_capacity": 15000,
+    "record_stride": 12,
+    "windows_header": 8,
+    "windows_extent": 180008,
+    "windows_start": "0x5108c0",
+    "windows_end_exclusive": "0x53c7e8",
+    "record_unknown_offset": 0,
+    "record_pointer_offset": 4,
+    "record_guarded_size_offset": 8,
+    "last_pointer_address": "0x53c7e0",
+    "last_size_address": "0x53c7e4",
+    "android_header": 12,
+    "android_extent": 180012
+  },
+  "limits": [
+    "The first record word is not semantically identified.",
+    "Native Windows push checks depth only after its writes; overflow behavior is preserved, not made safe.",
+    "Android symbol addresses are from the actual local ELF inputs, which differ from the older exported Android decompiler snapshot."
+  ]
+}

@@ -2,14 +2,14 @@
 
 Builds a quaternion from the rotational 3x3 basis of a transform matrix. Android
 symbols identify this as `tQuaternian::tQuaternian(const tMatrix&)`; the scratch
-now defines the corresponding real `Quaternion(const TransformMatrix&)`
+now defines the corresponding real `tQuaternian(const tMatrix&)`
 constructor.
 
 ## Recovered shape
 
 - `this` is the output quaternion `{x, y, z, w}` in `ecx`.
-- The stack argument is a const matrix reference. The body aliases its first
-  basis float only to preserve the native indexed row arithmetic.
+- The stack argument is a const matrix reference. The body uses the nine named
+  rotational basis fields at the native matrix offsets.
 - The positive trace path computes `scale = 0.5 / sqrt(trace)`, then writes
   `w, x, y, z` from the standard matrix-to-quaternion formula.
 - The fallback path uses the native dominant-diagonal branch order rather than a
@@ -179,3 +179,61 @@ continuations. The canonical source remains unchanged.
 
 The committed recipes and hash-bound receipts describe the tested forms; they
 do not establish source exhaustion.
+
+## 2026-09-08 real link blocker and native behavioral control
+
+An actual three-function link exposed a declaration problem that the clean
+masked-reference audit did not detect. This constructor declared
+`debug_report_stub` locally with C++ linkage, requesting
+`?debug_report_stub@@YAHPADZZ`; the recovered definition uses the shared C ABI
+in `rdebug.h`, exporting `_debug_report_stub`. Including that header fixes the
+unresolved external. Both declarations had resolved to the same native address
+in the function-level reference audit. Native target identity therefore does
+not by itself prove that independently compiled source objects agree on a
+linkable symbol identity.
+
+The retained source also replaces the cross-member `float*` cursor with the
+nine existing `tMatrix` basis fields. That owner projection preserves the
+complete extracted body and relocation identity. The subsequent shared-header
+change alters only the real reporting symbol identity: focused matching stays
+at **92.47%, 186/186 instructions, prefix 42, and 23 clean references**.
+The two source-overlay probes are in `experiments.jsonl`; earlier mutation
+recipes remain intact as historical evidence for their recorded source.
+
+Reproduce the behavioral comparison with an existing VC6 CRT import library:
+
+```sh
+uv run tools/match/compare_quaternion_native.py --runtime-library /path/to/msvcrt.lib
+```
+
+The new diagnostic links the unchanged candidate with the exact recovered
+`Sqrt` and `debug_report_stub` definitions. A second executable replaces only
+the constructor with audited original bytes. Extraction verifies a 100%
+native round trip, and post-link checks verify the original instruction bytes,
+all 23 relocated operands, and copied scalar/string constants. Source-object
+relocations are checked independently against the linked symbols as well.
+
+Ten finite fixtures cover positive traces, all three dominant-diagonal output
+arms, pairwise and three-way ties, the less-than dispatch continuation, and
+non-symmetric off-diagonal inputs. Every output quaternion agrees bit for bit:
+**160 serialized bytes**, SHA-256
+`a0cdd33dac3561c020f14b700183307a9cea6ec0a110186c9f2af735c093c5ba`.
+Both runs verify that the input matrix is unchanged. Independent expectations
+for the four simple cases additionally confirm the unusual shipped fallback
+`w` sums. Replacing the X-arm sum with the conventional difference is an
+explicit negative control, and both executables reject it.
+
+These fixtures do not exercise negative-radicand diagnostics or non-finite
+inputs, and they do not prove original source layout. The constructor remains
+a partial instruction match; the original-code oracle and both diagnostic
+executables receive **no source-matching or public linked credit**. The
+receipt lives under the ignored `artifacts/match/quaternion-comparison/`.
+
+The comparison gates the exact private object copies that it links, rather
+than scoring a shared scratch output and later copying a potentially different
+build. The oracle audits an immutable snapshot of the supplied object bytes.
+Nonblocking output-directory locks prevent competing comparison runs, and
+object/executable/map hashes are checked again before publishing a receipt.
+Negative controls confirmed that a lock conflict leaves an existing receipt
+untouched, a changed executable prevents receipt publication, and an oracle
+object differing from its extraction hash is rejected.

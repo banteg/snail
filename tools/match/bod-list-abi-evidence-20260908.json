@@ -1,0 +1,139 @@
+{
+  "format_version": 1,
+  "scope": "Three exact BOD methods now share the actual C reporter definition; unrelated source functions receive no new matching credit",
+  "header_sha256": "195c20b309b6843baff10e1362e5f72f8c44870ef0eaaedfd64debe4e12784bf",
+  "functions": [
+    {
+      "function": "add_bod_to_front",
+      "native_address": 4264880,
+      "native_extent": 105,
+      "source_sha256": "f2fab91023d6a65b4bdbf5c0cafa58c698813dfca111cb670f16c17b3088fe94",
+      "normalized_exact": true,
+      "clean_references": 2,
+      "raw_function_bytes_unchanged": true,
+      "body_sha256": "ee5d97910e85abcb3975e9affce334fa0bfec57336a29db7fe321ecaa2a9c023",
+      "body_size": 105,
+      "old_object_sha256": "aaeefdafbca2e4f14b69192cde7bf53171997c2c91f57e7f467b1205cbedc968",
+      "new_object_sha256": "73b3081526a86daab6989bf5c410aafe2c5140e8a2ba8efbc4613c4c2561c749",
+      "relocation_changes": [
+        {
+          "offset": 18,
+          "before": "?report_errorf@@YAHPADZZ",
+          "after": "_report_errorf"
+        }
+      ]
+    },
+    {
+      "function": "append_bod_to_end",
+      "native_address": 4264992,
+      "native_extent": 129,
+      "source_sha256": "2c7a5c7c8dd24452b068003165370ba31befb0b56a89cef7b46228e0abdcbc97",
+      "normalized_exact": true,
+      "clean_references": 2,
+      "raw_function_bytes_unchanged": true,
+      "body_sha256": "1ae46c1971bba626b9a4dabbf73074208174078e5a6341c471b29d295392a791",
+      "body_size": 104,
+      "old_object_sha256": "1fd2f2d53afdb0af49dbedcdf2376f1891b1f8a7806cda378c2ccbcc98bd3f19",
+      "new_object_sha256": "8eaa2b785c84a9b50c02c7eb828e81293bc14ea2bf48d23f361a6e1694588df5",
+      "relocation_changes": [
+        {
+          "offset": 18,
+          "before": "?report_errorf@@YAHPADZZ",
+          "after": "_report_errorf"
+        }
+      ]
+    },
+    {
+      "function": "recycle_bod_to_free_list",
+      "native_address": 4485776,
+      "native_extent": 106,
+      "source_sha256": "f36d98964bc353e69900bd3a536d7dafec408f3fd1e332e2993d8590740b8406",
+      "normalized_exact": true,
+      "clean_references": 4,
+      "raw_function_bytes_unchanged": true,
+      "body_sha256": "30f6d370a083ff4edaed68af5c562d9fec6ef8527fc6c7763ba985b55dc9d244",
+      "body_size": 106,
+      "old_object_sha256": "f5db3608dc639b80ce1ecf021c86d2c4546f4e0e4c350821f630c4cc1f52e5b7",
+      "new_object_sha256": "a673815714972e6551d79e142b162a187ac74aecefd52fff0fcacbc602110ae4",
+      "relocation_changes": [
+        {
+          "offset": 18,
+          "before": "?report_errorf@@YAHPADZZ",
+          "after": "_report_errorf"
+        },
+        {
+          "offset": 39,
+          "before": "?report_errorf@@YAHPADZZ",
+          "after": "_report_errorf"
+        }
+      ]
+    }
+  ],
+  "reverse_control": {
+    "replacement": "Only add_bod_to_front.obj replaced by its pre-fix object in otherwise successful link",
+    "exit_code": 96,
+    "log": "add_bod_to_front.obj : error LNK2001: unresolved external symbol \"int __cdecl report_errorf(char *,...)\" (?report_errorf@@YAHPADZZ)\nZ:/Users/banteg/dev/banteg/snail-mail/artifacts/match/bod-list-abi-before/bod-list-before.exe : fatal error LNK1120: 1 unresolved externals\n",
+    "log_sha256": "22e04bf8e8960982378164b51ceae19dac82f5d2c1c86c898040457618c0180e"
+  },
+  "integration": {
+    "group": "bod-list",
+    "recovered_functions": 5,
+    "native_extent_bytes": 421,
+    "verified_call_relocations": 9,
+    "verified_data_relocations": 7,
+    "runs": [
+      {
+        "label": "positive",
+        "exit_code": 0,
+        "checks": 21,
+        "failures": 0,
+        "stdout": "bod-list checks=21 failures=0\n"
+      },
+      {
+        "label": "negative",
+        "exit_code": 1,
+        "checks": 21,
+        "failures": 1,
+        "stdout": "FAIL: complete final free chain\nbod-list checks=21 failures=1\n"
+      }
+    ],
+    "public_linked_credit": 0
+  },
+  "limits": [
+    "The runtime list nodes and owners are harness storage, not recovered game-global BSS.",
+    "The fixture detaches a recycled node itself; no recovered pool allocator or destructor lifecycle is claimed.",
+    "Native prev-link residue after removal is preserved."
+  ],
+  "error_header_sha256": "dc2abc2bbf3d25706b97c690d7a31b4bc68777c5323c8e50ffcdf561c56a6e86",
+  "header_scope_control": {
+    "retained_header": "rerror.h",
+    "rejected_broad_header": "rdebug.h",
+    "broad_header_compile_errors": [
+      "construct_game_runtime",
+      "display_score_stats"
+    ],
+    "rejected_direct_variadic_constructor": {
+      "ratio": 0.8975265017667845,
+      "candidate_instructions": 298,
+      "target_instructions": 268,
+      "clean_references": 120,
+      "code_identity_sha256": "b8d6ab6fa1bd54ebb0e6d157c7eda4946b5d79ce5daa6a5faf90eb861c8a3574"
+    },
+    "retained_consumers": [
+      {
+        "function": "construct_game_runtime",
+        "source_sha256": "e8b18941b952d5e9754e8b33fdc5408c176badc8cb8bc769bc5790c035880456",
+        "normalized_exact": true,
+        "instructions": 268,
+        "clean_references": 120
+      },
+      {
+        "function": "display_score_stats",
+        "source_sha256": "65dbdb6ec730f268a68c9e84715c51ebddd4f63b318d88c6c42cbf664c791e31",
+        "normalized_exact": true,
+        "instructions": 67,
+        "clean_references": 16
+      }
+    ]
+  }
+}

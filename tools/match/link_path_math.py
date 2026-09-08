@@ -2,6 +2,7 @@
 """Link and exercise recovered dependency groups (not a game build)."""
 
 import argparse
+import fcntl
 import hashlib
 import json
 import os
@@ -15,12 +16,27 @@ import pefile
 
 from snail.match import (
     DEFAULT_MATCH_ROOT,
+    DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH,
+    CoffRelocation,
+    _ScratchIncludeResolver,
     compile_scratch,
-    evaluate_scratch,
     extract_object_function,
+    load_default_reference_symbol_manifest,
+    load_image,
     load_scratch_config,
+    object_function_fingerprint,
     parse_coff_object,
+    resolve_function_extent,
+    run_match,
+    scratch_dependency_sha256,
 )
+from snail.match_link import (
+    load_link_symbols,
+    verify_code_sections,
+    verify_data_sections,
+    verify_relocated_bytes,
+)
+from snail.match_storage import verify_native_storage
 from snail.symbols import (
     DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
     REPO_ROOT,
@@ -74,6 +90,33 @@ GROUPS["mesh-storage"] = GROUPS["allocator"] + (
     "request_object_texture_groups",
     "request_object_edges",
 )
+GROUPS["transforms"] = GROUPS["rmath"] + (
+    "vector_magnitude",
+    "multiply_vector_by_matrix",
+    "multiply_vector_by_matrix_copy",
+    "rotate_vector_by_matrix",
+    "initialize_uniform_scale_matrix",
+    "initialize_matrix_from_values",
+    "set_matrix_rotation_identity",
+    "invert_matrix_in_place",
+    "rotate_matrix_world_x",
+    "rotate_matrix_world_y",
+    "rotate_matrix_world_z",
+    "set_matrix_z_direction",
+    "look_at_point",
+    "orthogonalize_matrix",
+    "multiply_matrices",
+    "multiply_matrix_assign",
+    "multiply_matrix",
+    "premultiply_matrix_in_place",
+)
+GROUPS["bod-list"] = (
+    "add_bod_to_front",
+    "append_bod_to_end",
+    "recycle_bod_to_free_list",
+    "report_errorf",
+    "debug_report_stub",
+)
 GROUPS["path-nodes"] = (
     GROUPS["mesh-storage"]
     + PATH_MATH_FUNCTIONS
@@ -87,13 +130,23 @@ GROUPS["path-nodes"] = (
     )
 )
 RUN_CONFIG = {
+    "bod-list": (
+        21,
+        "!corrupt-free-chain",
+        "Intrusive active/free lists, duplicate-operation and saved-next guards, independent owners; fixture storage only, no pool allocator or constructors",
+    ),
+    "transforms": (
+        40,
+        "!corrupt-table",
+        "Math checks plus transform constructors, composition, aliasing, rotation and direction; no rendering",
+    ),
     "rmath": (
         23,
         "!corrupt-table",
         "Selected math operations; CalcLengthZ is linked but not exercised",
     ),
     "allocator": (
-        20,
+        24,
         "!corrupt-payload",
         "Tracked allocator on valid LIFO inputs; GetNodes is linked but not exercised",
     ),
@@ -133,6 +186,22 @@ def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def support_inputs(source: Path) -> dict[str, str]:
+    """Pin support sources, nested includes and the actual VC6 components."""
+    resolver = _ScratchIncludeResolver(DEFAULT_MATCH_ROOT)
+    paths = {source.resolve(), DEFAULT_MATCH_ROOT / "cl.sh"}
+    pending = [source]
+    while pending:
+        for dependency in resolver.direct_dependencies(pending.pop(), source=False):
+            if dependency not in paths:
+                paths.add(dependency)
+                pending.append(dependency)
+    binary = DEFAULT_MATCH_ROOT / "compilers/msvc6.5/Bin"
+    paths.add(binary / "CL.EXE")
+    paths.update(path for path in binary.iterdir() if path.suffix.lower() == ".dll")
+    return {str(path.relative_to(REPO_ROOT)): sha(path) for path in sorted(paths)}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--group", choices=GROUPS, default="path-math")
@@ -161,57 +230,103 @@ def main() -> None:
     if args.run and args.group not in RUN_CONFIG:
         parser.error("--run requires a group with a runtime harness")
     runtime = args.runtime_library.resolve(strict=True)
+    runtime_sha256 = sha(runtime)
+    manifest = load_function_symbol_manifest(DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH)
+    native_path = REPO_ROOT / manifest.primary_target
+    if sha(native_path) != manifest.unwrapped_sha256:
+        raise ValueError("native image differs from the matching manifest")
+    verification_paths = (
+        Path(__file__).resolve(),
+        REPO_ROOT / "src/snail/match_link.py",
+        REPO_ROOT / "src/snail/match_storage.py",
+        REPO_ROOT / "src/snail/match.py",
+        REPO_ROOT / "src/snail/symbols.py",
+        DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+        DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH,
+    )
+    verification_inputs = {
+        str(path.relative_to(REPO_ROOT)): sha(path) for path in verification_paths
+    }
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
+    output_lock = (out / ".lock").open("a")
+    try:
+        fcntl.flock(output_lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError as error:
+        raise ValueError(f"another integration build is using {out}") from error
     receipt_path = out / "receipt.json"
     receipt_path.unlink(missing_ok=True)
 
     objects = []
     records = []
     functions = []
+    configs = []
     for name in GROUPS[args.group]:
         config = load_scratch_config(DEFAULT_MATCH_ROOT / "scratches" / name)
+        configs.append(config)
+        dependency_sha256 = scratch_dependency_sha256(config)
+        config_sha256 = sha(config.directory / "scratch.conf")
         if config.compiler != "msvc6.5":
             raise ValueError(f"{name}: expected the canonical VC6 profile")
-        status = evaluate_scratch(config)
+        # Match the immutable per-output copy that will actually be linked.
+        # The canonical build cache may be replaced by a parallel match task.
+        copied = out / f"{name}.obj"
+        copied.write_bytes(compile_scratch(config).read_bytes())
+        object_sha256 = sha(copied)
+        result = run_match(
+            obj_path=copied,
+            function_name=config.function,
+            image_path=native_path,
+            manifest=manifest,
+            symbol_name=config.symbol,
+            end_va=config.end_va,
+        )
+        audit = result.masked_operand_audit
+        reference_clean = not (
+            audit.unresolved_count or audit.mismatch_count or audit.unaudited_count
+        )
+        exact = result.ratio == 1.0 and reference_clean
         diagnostic = (
             args.diagnostic_sbend
             and name == SBEND_FUNCTION
-            and status.state == "wip"
-            and not status.masked_unresolved
-            and not status.masked_mismatches
-            and not status.masked_unaudited
+            and result.ratio < 1.0
+            and reference_clean
         )
-        if status.state != "match" and not diagnostic:
+        if not exact and not diagnostic:
             raise ValueError(
-                f"{name}: requires an exact, reference-clean scratch: {status}"
+                f"{name}: requires an exact, reference-clean scratch; ratio={result.ratio} audit={audit}"
             )
-        obj_path = compile_scratch(config)
         function = extract_object_function(
-            parse_coff_object(obj_path.read_bytes()), config.symbol or config.function
+            parse_coff_object(copied.read_bytes()),
+            config.symbol or config.function,
+            reference_manifest=load_default_reference_symbol_manifest(),
         )
         functions.append(function)
-        # Unique filenames make the link map useful without changing the objects.
-        copied = out / f"{name}.obj"
-        shutil.copyfile(obj_path, copied)
+        address, end = resolve_function_extent(manifest, config.function, config.end_va)
+        native_bytes = len(
+            load_image(native_path, manifest.image_base).function_bytes(address, end)
+        )
         objects.append(copied)
         records.append(
             {
                 "function": name,
                 "symbol": function.name,
-                "native_address": status.address,
-                "native_bytes": status.target_size,
-                "object_sha256": sha(copied),
+                "native_address": address,
+                "native_bytes": native_bytes,
+                "object_sha256": object_sha256,
                 "source_sha256": sha(config.directory / "scratch.cpp"),
-                "code_identity_sha256": status.code_sha256,
-                "normalized_exact": status.state == "match",
-                "native_match_ratio": status.ratio,
-                "native_references_ok": status.masked_ok,
+                "dependency_sha256": dependency_sha256,
+                "config_sha256": config_sha256,
+                "code_identity_sha256": object_function_fingerprint(function),
+                "normalized_exact": exact,
+                "native_match_ratio": result.ratio,
+                "native_references_ok": audit.ok_count,
             }
         )
 
     support = []
     storage_groups = {
+        "transforms": ["rmath"],
         "rmath": ["rmath"],
         "allocator": ["allocator"],
         "mesh-storage": ["allocator"],
@@ -223,6 +338,7 @@ def main() -> None:
         support_names.append(f"{args.group}_smoke")
     for name in support_names:
         source = DEFAULT_MATCH_ROOT / f"link/{name}.cpp"
+        inputs = support_inputs(source)
         obj = out / f"{name}.obj"
         obj.unlink(missing_ok=True)
         compiled = subprocess.run(
@@ -251,15 +367,18 @@ def main() -> None:
                 "source": str(source.relative_to(REPO_ROOT)),
                 "source_sha256": sha(source),
                 "object_sha256": sha(obj),
+                "inputs": inputs,
             }
         )
 
     linker = DEFAULT_MATCH_ROOT / "compilers/msvc6.5/Bin/LINK.EXE"
+    linker_sha256 = sha(linker)
     runner = os.environ.get("WIBO") or str(DEFAULT_MATCH_ROOT / "bin/wibo")
     if not Path(runner).is_file():
         runner = shutil.which(runner) or shutil.which("wibo")
     if not runner:
         raise FileNotFoundError("Wibo is required, as for the regular matcher")
+    runner_sha256 = sha(Path(runner))
 
     dll = out / (f"{args.group}-smoke.exe" if args.run else f"{args.group}.dll")
     map_path = dll.with_suffix(".map")
@@ -274,6 +393,10 @@ def main() -> None:
         ),
         "/nodefaultlib",
         "/opt:noref",
+        "/debug",
+        "/debugtype:coff",
+        "/pdb:none",
+        "/incremental:no",
         f"/out:Z:{dll}",
         f"/map:Z:{map_path}",
         *(f"Z:{obj}" for obj in objects),
@@ -293,21 +416,22 @@ def main() -> None:
     if result.returncode or not dll.is_file():
         raise RuntimeError(f"link failed; see {out / 'link.log'}")
 
-    symbols = {
-        match[1]: int(match[2], 16)
-        for match in re.finditer(
-            r"^\s+[0-9A-Fa-f]{4}:[0-9A-Fa-f]{8}\s+(\S+)\s+([0-9A-Fa-f]{8})\b",
-            map_path.read_text(),
-            re.MULTILINE,
-        )
+    dll_sha256, map_sha256 = sha(dll), sha(map_path)
+    pe, link_symbols = load_link_symbols(dll, map_path)
+    input_objects = {
+        path.name: parse_coff_object(path.read_bytes()) for path in objects
     }
-    pe = pefile.PE(str(dll))
-    mapped = pe.get_memory_mapped_image()
+    link_symbols.bind_objects(input_objects)
+    symbols = {
+        name: next(iter(addresses))
+        for name, addresses in link_symbols.addresses.items()
+        if len(addresses) == 1
+    }
+    mapped = pe.get_memory_mapped_image().ljust(pe.OPTIONAL_HEADER.SizeOfImage, b"\0")
     image_base = pe.OPTIONAL_HEADER.ImageBase
     data_tables = []
     if args.group in ("path-nodes", "sbend"):
-        manifest = load_function_symbol_manifest(DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH)
-        native = pefile.PE(str(REPO_ROOT / manifest.primary_target))
+        native = pefile.PE(str(native_path))
         for table, native_address in [
             ("?g_bod_base_vtable@@3PAXA", 0x4974FC),
             ("?g_path_template_record_vtable@@3PAXA", 0x497334),
@@ -333,6 +457,7 @@ def main() -> None:
             )
     for record, function in zip(records, functions, strict=True):
         address = symbols[function.name]
+        link_symbols.section_for_span(address, len(function.data), code=True)
         offset = address - image_base
         linked = mapped[offset : offset + len(function.data)]
         masked = {i for r in function.relocation_offsets for i in range(r, r + 4)}
@@ -344,61 +469,52 @@ def main() -> None:
             if i not in masked
         ):
             raise ValueError(f"link changed non-relocation bytes in {function.name}")
-        # Independently verify named REL32 call destinations, including the
-        # Cross edge that failed to link under the compatibility declaration.
-        obj = parse_coff_object((out / f"{record['function']}.obj").read_bytes())
+        owner = f"{record['function']}.obj"
+        obj = input_objects[owner]
         symbol = next(s for s in obj.symbols if s.name == function.name)
-        by_index = {s.raw_index: s for s in obj.symbols}
-        calls = []
-        data_references = []
-        local_data_references = []
-        for relocation in obj.sections[symbol.section_number - 1].relocations:
-            relative = relocation.virtual_address - symbol.value
-            if not (0 <= relative < len(function.data)):
-                continue
-            target = by_index[relocation.symbol_index].name
-            if relocation.relocation_type == 0x06:
-                actual = struct.unpack_from("<I", linked, relative)[0]
-                addend = struct.unpack_from("<i", function.data, relative)[0]
-                if target in symbols:
-                    if actual != (symbols[target] + addend) & 0xFFFFFFFF:
-                        raise ValueError(f"wrong linked data address for {target}")
-                    data_references.append(
-                        {
-                            "offset": relative,
-                            "symbol": target,
-                            "addend": addend,
-                            "address": actual,
-                        }
-                    )
-                else:
-                    local_data_references.append({"offset": relative, "symbol": target})
-                continue
-            if relocation.relocation_type != 0x14:
-                raise ValueError(
-                    f"unsupported function relocation {relocation.relocation_type:#x}"
-                )
-            if target not in symbols:
-                raise ValueError(f"missing linked call target {target}")
-            addend = struct.unpack_from("<i", function.data, relative)[0]
-            actual = (
-                address + relative + 4 + struct.unpack_from("<i", linked, relative)[0]
+        relocations = tuple(
+            CoffRelocation(
+                r.virtual_address - symbol.value, r.symbol_index, r.relocation_type
             )
-            if actual != symbols[target] + addend:
-                raise ValueError(
-                    f"wrong linked destination for {function.name} -> {target}"
-                )
-            calls.append({"offset": relative, "symbol": target, "address": actual})
+            for r in obj.sections[symbol.section_number - 1].relocations
+            if symbol.value <= r.virtual_address < symbol.value + len(function.data)
+        )
+        references = verify_relocated_bytes(
+            function.data,
+            linked,
+            address,
+            relocations,
+            obj,
+            link_symbols,
+            owner,
+        )
         record.update(
             {
                 "linked_address": address,
                 "object_body_bytes": len(function.data),
                 "non_relocation_bytes_preserved": True,
-                "verified_rel32_calls": calls,
-                "verified_named_data_references": data_references,
-                "local_data_references_not_map_verified": local_data_references,
+                "verified_rel32_calls": [r for r in references if r["type"] == "REL32"],
+                "verified_named_data_references": [
+                    r for r in references if r["type"] == "DIR32"
+                ],
+                "local_data_references_not_map_verified": [],
             }
         )
+    storage = verify_data_sections(
+        input_objects,
+        mapped,
+        image_base,
+        link_symbols,
+    )
+    code_sections = verify_code_sections(
+        input_objects, mapped, image_base, link_symbols
+    )
+    native_storage = verify_native_storage(
+        input_objects,
+        pefile.PE(str(native_path)),
+        json.loads(DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH.read_text())["symbols"],
+        records,
+    )
     imports = [
         {
             "dll": entry.dll.decode(),
@@ -445,8 +561,42 @@ def main() -> None:
                     "stdout": run.stdout,
                 }
             )
+    # A receipt must bind one stable build, even when another matching lane is
+    # editing shared headers or sources while the integration check runs.
+    for config, record in zip(configs, records, strict=True):
+        if (
+            scratch_dependency_sha256(config) != record["dependency_sha256"]
+            or sha(config.directory / "scratch.conf") != record["config_sha256"]
+        ):
+            raise ValueError(
+                f"scratch inputs changed during verification: {config.function}"
+            )
+        if sha(out / f"{record['function']}.obj") != record["object_sha256"]:
+            raise ValueError(
+                f"copied object changed during verification: {config.function}"
+            )
+    for record in support:
+        if support_inputs(REPO_ROOT / record["source"]) != record["inputs"]:
+            raise ValueError(
+                f"support inputs changed during verification: {record['source']}"
+            )
+        if sha(out / (Path(record["source"]).stem + ".obj")) != record["object_sha256"]:
+            raise ValueError(
+                f"support object changed during verification: {record['source']}"
+            )
+    if (
+        {str(path.relative_to(REPO_ROOT)): sha(path) for path in verification_paths}
+        != verification_inputs
+        or sha(native_path) != manifest.unwrapped_sha256
+        or sha(runtime) != runtime_sha256
+        or sha(linker) != linker_sha256
+        or sha(Path(runner)) != runner_sha256
+        or sha(dll) != dll_sha256
+        or sha(map_path) != map_sha256
+    ):
+        raise ValueError("verification inputs changed during the build")
     receipt = {
-        "schema": 1,
+        "schema": 2,
         "purpose": "Source-object link feasibility; not an executable reconstruction",
         "group": args.group,
         "diagnostic_partial_functions": [
@@ -458,13 +608,20 @@ def main() -> None:
         "runtime_scope": RUN_CONFIG[args.group][2] if args.run else None,
         "runs": runs,
         "public_linked_credit": False,
-        "linker_sha256": sha(linker),
+        "native_image_sha256": manifest.unwrapped_sha256,
+        "runner_sha256": runner_sha256,
+        "linker_sha256": linker_sha256,
         "runtime_library": str(runtime),
-        "runtime_library_sha256": sha(runtime),
-        "dll_sha256": sha(dll),
+        "runtime_library_sha256": runtime_sha256,
+        "dll_sha256": dll_sha256,
+        "map_sha256": map_sha256,
         "imports": imports,
         "functions": records,
         "verified_callback_tables": data_tables,
+        "storage": storage,
+        "source_code_sections": code_sections,
+        "native_storage": native_storage,
+        "verification_sources": verification_inputs,
     }
     receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
     partial_count = sum(not record["normalized_exact"] for record in records)

@@ -25,7 +25,8 @@ void cRGalaxy::Open()
         first_point_cursor[0] =
             (first_point_cursor[0] * 0.80000001f - 240.0f) * 0.93000001f + 250.0f;
         first_point_cursor += 2;
-    } while ((int)first_point_cursor < 0x4a2040);
+    } while ((int)first_point_cursor < (int)((char*)g_galaxy_route_points
+        + sizeof(g_galaxy_route_points) + offsetof(GalaxyPoint, y)));
 
     float* galaxy_point_cursor = &g_galaxy_group_points[0].y;
     do {
@@ -34,7 +35,8 @@ void cRGalaxy::Open()
         galaxy_point_cursor[0] =
             (galaxy_point_cursor[0] * 0.80000001f - 240.0f) * 0.93000001f + 250.0f;
         galaxy_point_cursor += 2;
-    } while ((int)galaxy_point_cursor < 0x4a1ca0);
+    } while ((int)galaxy_point_cursor < (int)((char*)g_galaxy_group_points
+        + sizeof(g_galaxy_group_points) + offsetof(GalaxyPoint, y)));
 
     level_progress_base = &g_game->subgame;
 

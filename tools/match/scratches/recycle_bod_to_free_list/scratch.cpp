@@ -2,8 +2,6 @@
 
 #include "bod_list.h"
 
-int report_errorf(char* format, ...);
-
 void BodList::recycle_bod_to_free_list(BodNode* node)
 {
     remove_bod(node);

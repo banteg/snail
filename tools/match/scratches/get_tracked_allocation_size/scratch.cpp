@@ -9,8 +9,8 @@ int TrackedAllocationStack::get_tracked_allocation_size(void* pointer)
     int index = 0;
     if (count > 0) {
         while (index < count) {
-            if (*(&first_pointer + index * 3) == (int)pointer)
-                return *(&first_size + index * 3);
+            if (records[index].pointer == pointer)
+                return records[index].guarded_size;
             ++index;
         }
     }

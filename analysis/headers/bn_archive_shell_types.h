@@ -15,16 +15,15 @@ typedef struct FileSearchData {
 } FileSearchData;
 
 typedef struct TrackedAllocationRecord {
+    int32_t unknown;
     void* pointer;
     int32_t guarded_size;
-    int32_t unknown;
 } TrackedAllocationRecord;
 
 typedef struct TrackedAllocationStack {
     int32_t depth;
     int32_t bookmark_depth;
-    int32_t unknown;
-    TrackedAllocationRecord records[1];
+    TrackedAllocationRecord records[15000];
 } TrackedAllocationStack;
 
 void* __cdecl malloc(uint32_t size);

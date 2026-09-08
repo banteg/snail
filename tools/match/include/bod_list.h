@@ -5,8 +5,7 @@
 #include <stddef.h>
 
 #include "contact_target.h"
-
-int report_errorf(char* format, ...);
+#include "rerror.h"
 
 struct BodNode : public ContactTargetObject {
     // Inlined cLinkedList<cRBod>::AddAfter used by the subgame group heads

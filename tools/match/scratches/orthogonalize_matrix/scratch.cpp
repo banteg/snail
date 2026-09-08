@@ -11,6 +11,6 @@ void tMatrix::Orthoganalize()
     right->Normalize();
     up->Normalize();
     forward->Normalize();
-    right->cross_vectors(up, forward);
-    forward->cross_vectors(right, up);
+    right->Cross(*up, *forward);
+    forward->Cross(*right, *up);
 }

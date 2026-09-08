@@ -1,10 +1,15 @@
 // Exercise separately compiled recovered code on valid LIFO allocations.
 #include <stdio.h>
+#include <stddef.h>
 #include "tracked_allocation_stack.h"
 #include "rdebug.h"
 
 static int checks;
 static int failures;
+static struct {
+    TrackedAllocationStack stack;
+    int next_owner;
+} boundary;
 
 static void check(bool condition, const char* label)
 {
@@ -22,6 +27,24 @@ static bool guard(const unsigned char* p)
 
 int main(int argc, char** argv)
 {
+    check(sizeof(TrackedAllocationStack) == 180008 &&
+          offsetof(TrackedAllocationStack, records) == 8 &&
+          offsetof(TrackedAllocationRecord, pointer) == 4 &&
+          offsetof(TrackedAllocationRecord, guarded_size) == 8,
+          "native two-word header and record boundaries");
+    boundary.stack.depth = 14999;
+    boundary.stack.records[14999].unknown_00 = 0x12345678;
+    boundary.next_owner = 0x23456789;
+    boundary.stack.push_tracked_allocation("last", &boundary, 17);
+    check(boundary.stack.depth == 15000 &&
+          boundary.stack.records[14999].pointer == &boundary &&
+          boundary.stack.records[14999].guarded_size == 17,
+          "last valid record uses recovered push body");
+    check(boundary.stack.records[14999].unknown_00 == 0x12345678,
+          "push preserves first record word");
+    check(boundary.next_owner == 0x23456789,
+          "last valid record preserves adjacent owner");
+
     g_tracked_allocation_stack.depth = 7;
     g_tracked_allocation_stack.bookmark_depth = 9;
     initialize_tracked_allocation_depth();

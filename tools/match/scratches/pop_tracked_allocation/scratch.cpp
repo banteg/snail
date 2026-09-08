@@ -6,11 +6,11 @@ int TrackedAllocationStack::pop_tracked_allocation(void* pointer)
 {
     int result = depth - 1;
     depth = result;
-    if (*(&first_pointer + result * 3) != (int)pointer) {
+    if (records[result].pointer != pointer) {
         int index = 0;
         if (result > 0) {
             while (index < result) {
-                if (*(&first_pointer + index * 3) == (int)pointer) {
+                if (records[index].pointer == pointer) {
                     return result;
                 }
                 ++index;

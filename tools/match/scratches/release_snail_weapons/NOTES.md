@@ -48,3 +48,24 @@ instructions, prefix 13, and 33 clean references. The first unique-name
 variant accidentally renamed real `release_step` members as well as locals;
 record 10 has a digest-bound invalid-plan audit. Its corrected recipe compiles
 successfully and is also neutral. No source or shared type changes are kept.
+
+## 2026-09-08 pre-RAND component ownership control
+
+The complete native/candidate comparison isolates two nonmatching blocks. The
+first `gRMathRand2` result is converted and spilled before `RAND`: native uses
+`[esp+0x1c]`, whereas the candidate uses the dedicated scalar slot
+`[esp+0xc]`. The proven-equivalent compiler listing identifies that candidate
+slot as `random_x`, while the native slot is also used by the constructed input
+vector later in the block. This identifies storage reuse, not a recovered
+native local name. Native also performs the first and third block's post-RAND
+`fadd` before loading `owner_player`; the third block interleaves three vector
+stores with the remaining multiplies. The second and fourth blocks already
+match.
+
+`component-input-ownership-20260908.json` tests whether staging the RNG values
+directly in their input-vector component owner recovers this relationship,
+for the first block, first and third blocks, or all four (with two scalar
+scope controls). All four keep 125/125 instructions and 33 clean references,
+but regress from 92.80% to 45.60-76.80%. None is retained. This bounds the
+specific component-staging hypothesis; it does not establish source or compiler
+exhaustion. The canonical scalar source and shared vector contracts are unchanged.

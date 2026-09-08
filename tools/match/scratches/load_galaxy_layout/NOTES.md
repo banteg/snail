@@ -414,3 +414,28 @@ prefix 194, and 42 clean references. Moving all three counters before file
 acquisition or owner publication gives 98.28%; moving them to entry gives
 92.70%. Buffer scope is neutral within every counter group. The two latch
 swaps remain; no source change is retained.
+
+## 2026-09-08 relocatable preprocessing bounds
+
+The two point-rescaling loops still contained absolute native addresses in
+source. Those bounds matched instructions but would stay fixed if the point
+banks moved in a linked image. Both now derive their y-cursor sentinel from
+the owned bank extent and `offsetof(GalaxyPoint, y)`.
+
+The route loop loads `0x4a1d18` at native `0x4088e6`, advances its y-field
+cursor by eight at `0x408904`, and compares it with `0x4a2040` at `0x408907`.
+This is exactly `g_galaxy_route_points + 101*8 + 4`; the separately recovered
+bank still occupies only `0x328` bytes. The reference record permits the
+single `+0x32c` cursor sentinel, following the existing group-bank `+0x54`
+rule, without extending storage or admitting other addresses. The group loop
+loads `0x4a1c50` at `0x40892f`, advances by eight at `0x40893d`, and compares
+against `0x4a1ca0` at `0x408940`, covering its ten records.
+
+Focused matching stays **99.14%, 233/233 instructions, prefix 194, 42 clean
+references**. The parsed canonical COFF object confirms `DIR32` (`0x06`)
+relocations at function offsets `0x28` (route bank `+0x32c`) and `0x61` (group
+bank `+0x54`); a proven-equivalent VC6 listing confirms both symbolic operands
+where the old source embedded immediate image addresses. This
+is two newly relocatable source references, not additional exact-function,
+original-placement, or linked-executable credit. The two loop-latch instruction
+swaps remain unchanged.

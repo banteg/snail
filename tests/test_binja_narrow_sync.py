@@ -5796,7 +5796,7 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
         "typedef struct FileSearchData",
         "char name[260];",
         "typedef struct TrackedAllocationRecord",
-        "TrackedAllocationRecord records[1];",
+        "TrackedAllocationRecord records[15000];",
         "typedef struct SerializedArchiveEntry",
         "int32_t path_offset;",
         "typedef struct SerializedArchiveIndex",

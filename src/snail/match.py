@@ -17,8 +17,9 @@ import os
 import re
 import struct
 from collections import Counter
-from collections.abc import Callable, Collection
+from collections.abc import Callable, Collection, Iterator
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field, replace
 from functools import cache
 from pathlib import Path
@@ -543,7 +544,13 @@ def parse_coff_object(data: bytes) -> CoffObject:
         sections.append(
             CoffSection(
                 name=name_raw.rstrip(b"\x00").decode("latin1"),
-                data=data[raw_offset : raw_offset + raw_size],
+                # COFF BSS has a virtual size but no file payload. Reading
+                # from offset zero would mistake the COFF header for data.
+                data=(
+                    bytes(raw_size)
+                    if not raw_offset and characteristics & 0x80
+                    else data[raw_offset : raw_offset + raw_size]
+                ),
                 characteristics=characteristics,
                 relocations=relocations,
             )
@@ -3141,9 +3148,11 @@ def run_match(
     manifest: FunctionSymbolManifest,
     symbol_name: str | None = None,
     end_va: int | None = None,
+    object_data: bytes | None = None,
+    reference_manifest: ReferenceSymbolManifest | None = None,
 ) -> MatchResult:
-    obj = parse_coff_object(obj_path.read_bytes())
-    reference_manifest = load_default_reference_symbol_manifest()
+    obj = parse_coff_object(obj_path.read_bytes() if object_data is None else object_data)
+    reference_manifest = reference_manifest or load_default_reference_symbol_manifest()
     candidate = extract_object_function(
         obj,
         symbol_name or function_name,
@@ -3892,16 +3901,54 @@ def _store_scratch_build_key(
     match_root: Path,
     *,
     include_resolver: _ScratchIncludeResolver | None = None,
+    build_key: dict | None = None,
 ) -> None:
-    (obj_path.parent / "scratch-build.json").write_text(
+    _write_text_atomic(
+        obj_path.parent / "scratch-build.json",
         json.dumps(
             {
-                "key": _scratch_build_key(
-                    config, match_root, include_resolver=include_resolver
-                )
+                "key": build_key if build_key is not None else _scratch_build_key(
+                    config, match_root, include_resolver=include_resolver,
+                ),
             }
-        )
+        ),
     )
+
+
+_SCRATCH_COMPILE_LOCKS: dict[Path, Lock] = {}
+_SCRATCH_COMPILE_LOCKS_GUARD = Lock()
+
+
+def _reset_scratch_compile_locks() -> None:
+    # A fork can inherit a lock held by a thread that does not exist in the
+    # child. ProcessPoolExecutor workers must create their own thread locks.
+    global _SCRATCH_COMPILE_LOCKS, _SCRATCH_COMPILE_LOCKS_GUARD
+    _SCRATCH_COMPILE_LOCKS = {}
+    _SCRATCH_COMPILE_LOCKS_GUARD = Lock()
+
+
+if hasattr(os, "register_at_fork"):
+    os.register_at_fork(after_in_child=_reset_scratch_compile_locks)
+
+
+@contextmanager
+def _scratch_compile_lock(build_dir: Path) -> Iterator[None]:
+    """Serialize one scratch's builders across threads and Unix processes."""
+    import fcntl
+
+    build_dir = build_dir.resolve()
+    build_dir.mkdir(parents=True, exist_ok=True)
+    with _SCRATCH_COMPILE_LOCKS_GUARD:
+        thread_lock = _SCRATCH_COMPILE_LOCKS.setdefault(build_dir, Lock())
+    with thread_lock:
+        # Keep this inode: unlinking a lock file could let a later builder
+        # acquire a different lock while an earlier waiter still uses this one.
+        with (build_dir / ".compile.lock").open("a+b") as handle:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
 def _format_cl_failure(
@@ -3944,47 +3991,64 @@ def compile_scratch(
     *,
     include_resolver: _ScratchIncludeResolver | None = None,
 ) -> Path:
-    """Compile scratch.cpp with cl.sh when the object is missing or stale."""
-    import os
-    import shutil
+    """Compile and atomically publish one scratch without exposing partial files."""
     import subprocess
+    import tempfile
 
     source = config.directory / "scratch.cpp"
     validate_scratch_source(source)
     build_dir = config.directory / "build"
     obj_path = build_dir / "scratch.obj"
-    if _scratch_object_is_current(
-        obj_path, config, match_root, include_resolver=include_resolver
-    ):
-        return obj_path
+    with _scratch_compile_lock(build_dir):
+        # Another builder may have completed while this one waited.
+        if _scratch_object_is_current(
+            obj_path, config, match_root, include_resolver=include_resolver,
+        ):
+            return obj_path
 
-    build_dir.mkdir(exist_ok=True)
-    shutil.copy(source, build_dir / "scratch.cpp")
-    # VC6 can overwrite a shorter object without truncating the previous
-    # file, leaving stale bytes after the new COFF string table. Start from a
-    # missing output so every cache miss produces one self-contained object.
-    obj_path.unlink(missing_ok=True)
-    completed = subprocess.run(
-        list(_scratch_compile_argv(config, match_root)),
-        cwd=build_dir,
-        env={**os.environ, "MSVC_VER": config.compiler},
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    if completed.returncode != 0 or not obj_path.exists():
-        raise RuntimeError(
-            _format_cl_failure(
-                returncode=completed.returncode,
-                stdout=completed.stdout,
-                stderr=completed.stderr,
-                obj_path=obj_path,
-                source_name=source.name,
+        # Use a fresh include graph on misses: the sweep's resolver may predate
+        # a concurrent source/header edit. Store this initial key, never a key
+        # for changed inputs observed only after compilation has finished.
+        build_key = _scratch_build_key(config, match_root)
+        with tempfile.TemporaryDirectory(prefix=".compile-", dir=build_dir) as temp_name:
+            private = Path(temp_name)
+            private_source = private / "scratch.cpp"
+            private_source.write_bytes(source.read_bytes())
+            validate_scratch_source(private_source)
+            private_object = private / "scratch.obj"
+            # VC6 may not truncate an existing object. A private, empty output
+            # directory avoids stale tails without deleting the published file.
+            completed = subprocess.run(
+                list(_scratch_compile_argv(config, match_root)),
+                cwd=private,
+                env={**os.environ, "MSVC_VER": config.compiler},
+                check=False,
+                capture_output=True,
+                text=True,
             )
+            if completed.returncode != 0 or not private_object.exists():
+                raise RuntimeError(
+                    _format_cl_failure(
+                        returncode=completed.returncode,
+                        stdout=completed.stdout,
+                        stderr=completed.stderr,
+                        obj_path=private_object,
+                        source_name=source.name,
+                    )
+                )
+            if _scratch_build_key(config, match_root) != build_key:
+                raise RuntimeError(f"scratch build inputs changed during compilation: {config.function}")
+
+            # Preserve build/scratch.cpp and optional compiler listings. Each
+            # output replaces its predecessor atomically; builders see the
+            # object/key publication together because they hold this lock.
+            for output in private.iterdir():
+                if output.is_file() and output != private_object:
+                    os.replace(output, build_dir / output.name)
+            os.replace(private_object, obj_path)
+        _store_scratch_build_key(
+            obj_path, config, match_root, build_key=build_key,
         )
-    _store_scratch_build_key(
-        obj_path, config, match_root, include_resolver=include_resolver
-    )
     return obj_path
 
 
@@ -4366,6 +4430,8 @@ def evaluate_scratch(
         image = load_image(image_path, manifest.image_base)
         target_size = len(image.function_bytes(start, end))
         obj_path = compile_scratch(config, match_root)
+        object_data = obj_path.read_bytes()
+        reference_manifest = load_default_reference_symbol_manifest()
         result = run_match(
             obj_path=obj_path,
             function_name=config.function,
@@ -4373,6 +4439,8 @@ def evaluate_scratch(
             manifest=manifest,
             symbol_name=config.symbol,
             end_va=config.end_va,
+            object_data=object_data,
+            reference_manifest=reference_manifest,
         )
         status = ScratchStatus(
             config=config,
@@ -4398,9 +4466,9 @@ def evaluate_scratch(
             ),
             error=None,
             code_sha256=object_function_fingerprint(extract_object_function(
-                parse_coff_object(obj_path.read_bytes()),
+                parse_coff_object(object_data),
                 config.symbol or config.function,
-                reference_manifest=load_default_reference_symbol_manifest(),
+                reference_manifest=reference_manifest,
             )),
         )
         if on_match is not None:

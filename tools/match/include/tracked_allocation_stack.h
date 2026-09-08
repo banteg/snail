@@ -2,9 +2,9 @@
 #define TRACKED_ALLOCATION_STACK_H
 
 struct TrackedAllocationRecord {
-    void* pointer;     // +0x00
-    int guarded_size;  // +0x04
-    int unknown_08;    // +0x08
+    int unknown_00;    // +0x00: unused by the Windows push/pop bodies
+    void* pointer;     // +0x04
+    int guarded_size;  // +0x08
 };
 
 typedef char TrackedAllocationRecord_must_be_0x0c[
@@ -20,16 +20,11 @@ public:
 
     int depth;          // +0x00
     int bookmark_depth; // +0x04
-    int unknown_08;     // +0x08
-    union {
-        struct {
-            int first_pointer;    // +0x0c
-            int first_size;       // +0x10
-            int first_unknown_14; // +0x14
-        };
-        TrackedAllocationRecord records[15000];
-    };
+    TrackedAllocationRecord records[15000]; // +0x08, pointer +0x0c, size +0x10
 };
+
+typedef char TrackedAllocationStack_must_be_0x2bf28[
+    (sizeof(TrackedAllocationStack) == 0x2bf28) ? 1 : -1];
 
 extern TrackedAllocationStack g_tracked_allocation_stack;
 extern int g_tracked_allocation_total_bytes;

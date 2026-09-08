@@ -5,8 +5,8 @@
 
 void TrackedAllocationStack::push_tracked_allocation(char* label, void* pointer, int size)
 {
-    *(&first_size + depth * 3) = size;
-    *(&first_pointer + depth * 3) = (int)pointer;
+    records[depth].guarded_size = size;
+    records[depth].pointer = pointer;
 
     ++depth;
     int result = depth;
