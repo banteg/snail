@@ -1,0 +1,5620 @@
+{
+  "schema": 1,
+  "classification": "compiler diagnostics; reductions carry no source-matching or runtime credit",
+  "source_sha256": "b16991fa21ea80bd23451d2d4a05bdcdfe97146b4c2dd9ed43d5ca6696c3aefb",
+  "image_sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5",
+  "compiler": "msvc6.5",
+  "runner_sha256": "e7a9196c9c40faba7b7fafe95182eea720f2301ae0ee88a39dda8af090270802",
+  "tool_sha256": "3eb7671222a41d07cca75bf2bf3d8d1a2dc92626d099082e8ab504e5ecc19c3b",
+  "build_inputs": {
+    "tools/match/scratches/initialize_sbend_path_template_pair/scratch.cpp": "b16991fa21ea80bd23451d2d4a05bdcdfe97146b4c2dd9ed43d5ca6696c3aefb",
+    "tools/match/cl.sh": "9710ae622fb1ac66bfe799c5dfc7c0cd462203c21be966e8146c9b47c31d0c1c",
+    "tools/match/compilers/msvc6.5/Bin/CL.EXE": "1bf99f206271ecdbd13da2829192ea2c02e2a44c740b8d72935d5d9cb753b156",
+    "tools/match/compilers/msvc6.5/Bin/C1.DLL": "0792033fc3d2fec262ff95478c6a9e70a06e836ed55f0a9710200fa06c204754",
+    "tools/match/compilers/msvc6.5/Bin/C1XX.DLL": "f014b3bee650224adf6cb44e51f0eeac5abbf5da666fa299d5250b2f3d1937c6",
+    "tools/match/compilers/msvc6.5/Bin/C2.DLL": "d50100ac2380d58f3f6f756961fb1319d35f5248e5fa6cafb866ca657e5dda4a",
+    "tools/match/compilers/msvc6.5/Bin/MSPDB60.DLL": "d9f1d9b5c5a99868bc172752a98ea700bce10ddb2afdbcb5e4faeafaec3489df",
+    "tools/match/compilers/msvc6.5/Bin/PROFILE.DLL": "32886b9eabe8a507c7857da3a9a99ba682881978ed422e9f3a4bdef166221244",
+    "tools/match/compilers/msvc6.5/Include/stddef.h": "85b7ea3023209d72394dff4d9f82899986a42db7be7574bd0f898f2271d23474",
+    "tools/match/include/attachment_sample.h": "a50a283dd1cb98ebc411be74599382b607c409417af939c57f0be3860aabe5f6",
+    "tools/match/include/bod_flags.h": "1c8ef2de4f6de936761d47df14e6440195ad714e445f212eed0e830261a3aa59",
+    "tools/match/include/bod_fwd.h": "cd9076dbfd79c813b9c3ae431d8b1e56f5aa1acb3c2318955d0b40b5e62f3f18",
+    "tools/match/include/bod_list.h": "dc27886e3297c9ec350d54526e0915fcdb565202783a42ba750770c0653a7751",
+    "tools/match/include/bod_types.h": "bb90a29107e27e211e67cdc9a7bd00376ed5fca23dcfed72e9107d4d508603c0",
+    "tools/match/include/contact_target.h": "6dac1eb038488adfea98c2bd3daaef03c40962be7ea772cd033169eda29435a1",
+    "tools/match/include/direct3d_device8_view.h": "86a4294cbfb2356bbb6c98ae2a6830624d669e129caa94ba88d9a71f5dbf6a13",
+    "tools/match/include/fringe_fwd.h": "bb6aa12e259c417ae8ba10d332038ad88ecf74dbf19a216872516feeecdebcb9",
+    "tools/match/include/object_fwd.h": "b911f3e35812eecdbcfd2336ada617dad43b58eed43ef225f966900d4032968d",
+    "tools/match/include/object_render_types.h": "3604d21b0757218760ba3195a369dc4da0536e1334c5fa85c4d9159768acb74a",
+    "tools/match/include/player_fwd.h": "c60ba19d8f081035d5d298a4a522af6342cc9c992be145b96c8b7d2cb73ff97e",
+    "tools/match/include/quaternion_fwd.h": "c06b953814ac74eda46aeedd2eb13829e56c728fbb67b53368365110c513a3a7",
+    "tools/match/include/render_scene.h": "649174463195b4778842d69fc94a0c2b544c57590ad5f83414417d26ee906b26",
+    "tools/match/include/sprite.h": "5b78f583122ed87814c3485f296d29928a26c453e90d8de862530f51f180f2eb",
+    "tools/match/include/sprite_fwd.h": "b22f63eb82084c71cbaa5a205874b1583220c1b50c5aef8c841aeb48478322d4",
+    "tools/match/include/sub_loc_fwd.h": "e624d7995567e9461aba079da3c687fcd1d5ab85d038854be7573a10bc66f7d7",
+    "tools/match/include/sub_loc_tile_ids.h": "537c4d34e8e139f540687537194f898842788b7835cccc433ec9fb8075881ecd",
+    "tools/match/include/texture_fwd.h": "883882efff828e2a08f31cc732a88c634f6de1dbe0dc109db2a677c83e9d3ab4",
+    "tools/match/include/track_attachment_types.h": "fca52bb6ada1622fb4bf2b07dec9221ab33bbaf6c777aa194df80a0d47bed510",
+    "tools/match/include/transform_matrix.h": "f853914ea1a561e34c96228556aa49ecb6d087b0048b7c8aaf1587a77b574f4e",
+    "tools/match/include/transform_matrix_fwd.h": "4c77ee2b78f071e7b496fb9dbb2b72c66fa1276d9dabdebdd37441d20030cdc5",
+    "tools/match/include/vector3.h": "273a759786bbdfaf286fda8cdc351b39cd37927583bbff5e6919dae148efd965",
+    "tools/match/include/vector_types.h": "33223119fdf13571c0f5fc5ffb4902ab8898901791c5428dc1790001ee4798ad",
+    "tools/match/include/vertex_buffer_view.h": "dc90cffa2acff9c98afb67ea5e20ffe340da0d5c37b66468a2b78cb6b727bb29"
+  },
+  "native_controls": {
+    "initialize_sbend_path_template_pair": {
+      "address": "0x42df00",
+      "size": 2068,
+      "body_sha256": "301f050c8095cec1aa8cae9e0656f050acef902c0315f1661fb9a1b661a8b380",
+      "instructions": 579,
+      "current_match_ratio": 0.9109766637856526,
+      "references": {
+        "ok": 39,
+        "unresolved": 0,
+        "mismatched": 0,
+        "unaudited": 0
+      },
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x42e561",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x42e566",
+              "mnemonic": "jne",
+              "operands": "0x42e61e"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x42e545",
+                "mnemonic": "fild",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x42e549",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0x497428]"
+              },
+              {
+                "address": "0x42e54f",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x5c]"
+              },
+              {
+                "address": "0x42e553",
+                "mnemonic": "jmp",
+                "operands": "0x42e559"
+              },
+              {
+                "address": "0x42e555",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x10]"
+              },
+              {
+                "address": "0x42e559",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [ebp + 0x54]"
+              },
+              {
+                "address": "0x42e55c",
+                "mnemonic": "imul",
+                "operands": "eax, edi"
+              },
+              {
+                "address": "0x42e55f",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": true,
+            "stride_in_taken_prefix": true
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x42e5d8",
+              "mnemonic": "call",
+              "operands": "0x44e810"
+            },
+            "nearby_parity_test": {
+              "address": "0x42e5c5",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": {
+              "address": "0x42e5cc",
+              "mnemonic": "jne",
+              "operands": "0x42e617"
+            },
+            "branch_target_after_call": true,
+            "cold_argument_continuation": true,
+            "target_prefix": [
+              {
+                "address": "0x42e617",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x74]"
+              },
+              {
+                "address": "0x42e61b",
+                "mnemonic": "push",
+                "operands": "ecx"
+              },
+              {
+                "address": "0x42e61c",
+                "mnemonic": "jmp",
+                "operands": "0x42e5d3"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x42e68e",
+              "mnemonic": "call",
+              "operands": "0x44e810"
+            },
+            "nearby_parity_test": {
+              "address": "0x42e677",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x42e67e",
+              "mnemonic": "jne",
+              "operands": "0x42e70a"
+            },
+            "branch_target_after_call": true,
+            "cold_argument_continuation": true,
+            "target_prefix": [
+              {
+                "address": "0x42e70a",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x78]"
+              },
+              {
+                "address": "0x42e70e",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x42e70f",
+                "mnemonic": "jmp",
+                "operands": "0x42e689"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "initialize_sweep_path_template_pair": {
+      "address": "0x422c00",
+      "size": 2428,
+      "body_sha256": "64d5aef18dea4b79cd01d822d6502e2c1d39e198f4db62d35881e7c28c4fe178",
+      "instructions": 652,
+      "current_match_ratio": 0.8558282208588958,
+      "references": {
+        "ok": 37,
+        "unresolved": 0,
+        "mismatched": 0,
+        "unaudited": 0
+      },
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x4233c1",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x4233c6",
+              "mnemonic": "jne",
+              "operands": "0x42347f"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x4233a5",
+                "mnemonic": "fild",
+                "operands": "dword ptr [esp + 0x24]"
+              },
+              {
+                "address": "0x4233a9",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0x497428]"
+              },
+              {
+                "address": "0x4233af",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x14]"
+              },
+              {
+                "address": "0x4233b3",
+                "mnemonic": "jmp",
+                "operands": "0x4233b9"
+              },
+              {
+                "address": "0x4233b5",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x1c]"
+              },
+              {
+                "address": "0x4233b9",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esi + 0x54]"
+              },
+              {
+                "address": "0x4233bc",
+                "mnemonic": "imul",
+                "operands": "eax, ebx"
+              },
+              {
+                "address": "0x4233bf",
+                "mnemonic": "add",
+                "operands": "eax, edi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": true,
+            "stride_in_taken_prefix": true
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x423439",
+              "mnemonic": "call",
+              "operands": "0x44e810"
+            },
+            "nearby_parity_test": {
+              "address": "0x423426",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": {
+              "address": "0x42342d",
+              "mnemonic": "jne",
+              "operands": "0x423478"
+            },
+            "branch_target_after_call": true,
+            "cold_argument_continuation": true,
+            "target_prefix": [
+              {
+                "address": "0x423478",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x7c]"
+              },
+              {
+                "address": "0x42347c",
+                "mnemonic": "push",
+                "operands": "ecx"
+              },
+              {
+                "address": "0x42347d",
+                "mnemonic": "jmp",
+                "operands": "0x423434"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x4234f3",
+              "mnemonic": "call",
+              "operands": "0x44e810"
+            },
+            "nearby_parity_test": {
+              "address": "0x4234d9",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x4234e0",
+              "mnemonic": "jne",
+              "operands": "0x42356f"
+            },
+            "branch_target_after_call": true,
+            "cold_argument_continuation": true,
+            "target_prefix": [
+              {
+                "address": "0x42356f",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x80]"
+              },
+              {
+                "address": "0x423576",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x423577",
+                "mnemonic": "jmp",
+                "operands": "0x4234ee"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "initialize_slalom_path_template_pair": {
+      "address": "0x41f760",
+      "size": 2564,
+      "body_sha256": "a5e7197e96991f9eb7ccbcfc3cd64317ee85cd8e8ab44d472538e1331c8bff8e",
+      "instructions": 696,
+      "current_match_ratio": 0.8066139468008627,
+      "references": {
+        "ok": 40,
+        "unresolved": 0,
+        "mismatched": 0,
+        "unaudited": 0
+      },
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x41ffd1",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x41ffdb",
+              "mnemonic": "jne",
+              "operands": "0x420081"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x41ffb8",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x41ffbc",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esi + 0x54]"
+              },
+              {
+                "address": "0x41ffbf",
+                "mnemonic": "imul",
+                "operands": "eax, ebx"
+              },
+              {
+                "address": "0x41ffc2",
+                "mnemonic": "add",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x41ffc4",
+                "mnemonic": "lea",
+                "operands": "eax, [ecx + eax*2]"
+              },
+              {
+                "address": "0x41ffc7",
+                "mnemonic": "lea",
+                "operands": "edx, [eax + eax*2]"
+              },
+              {
+                "address": "0x41ffca",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x41ffce",
+                "mnemonic": "shl",
+                "operands": "edx, 4"
+              }
+            ],
+            "stride_in_pretest_prefix": true,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x42003b",
+              "mnemonic": "call",
+              "operands": "0x44e810"
+            },
+            "nearby_parity_test": {
+              "address": "0x420028",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": {
+              "address": "0x42002f",
+              "mnemonic": "jne",
+              "operands": "0x42007a"
+            },
+            "branch_target_after_call": true,
+            "cold_argument_continuation": true,
+            "target_prefix": [
+              {
+                "address": "0x42007a",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x78]"
+              },
+              {
+                "address": "0x42007e",
+                "mnemonic": "push",
+                "operands": "ecx"
+              },
+              {
+                "address": "0x42007f",
+                "mnemonic": "jmp",
+                "operands": "0x420036"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x4200de",
+              "mnemonic": "call",
+              "operands": "0x44e810"
+            },
+            "nearby_parity_test": {
+              "address": "0x4200c8",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": {
+              "address": "0x4200ce",
+              "mnemonic": "jne",
+              "operands": "0x42015a"
+            },
+            "branch_target_after_call": true,
+            "cold_argument_continuation": true,
+            "target_prefix": [
+              {
+                "address": "0x42015a",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x7c]"
+              },
+              {
+                "address": "0x42015e",
+                "mnemonic": "push",
+                "operands": "edx"
+              },
+              {
+                "address": "0x42015f",
+                "mnemonic": "jmp",
+                "operands": "0x4200d9"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "initialize_turnunder_path_template_pair": {
+      "address": "0x427fe0",
+      "size": 2487,
+      "body_sha256": "5a6fda84cb8df0ffb0b54df33fd0cf5400382a022beb84a028be0da246c3989e",
+      "instructions": 687,
+      "current_match_ratio": 0.5722757598220904,
+      "references": {
+        "ok": 45,
+        "unresolved": 0,
+        "mismatched": 0,
+        "unaudited": 0
+      },
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x4287de",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x4287e3",
+              "mnemonic": "jne",
+              "operands": "0x42889b"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x4287c2",
+                "mnemonic": "fild",
+                "operands": "dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x4287c6",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0x497428]"
+              },
+              {
+                "address": "0x4287cc",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x10]"
+              },
+              {
+                "address": "0x4287d0",
+                "mnemonic": "jmp",
+                "operands": "0x4287d6"
+              },
+              {
+                "address": "0x4287d2",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x4287d6",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [ebp + 0x54]"
+              },
+              {
+                "address": "0x4287d9",
+                "mnemonic": "imul",
+                "operands": "eax, edi"
+              },
+              {
+                "address": "0x4287dc",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": true,
+            "stride_in_taken_prefix": true
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x428855",
+              "mnemonic": "call",
+              "operands": "0x44e810"
+            },
+            "nearby_parity_test": {
+              "address": "0x428842",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": {
+              "address": "0x428849",
+              "mnemonic": "jne",
+              "operands": "0x428894"
+            },
+            "branch_target_after_call": true,
+            "cold_argument_continuation": true,
+            "target_prefix": [
+              {
+                "address": "0x428894",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x7c]"
+              },
+              {
+                "address": "0x428898",
+                "mnemonic": "push",
+                "operands": "ecx"
+              },
+              {
+                "address": "0x428899",
+                "mnemonic": "jmp",
+                "operands": "0x428850"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x42890e",
+              "mnemonic": "call",
+              "operands": "0x44e810"
+            },
+            "nearby_parity_test": {
+              "address": "0x4288f4",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x4288fb",
+              "mnemonic": "jne",
+              "operands": "0x42898a"
+            },
+            "branch_target_after_call": true,
+            "cold_argument_continuation": true,
+            "target_prefix": [
+              {
+                "address": "0x42898a",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x80]"
+              },
+              {
+                "address": "0x428991",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x428992",
+                "mnemonic": "jmp",
+                "operands": "0x428909"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "build_track_fringe_mesh": {
+      "address": "0x4246a0",
+      "size": 1069,
+      "body_sha256": "13e179163ed3f4467a2d6449a5c6b090abdb22cf70e602189d7531791d09f64c",
+      "instructions": 318,
+      "current_match_ratio": 1.0,
+      "references": {
+        "ok": 23,
+        "unresolved": 0,
+        "mismatched": 0,
+        "unaudited": 0
+      },
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x424a0d",
+              "mnemonic": "call",
+              "operands": "0x44e810"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x424a69",
+              "mnemonic": "call",
+              "operands": "0x44e810"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          }
+        ]
+      }
+    },
+    "build_track_fringe_supertramp_mesh": {
+      "address": "0x424ad0",
+      "size": 1396,
+      "body_sha256": "ed431ba09fe4f0be956183593ba7aec262b75f28cf376a724bd9f9c484164bcb",
+      "instructions": 421,
+      "current_match_ratio": 1.0,
+      "references": {
+        "ok": 25,
+        "unresolved": 0,
+        "mismatched": 0,
+        "unaudited": 0
+      },
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x424d4d",
+              "mnemonic": "call",
+              "operands": "0x44e810"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x424da4",
+              "mnemonic": "call",
+              "operands": "0x44e810"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x424f54",
+              "mnemonic": "call",
+              "operands": "0x44e810"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          }
+        ]
+      }
+    }
+  },
+  "reductions": {
+    "face_loops": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "374a06bf1fbcf909c7de2d08048a65783ff192a7c03d7ea397fd476cd7263440",
+      "instructions": 184,
+      "size": 575,
+      "code_sha256": "3d53605f3e4885cff3f9651783d54d4f34a1f3c1762043ef9b46ea727d710c91",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0xa1",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0xa6",
+              "mnemonic": "jne",
+              "operands": "0x159"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x85",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x8b",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x14]"
+              },
+              {
+                "address": "0x8f",
+                "mnemonic": "jmp",
+                "operands": "0x99"
+              },
+              {
+                "address": "0x91",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x95",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x1c]"
+              },
+              {
+                "address": "0x99",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [edi + 0x54]"
+              },
+              {
+                "address": "0x9c",
+                "mnemonic": "imul",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x9f",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": true,
+            "stride_in_taken_prefix": true
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x11a",
+              "mnemonic": "call",
+              "operands": "0x11f"
+            },
+            "nearby_parity_test": {
+              "address": "0x105",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": {
+              "address": "0x107",
+              "mnemonic": "je",
+              "operands": "0x110"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x110",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x38]"
+              },
+              {
+                "address": "0x114",
+                "mnemonic": "push",
+                "operands": "edx"
+              },
+              {
+                "address": "0x115",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x1c8",
+              "mnemonic": "call",
+              "operands": "0x1cd"
+            },
+            "nearby_parity_test": {
+              "address": "0x1ae",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x1b5",
+              "mnemonic": "je",
+              "operands": "0x1be"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x1be",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x3c]"
+              },
+              {
+                "address": "0x1c2",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x1c3",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "branch_pointer": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "b335862a1b59759bbf7abef5e3cb4b4fbb597a86ae3454b03e69c445f8c3f9bb",
+      "instructions": 183,
+      "size": 571,
+      "code_sha256": "409496acc267c4fa8a15340601603e624316ea8deb5a618842fe7bf296b49788",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0xa1",
+              "mnemonic": "test",
+              "operands": "eax, eax"
+            },
+            "branch": {
+              "address": "0xa9",
+              "mnemonic": "jne",
+              "operands": "0x159"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x85",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x8b",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x14]"
+              },
+              {
+                "address": "0x8f",
+                "mnemonic": "jmp",
+                "operands": "0x99"
+              },
+              {
+                "address": "0x91",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x95",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x1c]"
+              },
+              {
+                "address": "0x99",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [ebx + 0x54]"
+              },
+              {
+                "address": "0x9c",
+                "mnemonic": "imul",
+                "operands": "edx, ebp"
+              },
+              {
+                "address": "0x9f",
+                "mnemonic": "add",
+                "operands": "edx, edi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x11a",
+              "mnemonic": "call",
+              "operands": "0x11f"
+            },
+            "nearby_parity_test": {
+              "address": "0x100",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": {
+              "address": "0x107",
+              "mnemonic": "je",
+              "operands": "0x110"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x110",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x38]"
+              },
+              {
+                "address": "0x114",
+                "mnemonic": "push",
+                "operands": "ecx"
+              },
+              {
+                "address": "0x115",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x1c4",
+              "mnemonic": "call",
+              "operands": "0x1c9"
+            },
+            "nearby_parity_test": {
+              "address": "0x1aa",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x1b1",
+              "mnemonic": "je",
+              "operands": "0x1ba"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x1ba",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x3c]"
+              },
+              {
+                "address": "0x1be",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x1bf",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "branch_offset": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "9f46ae216c2f319cd4a0d1212471a7c76750b018c3c4eaeb50ac3f6b44c2ffe1",
+      "instructions": 188,
+      "size": 588,
+      "code_sha256": "2ce9a95f21002f4aaa153feeb8d63af54a87dc5f33413aae630049e59467161d",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x11b",
+              "mnemonic": "call",
+              "operands": "0x120"
+            },
+            "nearby_parity_test": {
+              "address": "0x101",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": {
+              "address": "0x108",
+              "mnemonic": "je",
+              "operands": "0x111"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x111",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x38]"
+              },
+              {
+                "address": "0x115",
+                "mnemonic": "push",
+                "operands": "ecx"
+              },
+              {
+                "address": "0x116",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x1d5",
+              "mnemonic": "call",
+              "operands": "0x1da"
+            },
+            "nearby_parity_test": {
+              "address": "0x1bb",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x1c2",
+              "mnemonic": "je",
+              "operands": "0x1cb"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x1cb",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x3c]"
+              },
+              {
+                "address": "0x1cf",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x1d0",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "single_face": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "dc3117dc3b64a24f42170519f61108e66c43f8055891fc91c7966667fe461dca",
+      "instructions": 130,
+      "size": 383,
+      "code_sha256": "61a395a3aa1bf71723a9145810c6d5d646646a815f79e6c8baace8991414ff8a",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x1b",
+              "mnemonic": "test",
+              "operands": "edi, edi"
+            },
+            "branch": {
+              "address": "0x23",
+              "mnemonic": "jne",
+              "operands": "0xd4"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x8",
+                "mnemonic": "push",
+                "operands": "ebx"
+              },
+              {
+                "address": "0x9",
+                "mnemonic": "push",
+                "operands": "esi"
+              },
+              {
+                "address": "0xa",
+                "mnemonic": "mov",
+                "operands": "esi, edx"
+              },
+              {
+                "address": "0xc",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x10",
+                "mnemonic": "imul",
+                "operands": "esi, dword ptr [ecx + 0x54]"
+              },
+              {
+                "address": "0x14",
+                "mnemonic": "push",
+                "operands": "edi"
+              },
+              {
+                "address": "0x15",
+                "mnemonic": "mov",
+                "operands": "edi, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x19",
+                "mnemonic": "add",
+                "operands": "esi, eax"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x96",
+              "mnemonic": "call",
+              "operands": "0x9b"
+            },
+            "nearby_parity_test": {
+              "address": "0x7c",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": {
+              "address": "0x83",
+              "mnemonic": "je",
+              "operands": "0x8c"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x8c",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x2c]"
+              },
+              {
+                "address": "0x90",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x91",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x141",
+              "mnemonic": "call",
+              "operands": "0x146"
+            },
+            "nearby_parity_test": {
+              "address": "0x123",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": {
+              "address": "0x12e",
+              "mnemonic": "je",
+              "operands": "0x137"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x137",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x30]"
+              },
+              {
+                "address": "0x13b",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x13c",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "full_baseline": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "b16991fa21ea80bd23451d2d4a05bdcdfe97146b4c2dd9ed43d5ca6696c3aefb",
+      "instructions": 578,
+      "size": 2058,
+      "code_sha256": "248b8462d3929dd486d724692b37fb16326fecbad238867391cd3372c4a74612",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x661",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x669",
+              "mnemonic": "jne",
+              "operands": "0x71e"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x645",
+                "mnemonic": "fild",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x649",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x64f",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x5c]"
+              },
+              {
+                "address": "0x653",
+                "mnemonic": "jmp",
+                "operands": "0x659"
+              },
+              {
+                "address": "0x655",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x10]"
+              },
+              {
+                "address": "0x659",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [ebp + 0x54]"
+              },
+              {
+                "address": "0x65c",
+                "mnemonic": "imul",
+                "operands": "eax, edi"
+              },
+              {
+                "address": "0x65f",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x6df",
+              "mnemonic": "call",
+              "operands": "0x6e4"
+            },
+            "nearby_parity_test": {
+              "address": "0x6c5",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": {
+              "address": "0x6cc",
+              "mnemonic": "je",
+              "operands": "0x6d5"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x6d5",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x74]"
+              },
+              {
+                "address": "0x6d9",
+                "mnemonic": "push",
+                "operands": "ecx"
+              },
+              {
+                "address": "0x6da",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x78e",
+              "mnemonic": "call",
+              "operands": "0x793"
+            },
+            "nearby_parity_test": {
+              "address": "0x774",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x77b",
+              "mnemonic": "je",
+              "operands": "0x784"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x784",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x78]"
+              },
+              {
+                "address": "0x788",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x789",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "member_faces": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "08aa7987ab0085304826e5046db87582b86b07afc2d2d92bd0266c5f819482ad",
+      "instructions": 184,
+      "size": 575,
+      "code_sha256": "7c83d73225c4e70bdef8da2a81c5e1dcdcdd91f73279d7529d165c229bda7322",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x9f",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0xa4",
+              "mnemonic": "jne",
+              "operands": "0x157"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x83",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x89",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x8d",
+                "mnemonic": "jmp",
+                "operands": "0x97"
+              },
+              {
+                "address": "0x8f",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x24]"
+              },
+              {
+                "address": "0x93",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x97",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [edi + 0x54]"
+              },
+              {
+                "address": "0x9a",
+                "mnemonic": "imul",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x9d",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": true,
+            "stride_in_taken_prefix": true
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x118",
+              "mnemonic": "call",
+              "operands": "0x11d"
+            },
+            "nearby_parity_test": {
+              "address": "0x103",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": {
+              "address": "0x105",
+              "mnemonic": "je",
+              "operands": "0x10e"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x10e",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x48]"
+              },
+              {
+                "address": "0x112",
+                "mnemonic": "push",
+                "operands": "edx"
+              },
+              {
+                "address": "0x113",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x1c6",
+              "mnemonic": "call",
+              "operands": "0x1cb"
+            },
+            "nearby_parity_test": {
+              "address": "0x1ac",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x1b3",
+              "mnemonic": "je",
+              "operands": "0x1bc"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x1bc",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x4c]"
+              },
+              {
+                "address": "0x1c0",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x1c1",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "member_faces_finalize": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "c8ab289739171219e9977a1d35f92b2e86b2a97a9f10c7d35562839932ccf674",
+      "instructions": 186,
+      "size": 582,
+      "code_sha256": "34de23a7e5aa592023ab4debbed0c7b6c88f975a0dfc1c682d6bfbc1043a6cc9",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x9f",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0xa4",
+              "mnemonic": "jne",
+              "operands": "0x157"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x83",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x89",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x8d",
+                "mnemonic": "jmp",
+                "operands": "0x97"
+              },
+              {
+                "address": "0x8f",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x24]"
+              },
+              {
+                "address": "0x93",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x97",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [edi + 0x54]"
+              },
+              {
+                "address": "0x9a",
+                "mnemonic": "imul",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x9d",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": true,
+            "stride_in_taken_prefix": true
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x118",
+              "mnemonic": "call",
+              "operands": "0x11d"
+            },
+            "nearby_parity_test": {
+              "address": "0x103",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": {
+              "address": "0x105",
+              "mnemonic": "je",
+              "operands": "0x10e"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x10e",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x48]"
+              },
+              {
+                "address": "0x112",
+                "mnemonic": "push",
+                "operands": "edx"
+              },
+              {
+                "address": "0x113",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x1c6",
+              "mnemonic": "call",
+              "operands": "0x1cb"
+            },
+            "nearby_parity_test": {
+              "address": "0x1ac",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x1b3",
+              "mnemonic": "je",
+              "operands": "0x1bc"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x1bc",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x4c]"
+              },
+              {
+                "address": "0x1c0",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x1c1",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "member_mesh": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "a8d421cccded7b18a58c1267b9b26f7f4073a3b883a55a6289ab40a382886947",
+      "instructions": 291,
+      "size": 939,
+      "code_sha256": "9777143f6142a0f3fe70b1dfe31bcf4f5bd720450b0ed3301feb9044f679fcc0",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x1fd",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x205",
+              "mnemonic": "jne",
+              "operands": "0x2c0"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x1e1",
+                "mnemonic": "fild",
+                "operands": "dword ptr [esp + 0x28]"
+              },
+              {
+                "address": "0x1e5",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x1eb",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x1ef",
+                "mnemonic": "jmp",
+                "operands": "0x1f5"
+              },
+              {
+                "address": "0x1f1",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x1f5",
+                "mnemonic": "mov",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x1f7",
+                "mnemonic": "imul",
+                "operands": "eax, dword ptr [edi + 0x54]"
+              },
+              {
+                "address": "0x1fb",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x281",
+              "mnemonic": "call",
+              "operands": "0x286"
+            },
+            "nearby_parity_test": {
+              "address": "0x261",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": {
+              "address": "0x268",
+              "mnemonic": "je",
+              "operands": "0x274"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x274",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x84]"
+              },
+              {
+                "address": "0x27b",
+                "mnemonic": "push",
+                "operands": "ecx"
+              },
+              {
+                "address": "0x27c",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x336",
+              "mnemonic": "call",
+              "operands": "0x33b"
+            },
+            "nearby_parity_test": {
+              "address": "0x316",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x31d",
+              "mnemonic": "je",
+              "operands": "0x329"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x329",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x88]"
+              },
+              {
+                "address": "0x330",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x331",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "member_mesh_finalize": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "066d1947814623a393bac066035f6f1bedf24c42bb7c3b49f4b6e3f0c65dc7ed",
+      "instructions": 293,
+      "size": 946,
+      "code_sha256": "ed1d4c1c5b7377c2d75faaf6d69592ca1002f5961a842f8cc6e6e525f9cf5eeb",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x1fd",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x205",
+              "mnemonic": "jne",
+              "operands": "0x2c0"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x1e1",
+                "mnemonic": "fild",
+                "operands": "dword ptr [esp + 0x28]"
+              },
+              {
+                "address": "0x1e5",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x1eb",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x1ef",
+                "mnemonic": "jmp",
+                "operands": "0x1f5"
+              },
+              {
+                "address": "0x1f1",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x1f5",
+                "mnemonic": "mov",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x1f7",
+                "mnemonic": "imul",
+                "operands": "eax, dword ptr [edi + 0x54]"
+              },
+              {
+                "address": "0x1fb",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x281",
+              "mnemonic": "call",
+              "operands": "0x286"
+            },
+            "nearby_parity_test": {
+              "address": "0x261",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": {
+              "address": "0x268",
+              "mnemonic": "je",
+              "operands": "0x274"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x274",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x84]"
+              },
+              {
+                "address": "0x27b",
+                "mnemonic": "push",
+                "operands": "ecx"
+              },
+              {
+                "address": "0x27c",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x336",
+              "mnemonic": "call",
+              "operands": "0x33b"
+            },
+            "nearby_parity_test": {
+              "address": "0x316",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x31d",
+              "mnemonic": "je",
+              "operands": "0x329"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x329",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x88]"
+              },
+              {
+                "address": "0x330",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x331",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "member_delta_mesh_finalize": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "d7911505a58aa7466e549444589b4c9360d64782e5ebec1a850fd9d9e3988a6b",
+      "instructions": 395,
+      "size": 1341,
+      "code_sha256": "57abb3ca011452b5ca36ded620ebaf61ecc35b0f8b09d831b368562238ca1978",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x388",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x390",
+              "mnemonic": "jne",
+              "operands": "0x44b"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x36c",
+                "mnemonic": "fild",
+                "operands": "dword ptr [esp + 0x28]"
+              },
+              {
+                "address": "0x370",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x376",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x37a",
+                "mnemonic": "jmp",
+                "operands": "0x380"
+              },
+              {
+                "address": "0x37c",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x380",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esi + 0x54]"
+              },
+              {
+                "address": "0x383",
+                "mnemonic": "imul",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x386",
+                "mnemonic": "add",
+                "operands": "eax, edi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x40c",
+              "mnemonic": "call",
+              "operands": "0x411"
+            },
+            "nearby_parity_test": {
+              "address": "0x3ec",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": {
+              "address": "0x3f3",
+              "mnemonic": "je",
+              "operands": "0x3ff"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x3ff",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x84]"
+              },
+              {
+                "address": "0x406",
+                "mnemonic": "push",
+                "operands": "ecx"
+              },
+              {
+                "address": "0x407",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x4c1",
+              "mnemonic": "call",
+              "operands": "0x4c6"
+            },
+            "nearby_parity_test": {
+              "address": "0x4a1",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x4a8",
+              "mnemonic": "je",
+              "operands": "0x4b4"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x4b4",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x88]"
+              },
+              {
+                "address": "0x4bb",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x4bc",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "full_without_vertex_loop": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "0526b8c7a04a1d57f0240adf570d4c68978da6021d2e66dca0712c28b7a6d587",
+      "instructions": 489,
+      "size": 1758,
+      "code_sha256": "9611adc207c5566681d996085650684b9752c7d59c2b6b7fcbc05f22b6ab7960",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x537",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x53c",
+              "mnemonic": "jne",
+              "operands": "0x5ef"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x51b",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x521",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x44]"
+              },
+              {
+                "address": "0x525",
+                "mnemonic": "jmp",
+                "operands": "0x52f"
+              },
+              {
+                "address": "0x527",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x10]"
+              },
+              {
+                "address": "0x52b",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x14]"
+              },
+              {
+                "address": "0x52f",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [ebp + 0x54]"
+              },
+              {
+                "address": "0x532",
+                "mnemonic": "imul",
+                "operands": "eax, edi"
+              },
+              {
+                "address": "0x535",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": true,
+            "stride_in_taken_prefix": true
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x5b0",
+              "mnemonic": "call",
+              "operands": "0x5b5"
+            },
+            "nearby_parity_test": {
+              "address": "0x59b",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": {
+              "address": "0x59d",
+              "mnemonic": "je",
+              "operands": "0x5a6"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x5a6",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x5c]"
+              },
+              {
+                "address": "0x5aa",
+                "mnemonic": "push",
+                "operands": "edx"
+              },
+              {
+                "address": "0x5ab",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x65e",
+              "mnemonic": "call",
+              "operands": "0x663"
+            },
+            "nearby_parity_test": {
+              "address": "0x644",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x64b",
+              "mnemonic": "je",
+              "operands": "0x654"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x654",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x60]"
+              },
+              {
+                "address": "0x658",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x659",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "full_without_deltas": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "2969077645e1058c41b60aecbf0b269ebddaaf1b8bdad38efc7438085fb76d52",
+      "instructions": 479,
+      "size": 1671,
+      "code_sha256": "6b2d84a8d52b457b1e8a7dbb11221a253f8e3ed029fe9da2dddf15a27829efda",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x4de",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x4e6",
+              "mnemonic": "jne",
+              "operands": "0x59b"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x4c2",
+                "mnemonic": "fild",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x4c6",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x4cc",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x5c]"
+              },
+              {
+                "address": "0x4d0",
+                "mnemonic": "jmp",
+                "operands": "0x4d6"
+              },
+              {
+                "address": "0x4d2",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x10]"
+              },
+              {
+                "address": "0x4d6",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [ebp + 0x54]"
+              },
+              {
+                "address": "0x4d9",
+                "mnemonic": "imul",
+                "operands": "eax, edi"
+              },
+              {
+                "address": "0x4dc",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x55c",
+              "mnemonic": "call",
+              "operands": "0x561"
+            },
+            "nearby_parity_test": {
+              "address": "0x542",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": {
+              "address": "0x549",
+              "mnemonic": "je",
+              "operands": "0x552"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x552",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x74]"
+              },
+              {
+                "address": "0x556",
+                "mnemonic": "push",
+                "operands": "ecx"
+              },
+              {
+                "address": "0x557",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x60b",
+              "mnemonic": "call",
+              "operands": "0x610"
+            },
+            "nearby_parity_test": {
+              "address": "0x5f1",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x5f8",
+              "mnemonic": "je",
+              "operands": "0x601"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x601",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x78]"
+              },
+              {
+                "address": "0x605",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x606",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "face_loops_publish_helper": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "d0c95279083f1ba69f0c7eeb8ef351e8168c1319d98b7dc52da3734843bd39da",
+      "instructions": 172,
+      "size": 547,
+      "code_sha256": "00b75968eb9617330607fc2a060c1edacce6dfec20ad395088b026bc14d14d07",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0xa1",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0xa9",
+              "mnemonic": "jne",
+              "operands": "0x148"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x85",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x8b",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x14]"
+              },
+              {
+                "address": "0x8f",
+                "mnemonic": "jmp",
+                "operands": "0x99"
+              },
+              {
+                "address": "0x91",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x95",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x1c]"
+              },
+              {
+                "address": "0x99",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [ebx + 0x54]"
+              },
+              {
+                "address": "0x9c",
+                "mnemonic": "imul",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x9f",
+                "mnemonic": "add",
+                "operands": "eax, edi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x111",
+              "mnemonic": "call",
+              "operands": "0x116"
+            },
+            "nearby_parity_test": {
+              "address": "0x10f",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x1aa",
+              "mnemonic": "call",
+              "operands": "0x1af"
+            },
+            "nearby_parity_test": {
+              "address": "0x1a8",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          }
+        ]
+      }
+    },
+    "full_publish_helper": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "c741c376f822202fd9e31903fdf0f997d65edd0e50a19da933d60a96379199ac",
+      "instructions": 577,
+      "size": 2060,
+      "code_sha256": "0f0a070b2c599db6e375575b175774354a4ab84014576295ab8279ec1ec8e9b0",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x673",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x678",
+              "mnemonic": "jne",
+              "operands": "0x727"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x657",
+                "mnemonic": "fild",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x65b",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x661",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x5c]"
+              },
+              {
+                "address": "0x665",
+                "mnemonic": "jmp",
+                "operands": "0x66b"
+              },
+              {
+                "address": "0x667",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x10]"
+              },
+              {
+                "address": "0x66b",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [ebp + 0x54]"
+              },
+              {
+                "address": "0x66e",
+                "mnemonic": "imul",
+                "operands": "eax, ebx"
+              },
+              {
+                "address": "0x671",
+                "mnemonic": "add",
+                "operands": "eax, edi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": true,
+            "stride_in_taken_prefix": true
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x6e8",
+              "mnemonic": "call",
+              "operands": "0x6ed"
+            },
+            "nearby_parity_test": {
+              "address": "0x6e5",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x790",
+              "mnemonic": "call",
+              "operands": "0x795"
+            },
+            "nearby_parity_test": {
+              "address": "0x78e",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          }
+        ]
+      }
+    },
+    "face_loops_four_inputs": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "544620ea369eb9fd1802193c2b01aa712f324004b46509d6f45a6db8bc6edd17",
+      "instructions": 184,
+      "size": 575,
+      "code_sha256": "3d53605f3e4885cff3f9651783d54d4f34a1f3c1762043ef9b46ea727d710c91",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0xa1",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0xa6",
+              "mnemonic": "jne",
+              "operands": "0x159"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x85",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x8b",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x14]"
+              },
+              {
+                "address": "0x8f",
+                "mnemonic": "jmp",
+                "operands": "0x99"
+              },
+              {
+                "address": "0x91",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x95",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x1c]"
+              },
+              {
+                "address": "0x99",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [edi + 0x54]"
+              },
+              {
+                "address": "0x9c",
+                "mnemonic": "imul",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x9f",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": true,
+            "stride_in_taken_prefix": true
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x11a",
+              "mnemonic": "call",
+              "operands": "0x11f"
+            },
+            "nearby_parity_test": {
+              "address": "0x105",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": {
+              "address": "0x107",
+              "mnemonic": "je",
+              "operands": "0x110"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x110",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x38]"
+              },
+              {
+                "address": "0x114",
+                "mnemonic": "push",
+                "operands": "edx"
+              },
+              {
+                "address": "0x115",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x1c8",
+              "mnemonic": "call",
+              "operands": "0x1cd"
+            },
+            "nearby_parity_test": {
+              "address": "0x1ae",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x1b5",
+              "mnemonic": "je",
+              "operands": "0x1be"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x1be",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x3c]"
+              },
+              {
+                "address": "0x1c2",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x1c3",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "mesh_one_vertex_x_store": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "c8155ec423cfd2fb98e3aee0bef481cb91feff14e9107b3cb5456ea8fbcf0f60",
+      "instructions": 202,
+      "size": 624,
+      "code_sha256": "6b8db9998b6106d6aab995bb34d7b9074c2debaed819b8e20e80eadde63700e1",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0xd0",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0xd5",
+              "mnemonic": "jne",
+              "operands": "0x188"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0xb4",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0xba",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0xbe",
+                "mnemonic": "jmp",
+                "operands": "0xc8"
+              },
+              {
+                "address": "0xc0",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x24]"
+              },
+              {
+                "address": "0xc4",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0xc8",
+                "mnemonic": "mov",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0xca",
+                "mnemonic": "imul",
+                "operands": "eax, dword ptr [edi + 0x54]"
+              },
+              {
+                "address": "0xce",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": true,
+            "stride_in_taken_prefix": true
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x149",
+              "mnemonic": "call",
+              "operands": "0x14e"
+            },
+            "nearby_parity_test": {
+              "address": "0x134",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": {
+              "address": "0x136",
+              "mnemonic": "je",
+              "operands": "0x13f"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x13f",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x48]"
+              },
+              {
+                "address": "0x143",
+                "mnemonic": "push",
+                "operands": "edx"
+              },
+              {
+                "address": "0x144",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x1f7",
+              "mnemonic": "call",
+              "operands": "0x1fc"
+            },
+            "nearby_parity_test": {
+              "address": "0x1dd",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x1e4",
+              "mnemonic": "je",
+              "operands": "0x1ed"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x1ed",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x4c]"
+              },
+              {
+                "address": "0x1f1",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x1f2",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "mesh_one_vertex_vector_copy": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "3429280c590d2f4e0a31019778eaffc16b502e2ca0c59214a3719bac9a4f262f",
+      "instructions": 207,
+      "size": 638,
+      "code_sha256": "4f8ce0713905a507600958676db50c3b2495761822128eabace2d8ceb7d3f89f",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0xde",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0xe3",
+              "mnemonic": "jne",
+              "operands": "0x196"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0xc2",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0xc8",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0xcc",
+                "mnemonic": "jmp",
+                "operands": "0xd6"
+              },
+              {
+                "address": "0xce",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x24]"
+              },
+              {
+                "address": "0xd2",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0xd6",
+                "mnemonic": "mov",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0xd8",
+                "mnemonic": "imul",
+                "operands": "eax, dword ptr [edi + 0x54]"
+              },
+              {
+                "address": "0xdc",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": true,
+            "stride_in_taken_prefix": true
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x157",
+              "mnemonic": "call",
+              "operands": "0x15c"
+            },
+            "nearby_parity_test": {
+              "address": "0x142",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": {
+              "address": "0x144",
+              "mnemonic": "je",
+              "operands": "0x14d"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x14d",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x48]"
+              },
+              {
+                "address": "0x151",
+                "mnemonic": "push",
+                "operands": "edx"
+              },
+              {
+                "address": "0x152",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x205",
+              "mnemonic": "call",
+              "operands": "0x20a"
+            },
+            "nearby_parity_test": {
+              "address": "0x1eb",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x1f2",
+              "mnemonic": "je",
+              "operands": "0x1fb"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x1fb",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x4c]"
+              },
+              {
+                "address": "0x1ff",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x200",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "mesh_vertex_x_stores_only": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "e312ccb9ba32cae93bde4334f66cb2ab0f5c0d89b33152bf6ad3b2ad66c01164",
+      "instructions": 240,
+      "size": 734,
+      "code_sha256": "9ea8cbada53e7336cc8328e4a85fca319d1282b0566fe24626ced42046a67ce4",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x13c",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x144",
+              "mnemonic": "jne",
+              "operands": "0x1f9"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x120",
+                "mnemonic": "fild",
+                "operands": "dword ptr [esp + 0x28]"
+              },
+              {
+                "address": "0x124",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x12a",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x12e",
+                "mnemonic": "jmp",
+                "operands": "0x134"
+              },
+              {
+                "address": "0x130",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x134",
+                "mnemonic": "mov",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x136",
+                "mnemonic": "imul",
+                "operands": "eax, dword ptr [edi + 0x54]"
+              },
+              {
+                "address": "0x13a",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x1ba",
+              "mnemonic": "call",
+              "operands": "0x1bf"
+            },
+            "nearby_parity_test": {
+              "address": "0x1a0",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": {
+              "address": "0x1a7",
+              "mnemonic": "je",
+              "operands": "0x1b0"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x1b0",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x48]"
+              },
+              {
+                "address": "0x1b4",
+                "mnemonic": "push",
+                "operands": "ecx"
+              },
+              {
+                "address": "0x1b5",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x269",
+              "mnemonic": "call",
+              "operands": "0x26e"
+            },
+            "nearby_parity_test": {
+              "address": "0x24f",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x256",
+              "mnemonic": "je",
+              "operands": "0x25f"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x25f",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x4c]"
+              },
+              {
+                "address": "0x263",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x264",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "mesh_vertex_plain_position": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "6bf175fc79c5ea8e3b8acb96fedf2c50cc96f306ae86701174c1a1a08d6b4483",
+      "instructions": 235,
+      "size": 716,
+      "code_sha256": "e0f4ff863a099ae10e49663c835b4d1b2a1aca5631d2f66198c88f9c4ded1f44",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x12c",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x131",
+              "mnemonic": "jne",
+              "operands": "0x1e4"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x110",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x116",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x11a",
+                "mnemonic": "jmp",
+                "operands": "0x124"
+              },
+              {
+                "address": "0x11c",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x120",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x24]"
+              },
+              {
+                "address": "0x124",
+                "mnemonic": "mov",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x126",
+                "mnemonic": "imul",
+                "operands": "eax, dword ptr [edi + 0x54]"
+              },
+              {
+                "address": "0x12a",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": true,
+            "stride_in_taken_prefix": true
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x1a5",
+              "mnemonic": "call",
+              "operands": "0x1aa"
+            },
+            "nearby_parity_test": {
+              "address": "0x190",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": {
+              "address": "0x192",
+              "mnemonic": "je",
+              "operands": "0x19b"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x19b",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x48]"
+              },
+              {
+                "address": "0x19f",
+                "mnemonic": "push",
+                "operands": "edx"
+              },
+              {
+                "address": "0x1a0",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x253",
+              "mnemonic": "call",
+              "operands": "0x258"
+            },
+            "nearby_parity_test": {
+              "address": "0x239",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x240",
+              "mnemonic": "je",
+              "operands": "0x249"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x249",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x4c]"
+              },
+              {
+                "address": "0x24d",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x24e",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "mesh_vertex_plain_x": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "b9c65c730af87ad9e67a5a3ba03a6a69a4bb8dc03d2792650c32ff867c7ea14d",
+      "instructions": 229,
+      "size": 700,
+      "code_sha256": "829592e8bed106cd2c1eb7f897e7cffd6992763896ea214a66cd9af6974c2c67",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x11c",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x121",
+              "mnemonic": "jne",
+              "operands": "0x1d4"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x100",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x106",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x10a",
+                "mnemonic": "jmp",
+                "operands": "0x114"
+              },
+              {
+                "address": "0x10c",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x110",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x24]"
+              },
+              {
+                "address": "0x114",
+                "mnemonic": "mov",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x116",
+                "mnemonic": "imul",
+                "operands": "eax, dword ptr [edi + 0x54]"
+              },
+              {
+                "address": "0x11a",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": true,
+            "stride_in_taken_prefix": true
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x195",
+              "mnemonic": "call",
+              "operands": "0x19a"
+            },
+            "nearby_parity_test": {
+              "address": "0x180",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": {
+              "address": "0x182",
+              "mnemonic": "je",
+              "operands": "0x18b"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x18b",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x48]"
+              },
+              {
+                "address": "0x18f",
+                "mnemonic": "push",
+                "operands": "edx"
+              },
+              {
+                "address": "0x190",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x243",
+              "mnemonic": "call",
+              "operands": "0x248"
+            },
+            "nearby_parity_test": {
+              "address": "0x229",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x230",
+              "mnemonic": "je",
+              "operands": "0x239"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x239",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x4c]"
+              },
+              {
+                "address": "0x23d",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x23e",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "mesh_allocations_only": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "bb827d9780163138cbee186228d78244d8e3c5158e1fae982db0a9268b784fdb",
+      "instructions": 198,
+      "size": 613,
+      "code_sha256": "e5de71edfd02047a9f5fd576eba078fc10443cecc51c838dde27a6c980c5e788",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0xc5",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0xca",
+              "mnemonic": "jne",
+              "operands": "0x17d"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0xa9",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0xaf",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0xb3",
+                "mnemonic": "jmp",
+                "operands": "0xbd"
+              },
+              {
+                "address": "0xb5",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x24]"
+              },
+              {
+                "address": "0xb9",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0xbd",
+                "mnemonic": "mov",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0xbf",
+                "mnemonic": "imul",
+                "operands": "eax, dword ptr [edi + 0x54]"
+              },
+              {
+                "address": "0xc3",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": true,
+            "stride_in_taken_prefix": true
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x13e",
+              "mnemonic": "call",
+              "operands": "0x143"
+            },
+            "nearby_parity_test": {
+              "address": "0x129",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": {
+              "address": "0x12b",
+              "mnemonic": "je",
+              "operands": "0x134"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x134",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x48]"
+              },
+              {
+                "address": "0x138",
+                "mnemonic": "push",
+                "operands": "edx"
+              },
+              {
+                "address": "0x139",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x1ec",
+              "mnemonic": "call",
+              "operands": "0x1f1"
+            },
+            "nearby_parity_test": {
+              "address": "0x1d2",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x1d9",
+              "mnemonic": "je",
+              "operands": "0x1e2"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x1e2",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x4c]"
+              },
+              {
+                "address": "0x1e6",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x1e7",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "face_loops_duplicate_parity_uv": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "b810a814d832f3891e00a3469a72b27ede8439de7487282f6387402fbbf99c79",
+      "instructions": 172,
+      "size": 547,
+      "code_sha256": "00b75968eb9617330607fc2a060c1edacce6dfec20ad395088b026bc14d14d07",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0xa1",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0xa9",
+              "mnemonic": "jne",
+              "operands": "0x148"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x85",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x8b",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x14]"
+              },
+              {
+                "address": "0x8f",
+                "mnemonic": "jmp",
+                "operands": "0x99"
+              },
+              {
+                "address": "0x91",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x95",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x1c]"
+              },
+              {
+                "address": "0x99",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [ebx + 0x54]"
+              },
+              {
+                "address": "0x9c",
+                "mnemonic": "imul",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x9f",
+                "mnemonic": "add",
+                "operands": "eax, edi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x111",
+              "mnemonic": "call",
+              "operands": "0x116"
+            },
+            "nearby_parity_test": {
+              "address": "0x10f",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x1aa",
+              "mnemonic": "call",
+              "operands": "0x1af"
+            },
+            "nearby_parity_test": {
+              "address": "0x1a8",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          }
+        ]
+      }
+    },
+    "member_mesh_duplicate_parity_uv": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "2a4f8e99ea846eef20da7379a15c51c707eeec0103a65d8c0d6c7ebe0b0278b3",
+      "instructions": 284,
+      "size": 917,
+      "code_sha256": "48ed1816c90a335e3c96a38bbbb45a549b9e867b93394c5a5ae5bac51efd74d9",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x1fd",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x202",
+              "mnemonic": "jne",
+              "operands": "0x2b4"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x1e1",
+                "mnemonic": "fild",
+                "operands": "dword ptr [esp + 0x28]"
+              },
+              {
+                "address": "0x1e5",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x1eb",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x1ef",
+                "mnemonic": "jmp",
+                "operands": "0x1f5"
+              },
+              {
+                "address": "0x1f1",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x1f5",
+                "mnemonic": "mov",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x1f7",
+                "mnemonic": "imul",
+                "operands": "eax, dword ptr [ebx + 0x54]"
+              },
+              {
+                "address": "0x1fb",
+                "mnemonic": "add",
+                "operands": "eax, edi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": true,
+            "stride_in_taken_prefix": true
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x275",
+              "mnemonic": "call",
+              "operands": "0x27a"
+            },
+            "nearby_parity_test": {
+              "address": "0x272",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x320",
+              "mnemonic": "call",
+              "operands": "0x325"
+            },
+            "nearby_parity_test": {
+              "address": "0x31e",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          }
+        ]
+      }
+    },
+    "full_baseline_duplicate_parity_uv": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "a5df77db3cefb78bf14acc90248224a30eb2fd713d5f4fd4ac0d766054d8d467",
+      "instructions": 577,
+      "size": 2060,
+      "code_sha256": "0f0a070b2c599db6e375575b175774354a4ab84014576295ab8279ec1ec8e9b0",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x673",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x678",
+              "mnemonic": "jne",
+              "operands": "0x727"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x657",
+                "mnemonic": "fild",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x65b",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x661",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x5c]"
+              },
+              {
+                "address": "0x665",
+                "mnemonic": "jmp",
+                "operands": "0x66b"
+              },
+              {
+                "address": "0x667",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x10]"
+              },
+              {
+                "address": "0x66b",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [ebp + 0x54]"
+              },
+              {
+                "address": "0x66e",
+                "mnemonic": "imul",
+                "operands": "eax, ebx"
+              },
+              {
+                "address": "0x671",
+                "mnemonic": "add",
+                "operands": "eax, edi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": true,
+            "stride_in_taken_prefix": true
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x6e8",
+              "mnemonic": "call",
+              "operands": "0x6ed"
+            },
+            "nearby_parity_test": {
+              "address": "0x6e5",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x790",
+              "mnemonic": "call",
+              "operands": "0x795"
+            },
+            "nearby_parity_test": {
+              "address": "0x78e",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          }
+        ]
+      }
+    },
+    "face_loops_global_opt_off": {
+      "flags": [
+        "/O2",
+        "/Og-",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "374a06bf1fbcf909c7de2d08048a65783ff192a7c03d7ea397fd476cd7263440",
+      "instructions": 321,
+      "size": 1032,
+      "code_sha256": "87925859a51073a75d934bcd53363ccff54ddf825892a4edffba34a9bdc6fea6",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x1b0",
+              "mnemonic": "call",
+              "operands": "0x1b5"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x1d1",
+              "mnemonic": "call",
+              "operands": "0x1d6"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x32f",
+              "mnemonic": "call",
+              "operands": "0x334"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x350",
+              "mnemonic": "call",
+              "operands": "0x355"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          }
+        ]
+      }
+    },
+    "face_loops_size_preference": {
+      "flags": [
+        "/O2",
+        "/Os",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "374a06bf1fbcf909c7de2d08048a65783ff192a7c03d7ea397fd476cd7263440",
+      "instructions": 156,
+      "size": 468,
+      "code_sha256": "c13bcc3897f8bfcaaf13f6f942e721fbb3bc0d37e3df56fac9cf0619a7d516e9",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x8a",
+              "mnemonic": "test",
+              "operands": "edx, edx"
+            },
+            "branch": {
+              "address": "0x92",
+              "mnemonic": "jne",
+              "operands": "0x110"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x71",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x77",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [ebp - 0x10]"
+              },
+              {
+                "address": "0x7a",
+                "mnemonic": "jmp",
+                "operands": "0x7f"
+              },
+              {
+                "address": "0x7c",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [ebp - 8]"
+              },
+              {
+                "address": "0x7f",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esi + 0x54]"
+              },
+              {
+                "address": "0x82",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [ebp - 4]"
+              },
+              {
+                "address": "0x85",
+                "mnemonic": "imul",
+                "operands": "eax, ecx"
+              },
+              {
+                "address": "0x88",
+                "mnemonic": "add",
+                "operands": "eax, ebx"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0xf7",
+              "mnemonic": "call",
+              "operands": "0xfc"
+            },
+            "nearby_parity_test": {
+              "address": "0xf5",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x173",
+              "mnemonic": "call",
+              "operands": "0x178"
+            },
+            "nearby_parity_test": {
+              "address": "0x171",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          }
+        ]
+      }
+    },
+    "member_mesh_global_opt_off": {
+      "flags": [
+        "/O2",
+        "/Og-",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "a8d421cccded7b18a58c1267b9b26f7f4073a3b883a55a6289ab40a382886947",
+      "instructions": 530,
+      "size": 1982,
+      "code_sha256": "f28fad82f23b581069422085ac37f21445c039385f28367e3a705079269e9999",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x555",
+              "mnemonic": "call",
+              "operands": "0x55a"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x576",
+              "mnemonic": "call",
+              "operands": "0x57b"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x6e0",
+              "mnemonic": "call",
+              "operands": "0x6e5"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x701",
+              "mnemonic": "call",
+              "operands": "0x706"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          }
+        ]
+      }
+    },
+    "member_mesh_size_preference": {
+      "flags": [
+        "/O2",
+        "/Os",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "a8d421cccded7b18a58c1267b9b26f7f4073a3b883a55a6289ab40a382886947",
+      "instructions": 6,
+      "size": 20,
+      "code_sha256": "cffff233dce3dd92f355df84239057e89c7fbc964f792c0122aaafc475225af6",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [],
+        "texture_calls": []
+      }
+    },
+    "full_baseline_global_opt_off": {
+      "flags": [
+        "/O2",
+        "/Og-",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "b16991fa21ea80bd23451d2d4a05bdcdfe97146b4c2dd9ed43d5ca6696c3aefb",
+      "instructions": 997,
+      "size": 4602,
+      "code_sha256": "50c209c185e09e4216cf4eb0bfd9c5d45073bf3a054eed94fdfbfe0cbd2cb58a",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0xe97",
+              "mnemonic": "call",
+              "operands": "0xe9c"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0xebe",
+              "mnemonic": "call",
+              "operands": "0xec3"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x10b2",
+              "mnemonic": "call",
+              "operands": "0x10b7"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x10d9",
+              "mnemonic": "call",
+              "operands": "0x10de"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          }
+        ]
+      }
+    },
+    "full_baseline_size_preference": {
+      "flags": [
+        "/O2",
+        "/Os",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "b16991fa21ea80bd23451d2d4a05bdcdfe97146b4c2dd9ed43d5ca6696c3aefb",
+      "instructions": 217,
+      "size": 718,
+      "code_sha256": "dc1d7a9ae80232d50ec22e07ab29a7d00d10ec20acdfc229c84a2175dc4c7280",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [],
+        "texture_calls": []
+      }
+    },
+    "face_loops_parity_independent": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "7eb212b78a653e1233fbaafefc07cd9399bc86f04181bca31e8b270d0d8504c6",
+      "instructions": 195,
+      "size": 613,
+      "code_sha256": "6f515769b3cc72badff328b0d2a6ae07c7f5398714135457469b29ab0da08347",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x9d",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0xa5",
+              "mnemonic": "jne",
+              "operands": "0x167"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x81",
+                "mnemonic": "fild",
+                "operands": "dword ptr [esp + 0x28]"
+              },
+              {
+                "address": "0x85",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x8b",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x14]"
+              },
+              {
+                "address": "0x8f",
+                "mnemonic": "jmp",
+                "operands": "0x95"
+              },
+              {
+                "address": "0x91",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x95",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [edi + 0x54]"
+              },
+              {
+                "address": "0x98",
+                "mnemonic": "imul",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x9b",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x114",
+              "mnemonic": "call",
+              "operands": "0x119"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x130",
+              "mnemonic": "call",
+              "operands": "0x135"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x1d0",
+              "mnemonic": "call",
+              "operands": "0x1d5"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x1ec",
+              "mnemonic": "call",
+              "operands": "0x1f1"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          }
+        ]
+      }
+    },
+    "face_loops_parity_else_if": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "34922a285fb59466e936f6d1c150c49ee6560df2c2e1fd6343e941feaa06cd10",
+      "instructions": 184,
+      "size": 575,
+      "code_sha256": "3d53605f3e4885cff3f9651783d54d4f34a1f3c1762043ef9b46ea727d710c91",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0xa1",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0xa6",
+              "mnemonic": "jne",
+              "operands": "0x159"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x85",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x8b",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x14]"
+              },
+              {
+                "address": "0x8f",
+                "mnemonic": "jmp",
+                "operands": "0x99"
+              },
+              {
+                "address": "0x91",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x95",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x1c]"
+              },
+              {
+                "address": "0x99",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [edi + 0x54]"
+              },
+              {
+                "address": "0x9c",
+                "mnemonic": "imul",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x9f",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": true,
+            "stride_in_taken_prefix": true
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x11a",
+              "mnemonic": "call",
+              "operands": "0x11f"
+            },
+            "nearby_parity_test": {
+              "address": "0x105",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": {
+              "address": "0x107",
+              "mnemonic": "je",
+              "operands": "0x110"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x110",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x38]"
+              },
+              {
+                "address": "0x114",
+                "mnemonic": "push",
+                "operands": "edx"
+              },
+              {
+                "address": "0x115",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x1c8",
+              "mnemonic": "call",
+              "operands": "0x1cd"
+            },
+            "nearby_parity_test": {
+              "address": "0x1ae",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x1b5",
+              "mnemonic": "je",
+              "operands": "0x1be"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x1be",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x3c]"
+              },
+              {
+                "address": "0x1c2",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x1c3",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "face_loops_parity_switch_zero": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "f1f1f73ab22ea23c9659da8bcc1c72277e5faa5a6d4d31d98a3d09ea48ed230a",
+      "instructions": 184,
+      "size": 575,
+      "code_sha256": "3d53605f3e4885cff3f9651783d54d4f34a1f3c1762043ef9b46ea727d710c91",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0xa1",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0xa6",
+              "mnemonic": "jne",
+              "operands": "0x159"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x85",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x8b",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x14]"
+              },
+              {
+                "address": "0x8f",
+                "mnemonic": "jmp",
+                "operands": "0x99"
+              },
+              {
+                "address": "0x91",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x95",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x1c]"
+              },
+              {
+                "address": "0x99",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [edi + 0x54]"
+              },
+              {
+                "address": "0x9c",
+                "mnemonic": "imul",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x9f",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": false,
+            "stride_in_fallthrough_prefix": true,
+            "stride_in_taken_prefix": true
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x11a",
+              "mnemonic": "call",
+              "operands": "0x11f"
+            },
+            "nearby_parity_test": {
+              "address": "0x105",
+              "mnemonic": "test",
+              "operands": "al, 1"
+            },
+            "branch": {
+              "address": "0x107",
+              "mnemonic": "je",
+              "operands": "0x110"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x110",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x38]"
+              },
+              {
+                "address": "0x114",
+                "mnemonic": "push",
+                "operands": "edx"
+              },
+              {
+                "address": "0x115",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x1c8",
+              "mnemonic": "call",
+              "operands": "0x1cd"
+            },
+            "nearby_parity_test": {
+              "address": "0x1ae",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x1b5",
+              "mnemonic": "je",
+              "operands": "0x1be"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x1be",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x3c]"
+              },
+              {
+                "address": "0x1c2",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x1c3",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "face_loops_parity_switch_one": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "e913e6f6364351c02a6ba7e7865f5e57b7aa7b206d01aaf46aaf364edd945072",
+      "instructions": 182,
+      "size": 569,
+      "code_sha256": "1918837465288625293cc1480a0c75f3fbe0777730f5c22a6a32b4e5012a7dd6",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0xa1",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0xa9",
+              "mnemonic": "jne",
+              "operands": "0x153"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x85",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x8b",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x14]"
+              },
+              {
+                "address": "0x8f",
+                "mnemonic": "jmp",
+                "operands": "0x99"
+              },
+              {
+                "address": "0x91",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x20]"
+              },
+              {
+                "address": "0x95",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x1c]"
+              },
+              {
+                "address": "0x99",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [edi + 0x54]"
+              },
+              {
+                "address": "0x9c",
+                "mnemonic": "imul",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x9f",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x11c",
+              "mnemonic": "call",
+              "operands": "0x121"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x1c0",
+              "mnemonic": "call",
+              "operands": "0x1c5"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          }
+        ]
+      }
+    },
+    "face_loops_parity_switch_both": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "3dc572927d4396ada33ad0365d5954b4b4a216fa25fcee12a6805160a399d41b",
+      "instructions": 189,
+      "size": 583,
+      "code_sha256": "10a4f5275e46bb1375f1cbf7fd00ceb4ea70fe15b8fdc61a7b608e15e7a18514",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x9d",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0xa5",
+              "mnemonic": "jne",
+              "operands": "0x158"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x81",
+                "mnemonic": "fild",
+                "operands": "dword ptr [esp + 0x24]"
+              },
+              {
+                "address": "0x85",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x8b",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x14]"
+              },
+              {
+                "address": "0x8f",
+                "mnemonic": "jmp",
+                "operands": "0x95"
+              },
+              {
+                "address": "0x91",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [esp + 0x1c]"
+              },
+              {
+                "address": "0x95",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [edi + 0x54]"
+              },
+              {
+                "address": "0x98",
+                "mnemonic": "imul",
+                "operands": "eax, ebp"
+              },
+              {
+                "address": "0x9b",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x121",
+              "mnemonic": "call",
+              "operands": "0x126"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x1ce",
+              "mnemonic": "call",
+              "operands": "0x1d3"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          }
+        ]
+      }
+    },
+    "full_baseline_parity_independent": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "a3502c0dab405e16eed887b94700b5c3ae3f4c223ee23a82f9396bac05b03d5a",
+      "instructions": 602,
+      "size": 2138,
+      "code_sha256": "0383aeae0e40743967fd027932484fdf40f9940d3c11939d820507b574e08019",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x685",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x68d",
+              "mnemonic": "jne",
+              "operands": "0x756"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x669",
+                "mnemonic": "fild",
+                "operands": "dword ptr [esp + 0x1c]"
+              },
+              {
+                "address": "0x66d",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x673",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x60]"
+              },
+              {
+                "address": "0x677",
+                "mnemonic": "jmp",
+                "operands": "0x67d"
+              },
+              {
+                "address": "0x679",
+                "mnemonic": "mov",
+                "operands": "ebx, dword ptr [esp + 0x14]"
+              },
+              {
+                "address": "0x67d",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [ebp + 0x54]"
+              },
+              {
+                "address": "0x680",
+                "mnemonic": "imul",
+                "operands": "edx, edi"
+              },
+              {
+                "address": "0x683",
+                "mnemonic": "add",
+                "operands": "edx, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x6fb",
+              "mnemonic": "call",
+              "operands": "0x700"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x717",
+              "mnemonic": "call",
+              "operands": "0x71c"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x7be",
+              "mnemonic": "call",
+              "operands": "0x7c3"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x7da",
+              "mnemonic": "call",
+              "operands": "0x7df"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          }
+        ]
+      }
+    },
+    "full_baseline_parity_else_if": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "b547a5b3c3a0830fc9489c3920b40967d8fc1725ef4ea62b5fdf907eb6fa5e13",
+      "instructions": 578,
+      "size": 2058,
+      "code_sha256": "248b8462d3929dd486d724692b37fb16326fecbad238867391cd3372c4a74612",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x661",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x669",
+              "mnemonic": "jne",
+              "operands": "0x71e"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x645",
+                "mnemonic": "fild",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x649",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x64f",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x5c]"
+              },
+              {
+                "address": "0x653",
+                "mnemonic": "jmp",
+                "operands": "0x659"
+              },
+              {
+                "address": "0x655",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x10]"
+              },
+              {
+                "address": "0x659",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [ebp + 0x54]"
+              },
+              {
+                "address": "0x65c",
+                "mnemonic": "imul",
+                "operands": "eax, edi"
+              },
+              {
+                "address": "0x65f",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x6df",
+              "mnemonic": "call",
+              "operands": "0x6e4"
+            },
+            "nearby_parity_test": {
+              "address": "0x6c5",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": {
+              "address": "0x6cc",
+              "mnemonic": "je",
+              "operands": "0x6d5"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x6d5",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x74]"
+              },
+              {
+                "address": "0x6d9",
+                "mnemonic": "push",
+                "operands": "ecx"
+              },
+              {
+                "address": "0x6da",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x78e",
+              "mnemonic": "call",
+              "operands": "0x793"
+            },
+            "nearby_parity_test": {
+              "address": "0x774",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x77b",
+              "mnemonic": "je",
+              "operands": "0x784"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x784",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x78]"
+              },
+              {
+                "address": "0x788",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x789",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "full_baseline_parity_switch_zero": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "164286974629a6260f1c6dea1f151856716b6af4b7ddbc9aa963aff7179d77d8",
+      "instructions": 578,
+      "size": 2058,
+      "code_sha256": "248b8462d3929dd486d724692b37fb16326fecbad238867391cd3372c4a74612",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x661",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x669",
+              "mnemonic": "jne",
+              "operands": "0x71e"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x645",
+                "mnemonic": "fild",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x649",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x64f",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x5c]"
+              },
+              {
+                "address": "0x653",
+                "mnemonic": "jmp",
+                "operands": "0x659"
+              },
+              {
+                "address": "0x655",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x10]"
+              },
+              {
+                "address": "0x659",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [ebp + 0x54]"
+              },
+              {
+                "address": "0x65c",
+                "mnemonic": "imul",
+                "operands": "eax, edi"
+              },
+              {
+                "address": "0x65f",
+                "mnemonic": "add",
+                "operands": "eax, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x6df",
+              "mnemonic": "call",
+              "operands": "0x6e4"
+            },
+            "nearby_parity_test": {
+              "address": "0x6c5",
+              "mnemonic": "test",
+              "operands": "dl, 1"
+            },
+            "branch": {
+              "address": "0x6cc",
+              "mnemonic": "je",
+              "operands": "0x6d5"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x6d5",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x74]"
+              },
+              {
+                "address": "0x6d9",
+                "mnemonic": "push",
+                "operands": "ecx"
+              },
+              {
+                "address": "0x6da",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          },
+          {
+            "call": {
+              "address": "0x78e",
+              "mnemonic": "call",
+              "operands": "0x793"
+            },
+            "nearby_parity_test": {
+              "address": "0x774",
+              "mnemonic": "test",
+              "operands": "cl, 1"
+            },
+            "branch": {
+              "address": "0x77b",
+              "mnemonic": "je",
+              "operands": "0x784"
+            },
+            "branch_target_after_call": false,
+            "cold_argument_continuation": false,
+            "target_prefix": [
+              {
+                "address": "0x784",
+                "mnemonic": "mov",
+                "operands": "eax, dword ptr [esp + 0x78]"
+              },
+              {
+                "address": "0x788",
+                "mnemonic": "push",
+                "operands": "eax"
+              },
+              {
+                "address": "0x789",
+                "mnemonic": "mov",
+                "operands": "ecx, 0"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "full_baseline_parity_switch_one": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "080cd6205607a287cc071e85696699f30c21724936b8bb00fd1b42625e9b2485",
+      "instructions": 589,
+      "size": 2094,
+      "code_sha256": "a9400fe483365f6dcc084b205f31e9885f4bb73e4c8fb9f4a212efbd24ea5d20",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x689",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x691",
+              "mnemonic": "jne",
+              "operands": "0x742"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x66d",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x673",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x5c]"
+              },
+              {
+                "address": "0x677",
+                "mnemonic": "jmp",
+                "operands": "0x681"
+              },
+              {
+                "address": "0x679",
+                "mnemonic": "mov",
+                "operands": "ecx, dword ptr [esp + 0x10]"
+              },
+              {
+                "address": "0x67d",
+                "mnemonic": "mov",
+                "operands": "ebx, dword ptr [esp + 0x14]"
+              },
+              {
+                "address": "0x681",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [ebp + 0x54]"
+              },
+              {
+                "address": "0x684",
+                "mnemonic": "imul",
+                "operands": "edx, edi"
+              },
+              {
+                "address": "0x687",
+                "mnemonic": "add",
+                "operands": "edx, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x703",
+              "mnemonic": "call",
+              "operands": "0x708"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x7ae",
+              "mnemonic": "call",
+              "operands": "0x7b3"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          }
+        ]
+      }
+    },
+    "full_baseline_parity_switch_both": {
+      "flags": [
+        "/O2",
+        "/G5",
+        "/W3"
+      ],
+      "source_sha256": "0880cef79c0c1ead6bb8391339674e4450acbf86b6e22fa7a05796eaa3a3e4f5",
+      "instructions": 596,
+      "size": 2108,
+      "code_sha256": "c92ee6c47d9724acafab1490322c1f83b75437b6712f62f55b60477217b6a327",
+      "patterns": {
+        "interpretation": "Local instruction observations; absence means no recognized pattern, not proof of absence.",
+        "winding_candidates": [
+          {
+            "test": {
+              "address": "0x685",
+              "mnemonic": "test",
+              "operands": "ecx, ecx"
+            },
+            "branch": {
+              "address": "0x68d",
+              "mnemonic": "jne",
+              "operands": "0x747"
+            },
+            "pretest_prefix": [
+              {
+                "address": "0x669",
+                "mnemonic": "fild",
+                "operands": "dword ptr [esp + 0x18]"
+              },
+              {
+                "address": "0x66d",
+                "mnemonic": "fmul",
+                "operands": "dword ptr [0]"
+              },
+              {
+                "address": "0x673",
+                "mnemonic": "fstp",
+                "operands": "dword ptr [esp + 0x5c]"
+              },
+              {
+                "address": "0x677",
+                "mnemonic": "jmp",
+                "operands": "0x67d"
+              },
+              {
+                "address": "0x679",
+                "mnemonic": "mov",
+                "operands": "ebx, dword ptr [esp + 0x10]"
+              },
+              {
+                "address": "0x67d",
+                "mnemonic": "mov",
+                "operands": "edx, dword ptr [ebp + 0x54]"
+              },
+              {
+                "address": "0x680",
+                "mnemonic": "imul",
+                "operands": "edx, edi"
+              },
+              {
+                "address": "0x683",
+                "mnemonic": "add",
+                "operands": "edx, esi"
+              }
+            ],
+            "stride_in_pretest_prefix": false,
+            "stride_between_test_and_branch": true,
+            "stride_in_fallthrough_prefix": false,
+            "stride_in_taken_prefix": false
+          }
+        ],
+        "texture_calls": [
+          {
+            "call": {
+              "address": "0x708",
+              "mnemonic": "call",
+              "operands": "0x70d"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          },
+          {
+            "call": {
+              "address": "0x7bc",
+              "mnemonic": "call",
+              "operands": "0x7c1"
+            },
+            "nearby_parity_test": null,
+            "branch": null,
+            "branch_target_after_call": null,
+            "cold_argument_continuation": false,
+            "target_prefix": []
+          }
+        ]
+      }
+    }
+  }
+}

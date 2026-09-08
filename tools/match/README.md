@@ -134,6 +134,11 @@ manifest function aliases are not searched.
 
 Useful analysis helpers:
 
+- `uv run tools/match/probe_face_emission_context.py` reproduces the
+  [S-bend face-emission reductions](face-emission-context-20260908.md) and six
+  native controls. Reduced functions are compiler diagnostics and carry no
+  source-matching or runtime credit.
+
 - `uv run snail match mobile <function>` prints the Binary Ninja Windows
   decompile followed by the verified Android and iOS source bodies. Pass
   `--windows-tool ida` to use the IDA corpus or `--paths-only` to print just

@@ -1,5 +1,20 @@
 # initialize_sbend_path_template_pair
 
+## 2026-09-08 face-emission context reduction
+
+The unchanged face loop emits branch-local stride calculation in isolation;
+restoring the vertex phase introduces the hoist. This does not identify a
+missing branch-local pointer: that explicit pointer itself hoists the stride
+in the reduced loop. Four native strip builders independently retain the same
+cold texture-argument continuation, which none of the 40 diagnostic cases
+reproduces. The exact fringe builders provide separate face/texture controls.
+
+Seven full phase-boundary variants and the combined texture/UV publication
+helper are rejected with 39 clean references each. The latter restores local
+stride placement but eliminates the native parity branches and falls to 75.43%,
+prefix 67. The canonical source stays 91.10%, 578/579, prefix 443.
+See [the reduction report and reproducible receipts](../../face-emission-context-20260908.md).
+
 ## 2026-09-08 genuine DDK and coupled phase ownership
 
 The verified XP SP1 DDK emits the native Rich component ID `0x001d23da`, but
