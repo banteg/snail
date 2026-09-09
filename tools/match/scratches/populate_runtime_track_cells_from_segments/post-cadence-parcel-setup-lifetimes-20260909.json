@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "parcel-set-indexed-source",
+      "find": "                runtime_rows[build_row].parcel_set_id =\n                    *(int*)(\n                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_PARCEL_SET_ID);",
+      "replacements": [
+        {
+          "name": "active-segment-row-index",
+          "text": "                runtime_rows[build_row].parcel_set_id =\n                    *(int*)(\n                        active_segment\n                        + sizeof(AuthoredSegmentRow) * segment_row\n                        + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_PARCEL_SET_ID);"
+        }
+      ]
+    },
+    {
+      "name": "segment-cursor-initialization",
+      "find": "    int segment_cursor = 0;\n    mode = level_mode;",
+      "replacements": [
+        {
+          "name": "initialize-in-mode-arms",
+          "text": "    int segment_cursor;\n    mode = level_mode;"
+        }
+      ]
+    },
+    {
+      "name": "first-block-publication",
+      "find": "        first_block_row_count = level_definition.first_segment.row_count;\n        int authored_length = level_definition.random_length;",
+      "replacements": [
+        {
+          "name": "pointer-owner",
+          "text": "        int* first_block_count = &first_block_row_count;\n        *first_block_count = level_definition.first_segment.row_count;\n        int authored_length = level_definition.random_length;"
+        },
+        {
+          "name": "reference-owner",
+          "text": "        int& first_block_count = first_block_row_count;\n        first_block_count = level_definition.first_segment.row_count;\n        int authored_length = level_definition.random_length;"
+        }
+      ]
+    }
+  ]
+}

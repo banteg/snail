@@ -11,6 +11,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -291,7 +292,79 @@ def build_variants(original: str) -> dict[str, str]:
                 altered = altered[:begin] + replacement + altered[end:]
             variants[base_name + "_parity_" + shape] = altered
 
+    variants.update(vertex_factor_variants(mesh_only, vertex_source))
     return variants
+
+
+def vertex_factor_variants(mesh_only: str, vertex_source: str) -> dict[str, str]:
+    """Separate terminal-row context from vector temporaries in diagnostics.
+
+    These sources store only X and some omit the terminal row. They deliberately
+    do not implement the mesh builder and must never receive matching credit.
+    """
+    x_only = vertex_source.replace(
+        "*vertex = generated_position;", "vertex->x = generated_position.x;"
+    )
+    scalar = x_only.replace(
+        "Vector3 lateral_offset =\n                            sample->transform.basis_right * lateral;",
+        "float lateral_offset = sample->transform.basis_right.x * (float)lateral;",
+    ).replace(
+        "Vector3 generated_position =\n                            sample->transform.position + lateral_offset;",
+        "float generated_position = sample->transform.position.x + lateral_offset;",
+    )
+
+    def scalar_terminal(match):
+        expression = match[1].replace(
+            ".transform.position + Vector3(0.0f, 0.0f, 1.0f)",
+            ".transform.position.x + 0.0f",
+        ).replace(".transform.basis_right * lateral", ".transform.basis_right.x * (float)lateral")
+        return "float generated_position = " + expression + ";"
+
+    scalar = re.sub(r"Vector3 generated_position = (.*?);", scalar_terminal,
+                    scalar, flags=re.DOTALL).replace(
+        "vertex->x = generated_position.x;", "vertex->x = generated_position;"
+    )
+
+    def typed_samples(source):
+        return source.replace(
+            "(PathTemplateSample*)((char*)path->primary_samples + sample_offset)",
+            "&path->primary_samples[row]",
+        ).replace(
+            "((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1]",
+            "path->primary_samples[row - 1]",
+        ).replace("        int sample_offset = 0;\n", "").replace(
+            "            sample_offset += sizeof(PathTemplateSample);\n", ""
+        )
+
+    variants = {
+        "x_original": x_only,
+        "x_scalar": scalar,
+        "x_typed_samples": typed_samples(x_only),
+        "x_scalar_typed_samples": typed_samples(scalar),
+        "x_float_lateral": x_only.replace("double lateral =", "float lateral ="),
+    }
+    for name, source in [("x_original", x_only), ("x_scalar", scalar)]:
+        at = source.index("                    if (row != path->segment_count) {")
+        middle = source.index("                    } else {", at)
+        end = source.index("                    ++column;", middle)
+        ordinary = source[
+            at + len("                    if (row != path->segment_count) {\n"):middle
+        ]
+        nonterminal = source[:at] + ordinary + source[end:]
+        variants[name + "_nonterminal_only"] = nonterminal.replace(
+            "path->segment_count >= 0", "path->segment_count > 0"
+        ).replace("row <= path->segment_count", "row < path->segment_count")
+        # Keep the extra iteration but remove the terminal expression/branch.
+        # This deliberately reads a different sample; it is a compiler control.
+        variants[name + "_extra_row_no_terminal_branch"] = nonterminal
+        # Keep the terminal branch text but constrain its loop to ordinary rows.
+        variants[name + "_nonterminal_bound"] = source.replace(
+            "path->segment_count >= 0", "path->segment_count > 0"
+        ).replace("row <= path->segment_count", "row < path->segment_count")
+    return {
+        "vertex_factor_" + name: mesh_only.replace(vertex_source, body)
+        for name, body in variants.items()
+    }
 
 
 def instruction_row(instruction):
@@ -496,7 +569,13 @@ def native_controls(output):
 
 
 def main():
+    from probe_texture_continuations import cold_continuations
+
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--variant-prefix", default="",
+        help="Run only diagnostic names starting with this prefix",
+    )
     parser.add_argument(
         "--out",
         type=Path,
@@ -527,6 +606,9 @@ def main():
         "compiler": "msvc6.5",
         "runner_sha256": digest(Path(runner).read_bytes()),
         "tool_sha256": digest(Path(__file__).read_bytes()),
+        "continuation_recognizer_sha256": digest(
+            Path(__file__).with_name("probe_texture_continuations.py").read_bytes()
+        ),
         "build_inputs": {
             str(path.relative_to(ROOT)): digest(path.read_bytes())
             for path in _scratch_build_dependencies(config, DEFAULT_MATCH_ROOT)
@@ -534,7 +616,13 @@ def main():
         "native_controls": controls,
         "reductions": {},
     }
-    for name, source in build_variants(original).items():
+    variants = {
+        name: source for name, source in build_variants(original).items()
+        if name.startswith(args.variant_prefix)
+    }
+    if not variants:
+        raise ValueError(f"no diagnostic names start with {args.variant_prefix!r}")
+    for name, source in variants.items():
         directory = output / name
         directory.mkdir(exist_ok=True)
         (directory / "reduction.cpp").write_text(source)
@@ -578,8 +666,14 @@ def main():
             "size": len(function.data),
             "code_sha256": object_function_fingerprint(function),
             "patterns": patterns(instructions, calls),
+            "strict_call_continuations": cold_continuations(instructions, calls),
         }
         print(f"{name}: {len(instructions)} instructions, {len(calls)} texture calls")
+    if digest(source_path.read_bytes()) != receipt["source_sha256"] or any(
+        digest((ROOT / name).read_bytes()) != expected
+        for name, expected in receipt["build_inputs"].items()
+    ):
+        raise ValueError("diagnostic source inputs changed during compilation")
     (output / "receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
     print(f"Diagnostic receipt: {output / 'receipt.json'}")
 

@@ -555,3 +555,22 @@ The full recipes and receipts are retained here. Results, the accepted Sweep
 counter recovery, and the remaining cross-builder differences are recorded in
 [the shared mesh report](../../shared-path-mesh-recovery-20260907.md).
 No common body or extra texture interface is promoted from this comparison.
+
+## 2026-09-09 terminal-row context and current destination replay
+
+The eleven reproducible vertex-factor reductions distinguish the terminal
+branch/expression from the extra row count: removing the terminal branch
+restores branch-local face stride calculation with either row bound, whereas
+keeping its source and limiting the loop to ordinary rows does not. Scalar
+expressions and typed sample addressing do not remove that interaction. These
+X-only reductions deliberately change geometry and carry no matching credit.
+No strict native texture-call continuation appears. See
+`../../path-context-and-ownership-20260909.md` for receipts and reproduction.
+
+Earlier destination-lifetime probes predate the recovered nested endpoint
+expression. Replaying all 15 single and paired forms from
+`recovered-terminal-destination-lifetimes-20260909.json` gives one unchanged
+body fingerprint: 91.0977%, 578/579 instructions, prefix 443 and 39 clean
+references. No source is retained and no source-form or compiler ceiling is
+inferred. The first six single probes and the complete fifteen-case grid are
+both preserved as separate append-only records.

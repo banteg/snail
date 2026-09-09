@@ -1522,3 +1522,23 @@ The ledger now contains 139 records: 132 mutation sweeps and 7 focused probes.
 experiment ledger already preserves the explored position-copy lane and its
 best recorded variant, while the plan's anchor no longer matches the current
 authored fringe source.
+
+## 2026-09-09 post-cadence transfer and setup replay
+
+The older row-transfer experiment predates the trampoline producer correction.
+A fresh seven-case replay starts at 75.7406%, 1,253/1,245 instructions, prefix
+76, and 163 clean / 0 mismatch / 4 unaudited references. The velocity-source
+pointer/reference owners are byte-neutral. Recomputing the parcel set from
+the selected segment and logical row now reaches 77.7555%, 1,250 instructions
+and 165 clean / no audit debt, but collapses the exact prefix to 9. It is not
+retained despite the score and reference improvements.
+
+The eleven-case `post-cadence-parcel-setup-lifetimes-20260909.json` then pairs
+that producer with late segment-cursor initialization and pointer/reference
+publication of the first-block count. The count owners do not restore the
+parcel variant's prefix; removing eager cursor initialization yields 74.6592%
+and still prefix 9. Without the parcel change, the cursor variants only extend
+the prefix to 77 at a substantial whole-function regression. No source change
+is retained. The tracked path-context receipt preserves both complete grids
+and their current baseline identities. These outcomes replace the older score
+expectations for these particular forms, without closing the ownership lane.

@@ -157,6 +157,14 @@ Useful analysis helpers:
   and the broader native path-family scan. Its reduced and independent-input
   bodies carry no source-matching or runtime credit.
 
+- `uv run tools/match/scan_call_continuations.py --include-sources` searches
+  the full native code inventory and current canonical source objects for
+  positive continuation controls. It preserves incomplete decode coverage
+  and validates physical instruction adjacency. The
+  [current report](path-context-and-ownership-20260909.md) also records eleven
+  reproducible vertex-factor controls, selected with
+  `probe_face_emission_context.py --variant-prefix vertex_factor_`.
+
 - `uv run tools/match/probe_face_emission_context.py` reproduces the
   [S-bend face-emission reductions](face-emission-context-20260908.md) and six
   native controls. Reduced functions are compiler diagnostics and carry no

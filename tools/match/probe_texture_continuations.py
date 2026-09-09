@@ -13,6 +13,7 @@ import json
 import os
 import shutil
 import subprocess
+from itertools import pairwise
 from pathlib import Path
 
 import probe_face_emission_context as p
@@ -223,9 +224,11 @@ def cold_continuations(instructions, calls):
         if index is None or target <= branch.address:
             continue
         chunk = instructions[index : index + 3]
-        if [item.mnemonic for item in chunk] != ["mov", "push", "jmp"] or chunk[
-            -1
-        ].operands[0].type != p.X86_OP_IMM:
+        if (
+            [item.mnemonic for item in chunk] != ["mov", "push", "jmp"]
+            or chunk[-1].operands[0].type != p.X86_OP_IMM
+            or any(left.address + left.size != right.address for left, right in pairwise(chunk))
+        ):
             continue
         load, push, _ = chunk
         if (
@@ -245,6 +248,7 @@ def cold_continuations(instructions, calls):
         receiver, call = instructions[join : join + 2]
         if (
             receiver.mnemonic != "mov"
+            or receiver.address + receiver.size != call.address
             or receiver.operands[0].type != p.X86_OP_REG
             or receiver.reg_name(receiver.operands[0].reg) != "ecx"
             or call.address not in calls

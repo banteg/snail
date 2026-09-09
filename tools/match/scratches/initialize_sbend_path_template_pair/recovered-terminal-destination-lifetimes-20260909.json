@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "normal-destination",
+      "find": "                        Vector3 lateral_offset =\n                            sample->transform.basis_right * lateral;\n                        Vector3 generated_position =\n                            sample->transform.position + lateral_offset;\n                        Vector3* vertex =\n                            &vertices[column + row * (path->width_cells + 1)];\n                        *vertex = generated_position;\n",
+      "replacements": [
+        {
+          "name": "early-destination",
+          "text": "                        Vector3* vertex =\n                            &vertices[column + row * (path->width_cells + 1)];\n                        Vector3 lateral_offset =\n                            sample->transform.basis_right * lateral;\n                        Vector3 generated_position =\n                            sample->transform.position + lateral_offset;\n                        *vertex = generated_position;\n"
+        },
+        {
+          "name": "direct-pointer",
+          "text": "                        Vector3 lateral_offset =\n                            sample->transform.basis_right * lateral;\n                        Vector3* vertex =\n                            &vertices[column + row * (path->width_cells + 1)];\n                        *vertex = sample->transform.position + lateral_offset;\n"
+        },
+        {
+          "name": "direct-array",
+          "text": "                        Vector3 lateral_offset =\n                            sample->transform.basis_right * lateral;\n                        vertices[column + row * (path->width_cells + 1)] = sample->transform.position + lateral_offset;\n"
+        }
+      ]
+    },
+    {
+      "name": "terminal-destination",
+      "find": "                        Vector3 generated_position = (((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.position + Vector3(0.0f, 0.0f, 1.0f)) + (((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.basis_right * lateral);\n                        Vector3* vertex =\n                            &vertices[column + row * (path->width_cells + 1)];\n                        *vertex = generated_position;\n",
+      "replacements": [
+        {
+          "name": "early-destination",
+          "text": "                        Vector3* vertex =\n                            &vertices[column + row * (path->width_cells + 1)];\n                        Vector3 generated_position = (((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.position + Vector3(0.0f, 0.0f, 1.0f)) + (((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.basis_right * lateral);\n                        *vertex = generated_position;\n"
+        },
+        {
+          "name": "direct-pointer",
+          "text": "                        Vector3* vertex =\n                            &vertices[column + row * (path->width_cells + 1)];\n                        *vertex = (((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.position + Vector3(0.0f, 0.0f, 1.0f)) + (((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.basis_right * lateral);\n"
+        },
+        {
+          "name": "direct-array",
+          "text": "                        vertices[column + row * (path->width_cells + 1)] = (((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.position + Vector3(0.0f, 0.0f, 1.0f)) + (((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.basis_right * lateral);\n"
+        }
+      ]
+    }
+  ]
+}
