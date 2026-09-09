@@ -142,6 +142,10 @@ manifest function aliases are not searched.
 
 Useful analysis helpers:
 
+- The [RText contract recovery](rtext-void-and-runtime-20260909.md) removes an
+  artificial return value while preserving the exact native body. The `rtext`
+  group in `link_path_math.py` links and exercises all seven shared text APIs.
+
 - `uv run tools/match/probe_texture_continuations.py` reproduces the
   [texture-call continuation diagnostics](texture-continuation-ownership-20260908.md)
   and the broader native path-family scan. Its reduced and independent-input

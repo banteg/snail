@@ -50,6 +50,15 @@ PATH_MATH_FUNCTIONS = (
     "invert_matrix_from_source",
 )
 GROUPS = {
+    "rtext": (
+        "copy_c_string",
+        "strings_equal_case_insensitive",
+        "skip_to_next_line",
+        "append_c_string",
+        "parse_next_space_delimited_token",
+        "parse_next_int32",
+        "parse_next_float32",
+    ),
     "path-math": PATH_MATH_FUNCTIONS,
     "rmath": PATH_MATH_FUNCTIONS
     + (
@@ -130,6 +139,11 @@ GROUPS["path-nodes"] = (
     )
 )
 RUN_CONFIG = {
+    "rtext": (
+        22,
+        "!corrupt-token",
+        "RShell text helpers through their shared declarations on delimiter-terminated fixtures; no bounded-input or general parser safety claim",
+    ),
     "bod-list": (
         21,
         "!corrupt-free-chain",

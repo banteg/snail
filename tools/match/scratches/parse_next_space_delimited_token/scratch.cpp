@@ -1,35 +1,20 @@
 // RTextExtractString @ 0x431e80 (cdecl)
 
-char** __cdecl RTextExtractString(char** cursor, char* out)
+#include "rtext.h"
+
+void __cdecl RTextExtractString(char** cursor, char* out)
 {
-    char** result = cursor;
-
-    if (**cursor == ' ') {
-        char* next;
-        do {
-            next = *cursor + 1;
-            *cursor = next;
-        } while (*next == ' ');
+    while (**cursor == ' ') {
+        ++*cursor;
     }
 
-    char* current_ptr = *cursor;
-    char current = *current_ptr;
-    char* out_cursor = out;
-    if (current != ' ') {
-        while (current != ' ') {
-            current_ptr = *cursor;
-            char value = *current_ptr;
-            if (value == '\r') {
-                break;
-            }
-            *out_cursor = value;
-            ++out_cursor;
-            current_ptr = *cursor + 1;
-            *cursor = current_ptr;
-            current = *current_ptr;
+    while (**cursor != ' ') {
+        if (**cursor == '\r') {
+            break;
         }
+        *out++ = **cursor;
+        ++*cursor;
     }
 
-    *out_cursor = '\0';
-    return result;
+    *out = '\0';
 }

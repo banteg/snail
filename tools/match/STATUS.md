@@ -28,7 +28,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 8 | initialize_halfpipe_path_template_pair | 805 | semantic-complete | analysis | historical-only | 0/20 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 9 | initialize_toad_path_template_pair | 803 | semantic-complete | analysis | historical-only | 0/61 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 10 | initialize_dip_path_template_pair | 802 | semantic-complete | analysis | historical-only | 0/46 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 11 | update_subgame | 752 | semantic-complete | analysis | historical-only | 0/14 | historical-only,stale-dependencies |
+| 11 | update_subgame | 752 | semantic-complete | analysis | historical-only | 0/13 | historical-only,stale-dependencies |
 | 12 | initialize_loopbow_path_template_pair | 748 | semantic-complete | analysis | historical-only | 0/12 | metric-tradeoffs,variant-errors,historical-only |
 | 13 | initialize_turnover_path_template_pair | 740 | semantic-complete | analysis | historical-only | 0/51 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only |
 | 14 | initialize_cage2_path_template_pair | 733 | semantic-complete | analysis | historical-only | 0/15 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |

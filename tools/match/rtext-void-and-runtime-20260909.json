@@ -1,0 +1,281 @@
+{
+  "schema": 2,
+  "group": "rtext",
+  "purpose": "Source-object link feasibility; not an executable reconstruction",
+  "runtime_scope": "RShell text helpers through their shared declarations on delimiter-terminated fixtures; no bounded-input or general parser safety claim",
+  "public_linked_credit": false,
+  "native_image_sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5",
+  "runner_sha256": "e7a9196c9c40faba7b7fafe95182eea720f2301ae0ee88a39dda8af090270802",
+  "linker_sha256": "9672e578fdfaa43bdb8e9c16071682988665cb90bba2904bf02f6a5576d8ffbc",
+  "runtime_library_sha256": "3efc3ddf045a459a2b6403f0b821be2cb7c316ffca67dddddb346cea7a9e4f63",
+  "dll_sha256": "16b4f96f7c7b2bb60d17cfad9d706431563659812cc76e8de3049a4208ef3c4e",
+  "map_sha256": "22551b0b45858950d1869a6af88fc6dcc32356ba0ccd79d753871409b70711d8",
+  "runs": [
+    {
+      "label": "positive",
+      "exit_code": 0,
+      "checks": 22,
+      "failures": 0,
+      "stdout": "rtext checks=22 failures=0\n"
+    },
+    {
+      "label": "negative",
+      "exit_code": 1,
+      "checks": 22,
+      "failures": 1,
+      "stdout": "FAIL: final token corruption control\nrtext checks=22 failures=1\n"
+    }
+  ],
+  "functions": [
+    {
+      "function": "copy_c_string",
+      "symbol": "?RTextCopy@@YAXPAD0@Z",
+      "native_address": 4398496,
+      "native_bytes": 21,
+      "object_sha256": "8d9ed74ced189c7986732115b1cd59cdc0148d9cae5704f566b98e3216dc5121",
+      "source_sha256": "0446aefccefad45675db0440f54e05ff3c4529cd8e1c7c5688bc6d3511f3f27c",
+      "dependency_sha256": "f7d4d779071fad57a8f144a72d417973f072727b3d94f39f7fc38c56d8911a75",
+      "config_sha256": "1d29d3a8ec8b35e8afe21fb223fb2f348f7f5c5d20a347534d73c277a3f76345",
+      "code_identity_sha256": "4c89c444604003d3923ba0d21f96a2f1f10d8b120e9ad205feb04e7509cb42c3",
+      "normalized_exact": true,
+      "native_match_ratio": 1.0,
+      "native_references_ok": 0,
+      "linked_address": 4198400,
+      "object_body_bytes": 21,
+      "non_relocation_bytes_preserved": true,
+      "verified_rel32_calls": [],
+      "verified_named_data_references": [],
+      "local_data_references_not_map_verified": []
+    },
+    {
+      "function": "strings_equal_case_insensitive",
+      "symbol": "?RTextCompStart@@YA_NPAD0@Z",
+      "native_address": 4398528,
+      "native_bytes": 104,
+      "object_sha256": "f0a8ae8abe29eea0c7855dfad4b608ef4e7fafef4eb4f39a114169c92253f661",
+      "source_sha256": "33da7a949be78252ca7c3afb627036875c40c953d81e8366a8c5fc8439a25eec",
+      "dependency_sha256": "590c7cf292e756b4f77846297d087f58fe0e5ac148878ddf2f74a2012d277105",
+      "config_sha256": "c271b56bb94c6abe4f4e993f68cf361bbb9ae7913af4dac9a1a7830d7184672f",
+      "code_identity_sha256": "59226bcb12ded3d13502f734e1df357a8acb0d62626f86bb19e55397eb186e1c",
+      "normalized_exact": true,
+      "native_match_ratio": 1.0,
+      "native_references_ok": 0,
+      "linked_address": 4198432,
+      "object_body_bytes": 104,
+      "non_relocation_bytes_preserved": true,
+      "verified_rel32_calls": [],
+      "verified_named_data_references": [],
+      "local_data_references_not_map_verified": []
+    },
+    {
+      "function": "skip_to_next_line",
+      "symbol": "?RTextNewLine@@YAXPAPAD@Z",
+      "native_address": 4398640,
+      "native_bytes": 29,
+      "object_sha256": "8efb2aba0eaf6ae35daa6b65842b1a792b57ea2233e17abc7dd93b675baa271c",
+      "source_sha256": "0fc8abded19aa9922a89a593096dce14edcd02b21bde38bc369c4bf3b8305b2c",
+      "dependency_sha256": "9f752415874ace7c6a81c8d55b17e0c6e0c0a0e083642f10977e6be179036c5d",
+      "config_sha256": "e84275fe46424d327e9bdeb431122a3b665810f185e7bf03b63335c3fec52075",
+      "code_identity_sha256": "bc336345ec0b62aafe2f192cc557f1aab0bd703f3136a898498aba6e933d778f",
+      "normalized_exact": true,
+      "native_match_ratio": 1.0,
+      "native_references_ok": 0,
+      "linked_address": 4198544,
+      "object_body_bytes": 29,
+      "non_relocation_bytes_preserved": true,
+      "verified_rel32_calls": [],
+      "verified_named_data_references": [],
+      "local_data_references_not_map_verified": []
+    },
+    {
+      "function": "append_c_string",
+      "symbol": "?RTextAppend@@YAXPAD0@Z",
+      "native_address": 4398672,
+      "native_bytes": 42,
+      "object_sha256": "c3fbf0ba4eae264f681b6cfcffbc63f61a7f4bcbd706c2903991893ca497fa8e",
+      "source_sha256": "964bc4fc0eed923a2a73d94102d758f447884cd0de7deb5252ede2486ba58cc8",
+      "dependency_sha256": "20df3ea9be7858b9209d0a2e99f7af034bf677061cb02e897c9991d98055b7e6",
+      "config_sha256": "c2153fb1b4e6c631e98a6d5feb198729b5a49677e373d5369f46dd8c39f69470",
+      "code_identity_sha256": "951ea693e81081c3495aaa833f347a363b84a00c3f4f09a7c6264c4cb284da9f",
+      "normalized_exact": true,
+      "native_match_ratio": 1.0,
+      "native_references_ok": 0,
+      "linked_address": 4198576,
+      "object_body_bytes": 42,
+      "non_relocation_bytes_preserved": true,
+      "verified_rel32_calls": [],
+      "verified_named_data_references": [],
+      "local_data_references_not_map_verified": []
+    },
+    {
+      "function": "parse_next_space_delimited_token",
+      "symbol": "?RTextExtractString@@YAXPAPADPAD@Z",
+      "native_address": 4398720,
+      "native_bytes": 60,
+      "object_sha256": "cbfc1999e14561ee74657fd4de740814c7617f9f30be600cb8deefae1d76a168",
+      "source_sha256": "c8d2a34b2e1664d13268b91f888bc045d73fb75b6fe27085329ea07842c63069",
+      "dependency_sha256": "b762112ee3fba7f8820b256a34558c41165c4ff3ff7467be400f027650d6aa08",
+      "config_sha256": "94d7e8d99b3a8ee234496d19db569ea0330a1328113638227c79a87d4c2678ce",
+      "code_identity_sha256": "55140009270e84007b3ce5e36e3db4d02e0af505001da48fbd645d9cf7f7c059",
+      "normalized_exact": true,
+      "native_match_ratio": 1.0,
+      "native_references_ok": 0,
+      "linked_address": 4198624,
+      "object_body_bytes": 60,
+      "non_relocation_bytes_preserved": true,
+      "verified_rel32_calls": [],
+      "verified_named_data_references": [],
+      "local_data_references_not_map_verified": []
+    },
+    {
+      "function": "parse_next_int32",
+      "symbol": "?RTextExtractInt@@YAHPAPAD@Z",
+      "native_address": 4398784,
+      "native_bytes": 89,
+      "object_sha256": "4596215709a13d05b21661262f73c3054c5f0f96d5be25751d382676c79c56df",
+      "source_sha256": "4339bed20a4ac86cc699a50361988bdb21da9a8644a692cf6658dff60a58043b",
+      "dependency_sha256": "1339e973c3f90f8c55fc1939ff807cd9ae3e79f3e5c3b5fd8abe76f94751642c",
+      "config_sha256": "6c7aefe74c80c977fdd43301ec8e475bd54a7b74e11aa773dc7d7c42ba7c11d6",
+      "code_identity_sha256": "53b8e0ba71ef29dc79a04b3aa03e206d1c71752b21b7a0d2f229c1f00f056971",
+      "normalized_exact": true,
+      "native_match_ratio": 1.0,
+      "native_references_ok": 0,
+      "linked_address": 4198688,
+      "object_body_bytes": 89,
+      "non_relocation_bytes_preserved": true,
+      "verified_rel32_calls": [],
+      "verified_named_data_references": [],
+      "local_data_references_not_map_verified": []
+    },
+    {
+      "function": "parse_next_float32",
+      "symbol": "?RTextExtractFloat@@YAMPAPAD@Z",
+      "native_address": 4398880,
+      "native_bytes": 173,
+      "object_sha256": "9a073fb125d4540369d5bb92a987621a979a6983ba1e2f3b7df38dcd3f946614",
+      "source_sha256": "7b2388f25d33443d97e724ea3312c62a1a22bb55bded5ee93493c482e61103da",
+      "dependency_sha256": "405271db4073f1ac0822840e253ba44ba752820ecbed5a9abc10e49e8867324c",
+      "config_sha256": "e7607999362f581c49073c73be28eee198ae305bbf713e000090f2949b1499a6",
+      "code_identity_sha256": "b97a7befa55d5253a20089b0a4781b1bde89f5ae2eb3ec1aef55752662f6a214",
+      "normalized_exact": true,
+      "native_match_ratio": 1.0,
+      "native_references_ok": 9,
+      "linked_address": 4198784,
+      "object_body_bytes": 173,
+      "non_relocation_bytes_preserved": true,
+      "verified_rel32_calls": [],
+      "verified_named_data_references": [
+        {
+          "offset": 50,
+          "symbol": "__real@4@bfff8000000000000000",
+          "addend": 0,
+          "address": 4202676,
+          "type": "DIR32",
+          "target_storage_class": 2
+        },
+        {
+          "offset": 61,
+          "symbol": "__real@4@3fff8000000000000000",
+          "addend": 0,
+          "address": 4202672,
+          "type": "DIR32",
+          "target_storage_class": 2
+        },
+        {
+          "offset": 67,
+          "symbol": "__real@4@00000000000000000000",
+          "addend": 0,
+          "address": 4202668,
+          "type": "DIR32",
+          "target_storage_class": 2
+        },
+        {
+          "offset": 73,
+          "symbol": "__real@4@00000000000000000000",
+          "addend": 0,
+          "address": 4202668,
+          "type": "DIR32",
+          "target_storage_class": 2
+        },
+        {
+          "offset": 101,
+          "symbol": "__real@4@3fff8000000000000000",
+          "addend": 0,
+          "address": 4202672,
+          "type": "DIR32",
+          "target_storage_class": 2
+        },
+        {
+          "offset": 131,
+          "symbol": "__real@4@4002a000000000000000",
+          "addend": 0,
+          "address": 4202664,
+          "type": "DIR32",
+          "target_storage_class": 2
+        },
+        {
+          "offset": 139,
+          "symbol": "__real@4@3ffbcccccd0000000000",
+          "addend": 0,
+          "address": 4202660,
+          "type": "DIR32",
+          "target_storage_class": 2
+        },
+        {
+          "offset": 147,
+          "symbol": "__real@4@00000000000000000000",
+          "addend": 0,
+          "address": 4202668,
+          "type": "DIR32",
+          "target_storage_class": 2
+        },
+        {
+          "offset": 162,
+          "symbol": "__real@4@3fff8000000000000000",
+          "addend": 0,
+          "address": 4202672,
+          "type": "DIR32",
+          "target_storage_class": 2
+        }
+      ],
+      "local_data_references_not_map_verified": []
+    }
+  ],
+  "verification_sources": {
+    "tools/match/link_path_math.py": "03b27965841e235d2e3e7bfd3d49e260169141e52ec0e0a7a161ccfbb0707e41",
+    "src/snail/match_link.py": "901e5940fee8570a4a4e5f44088bb4317761293213282d3509302adf5f5a0fcc",
+    "src/snail/match_storage.py": "a2ef8f780991e0b0a7f788bea2879acb59214286cc78b6b279b26830a2595977",
+    "src/snail/match.py": "9f60fa28a67e1ff78c65987d3cfa6bdc4de94e12390064d3cfd937f5b173ba01",
+    "src/snail/symbols.py": "a4ff1d7692bea8d15b1a7b866dab534ad1fd7df474e45796f1455ba62d948b7a",
+    "analysis/symbols/gameplay-functions.json": "dd56903328eaf16b2a7daeb28544e37f71aed1a6f469755c58b295498cb79f0f",
+    "analysis/symbols/gameplay-references.json": "374bc97ceb15cbf3860c62b756a48d9d4b5765344704c079a14620c131033a23"
+  },
+  "receipt": "artifacts/match/rtext-runtime-20260909/receipt.json",
+  "receipt_sha256": "bf57ccd05447e88c42a8a51d54a343766b660100333ce4ee8a49c66c95812eb4",
+  "exact_native_body_bytes": 518,
+  "unverified_source_sections": 0,
+  "reverse_old_abi_link": {
+    "exit_code": 96,
+    "missing_symbol": "?RTextExtractString@@YAXPAPADPAD@Z",
+    "log_sha256": "5ea9bcd61fde89b5806ca6da8681a0c48fa8a09280d8ca26a4b1830247631ed3"
+  },
+  "canonical_caller_edge": {
+    "caller": "load_object_definition",
+    "caller_native_address": 4506656,
+    "offset": 739,
+    "relocation_type": 20,
+    "symbol": "?RTextExtractString@@YAXPAPADPAD@Z",
+    "encoded_addend": 0,
+    "category": "exact_external_definition",
+    "providers": [
+      {
+        "caller": "parse_next_space_delimited_token",
+        "symbol": "?RTextExtractString@@YAXPAPADPAD@Z",
+        "kind": "code",
+        "comdat": true,
+        "selected_function": true,
+        "native_address": 4398720
+      }
+    ]
+  }
+}

@@ -6421,12 +6421,6 @@ def test_mobile_rtext_family_recovers_rshell_ownership_and_real_abis() -> None:
         "parse_next_int32": "?RTextExtractInt@@YAHPAPAD@Z",
         "parse_next_float32": "?RTextExtractFloat@@YAMPAPAD@Z",
     }
-    scratch_symbols = {
-        **object_symbols,
-        "parse_next_space_delimited_token": (
-            "?RTextExtractString@@YAPAPADPAPADPAD@Z"
-        ),
-    }
     for windows_name, mobile_symbol in expected.items():
         entry = entries[windows_name]
         authored_name = mobile_symbol.split("(", 1)[0]
@@ -6445,7 +6439,7 @@ def test_mobile_rtext_family_recovers_rshell_ownership_and_real_abis() -> None:
         source = (scratch / "scratch.cpp").read_text(encoding="utf-8")
         config = (scratch / "scratch.conf").read_text(encoding="utf-8")
         assert f"{authored_name}(" in source
-        assert f"SYMBOL={scratch_symbols[windows_name]}\n" in config
+        assert f"SYMBOL={object_symbols[windows_name]}\n" in config
 
     assert "`Rstrcmp` is strict equality" in (
         functions_by_name["strings_equal_case_insensitive"]["description"]
