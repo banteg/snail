@@ -1,0 +1,2548 @@
+{
+  "schema": 1,
+  "function": "initialize_tip",
+  "classification": "partial; no new proof-grade function or bytes",
+  "probe": {
+    "baseline": {
+      "address": 4491840,
+      "candidate_instructions": 154,
+      "cflags": "/O2 /G5 /W3",
+      "code_sha256": "17df4ac19f085ebe629810533f6bfbabb456dcb960194fe581cd5331942bd4b4",
+      "compiler": "msvc6.5",
+      "error": null,
+      "first_mismatch": {
+        "candidate_offset": 61,
+        "target_offset": 61
+      },
+      "function": "initialize_tip",
+      "fuzzy_gap_bytes": 79.63636363636368,
+      "fuzzy_weighted_bytes": 431.3636363636363,
+      "match_ratio": 0.8441558441558441,
+      "prefix_instructions": 19,
+      "recovery": "semantic-complete",
+      "references": {
+        "mismatch": 0,
+        "ok": 27,
+        "unaudited": 0,
+        "unresolved": 0
+      },
+      "residuals": [
+        "analysis"
+      ],
+      "scratch": "/Users/banteg/dev/banteg/snail-mail/tools/match/scratches/initialize_tip",
+      "state": "wip",
+      "target_bytes": 511,
+      "target_instructions": 154
+    },
+    "delta": {
+      "candidate_instructions": 0,
+      "fuzzy_weighted_bytes": 16.590909090909122,
+      "match_ratio": 0.032467532467532534,
+      "prefix_instructions": 4,
+      "references": {
+        "mismatch": 0,
+        "ok": 0,
+        "unaudited": 0,
+        "unresolved": 0
+      }
+    },
+    "diagnostic_export": "artifacts/match/tip-retained-live-flags-20260909",
+    "label": "tip-live-flags-and-alignment-lifetime-retained-20260909",
+    "probe": {
+      "address": 4491840,
+      "candidate_instructions": 154,
+      "cflags": "/O2 /G5 /W3",
+      "code_sha256": "7000642614c72eccd46ecce9517cdc1972b5c116432699ac4ea4f2a4f3b93a4f",
+      "compiler": "msvc6.5",
+      "error": null,
+      "first_mismatch": {
+        "candidate_offset": 71,
+        "target_offset": 71
+      },
+      "function": "initialize_tip",
+      "fuzzy_gap_bytes": 63.04545454545456,
+      "fuzzy_weighted_bytes": 447.95454545454544,
+      "match_ratio": 0.8766233766233766,
+      "prefix_instructions": 23,
+      "recovery": "semantic-complete",
+      "references": {
+        "mismatch": 0,
+        "ok": 27,
+        "unaudited": 0,
+        "unresolved": 0
+      },
+      "residuals": [
+        "analysis"
+      ],
+      "scratch": "<shadow>",
+      "state": "wip",
+      "target_bytes": 511,
+      "target_instructions": 154
+    },
+    "recorded_to": "/Users/banteg/dev/banteg/snail-mail/tools/match/scratches/initialize_tip/experiments.jsonl",
+    "source_sha256": "be0e80b6e21dca5c78d48dc254bcac2ecd7465b4cbd5712e18bbb47bb1e232ea",
+    "tradeoffs": []
+  },
+  "diagnostic": {
+    "baseline_epoch": "e1ee81ce394555a3b0e1d6eb8d2c203a786e2f0c463bc4a9f01affc4a33fc3c8",
+    "baseline_source_sha256": "8a93255004908f3224ae1fed16d6aa91c53701fb52de9122bdd56050eb8dae23",
+    "code_sha256": "7000642614c72eccd46ecce9517cdc1972b5c116432699ac4ea4f2a4f3b93a4f",
+    "dependency_sha256": "99698acaa6ef137c2af6794aebd0a4c1038d1181dd75654ebd81df2a12880f41",
+    "diagnostic": {
+      "candidate_instructions": 154,
+      "candidate_source_caveat": null,
+      "cfg_alignment": {
+        "method": "diagnostic-only: unique exact normalized block contents and outgoing shape, followed by greedy structurally identical pairs with at least 55% instruction similarity; edges are checked only against a monotonic backbone of unique exact pairs within 5% normalized order distance; predecessor counts never make duplicate blocks unique",
+        "pairs": [
+          {
+            "candidate": {
+              "addresses": {
+                "end": 23,
+                "start": 0
+              },
+              "bytes": {
+                "end": 23,
+                "start": 0
+              },
+              "index": 0,
+              "instructions": {
+                "count": 9,
+                "end": 9,
+                "start": 0
+              },
+              "successors": [
+                2,
+                1
+              ],
+              "terminator": "je"
+            },
+            "candidate_block": 0,
+            "edge_anchor": true,
+            "edge_consistent": true,
+            "kind": "exact",
+            "match_ratio": 1.0,
+            "structure_match": true,
+            "target": {
+              "addresses": {
+                "end": 4491863,
+                "start": 4491840
+              },
+              "bytes": {
+                "end": 23,
+                "start": 0
+              },
+              "index": 0,
+              "instructions": {
+                "count": 9,
+                "end": 9,
+                "start": 0
+              },
+              "successors": [
+                2,
+                1
+              ],
+              "terminator": "je"
+            },
+            "target_block": 0
+          },
+          {
+            "candidate": {
+              "addresses": {
+                "end": 28,
+                "start": 23
+              },
+              "bytes": {
+                "end": 28,
+                "start": 23
+              },
+              "index": 1,
+              "instructions": {
+                "count": 2,
+                "end": 11,
+                "start": 9
+              },
+              "successors": [
+                3
+              ],
+              "terminator": "jmp"
+            },
+            "candidate_block": 1,
+            "edge_anchor": true,
+            "edge_consistent": null,
+            "kind": "exact",
+            "match_ratio": 1.0,
+            "structure_match": true,
+            "target": {
+              "addresses": {
+                "end": 4491868,
+                "start": 4491863
+              },
+              "bytes": {
+                "end": 28,
+                "start": 23
+              },
+              "index": 1,
+              "instructions": {
+                "count": 2,
+                "end": 11,
+                "start": 9
+              },
+              "successors": [
+                3
+              ],
+              "terminator": "jmp"
+            },
+            "target_block": 1
+          },
+          {
+            "candidate": {
+              "addresses": {
+                "end": 35,
+                "start": 28
+              },
+              "bytes": {
+                "end": 35,
+                "start": 28
+              },
+              "index": 2,
+              "instructions": {
+                "count": 1,
+                "end": 12,
+                "start": 11
+              },
+              "successors": [
+                3
+              ],
+              "terminator": "mov"
+            },
+            "candidate_block": 2,
+            "edge_anchor": true,
+            "edge_consistent": null,
+            "kind": "exact",
+            "match_ratio": 1.0,
+            "structure_match": true,
+            "target": {
+              "addresses": {
+                "end": 4491875,
+                "start": 4491868
+              },
+              "bytes": {
+                "end": 35,
+                "start": 28
+              },
+              "index": 2,
+              "instructions": {
+                "count": 1,
+                "end": 12,
+                "start": 11
+              },
+              "successors": [
+                3
+              ],
+              "terminator": "mov"
+            },
+            "target_block": 2
+          },
+          {
+            "candidate": {
+              "addresses": {
+                "end": 141,
+                "start": 35
+              },
+              "bytes": {
+                "end": 141,
+                "start": 35
+              },
+              "index": 3,
+              "instructions": {
+                "count": 36,
+                "end": 48,
+                "start": 12
+              },
+              "successors": [
+                5,
+                4
+              ],
+              "terminator": "je"
+            },
+            "candidate_block": 3,
+            "edge_anchor": false,
+            "edge_consistent": true,
+            "kind": "similar",
+            "match_ratio": 0.9444444444444444,
+            "structure_match": true,
+            "target": {
+              "addresses": {
+                "end": 4491981,
+                "start": 4491875
+              },
+              "bytes": {
+                "end": 141,
+                "start": 35
+              },
+              "index": 3,
+              "instructions": {
+                "count": 36,
+                "end": 48,
+                "start": 12
+              },
+              "successors": [
+                5,
+                4
+              ],
+              "terminator": "je"
+            },
+            "target_block": 3
+          },
+          {
+            "candidate": {
+              "addresses": {
+                "end": 162,
+                "start": 141
+              },
+              "bytes": {
+                "end": 162,
+                "start": 141
+              },
+              "index": 4,
+              "instructions": {
+                "count": 5,
+                "end": 53,
+                "start": 48
+              },
+              "successors": [
+                5
+              ],
+              "terminator": "fstp"
+            },
+            "candidate_block": 4,
+            "edge_anchor": true,
+            "edge_consistent": true,
+            "kind": "exact",
+            "match_ratio": 1.0,
+            "structure_match": true,
+            "target": {
+              "addresses": {
+                "end": 4492002,
+                "start": 4491981
+              },
+              "bytes": {
+                "end": 162,
+                "start": 141
+              },
+              "index": 4,
+              "instructions": {
+                "count": 5,
+                "end": 53,
+                "start": 48
+              },
+              "successors": [
+                5
+              ],
+              "terminator": "fstp"
+            },
+            "target_block": 4
+          },
+          {
+            "candidate": {
+              "addresses": {
+                "end": 171,
+                "start": 162
+              },
+              "bytes": {
+                "end": 171,
+                "start": 162
+              },
+              "index": 5,
+              "instructions": {
+                "count": 2,
+                "end": 55,
+                "start": 53
+              },
+              "successors": [
+                9,
+                6
+              ],
+              "terminator": "je"
+            },
+            "candidate_block": 5,
+            "edge_anchor": true,
+            "edge_consistent": true,
+            "kind": "exact",
+            "match_ratio": 1.0,
+            "structure_match": true,
+            "target": {
+              "addresses": {
+                "end": 4492011,
+                "start": 4492002
+              },
+              "bytes": {
+                "end": 171,
+                "start": 162
+              },
+              "index": 5,
+              "instructions": {
+                "count": 2,
+                "end": 55,
+                "start": 53
+              },
+              "successors": [
+                9,
+                6
+              ],
+              "terminator": "je"
+            },
+            "target_block": 5
+          },
+          {
+            "candidate": {
+              "addresses": {
+                "end": 202,
+                "start": 171
+              },
+              "bytes": {
+                "end": 202,
+                "start": 171
+              },
+              "index": 6,
+              "instructions": {
+                "count": 7,
+                "end": 62,
+                "start": 55
+              },
+              "successors": [
+                8,
+                7
+              ],
+              "terminator": "jne"
+            },
+            "candidate_block": 6,
+            "edge_anchor": true,
+            "edge_consistent": null,
+            "kind": "exact",
+            "match_ratio": 1.0,
+            "structure_match": true,
+            "target": {
+              "addresses": {
+                "end": 4492042,
+                "start": 4492011
+              },
+              "bytes": {
+                "end": 202,
+                "start": 171
+              },
+              "index": 6,
+              "instructions": {
+                "count": 7,
+                "end": 62,
+                "start": 55
+              },
+              "successors": [
+                8,
+                7
+              ],
+              "terminator": "jne"
+            },
+            "target_block": 6
+          },
+          {
+            "candidate": {
+              "addresses": {
+                "end": 382,
+                "start": 202
+              },
+              "bytes": {
+                "end": 382,
+                "start": 202
+              },
+              "index": 7,
+              "instructions": {
+                "count": 53,
+                "end": 115,
+                "start": 62
+              },
+              "successors": [
+                10
+              ],
+              "terminator": "jmp"
+            },
+            "candidate_block": 7,
+            "edge_anchor": false,
+            "edge_consistent": null,
+            "kind": "similar",
+            "match_ratio": 0.9622641509433962,
+            "structure_match": true,
+            "target": {
+              "addresses": {
+                "end": 4492222,
+                "start": 4492042
+              },
+              "bytes": {
+                "end": 382,
+                "start": 202
+              },
+              "index": 7,
+              "instructions": {
+                "count": 53,
+                "end": 115,
+                "start": 62
+              },
+              "successors": [
+                10
+              ],
+              "terminator": "jmp"
+            },
+            "target_block": 7
+          },
+          {
+            "candidate": {
+              "addresses": {
+                "end": 457,
+                "start": 382
+              },
+              "bytes": {
+                "end": 457,
+                "start": 382
+              },
+              "index": 8,
+              "instructions": {
+                "count": 24,
+                "end": 139,
+                "start": 115
+              },
+              "successors": [
+                10
+              ],
+              "terminator": "jmp"
+            },
+            "candidate_block": 8,
+            "edge_anchor": false,
+            "edge_consistent": null,
+            "kind": "similar",
+            "match_ratio": 0.7083333333333334,
+            "structure_match": true,
+            "target": {
+              "addresses": {
+                "end": 4492297,
+                "start": 4492222
+              },
+              "bytes": {
+                "end": 457,
+                "start": 382
+              },
+              "index": 8,
+              "instructions": {
+                "count": 24,
+                "end": 139,
+                "start": 115
+              },
+              "successors": [
+                10
+              ],
+              "terminator": "jmp"
+            },
+            "target_block": 8
+          },
+          {
+            "candidate": {
+              "addresses": {
+                "end": 463,
+                "start": 457
+              },
+              "bytes": {
+                "end": 463,
+                "start": 457
+              },
+              "index": 9,
+              "instructions": {
+                "count": 2,
+                "end": 141,
+                "start": 139
+              },
+              "successors": [
+                10
+              ],
+              "terminator": "mov"
+            },
+            "candidate_block": 9,
+            "edge_anchor": true,
+            "edge_consistent": null,
+            "kind": "exact",
+            "match_ratio": 1.0,
+            "structure_match": true,
+            "target": {
+              "addresses": {
+                "end": 4492303,
+                "start": 4492297
+              },
+              "bytes": {
+                "end": 463,
+                "start": 457
+              },
+              "index": 9,
+              "instructions": {
+                "count": 2,
+                "end": 141,
+                "start": 139
+              },
+              "successors": [
+                10
+              ],
+              "terminator": "mov"
+            },
+            "target_block": 9
+          },
+          {
+            "candidate": {
+              "addresses": {
+                "end": 509,
+                "start": 503
+              },
+              "bytes": {
+                "end": 509,
+                "start": 503
+              },
+              "index": 12,
+              "instructions": {
+                "count": 2,
+                "end": 154,
+                "start": 152
+              },
+              "successors": [],
+              "terminator": "ret"
+            },
+            "candidate_block": 12,
+            "edge_anchor": true,
+            "edge_consistent": null,
+            "kind": "exact",
+            "match_ratio": 1.0,
+            "structure_match": true,
+            "target": {
+              "addresses": {
+                "end": 4492351,
+                "start": 4492345
+              },
+              "bytes": {
+                "end": 511,
+                "start": 505
+              },
+              "index": 12,
+              "instructions": {
+                "count": 2,
+                "end": 154,
+                "start": 152
+              },
+              "successors": [],
+              "terminator": "ret"
+            },
+            "target_block": 12
+          }
+        ],
+        "summary": {
+          "candidate_blocks": 13,
+          "edge_anchor_pairs": 8,
+          "edge_conflicts": 0,
+          "edge_consistent_pairs": 3,
+          "edge_unchecked_pairs": 7,
+          "exact_ambiguous_pairs": 0,
+          "exact_pairs": 8,
+          "heuristic_edge_conflicts": 0,
+          "heuristic_edge_consistent_pairs": 1,
+          "similar_pairs": 3,
+          "target_blocks": 13,
+          "unmatched_candidate": 2,
+          "unmatched_target": 2
+        },
+        "unmatched_candidate": [
+          {
+            "addresses": {
+              "end": 488,
+              "start": 463
+            },
+            "bytes": {
+              "end": 488,
+              "start": 463
+            },
+            "fallthrough": 11,
+            "index": 10,
+            "instructions": {
+              "count": 9,
+              "end": 150,
+              "start": 141
+            },
+            "lines": [
+              "mov eax, dword [ADDR]",
+              "mov edx, dword [esi+0x8]",
+              "mov ecx, dword [eax+0x1b8]",
+              "mov dword [esi+0x4], ecx",
+              "mov al, byte [edx]",
+              "pop esi",
+              "pop ebx",
+              "test al, 0x1",
+              "je L1f7"
+            ],
+            "successors": [
+              12,
+              11
+            ],
+            "terminator": "je"
+          },
+          {
+            "addresses": {
+              "end": 503,
+              "start": 488
+            },
+            "bytes": {
+              "end": 503,
+              "start": 488
+            },
+            "fallthrough": 12,
+            "index": 11,
+            "instructions": {
+              "count": 2,
+              "end": 152,
+              "start": 150
+            },
+            "lines": [
+              "mov eax, dword [ADDR]",
+              "mov dword [eax+0x1b8], 0x16"
+            ],
+            "successors": [
+              12
+            ],
+            "terminator": "mov"
+          }
+        ],
+        "unmatched_target": [
+          {
+            "addresses": {
+              "end": 4492329,
+              "start": 4492303
+            },
+            "bytes": {
+              "end": 489,
+              "start": 463
+            },
+            "fallthrough": 11,
+            "index": 10,
+            "instructions": {
+              "count": 9,
+              "end": 150,
+              "start": 141
+            },
+            "lines": [
+              "mov edx, dword [ADDR]",
+              "mov ecx, dword [esi+0x8]",
+              "mov eax, dword [edx+0x1b8]",
+              "mov dword [esi+0x4], eax",
+              "mov al, byte [ecx]",
+              "pop esi",
+              "pop ebx",
+              "test al, 0x1",
+              "je L1f9"
+            ],
+            "successors": [
+              12,
+              11
+            ],
+            "terminator": "je"
+          },
+          {
+            "addresses": {
+              "end": 4492345,
+              "start": 4492329
+            },
+            "bytes": {
+              "end": 505,
+              "start": 489
+            },
+            "fallthrough": 12,
+            "index": 11,
+            "instructions": {
+              "count": 2,
+              "end": 152,
+              "start": 150
+            },
+            "lines": [
+              "mov edx, dword [ADDR]",
+              "mov dword [edx+0x1b8], 0x16"
+            ],
+            "successors": [
+              12
+            ],
+            "terminator": "mov"
+          }
+        ]
+      },
+      "exact": false,
+      "masked_references": {
+        "mismatch": 0,
+        "ok": 27,
+        "unaudited": 0,
+        "unresolved": 0
+      },
+      "match_ratio": 0.8766233766233766,
+      "prefix_instructions": 23,
+      "regions": [
+        {
+          "candidate_instructions": {
+            "changed": 2,
+            "changed_end": 26,
+            "changed_start": 23,
+            "end": 30,
+            "start": 19
+          },
+          "candidate_lines": [
+            "mov ecx, dword [eax]",
+            "mov edx, dword [edi+0x4]",
+            "not cl",
+            "movsx eax, cl",
+            "shr eax, 0x1",
+            "and eax, 0x2",
+            "push edx",
+            "push eax",
+            "push 0x3f800000",
+            "push 0x3f800000",
+            "push 0x3f800000"
+          ],
+          "instruction_delta": 0,
+          "match_ratio": 0.8181818181818182,
+          "prefix_instructions": 4,
+          "target_instructions": {
+            "changed": 2,
+            "changed_end": 26,
+            "changed_start": 23,
+            "end": 30,
+            "start": 19
+          },
+          "target_lines": [
+            "mov ecx, dword [eax]",
+            "mov edx, dword [edi+0x4]",
+            "not cl",
+            "movsx eax, cl",
+            "and eax, 0x4",
+            "push edx",
+            "shr eax, 0x1",
+            "push eax",
+            "push 0x3f800000",
+            "push 0x3f800000",
+            "push 0x3f800000"
+          ]
+        },
+        {
+          "candidate_instructions": {
+            "changed": 5,
+            "changed_end": 118,
+            "changed_start": 110,
+            "end": 122,
+            "start": 106
+          },
+          "candidate_lines": [
+            "mov ecx, dword [esi+0xc]",
+            "push ecx",
+            "mov ecx, dword [esi+0x14]",
+            "call ADDR",
+            "mov edx, dword [esi+0xc]",
+            "mov ecx, dword [esi+0x10]",
+            "push edx",
+            "call ADDR",
+            "jmp L1cf",
+            "mov eax, dword [esi+0x8]",
+            "mov ecx, dword [eax+0x4]",
+            "push ecx",
+            "push 0x2",
+            "push 0x3f800000",
+            "push 0x3f800000",
+            "push 0x3f800000"
+          ],
+          "instruction_delta": -1,
+          "match_ratio": 0.6666666666666666,
+          "prefix_instructions": 4,
+          "target_instructions": {
+            "changed": 6,
+            "changed_end": 119,
+            "changed_start": 110,
+            "end": 123,
+            "start": 106
+          },
+          "target_lines": [
+            "mov ecx, dword [esi+0xc]",
+            "push ecx",
+            "mov ecx, dword [esi+0x14]",
+            "call ADDR",
+            "mov ecx, dword [esi+0xc]",
+            "push ecx",
+            "mov ecx, dword [esi+0x10]",
+            "call ADDR",
+            "jmp L1cf",
+            "mov edx, dword [esi+0x8]",
+            "lea ecx, dword [esp+0x8]",
+            "mov eax, dword [edx+0x4]",
+            "push eax",
+            "push 0x2",
+            "push 0x3f800000",
+            "push 0x3f800000",
+            "push 0x3f800000"
+          ]
+        },
+        {
+          "candidate_instructions": {
+            "changed": 1,
+            "changed_end": 124,
+            "changed_start": 123,
+            "end": 128,
+            "start": 119
+          },
+          "candidate_lines": [
+            "push 0x3f800000",
+            "push 0x3f800000",
+            "push 0x3f800000",
+            "push 0x3f800000",
+            "lea ecx, dword [esp+0x20]",
+            "call ADDR",
+            "mov ecx, dword [esi+0x10]",
+            "push eax",
+            "push ebx"
+          ],
+          "instruction_delta": 1,
+          "match_ratio": 0.9411764705882353,
+          "prefix_instructions": 4,
+          "target_instructions": {
+            "changed": 0,
+            "changed_end": 124,
+            "changed_start": 124,
+            "end": 128,
+            "start": 120
+          },
+          "target_lines": [
+            "push 0x3f800000",
+            "push 0x3f800000",
+            "push 0x3f800000",
+            "push 0x3f800000",
+            "call ADDR",
+            "mov ecx, dword [esi+0x10]",
+            "push eax",
+            "push ebx"
+          ]
+        },
+        {
+          "candidate_instructions": {
+            "changed": 11,
+            "changed_end": 152,
+            "changed_start": 133,
+            "end": 154,
+            "start": 129
+          },
+          "candidate_lines": [
+            "push 0x14",
+            "push ADDR",
+            "push 0x14",
+            "call ADDR",
+            "mov edx, dword [esi+0xc]",
+            "mov ecx, dword [esi+0x10]",
+            "push edx",
+            "mov dword [esi+0x14], ebx",
+            "call ADDR",
+            "jmp L1cf",
+            "mov dword [esi+0x10], ebx",
+            "mov dword [esi+0x14], ebx",
+            "mov eax, dword [ADDR]",
+            "mov edx, dword [esi+0x8]",
+            "mov ecx, dword [eax+0x1b8]",
+            "mov dword [esi+0x4], ecx",
+            "mov al, byte [edx]",
+            "pop esi",
+            "pop ebx",
+            "test al, 0x1",
+            "je L1f7",
+            "mov eax, dword [ADDR]",
+            "mov dword [eax+0x1b8], 0x16",
+            "add esp, 0x10",
+            "ret 0x8"
+          ],
+          "instruction_delta": 0,
+          "match_ratio": 0.56,
+          "prefix_instructions": 4,
+          "target_instructions": {
+            "changed": 11,
+            "changed_end": 152,
+            "changed_start": 133,
+            "end": 154,
+            "start": 129
+          },
+          "target_lines": [
+            "push 0x14",
+            "push ADDR",
+            "push 0x14",
+            "call ADDR",
+            "mov ecx, dword [esi+0xc]",
+            "mov dword [esi+0x14], ebx",
+            "push ecx",
+            "mov ecx, dword [esi+0x10]",
+            "call ADDR",
+            "jmp L1cf",
+            "mov dword [esi+0x10], ebx",
+            "mov dword [esi+0x14], ebx",
+            "mov edx, dword [ADDR]",
+            "mov ecx, dword [esi+0x8]",
+            "mov eax, dword [edx+0x1b8]",
+            "mov dword [esi+0x4], eax",
+            "mov al, byte [ecx]",
+            "pop esi",
+            "pop ebx",
+            "test al, 0x1",
+            "je L1f9",
+            "mov edx, dword [ADDR]",
+            "mov dword [edx+0x1b8], 0x16",
+            "add esp, 0x10",
+            "ret 0x8"
+          ]
+        }
+      ],
+      "stack_frame": {
+        "candidate_prologue_allocation_bytes": 16,
+        "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte.",
+        "classification": "same-prologue-allocation",
+        "target_minus_candidate_bytes": 0,
+        "target_prologue_allocation_bytes": 16
+      },
+      "target_instructions": 154
+    },
+    "error": null,
+    "evaluation": {
+      "baseline": {
+        "address": 4491840,
+        "candidate_instructions": 154,
+        "cflags": "/O2 /G5 /W3",
+        "code_sha256": "17df4ac19f085ebe629810533f6bfbabb456dcb960194fe581cd5331942bd4b4",
+        "compiler": "msvc6.5",
+        "error": null,
+        "first_mismatch": {
+          "candidate_offset": 61,
+          "target_offset": 61
+        },
+        "function": "initialize_tip",
+        "fuzzy_gap_bytes": 79.63636363636368,
+        "fuzzy_weighted_bytes": 431.3636363636363,
+        "match_ratio": 0.8441558441558441,
+        "prefix_instructions": 19,
+        "recovery": "semantic-complete",
+        "references": {
+          "mismatch": 0,
+          "ok": 27,
+          "unaudited": 0,
+          "unresolved": 0
+        },
+        "residuals": [
+          "analysis"
+        ],
+        "scratch": "/Users/banteg/dev/banteg/snail-mail/tools/match/scratches/initialize_tip",
+        "state": "wip",
+        "target_bytes": 511,
+        "target_instructions": 154
+      },
+      "delta": {
+        "candidate_instructions": 0,
+        "fuzzy_weighted_bytes": 16.590909090909122,
+        "match_ratio": 0.032467532467532534,
+        "prefix_instructions": 4,
+        "references": {
+          "mismatch": 0,
+          "ok": 0,
+          "unaudited": 0,
+          "unresolved": 0
+        }
+      },
+      "label": "tip-live-flags-and-alignment-lifetime-retained-20260909",
+      "probe": {
+        "address": 4491840,
+        "candidate_instructions": 154,
+        "cflags": "/O2 /G5 /W3",
+        "code_sha256": "7000642614c72eccd46ecce9517cdc1972b5c116432699ac4ea4f2a4f3b93a4f",
+        "compiler": "msvc6.5",
+        "error": null,
+        "first_mismatch": {
+          "candidate_offset": 71,
+          "target_offset": 71
+        },
+        "function": "initialize_tip",
+        "fuzzy_gap_bytes": 63.04545454545456,
+        "fuzzy_weighted_bytes": 447.95454545454544,
+        "match_ratio": 0.8766233766233766,
+        "prefix_instructions": 23,
+        "recovery": "semantic-complete",
+        "references": {
+          "mismatch": 0,
+          "ok": 27,
+          "unaudited": 0,
+          "unresolved": 0
+        },
+        "residuals": [
+          "analysis"
+        ],
+        "scratch": "<shadow>",
+        "state": "wip",
+        "target_bytes": 511,
+        "target_instructions": 154
+      },
+      "source_sha256": "be0e80b6e21dca5c78d48dc254bcac2ecd7465b4cbd5712e18bbb47bb1e232ea",
+      "tradeoffs": []
+    },
+    "kind": "probe-diagnostic",
+    "reference_audit": {
+      "entries": [
+        {
+          "candidate_address": 28,
+          "candidate_index": 11,
+          "candidate_offset": 28,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:g_default_tip_message",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 1,
+              "source": "reloc",
+              "text": "sym:g_default_tip_message",
+              "value": null
+            }
+          ],
+          "instruction": "mov dword [esi+0x8], ADDR",
+          "status": "ok",
+          "target_address": 4491868,
+          "target_index": 11,
+          "target_offset": 28,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:g_default_tip_message",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 1,
+              "source": "image",
+              "text": "global:g_default_tip_message@0x4ac5c8",
+              "value": 4900296
+            }
+          ]
+        },
+        {
+          "candidate_address": 35,
+          "candidate_index": 12,
+          "candidate_offset": 35,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:g_game_base",
+              "kind": "disp",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 1,
+              "source": "reloc",
+              "text": "sym:g_game",
+              "value": null
+            }
+          ],
+          "instruction": "mov eax, dword [ADDR]",
+          "status": "ok",
+          "target_address": 4491875,
+          "target_index": 12,
+          "target_offset": 35,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:g_game_base",
+              "kind": "disp",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 1,
+              "source": "image",
+              "text": "global:g_game_base@0x4df904",
+              "value": 5110020
+            }
+          ]
+        },
+        {
+          "candidate_address": 47,
+          "candidate_index": 15,
+          "candidate_offset": 47,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:allocate_border",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "sym:GetBorder",
+              "value": null
+            }
+          ],
+          "instruction": "call ADDR",
+          "status": "ok",
+          "target_address": 4491887,
+          "target_index": 15,
+          "target_offset": 47,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:allocate_border",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "function:allocate_border@0x4032a0",
+              "value": 4207264
+            }
+          ]
+        },
+        {
+          "candidate_address": 102,
+          "candidate_index": 32,
+          "candidate_offset": 102,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:set_color_rgba",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "sym:Set",
+              "value": null
+            }
+          ],
+          "instruction": "call ADDR",
+          "status": "ok",
+          "target_address": 4491942,
+          "target_index": 32,
+          "target_offset": 102,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:set_color_rgba",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "function:set_color_rgba@0x44db60",
+              "value": 4512608
+            }
+          ]
+        },
+        {
+          "candidate_address": 127,
+          "candidate_index": 43,
+          "candidate_offset": 127,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:initialize_frontend_widget",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "sym:Init",
+              "value": null
+            }
+          ],
+          "instruction": "call ADDR",
+          "status": "ok",
+          "target_address": 4491967,
+          "target_index": 43,
+          "target_offset": 127,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:initialize_frontend_widget",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "function:initialize_frontend_widget@0x401d30",
+              "value": 4201776
+            }
+          ]
+        },
+        {
+          "candidate_address": 147,
+          "candidate_index": 50,
+          "candidate_offset": 147,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "const:f32:42700000",
+              "kind": "disp",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "const:f32:60",
+              "value": null
+            }
+          ],
+          "instruction": "fmul dword [ADDR]",
+          "status": "ok",
+          "target_address": 4491987,
+          "target_index": 50,
+          "target_offset": 147,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "const:f32:42700000",
+              "kind": "disp",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "const:f32:60@0x497298",
+              "value": 4813464
+            }
+          ]
+        },
+        {
+          "candidate_address": 153,
+          "candidate_index": 51,
+          "candidate_offset": 153,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "const:f32:3f800000",
+              "kind": "disp",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "const:f32:1",
+              "value": null
+            }
+          ],
+          "instruction": "fdivr dword [ADDR]",
+          "status": "ok",
+          "target_address": 4491993,
+          "target_index": 51,
+          "target_offset": 153,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "const:f32:3f800000",
+              "kind": "disp",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "const:f32:1@0x497220",
+              "value": 4813344
+            }
+          ]
+        },
+        {
+          "candidate_address": 171,
+          "candidate_index": 55,
+          "candidate_offset": 171,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:g_game_base",
+              "kind": "disp",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 1,
+              "source": "reloc",
+              "text": "sym:g_game",
+              "value": null
+            }
+          ],
+          "instruction": "mov eax, dword [ADDR]",
+          "status": "ok",
+          "target_address": 4492011,
+          "target_index": 55,
+          "target_offset": 171,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:g_game_base",
+              "kind": "disp",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 1,
+              "source": "image",
+              "text": "global:g_game_base@0x4df904",
+              "value": 5110020
+            }
+          ]
+        },
+        {
+          "candidate_address": 182,
+          "candidate_index": 57,
+          "candidate_offset": 182,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:allocate_border",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "sym:GetBorder",
+              "value": null
+            }
+          ],
+          "instruction": "call ADDR",
+          "status": "ok",
+          "target_address": 4492022,
+          "target_index": 57,
+          "target_offset": 182,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:allocate_border",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "function:allocate_border@0x4032a0",
+              "value": 4207264
+            }
+          ]
+        },
+        {
+          "candidate_address": 209,
+          "candidate_index": 65,
+          "candidate_offset": 209,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "const:f32:42200000",
+              "kind": "disp",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "const:f32:40",
+              "value": null
+            }
+          ],
+          "instruction": "fadd dword [ADDR]",
+          "status": "ok",
+          "target_address": 4492049,
+          "target_index": 65,
+          "target_offset": 209,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "const:f32:42200000",
+              "kind": "disp",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "const:f32:40@0x497240",
+              "value": 4813376
+            }
+          ]
+        },
+        {
+          "candidate_address": 244,
+          "candidate_index": 73,
+          "candidate_offset": 244,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:set_color_rgba",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "sym:Set",
+              "value": null
+            }
+          ],
+          "instruction": "call ADDR",
+          "status": "ok",
+          "target_address": 4492084,
+          "target_index": 73,
+          "target_offset": 244,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:set_color_rgba",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "function:set_color_rgba@0x44db60",
+              "value": 4512608
+            }
+          ]
+        },
+        {
+          "candidate_address": 257,
+          "candidate_index": 79,
+          "candidate_offset": 257,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "str:OK",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "str:\"OK\"",
+              "value": null
+            }
+          ],
+          "instruction": "push ADDR",
+          "status": "ok",
+          "target_address": 4492097,
+          "target_index": 79,
+          "target_offset": 257,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "str:OK",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "str:\"OK\"@0x4a1150",
+              "value": 4854096
+            }
+          ]
+        },
+        {
+          "candidate_address": 264,
+          "candidate_index": 81,
+          "candidate_offset": 264,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:initialize_frontend_widget",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "sym:Init",
+              "value": null
+            }
+          ],
+          "instruction": "call ADDR",
+          "status": "ok",
+          "target_address": 4492104,
+          "target_index": 81,
+          "target_offset": 264,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:initialize_frontend_widget",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "function:initialize_frontend_widget@0x401d30",
+              "value": 4201776
+            }
+          ]
+        },
+        {
+          "candidate_address": 269,
+          "candidate_index": 82,
+          "candidate_offset": 269,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:g_game_base",
+              "kind": "disp",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 1,
+              "source": "reloc",
+              "text": "sym:g_game",
+              "value": null
+            }
+          ],
+          "instruction": "mov edx, dword [ADDR]",
+          "status": "ok",
+          "target_address": 4492109,
+          "target_index": 82,
+          "target_offset": 269,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:g_game_base",
+              "kind": "disp",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 1,
+              "source": "image",
+              "text": "global:g_game_base@0x4df904",
+              "value": 5110020
+            }
+          ]
+        },
+        {
+          "candidate_address": 281,
+          "candidate_index": 84,
+          "candidate_offset": 281,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:allocate_border",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "sym:GetBorder",
+              "value": null
+            }
+          ],
+          "instruction": "call ADDR",
+          "status": "ok",
+          "target_address": 4492121,
+          "target_index": 84,
+          "target_offset": 281,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:allocate_border",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "function:allocate_border@0x4032a0",
+              "value": 4207264
+            }
+          ]
+        },
+        {
+          "candidate_address": 300,
+          "candidate_index": 90,
+          "candidate_offset": 300,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "const:f32:42700000",
+              "kind": "disp",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "const:f32:60",
+              "value": null
+            }
+          ],
+          "instruction": "fsub dword [ADDR]",
+          "status": "ok",
+          "target_address": 4492140,
+          "target_index": 90,
+          "target_offset": 300,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "const:f32:42700000",
+              "kind": "disp",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "const:f32:60@0x497298",
+              "value": 4813464
+            }
+          ]
+        },
+        {
+          "candidate_address": 331,
+          "candidate_index": 97,
+          "candidate_offset": 331,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:set_color_rgba",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "sym:Set",
+              "value": null
+            }
+          ],
+          "instruction": "call ADDR",
+          "status": "ok",
+          "target_address": 4492171,
+          "target_index": 97,
+          "target_offset": 331,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:set_color_rgba",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "function:set_color_rgba@0x44db60",
+              "value": 4512608
+            }
+          ]
+        },
+        {
+          "candidate_address": 344,
+          "candidate_index": 103,
+          "candidate_offset": 344,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "str:Disable",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "str:\"Disable\"",
+              "value": null
+            }
+          ],
+          "instruction": "push ADDR",
+          "status": "ok",
+          "target_address": 4492184,
+          "target_index": 103,
+          "target_offset": 344,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "str:Disable",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "str:\"Disable\"@0x4ac5f4",
+              "value": 4900340
+            }
+          ]
+        },
+        {
+          "candidate_address": 351,
+          "candidate_index": 105,
+          "candidate_offset": 351,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:initialize_frontend_widget",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "sym:Init",
+              "value": null
+            }
+          ],
+          "instruction": "call ADDR",
+          "status": "ok",
+          "target_address": 4492191,
+          "target_index": 105,
+          "target_offset": 351,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:initialize_frontend_widget",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "function:initialize_frontend_widget@0x401d30",
+              "value": 4201776
+            }
+          ]
+        },
+        {
+          "candidate_address": 363,
+          "candidate_index": 109,
+          "candidate_offset": 363,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:stack_widget_below",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "sym:SetBelow",
+              "value": null
+            }
+          ],
+          "instruction": "call ADDR",
+          "status": "ok",
+          "target_address": 4492203,
+          "target_index": 109,
+          "target_offset": 363,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:stack_widget_below",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "function:stack_widget_below@0x4027b0",
+              "value": 4204464
+            }
+          ]
+        },
+        {
+          "candidate_address": 375,
+          "candidate_index": 113,
+          "candidate_offset": 375,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:stack_widget_below",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "sym:SetBelow",
+              "value": null
+            }
+          ],
+          "instruction": "call ADDR",
+          "status": "ok",
+          "target_address": 4492215,
+          "target_index": 113,
+          "target_offset": 375,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:stack_widget_below",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "function:stack_widget_below@0x4027b0",
+              "value": 4204464
+            }
+          ]
+        },
+        {
+          "candidate_address": 415,
+          "candidate_index": 124,
+          "candidate_offset": 415,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:set_color_rgba",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "sym:Set",
+              "value": null
+            }
+          ],
+          "instruction": "call ADDR",
+          "status": "ok",
+          "target_address": 4492255,
+          "target_index": 124,
+          "target_offset": 415,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:set_color_rgba",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "function:set_color_rgba@0x44db60",
+              "value": 4512608
+            }
+          ]
+        },
+        {
+          "candidate_address": 428,
+          "candidate_index": 130,
+          "candidate_offset": 428,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "str:OK",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "str:\"OK\"",
+              "value": null
+            }
+          ],
+          "instruction": "push ADDR",
+          "status": "ok",
+          "target_address": 4492268,
+          "target_index": 130,
+          "target_offset": 428,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "str:OK",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "str:\"OK\"@0x4a1150",
+              "value": 4854096
+            }
+          ]
+        },
+        {
+          "candidate_address": 435,
+          "candidate_index": 132,
+          "candidate_offset": 435,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:initialize_frontend_widget",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "sym:Init",
+              "value": null
+            }
+          ],
+          "instruction": "call ADDR",
+          "status": "ok",
+          "target_address": 4492275,
+          "target_index": 132,
+          "target_offset": 435,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:initialize_frontend_widget",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "function:initialize_frontend_widget@0x401d30",
+              "value": 4201776
+            }
+          ]
+        },
+        {
+          "candidate_address": 450,
+          "candidate_index": 137,
+          "candidate_offset": 450,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:stack_widget_below",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "reloc",
+              "text": "sym:SetBelow",
+              "value": null
+            }
+          ],
+          "instruction": "call ADDR",
+          "status": "ok",
+          "target_address": 4492290,
+          "target_index": 137,
+          "target_offset": 450,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:stack_widget_below",
+              "kind": "imm",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 0,
+              "source": "image",
+              "text": "function:stack_widget_below@0x4027b0",
+              "value": 4204464
+            }
+          ]
+        },
+        {
+          "candidate_address": 463,
+          "candidate_index": 141,
+          "candidate_offset": 463,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:g_game_base",
+              "kind": "disp",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 1,
+              "source": "reloc",
+              "text": "sym:g_game",
+              "value": null
+            }
+          ],
+          "instruction": "mov edx, dword [ADDR]",
+          "status": "ok",
+          "target_address": 4492303,
+          "target_index": 141,
+          "target_offset": 463,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:g_game_base",
+              "kind": "disp",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 1,
+              "source": "image",
+              "text": "global:g_game_base@0x4df904",
+              "value": 5110020
+            }
+          ]
+        },
+        {
+          "candidate_address": 488,
+          "candidate_index": 150,
+          "candidate_offset": 488,
+          "candidate_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:g_game_base",
+              "kind": "disp",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 1,
+              "source": "reloc",
+              "text": "sym:g_game",
+              "value": null
+            }
+          ],
+          "instruction": "mov edx, dword [ADDR]",
+          "status": "ok",
+          "target_address": 4492329,
+          "target_index": 150,
+          "target_offset": 489,
+          "target_references": [
+            {
+              "alternate_jump_table_entries": [],
+              "alternate_keys": [],
+              "audited_bytes": null,
+              "explained": true,
+              "jump_table_entries": null,
+              "key": "ref:g_game_base",
+              "kind": "disp",
+              "local_data_bytes": null,
+              "normalized_code": null,
+              "operand_index": 1,
+              "source": "image",
+              "text": "global:g_game_base@0x4df904",
+              "value": 5110020
+            }
+          ]
+        }
+      ]
+    },
+    "schema": 1,
+    "scratch_config": {
+      "cflags": "/O2 /G5 /W3",
+      "compiler": "msvc6.5",
+      "end_va": null,
+      "function": "initialize_tip",
+      "symbol": "?Init@cRTip@@QAEXPAUcRTipData@@H@Z"
+    }
+  },
+  "baseline_source": "// initialize_tip / cRTip::Init @ 0x448a40 (thiscall, ret 0x8)\n\n#include \"border_manager.h\"\n#include \"frontend_widget.h\"\n#include \"game_root.h\"\n#include \"tip_manager.h\"\n\nextern cRTipData g_default_tip_message; // data_4ac5c8 / iOS gTips\n\nvoid cRTip::Init(cRTipData* definition_, int hide_disable_button)\n{\n    active = 1;\n    if (definition_ != 0)\n        definition = definition_;\n    else\n        definition = &g_default_tip_message;\n\n    FrontendWidget*& main_widget = widget_main;\n    main_widget = g_game->border_manager.GetBorder();\n    int definition_flags = definition->flags;\n    unsigned int alignment = (int)(char)~definition_flags;\n    alignment &= 4;\n    tColour color;\n    main_widget->Init(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        alignment >> 1,\n        definition->anchor_x);\n\n    cRTipData* live_definition = definition;\n    int live_flags = live_definition->flags;\n    if ((live_flags & 2) != 0) {\n        dismiss_progress = 0.0f;\n        dismiss_step = 1.0f / (live_definition->dismiss_seconds * 60.0f);\n    }\n\n    if ((live_flags & 1) != 0) {\n        widget_ok = g_game->border_manager.GetBorder();\n        if (hide_disable_button == 0) {\n            widget_ok->Init(\n                FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED\n                    | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,\n                \"OK\",\n                0x14,\n                0.0f,\n                0.0f,\n                color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n                2,\n                definition->anchor_x + 40.0f);\n\n            widget_disable = g_game->border_manager.GetBorder();\n            widget_disable->Init(\n                FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED\n                    | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,\n                \"Disable\",\n                0x14,\n                0.0f,\n                0.0f,\n                color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n                2,\n                definition->anchor_x - 60.0f);\n            widget_disable->SetBelow(widget_main);\n            widget_ok->SetBelow(widget_main);\n        } else {\n            widget_ok->Init(\n                FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED\n                    | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,\n                \"OK\",\n                0x14,\n                0.0f,\n                0.0f,\n                color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n                2,\n                definition->anchor_x);\n            widget_disable = 0;\n            widget_ok->SetBelow(widget_main);\n        }\n    } else {\n        widget_ok = 0;\n        widget_disable = 0;\n    }\n\n    cRTipData* final_definition = definition;\n    previous_outer_owner = g_game->players[0].frontend_state;\n    if ((final_definition->flags & 1) != 0)\n        g_game->players[0].frontend_state = 0x16;\n}\n",
+  "retained_source": "// initialize_tip / cRTip::Init @ 0x448a40 (thiscall, ret 0x8)\n\n#include \"border_manager.h\"\n#include \"frontend_widget.h\"\n#include \"game_root.h\"\n#include \"tip_manager.h\"\n\nextern cRTipData g_default_tip_message; // data_4ac5c8 / iOS gTips\n\nvoid cRTip::Init(cRTipData* definition_, int hide_disable_button)\n{\n    active = 1;\n    if (definition_ != 0)\n        definition = definition_;\n    else\n        definition = &g_default_tip_message;\n\n    FrontendWidget*& main_widget = widget_main;\n    main_widget = g_game->border_manager.GetBorder();\n    int definition_flags = definition->flags;\n    unsigned int alignment = (char)~definition_flags;\n    tColour color;\n    main_widget->Init(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        (alignment & 4) >> 1,\n        definition->anchor_x);\n\n    cRTipData* live_definition = definition;\n    if ((live_definition->flags & 2) != 0) {\n        dismiss_progress = 0.0f;\n        dismiss_step = 1.0f / (live_definition->dismiss_seconds * 60.0f);\n    }\n\n    if ((live_definition->flags & 1) != 0) {\n        widget_ok = g_game->border_manager.GetBorder();\n        if (hide_disable_button == 0) {\n            widget_ok->Init(\n                FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED\n                    | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,\n                \"OK\",\n                0x14,\n                0.0f,\n                0.0f,\n                color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n                2,\n                definition->anchor_x + 40.0f);\n\n            widget_disable = g_game->border_manager.GetBorder();\n            widget_disable->Init(\n                FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED\n                    | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,\n                \"Disable\",\n                0x14,\n                0.0f,\n                0.0f,\n                color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n                2,\n                definition->anchor_x - 60.0f);\n            widget_disable->SetBelow(widget_main);\n            widget_ok->SetBelow(widget_main);\n        } else {\n            widget_ok->Init(\n                FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED\n                    | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,\n                \"OK\",\n                0x14,\n                0.0f,\n                0.0f,\n                color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n                2,\n                definition->anchor_x);\n            widget_disable = 0;\n            widget_ok->SetBelow(widget_main);\n        }\n    } else {\n        widget_ok = 0;\n        widget_disable = 0;\n    }\n\n    cRTipData* final_definition = definition;\n    previous_outer_owner = g_game->players[0].frontend_state;\n    if ((final_definition->flags & 1) != 0)\n        g_game->players[0].frontend_state = 0x16;\n}\n",
+  "listings": {
+    "baseline.asm": "0000  mov eax, dword [esp+0x4]\n0004  sub esp, 0x10\n0007  push ebx\n0008  push esi\n0009  mov esi, ecx\n000b  xor ebx, ebx\n000d  cmp eax, ebx\n000f  mov dword [esi], 0x1\n0015  je L1c\n0017  mov dword [esi+0x8], eax\n001a  jmp L23\n001c  mov dword [esi+0x8], ADDR\n0023  mov eax, dword [ADDR]\n0028  push edi\n0029  lea ecx, dword [eax+0xb4c]\n002f  call ADDR\n0034  mov dword [esi+0xc], eax\n0037  mov eax, dword [esi+0x8]\n003a  mov edi, dword [esi+0x8]\n003d  mov eax, dword [eax]\n003f  mov ecx, dword [edi+0x4]\n0042  not al\n0044  and eax, 0x4\n0047  push ecx\n0048  shr eax, 0x1\n004a  push eax\n004b  push 0x3f800000\n0050  push 0x3f800000\n0055  push 0x3f800000\n005a  push 0x3f800000\n005f  lea ecx, dword [esp+0x24]\n0063  call ADDR\n0068  mov edx, dword [edi+0x8]\n006b  mov ecx, dword [edi+0x10]\n006e  push eax\n006f  mov eax, dword [edi+0x4]\n0072  push edx\n0073  push eax\n0074  push 0x14\n0076  push ecx\n0077  mov ecx, dword [esi+0xc]\n007a  push 0x2\n007c  call ADDR\n0081  mov eax, dword [esi+0x8]\n0084  pop edi\n0085  mov ecx, dword [eax]\n0087  test cl, 0x2\n008a  je La1\n008c  mov dword [esi+0x18], ebx\n008f  fld dword [eax+0xc]\n0092  fmul dword [ADDR]\n0098  fdivr dword [ADDR]\n009e  fstp dword [esi+0x1c]\n00a1  test cl, 0x1\n00a4  je L1c9\n00aa  mov edx, dword [ADDR]\n00b0  lea ecx, dword [edx+0xb4c]\n00b6  call ADDR\n00bb  mov dword [esi+0x10], eax\n00be  mov eax, dword [esp+0x20]\n00c2  cmp eax, ebx\n00c4  jne L17e\n00ca  mov eax, dword [esi+0x8]\n00cd  push ecx\n00ce  lea ecx, dword [esp+0xc]\n00d2  fld dword [eax+0x4]\n00d5  fadd dword [ADDR]\n00db  fstp dword [esp]\n00de  push 0x2\n00e0  push 0x3f800000\n00e5  push 0x3f800000\n00ea  push 0x3f800000\n00ef  push 0x3f800000\n00f4  call ADDR\n00f9  mov ecx, dword [esi+0x10]\n00fc  push eax\n00fd  push ebx\n00fe  push ebx\n00ff  push 0x14\n0101  push ADDR\n0106  push 0x14\n0108  call ADDR\n010d  mov ecx, dword [ADDR]\n0113  add ecx, 0xb4c\n0119  call ADDR\n011e  mov edx, dword [esi+0x8]\n0121  mov dword [esi+0x14], eax\n0124  push ecx\n0125  lea ecx, dword [esp+0xc]\n0129  fld dword [edx+0x4]\n012c  fsub dword [ADDR]\n0132  fstp dword [esp]\n0135  push 0x2\n0137  push 0x3f800000\n013c  push 0x3f800000\n0141  push 0x3f800000\n0146  push 0x3f800000\n014b  call ADDR\n0150  mov ecx, dword [esi+0x14]\n0153  push eax\n0154  push ebx\n0155  push ebx\n0156  push 0x14\n0158  push ADDR\n015d  push 0x14\n015f  call ADDR\n0164  mov eax, dword [esi+0xc]\n0167  mov ecx, dword [esi+0x14]\n016a  push eax\n016b  call ADDR\n0170  mov ecx, dword [esi+0xc]\n0173  push ecx\n0174  mov ecx, dword [esi+0x10]\n0177  call ADDR\n017c  jmp L1cf\n017e  mov edx, dword [esi+0x8]\n0181  lea ecx, dword [esp+0x8]\n0185  mov eax, dword [edx+0x4]\n0188  push eax\n0189  push 0x2\n018b  push 0x3f800000\n0190  push 0x3f800000\n0195  push 0x3f800000\n019a  push 0x3f800000\n019f  call ADDR\n01a4  mov ecx, dword [esi+0x10]\n01a7  push eax\n01a8  push ebx\n01a9  push ebx\n01aa  push 0x14\n01ac  push ADDR\n01b1  push 0x14\n01b3  call ADDR\n01b8  mov ecx, dword [esi+0xc]\n01bb  mov dword [esi+0x14], ebx\n01be  push ecx\n01bf  mov ecx, dword [esi+0x10]\n01c2  call ADDR\n01c7  jmp L1cf\n01c9  mov dword [esi+0x10], ebx\n01cc  mov dword [esi+0x14], ebx\n01cf  mov edx, dword [ADDR]\n01d5  mov ecx, dword [esi+0x8]\n01d8  mov eax, dword [edx+0x1b8]\n01de  mov dword [esi+0x4], eax\n01e1  mov al, byte [ecx]\n01e3  pop esi\n01e4  pop ebx\n01e5  test al, 0x1\n01e7  je L1f9\n01e9  mov edx, dword [ADDR]\n01ef  mov dword [edx+0x1b8], 0x16\n01f9  add esp, 0x10\n01fc  ret 0x8\n",
+    "target.asm": "0000  mov eax, dword [esp+0x4]\n0004  sub esp, 0x10\n0007  push ebx\n0008  push esi\n0009  mov esi, ecx\n000b  xor ebx, ebx\n000d  cmp eax, ebx\n000f  mov dword [esi], 0x1\n0015  je L1c\n0017  mov dword [esi+0x8], eax\n001a  jmp L23\n001c  mov dword [esi+0x8], ADDR\n0023  mov eax, dword [ADDR]\n0028  push edi\n0029  lea ecx, dword [eax+0xb4c]\n002f  call ADDR\n0034  mov dword [esi+0xc], eax\n0037  mov eax, dword [esi+0x8]\n003a  mov edi, dword [esi+0x8]\n003d  mov ecx, dword [eax]\n003f  mov edx, dword [edi+0x4]\n0042  not cl\n0044  movsx eax, cl\n0047  and eax, 0x4\n004a  push edx\n004b  shr eax, 0x1\n004d  push eax\n004e  push 0x3f800000\n0053  push 0x3f800000\n0058  push 0x3f800000\n005d  push 0x3f800000\n0062  lea ecx, dword [esp+0x24]\n0066  call ADDR\n006b  mov ecx, dword [edi+0x4]\n006e  mov edx, dword [edi+0x10]\n0071  push eax\n0072  mov eax, dword [edi+0x8]\n0075  push eax\n0076  push ecx\n0077  mov ecx, dword [esi+0xc]\n007a  push 0x14\n007c  push edx\n007d  push 0x2\n007f  call ADDR\n0084  mov eax, dword [esi+0x8]\n0087  pop edi\n0088  test byte [eax], 0x2\n008b  je La2\n008d  mov dword [esi+0x18], ebx\n0090  fld dword [eax+0xc]\n0093  fmul dword [ADDR]\n0099  fdivr dword [ADDR]\n009f  fstp dword [esi+0x1c]\n00a2  test byte [eax], 0x1\n00a5  je L1c9\n00ab  mov eax, dword [ADDR]\n00b0  lea ecx, dword [eax+0xb4c]\n00b6  call ADDR\n00bb  mov dword [esi+0x10], eax\n00be  mov eax, dword [esp+0x20]\n00c2  cmp eax, ebx\n00c4  jne L17e\n00ca  mov ecx, dword [esi+0x8]\n00cd  push ecx\n00ce  fld dword [ecx+0x4]\n00d1  fadd dword [ADDR]\n00d7  lea ecx, dword [esp+0xc]\n00db  fstp dword [esp]\n00de  push 0x2\n00e0  push 0x3f800000\n00e5  push 0x3f800000\n00ea  push 0x3f800000\n00ef  push 0x3f800000\n00f4  call ADDR\n00f9  mov ecx, dword [esi+0x10]\n00fc  push eax\n00fd  push ebx\n00fe  push ebx\n00ff  push 0x14\n0101  push ADDR\n0106  push 0x14\n0108  call ADDR\n010d  mov edx, dword [ADDR]\n0113  lea ecx, dword [edx+0xb4c]\n0119  call ADDR\n011e  mov dword [esi+0x14], eax\n0121  mov eax, dword [esi+0x8]\n0124  push ecx\n0125  lea ecx, dword [esp+0xc]\n0129  fld dword [eax+0x4]\n012c  fsub dword [ADDR]\n0132  fstp dword [esp]\n0135  push 0x2\n0137  push 0x3f800000\n013c  push 0x3f800000\n0141  push 0x3f800000\n0146  push 0x3f800000\n014b  call ADDR\n0150  mov ecx, dword [esi+0x14]\n0153  push eax\n0154  push ebx\n0155  push ebx\n0156  push 0x14\n0158  push ADDR\n015d  push 0x14\n015f  call ADDR\n0164  mov ecx, dword [esi+0xc]\n0167  push ecx\n0168  mov ecx, dword [esi+0x14]\n016b  call ADDR\n0170  mov ecx, dword [esi+0xc]\n0173  push ecx\n0174  mov ecx, dword [esi+0x10]\n0177  call ADDR\n017c  jmp L1cf\n017e  mov edx, dword [esi+0x8]\n0181  lea ecx, dword [esp+0x8]\n0185  mov eax, dword [edx+0x4]\n0188  push eax\n0189  push 0x2\n018b  push 0x3f800000\n0190  push 0x3f800000\n0195  push 0x3f800000\n019a  push 0x3f800000\n019f  call ADDR\n01a4  mov ecx, dword [esi+0x10]\n01a7  push eax\n01a8  push ebx\n01a9  push ebx\n01aa  push 0x14\n01ac  push ADDR\n01b1  push 0x14\n01b3  call ADDR\n01b8  mov ecx, dword [esi+0xc]\n01bb  mov dword [esi+0x14], ebx\n01be  push ecx\n01bf  mov ecx, dword [esi+0x10]\n01c2  call ADDR\n01c7  jmp L1cf\n01c9  mov dword [esi+0x10], ebx\n01cc  mov dword [esi+0x14], ebx\n01cf  mov edx, dword [ADDR]\n01d5  mov ecx, dword [esi+0x8]\n01d8  mov eax, dword [edx+0x1b8]\n01de  mov dword [esi+0x4], eax\n01e1  mov al, byte [ecx]\n01e3  pop esi\n01e4  pop ebx\n01e5  test al, 0x1\n01e7  je L1f9\n01e9  mov edx, dword [ADDR]\n01ef  mov dword [edx+0x1b8], 0x16\n01f9  add esp, 0x10\n01fc  ret 0x8\n",
+    "candidate.asm": "0000  mov eax, dword [esp+0x4]\n0004  sub esp, 0x10\n0007  push ebx\n0008  push esi\n0009  mov esi, ecx\n000b  xor ebx, ebx\n000d  cmp eax, ebx\n000f  mov dword [esi], 0x1\n0015  je L1c\n0017  mov dword [esi+0x8], eax\n001a  jmp L23\n001c  mov dword [esi+0x8], ADDR\n0023  mov eax, dword [ADDR]\n0028  push edi\n0029  lea ecx, dword [eax+0xb4c]\n002f  call ADDR\n0034  mov dword [esi+0xc], eax\n0037  mov eax, dword [esi+0x8]\n003a  mov edi, dword [esi+0x8]\n003d  mov ecx, dword [eax]\n003f  mov edx, dword [edi+0x4]\n0042  not cl\n0044  movsx eax, cl\n0047  shr eax, 0x1\n0049  and eax, 0x2\n004c  push edx\n004d  push eax\n004e  push 0x3f800000\n0053  push 0x3f800000\n0058  push 0x3f800000\n005d  push 0x3f800000\n0062  lea ecx, dword [esp+0x24]\n0066  call ADDR\n006b  mov ecx, dword [edi+0x4]\n006e  mov edx, dword [edi+0x10]\n0071  push eax\n0072  mov eax, dword [edi+0x8]\n0075  push eax\n0076  push ecx\n0077  mov ecx, dword [esi+0xc]\n007a  push 0x14\n007c  push edx\n007d  push 0x2\n007f  call ADDR\n0084  mov eax, dword [esi+0x8]\n0087  pop edi\n0088  test byte [eax], 0x2\n008b  je La2\n008d  mov dword [esi+0x18], ebx\n0090  fld dword [eax+0xc]\n0093  fmul dword [ADDR]\n0099  fdivr dword [ADDR]\n009f  fstp dword [esi+0x1c]\n00a2  test byte [eax], 0x1\n00a5  je L1c9\n00ab  mov eax, dword [ADDR]\n00b0  lea ecx, dword [eax+0xb4c]\n00b6  call ADDR\n00bb  mov dword [esi+0x10], eax\n00be  mov eax, dword [esp+0x20]\n00c2  cmp eax, ebx\n00c4  jne L17e\n00ca  mov ecx, dword [esi+0x8]\n00cd  push ecx\n00ce  fld dword [ecx+0x4]\n00d1  fadd dword [ADDR]\n00d7  lea ecx, dword [esp+0xc]\n00db  fstp dword [esp]\n00de  push 0x2\n00e0  push 0x3f800000\n00e5  push 0x3f800000\n00ea  push 0x3f800000\n00ef  push 0x3f800000\n00f4  call ADDR\n00f9  mov ecx, dword [esi+0x10]\n00fc  push eax\n00fd  push ebx\n00fe  push ebx\n00ff  push 0x14\n0101  push ADDR\n0106  push 0x14\n0108  call ADDR\n010d  mov edx, dword [ADDR]\n0113  lea ecx, dword [edx+0xb4c]\n0119  call ADDR\n011e  mov dword [esi+0x14], eax\n0121  mov eax, dword [esi+0x8]\n0124  push ecx\n0125  lea ecx, dword [esp+0xc]\n0129  fld dword [eax+0x4]\n012c  fsub dword [ADDR]\n0132  fstp dword [esp]\n0135  push 0x2\n0137  push 0x3f800000\n013c  push 0x3f800000\n0141  push 0x3f800000\n0146  push 0x3f800000\n014b  call ADDR\n0150  mov ecx, dword [esi+0x14]\n0153  push eax\n0154  push ebx\n0155  push ebx\n0156  push 0x14\n0158  push ADDR\n015d  push 0x14\n015f  call ADDR\n0164  mov ecx, dword [esi+0xc]\n0167  push ecx\n0168  mov ecx, dword [esi+0x14]\n016b  call ADDR\n0170  mov edx, dword [esi+0xc]\n0173  mov ecx, dword [esi+0x10]\n0176  push edx\n0177  call ADDR\n017c  jmp L1cf\n017e  mov eax, dword [esi+0x8]\n0181  mov ecx, dword [eax+0x4]\n0184  push ecx\n0185  push 0x2\n0187  push 0x3f800000\n018c  push 0x3f800000\n0191  push 0x3f800000\n0196  push 0x3f800000\n019b  lea ecx, dword [esp+0x20]\n019f  call ADDR\n01a4  mov ecx, dword [esi+0x10]\n01a7  push eax\n01a8  push ebx\n01a9  push ebx\n01aa  push 0x14\n01ac  push ADDR\n01b1  push 0x14\n01b3  call ADDR\n01b8  mov edx, dword [esi+0xc]\n01bb  mov ecx, dword [esi+0x10]\n01be  push edx\n01bf  mov dword [esi+0x14], ebx\n01c2  call ADDR\n01c7  jmp L1cf\n01c9  mov dword [esi+0x10], ebx\n01cc  mov dword [esi+0x14], ebx\n01cf  mov eax, dword [ADDR]\n01d4  mov edx, dword [esi+0x8]\n01d7  mov ecx, dword [eax+0x1b8]\n01dd  mov dword [esi+0x4], ecx\n01e0  mov al, byte [edx]\n01e2  pop esi\n01e3  pop ebx\n01e4  test al, 0x1\n01e6  je L1f7\n01e8  mov eax, dword [ADDR]\n01ed  mov dword [eax+0x1b8], 0x16\n01f7  add esp, 0x10\n01fa  ret 0x8\n",
+    "baseline.diff": "--- baseline\n+++ candidate\n@@ -17,12 +17,13 @@\n mov dword [esi+0xc], eax\n mov eax, dword [esi+0x8]\n mov edi, dword [esi+0x8]\n-mov eax, dword [eax]\n-mov ecx, dword [edi+0x4]\n-not al\n-and eax, 0x4\n-push ecx\n+mov ecx, dword [eax]\n+mov edx, dword [edi+0x4]\n+not cl\n+movsx eax, cl\n shr eax, 0x1\n+and eax, 0x2\n+push edx\n push eax\n push 0x3f800000\n push 0x3f800000\n@@ -30,41 +31,40 @@\n push 0x3f800000\n lea ecx, dword [esp+0x24]\n call ADDR\n-mov edx, dword [edi+0x8]\n-mov ecx, dword [edi+0x10]\n+mov ecx, dword [edi+0x4]\n+mov edx, dword [edi+0x10]\n push eax\n-mov eax, dword [edi+0x4]\n-push edx\n+mov eax, dword [edi+0x8]\n push eax\n-push 0x14\n push ecx\n mov ecx, dword [esi+0xc]\n+push 0x14\n+push edx\n push 0x2\n call ADDR\n mov eax, dword [esi+0x8]\n pop edi\n-mov ecx, dword [eax]\n-test cl, 0x2\n-je La1\n+test byte [eax], 0x2\n+je La2\n mov dword [esi+0x18], ebx\n fld dword [eax+0xc]\n fmul dword [ADDR]\n fdivr dword [ADDR]\n fstp dword [esi+0x1c]\n-test cl, 0x1\n+test byte [eax], 0x1\n je L1c9\n-mov edx, dword [ADDR]\n-lea ecx, dword [edx+0xb4c]\n+mov eax, dword [ADDR]\n+lea ecx, dword [eax+0xb4c]\n call ADDR\n mov dword [esi+0x10], eax\n mov eax, dword [esp+0x20]\n cmp eax, ebx\n jne L17e\n-mov eax, dword [esi+0x8]\n+mov ecx, dword [esi+0x8]\n push ecx\n+fld dword [ecx+0x4]\n+fadd dword [ADDR]\n lea ecx, dword [esp+0xc]\n-fld dword [eax+0x4]\n-fadd dword [ADDR]\n fstp dword [esp]\n push 0x2\n push 0x3f800000\n@@ -80,14 +80,14 @@\n push ADDR\n push 0x14\n call ADDR\n-mov ecx, dword [ADDR]\n-add ecx, 0xb4c\n+mov edx, dword [ADDR]\n+lea ecx, dword [edx+0xb4c]\n call ADDR\n-mov edx, dword [esi+0x8]\n mov dword [esi+0x14], eax\n+mov eax, dword [esi+0x8]\n push ecx\n lea ecx, dword [esp+0xc]\n-fld dword [edx+0x4]\n+fld dword [eax+0x4]\n fsub dword [ADDR]\n fstp dword [esp]\n push 0x2\n@@ -104,24 +104,24 @@\n push ADDR\n push 0x14\n call ADDR\n-mov eax, dword [esi+0xc]\n-mov ecx, dword [esi+0x14]\n-push eax\n-call ADDR\n mov ecx, dword [esi+0xc]\n push ecx\n+mov ecx, dword [esi+0x14]\n+call ADDR\n+mov edx, dword [esi+0xc]\n mov ecx, dword [esi+0x10]\n+push edx\n call ADDR\n jmp L1cf\n-mov edx, dword [esi+0x8]\n-lea ecx, dword [esp+0x8]\n-mov eax, dword [edx+0x4]\n-push eax\n+mov eax, dword [esi+0x8]\n+mov ecx, dword [eax+0x4]\n+push ecx\n push 0x2\n push 0x3f800000\n push 0x3f800000\n push 0x3f800000\n push 0x3f800000\n+lea ecx, dword [esp+0x20]\n call ADDR\n mov ecx, dword [esi+0x10]\n push eax\n@@ -131,24 +131,24 @@\n push ADDR\n push 0x14\n call ADDR\n-mov ecx, dword [esi+0xc]\n+mov edx, dword [esi+0xc]\n+mov ecx, dword [esi+0x10]\n+push edx\n mov dword [esi+0x14], ebx\n-push ecx\n-mov ecx, dword [esi+0x10]\n call ADDR\n jmp L1cf\n mov dword [esi+0x10], ebx\n mov dword [esi+0x14], ebx\n-mov edx, dword [ADDR]\n-mov ecx, dword [esi+0x8]\n-mov eax, dword [edx+0x1b8]\n-mov dword [esi+0x4], eax\n-mov al, byte [ecx]\n+mov eax, dword [ADDR]\n+mov edx, dword [esi+0x8]\n+mov ecx, dword [eax+0x1b8]\n+mov dword [esi+0x4], ecx\n+mov al, byte [edx]\n pop esi\n pop ebx\n test al, 0x1\n-je L1f9\n-mov edx, dword [ADDR]\n-mov dword [edx+0x1b8], 0x16\n+je L1f7\n+mov eax, dword [ADDR]\n+mov dword [eax+0x1b8], 0x16\n add esp, 0x10\n ret 0x8\n",
+    "assembly.diff": "--- target\n+++ candidate\n@@ -21,9 +21,9 @@\n mov edx, dword [edi+0x4]\n not cl\n movsx eax, cl\n-and eax, 0x4\n+shr eax, 0x1\n+and eax, 0x2\n push edx\n-shr eax, 0x1\n push eax\n push 0x3f800000\n push 0x3f800000\n@@ -108,20 +108,20 @@\n push ecx\n mov ecx, dword [esi+0x14]\n call ADDR\n-mov ecx, dword [esi+0xc]\n-push ecx\n+mov edx, dword [esi+0xc]\n mov ecx, dword [esi+0x10]\n+push edx\n call ADDR\n jmp L1cf\n-mov edx, dword [esi+0x8]\n-lea ecx, dword [esp+0x8]\n-mov eax, dword [edx+0x4]\n-push eax\n+mov eax, dword [esi+0x8]\n+mov ecx, dword [eax+0x4]\n+push ecx\n push 0x2\n push 0x3f800000\n push 0x3f800000\n push 0x3f800000\n push 0x3f800000\n+lea ecx, dword [esp+0x20]\n call ADDR\n mov ecx, dword [esi+0x10]\n push eax\n@@ -131,24 +131,24 @@\n push ADDR\n push 0x14\n call ADDR\n-mov ecx, dword [esi+0xc]\n+mov edx, dword [esi+0xc]\n+mov ecx, dword [esi+0x10]\n+push edx\n mov dword [esi+0x14], ebx\n-push ecx\n-mov ecx, dword [esi+0x10]\n call ADDR\n jmp L1cf\n mov dword [esi+0x10], ebx\n mov dword [esi+0x14], ebx\n-mov edx, dword [ADDR]\n-mov ecx, dword [esi+0x8]\n-mov eax, dword [edx+0x1b8]\n-mov dword [esi+0x4], eax\n-mov al, byte [ecx]\n+mov eax, dword [ADDR]\n+mov edx, dword [esi+0x8]\n+mov ecx, dword [eax+0x1b8]\n+mov dword [esi+0x4], ecx\n+mov al, byte [edx]\n pop esi\n pop ebx\n test al, 0x1\n-je L1f9\n-mov edx, dword [ADDR]\n-mov dword [edx+0x1b8], 0x16\n+je L1f7\n+mov eax, dword [ADDR]\n+mov dword [eax+0x1b8], 0x16\n add esp, 0x10\n ret 0x8\n"
+  },
+  "all_member_context_controls": [
+    {
+      "unit": "Tips.o",
+      "order": "native",
+      "function": "kill_tip_widgets",
+      "ratio": 1.0,
+      "prefix": 24,
+      "candidate": 24,
+      "target": 24,
+      "refs": [
+        6,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "unit": "Tips.o",
+      "order": "native",
+      "function": "initialize_tip",
+      "ratio": 0.8766233766233766,
+      "prefix": 23,
+      "candidate": 154,
+      "target": 154,
+      "refs": [
+        27,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "unit": "Tips.o",
+      "order": "native",
+      "function": "update_tip",
+      "ratio": 1.0,
+      "prefix": 51,
+      "candidate": 51,
+      "target": 51,
+      "refs": [
+        9,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "unit": "Tips.o",
+      "order": "native",
+      "function": "initialize_tip_manager",
+      "ratio": 1.0,
+      "prefix": 7,
+      "candidate": 7,
+      "target": 7,
+      "refs": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "unit": "Tips.o",
+      "order": "native",
+      "function": "uninit_tips",
+      "ratio": 1.0,
+      "prefix": 14,
+      "candidate": 14,
+      "target": 14,
+      "refs": [
+        1,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "unit": "Tips.o",
+      "order": "native",
+      "function": "enqueue_tip_message",
+      "ratio": 1.0,
+      "prefix": 26,
+      "candidate": 26,
+      "target": 26,
+      "refs": [
+        3,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "unit": "Tips.o",
+      "order": "native",
+      "function": "update_tip_manager",
+      "ratio": 1.0,
+      "prefix": 14,
+      "candidate": 14,
+      "target": 14,
+      "refs": [
+        1,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "unit": "Tips.o",
+      "order": "reverse",
+      "function": "kill_tip_widgets",
+      "ratio": 1.0,
+      "prefix": 24,
+      "candidate": 24,
+      "target": 24,
+      "refs": [
+        6,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "unit": "Tips.o",
+      "order": "reverse",
+      "function": "initialize_tip",
+      "ratio": 0.8766233766233766,
+      "prefix": 23,
+      "candidate": 154,
+      "target": 154,
+      "refs": [
+        27,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "unit": "Tips.o",
+      "order": "reverse",
+      "function": "update_tip",
+      "ratio": 1.0,
+      "prefix": 51,
+      "candidate": 51,
+      "target": 51,
+      "refs": [
+        9,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "unit": "Tips.o",
+      "order": "reverse",
+      "function": "initialize_tip_manager",
+      "ratio": 1.0,
+      "prefix": 7,
+      "candidate": 7,
+      "target": 7,
+      "refs": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "unit": "Tips.o",
+      "order": "reverse",
+      "function": "uninit_tips",
+      "ratio": 1.0,
+      "prefix": 14,
+      "candidate": 14,
+      "target": 14,
+      "refs": [
+        1,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "unit": "Tips.o",
+      "order": "reverse",
+      "function": "enqueue_tip_message",
+      "ratio": 1.0,
+      "prefix": 26,
+      "candidate": 26,
+      "target": 26,
+      "refs": [
+        3,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "unit": "Tips.o",
+      "order": "reverse",
+      "function": "update_tip_manager",
+      "ratio": 1.0,
+      "prefix": 14,
+      "candidate": 14,
+      "target": 14,
+      "refs": [
+        1,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "full_status_non_regression": {
+    "rows": 785,
+    "changed": [
+      "initialize_tip"
+    ],
+    "old": [
+      "",
+      "\ud83d\udea7",
+      "initialize_tip",
+      "0x448a40",
+      "511",
+      "154/154",
+      "84.42%",
+      "19/154",
+      "27 ok",
+      "",
+      "core",
+      ""
+    ],
+    "new": [
+      "",
+      "\ud83d\udea7",
+      "initialize_tip",
+      "0x448a40",
+      "511",
+      "154/154",
+      "87.66%",
+      "23/154",
+      "27 ok",
+      "",
+      "core",
+      ""
+    ]
+  }
+}

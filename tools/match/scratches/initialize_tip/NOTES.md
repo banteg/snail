@@ -1,5 +1,34 @@
 # initialize_tip
 
+## 2026-09-09 live flag reads and alignment lifetime
+
+The retained source improves **84.42% to 87.66%**, keeps **154/154**
+instructions and **27 clean references**, and extends the exact prefix from
+19 to 23 instructions. The alignment mask is applied at the widget call,
+after preserving the signed-byte complement in an unsigned scalar. This
+recovers the native full-width flag load, byte complement, and sign extension.
+The result still has precisely the same two possible alignment values, 0 and 2.
+
+The timed and modal gates now read the definition's flags at each use. Native
+code tests `[eax]` directly on both gates, including after the timed-state
+writes; Android also reloads the flags after entering the timed branch. This
+removes the old shared flags snapshot and recovers the main widget argument
+schedule and the timed/modal test region. Windows remains authoritative for
+the unguarded dismiss-time division and the integer second formal.
+
+The receipt in `live-flags-and-alignment-lifetime-20260909.json` embeds both
+sources, native/baseline/candidate listings, full diagnostics, and the focused
+probe. All seven authored `Tips.o` members were compiled in native and reversed
+order: the six exact controls remain exact and this initializer preserves its
+new metrics. The full 785-row status comparison changes only this initializer.
+
+This remains a partial, with zero additional proof-grade functions or bytes.
+The first remaining difference is equivalent shift/mask ordering; later
+differences cover parent-widget call setup, the OK-only colour argument, and
+the final frontend-owner handoff. The higher fuzzy result is not an encoded
+body exactness claim. Additional slot-reference controls reach the same score
+with a shorter prefix and are not retained.
+
 Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
 `cRTip::Init(cRTipData*, bool)` bodies and the live Windows Tip method establish
 the default definition, timed/modal branch, three-widget construction, and

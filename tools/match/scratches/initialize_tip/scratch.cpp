@@ -18,8 +18,7 @@ void cRTip::Init(cRTipData* definition_, int hide_disable_button)
     FrontendWidget*& main_widget = widget_main;
     main_widget = g_game->border_manager.GetBorder();
     int definition_flags = definition->flags;
-    unsigned int alignment = (int)(char)~definition_flags;
-    alignment &= 4;
+    unsigned int alignment = (char)~definition_flags;
     tColour color;
     main_widget->Init(
         FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
@@ -28,17 +27,16 @@ void cRTip::Init(cRTipData* definition_, int hide_disable_button)
         definition->anchor_x,
         definition->layout_y,
         color.Set(1.0f, 1.0f, 1.0f, 1.0f),
-        alignment >> 1,
+        (alignment & 4) >> 1,
         definition->anchor_x);
 
     cRTipData* live_definition = definition;
-    int live_flags = live_definition->flags;
-    if ((live_flags & 2) != 0) {
+    if ((live_definition->flags & 2) != 0) {
         dismiss_progress = 0.0f;
         dismiss_step = 1.0f / (live_definition->dismiss_seconds * 60.0f);
     }
 
-    if ((live_flags & 1) != 0) {
+    if ((live_definition->flags & 1) != 0) {
         widget_ok = g_game->border_manager.GetBorder();
         if (hide_disable_button == 0) {
             widget_ok->Init(
