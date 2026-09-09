@@ -1,0 +1,840 @@
+{
+  "input_sha256": "523f848f2a0b8ef8c9dfe2714744bf0479a4feec79b25f0d1f5e035a6487c096",
+  "scope": "cR-prefixed name records in the observed small-data descriptor range, recursively following base entries; not a complete RTTI census",
+  "interpretation": "Runtime type metadata, supported by name/base pointers and native vtable installation. Base entries may include transitive bases; offset words are not complete object sizes.",
+  "records": [
+    {
+      "address": "0x808f3720",
+      "name": "cRBackdrop",
+      "name_address": "0x8015e634",
+      "base_table": "0x80166850",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x800066d8",
+        "0x800066dc",
+        "0x80166844"
+      ]
+    },
+    {
+      "address": "0x808f3758",
+      "name": "cRBod",
+      "name_address": "0x808f4b60",
+      "base_table": "0x0",
+      "base_entries": [],
+      "references": [
+        "0x80166850",
+        "0x80166868",
+        "0x80166890",
+        "0x801668a8",
+        "0x801668c8",
+        "0x801668dc",
+        "0x80166950",
+        "0x80166968",
+        "0x801669a4",
+        "0x80166b94",
+        "0x80166bac",
+        "0x80166bcc",
+        "0x80166be4",
+        "0x80166c04",
+        "0x80166c24",
+        "0x80166c44",
+        "0x80166c64",
+        "0x80166c7c",
+        "0x80166c9c",
+        "0x80166cbc",
+        "0x80166cdc",
+        "0x80166cf4",
+        "0x80166d14",
+        "0x80166d2c",
+        "0x80166d4c",
+        "0x80166d64",
+        "0x80166d8c",
+        "0x80166da4",
+        "0x801673e4",
+        "0x8016741c",
+        "0x8016743c",
+        "0x80167524",
+        "0x80167544",
+        "0x80167848",
+        "0x80167924",
+        "0x80167b54",
+        "0x80167bcc",
+        "0x80167be4",
+        "0x80167c04",
+        "0x80167c24"
+      ]
+    },
+    {
+      "address": "0x808f3728",
+      "name": "cRPlayer",
+      "name_address": "0x8015e640",
+      "base_table": "0x80166868",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x8016685c"
+      ]
+    },
+    {
+      "address": "0x808f3750",
+      "name": "cRBodPos",
+      "name_address": "0x8015e670",
+      "base_table": "0x801668dc",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166870",
+        "0x801668b0",
+        "0x801668d0",
+        "0x80166998",
+        "0x80166bb4",
+        "0x80166bec",
+        "0x80166c0c",
+        "0x80166c2c",
+        "0x80166c4c",
+        "0x80166c84",
+        "0x80166ca4",
+        "0x80166cc4",
+        "0x80166cfc",
+        "0x80166d34",
+        "0x80166d6c",
+        "0x80166dac",
+        "0x80167424",
+        "0x80167444",
+        "0x8016752c",
+        "0x8016754c",
+        "0x8016792c",
+        "0x80167b5c",
+        "0x80167bec",
+        "0x80167c0c"
+      ]
+    },
+    {
+      "address": "0x808f3730",
+      "name": "cRGameInput",
+      "name_address": "0x8015e64c",
+      "base_table": "0x80166888",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3748",
+          "name": "cRInput",
+          "offset_word": "0x30"
+        },
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x8016687c"
+      ]
+    },
+    {
+      "address": "0x808f3748",
+      "name": "cRInput",
+      "name_address": "0x808f4b58",
+      "base_table": "0x0",
+      "base_entries": [],
+      "references": [
+        "0x80166888"
+      ]
+    },
+    {
+      "address": "0x808f3738",
+      "name": "cROverlay",
+      "name_address": "0x8015e658",
+      "base_table": "0x801668a8",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x8016689c"
+      ]
+    },
+    {
+      "address": "0x808f3740",
+      "name": "cRCamera",
+      "name_address": "0x8015e664",
+      "base_table": "0x801668c8",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x801668bc"
+      ]
+    },
+    {
+      "address": "0x808f3768",
+      "name": "cRBorderManager",
+      "name_address": "0x8015f768",
+      "base_table": "0x80166950",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166944"
+      ]
+    },
+    {
+      "address": "0x808f3770",
+      "name": "cRBorder",
+      "name_address": "0x8015f778",
+      "base_table": "0x80166968",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x8016695c"
+      ]
+    },
+    {
+      "address": "0x808f3778",
+      "name": "cRSubDivides",
+      "name_address": "0x8015fdf8",
+      "base_table": "0x80166b94",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166b88"
+      ]
+    },
+    {
+      "address": "0x808f3780",
+      "name": "cRSubRing",
+      "name_address": "0x8015fe08",
+      "base_table": "0x80166bac",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166ba0"
+      ]
+    },
+    {
+      "address": "0x808f3788",
+      "name": "cRBarrier",
+      "name_address": "0x8015fe14",
+      "base_table": "0x80166bcc",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166bc0"
+      ]
+    },
+    {
+      "address": "0x808f3790",
+      "name": "cRWeapon",
+      "name_address": "0x8015fe20",
+      "base_table": "0x80166be4",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166bd8"
+      ]
+    },
+    {
+      "address": "0x808f3798",
+      "name": "cRInvincible",
+      "name_address": "0x8015fe2c",
+      "base_table": "0x80166c04",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166bf8"
+      ]
+    },
+    {
+      "address": "0x808f37a0",
+      "name": "cRClickStart",
+      "name_address": "0x8015fe3c",
+      "base_table": "0x80166c24",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166c18"
+      ]
+    },
+    {
+      "address": "0x808f37a8",
+      "name": "cRSubTrampRing",
+      "name_address": "0x8015fe4c",
+      "base_table": "0x80166c44",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166c38"
+      ]
+    },
+    {
+      "address": "0x808f37b0",
+      "name": "cRBanner",
+      "name_address": "0x8015fe5c",
+      "base_table": "0x80166c64",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166c58"
+      ]
+    },
+    {
+      "address": "0x808f37c0",
+      "name": "cRSubLazer",
+      "name_address": "0x8015fe68",
+      "base_table": "0x80166c9c",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166c90"
+      ]
+    },
+    {
+      "address": "0x808f37d0",
+      "name": "cRParcel",
+      "name_address": "0x8015fe74",
+      "base_table": "0x80166cdc",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166cd0"
+      ]
+    },
+    {
+      "address": "0x808f37d8",
+      "name": "cRSubGarbage",
+      "name_address": "0x8015fe80",
+      "base_table": "0x80166cf4",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166ce8"
+      ]
+    },
+    {
+      "address": "0x808f37e0",
+      "name": "cRJetPack",
+      "name_address": "0x8015fe90",
+      "base_table": "0x80166d14",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166d08"
+      ]
+    },
+    {
+      "address": "0x808f37e8",
+      "name": "cRSubSpeedUp",
+      "name_address": "0x8015fe9c",
+      "base_table": "0x80166d2c",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166d20"
+      ]
+    },
+    {
+      "address": "0x808f37f0",
+      "name": "cRSubHealth",
+      "name_address": "0x8015feac",
+      "base_table": "0x80166d4c",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166d40"
+      ]
+    },
+    {
+      "address": "0x808f37f8",
+      "name": "cRVapour",
+      "name_address": "0x8015feb8",
+      "base_table": "0x80166d64",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166d58"
+      ]
+    },
+    {
+      "address": "0x808f3800",
+      "name": "cRSubLoc",
+      "name_address": "0x8015fec4",
+      "base_table": "0x80166d84",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3808",
+          "name": "cRLoc",
+          "offset_word": "0x30"
+        },
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166d78"
+      ]
+    },
+    {
+      "address": "0x808f3808",
+      "name": "cRLoc",
+      "name_address": "0x808f4f28",
+      "base_table": "0x0",
+      "base_entries": [],
+      "references": [
+        "0x80166d84"
+      ]
+    },
+    {
+      "address": "0x808f3810",
+      "name": "cRRowModel",
+      "name_address": "0x8015fed0",
+      "base_table": "0x80166da4",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166d98"
+      ]
+    },
+    {
+      "address": "0x808f3818",
+      "name": "cRStarManager",
+      "name_address": "0x80161588",
+      "base_table": "0x801673e4",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x801673d8"
+      ]
+    },
+    {
+      "address": "0x808f3820",
+      "name": "cRSubGolb",
+      "name_address": "0x80161670",
+      "base_table": "0x8016741c",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80167410"
+      ]
+    },
+    {
+      "address": "0x808f3828",
+      "name": "cRGolbRocket",
+      "name_address": "0x8016167c",
+      "base_table": "0x8016743c",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80167430"
+      ]
+    },
+    {
+      "address": "0x808f3830",
+      "name": "cRSubGoldy",
+      "name_address": "0x80161888",
+      "base_table": "0x80167524",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80167518"
+      ]
+    },
+    {
+      "address": "0x808f3840",
+      "name": "cRTipManager",
+      "name_address": "0x80161f8c",
+      "base_table": "0x80167848",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x8016783c"
+      ]
+    },
+    {
+      "address": "0x808f3848",
+      "name": "cRLogoLetter",
+      "name_address": "0x80162278",
+      "base_table": "0x80167924",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80167918"
+      ]
+    },
+    {
+      "address": "0x808f3858",
+      "name": "cRCountDown",
+      "name_address": "0x801625f8",
+      "base_table": "0x80167b54",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80167b48"
+      ]
+    },
+    {
+      "address": "0x808f38a8",
+      "name": "cRDirectXModel",
+      "name_address": "0x80162860",
+      "base_table": "0x80167bcc",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80167bc0"
+      ]
+    },
+    {
+      "address": "0x808f38b8",
+      "name": "cRSegTrack",
+      "name_address": "0x80162880",
+      "base_table": "0x80167c04",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80167bf8"
+      ]
+    },
+    {
+      "address": "0x808f37b8",
+      "name": "cRSalt",
+      "name_address": "0x808f4f18",
+      "base_table": "0x80166c7c",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166c70"
+      ]
+    },
+    {
+      "address": "0x808f37c8",
+      "name": "cRSlug",
+      "name_address": "0x808f4f20",
+      "base_table": "0x80166cbc",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80166cb0"
+      ]
+    },
+    {
+      "address": "0x808f3838",
+      "name": "cRSnail",
+      "name_address": "0x808f5500",
+      "base_table": "0x80167544",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        },
+        {
+          "descriptor": "0x808f3750",
+          "name": "cRBodPos",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80167538"
+      ]
+    },
+    {
+      "address": "0x808f38c0",
+      "name": "cRPath",
+      "name_address": "0x808f5ac0",
+      "base_table": "0x80167c24",
+      "base_entries": [
+        {
+          "descriptor": "0x808f3758",
+          "name": "cRBod",
+          "offset_word": "0x0"
+        }
+      ],
+      "references": [
+        "0x80167c18"
+      ]
+    }
+  ],
+  "player_vtable_proof": {
+    "vtable": "0x8016685c",
+    "words": [
+      "0x808f3728",
+      "0x0",
+      "0x80019644"
+    ],
+    "installer_function": "0x80081358",
+    "address_materialization": "0x800813a8",
+    "store": "0x800813b8: stw r17,44(r18)"
+  }
+}
