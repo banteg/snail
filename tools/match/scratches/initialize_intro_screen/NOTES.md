@@ -1,5 +1,27 @@
 # initialize_intro_screen @ 0x4191e0
 
+## 2026-09-09 native parser-call cleanup profile
+
+The unchanged source now uses `msvc6.0 /O2 /G5 /W3` and improves from
+**88.89% to 93.38%**, with **522/521** instructions, prefix 88, and all
+66 references clean. Both `msvc6.0` and `msvc6.3` defer cleanup of the two
+image-dimension parser arguments through the following `sprintf`, matching
+native's combined 20-byte cleanup. VC6.5 emitted an extra `add esp, 8` and
+a separate 12-byte cleanup. This is one fewer excess instruction; it does
+not identify the original service pack or close the function.
+
+The four exact Logo peers remain exact when compiled together in native and
+reversed source order under VC6.3, while this method preserves the same new
+partial result. A full 785-row check changes only this initializer. The
+[receipt](../../intro-native-profile-20260909.json) records these controls and
+the complete remaining native diff. Port-relevant exact progress stays 596/662.
+
+The remaining differences are the text-end/image-position stack slots, the
+image dimensions sharing slots with glyph-loop locals, and the final vector
+copy's register allocation and script-owner reload. Replaying the existing
+lifetime recipes under the older profile does not improve the new baseline.
+The raw body is not byte-identical, and no proof-grade bytes are added.
+
 Starter scratch for the intro/credits crawl initializer.
 
 Models the SpaceRed backdrop/music setup, render matrix/FOV setup, mouse release,

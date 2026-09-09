@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**596/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **140641/294937** bytes (**47.69%**) are proof-grade, and overall fuzzy is **88.56%**.
+**596/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **140641/294937** bytes (**47.69%**) are proof-grade, and overall fuzzy is **88.59%**.
 
 **114/120** platform helpers matched, **120/120** have a scratch, **16893/22103** bytes (**76.43%**) are proof-grade, and overall fuzzy is **97.44%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -10,9 +10,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**66** non-exact scratch-backed functions hold **28435 fuzzy-gap bytes**. The top 5 hold **31.8%** of that gap; the top 10 hold **46.3%**.
+**66** non-exact scratch-backed functions hold **28352 fuzzy-gap bytes**. The top 5 hold **31.9%** of that gap; the top 10 hold **46.4%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **66 / 28435** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **1 functions / 122 gap bytes**; **65 / 28229** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -56,9 +56,9 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 36 | initialize_snake_path_template_pair | 288 | semantic-complete | analysis | historical-only | 0/72 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 37 | initialize_start_path_template_pair | 268 | incomplete | analysis | historical-only | 0/68 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 38 | set_snail_weapon | 254 | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
-| 39 | initialize_intro_screen | 206 | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,variant-errors,historical-only,stale-dependencies |
-| 40 | initialize_sbend_path_template_pair | 184 | semantic-complete | analysis | historical-only | 0/101 | repeated-variants,repeated-specs,metric-tradeoffs,historical-only,stale-dependencies |
-| 41 | initialize_loading_screen | 129 | semantic-complete | analysis | historical-only | 0/8 | variant-errors,historical-only,stale-dependencies |
+| 39 | initialize_sbend_path_template_pair | 184 | semantic-complete | analysis | historical-only | 0/101 | repeated-variants,repeated-specs,metric-tradeoffs,historical-only,stale-dependencies |
+| 40 | initialize_loading_screen | 129 | semantic-complete | analysis | historical-only | 0/8 | variant-errors,historical-only,stale-dependencies |
+| 41 | initialize_intro_screen | 122 | semantic-complete | analysis | current-active | 1/13 | repeated-variants,variant-errors,stale-dependencies |
 | 42 | register_font_texture_sheet | 120 | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
 | 43 | place_challenge_parcels_on_track | 115 | semantic-complete | analysis,references | historical-only | 0/9 | historical-only,stale-dependencies |
 | 44 | update_frontend_widget_interaction | 112 | semantic-complete | analysis,references | historical-only | 0/16 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
@@ -712,7 +712,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 5405/5411 | 81.34% | 0/5411 | 2 unaudited, 1880 ok |  | core |
 | 🚧 | refresh_object_vertex_buffer | 0x412250 | 393 | 137/139 | 90.58% | 7/139 | 4 ok |  | boundary |
 | 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 54 ok |  | core |
-| 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 523/521 | 88.89% | 88/521 | 66 ok |  | core |
+| 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 522/521 | 93.38% | 88/521 | 66 ok | msvc6.0 /O2 /G5 /W3 | core |
 | 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 689/690 | 82.81% | 20/690 | 43 ok |  | core |
 | 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 695/696 | 80.66% | 48/696 | 40 ok |  | core |
 | 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 695/696 | 80.66% | 48/696 | 40 ok |  | core |

@@ -1,0 +1,368 @@
+{
+  "schema": 1,
+  "classification": "partial; no new exact functions or proof-grade bytes",
+  "function": "initialize_intro_screen",
+  "source_sha256": "c1c3493c0575d7578ae66c7431088924f95cfe66e3319d9a0317f0acb210e3cf",
+  "before": {
+    "label": "canonical",
+    "state": "wip",
+    "code_sha256": "620f016714fb3346f4babf72cecffad5dca91b77fda7b7aaf24e90020391e7e3",
+    "function": "initialize_intro_screen",
+    "address": 4297184,
+    "target_bytes": 1851,
+    "fuzzy_weighted_bytes": 1645.3333333333333,
+    "fuzzy_gap_bytes": 205.66666666666674,
+    "target_instructions": 521,
+    "candidate_instructions": 523,
+    "match_ratio": 0.8888888888888888,
+    "prefix_instructions": 88,
+    "first_mismatch": {
+      "target_offset": 330,
+      "candidate_offset": 330
+    },
+    "references": {
+      "ok": 66,
+      "unresolved": 0,
+      "mismatch": 0,
+      "unaudited": 0
+    },
+    "compiler": "msvc6.5",
+    "cflags": "/O2 /G5 /W3",
+    "recovery": "semantic-complete",
+    "residuals": [
+      "analysis"
+    ],
+    "scratch": "/var/folders/zq/vyffd7255m38x2mbmvvd102w0000gn/T/snail-match-probe-initialize_intro_screen-ejadhtds",
+    "error": null
+  },
+  "profile_controls": [
+    {
+      "label": "msvc6.0-None",
+      "state": "wip",
+      "code_sha256": "c07653e15921c94d02dc04c3ccd8405fe820b6d1ff0154a1857cc47640455736",
+      "function": "initialize_intro_screen",
+      "address": 4297184,
+      "target_bytes": 1851,
+      "fuzzy_weighted_bytes": 1728.5465004793864,
+      "fuzzy_gap_bytes": 122.4534995206136,
+      "target_instructions": 521,
+      "candidate_instructions": 522,
+      "match_ratio": 0.9338446788111218,
+      "prefix_instructions": 88,
+      "first_mismatch": {
+        "target_offset": 330,
+        "candidate_offset": 330
+      },
+      "references": {
+        "ok": 66,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "compiler": "msvc6.0",
+      "cflags": "/O2 /G5 /W3",
+      "recovery": "semantic-complete",
+      "residuals": [
+        "analysis"
+      ],
+      "scratch": "/var/folders/zq/vyffd7255m38x2mbmvvd102w0000gn/T/snail-match-probe-initialize_intro_screen-1bvma2et",
+      "error": null
+    },
+    {
+      "label": "msvc6.3-None",
+      "state": "wip",
+      "code_sha256": "c07653e15921c94d02dc04c3ccd8405fe820b6d1ff0154a1857cc47640455736",
+      "function": "initialize_intro_screen",
+      "address": 4297184,
+      "target_bytes": 1851,
+      "fuzzy_weighted_bytes": 1728.5465004793864,
+      "fuzzy_gap_bytes": 122.4534995206136,
+      "target_instructions": 521,
+      "candidate_instructions": 522,
+      "match_ratio": 0.9338446788111218,
+      "prefix_instructions": 88,
+      "first_mismatch": {
+        "target_offset": 330,
+        "candidate_offset": 330
+      },
+      "references": {
+        "ok": 66,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "compiler": "msvc6.3",
+      "cflags": "/O2 /G5 /W3",
+      "recovery": "semantic-complete",
+      "residuals": [
+        "analysis"
+      ],
+      "scratch": "/var/folders/zq/vyffd7255m38x2mbmvvd102w0000gn/T/snail-match-probe-initialize_intro_screen-hj5xj0fc",
+      "error": null
+    }
+  ],
+  "retained_probe": {
+    "baseline": {
+      "address": 4297184,
+      "candidate_instructions": 522,
+      "cflags": "/O2 /G5 /W3",
+      "code_sha256": "c07653e15921c94d02dc04c3ccd8405fe820b6d1ff0154a1857cc47640455736",
+      "compiler": "msvc6.0",
+      "error": null,
+      "first_mismatch": {
+        "candidate_offset": 330,
+        "target_offset": 330
+      },
+      "function": "initialize_intro_screen",
+      "fuzzy_gap_bytes": 122.4534995206136,
+      "fuzzy_weighted_bytes": 1728.5465004793864,
+      "match_ratio": 0.9338446788111218,
+      "prefix_instructions": 88,
+      "recovery": "semantic-complete",
+      "references": {
+        "mismatch": 0,
+        "ok": 66,
+        "unaudited": 0,
+        "unresolved": 0
+      },
+      "residuals": [
+        "analysis"
+      ],
+      "scratch": "/Users/banteg/dev/banteg/snail-mail/tools/match/scratches/initialize_intro_screen",
+      "state": "wip",
+      "target_bytes": 1851,
+      "target_instructions": 521
+    },
+    "delta": {
+      "candidate_instructions": 0,
+      "fuzzy_weighted_bytes": 0.0,
+      "match_ratio": 0.0,
+      "prefix_instructions": 0,
+      "references": {
+        "mismatch": 0,
+        "ok": 0,
+        "unaudited": 0,
+        "unresolved": 0
+      }
+    },
+    "diagnostic_export": "artifacts/match/intro-native-profile-20260909",
+    "label": "intro-native-parser-cleanup-profile-20260909",
+    "probe": {
+      "address": 4297184,
+      "candidate_instructions": 522,
+      "cflags": "/O2 /G5 /W3",
+      "code_sha256": "c07653e15921c94d02dc04c3ccd8405fe820b6d1ff0154a1857cc47640455736",
+      "compiler": "msvc6.0",
+      "error": null,
+      "first_mismatch": {
+        "candidate_offset": 330,
+        "target_offset": 330
+      },
+      "function": "initialize_intro_screen",
+      "fuzzy_gap_bytes": 122.4534995206136,
+      "fuzzy_weighted_bytes": 1728.5465004793864,
+      "match_ratio": 0.9338446788111218,
+      "prefix_instructions": 88,
+      "recovery": "semantic-complete",
+      "references": {
+        "mismatch": 0,
+        "ok": 66,
+        "unaudited": 0,
+        "unresolved": 0
+      },
+      "residuals": [
+        "analysis"
+      ],
+      "scratch": "<shadow>",
+      "state": "wip",
+      "target_bytes": 1851,
+      "target_instructions": 521
+    },
+    "recorded_to": "/Users/banteg/dev/banteg/snail-mail/tools/match/scratches/initialize_intro_screen/experiments.jsonl",
+    "source_sha256": "c1c3493c0575d7578ae66c7431088924f95cfe66e3319d9a0317f0acb210e3cf",
+    "tradeoffs": []
+  },
+  "all_member_source_context_controls": [
+    {
+      "order": "native",
+      "function": "open_logo",
+      "ratio": 1.0,
+      "prefix": 60,
+      "candidate": 60,
+      "target": 60,
+      "refs": [
+        13,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "order": "native",
+      "function": "initialize_intro_screen",
+      "ratio": 0.9338446788111218,
+      "prefix": 88,
+      "candidate": 522,
+      "target": 521,
+      "refs": [
+        66,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "order": "native",
+      "function": "destroy_intro_screen",
+      "ratio": 1.0,
+      "prefix": 61,
+      "candidate": 61,
+      "target": 61,
+      "refs": [
+        7,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "order": "native",
+      "function": "update_intro_screen",
+      "ratio": 1.0,
+      "prefix": 51,
+      "candidate": 51,
+      "target": 51,
+      "refs": [
+        11,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "order": "native",
+      "function": "update_intro_logo_renderable",
+      "ratio": 1.0,
+      "prefix": 42,
+      "candidate": 42,
+      "target": 42,
+      "refs": [
+        7,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "order": "reverse",
+      "function": "open_logo",
+      "ratio": 1.0,
+      "prefix": 60,
+      "candidate": 60,
+      "target": 60,
+      "refs": [
+        13,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "order": "reverse",
+      "function": "initialize_intro_screen",
+      "ratio": 0.9338446788111218,
+      "prefix": 88,
+      "candidate": 522,
+      "target": 521,
+      "refs": [
+        66,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "order": "reverse",
+      "function": "destroy_intro_screen",
+      "ratio": 1.0,
+      "prefix": 61,
+      "candidate": 61,
+      "target": 61,
+      "refs": [
+        7,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "order": "reverse",
+      "function": "update_intro_screen",
+      "ratio": 1.0,
+      "prefix": 51,
+      "candidate": 51,
+      "target": 51,
+      "refs": [
+        11,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "order": "reverse",
+      "function": "update_intro_logo_renderable",
+      "ratio": 1.0,
+      "prefix": 42,
+      "candidate": 42,
+      "target": 42,
+      "refs": [
+        7,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "native_vs_retained_diff": "--- \n\n+++ \n\n@@ -87,5 +87,5 @@\n\n add esp, 0x18\n cmp ecx, eax\n-mov dword [esp+0x44], eax\n+mov dword [esp+0x38], eax\n jae L69b\n lea edx, dword [ebp+0x2403c]\n@@ -123,9 +123,9 @@\n\n push eax\n call ADDR\n-fstp dword [esp+0x1c]\n+fstp dword [esp+0x18]\n lea ecx, dword [esp+0x14]\n push ecx\n call ADDR\n-fstp dword [esp+0x1c]\n+fstp dword [esp+0x20]\n lea edx, dword [esp+0x90]\n lea eax, dword [esp+0x110]\n@@ -192,16 +192,16 @@\n\n call ADDR\n mov eax, dword [ebp+0x14]\n-mov dword [esp+0x38], 0x0\n-mov edx, dword [esp+0x38]\n-mov dword [esp+0x3c], 0xc0800000\n-lea eax, dword [eax+eax*8]\n-mov dword [esp+0x40], 0x0\n-shl eax, 0x4\n-fld dword [esp+0x14]\n+mov dword [esp+0x3c], 0x0\n+mov edx, dword [esp+0x3c]\n+mov dword [esp+0x40], 0xc0800000\n+lea eax, dword [eax+eax*8]\n+mov dword [esp+0x44], 0x0\n+shl eax, 0x4\n+fld dword [esp+0x18]\n lea ecx, dword [eax+ebp*1+0x80]\n-mov eax, dword [esp+0x3c]\n+mov eax, dword [esp+0x40]\n fmul dword [ADDR]\n mov dword [ecx], edx\n-mov edx, dword [esp+0x40]\n+mov edx, dword [esp+0x44]\n mov dword [ecx+0x4], eax\n fstp dword [esp+0x20]\n@@ -221,5 +221,5 @@\n\n call ADDR\n mov eax, dword [ebp+0x14]\n-fld dword [esp+0x18]\n+fld dword [esp+0x14]\n lea edx, dword [eax+eax*8]\n shl edx, 0x4\n@@ -237,5 +237,5 @@\n\n fst dword [eax]\n mov eax, dword [ebp+0x14]\n-fld dword [esp+0x18]\n+fld dword [esp+0x14]\n lea ecx, dword [eax+eax*8]\n shl ecx, 0x4\n@@ -265,10 +265,10 @@\n\n fstp dword [edx+0x18]\n mov eax, dword [ebp+0x14]\n-fld dword [esp+0x14]\n+fld dword [esp+0x18]\n fmul dword [ADDR]\n lea eax, dword [eax+eax*8]\n shl eax, 0x4\n mov ecx, dword [eax+ebp*1+0x3c]\n-fst dword [esp+0x18]\n+fst dword [esp+0x14]\n mov edx, dword [ecx+0x38]\n fstp dword [edx+0x20]\n@@ -283,5 +283,5 @@\n\n shl eax, 0x4\n mov ecx, dword [eax+ebp*1+0x3c]\n-mov eax, dword [esp+0x18]\n+mov eax, dword [esp+0x14]\n mov edx, dword [ecx+0x38]\n mov dword [edx+0x2c], eax\n@@ -302,5 +302,5 @@\n\n mov ecx, dword [esp+0x10]\n add esi, 0x90\n-fsub dword [esp+0x14]\n+fsub dword [esp+0x18]\n mov dword [esp+0x20], esi\n mov esi, dword [ebp+0x14]\n@@ -343,7 +343,7 @@\n\n mov dword [esp+0x2c], 0xc0800000\n mov dword [esp+0x30], 0x0\n-mov dword [esp+0x18], edi\n-fmul dword [ADDR]\n-fstp dword [esp+0x14]\n+mov dword [esp+0x14], edi\n+fmul dword [ADDR]\n+fstp dword [esp+0x18]\n mov eax, dword [ebp+0x14]\n lea ecx, dword [eax+eax*8]\n@@ -398,5 +398,5 @@\n\n mov eax, dword [ebp+0x14]\n mov ecx, dword [esp+0x28]\n-fld dword [esp+0x14]\n+fld dword [esp+0x18]\n lea edx, dword [eax+eax*8]\n shl edx, 0x4\n@@ -456,10 +456,10 @@\n\n inc esi\n inc ecx\n-fsubr dword [esp+0x14]\n+fsubr dword [esp+0x18]\n mov dword [ebp+0x14], ecx\n-fstp dword [esp+0x14]\n-mov eax, dword [esp+0x18]\n+fstp dword [esp+0x18]\n+mov eax, dword [esp+0x14]\n dec eax\n-mov dword [esp+0x18], eax\n+mov dword [esp+0x14], eax\n jne L4d5\n mov ecx, dword [esp+0x10]\n@@ -471,5 +471,5 @@\n\n mov dword [esp+0x10], ecx\n fstp dword [esp+0x1c]\n-cmp ecx, dword [esp+0x44]\n+cmp ecx, dword [esp+0x38]\n jb L15e\n mov esi, dword [esp+0x34]\n@@ -497,18 +497,19 @@\n\n fmulp st(1)\n fstp dword [esp+0x30]\n-jle L725\n+jle L729\n mov ecx, dword [esp+0x2c]\n+mov edx, dword [esp+0x30]\n+mov esi, dword [esp+0x28]\n lea eax, dword [ebp+0x98]\n-mov edi, dword [esp+0x28]\n-mov edx, eax\n+mov edi, eax\n inc ebx\n add eax, 0x90\n-mov dword [edx], edi\n-mov edi, dword [esp+0x30]\n-mov dword [edx+0x4], ecx\n-mov dword [edx+0x8], edi\n-mov edx, dword [ebp+0x14]\n-cmp ebx, edx\n-jl L706\n+mov dword [edi], esi\n+mov dword [edi+0x4], ecx\n+mov dword [edi+0x8], edx\n+mov edi, dword [ebp+0x14]\n+cmp ebx, edi\n+jl L70e\n+mov esi, dword [esp+0x34]\n push esi\n call ADDR",
+  "all_status_non_regression": {
+    "rows": 785,
+    "changed": [
+      "initialize_intro_screen"
+    ],
+    "before": [
+      "",
+      "\ud83d\udea7",
+      "initialize_intro_screen",
+      "0x4191e0",
+      "1851",
+      "523/521",
+      "88.89%",
+      "88/521",
+      "66 ok",
+      "",
+      "core",
+      ""
+    ],
+    "after": [
+      "",
+      "\ud83d\udea7",
+      "initialize_intro_screen",
+      "0x4191e0",
+      "1851",
+      "522/521",
+      "93.38%",
+      "88/521",
+      "66 ok",
+      "msvc6.0 /O2 /G5 /W3",
+      "core",
+      ""
+    ],
+    "port_exact": 596
+  },
+  "source_form_controls": {
+    "path": "/private/tmp/snail-intro-rich-lifetimes/results.json",
+    "count": 77,
+    "improved_over_profile_only": 0
+  }
+}
