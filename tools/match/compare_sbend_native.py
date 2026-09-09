@@ -112,7 +112,29 @@ def write_object(function_name, body, constants, relocations, external_symbols):
     )
 
 
-def make_oracle(path, *, function_name=FUNCTION, source_object=None):
+def oracle_reference_entries(audit, *, allow_candidate_only=False):
+    """Candidate-only instructions cannot supply native relocation identities.
+
+    An explicit diagnostic may omit these entries; every native reference must
+    still be clean, and extraction independently checks all native addresses.
+    """
+    entries = []
+    omitted = []
+    for entry in audit.entries:
+        if entry.status == "ok":
+            entries.append(entry)
+        elif (allow_candidate_only and entry.status == "unaudited"
+              and entry.target_index is None and entry.target_offset is None
+              and not entry.target_references and entry.candidate_references):
+            omitted.append({"candidate_offset": entry.candidate_offset,
+                            "instruction": entry.instruction})
+        else:
+            raise ValueError("oracle requires a complete clean native reference audit")
+    return entries, omitted
+
+
+def make_oracle(path, *, function_name=FUNCTION, source_object=None,
+                allow_candidate_only=False):
     """Extract one clean-audited native body for behavioral diagnostics only."""
     config = load_scratch_config(DEFAULT_MATCH_ROOT / "scratches" / function_name)
     dependency_sha256 = scratch_dependency_sha256(config)
@@ -136,8 +158,9 @@ def make_oracle(path, *, function_name=FUNCTION, source_object=None):
             obj_path=snapshot, function_name=function_name, image_path=image,
             manifest=manifest, symbol_name=config.symbol, end_va=config.end_va,
         )
-    if match.masked_operand_audit.problem_count:
-        raise ValueError("oracle requires a complete clean native reference audit")
+    audited_entries, omitted_entries = oracle_reference_entries(
+        match.masked_operand_audit, allow_candidate_only=allow_candidate_only,
+    )
     address, end = resolve_function_extent(manifest, function_name, config.end_va)
     original = load_image(image, manifest.image_base).function_bytes(address, end)
     pe = pefile.PE(str(image))
@@ -152,7 +175,7 @@ def make_oracle(path, *, function_name=FUNCTION, source_object=None):
     externals = {}
     relocations = []
     evidence = []
-    for entry in match.masked_operand_audit.entries:
+    for entry in audited_entries:
         if (
             entry.status != "ok"
             or len(entry.target_references) != 1
@@ -281,6 +304,7 @@ def make_oracle(path, *, function_name=FUNCTION, source_object=None):
         "native_bytes": len(original),
         "oracle_object_sha256": digest(oracle_bytes),
         "relocations": evidence,
+        "candidate_only_entries_omitted": omitted_entries,
         "copied_constants": {name: value.hex() for name, value in constants.items()},
         "round_trip_native_ratio": control.ratio,
     }

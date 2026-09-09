@@ -145,6 +145,12 @@ manifest function aliases are not searched.
 
 Useful analysis helpers:
 
+- `uv run tools/match/compare_loaders_native.py --runtime-library <VC6-MSVCRT.LIB>`
+  compares recovered level/segment loaders with original routines on all shipped
+  files. `--include-synthetic` adds controlled metadata/default/error cases.
+  The [corpus report](loaders-native-corpus-20260909.md) documents full object
+  coverage, resource callback boundaries and the single-byte corruption control.
+
 - The [authored math API pass](authored-math-api-20260909.md) repairs 205
   caller relocations with identical body bytes across 36 functions.
 
