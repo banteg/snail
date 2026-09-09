@@ -48,3 +48,23 @@ order and operands, with branch destinations adjusted for the removed code.
 Isolated, reversed, and peer-headers-only controls restore the old partial result.
 This remains partial: 931 candidate instructions versus 926 native. See
 `../../subtrack-source-context-20260909.md` for the controls and validation.
+
+## 2026-09-09 exact native segment loop and VC6 profile
+
+The registered Subtrack source pair now uses `msvc6.0 /O2 /G5 /W3`.
+Replacing the guarded `do/while` and post-loop EOF return with a normal
+`while (cursor < segments_end)` and its null-cursor return inside the loop
+recovers **926/926 instructions, prefix 926, and all 183 positional references**.
+Both native-supported older VC6 profiles produce the exact body; the retained
+profile does not establish the original service pack.
+
+All 3,039 bytes are accounted for: 2,307 identical non-relocation bytes plus
+183 four-byte relocations, no unexplained bytes. The raw unlinked body is not
+byte-identical. The exact copy peer remains unchanged at 125/125 and five
+references. Registered source order remains necessary: isolated and reversed
+loader controls reach 96.30%.
+
+The [full report](../../level-native-loop-20260909.md) records the crossed
+compiler/source controls, all-member proof, 224 native corpus cases, fault
+control, and full-status non-regression. This supersedes the partial status
+above and adds one exact function, taking the board to 596/662.

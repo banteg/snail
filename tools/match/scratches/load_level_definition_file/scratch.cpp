@@ -265,95 +265,93 @@ void cRSubTracks::Init(char* filename)
         return;
     }
 
-    if (cursor < segments_end) {
-        do {
+    while (cursor < segments_end) {
+        ch = *cursor;
+        char* segment_out = segment_name;
+        while (*cursor != '.') {
+            *segment_out++ = ch;
+            cursor++;
             ch = *cursor;
-            char* segment_out = segment_name;
-            while (*cursor != '.') {
-                *segment_out++ = ch;
-                cursor++;
-                ch = *cursor;
-            }
-            int slot_index = segment_count;
-            *segment_out++ = '.';
-            *segment_out++ = 't';
-            *segment_out++ = 'x';
-            *segment_out++ = 't';
-            *segment_out = 0;
-            ImportSegment(segment_name, &segment_slots[slot_index]);
+        }
+        int slot_index = segment_count;
+        *segment_out++ = '.';
+        *segment_out++ = 't';
+        *segment_out++ = 'x';
+        *segment_out++ = 't';
+        *segment_out = 0;
+        ImportSegment(segment_name, &segment_slots[slot_index]);
 
-            line_cursor = cursor + 3;
-            char* options_out = line_options;
+        line_cursor = cursor + 3;
+        char* options_out = line_options;
+        ch = *line_cursor;
+        while (ch >= 32) {
+            *options_out++ = ch;
+            line_cursor++;
             ch = *line_cursor;
-            while (ch >= 32) {
-                *options_out++ = ch;
-                line_cursor++;
-                ch = *line_cursor;
-            }
-            *options_out = 0;
+        }
+        *options_out = 0;
 
-            line_cursor = Rstrfind("Angle=", line_options);
-            if (line_cursor != 0) {
-                line_cursor = Rstrfind("=", line_cursor);
-                parsed_int = Rstrint(&line_cursor);
-                segment_slots[segment_count].angle_radians.value =
-                    (float)parsed_int * 0.017453292f;
-            } else {
-                segment_slots[segment_count].angle_radians.value = 0.0f;
-            }
+        line_cursor = Rstrfind("Angle=", line_options);
+        if (line_cursor != 0) {
+            line_cursor = Rstrfind("=", line_cursor);
+            parsed_int = Rstrint(&line_cursor);
+            segment_slots[segment_count].angle_radians.value =
+                (float)parsed_int * 0.017453292f;
+        } else {
+            segment_slots[segment_count].angle_radians.value = 0.0f;
+        }
 
-            segment_slots[segment_count].message_text[0] = 0;
-            line_cursor = Rstrfind("Message=", line_options);
+        segment_slots[segment_count].message_text[0] = 0;
+        line_cursor = Rstrfind("Message=", line_options);
+        if (line_cursor != 0) {
+            line_cursor = Rstrfind("=", line_cursor) + 1;
+            if (*line_cursor != '"') {
+                report_errorf("Need \" after Message=");
+                return;
+            }
+            line_cursor++;
+            char* message_end = line_cursor;
+            if (*message_end != '"') {
+                do {
+                    message_end++;
+                    ch = *message_end;
+                } while (ch != '"');
+            }
+            char* message_out = segment_slots[segment_count].message_text;
+            while ((unsigned int)line_cursor < (unsigned int)message_end) {
+                *message_out++ = *line_cursor++;
+            }
+            *message_out = 0;
+
+            line_cursor = Rstrfind("Duration=", line_options);
+            segment_slots[segment_count].message_duration.value = 4.0f;
             if (line_cursor != 0) {
                 line_cursor = Rstrfind("=", line_cursor) + 1;
-                if (*line_cursor != '"') {
-                    report_errorf("Need \" after Message=");
-                    return;
-                }
-                line_cursor++;
-                char* message_end = line_cursor;
-                if (*message_end != '"') {
-                    do {
-                        message_end++;
-                        ch = *message_end;
-                    } while (ch != '"');
-                }
-                char* message_out = segment_slots[segment_count].message_text;
-                while ((unsigned int)line_cursor < (unsigned int)message_end) {
-                    *message_out++ = *line_cursor++;
-                }
-                *message_out = 0;
-
-                line_cursor = Rstrfind("Duration=", line_options);
-                segment_slots[segment_count].message_duration.value = 4.0f;
-                if (line_cursor != 0) {
-                    line_cursor = Rstrfind("=", line_cursor) + 1;
-                    segment_slots[segment_count].message_duration.value =
-                        RTextExtractFloat(&line_cursor);
-                }
-
-                line_cursor = Rstrfind("Sample=", line_options);
-                segment_slots[segment_count].message_sample_id = -1;
-                if (line_cursor != 0) {
-                    line_cursor = Rstrfind("=", line_cursor) + 2;
-                    char* sample_out = sample_name;
-                    ch = *line_cursor;
-                    while (*line_cursor != '"') {
-                        *sample_out++ = ch;
-                        line_cursor++;
-                        ch = *line_cursor;
-                    }
-                    *sample_out = 0;
-                    segment_slots[segment_count].message_sample_id =
-                        find_registered_sound_sample_id_by_name(sample_name);
-                    if (segment_slots[segment_count].message_sample_id == -1)
-                        report_errorf("Cannot find sample %s in %s", sample_name, level_path);
-                }
+                segment_slots[segment_count].message_duration.value =
+                    RTextExtractFloat(&line_cursor);
             }
 
-            segment_count++;
-            cursor = Rstrnewline(cursor);
-        } while (cursor != 0 && cursor < segments_end);
+            line_cursor = Rstrfind("Sample=", line_options);
+            segment_slots[segment_count].message_sample_id = -1;
+            if (line_cursor != 0) {
+                line_cursor = Rstrfind("=", line_cursor) + 2;
+                char* sample_out = sample_name;
+                ch = *line_cursor;
+                while (*line_cursor != '"') {
+                    *sample_out++ = ch;
+                    line_cursor++;
+                    ch = *line_cursor;
+                }
+                *sample_out = 0;
+                segment_slots[segment_count].message_sample_id =
+                    find_registered_sound_sample_id_by_name(sample_name);
+                if (segment_slots[segment_count].message_sample_id == -1)
+                    report_errorf("Cannot find sample %s in %s", sample_name, level_path);
+            }
+        }
+
+        segment_count++;
+        cursor = Rstrnewline(cursor);
         if (cursor == 0) {
             report_errorf("Unexpected end of file in %s", filename);
             return;

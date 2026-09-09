@@ -331,8 +331,8 @@ def compare(runtime, archive, out, include_synthetic=False):
     physical_objects, function_objects = {}, {}
     for name in (*TARGETS, *HELPERS):
         config = load_scratch_config(DEFAULT_MATCH_ROOT / "scratches" / name)
-        if config.compiler != "msvc6.5":
-            raise ValueError("loader diagnostic requires the canonical VC6 profile")
+        if config.compiler not in {"msvc6.0", "msvc6.3", "msvc6.5"}:
+            raise ValueError("loader diagnostic requires a supported VC6 profile")
         deps = scratch_dependency_sha256(config)
         compiled = compile_scratch(config).resolve()
         if compiled not in physical_objects:

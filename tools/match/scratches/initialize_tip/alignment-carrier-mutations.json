@@ -3,7 +3,7 @@
   "sites": [
     {
       "name": "definition-alignment-carrier",
-      "find": "    int definition_flags = definition->flags;\n    unsigned int alignment = (int)(char)~definition_flags;\n    alignment &= 4;\n    tColour color;\n    main_widget->Init(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        alignment >> 1,\n        definition->anchor_x);",
+      "find": "    int definition_flags = definition->flags;\n    unsigned int alignment = (char)~definition_flags;\n    tColour color;\n    main_widget->Init(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        (alignment & 4) >> 1,\n        definition->anchor_x);",
       "replacements": [
         {
           "name": "signed-char-then-int",

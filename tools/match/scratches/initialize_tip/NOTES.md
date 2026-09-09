@@ -16,7 +16,7 @@ removes the old shared flags snapshot and recovers the main widget argument
 schedule and the timed/modal test region. Windows remains authoritative for
 the unguarded dismiss-time division and the integer second formal.
 
-The receipt in `live-flags-and-alignment-lifetime-20260909.json` embeds both
+The receipt in [tip-live-flags-and-alignment-lifetime-20260909.json](../../tip-live-flags-and-alignment-lifetime-20260909.json) embeds both
 sources, native/baseline/candidate listings, full diagnostics, and the focused
 probe. All seven authored `Tips.o` members were compiled in native and reversed
 order: the six exact controls remain exact and this initializer preserves its
