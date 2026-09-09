@@ -6,7 +6,6 @@ import fcntl
 import hashlib
 import json
 import os
-import re
 import shutil
 import struct
 import subprocess
@@ -35,6 +34,7 @@ from snail.match_link import (
     verify_code_sections,
     verify_data_sections,
     verify_relocated_bytes,
+    verify_runtime_control,
 )
 from snail.match_storage import verify_native_storage
 from snail.symbols import (
@@ -554,24 +554,23 @@ def main() -> None:
                 check=False,
             )
             (out / f"{label}.log").write_text(run.stdout + run.stderr)
-            summary = re.search(
-                rf"{args.group} checks=(\d+) failures=(\d+)", run.stdout
-            )
-            if (
-                run.returncode != expected
-                or not summary
-                or int(summary[1]) != expected_checks
-                or bool(int(summary[2])) != bool(expected)
-            ):
+            try:
+                summary = verify_runtime_control(
+                    args.group,
+                    run.stdout,
+                    run.returncode,
+                    expected_checks=expected_checks,
+                    expected_failures=expected,
+                )
+            except ValueError as error:
                 raise ValueError(
                     f"{label} runtime control failed; see {out / (label + '.log')}"
-                )
+                ) from error
             runs.append(
                 {
                     "label": label,
                     "exit_code": run.returncode,
-                    "checks": int(summary[1]),
-                    "failures": int(summary[2]),
+                    **summary,
                     "stdout": run.stdout,
                 }
             )

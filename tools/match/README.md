@@ -102,6 +102,9 @@ It keeps normalized matching, native initial storage, source integration,
 behavioral diagnostics, and original TU/layout claims separate.
 Run `uv run tools/match/link_frontier.py` to inventory remaining source-object
 ABI and storage edges without mistaking native address aliases for linked symbols.
+Runtime receipts require one complete summary, the expected assertion count,
+matching failure lines, and the correct exit status. A deliberate-corruption
+process must fail exactly one assertion; collateral failures invalidate it.
 
 The [2026-09-08 path pass](path-frontier-and-linking-20260908.md) records the
 current path-family triage, three isolated mesh-loop improvements, and a

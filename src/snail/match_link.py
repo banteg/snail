@@ -15,6 +15,38 @@ import pefile
 from .match import CoffObject, CoffRelocation, CoffSymbol
 
 
+def verify_runtime_control(
+    group: str,
+    stdout: str,
+    returncode: int,
+    *,
+    expected_checks: int,
+    expected_failures: int,
+) -> dict[str, int]:
+    """Require one complete summary and exactly the intended failing checks."""
+    pattern = re.compile(rf"{re.escape(group)} checks=(\d+) failures=(\d+)")
+    summaries = [
+        match
+        for line in stdout.splitlines()
+        if (match := pattern.fullmatch(line)) is not None
+    ]
+    if len(summaries) != 1:
+        raise ValueError("runtime control requires exactly one complete summary")
+    checks, failures = map(int, summaries[0].groups())
+    reported_failures = sum(line.startswith("FAIL: ") for line in stdout.splitlines())
+    if (
+        checks != expected_checks
+        or failures != expected_failures
+        or reported_failures != failures
+        or returncode != int(expected_failures != 0)
+    ):
+        raise ValueError(
+            "runtime control outcome differs from the expected checks/failures/exit: "
+            f"{checks}/{failures}/{returncode}, failure lines={reported_failures}"
+        )
+    return {"checks": checks, "failures": failures}
+
+
 class LinkSymbols:
     def __init__(self, image: bytes, pe: pefile.PE, map_text: str):
         self.addresses: dict[str, set[int]] = {}

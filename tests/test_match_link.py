@@ -15,9 +15,45 @@ from snail.match_link import (
     verify_code_sections,
     verify_data_sections,
     verify_relocated_bytes,
+    verify_runtime_control,
 )
 
 BASE = 0x400000
+
+
+@pytest.mark.parametrize("negative", [False, True])
+def test_runtime_control_requires_exact_assertion_outcomes(negative):
+    failures = int(negative)
+    output = ("FAIL: deliberate corruption\n" if negative else "")
+    output += f"rtext checks=22 failures={failures}\n"
+    expected = {"expected_checks": 22, "expected_failures": failures}
+    assert verify_runtime_control("rtext", output, failures, **expected) == {
+        "checks": 22, "failures": failures,
+    }
+    with pytest.raises(ValueError, match="expected checks"):
+        verify_runtime_control("rtext", output, 1 - failures, **expected)
+    with pytest.raises(ValueError, match="expected checks"):
+        verify_runtime_control("rtext", output.replace("checks=22", "checks=21"), failures, **expected)
+    with pytest.raises(ValueError, match="one complete summary"):
+        verify_runtime_control("rtext", output + output, failures, **expected)
+
+
+def test_negative_control_rejects_collateral_failures_and_inconsistent_logs():
+    expected = {"expected_checks": 22, "expected_failures": 1}
+    for output in (
+        "FAIL: deliberate corruption\nFAIL: unrelated regression\nrtext checks=22 failures=2\n",
+        "FAIL: deliberate corruption\nFAIL: hidden regression\nrtext checks=22 failures=1\n",
+        "rtext checks=22 failures=1\n",
+    ):
+        with pytest.raises(ValueError, match="expected checks"):
+            verify_runtime_control("rtext", output, 1, **expected)
+    for output in (
+        "rtext checks=22 failures=1garbage\n",
+        "prefix rtext checks=22 failures=1\n",
+        "another-group checks=22 failures=1\n",
+    ):
+        with pytest.raises(ValueError, match="one complete summary"):
+            verify_runtime_control("rtext", output, 1, **expected)
 
 
 def linked_symbols(entries, map_rows="", *, section_size=0x100, characteristics=0xC0):
