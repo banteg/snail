@@ -1,0 +1,135 @@
+{
+  "ghidra_version": "12.1.2",
+  "program": "SnailMail-USA.dol",
+  "input_sha256": "523f848f2a0b8ef8c9dfe2714744bf0479a4feec79b25f0d1f5e035a6487c096",
+  "language": "PowerPC:BE:32:Gekko_Broadway",
+  "format": "Nintendo GameCube/Wii Binary (Executable)",
+  "sections": [
+    {
+      "name": "text0",
+      "address": "80004000",
+      "sha256": "e27e67187271becdd59c070f9205099cf33d23e8aef83a71cffd628e9d1ac674",
+      "size": 10016
+    },
+    {
+      "name": "text1",
+      "address": "800092e0",
+      "sha256": "a88e28599e17db7706684014b87777925cd855186142997bcc2aa460984e435b",
+      "size": 1394880
+    },
+    {
+      "name": "data0",
+      "address": "80006720",
+      "sha256": "c36d9d55395decc75a0d990030a83a69cb40aae2cdabd1973ac1f15ce4b18ab7",
+      "size": 4544
+    },
+    {
+      "name": "data1",
+      "address": "800078e0",
+      "sha256": "65b2ae8f3206dced1b5320517f1f7be02fb53c759628ccd15ee210fdaba26c67",
+      "size": 6656
+    },
+    {
+      "name": "data2",
+      "address": "8015dba0",
+      "sha256": "842f005a76d5567fe6a87e1b843bfcd6cdc30580842ede17881bb97020637e96",
+      "size": 96
+    },
+    {
+      "name": "data3",
+      "address": "8015dc00",
+      "sha256": "06f8fdd0822941563c01c1c815479514050b1c8ff37aefe7252ef5760b5c0221",
+      "size": 32
+    },
+    {
+      "name": "data4",
+      "address": "8015dc20",
+      "sha256": "d6c8234cef5448ad4eff7e57c66afcf1ff03fcdad2471b678f4c9fe4f63284e4",
+      "size": 34560
+    },
+    {
+      "name": "data5",
+      "address": "80166320",
+      "sha256": "1de7e6b3056d366b72864150ff99ac5afe8c1a6488ee134dcb9308c6867a1e7d",
+      "size": 153600
+    },
+    {
+      "name": "data6",
+      "address": "808f3720",
+      "sha256": "f68d7c3833b930399e0ad5ec50023e87283dd63fc73c3d7f0771628946e08ee4",
+      "size": 1824
+    },
+    {
+      "name": "data7",
+      "address": "808f4860",
+      "sha256": "3a0151fe6c036bbb964506b79331c92e740282c57d35403f4dabdb5c3a91c1e0",
+      "size": 7872
+    }
+  ],
+  "registers_at_quaternion": {
+    "r2": "808fc860",
+    "r13": "808fb720",
+    "GQR0": "0",
+    "GQR1": "0",
+    "GQR2": "40004",
+    "GQR3": "50005",
+    "GQR4": "60006",
+    "GQR5": "70007",
+    "GQR6": "0",
+    "GQR7": "0"
+  },
+  "function_count": 3458,
+  "paired_single_instructions": 3051,
+  "paired_single_examples": [
+    "800093e4: psq_st f31,0x68(r1),0x0,GQR0",
+    "800093f0: psq_st f30,0x58(r1),0x0,GQR0",
+    "800093fc: psq_st f29,0x48(r1),0x0,GQR0",
+    "80009408: psq_st f28,0x38(r1),0x0,GQR0",
+    "80009414: psq_st f27,0x28(r1),0x0,GQR0",
+    "800094d4: psq_l f31,0x68(r1),0x0,GQR0",
+    "800094dc: psq_l f30,0x58(r1),0x0,GQR0",
+    "800094e4: psq_l f29,0x48(r1),0x0,GQR0"
+  ],
+  "project_file": "artifacts/ghidra/SnailMail-USA.dol-fba1665a73de/project/SnailMailAnalysis.gpr",
+  "reopen": {
+    "same_verification": true,
+    "imported_again": false,
+    "analysis_rerun": false,
+    "recovered_name_preserved": true
+  },
+  "extension_archive": {
+    "release": "1.3.1",
+    "sha256": "9892f28fc1e7f19bb3fcec7cfb4ad2ab7504503b571d93de8b142a6f7bec8ed0"
+  },
+  "extension_inputs": {
+    "data/languages/lmwInstructions.sinc": "46b22984787a857833018917c8613b69c36f7ac26c0a84623d040971a2dbe695",
+    "data/languages/lswInstructions.sinc": "db7c0ab36beaf7290484d977ba8cfc35a991d8a56e2742ef19f7bab184fc0e43",
+    "data/languages/ppc_embedded.sinc": "31d65b30afdba57a89254ebef5a4af4b47504d5efb0d237c48abec341e5ea884",
+    "data/languages/ppc_gekko_broadway.cspec": "c4b1d69e818213933596041006f743a8ff78d806f90507178955704b775ca44d",
+    "data/languages/ppc_gekko_broadway.ldefs": "430ee2f530a60f0d765323dd678ba31a990540cc708c3e0bbe159b14822077be",
+    "data/languages/ppc_gekko_broadway.pspec": "12d80a399188ad3e3392986a6bef39e965bafb15fe17e84300753b150686e543",
+    "data/languages/ppc_gekko_broadway.slaspec": "32ce4852d6243f5eea19cda1eb8cf0b2af8fb93532dcd9a585ee927a32c8eb75",
+    "data/languages/ppc_instructions_gekko_broadway.sinc": "764e5fa91eb3703456fc62885ed03bddbded58608d6e304873b5de290c5d0332",
+    "data/languages/stmwInstructions.sinc": "3c77bfd31e488f5f792df1387c2f0679e95d183c5e9f2f4ecc7e48729022fd81",
+    "data/languages/stswiInstructions.sinc": "4d26756213acb9cd9fc8ebd500ba5dc7e1fbcaa70a13b58b7687e7fd0b41e153",
+    "extension.properties": "e9099f5804b2ab1606d610c79d416c5055ecd07a11860de0b4d0c3449675271f",
+    "lib/GameCubeLoader.jar": "803d7a3c492524271ff8ed1f4b1279e7b9797753c315f8e610fd8d802b37ef53"
+  },
+  "project_metadata": {
+    "binary": {
+      "identity": "artifacts/wii/reference/SnailMail-USA.dol",
+      "sha256": "523f848f2a0b8ef8c9dfe2714744bf0479a4feec79b25f0d1f5e035a6487c096",
+      "size": 1614336
+    },
+    "ghidra": {
+      "revision": "c0f584bf229fffba61b36431f3ce30c0c3e4e682",
+      "version": "12.1.2"
+    },
+    "project": {
+      "name": "SnailMailAnalysis",
+      "program_name": "SnailMail-USA.dol"
+    },
+    "schema": 1
+  },
+  "tests": "11 ghidra tests passed; Ruff passed"
+}

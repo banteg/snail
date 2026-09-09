@@ -251,3 +251,55 @@ def test_persistent_project_state_is_checked_after_lock(
         assert project is expected_project
 
     assert events == ["lock", "inspect", "unlock"]
+
+
+def test_wii_rejects_wrong_dol_before_starting_ghidra(
+    tmp_path: Path, monkeypatch
+) -> None:
+    import wii
+
+    binary = tmp_path / "wrong.dol"
+    binary.write_bytes(b"different executable")
+    monkeypatch.setattr(
+        wii.subprocess,
+        "run",
+        lambda *args, **kwargs: pytest.fail("must not launch Ghidra"),
+    )
+    with pytest.raises(ValueError, match="committed Wii reference hash"):
+        wii.run(binary, tmp_path / "ghidra", tmp_path / "projects", "entry", False)
+    assert not (tmp_path / "projects").exists()
+
+
+def test_wii_rejects_loader_drift_without_changing_existing_project(
+    tmp_path: Path, monkeypatch
+) -> None:
+    import json
+
+    import wii
+    from project import persistent_project, prepare_project, record_initialized_project
+
+    binary = tmp_path / "test.dol"
+    binary.write_bytes(b"fixture")
+    monkeypatch.setattr(wii, "DOL_SHA256", wii.sha256_file(binary))
+    ghidra = tmp_path / "ghidra"
+    _write_ghidra_build(ghidra)
+    projects = tmp_path / "projects"
+    project = persistent_project(binary, ghidra, projects)
+    prepare_project(project)
+    project.project_file.write_bytes(b"existing database")
+    record_initialized_project(project)
+    pin = project.root / "wii-loader.json"
+    pin.write_text(json.dumps({"loader.jar": "old"}))
+    export = project.root / "decompile.txt"
+    export.write_text("previous successful export")
+    monkeypatch.setattr(wii, "extension_identity", lambda path: {"loader.jar": "new"})
+    monkeypatch.setattr(
+        wii.subprocess,
+        "run",
+        lambda *args, **kwargs: pytest.fail("must not launch Ghidra"),
+    )
+    with pytest.raises(ValueError, match="extension identity changed"):
+        wii.run(binary, ghidra, projects, "entry", False)
+    assert json.loads(pin.read_text()) == {"loader.jar": "old"}
+    assert export.read_text() == "previous successful export"
+    assert project.project_file.read_bytes() == b"existing database"

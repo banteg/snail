@@ -1,4 +1,4 @@
-# Ghidra mobile decompile tools
+# Ghidra reference analysis tools
 
 ## Local installation
 
@@ -105,3 +105,69 @@ stale project directory aside before building its replacement.
 The projects remain ignored working artifacts. The symbol manifests, replay
 scripts, headers, and exported decompile corpora remain the version-controlled
 durable state.
+
+## Wii reference database
+
+The local Wii setup uses `/Applications/ghidra_12.1.2_PUBLIC` with
+[GameCubeLoader release 1.3.1](https://github.com/Cuyler36/Ghidra-GameCube-Loader/releases/tag/1.3.1)
+(the distribution filename identifies its internal version as 1.3.0).
+The official `GameCubeLoader-1.3.0-921504c-Ghidra_12.1.zip` SHA-256 is
+`9892f28fc1e7f19bb3fcec7cfb4ad2ab7504503b571d93de8b142a6f7bec8ed0`.
+It is installed under the application's `Ghidra/Extensions/GameCubeLoader`,
+so both GUI and headless sessions can use the language. Its bundled Sleigh
+source has been compiled with the installation's `support/sleigh` command.
+
+The stable input is `artifacts/wii/reference/SnailMail-USA.dol`, SHA-256
+`523f848f2a0b8ef8c9dfe2714744bf0479a4feec79b25f0d1f5e035a6487c096`.
+It is the decompressed original DOL, not the earlier synthetic ELF. See the
+[Wii provenance receipt](../match/quaternion-wii-dispatch-20260909.json) for
+its compressed source identity and extraction evidence. Input bytes and the
+analysis database remain ignored local artifacts.
+
+```sh
+# Import once; subsequent calls reopen the same program without reanalysis.
+uv run tools/ghidra/wii.py
+uv run tools/ghidra/wii.py 0x8000a968
+
+# Rerun analyzers only when intentionally requested.
+uv run tools/ghidra/wii.py --analyze
+```
+
+The default selector is the recovered `initialize_quaternion_from_matrix`.
+Names and address selectors use the same rules as `decompile_symbol.py`.
+`--ghidra-dir`, `--binary`, and `--project-root` provide explicit overrides.
+The local 12.1.2 fallback is used only when the shared configured/default
+Ghidra installation is absent.
+
+The persistent GUI project is:
+
+```text
+artifacts/ghidra/SnailMail-USA.dol-fba1665a73de/project/SnailMailAnalysis.gpr
+```
+
+Open that `.gpr` with Ghidra 12.1.2, then open `SnailMail-USA.dol`. Close the
+GUI's project before running headless commands against it; Ghidra itself
+locks the database, and the wrapper additionally locks concurrent wrapper runs.
+The earlier synthetic-ELF project is preserved separately.
+
+The [setup receipt](wii-setup-20260910.json) records 3,458 discovered functions,
+3,051 decoded paired-single instructions, all ten byte-verified initialized
+sections, and successful reuse with the same inventory and recovered name.
+These are analyzer counts, not proof-grade function matches.
+
+The wrapper explicitly selects the DOL loader and
+`PowerPC:BE:32:Gekko_Broadway` language, disables interactive map-file prompts,
+and enables the extension's SDA/GQR analyzer. Settings, temporary files, and
+Ghidra's filesystem cache live inside the per-binary project directory. Each
+successful run writes `wii-verification.json`, `decompile.txt`, and
+`headless.log` there. Verification checks every initialized DOL section against
+its loaded bytes, the entry-established r2/r13 values, paired-single decoding,
+and the quaternion's known 768-byte extent.
+
+`metadata.json` pins the input and Ghidra build; `wii-loader.json` additionally
+pins the extension's loader and language sources. A mismatch refuses reuse;
+choose a separate `--project-root` to analyze with changed inputs or tooling.
+The wrapper seeds only the already verified quaternion function name and
+preserves subsequent analyst names and comments. It does not replace the
+project on repeated calls. Dolphin is deferred until runtime evidence is
+needed; IDA remains available for an independent decompiler comparison.
