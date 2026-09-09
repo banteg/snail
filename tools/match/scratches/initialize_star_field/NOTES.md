@@ -243,3 +243,13 @@ statements. All eight combinations were evaluated: five reproduce the new
 baseline's exact code identity; three separate-Set/copy forms regress to
 85.02%. No further source change is retained. These results constrain those
 particular ownership forms, not other source shapes or compiler provenance.
+
+## 2026-09-09 division parameter controls
+
+`division-parameter-ownership-20260909.json` preserves the explicit-result
+division body and tests eight vector/scalar parameter declarations. Vector
+value arguments and top-level const qualifications are neutral at **98.38%,
+247/247 instructions, prefix 126**, with 26 clean references. All three
+scalar-reference forms regress to **95.51%, 243/247, prefix 29**. None recovers
+the native travel-store/color-argument window. The recorded current-baseline
+receipts leave the canonical source and header unchanged.

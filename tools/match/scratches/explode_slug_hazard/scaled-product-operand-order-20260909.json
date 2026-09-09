@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "scaled-products",
+      "find": "        scaled_velocity.x = random_velocity.x * speed;\n        scaled_velocity.y = random_velocity.y * speed;\n        scaled_velocity.z = random_velocity.z * speed;",
+      "replacements": [
+        {
+          "name": "scale-first-x",
+          "text": "        scaled_velocity.x = speed * random_velocity.x;\n        scaled_velocity.y = random_velocity.y * speed;\n        scaled_velocity.z = random_velocity.z * speed;"
+        },
+        {
+          "name": "scale-first-xy",
+          "text": "        scaled_velocity.x = speed * random_velocity.x;\n        scaled_velocity.y = speed * random_velocity.y;\n        scaled_velocity.z = random_velocity.z * speed;"
+        },
+        {
+          "name": "scale-first-xyz",
+          "text": "        scaled_velocity.x = speed * random_velocity.x;\n        scaled_velocity.y = speed * random_velocity.y;\n        scaled_velocity.z = speed * random_velocity.z;"
+        },
+        {
+          "name": "scale-first-yz",
+          "text": "        scaled_velocity.x = random_velocity.x * speed;\n        scaled_velocity.y = speed * random_velocity.y;\n        scaled_velocity.z = speed * random_velocity.z;"
+        }
+      ]
+    }
+  ]
+}

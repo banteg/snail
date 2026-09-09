@@ -229,3 +229,17 @@ exact neighboring controls. No compiler override or source change follows
 from this comparison. Component versions, hashes, measured results and the
 separate mislabeled VC7-archive check are recorded in
 [the compiler-control report](../../compiler-profile-controls-20260907.md).
+
+## 2026-09-09 complete scan operation controls
+
+`swept-scan-operation-boundary-20260909.json` factors the complete reverse
+scan into an ordinary inline operation, preserving sample order, bounds,
+vector calculations, and the accepted handoff. Returning the sample index
+adds two instructions and regresses to **95.31%, 201/204, prefix 16**. Returning
+acceptance with sample-index and local-vector outputs emits the unchanged
+**95.78%, 199/204, prefix 16** baseline. Both keep 47 clean references.
+
+Neither form recovers the separate native miss epilogue or the commuted X
+addition. The helper is a diagnostic source hypothesis, not an established
+authored API, and is not added to canonical code. These receipts complement
+the earlier accepted-handoff helper controls by testing the scan boundary.

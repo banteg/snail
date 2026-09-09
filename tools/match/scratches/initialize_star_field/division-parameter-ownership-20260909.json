@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "division-parameters",
+      "find": "const Vector3& vector, float scale",
+      "replacements": [
+        {
+          "name": "const_Vector3_ref-const_float",
+          "text": "const Vector3& vector, const float scale"
+        },
+        {
+          "name": "const_Vector3_ref-const_float_ref",
+          "text": "const Vector3& vector, const float& scale"
+        },
+        {
+          "name": "Vector3-float",
+          "text": "Vector3 vector, float scale"
+        },
+        {
+          "name": "Vector3-const_float",
+          "text": "Vector3 vector, const float scale"
+        },
+        {
+          "name": "Vector3-const_float_ref",
+          "text": "Vector3 vector, const float& scale"
+        },
+        {
+          "name": "const_Vector3-float",
+          "text": "const Vector3 vector, float scale"
+        },
+        {
+          "name": "const_Vector3-const_float",
+          "text": "const Vector3 vector, const float scale"
+        },
+        {
+          "name": "const_Vector3-const_float_ref",
+          "text": "const Vector3 vector, const float& scale"
+        }
+      ]
+    }
+  ]
+}

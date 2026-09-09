@@ -263,3 +263,12 @@ instruction-count gain cannot justify changing the shared operator. Slug's
 separate local-result follow-up is documented above; the other canonical
 sources remain unchanged. The receipts preserve the full compiled identities
 and reference debt rather than interpreting an unchanged score as exact code.
+
+## 2026-09-09 multiplication operand controls
+
+`scaled-product-operand-order-20260909.json` commutes the existing wide
+velocity products for X, XY, XYZ, and YZ without changing statement order,
+precision, random calls, or owner lifetimes. All four emit the baseline code
+identity: **97.96%, 147/147 instructions, prefix 79**, with 32 clean references.
+VC6 normalizes these operand spellings; they do not recover the native
+duplicate-scale x87 load or the earlier game-owner load. No source is retained.
