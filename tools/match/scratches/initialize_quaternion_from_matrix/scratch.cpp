@@ -19,43 +19,26 @@ tQuaternian::tQuaternian(const tMatrix& matrix)
         return;
     }
 
-    if (matrix.basis_right.x < matrix.basis_up.y) {
-        goto right_less_than_up;
-    }
-    if (matrix.basis_right.x > matrix.basis_forward.z) {
-        goto x_dominant;
-    }
-    if (matrix.basis_up.y > matrix.basis_forward.z) {
-        goto y_dominant;
-    }
-
-z_dominant:
-    {
-        float radicand = matrix.basis_forward.z + 1.0f - matrix.basis_right.x - matrix.basis_up.y;
-        if (radicand < 0.0f) {
-            debug_report_stub("ERROR:sqt %f\n", radicand);
-            radicand = 0.0f;
+    int axis;
+    if (matrix.basis_right.x >= matrix.basis_up.y) {
+        if (matrix.basis_right.x > matrix.basis_forward.z) {
+            axis = 0;
+        } else if (matrix.basis_up.y > matrix.basis_forward.z) {
+            axis = 1;
+        } else {
+            axis = 2;
         }
-
-        float doubled_root = Sqrt(radicand);
-        doubled_root = doubled_root + doubled_root;
-        x = (matrix.basis_forward.x + matrix.basis_right.z) / doubled_root;
-        y = (matrix.basis_forward.y + matrix.basis_up.z) / doubled_root;
-        z = doubled_root * 0.25f;
-        w = (matrix.basis_up.x + matrix.basis_right.y) / doubled_root;
-        return;
+    } else {
+        if (matrix.basis_up.y >= matrix.basis_forward.z) {
+            axis = 1;
+        } else if (matrix.basis_right.x > matrix.basis_forward.z) {
+            axis = 0;
+        } else {
+            axis = 2;
+        }
     }
 
-right_less_than_up:
-    if (matrix.basis_up.y >= matrix.basis_forward.z) {
-        goto y_dominant;
-    }
-    if (matrix.basis_right.x <= matrix.basis_forward.z) {
-        goto z_dominant;
-    }
-
-x_dominant:
-    {
+    if (axis == 0) {
         float radicand = matrix.basis_right.x + 1.0f - matrix.basis_up.y - matrix.basis_forward.z;
         if (radicand < 0.0f) {
             debug_report_stub("ERROR:sqrt %f\n", radicand);
@@ -69,10 +52,7 @@ x_dominant:
         z = (matrix.basis_forward.x + matrix.basis_right.z) / doubled_root;
         w = (matrix.basis_forward.y + matrix.basis_up.z) / doubled_root;
         return;
-    }
-
-y_dominant:
-    {
+    } else if (axis == 1) {
         float radicand = matrix.basis_up.y + 1.0f - matrix.basis_right.x - matrix.basis_forward.z;
         if (radicand < 0.0f) {
             debug_report_stub("ERROR:sqt %f\n", radicand);
@@ -85,6 +65,20 @@ y_dominant:
         y = doubled_root * 0.25f;
         z = (matrix.basis_forward.y + matrix.basis_up.z) / doubled_root;
         w = (matrix.basis_forward.x + matrix.basis_right.z) / doubled_root;
+        return;
+    } else if (axis == 2) {
+        float radicand = matrix.basis_forward.z + 1.0f - matrix.basis_right.x - matrix.basis_up.y;
+        if (radicand < 0.0f) {
+            debug_report_stub("ERROR:sqt %f\n", radicand);
+            radicand = 0.0f;
+        }
+
+        float doubled_root = Sqrt(radicand);
+        doubled_root = doubled_root + doubled_root;
+        x = (matrix.basis_forward.x + matrix.basis_right.z) / doubled_root;
+        y = (matrix.basis_forward.y + matrix.basis_up.z) / doubled_root;
+        z = doubled_root * 0.25f;
+        w = (matrix.basis_up.x + matrix.basis_right.y) / doubled_root;
         return;
     }
 }

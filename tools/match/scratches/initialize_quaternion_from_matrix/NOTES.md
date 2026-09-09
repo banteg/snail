@@ -5,6 +5,19 @@ symbols identify this as `tQuaternian::tQuaternian(const tMatrix&)`; the scratch
 now defines the corresponding real `tQuaternian(const tMatrix&)`
 constructor.
 
+## Current result: exact (2026-09-09)
+
+The Wii executable supplies an integer dominant-axis selection with a
+`right.x >= up.y` outer comparison, followed by X/Y/Z equality bodies. That
+source structure matches Windows exactly: **186/186 instructions**, prefix
+**186**, **23 positional references**, and all **579 bytes** accounted for.
+The unchanged compiler profile is `msvc6.5 /O2 /G5 /W3`. The ten original-code
+runtime fixtures and their negative controls pass. All other status rows are
+unchanged. See the [full evidence report](../../quaternion-wii-dispatch-20260909.md).
+
+The dated experiments below document earlier partial sources and remain
+historical; their 92.47% results do not describe the current constructor.
+
 ## Recovered shape
 
 - `this` is the output quaternion `{x, y, z, w}` in `ecx`.
