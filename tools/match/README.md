@@ -72,10 +72,14 @@ The first two [verified adjacent pairs](adjacent-source-units-20260909.md)
 recover two `SubGame.o` functions whose isolated builds duplicated shared tails.
 Each member keeps its existing source file; the compiler concatenates members
 in manifest order and publishes one physical object under the first member's
-build directory. Every member must retain its own proof-grade match.
+build directory. Exact members must retain their proof-grade matches. Partial
+members may improve while preserving instruction-count distance, prefix, and
+reference evidence; they remain explicitly partial and receive no exact credit.
 
-Source, config, transitive headers, and the group manifest participate in cache
-invalidation. `probe` and `mutate` replace only the selected member while keeping
+Source, config, transitive headers, the group manifest, and the selected Wibo
+executable participate in cache invalidation. This includes `WIBO` overrides
+and the launcher's bundled-runner/PATH fallback. Experiment receipts also hash
+the selected runner. `probe` and `mutate` replace only the selected member while keeping
 its peers. Diagnostic exports include `translation-unit.cpp`; mixed listings
 select the actual decorated function symbol. Link consumers reuse the physical
 object and retain separate native-function ownership. This does not imply that

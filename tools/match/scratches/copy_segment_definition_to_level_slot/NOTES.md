@@ -11,6 +11,12 @@ an ordinary, first, or last inline segment.
 - masked operands: 5/5 audited
 - live callers: three sites in `cRSubTracks::Init(char*)`
 
+The `subtrack_copy_level_loader` source group preserves this member's exact
+125-instruction match and five positional references while improving the
+adjacent level loader. Isolated, registered, reversed, and peer-headers-only
+controls all keep this member exact; see
+`../../subtrack-source-context-20260909.md`.
+
 ## 2026-09-09 shipped-corpus native execution comparison
 
 The unchanged recovered source agrees with an independently relocated original

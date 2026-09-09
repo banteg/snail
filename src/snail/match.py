@@ -3761,6 +3761,19 @@ def _scratch_compile_argv(config: ScratchConfig, match_root: Path) -> tuple[str,
     )
 
 
+def _scratch_wibo_path(match_root: Path) -> Path | None:
+    """Resolve the runner selected by cl.sh, including an explicit override."""
+    import shutil
+
+    override = os.environ.get("WIBO", "")
+    if override:
+        selected = override if "/" in override else shutil.which(override)
+    else:
+        bundled = match_root / "bin" / "wibo"
+        selected = str(bundled) if os.access(bundled, os.X_OK) else shutil.which("wibo")
+    return Path(selected).resolve() if selected else None
+
+
 def _scratch_build_dependencies(
     config: ScratchConfig,
     match_root: Path,
@@ -3780,9 +3793,11 @@ def _scratch_build_dependencies(
                 for path in (member / "scratch.cpp", member / "scratch.conf"))
         if unit else (config.directory / "scratch.cpp",)
     )
+    runner = _scratch_wibo_path(match_root)
     return (
         *unit_inputs,
         match_root / "cl.sh",
+        *((runner,) if runner else ()),
         compiler_bin / "CL.EXE",
         *compiler_dlls,
         *_scratch_include_headers(config, match_root, resolver=include_resolver),
@@ -3797,6 +3812,7 @@ def _scratch_build_key(
 ) -> dict:
     return {
         "compiler": config.compiler,
+        "runner_command": os.environ.get("WIBO") or "auto",
         "argv": list(_scratch_compile_argv(config, match_root)),
         "dependencies": [
             [str(path.relative_to(match_root) if path.is_relative_to(match_root) else path), _mtime_ns(path)]

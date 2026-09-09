@@ -16,6 +16,14 @@
         "update_track_parcel",
         "load_frontend_level_by_mode_and_index"
       ]
+    },
+    {
+      "name": "subtrack_copy_level_loader",
+      "source_object": "Subtrack.o",
+      "members": [
+        "copy_segment_definition_to_level_slot",
+        "load_level_definition_file"
+      ]
     }
   ]
 }

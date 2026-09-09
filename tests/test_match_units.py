@@ -77,6 +77,65 @@ def test_one_physical_object_and_peer_cache_invalidation(grouped_scratches, monk
     assert "return 2" in compiled[1]
 
 
+def test_runner_override_and_binary_update_recompile_shared_object(grouped_scratches, monkeypatch):
+    import os
+
+    root, (first, second) = grouped_scratches
+    runners = [root / "bin" / name for name in ("wibo", "patched-wibo")]
+    runners[0].parent.mkdir()
+    for runner in runners:
+        runner.write_bytes(b"runner")
+        runner.chmod(0o755)
+    monkeypatch.delenv("WIBO", raising=False)
+    compiled = []
+
+    def compile_fixture(argv, *, cwd, **kwargs):
+        compiled.append(kwargs["env"].get("WIBO"))
+        (Path(cwd) / "scratch.obj").write_bytes(b"fixture object")
+        return subprocess.CompletedProcess(argv, 0, "", "")
+
+    monkeypatch.setattr(subprocess, "run", compile_fixture)
+    obj = match.compile_scratch(first, root)
+    original_digest = match.scratch_dependency_sha256(second, root)
+    assert match.compile_scratch(second, root) == obj
+    assert len(compiled) == 1
+
+    # Both runners predate the object. Selection itself must invalidate it.
+    monkeypatch.setenv("WIBO", str(runners[1]))
+    assert match.scratch_dependency_sha256(second, root) != original_digest
+    assert match.compile_scratch(second, root) == obj
+    assert compiled == [None, str(runners[1])]
+    patched_digest = match.scratch_dependency_sha256(second, root)
+    previous = runners[1].stat()
+    runners[1].write_bytes(b"updated runner")
+    os.utime(runners[1], ns=(previous.st_atime_ns, previous.st_mtime_ns + 1))
+    assert match.scratch_dependency_sha256(second, root) != patched_digest
+    assert match.compile_scratch(first, root) == obj
+    assert len(compiled) == 3
+
+
+def test_runner_resolution_follows_launcher_precedence(tmp_path, monkeypatch):
+    root = tmp_path / "match"
+    bundled = root / "bin" / "wibo"
+    path_runner = tmp_path / "path-bin" / "wibo"
+    named_runner = path_runner.with_name("patched-wibo")
+    for runner in (bundled, path_runner, named_runner):
+        runner.parent.mkdir(parents=True, exist_ok=True)
+        runner.write_bytes(b"runner")
+        runner.chmod(0o755)
+    monkeypatch.setenv("PATH", str(path_runner.parent))
+    monkeypatch.delenv("WIBO", raising=False)
+    assert match._scratch_wibo_path(root) == bundled
+    bundled.chmod(0o644)
+    assert match._scratch_wibo_path(root) == path_runner
+    monkeypatch.setenv("WIBO", "patched-wibo")
+    assert match._scratch_wibo_path(root) == named_runner
+    monkeypatch.setenv("WIBO", str(bundled))
+    assert match._scratch_wibo_path(root) == bundled
+    monkeypatch.setenv("WIBO", "missing-runner")
+    assert match._scratch_wibo_path(root) is None
+
+
 def test_unit_order_is_a_cache_and_compilation_input(grouped_scratches):
     root, (first, _) = grouped_scratches
     before = match.scratch_dependency_sha256(first, root)

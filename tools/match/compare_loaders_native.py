@@ -33,7 +33,11 @@ from snail.match import (
     run_match,
     scratch_dependency_sha256,
 )
-from snail.match_link import load_link_symbols, verify_relocated_bytes
+from snail.match_link import (
+    externalize_coff_function,
+    load_link_symbols,
+    verify_relocated_bytes,
+)
 from snail.symbols import (
     DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
     REPO_ROOT,
@@ -234,18 +238,32 @@ def compare_regions(source, candidate):
     }
 
 
-def verify_source_link(executable, map_path, objects, records, replaced):
+def verify_source_link(executable, map_path, objects, records, replaced, object_overrides=None):
     pe, symbols = load_link_symbols(executable, map_path)
     parsed = {obj.name: parse_coff_object(obj.read_bytes()) for obj in objects}
     symbols.bind_objects(parsed)
     mapped = pe.get_memory_mapped_image()
     verified = []
-    for record, path in zip(records, objects, strict=False):
+    object_overrides = object_overrides or {}
+    for record in records:
         if record["function"] == replaced:
             continue
-        obj = parsed[path.name]
+        owner = object_overrides.get(record["object_name"], record["object_name"])
+        obj = parsed[owner]
         function = extract_object_function(obj, record["symbol"])
         symbol = next(s for s in obj.symbols if s.name == function.name)
+        original = parse_coff_object((executable.parent / record["object_name"]).read_bytes())
+        original_function = extract_object_function(original, record["symbol"])
+        original_symbol = next(s for s in original.symbols if s.name == function.name)
+        # Externalizing a callee changes its resolved reference metadata. The
+        # retained caller's actual section, relocations and symbol must not change.
+        if (
+            object_function_fingerprint(original_function) != record["code_sha256"]
+            or symbol != original_symbol
+            or obj.sections[symbol.section_number - 1]
+            != original.sections[original_symbol.section_number - 1]
+        ):
+            raise ValueError(f"retained source function changed: {record['function']}")
         relocations = tuple(
             CoffRelocation(
                 r.virtual_address - symbol.value, r.symbol_index, r.relocation_type
@@ -253,7 +271,7 @@ def verify_source_link(executable, map_path, objects, records, replaced):
             for r in obj.sections[symbol.section_number - 1].relocations
             if symbol.value <= r.virtual_address < symbol.value + len(function.data)
         )
-        address = symbols.resolve(function.name, path.name)
+        address = symbols.resolve(function.name, owner)
         offset = address - pe.OPTIONAL_HEADER.ImageBase
         references = verify_relocated_bytes(
             function.data,
@@ -262,7 +280,7 @@ def verify_source_link(executable, map_path, objects, records, replaced):
             relocations,
             obj,
             symbols,
-            path.name,
+            owner,
         )
         verified.append(
             {
@@ -310,13 +328,20 @@ def compare(runtime, archive, out, include_synthetic=False):
     )
     identities[str(bundle)] = digest(bundle.read_bytes())
     objects, records = [], []
+    physical_objects, function_objects = {}, {}
     for name in (*TARGETS, *HELPERS):
         config = load_scratch_config(DEFAULT_MATCH_ROOT / "scratches" / name)
         if config.compiler != "msvc6.5":
             raise ValueError("loader diagnostic requires the canonical VC6 profile")
         deps = scratch_dependency_sha256(config)
-        obj = out / f"{name}.obj"
-        obj.write_bytes(compile_scratch(config).read_bytes())
+        compiled = compile_scratch(config).resolve()
+        if compiled not in physical_objects:
+            obj = out / f"{name}.obj"
+            obj.write_bytes(compiled.read_bytes())
+            physical_objects[compiled] = obj
+            objects.append(obj)
+        obj = physical_objects[compiled]
+        function_objects[name] = obj
         match = run_match(
             obj_path=obj,
             function_name=name,
@@ -335,6 +360,7 @@ def compare(runtime, archive, out, include_synthetic=False):
         records.append(
             {
                 "function": name,
+                "object_name": obj.name,
                 "symbol": f.name,
                 "match_ratio": match.ratio,
                 "compiler": config.compiler,
@@ -352,7 +378,6 @@ def compare(runtime, archive, out, include_synthetic=False):
                 "object_sha256": digest(obj.read_bytes()),
             }
         )
-        objects.append(obj)
     fixture_inputs = {}
     for name in ("loader_smoke", "loader_crt_compat"):
         source = DEFAULT_MATCH_ROOT / "link" / f"{name}.cpp"
@@ -379,15 +404,23 @@ def compare(runtime, archive, out, include_synthetic=False):
         oracles[name] = make_oracle(
             obj,
             function_name=name,
-            source_object=objects[TARGETS.index(name)],
+            source_object=function_objects[name],
             allow_candidate_only=name == "load_level_definition_file",
         )
         identities[str(obj)] = digest(obj.read_bytes())
     results, outputs = {}, {}
     for label, replaced in [("source", None), *[(f"native-{n}", n) for n in TARGETS]]:
         linked = list(objects)
+        object_overrides = {}
         if replaced:
-            linked[TARGETS.index(replaced)] = out / f"{replaced}.native.obj"
+            original = function_objects[replaced]
+            forwarded = out / f"{replaced}.source-peers.obj"
+            record = next(r for r in records if r["function"] == replaced)
+            forwarded.write_bytes(externalize_coff_function(original.read_bytes(), record["symbol"]))
+            linked[linked.index(original)] = forwarded
+            linked.append(out / f"{replaced}.native.obj")
+            object_overrides[original.name] = forwarded.name
+            identities[str(forwarded)] = digest(forwarded.read_bytes())
         executable = out / f"{label}.exe"
         mapping = out / f"{label}.map"
         for path in (executable, mapping):
@@ -412,7 +445,7 @@ def compare(runtime, archive, out, include_synthetic=False):
         rsp = out / f"{label}.rsp"
         rsp.write_text("\n".join(f'"{s}"' for s in options) + "\n")
         checked_run([runner, str(linker), f"@Z:{rsp}"], out / f"{label}.link.log")
-        proof = verify_source_link(executable, mapping, linked, records, replaced)
+        proof = verify_source_link(executable, mapping, linked, records, replaced, object_overrides)
         if replaced:
             oracles[replaced]["link_verification"] = verify_oracle_link(
                 executable, mapping, out / f"{replaced}.native.obj", oracles[replaced]

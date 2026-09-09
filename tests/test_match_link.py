@@ -12,6 +12,7 @@ from snail.match import (
 )
 from snail.match_link import (
     LinkSymbols,
+    externalize_coff_function,
     verify_code_sections,
     verify_data_sections,
     verify_relocated_bytes,
@@ -19,6 +20,63 @@ from snail.match_link import (
 )
 
 BASE = 0x400000
+
+
+def two_function_object(*, interior_reference=False):
+    """Independent i386 COFF fixture: peer calls the first function."""
+    code = b"\xb8\x01\0\0\0\xc3\x90\x90" + b"\xe8\0\0\0\0\xc3\x90\x90"
+    symbol_count = 3 if interior_reference else 2
+    header = struct.pack("<HHIIIHH", 0x14C, 2, 0, 126, symbol_count, 0, 0)
+    sections = b"".join(
+        struct.pack("<8sIIIIIIHHI", b".text", 0, 0, 8, 100 + i * 8,
+                    116 if i else 0, 0, int(bool(i)), 0, 0x60501020)
+        for i in range(2)
+    )
+    relocation = struct.pack("<IIH", 1, 2 if interior_reference else 0, 0x14)
+    symbols = struct.pack("<8sIhHBB", b"_swap", 0, 1, 0x20, 2, 0)
+    symbols += struct.pack("<8sIhHBB", b"_peer", 0, 2, 0x20, 2, 0)
+    if interior_reference:
+        symbols += struct.pack("<8sIhHBB", b"_inner", 4, 1, 0, 3, 0)
+    return header + sections + code + relocation + symbols + struct.pack("<I", 4)
+
+
+def test_externalized_function_preserves_peer_code_and_call_symbol():
+    original = two_function_object()
+    transformed = externalize_coff_function(original, "_swap")
+    before = parse_coff_object(original)
+    after = parse_coff_object(transformed)
+    assert after.sections[0].characteristics & 0x800
+    assert not after.sections[0].characteristics & 0x1000
+    assert after.sections[0].data == before.sections[0].data
+    assert after.sections[1] == before.sections[1]
+    assert after.symbols[0].name == "_swap"
+    assert after.symbols[0].section_number == 0
+    assert after.symbols[0].raw_index == 0
+    assert after.symbols[1] == before.symbols[1]
+    assert after.sections[1].relocations[0].symbol_index == after.symbols[0].raw_index
+    changed = {i for i, (a, b) in enumerate(zip(original, transformed, strict=True)) if a != b}
+    assert changed <= {*range(56, 60), *range(134, 140)}
+
+
+def test_externalization_rejects_peer_reference_to_function_interior():
+    with pytest.raises(ValueError, match="another symbol"):
+        externalize_coff_function(two_function_object(interior_reference=True), "_swap")
+
+
+def test_externalization_rejects_shared_function_section():
+    data = bytearray(two_function_object())
+    struct.pack_into("<Ih", data, 126 + 18 + 8, 4, 1)
+    with pytest.raises(ValueError, match="dedicated function section"):
+        externalize_coff_function(bytes(data), "_swap")
+
+
+def test_externalization_rejects_missing_or_already_external_function():
+    original = two_function_object()
+    with pytest.raises(ValueError, match="one defined function"):
+        externalize_coff_function(original, "_absent")
+    once = externalize_coff_function(original, "_swap")
+    with pytest.raises(ValueError, match="one defined function"):
+        externalize_coff_function(once, "_swap")
 
 
 @pytest.mark.parametrize("negative", [False, True])

@@ -31,6 +31,25 @@ from snail.symbols import (
 )
 
 
+def assert_member_nonregression(isolated: dict, canonical: dict) -> None:
+    """A partial gain cannot buy regressions in another proof dimension."""
+    function = canonical["function"]
+    if isolated["state"] == "match" and canonical["state"] != "match":
+        raise ValueError(f"exact member regressed: {function}")
+    for field in ("match_ratio", "prefix_instructions"):
+        if canonical[field] < isolated[field]:
+            raise ValueError(f"{field} regressed: {function}")
+    old_distance = abs(isolated["candidate_instructions"] - isolated["target_instructions"])
+    new_distance = abs(canonical["candidate_instructions"] - canonical["target_instructions"])
+    if new_distance > old_distance:
+        raise ValueError(f"instruction count regressed: {function}")
+    if canonical["references"]["ok"] < isolated["references"]["ok"]:
+        raise ValueError(f"clean references regressed: {function}")
+    for field in ("unresolved", "mismatch", "unaudited"):
+        if canonical["references"][field] > isolated["references"][field]:
+            raise ValueError(f"{field} references regressed: {function}")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", type=Path, required=True)
@@ -49,6 +68,7 @@ def main():
         unit = scratch_translation_unit(configs[0])
         sources = [(config.directory / "scratch.cpp").read_text() for config in configs]
         for index, config in enumerate(configs):
+            statuses = {}
             variants = {
                 "canonical": scratch_compilation_source(config),
                 "isolated": sources[index],
@@ -75,7 +95,7 @@ def main():
                     )
                     detail = match_result_payload(result)
                     detail.pop("cfg_alignment")  # CFG diagnostics do not certify exactness.
-                    if label == "canonical":
+                    if label == "canonical" and status.state == "match":
                         positional = all(
                             entry.status == "ok" and entry.target_index == entry.candidate_index
                             and entry.target_offset == entry.candidate_offset
@@ -110,6 +130,7 @@ def main():
                             raise ValueError(f"body encoding differs outside relocations: {config.function}")
                     payload = scratch_status_payload(status)
                     payload.pop("scratch")  # Ephemeral compiler directory is not provenance.
+                    statuses[label] = payload
                     rows.append({
                         "unit": unit.name, "source_object": unit.source_object,
                         "members": registered["members"], "variant": label,
@@ -117,8 +138,7 @@ def main():
                         "status": payload, "diagnostic": detail,
                     })
                     print(config.function, label, status.state, status.ratio, flush=True)
-                    if label == "canonical" and status.state != "match":
-                        raise ValueError(f"registered source unit regressed: {config.function}")
+            assert_member_nonregression(statuses["isolated"], statuses["canonical"])
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps({
         "schema": 1, "native_image_sha256": native_sha256, "controls": rows,

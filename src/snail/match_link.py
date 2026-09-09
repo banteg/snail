@@ -12,7 +12,49 @@ from pathlib import Path
 
 import pefile
 
-from .match import CoffObject, CoffRelocation, CoffSymbol
+from .match import CoffObject, CoffRelocation, CoffSymbol, parse_coff_object
+
+
+def externalize_coff_function(data: bytes, name: str) -> bytes:
+    """Discard one dedicated function section and bind its callers externally.
+
+    Raw symbol indices stay fixed, so references from retained peers still use
+    the original function name. This is a runtime-control object transformation,
+    never a source-matching transformation.
+    """
+    obj = parse_coff_object(data)
+    matches = [s for s in obj.symbols if s.name == name and s.section_number > 0]
+    if len(matches) != 1:
+        raise ValueError(f"expected one defined function: {name}")
+    target = matches[0]
+    table = struct.unpack_from("<I", data, 8)[0]
+    symbol_offset = table + target.raw_index * 18
+    if target.storage_class != 2 or target.symbol_type != 0x20 or data[symbol_offset + 17]:
+        raise ValueError("externalization requires an external function without auxiliary records")
+    section = obj.sections[target.section_number - 1]
+    peers = [
+        s for s in obj.symbols
+        if s.section_number == target.section_number and s.symbol_type & 0x20
+    ]
+    if target.value != 0 or len(peers) != 1 or not section.characteristics & 0x20:
+        raise ValueError("externalization requires a dedicated function section")
+    by_index = {s.raw_index: s for s in obj.symbols}
+    for index, peer in enumerate(obj.sections, start=1):
+        if index == target.section_number:
+            continue
+        for relocation in peer.relocations:
+            symbol = by_index[relocation.symbol_index]
+            if symbol.section_number == target.section_number and symbol.raw_index != target.raw_index:
+                raise ValueError("a peer references the removed section through another symbol")
+    patched = bytearray(data)
+    # Undefined external: leave its name/type/index and every relocation intact.
+    struct.pack_into("<Ih", patched, symbol_offset + 8, 0, 0)
+    optional_size = struct.unpack_from("<H", data, 16)[0]
+    header = 20 + optional_size + (target.section_number - 1) * 40
+    # LINK validates COMDAT ownership before discarding removed sections. Once
+    # the definition is external, this discarded section cannot remain COMDAT.
+    struct.pack_into("<I", patched, header + 36, (section.characteristics | 0x800) & ~0x1000)
+    return bytes(patched)
 
 
 def verify_runtime_control(
