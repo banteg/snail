@@ -59,8 +59,9 @@ are resolved to the neighboring
 
 - Algebraically combining challenge-scale expressions changed target constant
   sequencing.
-- Preinitializing the landscape result lowered the score. The old incoming-index
-  alias is now removed because the volatile stack reload is the stronger shape.
+- Preinitializing the landscape result lowered the score. The retained default
+  arm uses `level_index` directly; the volatile view that forced the native
+  stack reload was removed because its qualifier lacked source evidence.
 - Typed row overlays, chained zero stores, and completion-row permutations
   worsened scheduling or did not improve the score.
 - Member/free inline helpers for repeated list insertion changed inlining,
@@ -75,11 +76,16 @@ are resolved to the neighboring
 
 ## Current residual
 
-The random-landscape
-default reload now has a complete ordinary-lifetime sweep plus an exact sibling
-with the same irreducible VC6 topology. The completion pre-mask schedule is
-unchanged by the dual-mobile cross-row Player lifetime, while all short
-completion-position owners regress. The active-list tail's owner and inline
-call spellings were already bounded. Do not retry these regions without new
-original-source or compiler-provenance evidence; the prior sweep count does
-not close the function.
+The random-landscape default reload, completion pre-mask schedule, and
+active-list tail remain open source-recovery questions. The recorded
+requested-level lifetime variants did not recover the reload; the tested
+cross-row Player lifetime was neutral, and all four tested short
+completion-position owners regressed. The list-owner and inline-call trials
+likewise did not recover the native tail schedule.
+
+These results apply to the tested forms and their recorded baselines. They do
+not establish an irreducible compiler difference. Use the instruction diff and
+ledger to select a distinct whole-function ownership or lifetime hypothesis,
+or revisit a rejected form after a relevant source or helper change. Preserve
+the native shared landscape activation and the reference audit; original
+source or new compiler provenance is not a prerequisite for further work.

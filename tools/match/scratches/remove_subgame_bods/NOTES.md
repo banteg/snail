@@ -360,9 +360,12 @@ variants with no repeats or tradeoffs.
 Native still assigns the cell cursor to EDI and the eight-cell countdown to
 EBX, then reloads `this` into EBX after the cache call. The candidate assigns
 the cell cursor to EBX and the row-end pointer to EDI, then uses EBX for a
-hoisted `0x200` linked flag. Further work requires new evidence about that
-opening lifetime; byte casts, register forcing, padding, and dummy locals are
-not acceptable substitutes.
+hoisted `0x200` linked flag. The opening lifetime remains a source-recovery
+question. Use a distinct ownership hypothesis or a relevant baseline change
+to guide further experiments; byte casts, register forcing, padding, and dummy
+locals are not acceptable substitutes. See the September 4 typed-owner
+diagnostic below for a subsequent revisit and withdrawal of the compiler
+attribution.
 
 ## 2026-08-12 recovery classification
 
