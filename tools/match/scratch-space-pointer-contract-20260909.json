@@ -1,0 +1,877 @@
+{
+  "before": {
+    "source_sha256": "da680fba55f15b138ef97337336c9e8efdebc302645938defca4f6162980252d",
+    "code_sha256": "534a16779c826579b8496f986bdcfdeae523748916ca0964f7ac4e306b8b0510",
+    "code_bytes": 1149,
+    "accessor_relocations": [
+      {
+        "offset": 141,
+        "symbol_name": "?get_archive_data_base@@YAHXZ",
+        "text": "sym:get_archive_data_base",
+        "key": "name:get_archive_data_base",
+        "explained": true,
+        "addend": 0,
+        "symbol_offset": null,
+        "symbol_size": null,
+        "symbol_data": null,
+        "symbol_relocation_offsets": []
+      },
+      {
+        "offset": 151,
+        "symbol_name": "?get_archive_data_end@@YAHXZ",
+        "text": "sym:get_archive_data_end",
+        "key": "name:get_archive_data_end",
+        "explained": true,
+        "addend": 0,
+        "symbol_offset": null,
+        "symbol_size": null,
+        "symbol_data": null,
+        "symbol_relocation_offsets": []
+      }
+    ]
+  },
+  "after": {
+    "source_sha256": "747db786141e8aaeccef739434827e337220a40e46c13057bb1e51245b493053",
+    "code_sha256": "534a16779c826579b8496f986bdcfdeae523748916ca0964f7ac4e306b8b0510",
+    "code_bytes": 1149,
+    "accessor_relocations": [
+      {
+        "offset": 141,
+        "symbol_name": "?get_archive_data_base@@YAPAXXZ",
+        "text": "sym:get_archive_data_base",
+        "key": "name:get_archive_data_base",
+        "explained": true,
+        "addend": 0,
+        "symbol_offset": null,
+        "symbol_size": null,
+        "symbol_data": null,
+        "symbol_relocation_offsets": []
+      },
+      {
+        "offset": 151,
+        "symbol_name": "?get_archive_data_end@@YAPAXXZ",
+        "text": "sym:get_archive_data_end",
+        "key": "name:get_archive_data_end",
+        "explained": true,
+        "addend": 0,
+        "symbol_offset": null,
+        "symbol_size": null,
+        "symbol_data": null,
+        "symbol_relocation_offsets": []
+      }
+    ]
+  },
+  "groups": [
+    {
+      "owner": "RObject.o",
+      "platform": "android",
+      "members": [
+        {
+          "function": "is_bod_after_sprites",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 3,
+            "candidate": 3,
+            "target": 3,
+            "refs": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "aa15911060f2969e75453689240956ad8b7ba12362c9716da828e724ef3040af"
+        },
+        {
+          "function": "set_bod_object",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 6,
+            "candidate": 6,
+            "target": 6,
+            "refs": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "2757cdf46908e0ace73fc6e432b7e55e6ceec89ba8bdaa31153690638c20bed2"
+        },
+        {
+          "function": "copy_object_vertices",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 28,
+            "candidate": 28,
+            "target": 28,
+            "refs": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "ffafb33755eeb41ba27b564019bdf207e66964efac5dcc46d55f03845c5f51dd"
+        },
+        {
+          "function": "apply_object_toon",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 24,
+            "candidate": 24,
+            "target": 24,
+            "refs": [
+              4,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "df9f1065dab795b1e83574a34474ea939e37ed2eaa4a28bca15e5b0e105e562d"
+        },
+        {
+          "function": "advance_frame_sequence",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 65,
+            "candidate": 65,
+            "target": 65,
+            "refs": [
+              2,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "199e8cf778a6a927e9a48588aa8c5559fb27c66ced1a38cadbecbb17bf395f9a"
+        },
+        {
+          "function": "rotate_object_facequad_uv_pairs",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 17,
+            "candidate": 17,
+            "target": 17,
+            "refs": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "bb974f5bad2c68accc4d6f268fccb3fdd5d4fea0e7a299b2cd1ab063d154927c"
+        },
+        {
+          "function": "get_or_append_object_texture_group_vertex",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 127,
+            "candidate": 127,
+            "target": 127,
+            "refs": [
+              18,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "fcc0777e2dd89ea66089c809e1f56b86ced52c38ec293abc0c3439bdc87ebd25"
+        },
+        {
+          "function": "request_object_edges",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 16,
+            "candidate": 16,
+            "target": 16,
+            "refs": [
+              2,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "0a2e7aebce6da5bcf5321ac49450dfe96879a758e28e04fd45503b3fa21b9747"
+        },
+        {
+          "function": "request_object_vertex_colours",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 30,
+            "candidate": 30,
+            "target": 30,
+            "refs": [
+              2,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "b53287c53d4f42df458a1650a6eeb3565cc0b667a491d59aae6ae28022281679"
+        },
+        {
+          "function": "request_object_facequad_normals",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 26,
+            "candidate": 26,
+            "target": 26,
+            "refs": [
+              4,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "a1bbd6699b3481def366d365369ce38483237203af499821cca075772c79d902"
+        },
+        {
+          "function": "request_object_vertices_copy",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 14,
+            "candidate": 14,
+            "target": 14,
+            "refs": [
+              3,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "08481c140670bee0e6f74c45196fe3653c4e0af58425e5a67d444a3ea2d35210"
+        },
+        {
+          "function": "build_object_texture_group_buffers",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 373,
+            "candidate": 373,
+            "target": 373,
+            "refs": [
+              29,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "747db786141e8aaeccef739434827e337220a40e46c13057bb1e51245b493053"
+        },
+        {
+          "function": "request_object_texture_groups",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 29,
+            "candidate": 29,
+            "target": 29,
+            "refs": [
+              4,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "0e9ced9eb35de2bad86396c7a260dcedaa779229fc4fd270adda72c8790370e7"
+        },
+        {
+          "function": "calc_object_texture_groups",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 55,
+            "candidate": 55,
+            "target": 55,
+            "refs": [
+              1,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "2d79c54aeae4667ecbcf93d20810afa04300b0c4f1a0834408f8d21c831dde72"
+        },
+        {
+          "function": "request_object_facequads",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 40,
+            "candidate": 40,
+            "target": 40,
+            "refs": [
+              5,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "c1c704f45812656d6c8a5e8cb5f4ae264b0696e03596e41a449c0e6c76c6a7d1"
+        },
+        {
+          "function": "request_object_vertices",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 37,
+            "candidate": 37,
+            "target": 37,
+            "refs": [
+              8,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "5863526a8522a54510b30dec8b5bb5cf82146ca0f9415a69b62129f6fc140e50"
+        },
+        {
+          "function": "request_object_animation",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 231,
+            "candidate": 231,
+            "target": 231,
+            "refs": [
+              17,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "8cdb92068dff2dc94e7b9306c5e134e0fc0b0f420afe1c7fcf6a834da48136f5"
+        },
+        {
+          "function": "add_object_edge",
+          "metrics": {
+            "ratio": 0.915929203539823,
+            "prefix": 15,
+            "candidate": 225,
+            "target": 227,
+            "refs": [
+              34,
+              0,
+              0,
+              3
+            ]
+          },
+          "source_sha256": "d34b7d3dc932b262070021c065138bdf05aa5ceca6fc75eda9f0140561733d2c"
+        },
+        {
+          "function": "calc_object_edges",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 141,
+            "candidate": 141,
+            "target": 141,
+            "refs": [
+              17,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "ab3dad08ebc4412e5972e8b37d849f74074d7284a2f05edb0ed6a6a2eb99289c"
+        },
+        {
+          "function": "calc_object_facequad_normals",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 437,
+            "candidate": 437,
+            "target": 437,
+            "refs": [
+              22,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "c143be259176ad287e483ec16b8d9489a97df157c861e7285f9559522f999427"
+        },
+        {
+          "function": "build_all_objects",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 54,
+            "candidate": 54,
+            "target": 54,
+            "refs": [
+              8,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "8ec23d482bb4ab6a155c9322659890415f6952f33fc972feedff57194d57dd15"
+        },
+        {
+          "function": "initialize_object",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 9,
+            "candidate": 9,
+            "target": 9,
+            "refs": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "2ac2bb65d4080acfacd7df5b073b090033303188aa4345f4c7c1a903e685aeb8"
+        },
+        {
+          "function": "add_object_to_list",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 24,
+            "candidate": 24,
+            "target": 24,
+            "refs": [
+              3,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "d347611c3ebc81f2fb026576417f27c0b7a03229211d675b6c502baec9231dad"
+        },
+        {
+          "function": "initialize_object_list",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 30,
+            "candidate": 30,
+            "target": 30,
+            "refs": [
+              3,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "f74382d8bba524796b38728b4f9681e7683cadede7b5eb4faa5d8bd9b5f3e7e8"
+        },
+        {
+          "function": "initialize_object_constructor_thunk",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 6,
+            "candidate": 6,
+            "target": 6,
+            "refs": [
+              1,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "6a53e5e6a5b3b48968894ab1021e0322e788c26e38b4908a6d9c90c8b5c51fbc"
+        },
+        {
+          "function": "apply_bod_position",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 39,
+            "candidate": 39,
+            "target": 39,
+            "refs": [
+              1,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "1fc09c390d3d6fbdf4d9f900cd0b8185fce20c4e067f6329560ebfadf125a749"
+        },
+        {
+          "function": "initialize_bod_base",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 27,
+            "candidate": 27,
+            "target": 27,
+            "refs": [
+              5,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "4819fe552a28d98a2a9050b1fa39fceaf5e5a67b1d3077723e51aeda4b64b333"
+        },
+        {
+          "function": "initialize_renderable_bod",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 10,
+            "candidate": 10,
+            "target": 10,
+            "refs": [
+              3,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "dc1c6dffc34eb4184c8b8f9af0a2b849517b27ca29676a718b34e1979f73d2ea"
+        }
+      ],
+      "translation_unit_sha256": "5a5c7d8af008c6728c285548c32e72a6c1876443ca26485f2dcc35c1119265be",
+      "all_members_unchanged": true
+    },
+    {
+      "owner": "RObject.o",
+      "platform": "ios",
+      "members": [
+        {
+          "function": "initialize_bod_base",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 27,
+            "candidate": 27,
+            "target": 27,
+            "refs": [
+              5,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "4819fe552a28d98a2a9050b1fa39fceaf5e5a67b1d3077723e51aeda4b64b333"
+        },
+        {
+          "function": "is_bod_after_sprites",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 3,
+            "candidate": 3,
+            "target": 3,
+            "refs": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "aa15911060f2969e75453689240956ad8b7ba12362c9716da828e724ef3040af"
+        },
+        {
+          "function": "set_bod_object",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 6,
+            "candidate": 6,
+            "target": 6,
+            "refs": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "2757cdf46908e0ace73fc6e432b7e55e6ceec89ba8bdaa31153690638c20bed2"
+        },
+        {
+          "function": "apply_object_toon",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 24,
+            "candidate": 24,
+            "target": 24,
+            "refs": [
+              4,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "df9f1065dab795b1e83574a34474ea939e37ed2eaa4a28bca15e5b0e105e562d"
+        },
+        {
+          "function": "advance_frame_sequence",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 65,
+            "candidate": 65,
+            "target": 65,
+            "refs": [
+              2,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "199e8cf778a6a927e9a48588aa8c5559fb27c66ced1a38cadbecbb17bf395f9a"
+        },
+        {
+          "function": "rotate_object_facequad_uv_pairs",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 17,
+            "candidate": 17,
+            "target": 17,
+            "refs": [
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "bb974f5bad2c68accc4d6f268fccb3fdd5d4fea0e7a299b2cd1ab063d154927c"
+        },
+        {
+          "function": "request_object_facequads",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 40,
+            "candidate": 40,
+            "target": 40,
+            "refs": [
+              5,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "c1c704f45812656d6c8a5e8cb5f4ae264b0696e03596e41a449c0e6c76c6a7d1"
+        },
+        {
+          "function": "request_object_vertices",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 37,
+            "candidate": 37,
+            "target": 37,
+            "refs": [
+              8,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "5863526a8522a54510b30dec8b5bb5cf82146ca0f9415a69b62129f6fc140e50"
+        },
+        {
+          "function": "request_object_animation",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 231,
+            "candidate": 231,
+            "target": 231,
+            "refs": [
+              17,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "8cdb92068dff2dc94e7b9306c5e134e0fc0b0f420afe1c7fcf6a834da48136f5"
+        },
+        {
+          "function": "add_object_edge",
+          "metrics": {
+            "ratio": 0.915929203539823,
+            "prefix": 15,
+            "candidate": 225,
+            "target": 227,
+            "refs": [
+              34,
+              0,
+              0,
+              3
+            ]
+          },
+          "source_sha256": "d34b7d3dc932b262070021c065138bdf05aa5ceca6fc75eda9f0140561733d2c"
+        },
+        {
+          "function": "apply_bod_position",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 39,
+            "candidate": 39,
+            "target": 39,
+            "refs": [
+              1,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "1fc09c390d3d6fbdf4d9f900cd0b8185fce20c4e067f6329560ebfadf125a749"
+        },
+        {
+          "function": "request_object_vertices_copy",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 14,
+            "candidate": 14,
+            "target": 14,
+            "refs": [
+              3,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "08481c140670bee0e6f74c45196fe3653c4e0af58425e5a67d444a3ea2d35210"
+        },
+        {
+          "function": "calc_object_texture_groups",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 55,
+            "candidate": 55,
+            "target": 55,
+            "refs": [
+              1,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "2d79c54aeae4667ecbcf93d20810afa04300b0c4f1a0834408f8d21c831dde72"
+        },
+        {
+          "function": "calc_object_edges",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 141,
+            "candidate": 141,
+            "target": 141,
+            "refs": [
+              17,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "ab3dad08ebc4412e5972e8b37d849f74074d7284a2f05edb0ed6a6a2eb99289c"
+        },
+        {
+          "function": "initialize_object_constructor_thunk",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 6,
+            "candidate": 6,
+            "target": 6,
+            "refs": [
+              1,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "6a53e5e6a5b3b48968894ab1021e0322e788c26e38b4908a6d9c90c8b5c51fbc"
+        },
+        {
+          "function": "add_object_to_list",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 24,
+            "candidate": 24,
+            "target": 24,
+            "refs": [
+              3,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "d347611c3ebc81f2fb026576417f27c0b7a03229211d675b6c502baec9231dad"
+        },
+        {
+          "function": "initialize_object_list",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 30,
+            "candidate": 30,
+            "target": 30,
+            "refs": [
+              3,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "f74382d8bba524796b38728b4f9681e7683cadede7b5eb4faa5d8bd9b5f3e7e8"
+        },
+        {
+          "function": "initialize_renderable_bod",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 10,
+            "candidate": 10,
+            "target": 10,
+            "refs": [
+              3,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "dc1c6dffc34eb4184c8b8f9af0a2b849517b27ca29676a718b34e1979f73d2ea"
+        },
+        {
+          "function": "calc_object_facequad_normals",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 437,
+            "candidate": 437,
+            "target": 437,
+            "refs": [
+              22,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "c143be259176ad287e483ec16b8d9489a97df157c861e7285f9559522f999427"
+        },
+        {
+          "function": "build_object_texture_group_buffers",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 373,
+            "candidate": 373,
+            "target": 373,
+            "refs": [
+              29,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "747db786141e8aaeccef739434827e337220a40e46c13057bb1e51245b493053"
+        },
+        {
+          "function": "build_all_objects",
+          "metrics": {
+            "ratio": 1.0,
+            "prefix": 54,
+            "candidate": 54,
+            "target": 54,
+            "refs": [
+              8,
+              0,
+              0,
+              0
+            ]
+          },
+          "source_sha256": "8ec23d482bb4ab6a155c9322659890415f6952f33fc972feedff57194d57dd15"
+        }
+      ],
+      "translation_unit_sha256": "f604cc6fa6417359ffc3eb0b8642dc6d3b59067104bcd53bce2dd4aa256cf683",
+      "all_members_unchanged": true
+    }
+  ],
+  "same_extracted_code": true,
+  "full_status": {
+    "port_proof_grade": 595,
+    "port_total": 662,
+    "platform_proof_grade": 114,
+    "platform_total": 120,
+    "type_findings": 0
+  },
+  "schema": 1,
+  "baseline_commit": "ab05dba0f",
+  "group_scope": "Available mapped whole functions in mobile address order; diagnostic compilation only, no group promotion."
+}

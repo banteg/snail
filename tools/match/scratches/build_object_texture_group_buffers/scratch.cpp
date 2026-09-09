@@ -6,8 +6,8 @@
 #include "vector3.h"
 
 void* allocate_tracked_memory(int size, char* name);
-int get_archive_data_base();
-int get_archive_data_end();
+void* get_archive_data_base();
+void* get_archive_data_end();
 extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
 #pragma intrinsic(memcpy)
 

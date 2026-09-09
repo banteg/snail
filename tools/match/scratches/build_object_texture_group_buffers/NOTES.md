@@ -6,6 +6,25 @@ Structure-first scratch for the object texture-group buffer builder at
 Current Wibo result: 100.00%, 373/373 candidate/target instructions,
 prefix 373/373, masked operands 29 ok, 0 unresolved, 0 mismatch.
 
+## 2026-09-09 scratch-space accessor declarations
+
+The two shell scratch-space accessors now return `void*`, matching their
+definitions in `get_archive_data_base` and `get_archive_data_end`. Their old
+`int` declarations produced incompatible C++ symbols and prevented a combined
+`RObject.o` compilation with `calc_object_edges`, which already used `void*`.
+The callers already cast the returned pointers to their vertex/index views.
+
+The 1,149 extracted code bytes are identical before and after; only the two
+accessor relocation names change from integer-return to pointer-return symbols.
+The full 373-instruction match and all 29 audited references remain exact.
+Diagnostic groups containing 28 Android-mapped or 21 iOS-mapped whole functions
+now compile, with every member retaining its isolated metrics. These mobile
+orders are context controls, not recovered Windows translation units.
+The full corpus remains 595/662 port functions and 114/120 platform helpers
+proof-grade, with zero type findings. No new exact-function credit is claimed.
+Hashes, changed relocations and member results are recorded in
+[the pointer-contract receipt](../../scratch-space-pointer-contract-20260909.json).
+
 Recovered relationships:
 
 - Called only by `build_all_objects`.
