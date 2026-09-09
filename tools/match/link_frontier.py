@@ -101,6 +101,7 @@ class Unit:
     main_symbol: CoffSymbol
     main_size: int
     symbol_aux_counts: dict[int, int]
+    object_path: str | None = None
 
 
 def symbol_aux_counts(data: bytes, obj: CoffObject) -> dict[int, int]:
@@ -264,6 +265,7 @@ def inventory(units: list[Unit], native_index: NativeIndex, imports: dict) -> di
     definitions = defaultdict(list)
     native_owners = defaultdict(list)
     data_owners = defaultdict(list)
+    physical_definitions = {}
     for unit in units:
         native_owners[unit.native_address].append({
             "caller": unit.caller, "symbol": unit.main_symbol.name,
@@ -272,19 +274,43 @@ def inventory(units: list[Unit], native_index: NativeIndex, imports: dict) -> di
         for symbol in unit.obj.symbols:
             definition = external_definition(unit, symbol)
             if definition:
-                definitions[symbol.name].append(definition)
-                if definition["kind"] in ("data", "common"):
-                    mapping = native_index.lookup(symbol.name)
-                    if (mapping and mapping.get("basis") == "exact_manifest_spelling"
-                            and mapping["kind"] not in ("function", "function_alias")):
-                        data_owners[mapping["address"]].append(definition)
+                key = (unit.object_path or ("scratch", unit.caller), symbol.raw_index)
+                # Source-unit members select different functions from the same
+                # immutable object. Prefer that function's own selected owner;
+                # this is not COMDAT coalescing between separate objects.
+                if key not in physical_definitions or definition["selected_function"]:
+                    physical_definitions[key] = definition
+    for definition in physical_definitions.values():
+        definitions[definition["symbol"]].append(definition)
+        if definition["kind"] in ("data", "common"):
+            mapping = native_index.lookup(definition["symbol"])
+            if (mapping and mapping.get("basis") == "exact_manifest_spelling"
+                    and mapping["kind"] not in ("function", "function_alias")):
+                data_owners[mapping["address"]].append(definition)
     edges = []
     objects = []
+    physical_scopes = {}
     for unit in units:
         symbols = {s.raw_index: s for s in unit.obj.symbols}
         section = unit.obj.sections[unit.main_symbol.section_number - 1]
         start, end = unit.main_symbol.value, unit.main_symbol.value + unit.main_size
-        selected = [r for r in section.relocations if start <= r.virtual_address < end]
+        selected_items = [
+            (index, r) for index, r in enumerate(section.relocations)
+            if start <= r.virtual_address < end
+        ]
+        selected = [r for _, r in selected_items]
+        scope = physical_scopes.setdefault(
+            unit.object_path or ("scratch", unit.caller),
+            {
+                "image_relocations": sum(
+                    len(s.relocations) for s in unit.obj.sections if image_section(s)
+                ),
+                "selected": set(),
+            },
+        )
+        scope["selected"].update(
+            (unit.main_symbol.section_number, index) for index, _ in selected_items
+        )
         selected_indices = {r.symbol_index for r in selected}
         for relocation in selected:
             symbol = symbols.get(relocation.symbol_index)
@@ -341,9 +367,13 @@ def inventory(units: list[Unit], native_index: NativeIndex, imports: dict) -> di
     frontier.sort(key=lambda r: (-len(r["callers"]), -r["relocations"], r["category"], r["symbol"] or ""))
     return {
         "summary": {
-            "objects": len(units), "selected_function_relocations": len(edges),
+            "objects": len(physical_scopes), "selected_functions": len(units),
+            "selected_function_relocations": len(edges),
             "categories": dict(sorted(Counter(r["category"] for r in edges).items())),
-            "other_image_relocations": sum(r["other_image_relocations"] for r in objects),
+            "other_image_relocations": sum(
+                scope["image_relocations"] - len(scope["selected"])
+                for scope in physical_scopes.values()
+            ),
         },
         "frontier": frontier, "edges": edges, "objects": objects,
     }
@@ -402,7 +432,10 @@ def main() -> int:
         selected = [s for s in obj.symbols if s.name == function.name]
         if len(selected) != 1 or selected[0].section_number <= 0:
             raise ValueError("selected function has no unique section definition")
-        unit = Unit(config.directory.name, start, obj, selected[0], len(function.data), symbol_aux_counts(data, obj))
+        unit = Unit(
+            config.directory.name, start, obj, selected[0], len(function.data),
+            symbol_aux_counts(data, obj), str(path.resolve()),
+        )
         identity = {
             "caller": unit.caller, "native_address": start,
             "selected_symbol": function.name, "selected_object_bytes": len(function.data),

@@ -1,6 +1,15 @@
 # play_subgoldy_shoot_sfx / cRSubGoldy::PlayShootSfx @ 0x43afd0
 
-Best current result: 89.13%.
+Current result (2026-09-09): **100%, 88/88 instructions, 19 clean references**.
+Compile the unchanged body immediately after `begin_post_follow_carryover`
+(`cRSubGoldy::FallingInit`) through `tools/match/translation_units.json`.
+Both belong to `SubGame.o` and are adjacent in the native image. The neighbor
+remains exact at 20/20 instructions. Reversing their order or retaining only
+its includes restores the old 89.13% result. This recovers compilation context;
+the precise compiler mechanism is not established. See
+[the source-unit report](../../adjacent-source-units-20260909.md).
+
+The following notes describe the historical isolated-function baseline.
 
 The native stack has two `Vector3` locals: the camera-minus-player delta is
 stored at `esp+0xc..0x14`, copied to `esp+0x18..0x20`, and the copy is passed to

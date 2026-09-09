@@ -143,8 +143,21 @@ def _export_diagnostic(
         if status.error is None:
             shadow = Path(temp) / "scratch"
             shadow.mkdir()
+            compilation_source = matchlib.scratch_compilation_source(
+                config, match_root, source_text=source_text,
+            )
+            unit = matchlib.scratch_translation_unit(config, match_root)
+            if unit:
+                (bundle / "translation-unit.cpp").write_text(
+                    compilation_source, encoding="utf-8",
+                )
+                report["translation_unit"] = {
+                    "name": unit.name,
+                    "members": [member.name for member in unit.members],
+                    "source_sha256": hashlib.sha256(compilation_source.encode()).hexdigest(),
+                }
             config = replace(config, directory=shadow)
-            (shadow / "scratch.cpp").write_text(source_text, encoding="utf-8")
+            (shadow / "scratch.cpp").write_text(compilation_source, encoding="utf-8")
             obj = matchlib.compile_scratch(config, match_root)
             function = matchlib.extract_object_function(
                 matchlib.parse_coff_object(obj.read_bytes()),

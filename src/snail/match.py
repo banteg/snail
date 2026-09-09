@@ -3560,6 +3560,80 @@ def load_scratch_config(directory: Path) -> ScratchConfig:
     )
 
 
+@dataclass(frozen=True, slots=True)
+class ScratchTranslationUnit:
+    name: str
+    source_object: str
+    members: tuple[Path, ...]
+
+
+def scratch_translation_unit(
+    config: ScratchConfig, match_root: Path = DEFAULT_MATCH_ROOT,
+) -> ScratchTranslationUnit | None:
+    """Resolve an explicitly recovered source group, never a temporary overlay.
+
+    Membership is deliberately path based. A probe's shadow directory must not
+    silently read the canonical function in place of the supplied candidate.
+    """
+    root = match_root.resolve()
+    directory = config.directory.resolve()
+    if directory.parent != root / "scratches":
+        return None
+    path = root / "translation_units.json"
+    if not path.exists():
+        return None
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if payload.get("schema") != 1 or not isinstance(payload.get("units"), list):
+        raise ValueError(f"{path}: expected translation-unit schema 1")
+    names: set[str] = set()
+    owners: set[str] = set()
+    selected = None
+    for item in payload["units"]:
+        name = item.get("name")
+        members = item.get("members")
+        source_object = item.get("source_object")
+        if (not isinstance(name, str) or not re.fullmatch(r"[a-z0-9_]+", name)
+                or name in names or not isinstance(members, list) or len(members) < 2
+                or not isinstance(source_object, str) or not source_object):
+            raise ValueError(f"{path}: invalid or duplicate translation unit {name!r}")
+        names.add(name)
+        for member in members:
+            if (not isinstance(member, str) or not re.fullmatch(r"[a-z0-9_]+", member)
+                    or member in owners):
+                raise ValueError(f"{path}: invalid or duplicate member {member!r}")
+            owners.add(member)
+        if directory.name in members:
+            selected = ScratchTranslationUnit(
+                name, source_object,
+                tuple(root / "scratches" / member for member in members),
+            )
+    if selected is not None:
+        profiles = {
+            (member.compiler, member.cflags)
+            for member in map(load_scratch_config, selected.members)
+        }
+        if len(profiles) != 1:
+            raise ValueError(f"{path}: {selected.name} members have different build profiles")
+    return selected
+
+
+def scratch_compilation_source(
+    config: ScratchConfig,
+    match_root: Path = DEFAULT_MATCH_ROOT,
+    *,
+    source_text: str | None = None,
+) -> str:
+    """Compose the actual source, replacing only the selected member in a probe."""
+    unit = scratch_translation_unit(config, match_root)
+    members = unit.members if unit else (config.directory,)
+    return "\n".join(
+        source_text
+        if source_text is not None and member.resolve() == config.directory.resolve()
+        else (member / "scratch.cpp").read_text(encoding="utf-8")
+        for member in members
+    )
+
+
 FORBIDDEN_SOURCE_TOKENS = ("__asm", "_asm", "__declspec(naked)")
 
 
@@ -3653,15 +3727,19 @@ def _scratch_include_headers(
     literal includes are conservatively tracked without preprocessing.
     """
     resolver = resolver or _ScratchIncludeResolver(match_root)
-    source = config.directory / "scratch.cpp"
-    pending = [source]
-    visited = {source}
+    unit = scratch_translation_unit(config, match_root)
+    sources = {
+        member / "scratch.cpp"
+        for member in (unit.members if unit else (config.directory,))
+    }
+    pending = list(sources)
+    visited = set(sources)
     headers: set[Path] = set()
 
     while pending:
         including_path = pending.pop()
         for dependency in resolver.direct_dependencies(
-            including_path, source=including_path == source, compiler=config.compiler
+            including_path, source=including_path in sources, compiler=config.compiler
         ):
             if dependency in visited:
                 continue
@@ -3695,8 +3773,15 @@ def _scratch_build_dependencies(
     compiler_dlls = tuple(
         sorted(path for path in compiler_bin.glob("*") if path.suffix.lower() == ".dll")
     )
+    unit = scratch_translation_unit(config, match_root)
+    unit_inputs = (
+        (match_root / "translation_units.json",)
+        + tuple(path for member in unit.members
+                for path in (member / "scratch.cpp", member / "scratch.conf"))
+        if unit else (config.directory / "scratch.cpp",)
+    )
     return (
-        config.directory / "scratch.cpp",
+        *unit_inputs,
         match_root / "cl.sh",
         compiler_bin / "CL.EXE",
         *compiler_dlls,
@@ -3995,6 +4080,12 @@ def compile_scratch(
     import subprocess
     import tempfile
 
+    unit = scratch_translation_unit(config, match_root)
+    if unit:
+        # Every member selects from one physical object and shares its lock.
+        config = replace(config, directory=unit.members[0])
+        for member in unit.members:
+            validate_scratch_source(member / "scratch.cpp")
     source = config.directory / "scratch.cpp"
     validate_scratch_source(source)
     build_dir = config.directory / "build"
@@ -4013,7 +4104,9 @@ def compile_scratch(
         with tempfile.TemporaryDirectory(prefix=".compile-", dir=build_dir) as temp_name:
             private = Path(temp_name)
             private_source = private / "scratch.cpp"
-            private_source.write_bytes(source.read_bytes())
+            private_source.write_text(
+                scratch_compilation_source(config, match_root), encoding="utf-8",
+            )
             validate_scratch_source(private_source)
             private_object = private / "scratch.obj"
             # VC6 may not truncate an existing object. A private, empty output
@@ -4101,10 +4194,14 @@ _COMPILER_LISTING_STACK_ALLOCATION_RE = re.compile(
 )
 
 
-def parse_compiler_listing_spans(text: str) -> tuple[CompilerListingSpan, ...]:
+def parse_compiler_listing_spans(
+    text: str, *, symbol: str | None = None,
+) -> tuple[CompilerListingSpan, ...]:
     source_lines: list[int] = []
     instruction_offsets: list[int] = []
     spans: list[CompilerListingSpan] = []
+    accepted = {symbol, f"_{symbol}", symbol.removeprefix("_")} if symbol else set()
+    active = symbol is None
 
     def flush() -> None:
         if instruction_offsets:
@@ -4118,6 +4215,17 @@ def parse_compiler_listing_spans(text: str) -> tuple[CompilerListingSpan, ...]:
             source_lines.clear()
 
     for line in text.splitlines():
+        if symbol is not None:
+            if proc := _COMPILER_LISTING_PROC_RE.match(line):
+                flush()
+                source_lines.clear()
+                active = proc.group(1) in accepted
+            elif re.match(r"^\S+\s+ENDP\b", line):
+                flush()
+                source_lines.clear()
+                active = False
+            if not active:
+                continue
         if source_match := _COMPILER_LISTING_SOURCE_RE.match(line):
             if instruction_offsets:
                 flush()
@@ -4190,7 +4298,7 @@ def generate_compiler_listing(
     match_root = match_root.resolve()
     source = config.directory / "scratch.cpp"
     validate_scratch_source(source)
-    source_data = source.read_bytes()
+    source_data = scratch_compilation_source(config, match_root).encode("utf-8")
     canonical_path = compile_scratch(config, match_root)
     canonical_object_data = canonical_path.read_bytes()
     reference_manifest = load_default_reference_symbol_manifest()
@@ -4267,10 +4375,12 @@ def generate_compiler_listing(
         listing_data = temp_listing.read_bytes()
 
     listing_text = listing_data.decode("latin1")
-    spans = parse_compiler_listing_spans(listing_text)
+    spans = parse_compiler_listing_spans(
+        listing_text, symbol=canonical_function.name,
+    )
     stack_layout = parse_compiler_listing_stack_layout(
         listing_text,
-        symbol=config.symbol or config.function,
+        symbol=canonical_function.name,
     )
     _write_bytes_atomic(output, listing_data)
     payload = {
@@ -4278,7 +4388,7 @@ def generate_compiler_listing(
         "kind": "snail-compiler-listing",
         "scratch": str(config.directory.resolve()),
         "function": config.function,
-        "source": "scratch.cpp",
+        "source": str(canonical_path.parent / "scratch.cpp"),
         "source_sha256": source_sha256,
         "compiler": config.compiler,
         "cflags": config.cflags,
@@ -4509,7 +4619,7 @@ def evaluate_source_overlay(
             encoding="utf-8",
         )
         (shadow_directory / "scratch.cpp").write_text(
-            source_text,
+            scratch_compilation_source(config, match_root, source_text=source_text),
             encoding="utf-8",
         )
         return evaluate_scratch(
@@ -5334,13 +5444,13 @@ def _store_cached_status(
 def _match_precompiled_scratch_config(
     config: ScratchConfig,
     *,
+    obj_path: Path,
     image: LoadedImage,
     manifest: FunctionSymbolManifest,
     reference_manifest: ReferenceSymbolManifest,
 ) -> tuple[int, MatchResult]:
     start, end = resolve_function_extent(manifest, config.function, config.end_va)
     target_data = image.function_bytes(start, end)
-    obj_path = config.directory / "build/scratch.obj"
     obj = parse_coff_object(obj_path.read_bytes())
     candidate = extract_object_function(
         obj,
@@ -5387,6 +5497,7 @@ def _scratch_status_fields(target_size: int, result: MatchResult) -> dict:
 class _ScratchMatchTask:
     config: ScratchConfig
     address: int
+    object_path: Path | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -5420,6 +5531,7 @@ def _match_precompiled_task_with_context(
     try:
         target_size, result = _match_precompiled_scratch_config(
             task.config,
+            obj_path=task.object_path or task.config.directory / "build/scratch.obj",
             image=context.image,
             manifest=context.manifest,
             reference_manifest=context.reference_manifest,
@@ -5461,7 +5573,7 @@ def _collect_uncached_match_outcomes(
 
     def compile_task(task: _ScratchMatchTask) -> _ScratchMatchTask | _ScratchMatchOutcome:
         try:
-            compile_scratch(
+            object_path = compile_scratch(
                 task.config,
                 match_root,
                 include_resolver=include_resolver,
@@ -5472,7 +5584,7 @@ def _collect_uncached_match_outcomes(
                 address=task.address,
                 error=_summarize_error(error),
             )
-        return task
+        return replace(task, object_path=object_path)
 
     if jobs == 1 or len(tasks) == 1:
         compiled = list(map(compile_task, tasks))

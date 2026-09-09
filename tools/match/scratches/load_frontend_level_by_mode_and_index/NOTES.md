@@ -1,5 +1,14 @@
 # load_frontend_level_by_mode_and_index @ 0x443650
 
+Current result (2026-09-09): **100%, 57/57 instructions, 12 clean references**.
+Compile the unchanged body immediately after `update_track_parcel` through
+`tools/match/translation_units.json`. Both belong to `SubGame.o` and are
+adjacent in the native image. The neighbor remains exact at 312/312 instructions
+with 35 clean references. Reversing their order or retaining only its includes
+restores the old 81.36% result. See
+[the source-unit report](../../adjacent-source-units-20260909.md).
+The residual notes below describe the historical isolated-function baseline.
+
 Initial shape:
 
 - Formats a level definition filename into a 128-byte stack buffer from the

@@ -1,0 +1,2053 @@
+{
+  "schema": 1,
+  "native_image_sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5",
+  "controls": [
+    {
+      "unit": "subgame_falling_shoot",
+      "source_object": "SubGame.o",
+      "members": [
+        "begin_post_follow_carryover",
+        "play_subgoldy_shoot_sfx"
+      ],
+      "variant": "canonical",
+      "source_sha256": "2e464780a9d2d2d4003a463b2135f80e076614a94c5c9829163e596e55fe77a2",
+      "status": {
+        "state": "match",
+        "code_sha256": "6e0503dfb93227e86aa3c99a4e760af3ec1daff3ce55799c175b8dd070e4123d",
+        "function": "begin_post_follow_carryover",
+        "address": 4435808,
+        "target_bytes": 97,
+        "fuzzy_weighted_bytes": 97.0,
+        "fuzzy_gap_bytes": 0.0,
+        "target_instructions": 20,
+        "candidate_instructions": 20,
+        "match_ratio": 1.0,
+        "prefix_instructions": 20,
+        "first_mismatch": {
+          "target_offset": null,
+          "candidate_offset": null
+        },
+        "references": {
+          "ok": 0,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "compiler": "msvc6.5",
+        "cflags": "/O2 /G5 /W3",
+        "recovery": "exact",
+        "residuals": [],
+        "error": null
+      },
+      "diagnostic": {
+        "exact": true,
+        "match_ratio": 1.0,
+        "prefix_instructions": 20,
+        "target_instructions": 20,
+        "candidate_instructions": 20,
+        "masked_references": {
+          "ok": 0,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "stack_frame": null,
+        "regions": [],
+        "candidate_source_caveat": null,
+        "body_encoding": {
+          "target_bytes": 97,
+          "candidate_bytes": 97,
+          "target_sha256": "27a65ff6541e16dbe61043271fe22abafdde8d66aff583639b059a6e4aff2771",
+          "candidate_sha256": "27a65ff6541e16dbe61043271fe22abafdde8d66aff583639b059a6e4aff2771",
+          "raw_body_byte_exact": true,
+          "positional_references_exact": true,
+          "compared_non_relocation_bytes": 97,
+          "coff_relocation_offsets": [],
+          "non_relocation_mismatch_offsets": [],
+          "unexplained_bytes": 0
+        }
+      }
+    },
+    {
+      "unit": "subgame_falling_shoot",
+      "source_object": "SubGame.o",
+      "members": [
+        "begin_post_follow_carryover",
+        "play_subgoldy_shoot_sfx"
+      ],
+      "variant": "isolated",
+      "source_sha256": "86554c175eb09024bb32384c60b87c6a5e68482d36b549802e610612abaa6414",
+      "status": {
+        "state": "match",
+        "code_sha256": "6e0503dfb93227e86aa3c99a4e760af3ec1daff3ce55799c175b8dd070e4123d",
+        "function": "begin_post_follow_carryover",
+        "address": 4435808,
+        "target_bytes": 97,
+        "fuzzy_weighted_bytes": 97.0,
+        "fuzzy_gap_bytes": 0.0,
+        "target_instructions": 20,
+        "candidate_instructions": 20,
+        "match_ratio": 1.0,
+        "prefix_instructions": 20,
+        "first_mismatch": {
+          "target_offset": null,
+          "candidate_offset": null
+        },
+        "references": {
+          "ok": 0,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "compiler": "msvc6.5",
+        "cflags": "/O2 /G5 /W3",
+        "recovery": "exact",
+        "residuals": [],
+        "error": null
+      },
+      "diagnostic": {
+        "exact": true,
+        "match_ratio": 1.0,
+        "prefix_instructions": 20,
+        "target_instructions": 20,
+        "candidate_instructions": 20,
+        "masked_references": {
+          "ok": 0,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "stack_frame": null,
+        "regions": [],
+        "candidate_source_caveat": null
+      }
+    },
+    {
+      "unit": "subgame_falling_shoot",
+      "source_object": "SubGame.o",
+      "members": [
+        "begin_post_follow_carryover",
+        "play_subgoldy_shoot_sfx"
+      ],
+      "variant": "reverse",
+      "source_sha256": "cf050fc4f4342ddb9a974ea3278f9c74bfd92473c7980ce7fd100e87fc6afeb4",
+      "status": {
+        "state": "match",
+        "code_sha256": "6e0503dfb93227e86aa3c99a4e760af3ec1daff3ce55799c175b8dd070e4123d",
+        "function": "begin_post_follow_carryover",
+        "address": 4435808,
+        "target_bytes": 97,
+        "fuzzy_weighted_bytes": 97.0,
+        "fuzzy_gap_bytes": 0.0,
+        "target_instructions": 20,
+        "candidate_instructions": 20,
+        "match_ratio": 1.0,
+        "prefix_instructions": 20,
+        "first_mismatch": {
+          "target_offset": null,
+          "candidate_offset": null
+        },
+        "references": {
+          "ok": 0,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "compiler": "msvc6.5",
+        "cflags": "/O2 /G5 /W3",
+        "recovery": "exact",
+        "residuals": [],
+        "error": null
+      },
+      "diagnostic": {
+        "exact": true,
+        "match_ratio": 1.0,
+        "prefix_instructions": 20,
+        "target_instructions": 20,
+        "candidate_instructions": 20,
+        "masked_references": {
+          "ok": 0,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "stack_frame": null,
+        "regions": [],
+        "candidate_source_caveat": null
+      }
+    },
+    {
+      "unit": "subgame_falling_shoot",
+      "source_object": "SubGame.o",
+      "members": [
+        "begin_post_follow_carryover",
+        "play_subgoldy_shoot_sfx"
+      ],
+      "variant": "peer-headers-only",
+      "source_sha256": "9593100ca268d0b8d749546a238143e5e4f2bd3c267b7e1d6952c2cbd025e87e",
+      "status": {
+        "state": "match",
+        "code_sha256": "6e0503dfb93227e86aa3c99a4e760af3ec1daff3ce55799c175b8dd070e4123d",
+        "function": "begin_post_follow_carryover",
+        "address": 4435808,
+        "target_bytes": 97,
+        "fuzzy_weighted_bytes": 97.0,
+        "fuzzy_gap_bytes": 0.0,
+        "target_instructions": 20,
+        "candidate_instructions": 20,
+        "match_ratio": 1.0,
+        "prefix_instructions": 20,
+        "first_mismatch": {
+          "target_offset": null,
+          "candidate_offset": null
+        },
+        "references": {
+          "ok": 0,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "compiler": "msvc6.5",
+        "cflags": "/O2 /G5 /W3",
+        "recovery": "exact",
+        "residuals": [],
+        "error": null
+      },
+      "diagnostic": {
+        "exact": true,
+        "match_ratio": 1.0,
+        "prefix_instructions": 20,
+        "target_instructions": 20,
+        "candidate_instructions": 20,
+        "masked_references": {
+          "ok": 0,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "stack_frame": null,
+        "regions": [],
+        "candidate_source_caveat": null
+      }
+    },
+    {
+      "unit": "subgame_falling_shoot",
+      "source_object": "SubGame.o",
+      "members": [
+        "begin_post_follow_carryover",
+        "play_subgoldy_shoot_sfx"
+      ],
+      "variant": "canonical",
+      "source_sha256": "2e464780a9d2d2d4003a463b2135f80e076614a94c5c9829163e596e55fe77a2",
+      "status": {
+        "state": "match",
+        "code_sha256": "28f8a1df4367d5fc3f024e8a4430ddaddcda89764ccf736199d31a88dc2e72c6",
+        "function": "play_subgoldy_shoot_sfx",
+        "address": 4435920,
+        "target_bytes": 335,
+        "fuzzy_weighted_bytes": 335.0,
+        "fuzzy_gap_bytes": 0.0,
+        "target_instructions": 88,
+        "candidate_instructions": 88,
+        "match_ratio": 1.0,
+        "prefix_instructions": 88,
+        "first_mismatch": {
+          "target_offset": null,
+          "candidate_offset": null
+        },
+        "references": {
+          "ok": 19,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "compiler": "msvc6.5",
+        "cflags": "/O2 /G5 /W3",
+        "recovery": "exact",
+        "residuals": [],
+        "error": null
+      },
+      "diagnostic": {
+        "exact": true,
+        "match_ratio": 1.0,
+        "prefix_instructions": 88,
+        "target_instructions": 88,
+        "candidate_instructions": 88,
+        "masked_references": {
+          "ok": 19,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "stack_frame": {
+          "target_prologue_allocation_bytes": 28,
+          "candidate_prologue_allocation_bytes": 28,
+          "target_minus_candidate_bytes": 0,
+          "classification": "same-prologue-allocation",
+          "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+        },
+        "regions": [],
+        "candidate_source_caveat": null,
+        "body_encoding": {
+          "target_bytes": 335,
+          "candidate_bytes": 335,
+          "target_sha256": "f19057c5ea55e9bba7b54cc58ea6cf3728ef7505b1c68e7399a5b2f70aa8adeb",
+          "candidate_sha256": "da8ecbb66360ebeb05977ebea3fa94e1f81eca6e523fcf73972e6194b4ab5159",
+          "raw_body_byte_exact": false,
+          "positional_references_exact": true,
+          "compared_non_relocation_bytes": 259,
+          "coff_relocation_offsets": [
+            18,
+            32,
+            37,
+            57,
+            71,
+            76,
+            100,
+            114,
+            119,
+            156,
+            228,
+            234,
+            240,
+            250,
+            277,
+            301,
+            308,
+            320,
+            325
+          ],
+          "non_relocation_mismatch_offsets": [],
+          "unexplained_bytes": 0
+        }
+      }
+    },
+    {
+      "unit": "subgame_falling_shoot",
+      "source_object": "SubGame.o",
+      "members": [
+        "begin_post_follow_carryover",
+        "play_subgoldy_shoot_sfx"
+      ],
+      "variant": "isolated",
+      "source_sha256": "602fe210326d3cac51190ec1352316a6c2476bdb2050d65767ecd609a28be8a5",
+      "status": {
+        "state": "wip",
+        "code_sha256": "c29c1936d38ec22e4350fa7345f08fecc0638431dbdc179eeda852cafffbb959",
+        "function": "play_subgoldy_shoot_sfx",
+        "address": 4435920,
+        "target_bytes": 335,
+        "fuzzy_weighted_bytes": 298.5869565217391,
+        "fuzzy_gap_bytes": 36.413043478260875,
+        "target_instructions": 88,
+        "candidate_instructions": 96,
+        "match_ratio": 0.8913043478260869,
+        "prefix_instructions": 26,
+        "first_mismatch": {
+          "target_offset": 93,
+          "candidate_offset": 93
+        },
+        "references": {
+          "ok": 19,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 2
+        },
+        "compiler": "msvc6.5",
+        "cflags": "/O2 /G5 /W3",
+        "recovery": "unspecified",
+        "residuals": [],
+        "error": null
+      },
+      "diagnostic": {
+        "exact": false,
+        "match_ratio": 0.8913043478260869,
+        "prefix_instructions": 26,
+        "target_instructions": 88,
+        "candidate_instructions": 96,
+        "masked_references": {
+          "ok": 19,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 2
+        },
+        "stack_frame": {
+          "target_prologue_allocation_bytes": 28,
+          "candidate_prologue_allocation_bytes": 28,
+          "target_minus_candidate_bytes": 0,
+          "classification": "same-prologue-allocation",
+          "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+        },
+        "regions": [
+          {
+            "target_instructions": {
+              "start": 22,
+              "end": 31,
+              "changed_start": 26,
+              "changed_end": 27,
+              "changed": 1
+            },
+            "candidate_instructions": {
+              "start": 22,
+              "end": 31,
+              "changed_start": 26,
+              "changed_end": 27,
+              "changed": 1
+            },
+            "match_ratio": 0.8888888888888888,
+            "prefix_instructions": 4,
+            "instruction_delta": 0,
+            "target_lines": [
+              "mov dword [esi+0x1cc], eax",
+              "lea edi, dword [eax+0x13]",
+              "jmp L84",
+              "test al, 0x60",
+              "je L149",
+              "call ADDR",
+              "mov dword [esp+0x8], eax",
+              "fild dword [esp+0x8]",
+              "fmul dword [ADDR]"
+            ],
+            "candidate_lines": [
+              "mov dword [esi+0x1cc], eax",
+              "lea edi, dword [eax+0x13]",
+              "jmp L84",
+              "test al, 0x60",
+              "je L15d",
+              "call ADDR",
+              "mov dword [esp+0x8], eax",
+              "fild dword [esp+0x8]",
+              "fmul dword [ADDR]"
+            ]
+          },
+          {
+            "target_instructions": {
+              "start": 31,
+              "end": 43,
+              "changed_start": 35,
+              "changed_end": 39,
+              "changed": 2
+            },
+            "candidate_instructions": {
+              "start": 31,
+              "end": 43,
+              "changed_start": 35,
+              "changed_end": 39,
+              "changed": 2
+            },
+            "match_ratio": 0.8333333333333334,
+            "prefix_instructions": 4,
+            "instruction_delta": 0,
+            "target_lines": [
+              "call ADDR",
+              "mov dword [esi+0x1cc], eax",
+              "lea edi, dword [eax+0x16]",
+              "cmp edi, -0x1",
+              "je L149",
+              "mov al, byte [esi+0x41d]",
+              "test al, al",
+              "je L13e",
+              "mov eax, dword [ADDR]",
+              "fld dword [eax+0x18c]",
+              "fsub dword [esi+0x68]",
+              "fstp dword [esp+0xc]"
+            ],
+            "candidate_lines": [
+              "call ADDR",
+              "mov dword [esi+0x1cc], eax",
+              "lea edi, dword [eax+0x16]",
+              "cmp edi, -0x1",
+              "je L15d",
+              "mov al, byte [esi+0x41d]",
+              "test al, al",
+              "je L152",
+              "mov eax, dword [ADDR]",
+              "fld dword [eax+0x18c]",
+              "fsub dword [esi+0x68]",
+              "fstp dword [esp+0xc]"
+            ]
+          },
+          {
+            "target_instructions": {
+              "start": 59,
+              "end": 75,
+              "changed_start": 63,
+              "changed_end": 71,
+              "changed": 3
+            },
+            "candidate_instructions": {
+              "start": 59,
+              "end": 83,
+              "changed_start": 63,
+              "changed_end": 79,
+              "changed": 11
+            },
+            "match_ratio": 0.65,
+            "prefix_instructions": 4,
+            "instruction_delta": 8,
+            "target_lines": [
+              "fst dword [esp+0x8]",
+              "fcomp dword [ADDR]",
+              "fnstsw ax",
+              "test ah, 0x1",
+              "je L10f",
+              "mov dword [esp+0x8], 0x0",
+              "jmp L128",
+              "fld dword [esp+0x8]",
+              "fcomp dword [ADDR]",
+              "fnstsw ax",
+              "test ah, 0x41",
+              "jne L128",
+              "mov dword [esp+0x8], 0x3f800000",
+              "mov eax, dword [esp+0x8]",
+              "mov ecx, ADDR",
+              "push eax"
+            ],
+            "candidate_lines": [
+              "fst dword [esp+0x8]",
+              "fcomp dword [ADDR]",
+              "fnstsw ax",
+              "test ah, 0x1",
+              "je L123",
+              "mov dword [esp+0x8], 0x0",
+              "mov ecx, ADDR",
+              "mov eax, dword [esp+0x8]",
+              "push eax",
+              "push edi",
+              "call ADDR",
+              "pop edi",
+              "pop esi",
+              "add esp, 0x1c",
+              "ret",
+              "fld dword [esp+0x8]",
+              "fcomp dword [ADDR]",
+              "fnstsw ax",
+              "test ah, 0x41",
+              "jne L13c",
+              "mov dword [esp+0x8], 0x3f800000",
+              "mov eax, dword [esp+0x8]",
+              "mov ecx, ADDR",
+              "push eax"
+            ]
+          }
+        ],
+        "candidate_source_caveat": null
+      }
+    },
+    {
+      "unit": "subgame_falling_shoot",
+      "source_object": "SubGame.o",
+      "members": [
+        "begin_post_follow_carryover",
+        "play_subgoldy_shoot_sfx"
+      ],
+      "variant": "reverse",
+      "source_sha256": "cf050fc4f4342ddb9a974ea3278f9c74bfd92473c7980ce7fd100e87fc6afeb4",
+      "status": {
+        "state": "wip",
+        "code_sha256": "c29c1936d38ec22e4350fa7345f08fecc0638431dbdc179eeda852cafffbb959",
+        "function": "play_subgoldy_shoot_sfx",
+        "address": 4435920,
+        "target_bytes": 335,
+        "fuzzy_weighted_bytes": 298.5869565217391,
+        "fuzzy_gap_bytes": 36.413043478260875,
+        "target_instructions": 88,
+        "candidate_instructions": 96,
+        "match_ratio": 0.8913043478260869,
+        "prefix_instructions": 26,
+        "first_mismatch": {
+          "target_offset": 93,
+          "candidate_offset": 93
+        },
+        "references": {
+          "ok": 19,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 2
+        },
+        "compiler": "msvc6.5",
+        "cflags": "/O2 /G5 /W3",
+        "recovery": "unspecified",
+        "residuals": [],
+        "error": null
+      },
+      "diagnostic": {
+        "exact": false,
+        "match_ratio": 0.8913043478260869,
+        "prefix_instructions": 26,
+        "target_instructions": 88,
+        "candidate_instructions": 96,
+        "masked_references": {
+          "ok": 19,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 2
+        },
+        "stack_frame": {
+          "target_prologue_allocation_bytes": 28,
+          "candidate_prologue_allocation_bytes": 28,
+          "target_minus_candidate_bytes": 0,
+          "classification": "same-prologue-allocation",
+          "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+        },
+        "regions": [
+          {
+            "target_instructions": {
+              "start": 22,
+              "end": 31,
+              "changed_start": 26,
+              "changed_end": 27,
+              "changed": 1
+            },
+            "candidate_instructions": {
+              "start": 22,
+              "end": 31,
+              "changed_start": 26,
+              "changed_end": 27,
+              "changed": 1
+            },
+            "match_ratio": 0.8888888888888888,
+            "prefix_instructions": 4,
+            "instruction_delta": 0,
+            "target_lines": [
+              "mov dword [esi+0x1cc], eax",
+              "lea edi, dword [eax+0x13]",
+              "jmp L84",
+              "test al, 0x60",
+              "je L149",
+              "call ADDR",
+              "mov dword [esp+0x8], eax",
+              "fild dword [esp+0x8]",
+              "fmul dword [ADDR]"
+            ],
+            "candidate_lines": [
+              "mov dword [esi+0x1cc], eax",
+              "lea edi, dword [eax+0x13]",
+              "jmp L84",
+              "test al, 0x60",
+              "je L15d",
+              "call ADDR",
+              "mov dword [esp+0x8], eax",
+              "fild dword [esp+0x8]",
+              "fmul dword [ADDR]"
+            ]
+          },
+          {
+            "target_instructions": {
+              "start": 31,
+              "end": 43,
+              "changed_start": 35,
+              "changed_end": 39,
+              "changed": 2
+            },
+            "candidate_instructions": {
+              "start": 31,
+              "end": 43,
+              "changed_start": 35,
+              "changed_end": 39,
+              "changed": 2
+            },
+            "match_ratio": 0.8333333333333334,
+            "prefix_instructions": 4,
+            "instruction_delta": 0,
+            "target_lines": [
+              "call ADDR",
+              "mov dword [esi+0x1cc], eax",
+              "lea edi, dword [eax+0x16]",
+              "cmp edi, -0x1",
+              "je L149",
+              "mov al, byte [esi+0x41d]",
+              "test al, al",
+              "je L13e",
+              "mov eax, dword [ADDR]",
+              "fld dword [eax+0x18c]",
+              "fsub dword [esi+0x68]",
+              "fstp dword [esp+0xc]"
+            ],
+            "candidate_lines": [
+              "call ADDR",
+              "mov dword [esi+0x1cc], eax",
+              "lea edi, dword [eax+0x16]",
+              "cmp edi, -0x1",
+              "je L15d",
+              "mov al, byte [esi+0x41d]",
+              "test al, al",
+              "je L152",
+              "mov eax, dword [ADDR]",
+              "fld dword [eax+0x18c]",
+              "fsub dword [esi+0x68]",
+              "fstp dword [esp+0xc]"
+            ]
+          },
+          {
+            "target_instructions": {
+              "start": 59,
+              "end": 75,
+              "changed_start": 63,
+              "changed_end": 71,
+              "changed": 3
+            },
+            "candidate_instructions": {
+              "start": 59,
+              "end": 83,
+              "changed_start": 63,
+              "changed_end": 79,
+              "changed": 11
+            },
+            "match_ratio": 0.65,
+            "prefix_instructions": 4,
+            "instruction_delta": 8,
+            "target_lines": [
+              "fst dword [esp+0x8]",
+              "fcomp dword [ADDR]",
+              "fnstsw ax",
+              "test ah, 0x1",
+              "je L10f",
+              "mov dword [esp+0x8], 0x0",
+              "jmp L128",
+              "fld dword [esp+0x8]",
+              "fcomp dword [ADDR]",
+              "fnstsw ax",
+              "test ah, 0x41",
+              "jne L128",
+              "mov dword [esp+0x8], 0x3f800000",
+              "mov eax, dword [esp+0x8]",
+              "mov ecx, ADDR",
+              "push eax"
+            ],
+            "candidate_lines": [
+              "fst dword [esp+0x8]",
+              "fcomp dword [ADDR]",
+              "fnstsw ax",
+              "test ah, 0x1",
+              "je L123",
+              "mov dword [esp+0x8], 0x0",
+              "mov ecx, ADDR",
+              "mov eax, dword [esp+0x8]",
+              "push eax",
+              "push edi",
+              "call ADDR",
+              "pop edi",
+              "pop esi",
+              "add esp, 0x1c",
+              "ret",
+              "fld dword [esp+0x8]",
+              "fcomp dword [ADDR]",
+              "fnstsw ax",
+              "test ah, 0x41",
+              "jne L13c",
+              "mov dword [esp+0x8], 0x3f800000",
+              "mov eax, dword [esp+0x8]",
+              "mov ecx, ADDR",
+              "push eax"
+            ]
+          }
+        ],
+        "candidate_source_caveat": null
+      }
+    },
+    {
+      "unit": "subgame_falling_shoot",
+      "source_object": "SubGame.o",
+      "members": [
+        "begin_post_follow_carryover",
+        "play_subgoldy_shoot_sfx"
+      ],
+      "variant": "peer-headers-only",
+      "source_sha256": "1ec8f84790cb93aa297f3845d05455ddbaec389274d2d91688316e2af5688878",
+      "status": {
+        "state": "wip",
+        "code_sha256": "c29c1936d38ec22e4350fa7345f08fecc0638431dbdc179eeda852cafffbb959",
+        "function": "play_subgoldy_shoot_sfx",
+        "address": 4435920,
+        "target_bytes": 335,
+        "fuzzy_weighted_bytes": 298.5869565217391,
+        "fuzzy_gap_bytes": 36.413043478260875,
+        "target_instructions": 88,
+        "candidate_instructions": 96,
+        "match_ratio": 0.8913043478260869,
+        "prefix_instructions": 26,
+        "first_mismatch": {
+          "target_offset": 93,
+          "candidate_offset": 93
+        },
+        "references": {
+          "ok": 19,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 2
+        },
+        "compiler": "msvc6.5",
+        "cflags": "/O2 /G5 /W3",
+        "recovery": "unspecified",
+        "residuals": [],
+        "error": null
+      },
+      "diagnostic": {
+        "exact": false,
+        "match_ratio": 0.8913043478260869,
+        "prefix_instructions": 26,
+        "target_instructions": 88,
+        "candidate_instructions": 96,
+        "masked_references": {
+          "ok": 19,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 2
+        },
+        "stack_frame": {
+          "target_prologue_allocation_bytes": 28,
+          "candidate_prologue_allocation_bytes": 28,
+          "target_minus_candidate_bytes": 0,
+          "classification": "same-prologue-allocation",
+          "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+        },
+        "regions": [
+          {
+            "target_instructions": {
+              "start": 22,
+              "end": 31,
+              "changed_start": 26,
+              "changed_end": 27,
+              "changed": 1
+            },
+            "candidate_instructions": {
+              "start": 22,
+              "end": 31,
+              "changed_start": 26,
+              "changed_end": 27,
+              "changed": 1
+            },
+            "match_ratio": 0.8888888888888888,
+            "prefix_instructions": 4,
+            "instruction_delta": 0,
+            "target_lines": [
+              "mov dword [esi+0x1cc], eax",
+              "lea edi, dword [eax+0x13]",
+              "jmp L84",
+              "test al, 0x60",
+              "je L149",
+              "call ADDR",
+              "mov dword [esp+0x8], eax",
+              "fild dword [esp+0x8]",
+              "fmul dword [ADDR]"
+            ],
+            "candidate_lines": [
+              "mov dword [esi+0x1cc], eax",
+              "lea edi, dword [eax+0x13]",
+              "jmp L84",
+              "test al, 0x60",
+              "je L15d",
+              "call ADDR",
+              "mov dword [esp+0x8], eax",
+              "fild dword [esp+0x8]",
+              "fmul dword [ADDR]"
+            ]
+          },
+          {
+            "target_instructions": {
+              "start": 31,
+              "end": 43,
+              "changed_start": 35,
+              "changed_end": 39,
+              "changed": 2
+            },
+            "candidate_instructions": {
+              "start": 31,
+              "end": 43,
+              "changed_start": 35,
+              "changed_end": 39,
+              "changed": 2
+            },
+            "match_ratio": 0.8333333333333334,
+            "prefix_instructions": 4,
+            "instruction_delta": 0,
+            "target_lines": [
+              "call ADDR",
+              "mov dword [esi+0x1cc], eax",
+              "lea edi, dword [eax+0x16]",
+              "cmp edi, -0x1",
+              "je L149",
+              "mov al, byte [esi+0x41d]",
+              "test al, al",
+              "je L13e",
+              "mov eax, dword [ADDR]",
+              "fld dword [eax+0x18c]",
+              "fsub dword [esi+0x68]",
+              "fstp dword [esp+0xc]"
+            ],
+            "candidate_lines": [
+              "call ADDR",
+              "mov dword [esi+0x1cc], eax",
+              "lea edi, dword [eax+0x16]",
+              "cmp edi, -0x1",
+              "je L15d",
+              "mov al, byte [esi+0x41d]",
+              "test al, al",
+              "je L152",
+              "mov eax, dword [ADDR]",
+              "fld dword [eax+0x18c]",
+              "fsub dword [esi+0x68]",
+              "fstp dword [esp+0xc]"
+            ]
+          },
+          {
+            "target_instructions": {
+              "start": 59,
+              "end": 75,
+              "changed_start": 63,
+              "changed_end": 71,
+              "changed": 3
+            },
+            "candidate_instructions": {
+              "start": 59,
+              "end": 83,
+              "changed_start": 63,
+              "changed_end": 79,
+              "changed": 11
+            },
+            "match_ratio": 0.65,
+            "prefix_instructions": 4,
+            "instruction_delta": 8,
+            "target_lines": [
+              "fst dword [esp+0x8]",
+              "fcomp dword [ADDR]",
+              "fnstsw ax",
+              "test ah, 0x1",
+              "je L10f",
+              "mov dword [esp+0x8], 0x0",
+              "jmp L128",
+              "fld dword [esp+0x8]",
+              "fcomp dword [ADDR]",
+              "fnstsw ax",
+              "test ah, 0x41",
+              "jne L128",
+              "mov dword [esp+0x8], 0x3f800000",
+              "mov eax, dword [esp+0x8]",
+              "mov ecx, ADDR",
+              "push eax"
+            ],
+            "candidate_lines": [
+              "fst dword [esp+0x8]",
+              "fcomp dword [ADDR]",
+              "fnstsw ax",
+              "test ah, 0x1",
+              "je L123",
+              "mov dword [esp+0x8], 0x0",
+              "mov ecx, ADDR",
+              "mov eax, dword [esp+0x8]",
+              "push eax",
+              "push edi",
+              "call ADDR",
+              "pop edi",
+              "pop esi",
+              "add esp, 0x1c",
+              "ret",
+              "fld dword [esp+0x8]",
+              "fcomp dword [ADDR]",
+              "fnstsw ax",
+              "test ah, 0x41",
+              "jne L13c",
+              "mov dword [esp+0x8], 0x3f800000",
+              "mov eax, dword [esp+0x8]",
+              "mov ecx, ADDR",
+              "push eax"
+            ]
+          }
+        ],
+        "candidate_source_caveat": null
+      }
+    },
+    {
+      "unit": "subgame_parcel_frontend_level",
+      "source_object": "SubGame.o",
+      "members": [
+        "update_track_parcel",
+        "load_frontend_level_by_mode_and_index"
+      ],
+      "variant": "canonical",
+      "source_sha256": "d6698b356a995bb6943c9c583bb354dcb8fa00e2ac8d86ae27f921837522e3be",
+      "status": {
+        "state": "match",
+        "code_sha256": "c94187a2ca48e425c6b325d2058f603cbb90b7f7da7c03c285247b1acf666485",
+        "function": "update_track_parcel",
+        "address": 4469200,
+        "target_bytes": 1148,
+        "fuzzy_weighted_bytes": 1148.0,
+        "fuzzy_gap_bytes": 0.0,
+        "target_instructions": 312,
+        "candidate_instructions": 312,
+        "match_ratio": 1.0,
+        "prefix_instructions": 312,
+        "first_mismatch": {
+          "target_offset": null,
+          "candidate_offset": null
+        },
+        "references": {
+          "ok": 35,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "compiler": "msvc6.5",
+        "cflags": "/O2 /G5 /W3",
+        "recovery": "exact",
+        "residuals": [],
+        "error": null
+      },
+      "diagnostic": {
+        "exact": true,
+        "match_ratio": 1.0,
+        "prefix_instructions": 312,
+        "target_instructions": 312,
+        "candidate_instructions": 312,
+        "masked_references": {
+          "ok": 35,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "stack_frame": {
+          "target_prologue_allocation_bytes": 40,
+          "candidate_prologue_allocation_bytes": 40,
+          "target_minus_candidate_bytes": 0,
+          "classification": "same-prologue-allocation",
+          "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+        },
+        "regions": [],
+        "candidate_source_caveat": null,
+        "body_encoding": {
+          "target_bytes": 1148,
+          "candidate_bytes": 1148,
+          "target_sha256": "a6b33611afc4adbe4482ac7c72ac8a969a03b37221ba34ed94e1908eb6f77ef5",
+          "candidate_sha256": "5c7d7628f9145378ab5b36d7cebe0f8a0c9fe7f1650fac6ec1941a2930ecce19",
+          "raw_body_byte_exact": false,
+          "positional_references_exact": true,
+          "compared_non_relocation_bytes": 976,
+          "coff_relocation_offsets": [
+            37,
+            49,
+            67,
+            82,
+            98,
+            143,
+            151,
+            157,
+            228,
+            237,
+            243,
+            332,
+            413,
+            421,
+            517,
+            526,
+            548,
+            556,
+            562,
+            662,
+            684,
+            713,
+            727,
+            733,
+            744,
+            764,
+            770,
+            776,
+            865,
+            875,
+            986,
+            994,
+            1072,
+            1093,
+            1104,
+            1116,
+            1120,
+            1124,
+            1128,
+            1132,
+            1136,
+            1140,
+            1144
+          ],
+          "non_relocation_mismatch_offsets": [],
+          "unexplained_bytes": 0
+        }
+      }
+    },
+    {
+      "unit": "subgame_parcel_frontend_level",
+      "source_object": "SubGame.o",
+      "members": [
+        "update_track_parcel",
+        "load_frontend_level_by_mode_and_index"
+      ],
+      "variant": "isolated",
+      "source_sha256": "bc77f7f15cae4e59b0c51c99bfcbfd316030c37eb80d24e0d73e733371fb571a",
+      "status": {
+        "state": "match",
+        "code_sha256": "98f50f932c6538b10782105df0eaee6e86dc7159607c92d56a0015677ddd0f64",
+        "function": "update_track_parcel",
+        "address": 4469200,
+        "target_bytes": 1148,
+        "fuzzy_weighted_bytes": 1148.0,
+        "fuzzy_gap_bytes": 0.0,
+        "target_instructions": 312,
+        "candidate_instructions": 312,
+        "match_ratio": 1.0,
+        "prefix_instructions": 312,
+        "first_mismatch": {
+          "target_offset": null,
+          "candidate_offset": null
+        },
+        "references": {
+          "ok": 35,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "compiler": "msvc6.5",
+        "cflags": "/O2 /G5 /W3",
+        "recovery": "exact",
+        "residuals": [],
+        "error": null
+      },
+      "diagnostic": {
+        "exact": true,
+        "match_ratio": 1.0,
+        "prefix_instructions": 312,
+        "target_instructions": 312,
+        "candidate_instructions": 312,
+        "masked_references": {
+          "ok": 35,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "stack_frame": {
+          "target_prologue_allocation_bytes": 40,
+          "candidate_prologue_allocation_bytes": 40,
+          "target_minus_candidate_bytes": 0,
+          "classification": "same-prologue-allocation",
+          "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+        },
+        "regions": [],
+        "candidate_source_caveat": null
+      }
+    },
+    {
+      "unit": "subgame_parcel_frontend_level",
+      "source_object": "SubGame.o",
+      "members": [
+        "update_track_parcel",
+        "load_frontend_level_by_mode_and_index"
+      ],
+      "variant": "reverse",
+      "source_sha256": "6244a265f6eb37e7f2c36ac75adc235f8c468dd49742221ffd884971cd66d5d9",
+      "status": {
+        "state": "match",
+        "code_sha256": "42640e2d67c2174677276c399b0992d5597d5cc28fd2f0c9b5fec4a9e72fbee4",
+        "function": "update_track_parcel",
+        "address": 4469200,
+        "target_bytes": 1148,
+        "fuzzy_weighted_bytes": 1148.0,
+        "fuzzy_gap_bytes": 0.0,
+        "target_instructions": 312,
+        "candidate_instructions": 312,
+        "match_ratio": 1.0,
+        "prefix_instructions": 312,
+        "first_mismatch": {
+          "target_offset": null,
+          "candidate_offset": null
+        },
+        "references": {
+          "ok": 35,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "compiler": "msvc6.5",
+        "cflags": "/O2 /G5 /W3",
+        "recovery": "exact",
+        "residuals": [],
+        "error": null
+      },
+      "diagnostic": {
+        "exact": true,
+        "match_ratio": 1.0,
+        "prefix_instructions": 312,
+        "target_instructions": 312,
+        "candidate_instructions": 312,
+        "masked_references": {
+          "ok": 35,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "stack_frame": {
+          "target_prologue_allocation_bytes": 40,
+          "candidate_prologue_allocation_bytes": 40,
+          "target_minus_candidate_bytes": 0,
+          "classification": "same-prologue-allocation",
+          "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+        },
+        "regions": [],
+        "candidate_source_caveat": null
+      }
+    },
+    {
+      "unit": "subgame_parcel_frontend_level",
+      "source_object": "SubGame.o",
+      "members": [
+        "update_track_parcel",
+        "load_frontend_level_by_mode_and_index"
+      ],
+      "variant": "peer-headers-only",
+      "source_sha256": "7437cefb055e0fb16f2d9a1b958bb7b1a37aff5e1b9ccf2d419c152f223a5346",
+      "status": {
+        "state": "match",
+        "code_sha256": "98f50f932c6538b10782105df0eaee6e86dc7159607c92d56a0015677ddd0f64",
+        "function": "update_track_parcel",
+        "address": 4469200,
+        "target_bytes": 1148,
+        "fuzzy_weighted_bytes": 1148.0,
+        "fuzzy_gap_bytes": 0.0,
+        "target_instructions": 312,
+        "candidate_instructions": 312,
+        "match_ratio": 1.0,
+        "prefix_instructions": 312,
+        "first_mismatch": {
+          "target_offset": null,
+          "candidate_offset": null
+        },
+        "references": {
+          "ok": 35,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "compiler": "msvc6.5",
+        "cflags": "/O2 /G5 /W3",
+        "recovery": "exact",
+        "residuals": [],
+        "error": null
+      },
+      "diagnostic": {
+        "exact": true,
+        "match_ratio": 1.0,
+        "prefix_instructions": 312,
+        "target_instructions": 312,
+        "candidate_instructions": 312,
+        "masked_references": {
+          "ok": 35,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "stack_frame": {
+          "target_prologue_allocation_bytes": 40,
+          "candidate_prologue_allocation_bytes": 40,
+          "target_minus_candidate_bytes": 0,
+          "classification": "same-prologue-allocation",
+          "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+        },
+        "regions": [],
+        "candidate_source_caveat": null
+      }
+    },
+    {
+      "unit": "subgame_parcel_frontend_level",
+      "source_object": "SubGame.o",
+      "members": [
+        "update_track_parcel",
+        "load_frontend_level_by_mode_and_index"
+      ],
+      "variant": "canonical",
+      "source_sha256": "d6698b356a995bb6943c9c583bb354dcb8fa00e2ac8d86ae27f921837522e3be",
+      "status": {
+        "state": "match",
+        "code_sha256": "b28ebf32e590d726f0b4ffbc1d7673695d7383a2797f16bfb46a43d097290ee9",
+        "function": "load_frontend_level_by_mode_and_index",
+        "address": 4470352,
+        "target_bytes": 220,
+        "fuzzy_weighted_bytes": 220.0,
+        "fuzzy_gap_bytes": 0.0,
+        "target_instructions": 57,
+        "candidate_instructions": 57,
+        "match_ratio": 1.0,
+        "prefix_instructions": 57,
+        "first_mismatch": {
+          "target_offset": null,
+          "candidate_offset": null
+        },
+        "references": {
+          "ok": 12,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "compiler": "msvc6.5",
+        "cflags": "/O2 /G5 /W3",
+        "recovery": "exact",
+        "residuals": [],
+        "error": null
+      },
+      "diagnostic": {
+        "exact": true,
+        "match_ratio": 1.0,
+        "prefix_instructions": 57,
+        "target_instructions": 57,
+        "candidate_instructions": 57,
+        "masked_references": {
+          "ok": 12,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 0
+        },
+        "stack_frame": {
+          "target_prologue_allocation_bytes": 128,
+          "candidate_prologue_allocation_bytes": 128,
+          "target_minus_candidate_bytes": 0,
+          "classification": "same-prologue-allocation",
+          "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+        },
+        "regions": [],
+        "candidate_source_caveat": null,
+        "body_encoding": {
+          "target_bytes": 220,
+          "candidate_bytes": 220,
+          "target_sha256": "d85b655b00009fb1c32497d7d1a7612ab6aad9b1a0bbc8a408143c6934debc5b",
+          "candidate_sha256": "22af248906f3f7643a763a0ed83878c345ed12f428cbb9ceed6f48ef1820e79c",
+          "raw_body_byte_exact": false,
+          "positional_references_exact": true,
+          "compared_non_relocation_bytes": 140,
+          "coff_relocation_offsets": [
+            25,
+            43,
+            53,
+            72,
+            97,
+            103,
+            117,
+            128,
+            140,
+            152,
+            158,
+            173,
+            188,
+            192,
+            196,
+            200,
+            204,
+            208,
+            212,
+            216
+          ],
+          "non_relocation_mismatch_offsets": [],
+          "unexplained_bytes": 0
+        }
+      }
+    },
+    {
+      "unit": "subgame_parcel_frontend_level",
+      "source_object": "SubGame.o",
+      "members": [
+        "update_track_parcel",
+        "load_frontend_level_by_mode_and_index"
+      ],
+      "variant": "isolated",
+      "source_sha256": "d6a57cf79505c3b90d713b5a60fffcb7402750ae93e9aed9169e5d50ec2ca208",
+      "status": {
+        "state": "wip",
+        "code_sha256": "196f6a3b95f5e017e6b3138c415e113a3c544cec3c561ecb018572d9629b226a",
+        "function": "load_frontend_level_by_mode_and_index",
+        "address": 4470352,
+        "target_bytes": 220,
+        "fuzzy_weighted_bytes": 178.98305084745763,
+        "fuzzy_gap_bytes": 41.01694915254237,
+        "target_instructions": 57,
+        "candidate_instructions": 61,
+        "match_ratio": 0.8135593220338984,
+        "prefix_instructions": 5,
+        "first_mismatch": {
+          "target_offset": 16,
+          "candidate_offset": 16
+        },
+        "references": {
+          "ok": 12,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 1
+        },
+        "compiler": "msvc6.5",
+        "cflags": "/O2 /G5 /W3",
+        "recovery": "unspecified",
+        "residuals": [],
+        "error": null
+      },
+      "diagnostic": {
+        "exact": false,
+        "match_ratio": 0.8135593220338984,
+        "prefix_instructions": 5,
+        "target_instructions": 57,
+        "candidate_instructions": 61,
+        "masked_references": {
+          "ok": 12,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 1
+        },
+        "stack_frame": {
+          "target_prologue_allocation_bytes": 128,
+          "candidate_prologue_allocation_bytes": 128,
+          "target_minus_candidate_bytes": 0,
+          "classification": "same-prologue-allocation",
+          "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+        },
+        "regions": [
+          {
+            "target_instructions": {
+              "start": 1,
+              "end": 10,
+              "changed_start": 5,
+              "changed_end": 6,
+              "changed": 1
+            },
+            "candidate_instructions": {
+              "start": 1,
+              "end": 10,
+              "changed_start": 5,
+              "changed_end": 6,
+              "changed": 1
+            },
+            "match_ratio": 0.8888888888888888,
+            "prefix_instructions": 4,
+            "instruction_delta": 0,
+            "target_lines": [
+              "sub esp, 0x80",
+              "cmp eax, 0x7",
+              "push esi",
+              "mov esi, ecx",
+              "ja La5",
+              "jmp dword [eax*4+ADDR]",
+              "mov eax, dword [esp+0x8c]",
+              "cmp eax, 0x32",
+              "jg L3e"
+            ],
+            "candidate_lines": [
+              "sub esp, 0x80",
+              "cmp eax, 0x7",
+              "push esi",
+              "mov esi, ecx",
+              "ja Lb2",
+              "jmp dword [eax*4+ADDR]",
+              "mov eax, dword [esp+0x8c]",
+              "cmp eax, 0x32",
+              "jg L3e"
+            ]
+          },
+          {
+            "target_instructions": {
+              "start": 7,
+              "end": 27,
+              "changed_start": 11,
+              "changed_end": 23,
+              "changed": 4
+            },
+            "candidate_instructions": {
+              "start": 7,
+              "end": 27,
+              "changed_start": 11,
+              "changed_end": 23,
+              "changed": 4
+            },
+            "match_ratio": 0.8,
+            "prefix_instructions": 4,
+            "instruction_delta": 0,
+            "target_lines": [
+              "mov eax, dword [esp+0x8c]",
+              "cmp eax, 0x32",
+              "jg L3e",
+              "push eax",
+              "push ADDR",
+              "lea eax, dword [esp+0xc]",
+              "push eax",
+              "call ADDR",
+              "add esp, 0xc",
+              "jmp La5",
+              "cmp eax, 0x33",
+              "jne La5",
+              "lea ecx, dword [esp+0x4]",
+              "push ADDR",
+              "push ecx",
+              "jmp L9d",
+              "mov eax, dword [esp+0x8c]",
+              "cmp eax, 0x32",
+              "jg L70",
+              "push eax"
+            ],
+            "candidate_lines": [
+              "mov eax, dword [esp+0x8c]",
+              "cmp eax, 0x32",
+              "jg L3e",
+              "push eax",
+              "lea eax, dword [esp+0x8]",
+              "push ADDR",
+              "push eax",
+              "call ADDR",
+              "add esp, 0xc",
+              "jmp Lb2",
+              "cmp eax, 0x33",
+              "jne Lb2",
+              "lea ecx, dword [esp+0x4]",
+              "push ADDR",
+              "push ecx",
+              "jmp Laa",
+              "mov eax, dword [esp+0x8c]",
+              "cmp eax, 0x32",
+              "jg L70",
+              "push eax"
+            ]
+          },
+          {
+            "target_instructions": {
+              "start": 28,
+              "end": 49,
+              "changed_start": 32,
+              "changed_end": 45,
+              "changed": 4
+            },
+            "candidate_instructions": {
+              "start": 28,
+              "end": 53,
+              "changed_start": 32,
+              "changed_end": 49,
+              "changed": 8
+            },
+            "match_ratio": 0.7391304347826086,
+            "prefix_instructions": 4,
+            "instruction_delta": 4,
+            "target_lines": [
+              "push ADDR",
+              "push edx",
+              "call ADDR",
+              "add esp, 0xc",
+              "jmp La5",
+              "add eax, -0x32",
+              "push eax",
+              "push ADDR",
+              "jmp L2f",
+              "lea ecx, dword [esp+0x4]",
+              "push ADDR",
+              "push ecx",
+              "jmp L9d",
+              "lea edx, dword [esp+0x4]",
+              "push ADDR",
+              "push edx",
+              "jmp L9d",
+              "lea eax, dword [esp+0x4]",
+              "push ADDR",
+              "push eax",
+              "call ADDR"
+            ],
+            "candidate_lines": [
+              "push ADDR",
+              "push edx",
+              "call ADDR",
+              "add esp, 0xc",
+              "jmp Lb2",
+              "add eax, -0x32",
+              "push eax",
+              "lea eax, dword [esp+0x8]",
+              "push ADDR",
+              "push eax",
+              "call ADDR",
+              "add esp, 0xc",
+              "jmp Lb2",
+              "lea ecx, dword [esp+0x4]",
+              "push ADDR",
+              "push ecx",
+              "jmp Laa",
+              "lea edx, dword [esp+0x4]",
+              "push ADDR",
+              "push edx",
+              "jmp Laa",
+              "lea eax, dword [esp+0x4]",
+              "push ADDR",
+              "push eax",
+              "call ADDR"
+            ]
+          }
+        ],
+        "candidate_source_caveat": null
+      }
+    },
+    {
+      "unit": "subgame_parcel_frontend_level",
+      "source_object": "SubGame.o",
+      "members": [
+        "update_track_parcel",
+        "load_frontend_level_by_mode_and_index"
+      ],
+      "variant": "reverse",
+      "source_sha256": "6244a265f6eb37e7f2c36ac75adc235f8c468dd49742221ffd884971cd66d5d9",
+      "status": {
+        "state": "wip",
+        "code_sha256": "146215d78f4b4cba1503e8e02312cc889e06a960c2ce298e27a5597f0f15c60f",
+        "function": "load_frontend_level_by_mode_and_index",
+        "address": 4470352,
+        "target_bytes": 220,
+        "fuzzy_weighted_bytes": 178.98305084745763,
+        "fuzzy_gap_bytes": 41.01694915254237,
+        "target_instructions": 57,
+        "candidate_instructions": 61,
+        "match_ratio": 0.8135593220338984,
+        "prefix_instructions": 5,
+        "first_mismatch": {
+          "target_offset": 16,
+          "candidate_offset": 16
+        },
+        "references": {
+          "ok": 12,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 1
+        },
+        "compiler": "msvc6.5",
+        "cflags": "/O2 /G5 /W3",
+        "recovery": "unspecified",
+        "residuals": [],
+        "error": null
+      },
+      "diagnostic": {
+        "exact": false,
+        "match_ratio": 0.8135593220338984,
+        "prefix_instructions": 5,
+        "target_instructions": 57,
+        "candidate_instructions": 61,
+        "masked_references": {
+          "ok": 12,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 1
+        },
+        "stack_frame": {
+          "target_prologue_allocation_bytes": 128,
+          "candidate_prologue_allocation_bytes": 128,
+          "target_minus_candidate_bytes": 0,
+          "classification": "same-prologue-allocation",
+          "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+        },
+        "regions": [
+          {
+            "target_instructions": {
+              "start": 1,
+              "end": 10,
+              "changed_start": 5,
+              "changed_end": 6,
+              "changed": 1
+            },
+            "candidate_instructions": {
+              "start": 1,
+              "end": 10,
+              "changed_start": 5,
+              "changed_end": 6,
+              "changed": 1
+            },
+            "match_ratio": 0.8888888888888888,
+            "prefix_instructions": 4,
+            "instruction_delta": 0,
+            "target_lines": [
+              "sub esp, 0x80",
+              "cmp eax, 0x7",
+              "push esi",
+              "mov esi, ecx",
+              "ja La5",
+              "jmp dword [eax*4+ADDR]",
+              "mov eax, dword [esp+0x8c]",
+              "cmp eax, 0x32",
+              "jg L3e"
+            ],
+            "candidate_lines": [
+              "sub esp, 0x80",
+              "cmp eax, 0x7",
+              "push esi",
+              "mov esi, ecx",
+              "ja Lb2",
+              "jmp dword [eax*4+ADDR]",
+              "mov eax, dword [esp+0x8c]",
+              "cmp eax, 0x32",
+              "jg L3e"
+            ]
+          },
+          {
+            "target_instructions": {
+              "start": 7,
+              "end": 27,
+              "changed_start": 11,
+              "changed_end": 23,
+              "changed": 4
+            },
+            "candidate_instructions": {
+              "start": 7,
+              "end": 27,
+              "changed_start": 11,
+              "changed_end": 23,
+              "changed": 4
+            },
+            "match_ratio": 0.8,
+            "prefix_instructions": 4,
+            "instruction_delta": 0,
+            "target_lines": [
+              "mov eax, dword [esp+0x8c]",
+              "cmp eax, 0x32",
+              "jg L3e",
+              "push eax",
+              "push ADDR",
+              "lea eax, dword [esp+0xc]",
+              "push eax",
+              "call ADDR",
+              "add esp, 0xc",
+              "jmp La5",
+              "cmp eax, 0x33",
+              "jne La5",
+              "lea ecx, dword [esp+0x4]",
+              "push ADDR",
+              "push ecx",
+              "jmp L9d",
+              "mov eax, dword [esp+0x8c]",
+              "cmp eax, 0x32",
+              "jg L70",
+              "push eax"
+            ],
+            "candidate_lines": [
+              "mov eax, dword [esp+0x8c]",
+              "cmp eax, 0x32",
+              "jg L3e",
+              "push eax",
+              "lea eax, dword [esp+0x8]",
+              "push ADDR",
+              "push eax",
+              "call ADDR",
+              "add esp, 0xc",
+              "jmp Lb2",
+              "cmp eax, 0x33",
+              "jne Lb2",
+              "lea ecx, dword [esp+0x4]",
+              "push ADDR",
+              "push ecx",
+              "jmp Laa",
+              "mov eax, dword [esp+0x8c]",
+              "cmp eax, 0x32",
+              "jg L70",
+              "push eax"
+            ]
+          },
+          {
+            "target_instructions": {
+              "start": 28,
+              "end": 49,
+              "changed_start": 32,
+              "changed_end": 45,
+              "changed": 4
+            },
+            "candidate_instructions": {
+              "start": 28,
+              "end": 53,
+              "changed_start": 32,
+              "changed_end": 49,
+              "changed": 8
+            },
+            "match_ratio": 0.7391304347826086,
+            "prefix_instructions": 4,
+            "instruction_delta": 4,
+            "target_lines": [
+              "push ADDR",
+              "push edx",
+              "call ADDR",
+              "add esp, 0xc",
+              "jmp La5",
+              "add eax, -0x32",
+              "push eax",
+              "push ADDR",
+              "jmp L2f",
+              "lea ecx, dword [esp+0x4]",
+              "push ADDR",
+              "push ecx",
+              "jmp L9d",
+              "lea edx, dword [esp+0x4]",
+              "push ADDR",
+              "push edx",
+              "jmp L9d",
+              "lea eax, dword [esp+0x4]",
+              "push ADDR",
+              "push eax",
+              "call ADDR"
+            ],
+            "candidate_lines": [
+              "push ADDR",
+              "push edx",
+              "call ADDR",
+              "add esp, 0xc",
+              "jmp Lb2",
+              "add eax, -0x32",
+              "push eax",
+              "lea eax, dword [esp+0x8]",
+              "push ADDR",
+              "push eax",
+              "call ADDR",
+              "add esp, 0xc",
+              "jmp Lb2",
+              "lea ecx, dword [esp+0x4]",
+              "push ADDR",
+              "push ecx",
+              "jmp Laa",
+              "lea edx, dword [esp+0x4]",
+              "push ADDR",
+              "push edx",
+              "jmp Laa",
+              "lea eax, dword [esp+0x4]",
+              "push ADDR",
+              "push eax",
+              "call ADDR"
+            ]
+          }
+        ],
+        "candidate_source_caveat": null
+      }
+    },
+    {
+      "unit": "subgame_parcel_frontend_level",
+      "source_object": "SubGame.o",
+      "members": [
+        "update_track_parcel",
+        "load_frontend_level_by_mode_and_index"
+      ],
+      "variant": "peer-headers-only",
+      "source_sha256": "d41a2c5f80bdc8904ed14169cb56cd02ee714c647b116672984c61589165451a",
+      "status": {
+        "state": "wip",
+        "code_sha256": "79746748ac34952dafb021ed88b3629ccfbc0b5f6fd6f8c79286679b9e71095c",
+        "function": "load_frontend_level_by_mode_and_index",
+        "address": 4470352,
+        "target_bytes": 220,
+        "fuzzy_weighted_bytes": 178.98305084745763,
+        "fuzzy_gap_bytes": 41.01694915254237,
+        "target_instructions": 57,
+        "candidate_instructions": 61,
+        "match_ratio": 0.8135593220338984,
+        "prefix_instructions": 5,
+        "first_mismatch": {
+          "target_offset": 16,
+          "candidate_offset": 16
+        },
+        "references": {
+          "ok": 12,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 1
+        },
+        "compiler": "msvc6.5",
+        "cflags": "/O2 /G5 /W3",
+        "recovery": "unspecified",
+        "residuals": [],
+        "error": null
+      },
+      "diagnostic": {
+        "exact": false,
+        "match_ratio": 0.8135593220338984,
+        "prefix_instructions": 5,
+        "target_instructions": 57,
+        "candidate_instructions": 61,
+        "masked_references": {
+          "ok": 12,
+          "unresolved": 0,
+          "mismatch": 0,
+          "unaudited": 1
+        },
+        "stack_frame": {
+          "target_prologue_allocation_bytes": 128,
+          "candidate_prologue_allocation_bytes": 128,
+          "target_minus_candidate_bytes": 0,
+          "classification": "same-prologue-allocation",
+          "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+        },
+        "regions": [
+          {
+            "target_instructions": {
+              "start": 1,
+              "end": 10,
+              "changed_start": 5,
+              "changed_end": 6,
+              "changed": 1
+            },
+            "candidate_instructions": {
+              "start": 1,
+              "end": 10,
+              "changed_start": 5,
+              "changed_end": 6,
+              "changed": 1
+            },
+            "match_ratio": 0.8888888888888888,
+            "prefix_instructions": 4,
+            "instruction_delta": 0,
+            "target_lines": [
+              "sub esp, 0x80",
+              "cmp eax, 0x7",
+              "push esi",
+              "mov esi, ecx",
+              "ja La5",
+              "jmp dword [eax*4+ADDR]",
+              "mov eax, dword [esp+0x8c]",
+              "cmp eax, 0x32",
+              "jg L3e"
+            ],
+            "candidate_lines": [
+              "sub esp, 0x80",
+              "cmp eax, 0x7",
+              "push esi",
+              "mov esi, ecx",
+              "ja Lb2",
+              "jmp dword [eax*4+ADDR]",
+              "mov eax, dword [esp+0x8c]",
+              "cmp eax, 0x32",
+              "jg L3e"
+            ]
+          },
+          {
+            "target_instructions": {
+              "start": 7,
+              "end": 27,
+              "changed_start": 11,
+              "changed_end": 23,
+              "changed": 4
+            },
+            "candidate_instructions": {
+              "start": 7,
+              "end": 27,
+              "changed_start": 11,
+              "changed_end": 23,
+              "changed": 4
+            },
+            "match_ratio": 0.8,
+            "prefix_instructions": 4,
+            "instruction_delta": 0,
+            "target_lines": [
+              "mov eax, dword [esp+0x8c]",
+              "cmp eax, 0x32",
+              "jg L3e",
+              "push eax",
+              "push ADDR",
+              "lea eax, dword [esp+0xc]",
+              "push eax",
+              "call ADDR",
+              "add esp, 0xc",
+              "jmp La5",
+              "cmp eax, 0x33",
+              "jne La5",
+              "lea ecx, dword [esp+0x4]",
+              "push ADDR",
+              "push ecx",
+              "jmp L9d",
+              "mov eax, dword [esp+0x8c]",
+              "cmp eax, 0x32",
+              "jg L70",
+              "push eax"
+            ],
+            "candidate_lines": [
+              "mov eax, dword [esp+0x8c]",
+              "cmp eax, 0x32",
+              "jg L3e",
+              "push eax",
+              "lea eax, dword [esp+0x8]",
+              "push ADDR",
+              "push eax",
+              "call ADDR",
+              "add esp, 0xc",
+              "jmp Lb2",
+              "cmp eax, 0x33",
+              "jne Lb2",
+              "lea ecx, dword [esp+0x4]",
+              "push ADDR",
+              "push ecx",
+              "jmp Laa",
+              "mov eax, dword [esp+0x8c]",
+              "cmp eax, 0x32",
+              "jg L70",
+              "push eax"
+            ]
+          },
+          {
+            "target_instructions": {
+              "start": 28,
+              "end": 49,
+              "changed_start": 32,
+              "changed_end": 45,
+              "changed": 4
+            },
+            "candidate_instructions": {
+              "start": 28,
+              "end": 53,
+              "changed_start": 32,
+              "changed_end": 49,
+              "changed": 8
+            },
+            "match_ratio": 0.7391304347826086,
+            "prefix_instructions": 4,
+            "instruction_delta": 4,
+            "target_lines": [
+              "push ADDR",
+              "push edx",
+              "call ADDR",
+              "add esp, 0xc",
+              "jmp La5",
+              "add eax, -0x32",
+              "push eax",
+              "push ADDR",
+              "jmp L2f",
+              "lea ecx, dword [esp+0x4]",
+              "push ADDR",
+              "push ecx",
+              "jmp L9d",
+              "lea edx, dword [esp+0x4]",
+              "push ADDR",
+              "push edx",
+              "jmp L9d",
+              "lea eax, dword [esp+0x4]",
+              "push ADDR",
+              "push eax",
+              "call ADDR"
+            ],
+            "candidate_lines": [
+              "push ADDR",
+              "push edx",
+              "call ADDR",
+              "add esp, 0xc",
+              "jmp Lb2",
+              "add eax, -0x32",
+              "push eax",
+              "lea eax, dword [esp+0x8]",
+              "push ADDR",
+              "push eax",
+              "call ADDR",
+              "add esp, 0xc",
+              "jmp Lb2",
+              "lea ecx, dword [esp+0x4]",
+              "push ADDR",
+              "push ecx",
+              "jmp Laa",
+              "lea edx, dword [esp+0x4]",
+              "push ADDR",
+              "push edx",
+              "jmp Laa",
+              "lea eax, dword [esp+0x4]",
+              "push ADDR",
+              "push eax",
+              "call ADDR"
+            ]
+          }
+        ],
+        "candidate_source_caveat": null
+      }
+    }
+  ]
+}

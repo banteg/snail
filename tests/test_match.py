@@ -5099,22 +5099,23 @@ def test_parse_compiler_listing_stack_layout_tracks_aliases() -> None:
     assert layout.generated_temporaries == 1
 
 
-def test_compiler_listing_proves_object_function_equivalence(tmp_path: Path) -> None:
+@pytest.mark.parametrize("scratch", ["unhide_border_init", "play_subgoldy_shoot_sfx"])
+def test_compiler_listing_proves_object_function_equivalence(tmp_path: Path, scratch: str) -> None:
     repo_root = Path(__file__).resolve().parents[1]
     match_root = repo_root / "tools" / "match"
     if not (match_root / "compilers" / "msvc6.5" / "Bin" / "CL.EXE").is_file():
         pytest.skip("local msvc6.5 compiler is required")
     if not (match_root / "bin" / "wibo").is_file():
         pytest.skip("local wibo is required")
-    config = load_scratch_config(match_root / "scratches" / "unhide_border_init")
-    output = tmp_path / "unhide_border_init.cod"
+    config = load_scratch_config(match_root / "scratches" / scratch)
+    output = tmp_path / f"{scratch}.cod"
 
     result = generate_compiler_listing(config, match_root, output=output)
     payload = compiler_listing_payload(result)
 
     assert result.listing_path == output.resolve()
     assert result.metadata_path.is_file()
-    assert result.function == "unhide_border_init"
+    assert result.function == scratch
     assert result.function_bytes > 0
     assert result.spans
     assert payload["object_function_equivalent"] is True

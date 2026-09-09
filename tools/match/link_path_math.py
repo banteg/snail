@@ -275,6 +275,7 @@ def main() -> None:
     records = []
     functions = []
     configs = []
+    compiled_outputs = {}
     for name in GROUPS[args.group]:
         config = load_scratch_config(DEFAULT_MATCH_ROOT / "scratches" / name)
         configs.append(config)
@@ -284,8 +285,13 @@ def main() -> None:
             raise ValueError(f"{name}: expected the canonical VC6 profile")
         # Match the immutable per-output copy that will actually be linked.
         # The canonical build cache may be replaced by a parallel match task.
-        copied = out / f"{name}.obj"
-        copied.write_bytes(compile_scratch(config).read_bytes())
+        canonical_object = compile_scratch(config).resolve()
+        copied = compiled_outputs.get(canonical_object)
+        if copied is None:
+            copied = out / f"{name}.obj"
+            copied.write_bytes(canonical_object.read_bytes())
+            compiled_outputs[canonical_object] = copied
+            objects.append(copied)
         object_sha256 = sha(copied)
         result = run_match(
             obj_path=copied,
@@ -320,10 +326,10 @@ def main() -> None:
         native_bytes = len(
             load_image(native_path, manifest.image_base).function_bytes(address, end)
         )
-        objects.append(copied)
         records.append(
             {
                 "function": name,
+                "object_name": copied.name,
                 "symbol": function.name,
                 "native_address": address,
                 "native_bytes": native_bytes,
@@ -483,7 +489,7 @@ def main() -> None:
             if i not in masked
         ):
             raise ValueError(f"link changed non-relocation bytes in {function.name}")
-        owner = f"{record['function']}.obj"
+        owner = record["object_name"]
         obj = input_objects[owner]
         symbol = next(s for s in obj.symbols if s.name == function.name)
         relocations = tuple(
@@ -584,7 +590,7 @@ def main() -> None:
             raise ValueError(
                 f"scratch inputs changed during verification: {config.function}"
             )
-        if sha(out / f"{record['function']}.obj") != record["object_sha256"]:
+        if sha(out / record["object_name"]) != record["object_sha256"]:
             raise ValueError(
                 f"copied object changed during verification: {config.function}"
             )

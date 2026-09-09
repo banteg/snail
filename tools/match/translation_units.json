@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "units": [
+    {
+      "name": "subgame_falling_shoot",
+      "source_object": "SubGame.o",
+      "members": [
+        "begin_post_follow_carryover",
+        "play_subgoldy_shoot_sfx"
+      ]
+    },
+    {
+      "name": "subgame_parcel_frontend_level",
+      "source_object": "SubGame.o",
+      "members": [
+        "update_track_parcel",
+        "load_frontend_level_by_mode_and_index"
+      ]
+    }
+  ]
+}

@@ -4,6 +4,7 @@ import importlib.util
 import os
 import struct
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -86,6 +87,36 @@ def test_static_definition_is_local_and_cannot_satisfy_another_object():
     assert classify(provider, local)["category"] == "local_definition"
     report = frontier.inventory([caller, provider], native_index(), {})
     assert report["edges"][0]["category"] == "unmapped_external"
+
+
+def test_shared_object_members_do_not_duplicate_definitions_or_exclusions():
+    first = symbol("_first", index=0, value=0, function=True)
+    second = symbol("_second", index=1, value=8, function=True)
+    target = symbol("_external", index=2, section=0)
+    obj = CoffObject((section(relocations=[
+        CoffRelocation(0, 2, 20), CoffRelocation(8, 2, 20),
+    ]),), (first, second, target))
+    a = frontier.Unit("first", 0x401000, obj, first, 8, {}, "/physical/pair.obj")
+    b = frontier.Unit("second", 0x401008, obj, second, 8, {}, "/physical/pair.obj")
+    caller = unit("caller", symbols=[symbol("_second", index=1, section=0)], sections=[
+        section(relocations=[CoffRelocation(0, 1, 20)]),
+    ])
+    report = frontier.inventory([a, b, caller], native_index(), {})
+    assert report["summary"]["objects"] == 2
+    assert report["summary"]["selected_functions"] == 3
+    assert report["summary"]["other_image_relocations"] == 0
+    edge = next(e for e in report["edges"] if e["caller"] == "caller")
+    assert edge["category"] == "exact_external_definition"
+    assert len(edge["providers"]) == 1
+    assert edge["providers"][0]["caller"] == "second"
+    assert edge["providers"][0]["selected_function"] is True
+    assert edge["providers"][0]["native_address"] == 0x401008
+
+    # Identical definitions in two different objects still need resolution.
+    separate = replace(b, object_path="/physical/separate.obj")
+    report = frontier.inventory([a, separate, caller], native_index(), {})
+    edge = next(e for e in report["edges"] if e["caller"] == "caller")
+    assert edge["category"] == "multiple_external_definitions"
 
 
 @pytest.mark.parametrize("flags, expected", [(0x20, "code"), (0x40, "data"), (0x80, "data")])

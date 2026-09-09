@@ -64,6 +64,34 @@ and the contemporary [VC6 optimization guide](https://www.cs.cmu.edu/~rbd/doc/op
 Product names and servicing mappings from community Rich tables are evidence,
 not an official Microsoft Rich-header specification.
 
+## Recovered source groups
+
+[`translation_units.json`](translation_units.json) records ordered groups of
+canonical scratch bodies with independent native source-object provenance.
+The first two [verified adjacent pairs](adjacent-source-units-20260909.md)
+recover two `SubGame.o` functions whose isolated builds duplicated shared tails.
+Each member keeps its existing source file; the compiler concatenates members
+in manifest order and publishes one physical object under the first member's
+build directory. Every member must retain its own proof-grade match.
+
+Source, config, transitive headers, and the group manifest participate in cache
+invalidation. `probe` and `mutate` replace only the selected member while keeping
+its peers. Diagnostic exports include `translation-unit.cpp`; mixed listings
+select the actual decorated function symbol. Link consumers reuse the physical
+object and retain separate native-function ownership. This does not imply that
+the entire original translation unit has been reconstructed.
+
+Replay isolated, reversed, and peer-header controls with:
+
+```sh
+uv run tools/match/probe_translation_unit_context.py --out artifacts/match/unit-controls.json
+```
+
+Promote a new group only after checking source-object ownership, source order,
+every member's instructions and positional references, body-byte accounting,
+and the full native status for regressions. A context-dependent compiler result
+is an observation, not proof of the compiler's internal mechanism.
+
 ## Setup
 
 1. wibo runner. Put a current `wibo` binary on `PATH`, set
