@@ -14,7 +14,7 @@ typedef AttachmentSample PathTemplateSample;
 static __forceinline void initialize_secondary_hill(
     Path* path, int index, float phase, float height, float z)
 {
-    set_matrix_identity(&path->secondary_samples[index].transform);
+    path->secondary_samples[index].transform.Identity();
     path->secondary_samples[index].transform.position.x =
         path->primary_samples[index].center_x;
     float y = (1.0f - Cos(phase)) * 0.5f;
@@ -33,9 +33,9 @@ static __forceinline void orient_previous_hill_pair(Path* path, int current_inde
             path->primary_samples[current_index - 1].transform.position;
         path->primary_samples[current_index - 1]
             .transform.basis_forward.Normalize();
-        path->primary_samples[current_index - 1].transform.basis_up.cross_vectors(
-            &path->primary_samples[current_index - 1].transform.basis_forward,
-            &path->primary_samples[current_index - 1].transform.basis_right);
+        path->primary_samples[current_index - 1].transform.basis_up.Cross(
+            path->primary_samples[current_index - 1].transform.basis_forward,
+            path->primary_samples[current_index - 1].transform.basis_right);
 
         path->secondary_samples[current_index - 1].transform.basis_right =
             Vector3(1.0f, 0.0f, 0.0f);
@@ -44,10 +44,10 @@ static __forceinline void orient_previous_hill_pair(Path* path, int current_inde
             path->secondary_samples[current_index - 1].transform.position;
         path->secondary_samples[current_index - 1]
             .transform.basis_forward.Normalize();
-        path->secondary_samples[current_index - 1].transform.basis_up.cross_vectors(
-            &path->secondary_samples[current_index - 1]
+        path->secondary_samples[current_index - 1].transform.basis_up.Cross(
+            path->secondary_samples[current_index - 1]
                  .transform.basis_forward,
-            &path->secondary_samples[current_index - 1].transform.basis_right);
+            path->secondary_samples[current_index - 1].transform.basis_right);
     } else {
         path->primary_samples[current_index - 1]
             .transform.RotIdentity();
@@ -216,11 +216,11 @@ void cRPath::initialize_hill_valley_path_template_pair(
     primary_samples[0].rotation_scalar_94 = 0.0f;
     primary_samples[0].special_scalar = 0.0f;
     primary_samples[0].lateral_scale = 1.0f;
-    set_matrix_identity(&primary_samples[0].transform);
+    primary_samples[0].transform.Identity();
     primary_samples[0].transform.position.x = primary_samples[0].center_x;
     primary_samples[0].transform.position.y = 0.0f;
     primary_samples[0].transform.position.z = 0.0f;
-    set_matrix_identity(&secondary_samples[0].transform);
+    secondary_samples[0].transform.Identity();
     secondary_samples[0].transform.position.x = primary_samples[0].center_x;
     secondary_samples[0].transform.position.y = 0.49000001f;
     secondary_samples[0].transform.position.z = 0.0f;
@@ -233,12 +233,12 @@ void cRPath::initialize_hill_valley_path_template_pair(
     primary_samples[last].rotation_scalar_94 = 0.0f;
     primary_samples[last].special_scalar = 0.0f;
     primary_samples[last].lateral_scale = 1.0f;
-    set_matrix_identity(&primary_samples[last].transform);
+    primary_samples[last].transform.Identity();
     primary_samples[last].transform.position.x = primary_samples[last].center_x;
     float last_z = (float)last;
     primary_samples[last].transform.position.y = 0.0f;
     primary_samples[last].transform.position.z = last_z;
-    set_matrix_identity(&secondary_samples[last].transform);
+    secondary_samples[last].transform.Identity();
     secondary_samples[last].transform.position.x = primary_samples[last].center_x;
     secondary_samples[last].transform.position.y = 0.49000001f;
     secondary_samples[last].transform.position.z = last_z;
@@ -251,7 +251,7 @@ void cRPath::initialize_hill_valley_path_template_pair(
         primary_samples[sample_index].special_scalar = 0.0f;
         primary_samples[sample_index].lateral_scale = 1.0f;
         float phase = (float)i * 6.2831855f / (float)steps;
-        set_matrix_identity(&primary_samples[sample_index].transform);
+        primary_samples[sample_index].transform.Identity();
         primary_samples[sample_index].transform.position.x =
             primary_samples[sample_index].center_x;
         float y = (1.0f - Cos(phase)) * 0.5f;

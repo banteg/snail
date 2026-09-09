@@ -23,12 +23,12 @@ static __forceinline void initialize_pair_sample(
     primary->rotation_scalar_94 = 0.0f;
     primary->special_scalar = 0.0f;
     primary->lateral_scale = 1.0f;
-    set_matrix_identity(&primary->transform);
+    primary->transform.Identity();
     primary->transform.position.x = center_x;
     primary->transform.position.y = y;
     primary->transform.position.z = z;
 
-    set_matrix_identity(&secondary->transform);
+    secondary->transform.Identity();
     secondary->transform.position.x = center_x;
     secondary->transform.position.y = y + 0.49000001f;
     secondary->transform.position.z = z;
@@ -54,9 +54,9 @@ static __forceinline void orient_previous_with_up(
         current->transform.position.y - previous->transform.position.y,
         current->transform.position.z - previous->transform.position.z);
     previous->transform.basis_forward.Normalize();
-    previous->transform.basis_right.cross_vectors(
-        &previous->transform.basis_up,
-        &previous->transform.basis_forward);
+    previous->transform.basis_right.Cross(
+        previous->transform.basis_up,
+        previous->transform.basis_forward);
     float roll_angle = roll_source->center_x * 0.2617994f;
     previous->transform.RotLocalZ(roll_angle);
 }
@@ -248,9 +248,8 @@ void cRPath::initialize_slalombig_path_template_pair(
             ->special_scalar = 0.0f;
         ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))
             ->lateral_scale = 1.0f;
-        set_matrix_identity(
-            &((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))
-                ->transform);
+        ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))
+                ->transform.Identity();
         float z = (float)lead_sample_index;
         ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))
             ->transform.position.x =
@@ -261,9 +260,8 @@ void cRPath::initialize_slalombig_path_template_pair(
         ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))
             ->transform.position.z = z;
 
-        set_matrix_identity(
-            &((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))
-                ->transform);
+        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))
+                ->transform.Identity();
         ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))
             ->transform.position.x =
             ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))
@@ -290,9 +288,8 @@ void cRPath::initialize_slalombig_path_template_pair(
             ->special_scalar = 0.0f;
         ((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))
             ->lateral_scale = 1.0f;
-        set_matrix_identity(
-            &((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))
-                ->transform);
+        ((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))
+                ->transform.Identity();
         ((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))
             ->transform.position.x =
             ((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))
@@ -302,9 +299,8 @@ void cRPath::initialize_slalombig_path_template_pair(
             ->transform.position.y = 0.0f;
         ((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))
             ->transform.position.z = z;
-        set_matrix_identity(
-            &((PathTemplateSample*)((char*)secondary_samples + departure_sample_offset))
-                ->transform);
+        ((PathTemplateSample*)((char*)secondary_samples + departure_sample_offset))
+                ->transform.Identity();
         ((PathTemplateSample*)((char*)secondary_samples + departure_sample_offset))
             ->transform.position.x =
             ((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))
@@ -339,9 +335,8 @@ void cRPath::initialize_slalombig_path_template_pair(
             ->special_scalar = 0.0f;
         ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
             ->lateral_scale = 1.0f;
-        set_matrix_identity(
-            &((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
-                ->transform);
+        ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                ->transform.Identity();
         ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
             ->transform.position.x =
             ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
@@ -352,9 +347,8 @@ void cRPath::initialize_slalombig_path_template_pair(
         ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
             ->transform.position.z = z;
 
-        set_matrix_identity(
-            &((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset))
-                ->transform);
+        ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset))
+                ->transform.Identity();
         ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset))
             ->transform.position.x =
             ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
@@ -386,10 +380,10 @@ void cRPath::initialize_slalombig_path_template_pair(
             ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)
                 ->transform.basis_forward.Normalize();
             ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)
-                ->transform.basis_right.cross_vectors(
-                    &((PathTemplateSample*)((char*)primary_samples
+                ->transform.basis_right.Cross(
+                    ((PathTemplateSample*)((char*)primary_samples
                         + curve_sample_offset) - 1)->transform.basis_up,
-                    &((PathTemplateSample*)((char*)primary_samples
+                    ((PathTemplateSample*)((char*)primary_samples
                         + curve_sample_offset) - 1)->transform.basis_forward);
             float primary_roll =
                 ((PathTemplateSample*)((char*)primary_samples
@@ -418,10 +412,10 @@ void cRPath::initialize_slalombig_path_template_pair(
             ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)
                 ->transform.basis_forward.Normalize();
             ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)
-                ->transform.basis_right.cross_vectors(
-                    &((PathTemplateSample*)((char*)secondary_samples
+                ->transform.basis_right.Cross(
+                    ((PathTemplateSample*)((char*)secondary_samples
                         + curve_sample_offset) - 1)->transform.basis_up,
-                    &((PathTemplateSample*)((char*)secondary_samples
+                    ((PathTemplateSample*)((char*)secondary_samples
                         + curve_sample_offset) - 1)->transform.basis_forward);
 
             float secondary_roll =

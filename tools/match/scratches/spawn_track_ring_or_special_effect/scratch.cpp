@@ -42,7 +42,7 @@ void cRSubGame::AddRing(
         default_phase_step *= owner_scale;
         default_phase_step *= subgame_rate;
         default_phase_step *= 6.28318548f;
-        set_matrix_identity(&slot_cursor->ring.transform);
+        slot_cursor->ring.transform.Identity();
 
         slot_cursor->ring.owner_player = player;
         if (requested_kind == SUB_RING_KIND_NORMAL_DEFAULT) {

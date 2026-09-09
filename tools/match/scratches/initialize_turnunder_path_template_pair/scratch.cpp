@@ -21,7 +21,7 @@ static __forceinline void initialize_sample(
     sample->lateral_scale = 1.0f;
     sample->special_scalar = 0.0f;
     sample->lateral_source = 0.0f;
-    set_matrix_identity(&sample->transform);
+    sample->transform.Identity();
     sample->transform.position.x = x;
     sample->transform.position.y = y;
     sample->transform.position.z = z;
@@ -39,7 +39,7 @@ static __forceinline void initialize_pair_sample(
     primary->lateral_scale = 1.0f;
     primary->special_scalar = 0.0f;
     primary->lateral_source = 0.0f;
-    set_matrix_identity(&primary->transform);
+    primary->transform.Identity();
     primary->transform.position.x = x;
     primary->transform.position.y = y;
     primary->transform.position.z = z;
@@ -51,7 +51,7 @@ static __forceinline void initialize_pair_sample(
     secondary->lateral_scale = 1.0f;
     secondary->special_scalar = 0.0f;
     secondary->lateral_source = 0.0f;
-    set_matrix_identity(&secondary->transform);
+    secondary->transform.Identity();
     secondary->transform.position.x = x;
     secondary->transform.position.y = y + 0.49000001f;
     secondary->transform.position.z = z;
@@ -212,14 +212,14 @@ void cRPath::initialize_turnunder_path_template_pair(
         primary_samples[i].rotation_scalar_94 = 0.0f;
         primary_samples[i].special_scalar = 0.0f;
         primary_samples[i].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[i].transform);
+        primary_samples[i].transform.Identity();
         primary_samples[i].transform.position.x = primary_samples[i].center_x;
         float z = (float)lead_z_index;
         primary_samples[i].transform.position.y = 0.0f;
         primary_samples[i].transform.position.z = z;
         primary_samples[i].delta_length = 1.0f;
 
-        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.Identity();
         secondary_samples[i].transform.position.x = primary_samples[i].center_x;
         secondary_samples[i].transform.position.y = 0.49000001f;
         secondary_samples[i].transform.position.z = z;
@@ -237,8 +237,7 @@ void cRPath::initialize_turnunder_path_template_pair(
         ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->rotation_scalar_94 = 0.0f;
         ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->special_scalar = 0.0f;
         ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->lateral_scale = 1.0f;
-        set_matrix_identity(
-            &((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->transform);
+        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->transform.Identity();
         float z = (float)i;
         ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->transform.position.x =
             ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->center_x;
@@ -246,8 +245,7 @@ void cRPath::initialize_turnunder_path_template_pair(
         ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->transform.position.z = z;
         ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->delta_length = 1.0f;
 
-        set_matrix_identity(
-            &((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform);
+        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform.Identity();
         ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform.position.x =
             ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->center_x;
         ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform.position.y = 0.49000001f;
@@ -273,7 +271,7 @@ void cRPath::initialize_turnunder_path_template_pair(
             primary_samples[i].rotation_scalar_94 = 0.0f;
             primary_samples[i].special_scalar = 0.0f;
             primary_samples[i].lateral_scale = 1.0f;
-            set_matrix_identity(&primary_samples[i].transform);
+            primary_samples[i].transform.Identity();
 
             float half_angle = angle * 0.5f;
             float half_sine = Sin(half_angle);
@@ -297,9 +295,9 @@ void cRPath::initialize_turnunder_path_template_pair(
                 primary_samples[i].transform.position.z -
                     primary_samples[i - 1].transform.position.z);
             primary_samples[i].transform.basis_forward.Normalize();
-            primary_samples[i].transform.basis_right.cross_vectors(
-                &primary_samples[i].transform.basis_up,
-                &primary_samples[i].transform.basis_forward);
+            primary_samples[i].transform.basis_right.Cross(
+                primary_samples[i].transform.basis_up,
+                primary_samples[i].transform.basis_forward);
 
             secondary_samples[i].transform = primary_samples[i].transform;
             Vector3 secondary_offset =

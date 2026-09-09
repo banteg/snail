@@ -35,7 +35,7 @@ void cRObject::CalcFaceQuadNormals()
             Vector3 rhs = vertices[CURRENT_FACE->vertex_2] - vertices[CURRENT_FACE->vertex_0];
 
             Vector3 normal_a;
-            normal_a.cross_vectors(&lhs, &rhs);
+            normal_a.Cross(lhs, rhs);
             normal_a.Normalize();
 
             *(Vector3*)((char*)facequad_normals + normal_offset) = normal_a;
@@ -45,7 +45,7 @@ void cRObject::CalcFaceQuadNormals()
                 lhs = vertices[CURRENT_FACE->vertex_2] - vertices[CURRENT_FACE->vertex_0];
                 rhs = vertices[CURRENT_FACE->vertex_3] - vertices[CURRENT_FACE->vertex_0];
 
-                normal_b.cross_vectors(&lhs, &rhs);
+                normal_b.Cross(lhs, rhs);
                 normal_b.Normalize();
 
                 *(Vector3*)((char*)facequad_normals + normal_offset + sizeof(Vector3)) =

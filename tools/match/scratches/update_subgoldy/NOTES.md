@@ -1116,3 +1116,17 @@ total concealed missing firing tests and extra instructions elsewhere. The
 clean; the existing single unaudited `g_game` load in the completion-exit
 branch remains visible. No compiler flags, declarations, reference aliases,
 or matching rules changed.
+
+## 2026-09-09 post-firing ownership replay
+
+Shared branch-root and frontend-player owners were replayed after the retained
+firing/action change. With the authored `cRPlayer` owner, both give 82.412%,
+2,092/2,087 instructions, and 315 clean references with no audit debt. The
+canonical source remains better at 83.540%, 2,093 instructions and one
+unaudited reference. Selected/conditional-state forms yield 83.297%, 2,086
+instructions and clear that debt, but lose native branch structure; they are
+also rejected. A historical recipe's obsolete `Player` alias failed to compile;
+that failed probe and its corrected `cRPlayer` replay are both preserved.
+The five records document specific tested forms, not an ownership ceiling.
+Detailed sources and results are in
+`artifacts/match/gameplay-lifetimes-20260909/update_subgoldy/`.

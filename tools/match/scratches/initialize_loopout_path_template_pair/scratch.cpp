@@ -31,14 +31,14 @@ static inline void initialize_sample_pair(
     primary->rotation_scalar_94 = 0.0f;
     primary->special_scalar = 0.0f;
     primary->lateral_scale = 1.0f;
-    set_matrix_identity(&primary->transform);
+    primary->transform.Identity();
     primary->transform.position.x = primary->center_x;
     primary->transform.position.y = primary_y;
     primary->transform.position.z = z;
     if (seed_delta_length)
         primary->delta_length = 1.0f;
 
-    set_matrix_identity(&secondary->transform);
+    secondary->transform.Identity();
     secondary->transform.position.x = primary->center_x;
     secondary->transform.position.y = secondary_y;
     secondary->transform.position.z = z;
@@ -54,9 +54,9 @@ static inline void orient_loop_sample(
     sample->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
     sample->transform.basis_up = Vector3(0.0f, up_y, up_z);
     sample->transform.basis_up.Normalize();
-    sample->transform.basis_forward.cross_vectors(
-        &sample->transform.basis_right,
-        &sample->transform.basis_up);
+    sample->transform.basis_forward.Cross(
+        sample->transform.basis_right,
+        sample->transform.basis_up);
 }
 
 static inline void orient_previous_with_fixed_right(
@@ -69,9 +69,9 @@ static inline void orient_previous_with_fixed_right(
         next->transform.position.y - previous->transform.position.y,
         next->transform.position.z - previous->transform.position.z);
     previous->transform.basis_forward.Normalize();
-    previous->transform.basis_up.cross_vectors(
-        &previous->transform.basis_forward,
-        &previous->transform.basis_right);
+    previous->transform.basis_up.Cross(
+        previous->transform.basis_forward,
+        previous->transform.basis_right);
 }
 
 static inline void orient_previous_with_fixed_up(
@@ -88,9 +88,9 @@ static inline void orient_previous_with_fixed_up(
         next->transform.position.y - previous->transform.position.y,
         next->transform.position.z - previous->transform.position.z);
     previous->transform.basis_forward.Normalize();
-    previous->transform.basis_right.cross_vectors(
-        &previous->transform.basis_up,
-        &previous->transform.basis_forward);
+    previous->transform.basis_right.Cross(
+        previous->transform.basis_up,
+        previous->transform.basis_forward);
     if (roll != 0.0f)
         previous->transform.RotLocalZ(roll);
 }
@@ -175,7 +175,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             primary_samples[sample_index].rotation_scalar_94 = 0.0f;
             primary_samples[sample_index].special_scalar = 0.0f;
             primary_samples[sample_index].lateral_scale = 1.0f;
-            set_matrix_identity(&primary_samples[sample_index].transform);
+            primary_samples[sample_index].transform.Identity();
             primary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             primary_samples[sample_index].transform.position.z =
@@ -183,7 +183,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             primary_samples[sample_index].transform.position.y =
                 loop_radius - Cos(angle) * loop_radius;
 
-            set_matrix_identity(&secondary_samples[sample_index].transform);
+            secondary_samples[sample_index].transform.Identity();
             secondary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             secondary_samples[sample_index].transform.position.z =
@@ -286,7 +286,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             primary_samples[sample_index].rotation_scalar_94 = 0.0f;
             primary_samples[sample_index].special_scalar = 0.0f;
             primary_samples[sample_index].lateral_scale = 1.0f;
-            set_matrix_identity(&primary_samples[sample_index].transform);
+            primary_samples[sample_index].transform.Identity();
             primary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             primary_samples[sample_index].transform.position.z =
@@ -294,7 +294,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             primary_samples[sample_index].transform.position.y =
                 Cos(angle) * loop_radius + center_y;
 
-            set_matrix_identity(&secondary_samples[sample_index].transform);
+            secondary_samples[sample_index].transform.Identity();
             secondary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             secondary_samples[sample_index].transform.position.z =
@@ -312,9 +312,9 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                 -(10.0f
                     - primary_samples[sample_index].transform.position.z);
             primary_samples[sample_index].transform.basis_up.Normalize();
-            primary_samples[sample_index].transform.basis_forward.cross_vectors(
-                &primary_samples[sample_index].transform.basis_right,
-                &primary_samples[sample_index].transform.basis_up);
+            primary_samples[sample_index].transform.basis_forward.Cross(
+                primary_samples[sample_index].transform.basis_right,
+                primary_samples[sample_index].transform.basis_up);
 
             secondary_samples[sample_index].transform.basis_right =
                 Vector3(1.0f, 0.0f, 0.0f);
@@ -326,9 +326,9 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                 -(10.0f
                     - secondary_samples[sample_index].transform.position.z);
             secondary_samples[sample_index].transform.basis_up.Normalize();
-            secondary_samples[sample_index].transform.basis_forward.cross_vectors(
-                &secondary_samples[sample_index].transform.basis_right,
-                &secondary_samples[sample_index].transform.basis_up);
+            secondary_samples[sample_index].transform.basis_forward.Cross(
+                secondary_samples[sample_index].transform.basis_right,
+                secondary_samples[sample_index].transform.basis_up);
         }
     }
 #elif PATH_VARIANT == 3 || PATH_VARIANT == 4

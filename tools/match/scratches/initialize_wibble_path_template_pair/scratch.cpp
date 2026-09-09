@@ -20,7 +20,7 @@ static __forceinline void initialize_sample(
     sample->rotation_scalar_94 = 0.0f;
     sample->special_scalar = 0.0f;
     sample->lateral_scale = 1.0f;
-    set_matrix_identity(&sample->transform);
+    sample->transform.Identity();
     sample->transform.position.x = x;
     sample->transform.position.y = y;
     sample->transform.position.z = z;
@@ -203,12 +203,12 @@ void cRPath::initialize_wibble_path_template_pair(
     primary_samples[0].rotation_scalar_94 = 0.0f;
     primary_samples[0].special_scalar = 0.0f;
     primary_samples[0].lateral_scale = 1.0f;
-    set_matrix_identity(&primary_samples[0].transform);
+    primary_samples[0].transform.Identity();
     primary_samples[0].transform.position.x = primary_samples[0].center_x;
     primary_samples[0].transform.position.y = 0.0f;
     primary_samples[0].transform.position.z = 0.0f;
     primary_samples[0].delta_length = 1.0f;
-    set_matrix_identity(&secondary_samples[0].transform);
+    secondary_samples[0].transform.Identity();
     secondary_samples[0].transform.position.x = primary_samples[0].center_x;
     secondary_samples[0].transform.position.y = 0.49000001f;
     secondary_samples[0].transform.position.z = 0.0f;
@@ -219,12 +219,12 @@ void cRPath::initialize_wibble_path_template_pair(
     primary_samples[31].rotation_scalar_94 = 0.0f;
     primary_samples[31].special_scalar = 0.0f;
     primary_samples[31].lateral_scale = 1.0f;
-    set_matrix_identity(&primary_samples[31].transform);
+    primary_samples[31].transform.Identity();
     primary_samples[31].transform.position.x = primary_samples[31].center_x;
     primary_samples[31].transform.position.y = 0.0f;
     primary_samples[31].transform.position.z = 31.0f;
     primary_samples[31].delta_length = 1.0f;
-    set_matrix_identity(&secondary_samples[31].transform);
+    secondary_samples[31].transform.Identity();
     secondary_samples[31].transform.position.x = primary_samples[31].center_x;
     secondary_samples[31].transform.position.y = 0.49000001f;
     secondary_samples[31].transform.position.z = 31.0f;
@@ -244,7 +244,7 @@ void cRPath::initialize_wibble_path_template_pair(
         primary_samples[sample_index].rotation_scalar_94 = 0.0f;
         primary_samples[sample_index].special_scalar = 0.0f;
         primary_samples[sample_index].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[sample_index].transform);
+        primary_samples[sample_index].transform.Identity();
 
         float roll_phase = turn_phase * 3.0f;
         int z_index = local_index + 1;
@@ -260,9 +260,9 @@ void cRPath::initialize_wibble_path_template_pair(
             primary_samples[sample_index].transform.position -
             primary_samples[sample_index - 1].transform.position;
         primary_samples[sample_index].transform.basis_forward.Normalize();
-        primary_samples[sample_index].transform.basis_right.cross_vectors(
-            &primary_samples[sample_index].transform.basis_up,
-            &primary_samples[sample_index].transform.basis_forward);
+        primary_samples[sample_index].transform.basis_right.Cross(
+            primary_samples[sample_index].transform.basis_up,
+            primary_samples[sample_index].transform.basis_forward);
 
         secondary_samples[sample_index].transform =
             primary_samples[sample_index].transform;

@@ -56,13 +56,13 @@ void cRPath::initialize_loopbow_path_template_pair(
         primary_samples[i].rotation_scalar_94 = 0.0f;
         primary_samples[i].special_scalar = 0.0f;
         primary_samples[i].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[i].transform);
+        primary_samples[i].transform.Identity();
         primary_samples[i].transform.position.x = primary_samples[i].center_x;
         primary_samples[i].transform.position.y = 0.0f;
         primary_samples[i].transform.position.z = fi;
         primary_samples[i].delta_length = 1.0f;
 
-        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.Identity();
         secondary_samples[i].transform.position.x = primary_samples[i].center_x;
         secondary_samples[i].transform.position.y = 0.49000001f;
         secondary_samples[i].transform.position.z = fi;
@@ -80,7 +80,7 @@ void cRPath::initialize_loopbow_path_template_pair(
         primary_samples[sample_index].rotation_scalar_94 = 0.0f;
         primary_samples[sample_index].special_scalar = 0.0f;
         primary_samples[sample_index].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[sample_index].transform);
+        primary_samples[sample_index].transform.Identity();
         primary_samples[sample_index].transform.position.x =
             primary_samples[sample_index].center_x;
         primary_samples[sample_index].transform.position.y = 0.0f;
@@ -88,7 +88,7 @@ void cRPath::initialize_loopbow_path_template_pair(
         primary_samples[sample_index].transform.position.z = z;
         primary_samples[sample_index].delta_length = 1.0f;
 
-        set_matrix_identity(&secondary_samples[sample_index].transform);
+        secondary_samples[sample_index].transform.Identity();
         ++i;
         secondary_samples[sample_index].transform.position.x =
             primary_samples[sample_index].center_x;
@@ -124,7 +124,7 @@ void cRPath::initialize_loopbow_path_template_pair(
             primary_samples[sample_index].special_scalar = 0.0f;
             primary_samples[sample_index].lateral_scale = 1.0f;
 
-            set_matrix_identity(&primary_samples[sample_index].transform);
+            primary_samples[sample_index].transform.Identity();
             primary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             primary_samples[sample_index].transform.position.z =
@@ -132,7 +132,7 @@ void cRPath::initialize_loopbow_path_template_pair(
             primary_samples[sample_index].transform.position.y =
                 curve_scale - Cos(angle) * curve_scale;
 
-            set_matrix_identity(&secondary_samples[sample_index].transform);
+            secondary_samples[sample_index].transform.Identity();
             secondary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             secondary_samples[sample_index].transform.position.z =
@@ -148,9 +148,9 @@ void cRPath::initialize_loopbow_path_template_pair(
             primary_samples[sample_index].transform.basis_up.z =
                 7.0f - primary_samples[sample_index].transform.position.z;
             primary_samples[sample_index].transform.basis_up.Normalize();
-            primary_samples[sample_index].transform.basis_forward.cross_vectors(
-                &primary_samples[sample_index].transform.basis_right,
-                &primary_samples[sample_index].transform.basis_up);
+            primary_samples[sample_index].transform.basis_forward.Cross(
+                primary_samples[sample_index].transform.basis_right,
+                primary_samples[sample_index].transform.basis_up);
 
             secondary_samples[sample_index].transform.basis_right = secondary_right;
             secondary_samples[sample_index].transform.basis_up.x = 0.0f;
@@ -160,12 +160,12 @@ void cRPath::initialize_loopbow_path_template_pair(
             secondary_samples[sample_index].transform.basis_up.z =
                 7.0f - secondary_samples[sample_index].transform.position.z;
             secondary_samples[sample_index].transform.basis_up.Normalize();
-            secondary_samples[sample_index].transform.basis_forward.cross_vectors(
-                &secondary_samples[sample_index].transform.basis_right,
-                &secondary_samples[sample_index].transform.basis_up);
+            secondary_samples[sample_index].transform.basis_forward.Cross(
+                secondary_samples[sample_index].transform.basis_right,
+                secondary_samples[sample_index].transform.basis_up);
 
             TransformMatrix rotation;
-            set_matrix_identity(&rotation);
+            rotation.Identity();
             float half_sine = Sin(half_angle);
             rotation.RotLocalY(
                 Sin(half_angle) * half_sine * 0.52359879f);

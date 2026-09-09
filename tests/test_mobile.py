@@ -2094,9 +2094,8 @@ def test_mobile_tvector_methods_recover_authored_surface() -> None:
     assert "typedef tVector Vector3;" in vector_header
     assert "tVector_must_be_0x0c" in vector_header
     assert "struct Vector3 {" not in vector_header
-    assert "void cross_vectors(const tVector* lhs, const tVector* rhs);" in (
-        vector_header
-    )
+    assert "void Cross(const tVector& lhs, const tVector& rhs);" in vector_header
+    assert "void cross_vectors(" not in vector_header
 
     old_member_names = (
         "dot_vectors",

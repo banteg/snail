@@ -56,7 +56,7 @@ void cRLandscapeManager::Init(int script_index)
             Object* landscape_object = entry->object;
             entry->repeat_z_span =
                 landscape_object->bounds_max.z - landscape_object->bounds_min.z;
-            set_matrix_identity(&entry->transform);
+            entry->transform.Identity();
             entry->transform.position.z =
                 ((float)staged_index - 0.5f) * entry->repeat_z_span;
             entry->reference_bod =

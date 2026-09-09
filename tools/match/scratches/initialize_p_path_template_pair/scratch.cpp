@@ -155,11 +155,11 @@ void cRPath::initialize_p_path_template_pair(
     primary_samples[0].rotation_scalar_94 = 0.0f;
     primary_samples[0].special_scalar = 0.0f;
     primary_samples[0].lateral_scale = 1.0f;
-    set_matrix_identity(&primary_samples[0].transform);
+    primary_samples[0].transform.Identity();
     primary_samples[0].transform.position.x = primary_samples[0].center_x;
     primary_samples[0].transform.position.y = 0.0f;
     primary_samples[0].transform.position.z = 0.0f;
-    set_matrix_identity(&secondary_samples[0].transform);
+    secondary_samples[0].transform.Identity();
     secondary_samples[0].transform.position.x = primary_samples[0].center_x;
     secondary_samples[0].transform.position.y = 0.49000001f;
     secondary_samples[0].transform.position.z = 0.0f;
@@ -169,12 +169,12 @@ void cRPath::initialize_p_path_template_pair(
     primary_samples[last_index].rotation_scalar_94 = 0.0f;
     primary_samples[last_index].special_scalar = 0.0f;
     primary_samples[last_index].lateral_scale = 1.0f;
-    set_matrix_identity(&primary_samples[last_index].transform);
+    primary_samples[last_index].transform.Identity();
     float terminal_z = (float)last_index;
     primary_samples[last_index].transform.position.x = primary_samples[last_index].center_x;
     primary_samples[last_index].transform.position.y = 0.0f;
     primary_samples[last_index].transform.position.z = terminal_z;
-    set_matrix_identity(&secondary_samples[last_index].transform);
+    secondary_samples[last_index].transform.Identity();
     secondary_samples[last_index].transform.position.x = primary_samples[last_index].center_x;
     secondary_samples[last_index].transform.position.y = 0.49000001f;
     secondary_samples[last_index].transform.position.z = terminal_z;
@@ -212,9 +212,8 @@ void cRPath::initialize_p_path_template_pair(
                 ->special_scalar = 0.0f;
             ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
                 ->lateral_scale = 1.0f;
-            set_matrix_identity(
-                &((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
-                    ->transform);
+            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                    ->transform.Identity();
             ++curve_index;
             float z = (float)i;
             ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
@@ -226,9 +225,8 @@ void cRPath::initialize_p_path_template_pair(
             ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
                 ->transform.position.z = z;
 
-            set_matrix_identity(
-                &((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset))
-                    ->transform);
+            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset))
+                    ->transform.Identity();
             ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset))
                 ->transform.position.x =
                 ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
@@ -257,9 +255,9 @@ void cRPath::initialize_p_path_template_pair(
                     primary_current->transform.position.y - primary_previous->transform.position.y,
                     primary_current->transform.position.z - primary_previous->transform.position.z);
                 primary_previous->transform.basis_forward.Normalize();
-                primary_previous->transform.basis_right.cross_vectors(
-                    &primary_previous->transform.basis_up,
-                    &primary_previous->transform.basis_forward);
+                primary_previous->transform.basis_right.Cross(
+                    primary_previous->transform.basis_up,
+                    primary_previous->transform.basis_forward);
 
                 secondary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
                 secondary_previous->transform.basis_forward = Vector3(
@@ -267,9 +265,9 @@ void cRPath::initialize_p_path_template_pair(
                     secondary_current->transform.position.y - secondary_previous->transform.position.y,
                     secondary_current->transform.position.z - secondary_previous->transform.position.z);
                 secondary_previous->transform.basis_forward.Normalize();
-                secondary_previous->transform.basis_right.cross_vectors(
-                    &secondary_previous->transform.basis_up,
-                    &secondary_previous->transform.basis_forward);
+                secondary_previous->transform.basis_right.Cross(
+                    secondary_previous->transform.basis_up,
+                    secondary_previous->transform.basis_forward);
             }
             ++i;
             curve_sample_offset += sizeof(PathTemplateSample);

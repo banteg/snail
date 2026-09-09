@@ -20,7 +20,7 @@ static __forceinline void initialize_sample(
     sample->rotation_scalar_94 = 0.0f;
     sample->special_scalar = 0.0f;
     sample->lateral_scale = 1.0f;
-    set_matrix_identity(&sample->transform);
+    sample->transform.Identity();
     sample->transform.position.x = x;
     sample->transform.position.y = y;
     sample->transform.position.z = z;
@@ -218,12 +218,12 @@ void cRPath::initialize_invert_path_template_pair(
     primary_samples[0].rotation_scalar_94 = 0.0f;
     primary_samples[0].special_scalar = 0.0f;
     primary_samples[0].lateral_scale = 1.0f;
-    set_matrix_identity(&primary_samples[0].transform);
+    primary_samples[0].transform.Identity();
     primary_samples[0].transform.position.x = primary_samples[0].center_x;
     primary_samples[0].transform.position.y = 0.0f;
     primary_samples[0].transform.position.z = 0.0f;
     primary_samples[0].delta_length = 1.0f;
-    set_matrix_identity(&secondary_samples[0].transform);
+    secondary_samples[0].transform.Identity();
     secondary_samples[0].transform.position.x = primary_samples[0].center_x;
     secondary_samples[0].transform.position.y = 0.49000001f;
     secondary_samples[0].transform.position.z = 0.0f;
@@ -234,12 +234,12 @@ void cRPath::initialize_invert_path_template_pair(
     primary_samples[33].rotation_scalar_94 = 0.0f;
     primary_samples[33].special_scalar = 0.0f;
     primary_samples[33].lateral_scale = 1.0f;
-    set_matrix_identity(&primary_samples[33].transform);
+    primary_samples[33].transform.Identity();
     primary_samples[33].transform.position.x = primary_samples[33].center_x;
     primary_samples[33].transform.position.y = 0.0f;
     primary_samples[33].transform.position.z = 33.0f;
     primary_samples[33].delta_length = 1.0f;
-    set_matrix_identity(&secondary_samples[33].transform);
+    secondary_samples[33].transform.Identity();
     secondary_samples[33].transform.position.x = primary_samples[33].center_x;
     secondary_samples[33].transform.position.y = 0.49000001f;
     secondary_samples[33].transform.position.z = 33.0f;
@@ -259,7 +259,7 @@ void cRPath::initialize_invert_path_template_pair(
         primary_samples[sample_index].rotation_scalar_94 = 0.0f;
         primary_samples[sample_index].special_scalar = 0.0f;
         primary_samples[sample_index].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[sample_index].transform);
+        primary_samples[sample_index].transform.Identity();
 
         float z_position = (float)(local_index + 1);
         primary_samples[sample_index].transform.position.x = 0.0f;
@@ -274,9 +274,9 @@ void cRPath::initialize_invert_path_template_pair(
             primary_samples[sample_index].transform.position -
             primary_samples[sample_index - 1].transform.position;
         primary_samples[sample_index].transform.basis_forward.Normalize();
-        primary_samples[sample_index].transform.basis_right.cross_vectors(
-            &primary_samples[sample_index].transform.basis_up,
-            &primary_samples[sample_index].transform.basis_forward);
+        primary_samples[sample_index].transform.basis_right.Cross(
+            primary_samples[sample_index].transform.basis_up,
+            primary_samples[sample_index].transform.basis_forward);
 
         secondary_samples[sample_index].transform =
             primary_samples[sample_index].transform;

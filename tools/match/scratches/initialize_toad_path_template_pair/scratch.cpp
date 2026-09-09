@@ -198,14 +198,14 @@ void cRPath::initialize_toad_path_template_pair(
         primary_samples[i].rotation_scalar_94 = 0.0f;
         primary_samples[i].special_scalar = 0.0f;
         primary_samples[i].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[i].transform);
+        primary_samples[i].transform.Identity();
         primary_samples[i].transform.position.x = primary_samples[i].center_x;
         float z = (float)i;
         primary_samples[i].transform.position.y = 0.0f;
         primary_samples[i].transform.position.z = z;
         primary_samples[i].delta_length = 1.0f;
 
-        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.Identity();
         secondary_samples[i].transform.position.x = primary_samples[i].center_x;
         secondary_samples[i].transform.position.y = 0.49000001f;
         secondary_samples[i].transform.position.z = z;
@@ -228,10 +228,9 @@ void cRPath::initialize_toad_path_template_pair(
                 ->special_scalar = 0.0f;
             ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))
                 ->lateral_scale = 1.0f;
-            set_matrix_identity(
-                &((AttachmentSample*)(
+            ((AttachmentSample*)(
                     (char*)primary_samples + tail_sample_offset))
-                    ->transform);
+                    ->transform.Identity();
             float z = (float)tail_index;
             ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))
                 ->transform.position.x =
@@ -245,10 +244,9 @@ void cRPath::initialize_toad_path_template_pair(
             ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))
                 ->delta_length = 1.0f;
 
-            set_matrix_identity(
-                &((AttachmentSample*)(
+            ((AttachmentSample*)(
                     (char*)secondary_samples + tail_sample_offset))
-                    ->transform);
+                    ->transform.Identity();
             ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))
                 ->transform.position.x =
                 ((AttachmentSample*)(
@@ -281,8 +279,7 @@ void cRPath::initialize_toad_path_template_pair(
             0.0f;
         ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))->lateral_scale =
             1.0f;
-        set_matrix_identity(
-            &((AttachmentSample*)((char*)primary_samples + curve_sample_offset))->transform);
+        ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))->transform.Identity();
         float turn_x = Sin(angle);
         ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
             ->transform.position.x = turn_x + turn_x + start_x;
@@ -310,10 +307,10 @@ void cRPath::initialize_toad_path_template_pair(
         ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
             ->transform.basis_forward.Normalize();
         ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
-            ->transform.basis_right.cross_vectors(
-            &((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+            ->transform.basis_right.Cross(
+            ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
                 ->transform.basis_up,
-            &((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+            ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
                 ->transform.basis_forward);
         ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
             ->transform.RotLocalZ(angle);

@@ -44,7 +44,7 @@ void cRCutScene::AI()
 
     case CUT_SCENE_STATE_INTRO_ACTIVE:
         camera_mode = 1;
-        set_matrix_identity(&live_matrix);
+        live_matrix.Identity();
         live_matrix.position = presentation->snail_hotspots_world[
             SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
         live_matrix.LookAt(presentation->transform.position);
@@ -60,7 +60,7 @@ void cRCutScene::AI()
         g_game->subgame.embedded_player()->click_start.hide_prompt = 0;
         camera_mode = 1;
 
-        set_matrix_identity(&camera_matrix_a);
+        camera_matrix_a.Identity();
         camera_matrix_a.position = presentation->snail_hotspots_world[
             SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
         float swing = Sin(progress * 3.1415927f);
@@ -110,7 +110,7 @@ void cRCutScene::AI()
 
     case CUT_SCENE_STATE_DEATH_BLEND: {
         camera_mode = -1;
-        set_matrix_identity(&camera_matrix_b);
+        camera_matrix_b.Identity();
         camera_matrix_b.position = presentation->snail_hotspots_world[
             SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
         float swing = Sin(progress * 3.1415927f);
@@ -137,7 +137,7 @@ void cRCutScene::AI()
     case CUT_SCENE_STATE_DEATH_HOLD:
         camera_mode = -1;
         force_camera_update = 1;
-        set_matrix_identity(&live_matrix);
+        live_matrix.Identity();
         live_matrix.position = presentation->snail_hotspots_world[
             SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
         if (live_matrix.position.y < 0.0f)
@@ -193,7 +193,7 @@ void cRCutScene::AI()
 
     case CUT_SCENE_STATE_COMPLETION_BLEND: {
         camera_mode = -1;
-        set_matrix_identity(&camera_matrix_b);
+        camera_matrix_b.Identity();
 
         camera_matrix_a.position = presentation->snail_hotspots_world[
             SNAIL_HOTSPOT_CAMERA_SKID_STOP];
@@ -227,7 +227,7 @@ void cRCutScene::AI()
     case CUT_SCENE_STATE_COMPLETION_HOLD:
         camera_mode = -1;
         force_camera_update = 1;
-        set_matrix_identity(&live_matrix);
+        live_matrix.Identity();
         live_matrix.position = presentation->snail_hotspots_world[
             SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
         live_matrix.LookAt(presentation->transform.position);

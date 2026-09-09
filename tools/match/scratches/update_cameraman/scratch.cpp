@@ -104,7 +104,7 @@ void cRCameraman::AI()
         + ((player->cached_camera_target_world.x * -8.0f) * 0.017449999f) * 0.17f);
 
     if (player->follow_state.active == 1) {
-        set_matrix_identity(&transform);
+        transform.Identity();
         transform.RotLocalZ(player->follow_state.orientation_a);
         desired_matrix *= transform;
         desired_matrix.RotLocalZ(player->follow_state.orientation_b);

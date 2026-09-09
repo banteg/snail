@@ -51,9 +51,6 @@ struct tVector {
     float Normalize(const tVector& source); // @ 0x44cd20
     float Dot(const tVector& rhs); // @ 0x44cb70
     void Cross(const tVector& lhs, const tVector& rhs); // @ 0x44cd40
-    // Compatibility view for low-progress path-template callers. The owned
-    // definition is the const-reference overload above.
-    void cross_vectors(const tVector* lhs, const tVector* rhs);
     float Magnitude() const; // @ 0x44ccf0
     // ABI compatibility view for the exact Bod caller that dereferences the
     // hidden-return EAX pointer. The owned definition is operator* above.

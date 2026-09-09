@@ -42,13 +42,13 @@ void cRPath::initialize_halfpipe_path_template_pair(
         ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->rotation_scalar_94 = 0.0f;
         ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->special_scalar = (depth * depth + 16.0f) / (depth + depth);
         ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->lateral_scale = 1.0f;
-        set_matrix_identity(&((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->transform);
+        ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->transform.Identity();
         ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->transform.position.x = ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->center_x;
         ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->transform.position.y = 0.0f;
         ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->transform.position.z = index;
         ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->delta_length = 1.0f;
 
-        set_matrix_identity(&((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform);
+        ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform.Identity();
         ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform.position.x = ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->center_x;
         ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform.position.y = 0.49000001f;
         ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform.position.z = index;
@@ -70,7 +70,7 @@ void cRPath::initialize_halfpipe_path_template_pair(
         primary_samples[exit_index + 50].special_scalar =
             (depth * depth + 16.0f) / (depth + depth);
         primary_samples[exit_index + 50].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[exit_index + 50].transform);
+        primary_samples[exit_index + 50].transform.Identity();
         primary_samples[exit_index + 50].transform.position.x =
             primary_samples[exit_index + 50].center_x;
         int sample_index = exit_index + 50;
@@ -78,7 +78,7 @@ void cRPath::initialize_halfpipe_path_template_pair(
         primary_samples[exit_index + 50].transform.position.z = (float)sample_index;
         primary_samples[exit_index + 50].delta_length = 1.0f;
 
-        set_matrix_identity(&secondary_samples[exit_index + 50].transform);
+        secondary_samples[exit_index + 50].transform.Identity();
         secondary_samples[exit_index + 50].transform.position.x =
             primary_samples[exit_index + 50].center_x;
         secondary_samples[exit_index + 50].transform.position.y = 0.49000001f;
@@ -100,7 +100,7 @@ void cRPath::initialize_halfpipe_path_template_pair(
         primary_samples[i].rotation_scalar_94 = 0.0f;
         primary_samples[i].special_scalar = 4.0f;
         primary_samples[i].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[i].transform);
+        primary_samples[i].transform.Identity();
         primary_samples[i].transform.position.x = 0.0f;
         primary_samples[i].transform.position.z = (float)(middle + 16);
         primary_samples[i].transform.position.y = 0.0f;
@@ -113,9 +113,9 @@ void cRPath::initialize_halfpipe_path_template_pair(
             primary_samples[i].transform.position.z
                 - primary_samples[i - 1].transform.position.z);
         primary_samples[i].transform.basis_forward.Normalize();
-        primary_samples[i].transform.basis_right.cross_vectors(
-            &primary_samples[i].transform.basis_up,
-            &primary_samples[i].transform.basis_forward);
+        primary_samples[i].transform.basis_right.Cross(
+            primary_samples[i].transform.basis_up,
+            primary_samples[i].transform.basis_forward);
 
         secondary_samples[i].transform = primary_samples[i].transform;
         Vector3 secondary_offset =
@@ -165,7 +165,7 @@ void cRPath::initialize_halfpipe_path_template_pair(
     cRFaceQuad* facequads = strip_mesh->facequads;
     Vector3* vertices = strip_mesh->vertices;
     TransformMatrix kind42_transform;
-    set_matrix_identity(&kind42_transform);
+    kind42_transform.Identity();
 
     int sample_offset = 0;
     for (int row = 0; row <= segment_count; ++row) {

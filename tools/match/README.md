@@ -145,6 +145,9 @@ manifest function aliases are not searched.
 
 Useful analysis helpers:
 
+- The [authored math API pass](authored-math-api-20260909.md) repairs 205
+  caller relocations with identical body bytes across 36 functions.
+
 - The [RText contract recovery](rtext-void-and-runtime-20260909.md) removes an
   artificial return value while preserving the exact native body. The `rtext`
   group in `link_path_math.py` links and exercises all seven shared text APIs.

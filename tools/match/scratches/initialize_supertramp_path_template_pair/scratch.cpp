@@ -177,7 +177,7 @@ void cRPath::initialize_supertramp_path_template_pair(
         ((PathTemplateSample*)((char*)primary_samples + lead_offset))->rotation_scalar_94 = 0.0f;
         ((PathTemplateSample*)((char*)primary_samples + lead_offset))->special_scalar = 0.0f;
         ((PathTemplateSample*)((char*)primary_samples + lead_offset))->lateral_scale = 1.0f;
-        set_matrix_identity(&((PathTemplateSample*)((char*)primary_samples + lead_offset))->transform);
+        ((PathTemplateSample*)((char*)primary_samples + lead_offset))->transform.Identity();
         ((PathTemplateSample*)((char*)primary_samples + lead_offset))->transform.position.x =
             ((PathTemplateSample*)((char*)primary_samples + lead_offset))->center_x;
         float z = (float)lead_sample_index;
@@ -185,7 +185,7 @@ void cRPath::initialize_supertramp_path_template_pair(
         ((PathTemplateSample*)((char*)primary_samples + lead_offset))->transform.position.z = z;
         ((PathTemplateSample*)((char*)primary_samples + lead_offset))->delta_length = 1.0f;
 
-        set_matrix_identity(&((PathTemplateSample*)((char*)secondary_samples + lead_offset))->transform);
+        ((PathTemplateSample*)((char*)secondary_samples + lead_offset))->transform.Identity();
         ((PathTemplateSample*)((char*)secondary_samples + lead_offset))->transform.position.x =
             ((PathTemplateSample*)((char*)primary_samples + lead_offset))->center_x;
         ((PathTemplateSample*)((char*)secondary_samples + lead_offset))->transform.position.y = 0.49000001f;
@@ -206,7 +206,7 @@ void cRPath::initialize_supertramp_path_template_pair(
             primary_samples[sample_index].rotation_scalar_94 = 0.0f;
             primary_samples[sample_index].special_scalar = 0.0f;
             primary_samples[sample_index].lateral_scale = 1.0f;
-            set_matrix_identity(&primary_samples[sample_index].transform);
+            primary_samples[sample_index].transform.Identity();
             primary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             primary_samples[sample_index].transform.position.z =
@@ -214,7 +214,7 @@ void cRPath::initialize_supertramp_path_template_pair(
             primary_samples[sample_index].transform.position.y =
                 radius - Cos(angle) * radius;
 
-            set_matrix_identity(&secondary_samples[sample_index].transform);
+            secondary_samples[sample_index].transform.Identity();
             secondary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             secondary_samples[sample_index].transform.position.z =
@@ -230,9 +230,9 @@ void cRPath::initialize_supertramp_path_template_pair(
             primary_samples[sample_index].transform.basis_up.z =
                 7.0f - primary_samples[sample_index].transform.position.z;
             primary_samples[sample_index].transform.basis_up.Normalize();
-            primary_samples[sample_index].transform.basis_forward.cross_vectors(
-                &primary_samples[sample_index].transform.basis_right,
-                &primary_samples[sample_index].transform.basis_up);
+            primary_samples[sample_index].transform.basis_forward.Cross(
+                primary_samples[sample_index].transform.basis_right,
+                primary_samples[sample_index].transform.basis_up);
 
             secondary_samples[sample_index].transform.basis_right =
                 Vector3(1.0f, 0.0f, 0.0f);
@@ -242,9 +242,9 @@ void cRPath::initialize_supertramp_path_template_pair(
             secondary_samples[sample_index].transform.basis_up.z =
                 7.0f - secondary_samples[sample_index].transform.position.z;
             secondary_samples[sample_index].transform.basis_up.Normalize();
-            secondary_samples[sample_index].transform.basis_forward.cross_vectors(
-                &secondary_samples[sample_index].transform.basis_right,
-                &secondary_samples[sample_index].transform.basis_up);
+            secondary_samples[sample_index].transform.basis_forward.Cross(
+                secondary_samples[sample_index].transform.basis_right,
+                secondary_samples[sample_index].transform.basis_up);
             ++curve_index;
         } while (curve_index <= curve_segments);
     }

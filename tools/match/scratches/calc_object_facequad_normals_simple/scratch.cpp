@@ -34,7 +34,7 @@ int cRObject::calc_object_facequad_normals_simple()
             Vector3 rhs = rhs_value;
 
             Vector3 normal_a;
-            normal_a.cross_vectors(&lhs, &rhs);
+            normal_a.Cross(lhs, rhs);
             normal_a.Normalize();
 
             *(Vector3*)((char*)facequad_normals + normal_offset) = normal_a;
@@ -52,7 +52,7 @@ int cRObject::calc_object_facequad_normals_simple()
                 rhs = quad_rhs_value;
 
                 Vector3 normal_b;
-                normal_b.cross_vectors(&lhs, &rhs);
+                normal_b.Cross(lhs, rhs);
                 normal_b.Normalize();
 
                 *(Vector3*)((char*)facequad_normals + normal_offset + sizeof(Vector3)) =

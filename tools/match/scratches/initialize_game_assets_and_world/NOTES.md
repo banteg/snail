@@ -1496,3 +1496,16 @@ The direct reference form preserves 81.34%, 5405/5411 instructions, prefix 0,
 regresses to 72.73%, 5383 instructions, 1872 clean references and 17 unaudited
 references. Neither is retained. The six other functions in this control
 batch are neutral, including both exact pickup spawners.
+
+## 2026-09-09 interior vapour owner replay
+
+The current nested `GolbShot::vapour.object` assignment was replayed with
+pointer/reference owners and with allocation performed before publishing the
+object. Direct field/owner references clear both unaudited operands (1,881
+clean) but regress 81.342% to 79.371% and 5,405 to 5,404 candidate instructions.
+Allocating the value before `SetObject` gives 81.331%, 5,404 instructions and
+retains both unaudited entries. None is retained. The four focused probes are
+recorded; sources and detailed results live under
+`artifacts/match/gameplay-lifetimes-20260909/initialize_game_assets_and_world/`.
+The separate authored math API migration preserves all existing body bytes,
+metrics and audit results; see `../../authored-math-api-20260909.md`.

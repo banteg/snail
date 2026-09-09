@@ -92,7 +92,7 @@ void cRLogo::Init(char* file_name)
             letters[renderable_count].SetObject(logo_object);
             letters[renderable_count].object->facequads[0].texture_ref =
                 g_texture_refs.Add(path, 0, 0);
-            set_matrix_identity(&letters[renderable_count].transform);
+            letters[renderable_count].transform.Identity();
             letters[renderable_count].transform.position =
                 Vector3(0.0f, -4.0f, 0.0f);
             letters[renderable_count].transform.position.z +=
@@ -149,8 +149,7 @@ void cRLogo::Init(char* file_name)
                         &letters[renderable_count]);
                     letters[renderable_count].SetObject(
                         g_font3d_bods[FontASCIIRemap(*glyph)].object);
-                    set_matrix_identity(
-                        &letters[renderable_count].transform);
+                    letters[renderable_count].transform.Identity();
                     letters[renderable_count].transform.position =
                         initial_position;
                     letters[renderable_count].transform.position.x += x;

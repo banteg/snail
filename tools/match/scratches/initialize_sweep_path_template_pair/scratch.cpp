@@ -162,14 +162,14 @@ void cRPath::initialize_sweep_path_template_pair(
         primary_samples[i].rotation_scalar_94 = 0.0f;
         primary_samples[i].special_scalar = 0.0f;
         primary_samples[i].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[i].transform);
+        primary_samples[i].transform.Identity();
         primary_samples[i].transform.position.x =
             primary_samples[i].center_x;
         float z = (float)i;
         primary_samples[i].transform.position.y = 0.0f;
         primary_samples[i].transform.position.z = z;
 
-        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.Identity();
         secondary_samples[i].transform.position.x =
             primary_samples[i].center_x;
         secondary_samples[i].transform.position.y = 0.49000001f;
@@ -189,9 +189,8 @@ void cRPath::initialize_sweep_path_template_pair(
             ->special_scalar = 0.0f;
         ((PathTemplateSample*)((char*)primary_samples + departure_offset))
             ->lateral_scale = 1.0f;
-        set_matrix_identity(
-            &((PathTemplateSample*)((char*)primary_samples + departure_offset))
-                ->transform);
+        ((PathTemplateSample*)((char*)primary_samples + departure_offset))
+                ->transform.Identity();
         float z = (float)departure_index;
         ((PathTemplateSample*)((char*)primary_samples + departure_offset))
             ->transform.position.x =
@@ -202,9 +201,8 @@ void cRPath::initialize_sweep_path_template_pair(
         ((PathTemplateSample*)((char*)primary_samples + departure_offset))
             ->transform.position.z = z;
 
-        set_matrix_identity(
-            &((PathTemplateSample*)((char*)secondary_samples + departure_offset))
-                ->transform);
+        ((PathTemplateSample*)((char*)secondary_samples + departure_offset))
+                ->transform.Identity();
         ((PathTemplateSample*)((char*)secondary_samples + departure_offset))
             ->transform.position.x =
             ((PathTemplateSample*)((char*)primary_samples + departure_offset))
@@ -228,8 +226,7 @@ void cRPath::initialize_sweep_path_template_pair(
         ((PathTemplateSample*)((char*)primary_samples + i))->rotation_scalar_94 = 0.0f;
         ((PathTemplateSample*)((char*)primary_samples + i))->special_scalar = 0.0f;
         ((PathTemplateSample*)((char*)primary_samples + i))->lateral_scale = 1.0f;
-        set_matrix_identity(
-            &((PathTemplateSample*)((char*)primary_samples + i))->transform);
+        ((PathTemplateSample*)((char*)primary_samples + i))->transform.Identity();
         ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.x =
             ((PathTemplateSample*)((char*)primary_samples + i))->center_x;
         ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.y =
@@ -237,8 +234,7 @@ void cRPath::initialize_sweep_path_template_pair(
         float z = (float)(curve_index + 3);
         ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.z = z;
 
-        set_matrix_identity(
-            &((PathTemplateSample*)((char*)secondary_samples + i))->transform);
+        ((PathTemplateSample*)((char*)secondary_samples + i))->transform.Identity();
         ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.x =
             ((PathTemplateSample*)((char*)primary_samples + i))->center_x;
         ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.y =
@@ -259,10 +255,10 @@ void cRPath::initialize_sweep_path_template_pair(
             ((PathTemplateSample*)((char*)primary_samples + i) - 1)
                 ->transform.basis_forward.Normalize();
             ((PathTemplateSample*)((char*)primary_samples + i) - 1)
-                ->transform.basis_right.cross_vectors(
-                &((PathTemplateSample*)((char*)primary_samples + i) - 1)
+                ->transform.basis_right.Cross(
+                ((PathTemplateSample*)((char*)primary_samples + i) - 1)
                     ->transform.basis_up,
-                &((PathTemplateSample*)((char*)primary_samples + i) - 1)
+                ((PathTemplateSample*)((char*)primary_samples + i) - 1)
                     ->transform.basis_forward);
 
             ((PathTemplateSample*)((char*)secondary_samples + i) - 1)
@@ -277,10 +273,10 @@ void cRPath::initialize_sweep_path_template_pair(
             ((PathTemplateSample*)((char*)secondary_samples + i) - 1)
                 ->transform.basis_forward.Normalize();
             ((PathTemplateSample*)((char*)secondary_samples + i) - 1)
-                ->transform.basis_right.cross_vectors(
-                &((PathTemplateSample*)((char*)secondary_samples + i) - 1)
+                ->transform.basis_right.Cross(
+                ((PathTemplateSample*)((char*)secondary_samples + i) - 1)
                     ->transform.basis_up,
-                &((PathTemplateSample*)((char*)secondary_samples + i) - 1)
+                ((PathTemplateSample*)((char*)secondary_samples + i) - 1)
                     ->transform.basis_forward);
         } else {
             ((PathTemplateSample*)((char*)primary_samples + i) - 1)

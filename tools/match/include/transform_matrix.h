@@ -56,8 +56,4 @@ struct tMatrix {
 
 typedef char tMatrix_must_be_0x40[(sizeof(tMatrix) == 0x40) ? 1 : -1];
 
-// Compatibility surface for partial scratches not yet converted to the
-// authored member spelling. The ABI is identical: transform is passed in ECX.
-void __fastcall set_matrix_identity(TransformMatrix* transform); // @ 0x44d210
-
 #endif

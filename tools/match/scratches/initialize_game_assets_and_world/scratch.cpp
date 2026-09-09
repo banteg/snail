@@ -272,7 +272,7 @@ char cRGame::initialize_game_assets_and_world()
     } while (slice_index < 8.0f);
 
     TransformMatrix transform;
-    set_matrix_identity(&transform);
+    transform.Identity();
 
     BodBase* pillar = &root_bod_catalog.pillars[0];
     pillar->SetObject(g_object_list.Add());
@@ -447,7 +447,7 @@ char cRGame::initialize_game_assets_and_world()
         *salt_owner = &subgame;
         salt->color.store_color4f(1.0f, 1.0f, 1.0f, 0.9f);
         salt->object->blend_mode = 12;
-        set_matrix_identity(&salt->transform);
+        salt->transform.Identity();
         salt_owner = (cRSubGame**)((char*)salt_owner + sizeof(cRSalt));
         --salt_count;
     } while (salt_count != 0);
@@ -3041,8 +3041,8 @@ char cRGame::initialize_game_assets_and_world()
     int player_index = 0;
     if (player_count > 0) {
         do {
-            set_matrix_identity(&players[player_index].transform);
-            set_matrix_identity(&players[player_index].camera.transform);
+            players[player_index].transform.Identity();
+            players[player_index].camera.transform.Identity();
             players[player_index].camera.fov_degrees = 110.0f;
             players[player_index].game_input = &game_inputs[player_index];
             players[player_index].transform =

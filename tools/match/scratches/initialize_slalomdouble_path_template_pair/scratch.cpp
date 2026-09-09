@@ -23,13 +23,13 @@ static __forceinline void initialize_pair_sample(
     primary->rotation_scalar_94 = 0.0f;
     primary->special_scalar = 0.0f;
     primary->lateral_scale = 1.0f;
-    set_matrix_identity(&primary->transform);
+    primary->transform.Identity();
     float z = (float)z_index;
     primary->transform.position.x = primary->center_x;
     primary->transform.position.y = y;
     primary->transform.position.z = z;
 
-    set_matrix_identity(&secondary->transform);
+    secondary->transform.Identity();
     secondary->transform.position.x = primary->center_x;
     secondary->transform.position.y = y + 0.49000001f;
     secondary->transform.position.z = z;
@@ -156,14 +156,14 @@ void cRPath::initialize_slalomdouble_path_template_pair(
         primary_samples[i].rotation_scalar_94 = 0.0f;
         primary_samples[i].special_scalar = 0.0f;
         primary_samples[i].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[i].transform);
+        primary_samples[i].transform.Identity();
         float z = (float)i;
         primary_samples[i].transform.position.x =
             primary_samples[i].center_x;
         primary_samples[i].transform.position.y = 0.0f;
         primary_samples[i].transform.position.z = z;
 
-        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.Identity();
         secondary_samples[i].transform.position.x =
             primary_samples[i].center_x;
         secondary_samples[i].transform.position.y = 0.49000001f;
@@ -176,14 +176,14 @@ void cRPath::initialize_slalomdouble_path_template_pair(
         primary_samples[i].rotation_scalar_94 = 0.0f;
         primary_samples[i].special_scalar = 0.0f;
         primary_samples[i].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[i].transform);
+        primary_samples[i].transform.Identity();
         float z = (float)i;
         primary_samples[i].transform.position.x =
             primary_samples[i].center_x;
         primary_samples[i].transform.position.y = 0.0f;
         primary_samples[i].transform.position.z = z;
 
-        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.Identity();
         secondary_samples[i].transform.position.x =
             primary_samples[i].center_x;
         secondary_samples[i].transform.position.y = 0.49000001f;
@@ -209,7 +209,7 @@ void cRPath::initialize_slalomdouble_path_template_pair(
         primary_samples[i].rotation_scalar_94 = 0.0f;
         primary_samples[i].special_scalar = 0.0f;
         primary_samples[i].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[i].transform);
+        primary_samples[i].transform.Identity();
         primary_samples[i].transform.position.x =
             primary_samples[i].center_x;
         primary_samples[i].transform.position.y =
@@ -217,7 +217,7 @@ void cRPath::initialize_slalomdouble_path_template_pair(
         float z = (float)(curve_index + 4);
         primary_samples[i].transform.position.z = z;
 
-        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.Identity();
         secondary_samples[i].transform.position.x =
             primary_samples[i].center_x;
         secondary_samples[i].transform.position.y =
@@ -237,9 +237,9 @@ void cRPath::initialize_slalomdouble_path_template_pair(
                 primary_current->transform.position.z
                     - primary_previous->transform.position.z);
             primary_previous->transform.basis_forward.Normalize();
-            primary_previous->transform.basis_right.cross_vectors(
-                &primary_previous->transform.basis_up,
-                &primary_previous->transform.basis_forward);
+            primary_previous->transform.basis_right.Cross(
+                primary_previous->transform.basis_up,
+                primary_previous->transform.basis_forward);
             float primary_roll = primary_previous->center_x * 0.2617994f;
             primary_previous->transform.RotLocalZ(primary_roll);
         }
@@ -258,9 +258,9 @@ void cRPath::initialize_slalomdouble_path_template_pair(
                 secondary_current->transform.position.z
                     - secondary_previous->transform.position.z);
             secondary_previous->transform.basis_forward.Normalize();
-            secondary_previous->transform.basis_right.cross_vectors(
-                &secondary_previous->transform.basis_up,
-                &secondary_previous->transform.basis_forward);
+            secondary_previous->transform.basis_right.Cross(
+                secondary_previous->transform.basis_up,
+                secondary_previous->transform.basis_forward);
             float secondary_roll = primary_previous->center_x * 0.2617994f;
             secondary_previous->transform.RotLocalZ(secondary_roll);
         }

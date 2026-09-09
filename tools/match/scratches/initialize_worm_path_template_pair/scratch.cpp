@@ -34,7 +34,7 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
         primary_samples[entrance_index].rotation_scalar_94 = 0.0f;
         primary_samples[entrance_index].special_scalar = 0.0f;
         primary_samples[entrance_index].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[entrance_index].transform);
+        primary_samples[entrance_index].transform.Identity();
 
         primary_samples[entrance_index].transform.position.x =
             primary_samples[entrance_index].center_x;
@@ -42,7 +42,7 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
         primary_samples[entrance_index].transform.position.z =
             (float)entrance_index * width_or_scale;
 
-        set_matrix_identity(&secondary_samples[entrance_index].transform);
+        secondary_samples[entrance_index].transform.Identity();
         secondary_samples[entrance_index].transform.position.x =
             primary_samples[entrance_index].center_x;
         secondary_samples[entrance_index].transform.position.y = 0.49000001f;
@@ -58,7 +58,7 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
         primary_samples[exit_index].rotation_scalar_94 = 0.0f;
         primary_samples[exit_index].special_scalar = 0.0f;
         primary_samples[exit_index].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[exit_index].transform);
+        primary_samples[exit_index].transform.Identity();
 
         primary_samples[exit_index].transform.position.x =
             primary_samples[exit_index].center_x;
@@ -66,7 +66,7 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
         primary_samples[exit_index].transform.position.z =
             (float)exit_index * width_or_scale;
 
-        set_matrix_identity(&secondary_samples[exit_index].transform);
+        secondary_samples[exit_index].transform.Identity();
         secondary_samples[exit_index].transform.position.x =
             primary_samples[exit_index].center_x;
         secondary_samples[exit_index].transform.position.y = 0.49000001f;
@@ -82,7 +82,7 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
         primary_samples[i].rotation_scalar_94 = 0.0f;
         primary_samples[i].special_scalar = 0.0f;
         primary_samples[i].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[i].transform);
+        primary_samples[i].transform.Identity();
         primary_samples[i].transform.position.x = primary_samples[i].center_x;
 
         int absolute_index = middle_index + 4;
@@ -90,7 +90,7 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
         primary_samples[i].transform.position.z =
             (float)absolute_index * width_or_scale;
 
-        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.Identity();
         secondary_samples[i].transform.position.x = primary_samples[i].center_x;
         secondary_samples[i].transform.position.y = 0.49000001f;
         secondary_samples[i].transform.position.z =
@@ -108,12 +108,12 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
                 primary_samples[i - 1].transform.position.z;
             primary_samples[i - 1].transform.basis_forward = primary_forward;
             primary_samples[i - 1].transform.basis_forward.Normalize();
-            primary_samples[i - 1].transform.basis_right.cross_vectors(
-                &primary_samples[i - 1].transform.basis_up,
-                &primary_samples[i - 1].transform.basis_forward);
-            primary_samples[i - 1].transform.basis_up.cross_vectors(
-                &primary_samples[i - 1].transform.basis_forward,
-                &primary_samples[i - 1].transform.basis_right);
+            primary_samples[i - 1].transform.basis_right.Cross(
+                primary_samples[i - 1].transform.basis_up,
+                primary_samples[i - 1].transform.basis_forward);
+            primary_samples[i - 1].transform.basis_up.Cross(
+                primary_samples[i - 1].transform.basis_forward,
+                primary_samples[i - 1].transform.basis_right);
 
             secondary_samples[i - 1].transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
 
@@ -126,12 +126,12 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
                 secondary_samples[i - 1].transform.position.z;
             secondary_samples[i - 1].transform.basis_forward = secondary_forward;
             secondary_samples[i - 1].transform.basis_forward.Normalize();
-            secondary_samples[i - 1].transform.basis_right.cross_vectors(
-                &secondary_samples[i - 1].transform.basis_up,
-                &secondary_samples[i - 1].transform.basis_forward);
-            secondary_samples[i - 1].transform.basis_up.cross_vectors(
-                &secondary_samples[i - 1].transform.basis_forward,
-                &secondary_samples[i - 1].transform.basis_right);
+            secondary_samples[i - 1].transform.basis_right.Cross(
+                secondary_samples[i - 1].transform.basis_up,
+                secondary_samples[i - 1].transform.basis_forward);
+            secondary_samples[i - 1].transform.basis_up.Cross(
+                secondary_samples[i - 1].transform.basis_forward,
+                secondary_samples[i - 1].transform.basis_right);
         } else {
             primary_samples[i - 1].transform.RotIdentity();
             secondary_samples[i - 1].transform.RotIdentity();

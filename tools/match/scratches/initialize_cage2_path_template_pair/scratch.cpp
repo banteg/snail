@@ -27,12 +27,12 @@ void cRPath::initialize_cage2_path_template_pair(
     primary_samples[0].rotation_scalar_94 = 0.0f;
     primary_samples[0].special_scalar = 0.0f;
     primary_samples[0].lateral_scale = 1.0f;
-    set_matrix_identity(&primary_samples[0].transform);
+    primary_samples[0].transform.Identity();
     primary_samples[0].transform.position.x = primary_samples[0].center_x;
     primary_samples[0].transform.position.y = 0.0f;
     primary_samples[0].transform.position.z = 0.0f;
 
-    set_matrix_identity(&secondary_samples[0].transform);
+    secondary_samples[0].transform.Identity();
     secondary_samples[0].transform.position.x = primary_samples[0].center_x;
     secondary_samples[0].transform.position.y = 0.49000001f;
     secondary_samples[0].transform.position.z = 0.0f;
@@ -42,12 +42,12 @@ void cRPath::initialize_cage2_path_template_pair(
     primary_samples[21].rotation_scalar_94 = 0.0f;
     primary_samples[21].special_scalar = 0.0f;
     primary_samples[21].lateral_scale = 1.0f;
-    set_matrix_identity(&primary_samples[21].transform);
+    primary_samples[21].transform.Identity();
     primary_samples[21].transform.position.x = primary_samples[21].center_x;
     primary_samples[21].transform.position.y = 0.0f;
     primary_samples[21].transform.position.z = 21.0f;
 
-    set_matrix_identity(&secondary_samples[21].transform);
+    secondary_samples[21].transform.Identity();
     secondary_samples[21].transform.position.x = primary_samples[21].center_x;
     width_cells_ = mesh_cursor;
     secondary_samples[21].transform.position.y = 0.49000001f;
@@ -63,12 +63,12 @@ void cRPath::initialize_cage2_path_template_pair(
         primary_samples[i].rotation_scalar_94 = 0.0f;
         primary_samples[i].special_scalar = 0.0f;
         primary_samples[i].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[i].transform);
+        primary_samples[i].transform.Identity();
         primary_samples[i].transform.position.x = primary_samples[i].center_x;
         primary_samples[i].transform.position.y = 0.0f;
         primary_samples[i].transform.position.z = (float)i;
 
-        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.Identity();
         secondary_samples[i].transform.position.x = primary_samples[i].center_x;
         secondary_samples[i].transform.position.y =
             primary_samples[i].transform.position.y + 0.49000001f;
@@ -84,9 +84,9 @@ void cRPath::initialize_cage2_path_template_pair(
                 primary_samples[i].transform.position -
                 primary_samples[i - 1].transform.position;
             primary_samples[i - 1].transform.basis_forward.Normalize();
-            primary_samples[i - 1].transform.basis_right.cross_vectors(
-                &primary_samples[i - 1].transform.basis_up,
-                &primary_samples[i - 1].transform.basis_forward);
+            primary_samples[i - 1].transform.basis_right.Cross(
+                primary_samples[i - 1].transform.basis_up,
+                primary_samples[i - 1].transform.basis_forward);
             primary_samples[i - 1].transform.RotLocalZ(
                 (float)((1.0f - Cos(curve_angle)) * 0.5f)
                     * primary_samples[i - 1].center_x * 0.39269909f);
@@ -96,9 +96,9 @@ void cRPath::initialize_cage2_path_template_pair(
                 secondary_samples[i].transform.position -
                 secondary_samples[i - 1].transform.position;
             secondary_samples[i - 1].transform.basis_forward.Normalize();
-            secondary_samples[i - 1].transform.basis_right.cross_vectors(
-                &secondary_samples[i - 1].transform.basis_up,
-                &secondary_samples[i - 1].transform.basis_forward);
+            secondary_samples[i - 1].transform.basis_right.Cross(
+                secondary_samples[i - 1].transform.basis_up,
+                secondary_samples[i - 1].transform.basis_forward);
             secondary_samples[i - 1].transform.RotLocalZ(
                 (float)((1.0f - Cos(curve_angle)) * 0.5f)
                     * primary_samples[i - 1].center_x * 0.39269909f);

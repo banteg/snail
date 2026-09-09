@@ -23,13 +23,13 @@ static __forceinline void initialize_pair_sample(
     primary->rotation_scalar_94 = 0.0f;
     primary->special_scalar = 0.0f;
     primary->lateral_scale = 1.0f;
-    set_matrix_identity(&primary->transform);
+    primary->transform.Identity();
     primary->transform.position.x = center_x;
     primary->transform.position.y = y;
     primary->transform.position.z = z;
     primary->delta_length = 1.0f;
 
-    set_matrix_identity(&secondary->transform);
+    secondary->transform.Identity();
     secondary->transform.position.x = center_x;
     secondary->transform.position.y = y + 0.49000001f;
     secondary->transform.position.z = z;
@@ -45,9 +45,9 @@ static __forceinline void orient_turnover_sample(
         sample->transform.position.y - previous->transform.position.y,
         sample->transform.position.z - previous->transform.position.z);
     sample->transform.basis_forward.Normalize();
-    sample->transform.basis_right.cross_vectors(
-        &sample->transform.basis_up,
-        &sample->transform.basis_forward);
+    sample->transform.basis_right.Cross(
+        sample->transform.basis_up,
+        sample->transform.basis_forward);
 }
 
 static __forceinline void copy_secondary_from_primary(PathTemplateSample* secondary, PathTemplateSample* primary)
@@ -242,8 +242,7 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
         ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->rotation_scalar_94 = 0.0f;
         ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->special_scalar = 0.0f;
         ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->lateral_scale = 1.0f;
-        set_matrix_identity(
-            &((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->transform);
+        ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->transform.Identity();
         ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->transform.position.x =
             ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->center_x;
         float z = (float)i;
@@ -251,8 +250,7 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
         ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->transform.position.z = z;
         ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->delta_length = 1.0f;
 
-        set_matrix_identity(
-            &((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform);
+        ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform.Identity();
         ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform.position.x =
             ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->center_x;
         ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform.position.y = 0.49000001f;
@@ -273,8 +271,7 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
         ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->rotation_scalar_94 = 0.0f;
         ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->special_scalar = 0.0f;
         ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->lateral_scale = 1.0f;
-        set_matrix_identity(
-            &((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->transform);
+        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->transform.Identity();
         float z = (float)i;
         ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->transform.position.x =
             ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->center_x;
@@ -282,8 +279,7 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
         ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->transform.position.z = z;
         ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->delta_length = 1.0f;
 
-        set_matrix_identity(
-            &((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform);
+        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform.Identity();
         ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform.position.x =
             ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->center_x;
         ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform.position.y = 0.49000001f;
@@ -314,9 +310,8 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
                 ->special_scalar = 0.0f;
             ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
                 ->lateral_scale = 1.0f;
-            set_matrix_identity(
-                &((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
-                    ->transform);
+            ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+                    ->transform.Identity();
 
             float half = roll_angle * 0.5f;
             float half_sine = Sin(half);
@@ -345,10 +340,10 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
             ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
                 ->transform.basis_forward.Normalize();
             ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
-                ->transform.basis_right.cross_vectors(
-                &((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+                ->transform.basis_right.Cross(
+                ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
                     ->transform.basis_up,
-                &((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+                ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
                     ->transform.basis_forward);
 
             ((AttachmentSample*)((char*)secondary_samples + curve_sample_offset))->transform =
