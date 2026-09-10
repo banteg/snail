@@ -1,9 +1,20 @@
 # initialize_turnunder_path_template_pair
 
-Current recovery: semantic-complete (`compiler` residual). The verified
-Android/iOS builder bodies establish the portable sample/control graph; the
-live Windows body and scratch additionally cover the native mesh/face tail.
-All references are clean, and the remaining differences are code layout.
+Current recovery: semantic-complete (`analysis` residual). The 2026-09-11
+source recovery improves **57.2276% to 78.1659%**, with **687/687 instructions**,
+a 56-instruction prefix, and **45 clean aligned references**. It remains
+partial: most reference positions differ and `body_byte_exact` is false.
+
+The departure phase uses the native two-sample bound relative to the curve
+count. Bank-reference initialization, nested half/full-angle sine evaluation,
+vector subtraction, branch-local mesh vectors, and paired checkerboard texture
+branches recover more of the native instruction schedule. The six-sample lead,
+count-derived radius, distinct endpoint centers, and transform-only secondary
+copy remain intact. Unused historical initializer helpers are removed.
+
+See [the recovery report](../../p-turnunder-source-recovery-20260911.md) and
+its complete before/after source and reference receipt. Earlier scores below
+are historical and superseded by this result, not source-exhaustion evidence.
 
 Ownership recovery for `initialize_turnunder_path_template_pair @ 0x427fe0`.
 

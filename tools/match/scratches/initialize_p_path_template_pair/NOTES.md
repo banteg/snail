@@ -1,9 +1,19 @@
 # initialize_p_path_template_pair
 
-Current recovery: semantic-complete (`compiler` residual). The verified
-Android/iOS builder bodies establish the portable sample/control graph; the
-live Windows body and scratch additionally cover the native mesh/face tail.
-All references are clean, and the remaining differences are code layout.
+Current recovery: semantic-complete (`analysis` residual). The 2026-09-11
+source recovery improves **64.6018% to 92.8519%**, with **678/679 instructions**,
+a six-instruction prefix, and **41 clean aligned references**. It remains
+partial: reference positions differ and `body_byte_exact` is false.
+
+The endpoint helper borrows the two banks, and one logical curve counter owns
+angle generation and the next sample's Z. Direct previous-sample vector
+subtraction preserves bank rereads across orientation calls. The mesh uses
+branch-local vector owners and separates texture dispatch from UV assignment,
+recovering the native texture continuation after the return.
+
+See [the recovery report](../../p-turnunder-source-recovery-20260911.md) and
+its complete before/after source and reference receipt. Earlier scores below
+are historical and superseded by this result, not source-exhaustion evidence.
 
 Honest starter scratch for `initialize_p_path_template_pair @ 0x425a40`.
 
