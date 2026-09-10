@@ -1,5 +1,17 @@
 # `initialize_slalom_path_template_pair` starter
 
+## 2026-09-11 partial source recovery
+
+Current result: **99.71%**, 696/696 instructions, prefix 560,
+with 40 clean references at the same instruction and byte positions.
+The residual is one two-instruction face-index multiplication difference.
+This remains partial; no exact-match credit is claimed.
+
+See the [source recovery report](../../slalom-sweep-source-recovery-20260911.md)
+and its complete, hash-bound before/after sources and comparison receipt.
+The current source supersedes the older metrics below. Earlier failed
+controls do not establish source exhaustion or compiler provenance.
+
 Current recovery: semantic-complete (`compiler` residual). The verified
 Android/iOS builder bodies establish the portable sample/control graph; the
 live Windows body and scratch additionally cover the native mesh/face tail.

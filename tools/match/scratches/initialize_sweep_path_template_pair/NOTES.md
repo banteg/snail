@@ -1,5 +1,17 @@
 # initialize_sweep_path_template_pair
 
+## 2026-09-11 partial source recovery
+
+Current result: **99.39%**, 652/652 instructions, prefix 45,
+with 37 clean references at the same instruction and byte positions.
+The residual is two secondary Identity receiver-setup differences.
+This remains partial; no exact-match credit is claimed.
+
+See the [source recovery report](../../slalom-sweep-source-recovery-20260911.md)
+and its complete, hash-bound before/after sources and comparison receipt.
+The current source supersedes the older metrics below. Earlier failed
+controls do not establish source exhaustion or compiler provenance.
+
 ## 2026-09-08 genuine DDK and mesh-owner interaction
 
 The verified XP SP1 DDK regresses unchanged source from 85.58% to 65.39%.
