@@ -93,3 +93,11 @@ The same shared face-dispatch lead also helps recover Windows Snake.
 completes all 652 normalized instructions and 40 positional references. Its
 receipt distinguishes the two equivalent SIB encoding bytes from literal
 body-byte identity.
+
+
+The [Twister pair recovery](../../tools/match/twister-bank-reset-recovery-20260910.md)
+combines that shared face-dispatch constraint with Windows sample-cursor and
+reset ownership. Both Twister variants independently match 677/677 normalized
+instructions and 49 positional references. Each encoded-body receipt accounts
+for 15 equivalent SIB bytes and zero unexplained bytes; no whole-function
+Slalom relationship or unique original helper spelling is claimed.

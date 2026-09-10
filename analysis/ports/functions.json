@@ -76,6 +76,34 @@
           ]
         }
       ]
+    },
+    {
+      "windows_id": "initialize_twister_path_template_pair",
+      "relationships": [],
+      "constraints": [
+        {
+          "claim": "The separate winding/texture and UV dispatch inside Wii Slalom supplies a scoped mesh lead. Windows direct sample expressions, a physical sample cursor and a reset helper borrowing the bank by reference complete this Twister variant under existing normalized instruction rules; 15 equivalent SIB bytes are explicitly accounted for. No whole-function Slalom correspondence is asserted.",
+          "evidence": [
+            "tools/match/twister-bank-reset-recovery-20260910.md",
+            "tools/match/twister-bank-reset-recovery-20260910.json",
+            "tools/match/wii-path-face-recovery-20260910.s"
+          ]
+        }
+      ]
+    },
+    {
+      "windows_id": "initialize_twister2_path_template_pair",
+      "relationships": [],
+      "constraints": [
+        {
+          "claim": "The separate winding/texture and UV dispatch inside Wii Slalom supplies a scoped mesh lead. Windows direct sample expressions, a physical sample cursor and a reset helper borrowing the bank by reference complete this Twister variant under existing normalized instruction rules; 15 equivalent SIB bytes are explicitly accounted for. No whole-function Slalom correspondence is asserted.",
+          "evidence": [
+            "tools/match/twister-bank-reset-recovery-20260910.md",
+            "tools/match/twister-bank-reset-recovery-20260910.json",
+            "tools/match/wii-path-face-recovery-20260910.s"
+          ]
+        }
+      ]
     }
   ]
 }

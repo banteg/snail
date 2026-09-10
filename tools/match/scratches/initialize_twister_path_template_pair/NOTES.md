@@ -490,3 +490,26 @@ The full recipes and receipts are retained here. Results, the accepted Sweep
 counter recovery, and the remaining cross-builder differences are recorded in
 [the shared mesh report](../../shared-path-mesh-recovery-20260907.md).
 No common body or extra texture interface is promoted from this comparison.
+
+
+## 2026-09-10 shared mesh and sample-bank reset recovery
+
+The full Windows body now matches **677/677 normalized instructions and all
+49 positional references**, from 86.94% and 678/677 instructions. The shared
+Wii face-dispatch structure separates winding/texture and UV publication.
+A physical sample cursor and direct vertex expressions reach 96.24%; a reset
+helper borrowing the sample bank by reference resolves the final receiver
+copy while preserving all metadata stores and the existing void Identity call.
+
+The [paired report](../../twister-bank-reset-recovery-20260910.md) and
+[complete receipt](../../twister-bank-reset-recovery-20260910.json) retain
+source controls, hashes, independent native comparisons, and encoding proof.
+Both float and const-float-reference center forms match when the bank is the
+first argument; the path-pointer and reordered-argument controls do not.
+No unique authored helper spelling is inferred.
+
+The 2,540-byte body has 2,329 identical non-relocation bytes, 15 equivalent
+scale-one/default-DS SIB bytes under the existing rule, and 196 relocation
+bytes with exact positional references. Zero bytes are unexplained. This is
+a normalized proof-grade match, not raw encoded-body identity. Compiler,
+shared layouts, ABI and matcher rules are unchanged.
