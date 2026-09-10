@@ -1,9 +1,21 @@
 # initialize_slalomdouble_path_template_pair
 
-Current recovery: semantic-complete (`compiler,references` residual). The
-verified Android/iOS bodies establish the portable sample/control graph, and
-the Windows scratch covers its native mesh/face tail. Two known first-curve
-identity calls remain unaudited; no reference is unresolved or mismatched.
+Current recovery: semantic-complete (`analysis` residual). The 2026-09-11
+source recovery reaches **99.7072%**, with **683/683 instructions** and **45
+clean references at identical instruction and byte positions**. Both formerly
+unaudited first-curve calls are resolved. It is still a partial match:
+`body_byte_exact` is false.
+
+The fixed 70-sample body retains four samples at each end and 62 curve
+samples. Phase-local physical cursors, bank-reference initialization helpers,
+branch-local mesh vectors, and the lead-in Z conversion schedule recover all
+but one departure-loop receiver setup. Native code copies the sample offset
+into ECX early and adds the secondary bank later; the candidate loads the bank
+into ECX and adds the offset. The remaining two normalized instructions differ.
+
+See [the recovery report](../../slalomdouble-source-recovery-20260911.md) and
+its replayable source/reference receipt. The notes below are historical;
+their earlier scores and reference residuals are superseded by this result.
 
 Honest starter scratch for `initialize_slalomdouble_path_template_pair @ 0x425050`.
 

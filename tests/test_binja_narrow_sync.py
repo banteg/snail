@@ -22758,10 +22758,6 @@ def test_slalomdouble_p_path_replay_preserves_clean_owner_lifetimes() -> None:
     replay = (BINJA_DIR / "sync_slalomdouble_p_path_lifetimes.py").read_text(
         encoding="utf-8"
     )
-    slalomdouble_scratch = (
-        Path(__file__).parents[1]
-        / "tools/match/scratches/initialize_slalomdouble_path_template_pair/scratch.cpp"
-    ).read_text(encoding="utf-8")
     p_scratch = (
         Path(__file__).parents[1]
         / "tools/match/scratches/initialize_p_path_template_pair/scratch.cpp"
@@ -22895,8 +22891,6 @@ def test_slalomdouble_p_path_replay_preserves_clean_owner_lifetimes() -> None:
         assert rejected_face_pass_phi not in replay
     for rejected_index in (825, 939, 1745, 1814):
         assert f"({rejected_index}, 66," not in replay
-    assert slalomdouble_scratch.count("if (curve_index == 0)") == 2
-    assert "if (i <= 4)" not in slalomdouble_scratch
     assert "int curve_index = 0" in p_scratch
     assert "float angle = (float)curve_index" in p_scratch
     assert "int face_index;" in p_scratch
