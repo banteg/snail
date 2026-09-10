@@ -1,0 +1,259 @@
+{
+  "dol_sha256": "523f848f2a0b8ef8c9dfe2714744bf0479a4feec79b25f0d1f5e035a6487c096",
+  "dtk_version": "dtk 1.8.4 a0c455e46cab58e1d2e0885623f85089ff0499db",
+  "dtk_sha256": "5ba1fd76adf937847277a1ebe2238b698df0020c3dbbde23ecb126f00fb10353",
+  "m2c_revision": "1d1c4454a445326541305f83f2b0cb680a9ecb2d",
+  "m2c_archive_sha256": "dee566508729227925c0941cfcc6139ae8a0900640793f4706388946b7d76340",
+  "m2c_source_verified_against_archive": true,
+  "dtk_function_symbols": 3834,
+  "dtk_symbol_rows": 9282,
+  "samples": [
+    {
+      "address": "0x800092e0",
+      "size": 36,
+      "verified_instruction_annotations": 9,
+      "cror_alias_addresses": [],
+      "raw": {
+        "name": "800092e0-raw",
+        "command": [
+          "uv",
+          "run",
+          "--no-project",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-20260910/tools/m2c-1d1c4454a445326541305f83f2b0cb680a9ecb2d/m2c.py",
+          "-t",
+          "ppc-mwcc-c++",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-replay-20260910/800092e0-raw.s"
+        ],
+        "exit_code": 0,
+        "m2c_errors": 0,
+        "input_sha256": "06b45340baecd1b1d131f2c25b32498c1b148d50a460f28d426975c8a223fdb7",
+        "output_sha256": "e4559e25d98044e980eada059d490693b0433ca8f335faf159531d96415f1360",
+        "stderr": ""
+      },
+      "adapted": {
+        "name": "800092e0-adapted",
+        "command": [
+          "uv",
+          "run",
+          "--no-project",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-20260910/tools/m2c-1d1c4454a445326541305f83f2b0cb680a9ecb2d/m2c.py",
+          "-t",
+          "ppc-mwcc-c++",
+          "--no-switches",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-replay-20260910/800092e0-adapted.s"
+        ],
+        "exit_code": 0,
+        "m2c_errors": 0,
+        "input_sha256": "06b45340baecd1b1d131f2c25b32498c1b148d50a460f28d426975c8a223fdb7",
+        "output_sha256": "e4559e25d98044e980eada059d490693b0433ca8f335faf159531d96415f1360",
+        "stderr": ""
+      }
+    },
+    {
+      "address": "0x8000a968",
+      "size": 768,
+      "verified_instruction_annotations": 192,
+      "cror_alias_addresses": [
+        "0x8000AA0C",
+        "0x8000AA40"
+      ],
+      "raw": {
+        "name": "8000a968-raw",
+        "command": [
+          "uv",
+          "run",
+          "--no-project",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-20260910/tools/m2c-1d1c4454a445326541305f83f2b0cb680a9ecb2d/m2c.py",
+          "-t",
+          "ppc-mwcc-c++",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-replay-20260910/8000a968-raw.s"
+        ],
+        "exit_code": 0,
+        "m2c_errors": 2,
+        "input_sha256": "acc6e01facbcb72a27c2f8e165c2ddc5033a76b8609e3d3ca156e36427dae3d8",
+        "output_sha256": "e7c69401952a713c4ec10ad91fca979afc7f7f24c2cd310cedd856b1428206f4",
+        "stderr": ""
+      },
+      "adapted": {
+        "name": "8000a968-adapted",
+        "command": [
+          "uv",
+          "run",
+          "--no-project",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-20260910/tools/m2c-1d1c4454a445326541305f83f2b0cb680a9ecb2d/m2c.py",
+          "-t",
+          "ppc-mwcc-c++",
+          "--no-switches",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-replay-20260910/8000a968-adapted.s"
+        ],
+        "exit_code": 0,
+        "m2c_errors": 0,
+        "input_sha256": "1fa628e55e61c6c129d73d13c64851ded551e9ac6d056d2fcc9a311d0d76e103",
+        "output_sha256": "6246095f2377732f9a7ba60c19bb49ad3268489836c58c3472c9018084768e8e",
+        "stderr": ""
+      }
+    },
+    {
+      "address": "0x800444e8",
+      "size": 1456,
+      "verified_instruction_annotations": 364,
+      "cror_alias_addresses": [],
+      "raw": {
+        "name": "800444e8-raw",
+        "command": [
+          "uv",
+          "run",
+          "--no-project",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-20260910/tools/m2c-1d1c4454a445326541305f83f2b0cb680a9ecb2d/m2c.py",
+          "-t",
+          "ppc-mwcc-c++",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-replay-20260910/800444e8-raw.s"
+        ],
+        "exit_code": 0,
+        "m2c_errors": 0,
+        "input_sha256": "dd19eb3be3ca0b6a6c2bae59d3dd3fa8ed01a332ebe0c5ed74e83df9c117be46",
+        "output_sha256": "b9a584fa004066a1f737e486282684cef772b463b7d2a1d3151e7a579909e587",
+        "stderr": ""
+      },
+      "adapted": {
+        "name": "800444e8-adapted",
+        "command": [
+          "uv",
+          "run",
+          "--no-project",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-20260910/tools/m2c-1d1c4454a445326541305f83f2b0cb680a9ecb2d/m2c.py",
+          "-t",
+          "ppc-mwcc-c++",
+          "--no-switches",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-replay-20260910/800444e8-adapted.s"
+        ],
+        "exit_code": 0,
+        "m2c_errors": 0,
+        "input_sha256": "dd19eb3be3ca0b6a6c2bae59d3dd3fa8ed01a332ebe0c5ed74e83df9c117be46",
+        "output_sha256": "b9a584fa004066a1f737e486282684cef772b463b7d2a1d3151e7a579909e587",
+        "stderr": ""
+      }
+    },
+    {
+      "address": "0x80052a00",
+      "size": 864,
+      "verified_instruction_annotations": 216,
+      "cror_alias_addresses": [],
+      "raw": {
+        "name": "80052a00-raw",
+        "command": [
+          "uv",
+          "run",
+          "--no-project",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-20260910/tools/m2c-1d1c4454a445326541305f83f2b0cb680a9ecb2d/m2c.py",
+          "-t",
+          "ppc-mwcc-c++",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-replay-20260910/80052a00-raw.s"
+        ],
+        "exit_code": 0,
+        "m2c_errors": 0,
+        "input_sha256": "15543f2465d67266c6ecbd01767dc21cc17ed4a48d5d7500cf27d95032ce3e8d",
+        "output_sha256": "0bba5852e098e548713b4836df6e78ec352a80c6f879d2bf780c62eb46cb1737",
+        "stderr": ""
+      },
+      "adapted": {
+        "name": "80052a00-adapted",
+        "command": [
+          "uv",
+          "run",
+          "--no-project",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-20260910/tools/m2c-1d1c4454a445326541305f83f2b0cb680a9ecb2d/m2c.py",
+          "-t",
+          "ppc-mwcc-c++",
+          "--no-switches",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-replay-20260910/80052a00-adapted.s"
+        ],
+        "exit_code": 0,
+        "m2c_errors": 0,
+        "input_sha256": "15543f2465d67266c6ecbd01767dc21cc17ed4a48d5d7500cf27d95032ce3e8d",
+        "output_sha256": "0bba5852e098e548713b4836df6e78ec352a80c6f879d2bf780c62eb46cb1737",
+        "stderr": ""
+      }
+    },
+    {
+      "address": "0x80075cc8",
+      "size": 1468,
+      "verified_instruction_annotations": 367,
+      "cror_alias_addresses": [],
+      "raw": {
+        "name": "80075cc8-raw",
+        "command": [
+          "uv",
+          "run",
+          "--no-project",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-20260910/tools/m2c-1d1c4454a445326541305f83f2b0cb680a9ecb2d/m2c.py",
+          "-t",
+          "ppc-mwcc-c++",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-replay-20260910/80075cc8-raw.s"
+        ],
+        "exit_code": 0,
+        "m2c_errors": 0,
+        "input_sha256": "0dab8db65b534ba5d6028ea7e09425154d8f92b0b8ddc538c7aa888ccff3eff3",
+        "output_sha256": "f6cf9f26059733d3509ec78bab3a4ccccc0ffa9a032eac967fb2a1db2d4d8248",
+        "stderr": ""
+      },
+      "adapted": {
+        "name": "80075cc8-adapted",
+        "command": [
+          "uv",
+          "run",
+          "--no-project",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-20260910/tools/m2c-1d1c4454a445326541305f83f2b0cb680a9ecb2d/m2c.py",
+          "-t",
+          "ppc-mwcc-c++",
+          "--no-switches",
+          "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-replay-20260910/80075cc8-adapted.s"
+        ],
+        "exit_code": 0,
+        "m2c_errors": 0,
+        "input_sha256": "0dab8db65b534ba5d6028ea7e09425154d8f92b0b8ddc538c7aa888ccff3eff3",
+        "output_sha256": "f6cf9f26059733d3509ec78bab3a4ccccc0ffa9a032eac967fb2a1db2d4d8248",
+        "stderr": ""
+      }
+    }
+  ],
+  "helper_name_control": {
+    "name": "helper-control",
+    "command": [
+      "uv",
+      "run",
+      "--no-project",
+      "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-20260910/tools/m2c-1d1c4454a445326541305f83f2b0cb680a9ecb2d/m2c.py",
+      "-t",
+      "ppc-mwcc-c++",
+      "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-replay-20260910/helper-control.s"
+    ],
+    "exit_code": 0,
+    "m2c_errors": 0,
+    "input_sha256": "12d9902fb05eb1e7cbfd5682b46043b382dc1ad78cadf6ea616e7dfe54c10161",
+    "output_sha256": "728c4995cc984249140342516066154b3b9fa916f943853d26c00df1a21ae3d6",
+    "stderr": ""
+  },
+  "paired_body_control": {
+    "name": "paired-body-control",
+    "command": [
+      "uv",
+      "run",
+      "--no-project",
+      "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-20260910/tools/m2c-1d1c4454a445326541305f83f2b0cb680a9ecb2d/m2c.py",
+      "-t",
+      "ppc-mwcc-c++",
+      "/Users/banteg/dev/banteg/snail-mail/artifacts/wii/spike-replay-20260910/paired-body-control.s"
+    ],
+    "exit_code": 0,
+    "m2c_errors": 1,
+    "input_sha256": "69a7ca03348cc881589465813c93421c7e27f1159961845b0203a82bdd791d10",
+    "output_sha256": "1ed809c2bc8eaa4487d3e3a5f75418f7c661b4c3c29ac4a9f857cbac0ba73a68",
+    "stderr": ""
+  },
+  "limits": [
+    "Byte annotations checked; split objects not relinked",
+    "No compiler matching or runtime equivalence claim",
+    "Exit zero and absence of M2C_ERROR do not establish semantic completeness"
+  ]
+}

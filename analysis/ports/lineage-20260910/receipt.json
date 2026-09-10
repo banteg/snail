@@ -1,0 +1,3027 @@
+{
+  "method": "Direct ELF32/Mach-O32 headers, symbol tables, external relocations and binary bytes; no decompiler corpus is an input to these comparisons.",
+  "builds": {
+    "android-v7": {
+      "file_sha256": "e43bc913e9ba99abd2fed4d2cee40d4a33a951ecbcf8ca154d099cc8cabaa466",
+      "slice_sha256": null,
+      "size": 670897,
+      "format": "ELF32-LE-ARM",
+      "cpu_subtype": null,
+      "unique_cpp_function_symbols": 1082,
+      "unique_demangled_functions": 1063,
+      "vtable_symbols": 42,
+      "typeinfo_symbols": 0,
+      "dwarf_sections": [],
+      "compiler_comments": [
+        "GCC: (GNU) 4.4.0"
+      ],
+      "encryption": [],
+      "stabs_record_types": {}
+    },
+    "android-v5": {
+      "file_sha256": "96dbeaeb20c60d687301ca769656727467371489db5e3ed744a93248bc8d8136",
+      "slice_sha256": null,
+      "size": 707235,
+      "format": "ELF32-LE-ARM",
+      "cpu_subtype": null,
+      "unique_cpp_function_symbols": 1082,
+      "unique_demangled_functions": 1063,
+      "vtable_symbols": 42,
+      "typeinfo_symbols": 0,
+      "dwarf_sections": [],
+      "compiler_comments": [
+        "GCC: (GNU) 4.4.0"
+      ],
+      "encryption": [],
+      "stabs_record_types": {}
+    },
+    "ios15": {
+      "file_sha256": "a05daa22f4349f8da209371edd40e78700594d9211d30b1d4fc2d139de6fac58",
+      "slice_sha256": "a05daa22f4349f8da209371edd40e78700594d9211d30b1d4fc2d139de6fac58",
+      "size": 3630192,
+      "format": "MachO32-LE-ARM",
+      "cpu_subtype": 6,
+      "unique_cpp_function_symbols": 970,
+      "unique_demangled_functions": 921,
+      "vtable_symbols": 73,
+      "typeinfo_symbols": 71,
+      "dwarf_sections": [],
+      "compiler_comments": [],
+      "encryption": [
+        {
+          "offset": 4096,
+          "size": 1785856,
+          "cryptid": 0
+        }
+      ],
+      "stabs_record_types": {
+        "0x64": 1440,
+        "0x66": 480,
+        "0x2e": 6960,
+        "0x24": 13920,
+        "0x4e": 6960,
+        "0x26": 3390,
+        "0x84": 65,
+        "0x20": 1
+      }
+    },
+    "ipad106": {
+      "file_sha256": "5960c4e4ea8a9636ae651da2e2b245c1afe100ecd957be83a87ace269536fcf4",
+      "slice_sha256": "5960c4e4ea8a9636ae651da2e2b245c1afe100ecd957be83a87ace269536fcf4",
+      "size": 550800,
+      "format": "MachO32-LE-ARM",
+      "cpu_subtype": 9,
+      "unique_cpp_function_symbols": 0,
+      "unique_demangled_functions": 1,
+      "vtable_symbols": 3,
+      "typeinfo_symbols": 0,
+      "dwarf_sections": [],
+      "compiler_comments": [],
+      "encryption": [
+        {
+          "offset": 4096,
+          "size": 503808,
+          "cryptid": 0
+        }
+      ],
+      "stabs_record_types": {
+        "0x3c": 1
+      }
+    },
+    "ios19-slice0": {
+      "file_sha256": "b8ace8a7ced96f6ef1db892ef0a8dcd5de427f2149f482f18c25426557aface4",
+      "slice_sha256": "27f83c36333bda45a8e0d8e472b93ba7e36f26e1d28f44e6c606ef4cab0d2355",
+      "size": 697088,
+      "format": "MachO32-LE-ARM",
+      "cpu_subtype": 6,
+      "unique_cpp_function_symbols": 731,
+      "unique_demangled_functions": 729,
+      "vtable_symbols": 47,
+      "typeinfo_symbols": 45,
+      "dwarf_sections": [],
+      "compiler_comments": [],
+      "encryption": [
+        {
+          "offset": 4096,
+          "size": 606208,
+          "cryptid": 0
+        }
+      ],
+      "stabs_record_types": {}
+    },
+    "ios19-slice1": {
+      "file_sha256": "b8ace8a7ced96f6ef1db892ef0a8dcd5de427f2149f482f18c25426557aface4",
+      "slice_sha256": "e9a242fb9177bd12a8e4546cf60e223aeb45250caf4ebcfa49e334261618bae8",
+      "size": 701200,
+      "format": "MachO32-LE-ARM",
+      "cpu_subtype": 9,
+      "unique_cpp_function_symbols": 731,
+      "unique_demangled_functions": 729,
+      "vtable_symbols": 47,
+      "typeinfo_symbols": 45,
+      "dwarf_sections": [],
+      "compiler_comments": [],
+      "encryption": [
+        {
+          "offset": 4096,
+          "size": 610304,
+          "cryptid": 0
+        }
+      ],
+      "stabs_record_types": {}
+    }
+  },
+  "wii_rtti_recheck": {
+    "sha256": "523f848f2a0b8ef8c9dfe2714744bf0479a4feec79b25f0d1f5e035a6487c096",
+    "verified_records": 41,
+    "shared_classes": 37,
+    "hierarchies": [
+      {
+        "class": "cRBackdrop",
+        "ios_ancestors": [
+          "cRBod"
+        ],
+        "wii_ancestors": [
+          "cRBod"
+        ]
+      },
+      {
+        "class": "cRBanner",
+        "ios_ancestors": [
+          "cRBod"
+        ],
+        "wii_ancestors": [
+          "cRBod"
+        ]
+      },
+      {
+        "class": "cRBarrier",
+        "ios_ancestors": [
+          "cRBod"
+        ],
+        "wii_ancestors": [
+          "cRBod"
+        ]
+      },
+      {
+        "class": "cRBod",
+        "ios_ancestors": [],
+        "wii_ancestors": []
+      },
+      {
+        "class": "cRBodPos",
+        "ios_ancestors": [
+          "cRBod"
+        ],
+        "wii_ancestors": [
+          "cRBod"
+        ]
+      },
+      {
+        "class": "cRBorder",
+        "ios_ancestors": [
+          "cRBod"
+        ],
+        "wii_ancestors": [
+          "cRBod"
+        ]
+      },
+      {
+        "class": "cRBorderManager",
+        "ios_ancestors": [
+          "cRBod"
+        ],
+        "wii_ancestors": [
+          "cRBod"
+        ]
+      },
+      {
+        "class": "cRCamera",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cRClickStart",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cRDirectXModel",
+        "ios_ancestors": [
+          "cRBod"
+        ],
+        "wii_ancestors": [
+          "cRBod"
+        ]
+      },
+      {
+        "class": "cRGameInput",
+        "ios_ancestors": [
+          "cRBod",
+          "cRInput"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRInput"
+        ]
+      },
+      {
+        "class": "cRGolbRocket",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cRInput",
+        "ios_ancestors": [],
+        "wii_ancestors": []
+      },
+      {
+        "class": "cRInvincible",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cRJetPack",
+        "ios_ancestors": [
+          "cRBod"
+        ],
+        "wii_ancestors": [
+          "cRBod"
+        ]
+      },
+      {
+        "class": "cRLogoLetter",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cROverlay",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cRParcel",
+        "ios_ancestors": [
+          "cRBod"
+        ],
+        "wii_ancestors": [
+          "cRBod"
+        ]
+      },
+      {
+        "class": "cRPath",
+        "ios_ancestors": [
+          "cRBod"
+        ],
+        "wii_ancestors": [
+          "cRBod"
+        ]
+      },
+      {
+        "class": "cRPlayer",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cRRowModel",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cRSalt",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cRSlug",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cRSnail",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cRStarManager",
+        "ios_ancestors": [
+          "cRBod"
+        ],
+        "wii_ancestors": [
+          "cRBod"
+        ]
+      },
+      {
+        "class": "cRSubGarbage",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cRSubGolb",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cRSubGoldy",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cRSubHealth",
+        "ios_ancestors": [
+          "cRBod"
+        ],
+        "wii_ancestors": [
+          "cRBod"
+        ]
+      },
+      {
+        "class": "cRSubLazer",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cRSubLoc",
+        "ios_ancestors": [
+          "cRBod"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRLoc"
+        ]
+      },
+      {
+        "class": "cRSubRing",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cRSubSpeedUp",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cRSubTrampRing",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cRTipManager",
+        "ios_ancestors": [
+          "cRBod"
+        ],
+        "wii_ancestors": [
+          "cRBod"
+        ]
+      },
+      {
+        "class": "cRVapour",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      },
+      {
+        "class": "cRWeapon",
+        "ios_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ],
+        "wii_ancestors": [
+          "cRBod",
+          "cRBodPos"
+        ]
+      }
+    ],
+    "scope": "Earlier bounded Wii address seeds, all name/base-list words rechecked in the current DOL; not a complete census."
+  },
+  "android_abis_cpp_symbol_symmetric_difference": 0,
+  "other_apk_same_native_libraries": {
+    "armeabi": true,
+    "armeabi-v7a": true
+  },
+  "iphone19_arm_slices_cpp_symbol_symmetric_difference": 0,
+  "iphone19_cpp_symbols_absent_from_15": [
+    "G0ScissorOn(float, float, float, float)",
+    "MacFileSize(char*)",
+    "G0ScissorOff()",
+    "OSDPrintReal(cFontPrintBuffer*)",
+    "MacGCGetTable(int, int, int, int)",
+    "GCGetHighScore()",
+    "GCSetHighScore()",
+    "MacGCAddArcade(int)",
+    "MathType10to32(short, float)",
+    "MathType32to10(float, float)",
+    "MacConvertTouch(float, float, float*, float*, int*, float*, float*)",
+    "MacGCMatchStart()",
+    "GCInitHighScores()",
+    "GCLoadHighScores()",
+    "GCSaveHighScores()",
+    "MacMultipleTouch(bool)",
+    "MacGCAddArcadePro(int)",
+    "MacGCAddChallenge(int)",
+    "MacGCGetHighScore()",
+    "MacGCMatchEndGame()",
+    "MacGCSessionClose()",
+    "MacGCSessionStart()",
+    "MacGCSetHighScore()",
+    "RShellGetFileSize(char*)",
+    "MacGCMatchSendData(unsigned char*, int, bool)",
+    "MacGCSessionInvite(int)",
+    "G0TextureReloadFast(int)",
+    "MacGCAddAchievement(int)",
+    "MacGCSaveHighScores()",
+    "G0FontRenderViewport(int)",
+    "MacGCMatchDisconnect()",
+    "MacGCMatchSendResult(int, int)",
+    "MacGCLeaderboardClear()",
+    "MacGCLeaderboardStart()",
+    "MacGCMatchReceiveData(unsigned char*, int)",
+    "MacG0TextureReloadFast(int)",
+    "MacGCAchievementsStart()",
+    "MacGCMatchSendContinue(int)",
+    "MacGCAddParcelDelivered()",
+    "MacGCLeaderboardDisplay()",
+    "MacGCMatchInviteAccepted()",
+    "MacGCMatchSendInviteAccepted()",
+    "MacGCSessionAcceptInvitation()",
+    "MacGCSessionCancelInvitation()",
+    "MacGCSessionDeclineInvitation()",
+    "RShellInputRegisterMouseExtra(int, float, float)",
+    "MacGCGetAchievementDescription(int, char*, int*, bool)",
+    "RShellInputRegisterMouseClickOnly(int)",
+    "FontType(char*, int, float, float, float, float, float*, float*, float*, float*, float, bool, int, float, int, tColour, bool, bool)",
+    "OSDState(int, int, float, float)",
+    "cBitStream::Add(unsigned int, int)",
+    "cBitStream::Getu(int)",
+    "cBitStream::Init(unsigned char*, int)",
+    "cBitStream::Size()",
+    "cBitStream::AddString(char*)",
+    "cBitStream::GetString(char*)",
+    "cRCutScene::Init(cRSubGoldy*)",
+    "cRGCSelect::HideBorders()",
+    "cRGCSelect::AI()",
+    "cRGCSelect::Init()",
+    "cRSubGoldy::GoldyGoldy(cRSubGoldy*, cRSubGoldy*)",
+    "cRSubGoldy::FallingInit()",
+    "cRSubGoldy::RessurectInit(int)",
+    "cRSubGoldy::SpeedUpCollect()",
+    "cRSubGoldy::RessurectAIScore()",
+    "cRSubGoldy::UnInit()",
+    "cRSubGoldy::DeathInit()",
+    "cRSubGoldy::GhostInit(int, int)",
+    "cRSubGoldy::ReadMouse()",
+    "cRSubHover::End()",
+    "cRSubHover::Init(cRSubGoldy*)",
+    "cRSubLazer::Shoot(cRSubGoldy*, tVector, tVector)",
+    "cRSubLocEx::AI()",
+    "cRCameraman::Init(cRSubGoldy*)",
+    "cRCountDown::AI()",
+    "cRCountDown::Init(cRSubGoldy*)",
+    "cRGoldyFade::Init(cRSubGoldy*)",
+    "cRGoldyFade::Start()",
+    "cRHighScore::RequestTable()",
+    "cRHighScore::Cancel()",
+    "cRHighScore::AddEntry(int, char*, int, int)",
+    "cRSnailSkin::Init(cRSnail*)",
+    "cRInvincible::Init()",
+    "cRTipManager::TipNew(cRTipData*, signed char)",
+    "cRAnimManager::AI()",
+    "cRAnimManager::Init()",
+    "cRDamageGuage::Init(cRSubGoldy*)",
+    "cRDamageGuage::Render()",
+    "cRProgressBar::Init(cRSubGoldy*)",
+    "cRProgressBar::Render()",
+    "cRSaltManager::Add(tVector&, cRSubGoldy*)",
+    "cRSubRingStar::Shower(cRSubGoldy*)",
+    "cGCMultiAwards::AI()",
+    "cGCMultiAwards::Init()",
+    "cGCAchievements::DisplayCurrent()",
+    "cGCAchievements::AI()",
+    "cGCAchievements::Init()",
+    "cGCAchievements::Load(char*)",
+    "cGCAchievements::Save(char*)",
+    "cGCMultiResults::AI()",
+    "cGCMultiResults::Init()",
+    "cGCMultiResults::GameInit(int)",
+    "cNetworkWarning::AI()",
+    "cNetworkWarning::Init()",
+    "cRParcelManager::AI()",
+    "cRHighScoreSelect::AI()",
+    "cRHighScoreSelect::Init()",
+    "cRSubTrampRingManager::AddRing(cRSubGoldy*, cRSubLoc*)",
+    "cGCNotificationManager::AI()",
+    "cGCNotificationManager::Add(int)",
+    "cGCNotificationManager::Init()",
+    "cGCNotificationManager::ReSet()",
+    "cRGC::AI()",
+    "cRGC::Init()",
+    "cRBod::SetScene(int)",
+    "cRTip::Init(cRTipData*, signed char)",
+    "cRGame::Portrait()",
+    "cRLogo::UnInit()",
+    "cRNuke::AI()",
+    "cRNuke::UnInit()",
+    "cRQuit::AI()",
+    "cRSlug::Explode(cRSubGoldy*)",
+    "cRTime::Add(float)",
+    "cRTime::Faster(int, int, int)",
+    "cRMouse::ClickScreen(int, bool, float, float, float, float)",
+    "cRMouse::ClickiPhone(int, bool, float, float, float, float)",
+    "cRMouse::ClickOn(int)",
+    "cRMouse::ClickOff(int)",
+    "cRMouse::ClickOnly(int, float, float, float, float)",
+    "cRSnail::SetAnimation(int, bool, int)",
+    "cRWorld::Init(int, int, int, int)",
+    "cRBorder::SetAbove(cRBorder*)",
+    "cRResult::AI()",
+    "cRResult::ReSet()",
+    "cRResult::GameAI()",
+    "cRResult::GameInit()",
+    "cRSprite::Cat()",
+    "cRSprite::NoCat()",
+    "cRSubLoc::IsRamp()",
+    "cRSubLoc::IsEmpty()",
+    "cRSubLoc::IsFloor()",
+    "cRNetwork::Disconnect()",
+    "cRNetwork::GetControl(int, int)",
+    "cRNetwork::AddGameData(int, cRInput*, bool, bool, bool)",
+    "cRNetwork::GetGameData(int, int, cRInput*, bool*, bool*, bool*)",
+    "cRNetwork::SetPlayerName(int, char*)",
+    "cRNetwork::ReceiveGameData(unsigned char*, int)",
+    "cRNetwork::Init()",
+    "cRNetwork::Send()",
+    "cRNetwork::Pause()",
+    "cRNetwork::ReSet()",
+    "cRNetwork::SendAll()",
+    "cRNetwork::LastFrame(cGCGameData*)",
+    "cRSquidge::AI()",
+    "cRSquidge::Init()",
+    "cRSquidge::StartZ(float)",
+    "cRSubGame::AddSpeedUp(cRSubLoc*, cRSubGoldy*)",
+    "cRSubGame::GetControl(int)",
+    "cRSubGame::TrackBuild()",
+    "cRSubGame::AspectCorrectPlayerNames()",
+    "cRSubGame::GetY(tVector)",
+    "cRSubGame::AddRing(cRSubRow*, cRSubLoc*, int, cRSubGoldy*, float)",
+    "cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)",
+    "cRSubGame::AddParcel(cRSubRow*, tVector*, cRSubGoldy*)",
+    "cRSubGame::DividesAI()",
+    "cRSubGame::SetScores()",
+    "cRTimesUp::AI()",
+    "cRTimesUp::Init()",
+    "cRWarning::StopSample()",
+    "cRWarning::AI()",
+    "cRWarning::Init(cRSubGoldy*)",
+    "cRWarning::Stop()"
+  ],
+  "iphone19_game_methods_also_in_android_but_absent_from_15": [
+    "cRSubGoldy::FallingInit()",
+    "cRSubGoldy::RessurectInit(int)",
+    "cRSubGoldy::SpeedUpCollect()",
+    "cRSubGoldy::UnInit()",
+    "cRSubGoldy::DeathInit()",
+    "cRSubHover::End()",
+    "cRInvincible::Init()",
+    "cRAnimManager::AI()",
+    "cRAnimManager::Init()",
+    "cRSubRingStar::Shower(cRSubGoldy*)",
+    "cRParcelManager::AI()",
+    "cRLogo::UnInit()",
+    "cRNuke::AI()",
+    "cRNuke::UnInit()",
+    "cRQuit::AI()",
+    "cRTime::Add(float)",
+    "cRTime::Faster(int, int, int)",
+    "cRSnail::SetAnimation(int, bool, int)",
+    "cRWorld::Init(int, int, int, int)",
+    "cRBorder::SetAbove(cRBorder*)",
+    "cRSubLoc::IsRamp()",
+    "cRSubLoc::IsEmpty()",
+    "cRSubLoc::IsFloor()",
+    "cRSquidge::AI()",
+    "cRSquidge::Init()",
+    "cRSquidge::StartZ(float)",
+    "cRSubGame::AddSpeedUp(cRSubLoc*, cRSubGoldy*)",
+    "cRSubGame::GetY(tVector)",
+    "cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)",
+    "cRTimesUp::AI()",
+    "cRTimesUp::Init()",
+    "cRWarning::StopSample()",
+    "cRWarning::AI()",
+    "cRWarning::Stop()"
+  ],
+  "iphone_rtti": {
+    "ios15": [
+      {
+        "symbol": "__ZTI10cRBackdrop",
+        "address": "0x1b6dd8",
+        "vptr_relocation": {
+          "address": 1797592,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17c868",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI10cRRowModel",
+        "address": "0x1b6d1c",
+        "vptr_relocation": {
+          "address": 1797404,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a180",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI10cRSubGoldy",
+        "address": "0x1b6c50",
+        "vptr_relocation": {
+          "address": 1797200,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a098",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI10cRSubLazer",
+        "address": "0x1b6cb0",
+        "vptr_relocation": {
+          "address": 1797296,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a108",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI11cRGameInput",
+        "address": "0x1b6df0",
+        "vptr_relocation": {
+          "address": 1797616,
+          "symbol": "__ZTVN10__cxxabiv121__vmi_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17c884",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false,
+            "encoded_offset_flags": "0x2"
+          },
+          {
+            "type": "__ZTI7cRInput",
+            "offset": 44,
+            "public": true,
+            "virtual": false,
+            "encoded_offset_flags": "0x2c02"
+          }
+        ],
+        "hierarchy_flags": 0
+      },
+      {
+        "symbol": "__ZTI11cRSubHealth",
+        "address": "0x1b6cf8",
+        "vptr_relocation": {
+          "address": 1797368,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a158",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI12cRClickStart",
+        "address": "0x1b6c80",
+        "vptr_relocation": {
+          "address": 1797248,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a0d0",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI12cRGolbRocket",
+        "address": "0x1b6d7c",
+        "vptr_relocation": {
+          "address": 1797500,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17b568",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI12cRInvincible",
+        "address": "0x1b6c74",
+        "vptr_relocation": {
+          "address": 1797236,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a0c0",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI12cRLogoLetter",
+        "address": "0x1b6e54",
+        "vptr_relocation": {
+          "address": 1797716,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17ce30",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI12cRSubGarbage",
+        "address": "0x1b6cd4",
+        "vptr_relocation": {
+          "address": 1797332,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a12c",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI12cRSubSpeedUp",
+        "address": "0x1b6cec",
+        "vptr_relocation": {
+          "address": 1797356,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a148",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI12cRTipManager",
+        "address": "0x1b6e84",
+        "vptr_relocation": {
+          "address": 1797764,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17ceac",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI13cRStarManager",
+        "address": "0x1b6e6c",
+        "vptr_relocation": {
+          "address": 1797740,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17ce74",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI14cRDirectXModel",
+        "address": "0x1b6ac8",
+        "vptr_relocation": {
+          "address": 1796808,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x1b460c",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI14cRSubTrampRing",
+        "address": "0x1b6c8c",
+        "vptr_relocation": {
+          "address": 1797260,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a0e0",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI15cRBorderManager",
+        "address": "0x1b6d40",
+        "vptr_relocation": {
+          "address": 1797440,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17b428",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI5cRBod",
+        "address": "0x1b6b10",
+        "vptr_relocation": {
+          "address": 1796880,
+          "symbol": "__ZTVN10__cxxabiv117__class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x179794",
+        "bases": []
+      },
+      {
+        "symbol": "__ZTI6cRFace",
+        "address": "0x1b6c2c",
+        "vptr_relocation": {
+          "address": 1797164,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a078",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI6cRGame",
+        "address": "0x1b6dd0",
+        "vptr_relocation": {
+          "address": 1797584,
+          "symbol": "__ZTVN10__cxxabiv117__class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17c860",
+        "bases": []
+      },
+      {
+        "symbol": "__ZTI6cRPath",
+        "address": "0x1b6af8",
+        "vptr_relocation": {
+          "address": 1796856,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x1b462c",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI6cRSalt",
+        "address": "0x1b6ca4",
+        "vptr_relocation": {
+          "address": 1797284,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a100",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI6cRSlug",
+        "address": "0x1b6cbc",
+        "vptr_relocation": {
+          "address": 1797308,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a118",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI7cRInput",
+        "address": "0x1b6e28",
+        "vptr_relocation": {
+          "address": 1797672,
+          "symbol": "__ZTVN10__cxxabiv117__class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x1b4640",
+        "bases": []
+      },
+      {
+        "symbol": "__ZTI7cRSnail",
+        "address": "0x1b6c5c",
+        "vptr_relocation": {
+          "address": 1797212,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a0a8",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI7cRWorld",
+        "address": "0x1b6ae0",
+        "vptr_relocation": {
+          "address": 1796832,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x1b4620",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI8cRBanner",
+        "address": "0x1b6c98",
+        "vptr_relocation": {
+          "address": 1797272,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a0f4",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI8cRBodPos",
+        "address": "0x1b6b24",
+        "vptr_relocation": {
+          "address": 1796900,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x1b4634",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI8cRBorder",
+        "address": "0x1b6d4c",
+        "vptr_relocation": {
+          "address": 1797452,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17b43c",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI8cRCamera",
+        "address": "0x1b6e1c",
+        "vptr_relocation": {
+          "address": 1797660,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17c8a0",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI8cRParcel",
+        "address": "0x1b6cc8",
+        "vptr_relocation": {
+          "address": 1797320,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a120",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI8cRPlayer",
+        "address": "0x1b6de4",
+        "vptr_relocation": {
+          "address": 1797604,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17c878",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI8cRSubLoc",
+        "address": "0x1b6d10",
+        "vptr_relocation": {
+          "address": 1797392,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a174",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI8cRVapour",
+        "address": "0x1b6d04",
+        "vptr_relocation": {
+          "address": 1797380,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a168",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI8cRWeapon",
+        "address": "0x1b6c68",
+        "vptr_relocation": {
+          "address": 1797224,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a0b4",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI9cRBarrier",
+        "address": "0x1b6c38",
+        "vptr_relocation": {
+          "address": 1797176,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a080",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI9cRJetPack",
+        "address": "0x1b6ce0",
+        "vptr_relocation": {
+          "address": 1797344,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a13c",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI9cRLogoRow",
+        "address": "0x1b6e48",
+        "vptr_relocation": {
+          "address": 1797704,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17ce24",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI9cROverlay",
+        "address": "0x1b6e10",
+        "vptr_relocation": {
+          "address": 1797648,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17c894",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI9cRSubGolb",
+        "address": "0x1b6d70",
+        "vptr_relocation": {
+          "address": 1797488,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17b55c",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI9cRSubRing",
+        "address": "0x1b6c44",
+        "vptr_relocation": {
+          "address": 1797188,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x17a08c",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      }
+    ],
+    "ios19-slice0": [
+      {
+        "symbol": "__ZTI10cRBackdrop",
+        "address": "0x967bc",
+        "vptr_relocation": {
+          "address": 616380,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x92768",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI10cRRowModel",
+        "address": "0x96700",
+        "vptr_relocation": {
+          "address": 616192,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f7a8",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI10cRSubGoldy",
+        "address": "0x96880",
+        "vptr_relocation": {
+          "address": 616576,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x94048",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI10cRSubLazer",
+        "address": "0x96688",
+        "vptr_relocation": {
+          "address": 616072,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f720",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI10cRSubLocEx",
+        "address": "0x966f4",
+        "vptr_relocation": {
+          "address": 616180,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f798",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI11cRCountDown",
+        "address": "0x968b0",
+        "vptr_relocation": {
+          "address": 616624,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x955f4",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI11cRGameInput",
+        "address": "0x967d4",
+        "vptr_relocation": {
+          "address": 616404,
+          "symbol": "__ZTVN10__cxxabiv121__vmi_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x92784",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false,
+            "encoded_offset_flags": "0x2"
+          },
+          {
+            "type": "__ZTI7cRInput",
+            "offset": 44,
+            "public": true,
+            "virtual": false,
+            "encoded_offset_flags": "0x2c02"
+          }
+        ],
+        "hierarchy_flags": 0
+      },
+      {
+        "symbol": "__ZTI11cRSubHealth",
+        "address": "0x966d0",
+        "vptr_relocation": {
+          "address": 616144,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f770",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI12cRClickStart",
+        "address": "0x96658",
+        "vptr_relocation": {
+          "address": 616024,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f6e8",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI12cRGolbRocket",
+        "address": "0x96760",
+        "vptr_relocation": {
+          "address": 616288,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x90bac",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI12cRInvincible",
+        "address": "0x9664c",
+        "vptr_relocation": {
+          "address": 616012,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f6d8",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI12cRLogoLetter",
+        "address": "0x96838",
+        "vptr_relocation": {
+          "address": 616504,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x92dbc",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI12cRSubGarbage",
+        "address": "0x966ac",
+        "vptr_relocation": {
+          "address": 616108,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f744",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI12cRSubSpeedUp",
+        "address": "0x966c4",
+        "vptr_relocation": {
+          "address": 616132,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f760",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI12cRTipManager",
+        "address": "0x96868",
+        "vptr_relocation": {
+          "address": 616552,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x92e38",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI13cRStarManager",
+        "address": "0x96850",
+        "vptr_relocation": {
+          "address": 616528,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x92e00",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI14cRDirectXModel",
+        "address": "0x96494",
+        "vptr_relocation": {
+          "address": 615572,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x95f68",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI14cRSubTrampRing",
+        "address": "0x96664",
+        "vptr_relocation": {
+          "address": 616036,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f6f8",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI15cRBorderManager",
+        "address": "0x96724",
+        "vptr_relocation": {
+          "address": 616228,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x90a50",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI5cRBod",
+        "address": "0x964f4",
+        "vptr_relocation": {
+          "address": 615668,
+          "symbol": "__ZTVN10__cxxabiv117__class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8ed6c",
+        "bases": []
+      },
+      {
+        "symbol": "__ZTI6cRFace",
+        "address": "0x96610",
+        "vptr_relocation": {
+          "address": 615952,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f6a0",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI6cRGame",
+        "address": "0x967b4",
+        "vptr_relocation": {
+          "address": 616372,
+          "symbol": "__ZTVN10__cxxabiv117__class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x92760",
+        "bases": []
+      },
+      {
+        "symbol": "__ZTI6cRPath",
+        "address": "0x964c4",
+        "vptr_relocation": {
+          "address": 615620,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x95f88",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI6cRSalt",
+        "address": "0x9667c",
+        "vptr_relocation": {
+          "address": 616060,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f718",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI6cRSlug",
+        "address": "0x96694",
+        "vptr_relocation": {
+          "address": 616084,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f730",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI7cRInput",
+        "address": "0x9680c",
+        "vptr_relocation": {
+          "address": 616460,
+          "symbol": "__ZTVN10__cxxabiv117__class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x95fb0",
+        "bases": []
+      },
+      {
+        "symbol": "__ZTI7cRSnail",
+        "address": "0x96634",
+        "vptr_relocation": {
+          "address": 615988,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f6c0",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI7cRWorld",
+        "address": "0x964ac",
+        "vptr_relocation": {
+          "address": 615596,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x95f7c",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI8cRBanner",
+        "address": "0x96670",
+        "vptr_relocation": {
+          "address": 616048,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f70c",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI8cRBodPos",
+        "address": "0x96508",
+        "vptr_relocation": {
+          "address": 615688,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x95fa4",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI8cRBorder",
+        "address": "0x96730",
+        "vptr_relocation": {
+          "address": 616240,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x90a64",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI8cRCamera",
+        "address": "0x96800",
+        "vptr_relocation": {
+          "address": 616448,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x927a0",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI8cRParcel",
+        "address": "0x966a0",
+        "vptr_relocation": {
+          "address": 616096,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f738",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI8cRPlayer",
+        "address": "0x967c8",
+        "vptr_relocation": {
+          "address": 616392,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x92778",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI8cRSubLoc",
+        "address": "0x966e8",
+        "vptr_relocation": {
+          "address": 616168,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f78c",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI8cRVapour",
+        "address": "0x966dc",
+        "vptr_relocation": {
+          "address": 616156,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f780",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI8cRWeapon",
+        "address": "0x96640",
+        "vptr_relocation": {
+          "address": 616000,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f6cc",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI9cRBarrier",
+        "address": "0x9661c",
+        "vptr_relocation": {
+          "address": 615964,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f6a8",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI9cRJetPack",
+        "address": "0x966b8",
+        "vptr_relocation": {
+          "address": 616120,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f754",
+        "bases": [
+          {
+            "type": "__ZTI5cRBod",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI9cRLogoRow",
+        "address": "0x9682c",
+        "vptr_relocation": {
+          "address": 616492,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x92db0",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI9cROverlay",
+        "address": "0x967f4",
+        "vptr_relocation": {
+          "address": 616436,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x92794",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI9cRSubGolb",
+        "address": "0x96754",
+        "vptr_relocation": {
+          "address": 616276,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x90ba0",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      },
+      {
+        "symbol": "__ZTI9cRSubRing",
+        "address": "0x96628",
+        "vptr_relocation": {
+          "address": 615976,
+          "symbol": "__ZTVN10__cxxabiv120__si_class_type_infoE",
+          "pcrel": 0,
+          "width": 4,
+          "type": 0
+        },
+        "vptr_addend": 8,
+        "name_address": "0x8f6b4",
+        "bases": [
+          {
+            "type": "__ZTI8cRBodPos",
+            "offset": 0,
+            "public": true,
+            "virtual": false
+          }
+        ]
+      }
+    ]
+  },
+  "iphone15_19_complete_extent_comparisons": [
+    {
+      "symbol": "__ZN11tQuaternianC2ERK7tMatrix",
+      "starts": {
+        "ios15": "0xa650",
+        "ios19-slice0": "0xa9f0"
+      },
+      "full_extent_bytes": 644,
+      "body_sha256": [
+        "aa4a4aa117b0f0c7b3ff45941a193f6bc9f0ef4be193f3c00f833321cff72ae2",
+        "5fc7e7d36a2a8dc609a41f65d5af25ce6950f5bfccd73cf5a70c27242f9d985d"
+      ],
+      "changed_words": [
+        {
+          "offset": "0x22c",
+          "old_word": "0xeb000cf4",
+          "new_word": "0xeb000cfe",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xdc54",
+            "0xe01c"
+          ],
+          "symbols": [
+            "__Z7wprintfPcz"
+          ]
+        },
+        {
+          "offset": "0x244",
+          "old_word": "0xeb000cee",
+          "new_word": "0xeb000cf8",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xdc54",
+            "0xe01c"
+          ],
+          "symbols": [
+            "__Z7wprintfPcz"
+          ]
+        },
+        {
+          "offset": "0x25c",
+          "old_word": "0xeb000ce8",
+          "new_word": "0xeb000cf2",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xdc54",
+            "0xe01c"
+          ],
+          "symbols": [
+            "__Z7wprintfPcz"
+          ]
+        },
+        {
+          "offset": "0x27c",
+          "old_word": "0x1790ac",
+          "new_word": "0x8e694",
+          "kind": "pointer_to_same_string",
+          "text": "ERROR:sqt %f\n"
+        },
+        {
+          "offset": "0x280",
+          "old_word": "0x17909c",
+          "new_word": "0x8e684",
+          "kind": "pointer_to_same_string",
+          "text": "ERROR:sqrt %f\n"
+        }
+      ],
+      "unchanged_words": 156,
+      "unexplained_changed_words": 0
+    },
+    {
+      "symbol": "__ZN6cRPath11BuildSlalomEiibPcS0_",
+      "starts": {
+        "ios15": "0x57c54",
+        "ios19-slice0": "0x58764"
+      },
+      "full_extent_bytes": 2696,
+      "body_sha256": [
+        "603936dc5515e7afe67f591938fdcd1da18cb4dc1969df9376e3f955bac074d5",
+        "111c08861f4a62ab9317d57e93ed2f807a6ad1c7e6073d1749b1051a20e1c5a9"
+      ],
+      "changed_words": [
+        {
+          "offset": "0x68",
+          "old_word": "0xebfed4e7",
+          "new_word": "0xebfed2fc",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xd060",
+            "0xd3c4"
+          ],
+          "symbols": [
+            "__Z18RShellMemoryMallociPc"
+          ]
+        },
+        {
+          "offset": "0x88",
+          "old_word": "0xebfed4df",
+          "new_word": "0xebfed2f4",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xd060",
+            "0xd3c4"
+          ],
+          "symbols": [
+            "__Z18RShellMemoryMallociPc"
+          ]
+        },
+        {
+          "offset": "0x120",
+          "old_word": "0xebfec92a",
+          "new_word": "0xebfec74e",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa224",
+            "0xa5c4"
+          ],
+          "symbols": [
+            "__ZN7tMatrix8IdentityEv"
+          ]
+        },
+        {
+          "offset": "0x144",
+          "old_word": "0xebfec921",
+          "new_word": "0xebfec745",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa224",
+            "0xa5c4"
+          ],
+          "symbols": [
+            "__ZN7tMatrix8IdentityEv"
+          ]
+        },
+        {
+          "offset": "0x198",
+          "old_word": "0xebfec90c",
+          "new_word": "0xebfec730",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa224",
+            "0xa5c4"
+          ],
+          "symbols": [
+            "__ZN7tMatrix8IdentityEv"
+          ]
+        },
+        {
+          "offset": "0x1c0",
+          "old_word": "0xebfec902",
+          "new_word": "0xebfec726",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa224",
+            "0xa5c4"
+          ],
+          "symbols": [
+            "__ZN7tMatrix8IdentityEv"
+          ]
+        },
+        {
+          "offset": "0x214",
+          "old_word": "0xebfec8ed",
+          "new_word": "0xebfec711",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa224",
+            "0xa5c4"
+          ],
+          "symbols": [
+            "__ZN7tMatrix8IdentityEv"
+          ]
+        },
+        {
+          "offset": "0x23c",
+          "old_word": "0xebfec8e3",
+          "new_word": "0xebfec707",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa224",
+            "0xa5c4"
+          ],
+          "symbols": [
+            "__ZN7tMatrix8IdentityEv"
+          ]
+        },
+        {
+          "offset": "0x294",
+          "old_word": "0xebfec8cd",
+          "new_word": "0xebfec6f1",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa224",
+            "0xa5c4"
+          ],
+          "symbols": [
+            "__ZN7tMatrix8IdentityEv"
+          ]
+        },
+        {
+          "offset": "0x2bc",
+          "old_word": "0xebfec8c3",
+          "new_word": "0xebfec6e7",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa224",
+            "0xa5c4"
+          ],
+          "symbols": [
+            "__ZN7tMatrix8IdentityEv"
+          ]
+        },
+        {
+          "offset": "0x338",
+          "old_word": "0xebfec8a4",
+          "new_word": "0xebfec6c8",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa224",
+            "0xa5c4"
+          ],
+          "symbols": [
+            "__ZN7tMatrix8IdentityEv"
+          ]
+        },
+        {
+          "offset": "0x36c",
+          "old_word": "0xebfec897",
+          "new_word": "0xebfec6bb",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa224",
+            "0xa5c4"
+          ],
+          "symbols": [
+            "__ZN7tMatrix8IdentityEv"
+          ]
+        },
+        {
+          "offset": "0x3fc",
+          "old_word": "0xebfec873",
+          "new_word": "0xebfec697",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa224",
+            "0xa5c4"
+          ],
+          "symbols": [
+            "__ZN7tMatrix8IdentityEv"
+          ]
+        },
+        {
+          "offset": "0x438",
+          "old_word": "0xebfec864",
+          "new_word": "0xebfec688",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa224",
+            "0xa5c4"
+          ],
+          "symbols": [
+            "__ZN7tMatrix8IdentityEv"
+          ]
+        },
+        {
+          "offset": "0x4c8",
+          "old_word": "0xebfec840",
+          "new_word": "0xebfec664",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa224",
+            "0xa5c4"
+          ],
+          "symbols": [
+            "__ZN7tMatrix8IdentityEv"
+          ]
+        },
+        {
+          "offset": "0x504",
+          "old_word": "0xebfec831",
+          "new_word": "0xebfec655",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa224",
+            "0xa5c4"
+          ],
+          "symbols": [
+            "__ZN7tMatrix8IdentityEv"
+          ]
+        },
+        {
+          "offset": "0x594",
+          "old_word": "0xebfec80d",
+          "new_word": "0xebfec631",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa224",
+            "0xa5c4"
+          ],
+          "symbols": [
+            "__ZN7tMatrix8IdentityEv"
+          ]
+        },
+        {
+          "offset": "0x5d0",
+          "old_word": "0xebfec7fe",
+          "new_word": "0xebfec622",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa224",
+            "0xa5c4"
+          ],
+          "symbols": [
+            "__ZN7tMatrix8IdentityEv"
+          ]
+        },
+        {
+          "offset": "0x620",
+          "old_word": "0x17c8ac",
+          "new_word": "0x927ac",
+          "kind": "pointer_to_same_string",
+          "text": "Path Tile Nodes"
+        },
+        {
+          "offset": "0x624",
+          "old_word": "0x17c8bc",
+          "new_word": "0x927bc",
+          "kind": "pointer_to_same_string",
+          "text": "Path Ball nodes"
+        },
+        {
+          "offset": "0x6b0",
+          "old_word": "0xebfec97b",
+          "new_word": "0xebfec79f",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa8f8",
+            "0xac98"
+          ],
+          "symbols": [
+            "__ZN7tVector9NormalizeEv"
+          ]
+        },
+        {
+          "offset": "0x6cc",
+          "old_word": "0xebfec8a3",
+          "new_word": "0xebfec6c7",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa5b4",
+            "0xa954"
+          ],
+          "symbols": [
+            "__ZN7tVector5CrossERKS_S1_"
+          ]
+        },
+        {
+          "offset": "0x6e8",
+          "old_word": "0xebfec76c",
+          "new_word": "0xebfec590",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa0f4",
+            "0xa494"
+          ],
+          "symbols": [
+            "__ZN7tMatrix9RotLocalZEf"
+          ]
+        },
+        {
+          "offset": "0x750",
+          "old_word": "0xebfec953",
+          "new_word": "0xebfec777",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa8f8",
+            "0xac98"
+          ],
+          "symbols": [
+            "__ZN7tVector9NormalizeEv"
+          ]
+        },
+        {
+          "offset": "0x76c",
+          "old_word": "0xebfec87b",
+          "new_word": "0xebfec69f",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa5b4",
+            "0xa954"
+          ],
+          "symbols": [
+            "__ZN7tVector5CrossERKS_S1_"
+          ]
+        },
+        {
+          "offset": "0x794",
+          "old_word": "0xebfec741",
+          "new_word": "0xebfec565",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa0f4",
+            "0xa494"
+          ],
+          "symbols": [
+            "__ZN7tMatrix9RotLocalZEf"
+          ]
+        },
+        {
+          "offset": "0x7c8",
+          "old_word": "0xebfec694",
+          "new_word": "0xebfec4b8",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0x9e74",
+            "0xa214"
+          ],
+          "symbols": [
+            "__Z3Sinf"
+          ]
+        },
+        {
+          "offset": "0x848",
+          "old_word": "0xebfec760",
+          "new_word": "0xebfec584",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa224",
+            "0xa5c4"
+          ],
+          "symbols": [
+            "__ZN7tMatrix8IdentityEv"
+          ]
+        },
+        {
+          "offset": "0x884",
+          "old_word": "0xebfec751",
+          "new_word": "0xebfec575",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa224",
+            "0xa5c4"
+          ],
+          "symbols": [
+            "__ZN7tMatrix8IdentityEv"
+          ]
+        },
+        {
+          "offset": "0x8d4",
+          "old_word": "0xebfec750",
+          "new_word": "0xebfec574",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa270",
+            "0xa610"
+          ],
+          "symbols": [
+            "__ZN7tMatrix11RotIdentityEv"
+          ]
+        },
+        {
+          "offset": "0x8e4",
+          "old_word": "0xebfec74c",
+          "new_word": "0xebfec570",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa270",
+            "0xa610"
+          ],
+          "symbols": [
+            "__ZN7tMatrix11RotIdentityEv"
+          ]
+        },
+        {
+          "offset": "0x960",
+          "old_word": "0xebfec8cf",
+          "new_word": "0xebfec6f3",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa8f8",
+            "0xac98"
+          ],
+          "symbols": [
+            "__ZN7tVector9NormalizeEv"
+          ]
+        },
+        {
+          "offset": "0x9b4",
+          "old_word": "0xebfec8ba",
+          "new_word": "0xebfec6de",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0xa8f8",
+            "0xac98"
+          ],
+          "symbols": [
+            "__ZN7tVector9NormalizeEv"
+          ]
+        },
+        {
+          "offset": "0xa84",
+          "old_word": "0xeaffd563",
+          "new_word": "0xeaffd50f",
+          "kind": "branch_to_same_symbol",
+          "targets": [
+            "0x4dc6c",
+            "0x4e62c"
+          ],
+          "symbols": [
+            "__ZN6cRPath11CalcLengthZEv"
+          ]
+        }
+      ],
+      "unchanged_words": 640,
+      "unexplained_changed_words": 0
+    },
+    {
+      "symbol": "__ZN8cRBorder13AddTextNumberEi",
+      "starts": {
+        "ios15": "0x380f0",
+        "ios19-slice0": "0x35508"
+      },
+      "full_extent_bytes": 980,
+      "body_sha256": [
+        "7693a86baebf1b5c80ce9cbd7a5a01cc90faa87e35f64b8c69883a42a5228b4e",
+        "383f7e7106c5411272bcddf8a9e1dc4927a44ba3cf884b4fac41916ae016fccd"
+      ],
+      "changed_words": [
+        {
+          "offset": "0x8",
+          "old_word": "0xe2802fb1",
+          "new_word": "0xe2802fb6",
+          "kind": "text_field_offset",
+          "old_offset": "0x2c4",
+          "new_offset": "0x2d8"
+        },
+        {
+          "offset": "0xc",
+          "old_word": "0xe5d002c4",
+          "new_word": "0xe5d002d8",
+          "kind": "text_field_offset",
+          "old_offset": "0x2c4",
+          "new_offset": "0x2d8"
+        }
+      ],
+      "unchanged_words": 243,
+      "unexplained_changed_words": 0
+    }
+  ],
+  "limits": [
+    "Symbol absence is not proof of source absence; inlining, stripping and library selection differ.",
+    "Matched names and cross-version instruction correspondence do not establish exact original C++ or direct ancestry order.",
+    "No full member type records or executable runtime equivalence are claimed.",
+    "Three function comparisons are bounded samples, not whole-game lineage percentages."
+  ]
+}

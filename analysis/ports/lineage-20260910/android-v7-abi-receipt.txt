@@ -1,0 +1,4 @@
+image_base=00010000
+compiler=default
+0002830c before undefined __stdcall Sqrt(float param_1) params s0:4 return <UNASSIGNED>
+0002830c after float __stdcall Sqrt(float value) params r0 return r0
