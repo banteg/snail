@@ -382,41 +382,163 @@ def test_run_match_hashes_the_supplied_object_snapshot(monkeypatch, tmp_path):
     assert actual.candidate_object_sha256 == hashlib.sha256(captured).hexdigest()
 
 
-def inline_table_fixture(*, entries=(7, 10), native_entries=None, padding=b'\x90' * 8):
+def inline_table_fixture(*, entries=(7, 10), native_entries=None, padding=b'\x90' * 8,
+                         alignment=b'', base=0x401000):
     """A real indexed dispatch, two return blocks, then a relocated data tail."""
     import struct
 
-    base = 0x401000
-    code = bytes.fromhex('ff24850000000031c0c3b801000000c3')
+    code = bytes.fromhex('ff24850000000031c0c3b801000000c3') + alignment
+    table_offset = len(code)
     target = bytearray(code)
-    struct.pack_into('<I', target, 3, base + 16)
+    struct.pack_into('<I', target, 3, base + table_offset)
     target += struct.pack('<II', *(base + x for x in (native_entries or entries)))
     target += padding
     obj_data = code + struct.pack('<II', *entries) + padding
     obj = m.CoffObject(
         sections=(m.CoffSection('.text', obj_data, 0x20, (
             m.CoffRelocation(3, 1, 0x06),
-            m.CoffRelocation(16, 0, 0x06),
-            m.CoffRelocation(20, 0, 0x06),
+            m.CoffRelocation(table_offset, 0, 0x06),
+            m.CoffRelocation(table_offset + 4, 0, 0x06),
         )),),
         symbols=(
             m.CoffSymbol(0, '_foo', 0, 1, 0x20, 2),
-            m.CoffSymbol(1, '$Ltable', 16, 1, 0, 3),
+            m.CoffSymbol(1, '$Ltable', table_offset, 1, 0, 3),
         ),
     )
     candidate = m.extract_object_function(obj, 'foo')
     references = m.ReferenceSymbolManifest('test', (
-        m.ReferenceSymbol(base + 16, 'foo_table', 'jump_table', size=8),
+        m.ReferenceSymbol(base + table_offset, 'foo_table', 'jump_table', size=8),
     ))
     return bytes(target), candidate, references
 
 
-def compare_inline_table(target, candidate, references):
+def compare_inline_table(target, candidate, references, *, base=0x401000):
     return m.match_function(
         target, candidate,
-        image=m.LoadedImage(target, 0x401000, len(target)),
-        target_va=0x401000, reference_manifest=references,
+        image=m.LoadedImage(target, base, len(target)),
+        target_va=base, reference_manifest=references,
     )
+
+
+@pytest.mark.parametrize('alignment', ['8d4900', '8d642400', '8da42400000000'])
+def test_inline_table_self_lea_alignment_is_retained_in_encoded_body(alignment):
+    alignment = bytes.fromhex(alignment)
+    target, candidate, references = inline_table_fixture(alignment=alignment)
+    result = compare_inline_table(target, candidate, references)
+    end = 24 + len(alignment)
+    assert result.exact and result.body_byte_exact
+    assert result.target_lines[-3].startswith('lea ')
+    assert result.compared_target_ranges == ((0, end),)
+    assert result.encoded_body_proof['body_size'] == end
+    assert result.encoded_body_proof['masked_relocation_ranges'] == [[3, 7]]
+
+
+@pytest.mark.parametrize('alignment', ['8d4a00', '8d4901', '668d4900', '8d4c0900'])
+def test_inline_table_does_not_treat_state_changing_lea_as_alignment(alignment):
+    target, candidate, references = inline_table_fixture(alignment=bytes.fromhex(alignment))
+    result = compare_inline_table(target, candidate, references)
+    assert not result.target_inline_data_ranges
+    assert not result.candidate_inline_data_ranges
+    assert not result.body_byte_exact
+
+
+def test_inline_table_does_not_accept_a_destination_in_self_lea_alignment():
+    target, candidate, references = inline_table_fixture(entries=(7, 16), alignment=b'\x8d\x49\0')
+    result = compare_inline_table(target, candidate, references)
+    assert not result.target_inline_data_ranges
+    assert not result.candidate_inline_data_ranges
+    assert not result.body_byte_exact
+
+
+@pytest.mark.parametrize('branch', [bytes.fromhex('eb07'), bytes.fromhex('eb0a')])
+def test_inline_table_rejects_real_code_branches_into_alignment_or_table(branch):
+    target, candidate, references = inline_table_fixture(alignment=b'\x8d\x49\0')
+    target = target[:7] + branch + target[9:]
+    candidate = replace(candidate, data=candidate.data[:7] + branch + candidate.data[9:])
+    result = compare_inline_table(target, candidate, references)
+    assert not result.target_inline_data_ranges
+    assert not result.candidate_inline_data_ranges
+    assert not result.body_byte_exact
+
+
+def test_inline_table_words_that_decode_as_branches_are_still_compared_as_data():
+    # The first native word is 7c 02 40 00: a linear decoder invents a JL
+    # from table offset 16 to offset 20, inside the same table.
+    base = 0x400275
+    target, candidate, references = inline_table_fixture(base=base)
+    assert target[16:20] == bytes.fromhex('7c024000')
+    result = compare_inline_table(target, candidate, references, base=base)
+    assert result.exact and result.body_byte_exact
+    assert result.target_inline_data_ranges == ((16, 24),)
+    assert result.encoded_body_proof['resolved_local_data_relocations'] == [
+        {'offset': 16, 'target_offset': 7}, {'offset': 20, 'target_offset': 10},
+    ]
+
+
+def test_inline_table_rejects_real_post_table_branch_into_data():
+    target, candidate, references = inline_table_fixture(padding=bytes.fromhex('ebf6'))
+    result = compare_inline_table(target, candidate, references)
+    assert not result.target_inline_data_ranges
+    assert not result.candidate_inline_data_ranges
+    assert not result.body_byte_exact
+
+
+def test_inline_table_can_start_where_linear_instruction_decoding_fails():
+    base = 0x405008
+    target, candidate, references = inline_table_fixture(base=base)
+    # 0f 50 40 is not a valid MOVMSKPS register operand; this is an address.
+    assert target[16:20] == bytes.fromhex('0f504000')
+    result = compare_inline_table(target, candidate, references, base=base)
+    assert result.exact and result.body_byte_exact
+    assert result.target_inline_data_ranges == ((16, 24),)
+    assert not result.unexplained_target_ranges
+
+
+@pytest.mark.parametrize('suffix', [b'\x90' * 8, bytes.fromhex('ebee')])
+def test_adjacent_inline_tables_are_checked_using_code_boundaries(suffix):
+    import struct
+
+    base = 0x405001
+    code = bytes.fromhex('ff248500000000ff24850000000031c0c3b801000000c390')
+    assert len(code) == 24
+    native = bytearray(code)
+    struct.pack_into('<I', native, 3, base + 24)
+    struct.pack_into('<I', native, 10, base + 32)
+    entries = (14, 17, 17, 14)
+    native += struct.pack('<IIII', *(base + x for x in entries)) + suffix
+    obj_data = code + struct.pack('<IIII', *entries) + suffix
+    obj = m.CoffObject(
+        sections=(m.CoffSection('.text', obj_data, 0x20, (
+            m.CoffRelocation(3, 1, 0x06), m.CoffRelocation(10, 2, 0x06),
+            *(m.CoffRelocation(at, 0, 0x06) for at in (24, 28, 32, 36)),
+        )),),
+        symbols=(
+            m.CoffSymbol(0, '_foo', 0, 1, 0x20, 2),
+            m.CoffSymbol(1, '$Lfirst', 24, 1, 0, 3),
+            m.CoffSymbol(2, '$Lsecond', 32, 1, 0, 3),
+        ),
+    )
+    references = m.ReferenceSymbolManifest('test', (
+        m.ReferenceSymbol(base + 24, 'first', 'jump_table', size=8),
+        m.ReferenceSymbol(base + 32, 'second', 'jump_table', size=8),
+    ))
+    result = compare_inline_table(
+        bytes(native), m.extract_object_function(obj, 'foo'), references, base=base,
+    )
+    if suffix.startswith(b'\xeb'):
+        # A real jump after both tables enters the first table. Reject it even
+        # though decoding the first table word as code stops before this jump.
+        assert not result.target_inline_data_ranges
+        assert not result.candidate_inline_data_ranges
+        assert not result.body_byte_exact
+    else:
+        assert result.exact and result.body_byte_exact
+        assert result.target_inline_data_ranges == ((24, 40),)
+        assert result.compared_target_ranges == ((0, 40),)
+        assert result.encoded_body_proof['resolved_local_data_relocations'] == [
+            {'offset': at, 'target_offset': entry}
+            for at, entry in zip((24, 28, 32, 36), entries, strict=True)
+        ]
 
 
 def test_inline_table_is_compared_as_data_and_resolved_without_masking_entries():

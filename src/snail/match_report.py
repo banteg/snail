@@ -25,7 +25,7 @@ from .symbols import REPO_ROOT, load_function_symbol_manifest
 VERSION = "win32-reflexive"
 EVIDENCE_SCHEMA = 2
 SCORING_POLICY = {
-    "version": 3,
+    "version": 4,
     "references": "positional-for-normalized-exact; diagnostic-alignment-for-partials",
     "coverage": "decoded-code-and-verified-inline-tables; unknown-bytes-reject-exact",
     "encoding": "same-offsets-and-encodings; audited-external-relocations; resolved-local-branches-and-table-entries",

@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "handoff-speed",
+      "find": "            float speed = velocity.z;\n            float window = handoff_game->subgame_rate * 0.17f;\n            if (speed >= window) {\n                window = handoff_game->subgame_rate * 0.5f;\n                if (speed <= window)\n                    window = speed;\n            }\n            velocity.z = window;\n",
+      "replacements": [
+        {
+          "name": "handoff-direct-speed",
+          "text": "            float window = handoff_game->subgame_rate * 0.17f;\n            if (velocity.z >= window) {\n                window = handoff_game->subgame_rate * 0.5f;\n                if (velocity.z <= window)\n                    window = velocity.z;\n            }\n            velocity.z = window;\n"
+        },
+        {
+          "name": "handoff-speed-reference",
+          "text": "            const float& speed = velocity.z;\n            float window = handoff_game->subgame_rate * 0.17f;\n            if (speed >= window) {\n                window = handoff_game->subgame_rate * 0.5f;\n                if (speed <= window)\n                    window = speed;\n            }\n            velocity.z = window;\n"
+        },
+        {
+          "name": "handoff-bounds-first",
+          "text": "            float window = handoff_game->subgame_rate * 0.17f;\n            float speed = velocity.z;\n            if (speed >= window) {\n                window = handoff_game->subgame_rate * 0.5f;\n                if (speed <= window)\n                    window = speed;\n            }\n            velocity.z = window;\n"
+        }
+      ]
+    },
+    {
+      "name": "handoff-timer",
+      "find": "        completion_handoff_timer += completion_handoff_timer_step;",
+      "replacements": [
+        {
+          "name": "explicit-add",
+          "text": "        completion_handoff_timer = completion_handoff_timer + completion_handoff_timer_step;"
+        },
+        {
+          "name": "timer-snapshot",
+          "text": "        float handoff_timer = completion_handoff_timer;\n        handoff_timer += completion_handoff_timer_step;\n        completion_handoff_timer = handoff_timer;"
+        }
+      ]
+    },
+    {
+      "name": "cruise-speed",
+      "find": "            float speed = velocity.z;\n            float window = completion_game->subgame_rate * 0.17f;\n            if (speed >= window) {\n                window = completion_game->subgame_rate * 0.5f;\n                if (speed <= window)\n                    window = speed;\n            }\n            velocity.z = window;\n",
+      "replacements": [
+        {
+          "name": "direct",
+          "text": "            float window = completion_game->subgame_rate * 0.17f;\n            if (velocity.z >= window) {\n                window = completion_game->subgame_rate * 0.5f;\n                if (velocity.z <= window)\n                    window = velocity.z;\n            }\n            velocity.z = window;\n"
+        },
+        {
+          "name": "reference",
+          "text": "            const float& speed = velocity.z;\n            float window = completion_game->subgame_rate * 0.17f;\n            if (speed >= window) {\n                window = completion_game->subgame_rate * 0.5f;\n                if (speed <= window)\n                    window = speed;\n            }\n            velocity.z = window;\n"
+        },
+        {
+          "name": "bounds-first",
+          "text": "            float window = completion_game->subgame_rate * 0.17f;\n            float speed = velocity.z;\n            if (speed >= window) {\n                window = completion_game->subgame_rate * 0.5f;\n                if (speed <= window)\n                    window = speed;\n            }\n            velocity.z = window;\n"
+        }
+      ]
+    }
+  ]
+}

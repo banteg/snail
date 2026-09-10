@@ -1,5 +1,17 @@
 # initialize_subgoldy_death
 
+## 2026-09-11 complete inline-table proof
+
+The unchanged C++ source now passes **100% normalized and encoded-body proof**:
+15 code instructions, 32 compared table bytes, and 3 clean references
+at identical instruction and byte positions. This corrects table boundary
+recognition, not source reconstruction. The obsolete END override is removed so the target includes alignment and the complete native table. Earlier scores below are historical.
+
+The [boundary report](../../inline-table-boundaries-20260911.md) and
+[receipt](../../inline-table-boundaries-20260911.json) preserve source/config
+identities, complete range accounting, table destinations, positional reference
+audits, and encoded-body hashes.
+
 - Exact match: 100.00%, 14/14 instructions.
 - Uses shared `cRSubGame::level_mode`, `Player::game`, and
   `Player::visible_life_stock` fields, matching the exact resurrect helpers

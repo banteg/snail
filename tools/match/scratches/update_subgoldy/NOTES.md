@@ -1130,3 +1130,20 @@ that failed probe and its corrected `cRPlayer` replay are both preserved.
 The five records document specific tested forms, not an ownership ceiling.
 Detailed sources and results are in
 `artifacts/match/gameplay-lifetimes-20260909/update_subgoldy/`.
+
+
+## 2026-09-11 completion lifetime controls
+
+The current baseline is 83.3612%, 2,094/2,087 candidate/native code instructions,
+315 clean aligned references and one unaudited root load. The saved
+`completion-lifetimes-20260911.json` recipe tests 29 single-site and two-site
+forms across the cruise clamp, completion-entry clamp, and handoff timer.
+
+The best combined bounds-first/timer-snapshot form reaches 83.5721% with 2,093
+instructions and unchanged reference debt. It still emits a speed spill that
+Windows does not have, and it schedules the game load between the timer load
+and addition. Direct/reference forms avoid that spill but reverse the native
+x87 compare direction into `fcom` rather than `fld`/`fcomp`. None is retained.
+The canonical source is unchanged; these controls do not establish a compiler
+limit. The [boundary-pass receipt](../../inline-table-boundaries-20260911.json)
+preserves the results and the best candidate's full source and assembly diff.

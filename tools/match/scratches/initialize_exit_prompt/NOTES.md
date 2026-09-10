@@ -1,5 +1,17 @@
 # initialize_exit_prompt
 
+## 2026-09-11 complete inline-table proof
+
+The unchanged C++ source now passes **100% normalized and encoded-body proof**:
+442 code instructions, 40 compared table bytes, and 109 clean references
+at identical instruction and byte positions. This corrects table boundary
+recognition, not source reconstruction. Earlier scores below are historical.
+
+The [boundary report](../../inline-table-boundaries-20260911.md) and
+[receipt](../../inline-table-boundaries-20260911.json) preserve source/config
+identities, complete range accounting, table destinations, positional reference
+audits, and encoded-body hashes.
+
 - Target: `cRExit::Init()` at `0x4060d0`, exposed by the descriptive Windows
   selector `initialize_exit_prompt` and recovered independently in Android and iOS.
 - First-pass recovery from BN decompile/disassembly. The function hides the

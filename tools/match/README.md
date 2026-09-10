@@ -523,6 +523,15 @@ instruction boundaries before the table; overlapping interpretations, code
 fallthrough into the table, and branches into its data are rejected. Post-table
 continuations and unknown bytes remain visible.
 
+Code spans are decoded separately around proposed tables. Table words need not
+decode as instructions, and accidental branch opcodes in those words do not
+create code edges. This also handles adjacent tables. Rejected tables are
+restored to ordinary code/unknown bytes before surviving tables are rechecked.
+VC6 self-`lea` alignment before a table is recognized only when it leaves the
+32-bit register unchanged; its bytes still participate in normalized and
+encoded-body comparison. Real branches and table entries into alignment or
+table data prevent recognition.
+
 Encoded-body evidence resolves each table word to its function-relative code
 destination and includes that value in the digest. It does not mask table words
 or grant equality from dispatch shape alone. Diagnostics expose separate

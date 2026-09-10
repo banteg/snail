@@ -1424,6 +1424,22 @@ def _prefers_rdata_f32(insn, operand) -> bool:
     return operand.size == 4 and insn.mnemonic in _X87_F32_MEMORY_MNEMONICS
 
 
+def _is_inline_table_alignment(insn: capstone.CsInsn) -> bool:
+    """Recognize inert VC6 alignment instructions without excluding their bytes."""
+    if insn.mnemonic in {"nop", "int3"} or bytes(insn.bytes) == b"\x8b\xff":
+        return True
+    return (
+        insn.mnemonic == "lea"
+        and len(insn.operands) == 2
+        and insn.operands[0].type == capstone.x86.X86_OP_REG
+        and insn.operands[0].size == 4
+        and insn.operands[1].type == capstone.x86.X86_OP_MEM
+        and insn.operands[1].mem.base == insn.operands[0].reg
+        and not insn.operands[1].mem.index
+        and not insn.operands[1].mem.disp
+    )
+
+
 def _inline_jump_tables(
     data: bytes,
     instructions: list[capstone.CsInsn],
@@ -1439,8 +1455,9 @@ def _inline_jump_tables(
     address-looking bytes nor the contents of a label alone establish data.
     """
     symbols = _reference_symbol_by_address(reference_manifest)
-    boundaries = {insn.address - base_address for insn in instructions}
     tables: dict[int, tuple[int, ...]] = {}
+    dispatches: dict[int, set[int]] = {}
+    conflicting_offsets: set[int] = set()
     for insn in instructions:
         if insn.mnemonic != "jmp" or len(insn.operands) != 1:
             continue
@@ -1497,25 +1514,49 @@ def _inline_jump_tables(
             ]
         if (
             not entries
-            or offset not in boundaries
-            or any(entry not in boundaries or not 0 <= entry < offset for entry in entries)
+            or not 0 <= offset < offset + 4 * len(entries) <= len(data)
+            or any(not 0 <= entry < offset for entry in entries)
         ):
             continue
-        # Do not reinterpret fallthrough code as data, even with a bad manifest.
-        preceding = [i for i in instructions if i.address - base_address < offset]
-        while preceding and (
-            preceding[-1].mnemonic in {"nop", "int3"}
-            or bytes(preceding[-1].bytes) == b"\x8b\xff"  # VC6 two-byte alignment nop
-        ):
-            preceding.pop()
-        if not preceding or preceding[-1].mnemonic not in {"ret", "retf", "jmp"}:
-            continue
-        padding_start = preceding[-1].address - base_address + preceding[-1].size
-        end = offset + 4 * len(entries)
-        if any(padding_start <= entry < offset for entry in entries):
-            continue
+        values = tuple(entries)
+        if offset in tables and tables[offset] != values:
+            conflicting_offsets.add(offset)
+        tables[offset] = values
+        dispatches.setdefault(offset, set()).add(insn.address - base_address)
+
+    # Conflicting interpretations remain ordinary bytes, never silently merge.
+    tables = {
+        offset: entries
+        for offset, entries in tables.items()
+        if offset not in conflicting_offsets
+        and not any(
+            other != offset
+            and offset < other + 4 * len(other_entries)
+            and other < offset + 4 * len(entries)
+            for other, other_entries in tables.items()
+        )
+    }
+    decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
+    decoder.detail = True
+    while tables:
+        # Disassemble code spans independently. Table words may decode as fake
+        # branches or stop a linear decoder before a second table or real code.
+        code = []
+        table_boundaries = set()
+        cursor = 0
+        for offset, entries in sorted(tables.items()):
+            span = list(decoder.disasm(data[cursor:offset], base_address + cursor))
+            code.extend(span)
+            if cursor == offset or (
+                span and span[-1].address - base_address + span[-1].size == offset
+            ):
+                table_boundaries.add(offset)
+            cursor = offset + 4 * len(entries)
+        code.extend(decoder.disasm(data[cursor:], base_address + cursor))
+        boundaries = {insn.address - base_address for insn in code}
+        table_targets = [entry for entries in tables.values() for entry in entries]
         direct_targets = []
-        for instruction in instructions:
+        for instruction in code:
             if not (capstone.CS_GRP_JUMP in instruction.groups
                     or capstone.CS_GRP_CALL in instruction.groups):
                 continue
@@ -1531,25 +1572,35 @@ def _inline_jump_tables(
                     else operand.imm - base_address
                 )
                 direct_targets.append(destination)
-        if any(padding_start <= destination < end for destination in direct_targets):
-            continue
-        tables[offset] = tuple(entries)
-    # Conflicting interpretations remain ordinary bytes, never silently merge.
-    return {
-        offset: entries
-        for offset, entries in tables.items()
-        if not any(
-            other != offset
-            and offset < other + 4 * len(other_entries)
-            and other < offset + 4 * len(entries)
-            for other, other_entries in tables.items()
-        )
-        and not any(
-            other <= destination < other + 4 * len(other_entries)
-            for destination in entries
-            for other, other_entries in tables.items()
-        )
-    }
+
+        rejected = set()
+        for offset, entries in tables.items():
+            if (
+                offset not in table_boundaries
+                or not dispatches[offset].intersection(boundaries)
+                or any(entry not in boundaries for entry in entries)
+            ):
+                rejected.add(offset)
+                continue
+            preceding = [i for i in code if i.address - base_address < offset]
+            while preceding and _is_inline_table_alignment(preceding[-1]):
+                preceding.pop()
+            if not preceding or preceding[-1].mnemonic not in {"ret", "retf", "jmp"}:
+                rejected.add(offset)
+                continue
+            padding_start = preceding[-1].address - base_address + preceding[-1].size
+            end = offset + 4 * len(entries)
+            if (
+                any(padding_start <= entry < end for entry in table_targets)
+                or any(padding_start <= destination < end for destination in direct_targets)
+            ):
+                rejected.add(offset)
+        if not rejected:
+            return tables
+        # A rejected region becomes code/unknown bytes again. Recheck survivors
+        # so a rejected table cannot conceal a branch or justify another table.
+        tables = {offset: entries for offset, entries in tables.items() if offset not in rejected}
+    return {}
 
 
 def _is_inline_data(line: DisassemblyLine) -> bool:

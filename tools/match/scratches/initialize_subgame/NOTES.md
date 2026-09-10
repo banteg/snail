@@ -1,5 +1,17 @@
 # initialize_subgame
 
+## 2026-09-11 complete inline-table proof
+
+The unchanged C++ source now passes **100% normalized and encoded-body proof**:
+397 code instructions, 52 compared table bytes, and 85 clean references
+at identical instruction and byte positions. This corrects table boundary
+recognition, not source reconstruction. Earlier scores below are historical.
+
+The [boundary report](../../inline-table-boundaries-20260911.md) and
+[receipt](../../inline-table-boundaries-20260911.json) preserve source/config
+identities, complete range accounting, table destinations, positional reference
+audits, and encoded-body hashes.
+
 Live source map for `initialize_subgame @ 0x4374b0`.
 
 Current match:

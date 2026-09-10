@@ -1,5 +1,17 @@
 # Exact match
 
+## 2026-09-11 complete inline-table proof
+
+The unchanged C++ source now passes **100% normalized and encoded-body proof**:
+19 code instructions, 32 compared table bytes, and 3 clean references
+at identical instruction and byte positions. This corrects table boundary
+recognition, not source reconstruction. The obsolete END override is removed so the target includes alignment and the complete native table. Earlier scores below are historical.
+
+The [boundary report](../../inline-table-boundaries-20260911.md) and
+[receipt](../../inline-table-boundaries-20260911.json) preserve source/config
+identities, complete range accounting, table destinations, positional reference
+audits, and encoded-body hashes.
+
 `set_subgame_features` seeds `game->runtime_flags` for the current mode before
 runtime track population. If a selected-level record override is active, it
 copies the record's flag word at `+0x38`; otherwise the native presets are:

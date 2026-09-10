@@ -1,5 +1,17 @@
 # configure_sprite_render_state
 
+## 2026-09-11 complete inline-table proof
+
+The unchanged C++ source now passes **100% normalized and encoded-body proof**:
+130 code instructions, 28 compared table bytes, and 18 clean references
+at identical instruction and byte positions. This corrects table boundary
+recognition, not source reconstruction. Earlier scores below are historical.
+
+The [boundary report](../../inline-table-boundaries-20260911.md) and
+[receipt](../../inline-table-boundaries-20260911.json) preserve source/config
+identities, complete range accounting, table destinations, positional reference
+audits, and encoded-body hashes.
+
 Small sprite-renderer state mapper used only by `draw_sprite_quad`.
 
 - `Sprite +0x28` is the sprite draw/render-state mode. The exact helper and its

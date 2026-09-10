@@ -1,5 +1,17 @@
 # update_garbage_hazard
 
+## 2026-09-11 complete inline-table proof
+
+The unchanged C++ source now passes **100% normalized and encoded-body proof**:
+218 code instructions, 16 compared table bytes, and 22 clean references
+at identical instruction and byte positions. This corrects table boundary
+recognition, not source reconstruction. The obsolete END override is removed so the target includes alignment and the complete native table. Earlier scores below are historical.
+
+The [boundary report](../../inline-table-boundaries-20260911.md) and
+[receipt](../../inline-table-boundaries-20260911.json) preserve source/config
+identities, complete range accounting, table destinations, positional reference
+audits, and encoded-body hashes.
+
 update_garbage_hazard @ 0x43f200 = `cRSubGarbage::AI()`.
 
 Recovered semantics covered by the initial scratch:

@@ -284,3 +284,19 @@ bytes (26.05%). Encoded-body equality covers 689 owners and 140,536 bytes
 of normalized credit with no regressions. Because scoring changed, this is a
 measurement-baseline transition, not source reconstruction progress. See the
 [full proof report](../../tools/match/inline-jump-table-proof-20260911.md).
+
+
+## 2026-09-11 table-boundary baseline
+
+Scoring policy 4 recognizes self-`lea` alignment, undecodable table words, and
+adjacent inline tables by decoding code spans separately around verified data.
+Actual code branches and table entries into alignment/data still reject a table.
+Four target extents now include their full dispatched tables. None of
+the eleven newly certified C++ sources changed.
+
+The refreshed report has 711 normalized-matched owners and 164,402/596,823 code
+bytes (27.55%). Encoded-body equality covers 700 owners and 149,475 bytes
+(25.04%). This measurement-baseline change adds 8,939 credited code bytes with
+no regression. Target, native inventory, ownership, and toolchain identities
+are unchanged, and the new table ranges overlap no native owned-code bytes.
+See the [boundary proof report](../../tools/match/inline-table-boundaries-20260911.md).
