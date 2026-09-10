@@ -2620,6 +2620,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"match: {result.ratio:.2%}")
         print(f"target: {len(result.target_lines)} insns, candidate: {len(result.candidate_lines)} insns")
         print(f"prefix: {result.prefix_instructions}/{len(result.target_lines)} target insns")
+        print(f"encoded body: {'match' if result.body_byte_exact else 'not matched'}")
+        if result.unexplained_target_ranges:
+            print(f"unexplained target bytes: {sum(b - a for a, b in result.unexplained_target_ranges)}")
         _print_masked_operand_audit(result.masked_operand_audit)
         if result.first_target_mismatch is not None or result.first_candidate_mismatch is not None:
             target = result.first_target_mismatch or "<end>"
@@ -2660,7 +2663,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         else:
             for line in result.diff_lines:
                 print(line)
-        return 0 if result.ratio == 1.0 and result.masked_operand_audit.problem_count == 0 else 1
+        return 0 if result.exact else 1
 
     parser.error(f"Unhandled command: {args.command}")
     return 2

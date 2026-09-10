@@ -1800,7 +1800,7 @@ def test_masked_operand_audit_accepts_matching_local_jump_table_contents() -> No
             ),
         ),
     )
-    assert result.ratio == 1.0
+    assert result.ratio < 1.0  # Candidate data tail is retained conservatively.
     assert result.masked_operand_audit.ok_count == 1
     assert result.masked_operand_audit.problem_count == 0
     entry = result.masked_operand_audit.entries[0]
@@ -2154,7 +2154,7 @@ def test_masked_operand_audit_bounds_unaliased_table_by_object_symbol_extent() -
             ),
         ),
     )
-    assert result.ratio == 1.0
+    assert result.ratio < 1.0  # Candidate data tail is retained conservatively.
     assert result.masked_operand_audit.ok_count == 1
     assert result.masked_operand_audit.problem_count == 0
     entry = result.masked_operand_audit.entries[0]
@@ -2243,7 +2243,7 @@ def test_masked_operand_audit_rejects_permuted_local_jump_table_contents() -> No
             ),
         ),
     )
-    assert result.ratio == 1.0
+    assert result.ratio < 1.0  # Candidate data tail is retained conservatively.
     assert result.masked_operand_audit.mismatch_count == 1
     assert result.masked_operand_audit.problem_count == 1
 
@@ -2272,7 +2272,7 @@ def test_masked_operand_audit_rejects_same_key_permuted_jump_table_contents() ->
             ),
         ),
     )
-    assert result.ratio == 1.0
+    assert result.ratio < 1.0  # Candidate data tail is retained conservatively.
     entry = result.masked_operand_audit.entries[0]
     assert entry.status == "mismatch"
     assert entry.target_references[0].key == "ref:foo_jump_table"
@@ -2321,7 +2321,7 @@ def test_masked_operand_audit_rejects_same_key_lookup_table_byte_mismatch() -> N
             ),
         ),
     )
-    assert result.ratio == 1.0
+    assert result.ratio < 1.0  # Candidate data tail is retained conservatively.
     entry = result.masked_operand_audit.entries[0]
     assert entry.status == "mismatch"
     assert entry.target_references[0].audited_bytes == b"\x09\x0a"
@@ -4077,19 +4077,19 @@ def test_normalize_resolves_relocated_local_call_targets() -> None:
     assert lines[0].masked_references == ()
 
 
-def test_normalize_strips_untargeted_terminal_padding() -> None:
+def test_normalize_keeps_unclassified_terminal_bytes() -> None:
     code = bytes.fromhex("c3") + bytes.fromhex("8d4900") + (b"\x00" * 4) + (b"\x90" * 4)
-    assert normalize_function(code) == ("ret",)
+    assert len(normalize_function(code)) > 1
 
 
-def test_normalize_strips_untargeted_terminal_data_after_ret() -> None:
+def test_normalize_keeps_untargeted_terminal_data_after_ret() -> None:
     code = bytes.fromhex("c3") + bytes.fromhex("b8ad0039c341")
-    assert normalize_function(code) == ("ret",)
+    assert len(normalize_function(code)) > 1
 
 
-def test_normalize_strips_tail_that_decodes_to_ret() -> None:
+def test_normalize_keeps_tail_that_decodes_to_ret() -> None:
     code = bytes.fromhex("5bc3c2394380ad0043")
-    assert normalize_function(code) == ("pop ebx", "ret")
+    assert normalize_function(code) == ("pop ebx", "ret", "ret 0x4339", "db 0x80", "db 0xad", "db 0x00", "db 0x43")
 
 
 def test_normalize_keeps_targeted_terminal_padding() -> None:
