@@ -127,6 +127,12 @@ is an observation, not proof of the compiler's internal mechanism.
 
 ## Workflow
 
+Use the [Windows-first cross-port workflow](../../analysis/ports/README.md)
+to gather Android, iPhone, and Wii evidence for a contested Windows function.
+`uv run snail match leads <function>` distinguishes curated body mappings from
+same-name leads in other builds and reports original versus rebased addresses.
+Windows remains the primary matching target and supplies every acceptance gate.
+
 The [source ownership and linking pass](matching-unblock-20260908.md) closes
 reporting/transform ABI boundaries, proves allocator and selected native data
 extents, and verifies all linked code/data sections in seven runtime groups.

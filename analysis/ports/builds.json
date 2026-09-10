@@ -1,0 +1,157 @@
+{
+  "schema": 1,
+  "primary_build": "windows-reflexive-x86",
+  "builds": [
+    {
+      "id": "windows-reflexive-x86",
+      "label": "Windows Reflexive reference",
+      "role": "primary",
+      "architecture": "x86-le32",
+      "binary": {
+        "path": "artifacts/bin/SnailMail_unwrapped.exe",
+        "sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5"
+      },
+      "matching_root": "tools/match",
+      "function_manifest": "analysis/symbols/gameplay-functions.json",
+      "compiler": {
+        "profile": "msvc6.5",
+        "flags": "/O2 /G5 /W3",
+        "status": "empirical reproduction baseline",
+        "evidence": "tools/match/README.md"
+      }
+    },
+    {
+      "id": "android-armv7",
+      "label": "Android ARMv7",
+      "role": "lead",
+      "architecture": "armv7-le32",
+      "binary": {
+        "path": "artifacts/android/unpacked/com.sandlotgames.snailmail.1/lib/armeabi-v7a/libsnailmail.so",
+        "sha256": "e43bc913e9ba99abd2fed4d2cee40d4a33a951ecbcf8ca154d099cc8cabaa466"
+      },
+      "symbol_index": "analysis/ports/symbols/android-armv7.json",
+      "compiler": {
+        "status": "unidentified configuration",
+        "evidence": "analysis/ports/lineage-20260910/receipt.json",
+        "family": "GCC 4.4.0 (embedded comments)"
+      },
+      "analysis_cautions": [
+        "Ghidra ELF analysis addresses add 0x10000; raw symbol addresses do not.",
+        "Audit float ABI storage: the default Sqrt parameter in s0 is incorrect; native uses r0."
+      ],
+      "corpus": {
+        "index": "analysis/decompile/android/index.json",
+        "address_bias": "0x10000",
+        "crosswalk_port": "android"
+      }
+    },
+    {
+      "id": "android-armv5",
+      "label": "Android ARMv5",
+      "role": "lead",
+      "architecture": "armv5-le32",
+      "binary": {
+        "path": "artifacts/android/unpacked/com.sandlotgames.snailmail.1/lib/armeabi/libsnailmail.so",
+        "sha256": "96dbeaeb20c60d687301ca769656727467371489db5e3ed744a93248bc8d8136"
+      },
+      "symbol_index": "analysis/ports/symbols/android-armv5.json",
+      "compiler": {
+        "status": "unidentified configuration",
+        "evidence": "analysis/ports/lineage-20260910/receipt.json",
+        "family": "GCC 4.4.0 (embedded comments)"
+      },
+      "analysis_cautions": [
+        "Ghidra ELF analysis addresses add 0x10000; raw symbol addresses do not.",
+        "Audit float ABI storage: the default Sqrt parameter in s0 is incorrect; native uses r0."
+      ]
+    },
+    {
+      "id": "ios-1.5-armv6",
+      "label": "iPhone 1.5.0 ARMv6",
+      "role": "lead",
+      "architecture": "armv6-le32",
+      "binary": {
+        "path": "artifacts/ios/unpacked/Snail Mail/Payload/iSM.app/iSM",
+        "sha256": "a05daa22f4349f8da209371edd40e78700594d9211d30b1d4fc2d139de6fac58"
+      },
+      "symbol_index": "analysis/ports/symbols/ios-1.5-armv6.json",
+      "compiler": {
+        "status": "unidentified configuration",
+        "evidence": "analysis/ports/lineage-20260910/receipt.json"
+      },
+      "corpus": {
+        "index": "analysis/decompile/ios/index.json",
+        "address_bias": "0x0",
+        "crosswalk_port": "ios"
+      }
+    },
+    {
+      "id": "ios-1.9-armv6",
+      "label": "iPhone 1.9.0 ARMv6",
+      "role": "lead",
+      "architecture": "armv6-le32",
+      "binary": {
+        "path": "artifacts/4pda/snail_mail_v1.9.0.ipa",
+        "sha256": "27f83c36333bda45a8e0d8e472b93ba7e36f26e1d28f44e6c606ef4cab0d2355",
+        "archive_member": "Payload/iSM103010_1.app/iSM",
+        "offset": 4096,
+        "size": 697088
+      },
+      "symbol_index": "analysis/ports/symbols/ios-1.9-armv6.json",
+      "compiler": {
+        "status": "unidentified configuration",
+        "evidence": "analysis/ports/lineage-20260910/receipt.json"
+      }
+    },
+    {
+      "id": "ios-1.9-armv7",
+      "label": "iPhone 1.9.0 ARMv7",
+      "role": "lead",
+      "architecture": "armv7-le32",
+      "binary": {
+        "path": "artifacts/4pda/snail_mail_v1.9.0.ipa",
+        "sha256": "e9a242fb9177bd12a8e4546cf60e223aeb45250caf4ebcfa49e334261618bae8",
+        "archive_member": "Payload/iSM103010_1.app/iSM",
+        "offset": 704512,
+        "size": 701200
+      },
+      "symbol_index": "analysis/ports/symbols/ios-1.9-armv7.json",
+      "compiler": {
+        "status": "unidentified configuration",
+        "evidence": "analysis/ports/lineage-20260910/receipt.json"
+      }
+    },
+    {
+      "id": "wii-usa-ppc",
+      "label": "Wii USA DOL",
+      "role": "lead",
+      "architecture": "ppc-be32",
+      "binary": {
+        "path": "artifacts/wii/reference/SnailMail-USA.dol",
+        "sha256": "523f848f2a0b8ef8c9dfe2714744bf0479a4feec79b25f0d1f5e035a6487c096"
+      },
+      "compiler": {
+        "status": "unidentified configuration",
+        "family": "Metrowerks runtime evidence",
+        "evidence": "analysis/wii/dtk-m2c-spike-20260910/README.md"
+      },
+      "analysis_cautions": [
+        "No complete Wii matching toolchain or denominator.",
+        "m2c drops some paired-single stores; inspect native code."
+      ]
+    },
+    {
+      "id": "ios-ipad-1.0.6",
+      "label": "iPad 1.0.6",
+      "role": "deferred",
+      "architecture": "arm-le32",
+      "binary": {
+        "path": "artifacts/ios/unpacked/SnailMailforiPad-v1.0.5/Payload/PSM-iPad.app/PSM-iPad",
+        "sha256": "5960c4e4ea8a9636ae651da2e2b245c1afe100ecd957be83a87ace269536fcf4"
+      },
+      "analysis_cautions": [
+        "Stripped; lower priority. Less source overlap has not been established."
+      ]
+    }
+  ]
+}

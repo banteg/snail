@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "windows_manifest": "analysis/symbols/gameplay-functions.json",
+  "mobile_crosswalk": "analysis/symbols/windows-mobile-gameplay-crosswalk.json",
+  "functions": [
+    {
+      "windows_id": "initialize_quaternion_from_matrix",
+      "relationships": [
+        {
+          "build_id": "wii-usa-ppc",
+          "address": "0x8000a968",
+          "kind": "same-algorithm",
+          "evidence": [
+            "tools/match/quaternion-wii-dispatch-20260909.md",
+            "tools/match/quaternion-wii-dispatch-20260909.json"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "claim": "Greater-or-equal-first axis selection, followed by ordinary equality bodies.",
+          "evidence": [
+            "tools/match/quaternion-wii-dispatch-20260909.asm"
+          ]
+        }
+      ]
+    }
+  ]
+}

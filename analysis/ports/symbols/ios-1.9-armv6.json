@@ -1,0 +1,5125 @@
+{
+  "schema": 1,
+  "build_id": "ios-1.9-armv6",
+  "binary_sha256": "27f83c36333bda45a8e0d8e472b93ba7e36f26e1d28f44e6c606ef4cab0d2355",
+  "address_space": "link-time-va",
+  "functions": [
+    {
+      "mangled": "_Z10FontMake3Ds",
+      "address": "0xf1cc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "FontMake3D(short)"
+    },
+    {
+      "mangled": "_Z10G0SetBlendi",
+      "address": "0x71b84",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0SetBlend(int)"
+    },
+    {
+      "mangled": "_Z10KeyboardAIv",
+      "address": "0xedc8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "KeyboardAI()"
+    },
+    {
+      "mangled": "_Z10MacVibratev",
+      "address": "0x784b0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacVibrate()"
+    },
+    {
+      "mangled": "_Z10OSDPrintUViffffffffffi7tColourffffif",
+      "address": "0xf400",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "OSDPrintUV(int, float, float, float, float, float, float, float, float, float, float, int, tColour, float, float, float, float, int, float)"
+    },
+    {
+      "mangled": "_Z10OSDPrintUViffffi7tColourffffif",
+      "address": "0xf50c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "OSDPrintUV(int, float, float, float, float, int, tColour, float, float, float, float, int, float)"
+    },
+    {
+      "mangled": "_Z10RShellInitv",
+      "address": "0xde84",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellInit()"
+    },
+    {
+      "mangled": "_Z11G0RenderEndv",
+      "address": "0x70c74",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0RenderEnd()"
+    },
+    {
+      "mangled": "_Z11G0ScissorOnffff",
+      "address": "0x73228",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0ScissorOn(float, float, float, float)"
+    },
+    {
+      "mangled": "_Z11GLObjectVBOP8cRObject",
+      "address": "0x70cf4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "GLObjectVBO(cRObject*)"
+    },
+    {
+      "mangled": "_Z11MacFileSizePc",
+      "address": "0x78800",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacFileSize(char*)"
+    },
+    {
+      "mangled": "_Z11MacFindFilePc",
+      "address": "0x7882c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacFindFile(char*)"
+    },
+    {
+      "mangled": "_Z11MacLoadFilePcPvPi",
+      "address": "0x78858",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacLoadFile(char*, void*, int*)"
+    },
+    {
+      "mangled": "_Z11MacSaveFilePcPvi",
+      "address": "0x788c4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacSaveFile(char*, void*, int)"
+    },
+    {
+      "mangled": "_Z11RShellErrorPcz",
+      "address": "0xd240",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellError(char*, ...)"
+    },
+    {
+      "mangled": "_Z11RShellInkeyv",
+      "address": "0xcb28",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellInkey()"
+    },
+    {
+      "mangled": "_Z11RTextAppendPcS_",
+      "address": "0xc0f8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RTextAppend(char*, char*)"
+    },
+    {
+      "mangled": "_Z11RstrnewlinePc",
+      "address": "0xe0dc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "Rstrnewline(char*)"
+    },
+    {
+      "mangled": "_Z11gRMathRand2v",
+      "address": "0xa184",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "gRMathRand2()"
+    },
+    {
+      "mangled": "_Z12G0RenderFontP9cRTextureffffffffffffffR7tColourif",
+      "address": "0x734f0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0RenderFont(cRTexture*, float, float, float, float, float, float, float, float, float, float, float, float, float, float, tColour&, int, float)"
+    },
+    {
+      "mangled": "_Z12G0RenderToonP8cRObjectP7tMatrix",
+      "address": "0x71de4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0RenderToon(cRObject*, tMatrix*)"
+    },
+    {
+      "mangled": "_Z12G0ScissorOffv",
+      "address": "0x70c78",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0ScissorOff()"
+    },
+    {
+      "mangled": "_Z12KeyboardInitv",
+      "address": "0xed8c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "KeyboardInit()"
+    },
+    {
+      "mangled": "_Z12MacAudioInitv",
+      "address": "0x784c8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacAudioInit()"
+    },
+    {
+      "mangled": "_Z12OSDPrintRealP16cFontPrintBuffer",
+      "address": "0xf780",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "OSDPrintReal(cFontPrintBuffer*)"
+    },
+    {
+      "mangled": "_Z12PngLoadImagePcPS_PiS1_S1_",
+      "address": "0x9f38",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "PngLoadImage(char*, char**, int*, int*, int*)"
+    },
+    {
+      "mangled": "_Z12RTextNewLinePPc",
+      "address": "0xc0c0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RTextNewLine(char**)"
+    },
+    {
+      "mangled": "_Z12SetGameStateiiii",
+      "address": "0x7a6d0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "SetGameState(int, int, int, int)"
+    },
+    {
+      "mangled": "_Z13FontPrintRealP16cFontPrintBuffer",
+      "address": "0x10374",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "FontPrintReal(cFontPrintBuffer*)"
+    },
+    {
+      "mangled": "_Z13G0BackdropVBOPjiPt",
+      "address": "0x70c90",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0BackdropVBO(unsigned int*, int, unsigned short*)"
+    },
+    {
+      "mangled": "_Z13G0BindTexturei",
+      "address": "0x71240",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0BindTexture(int)"
+    },
+    {
+      "mangled": "_Z13G0RenderStartv",
+      "address": "0x70c54",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0RenderStart()"
+    },
+    {
+      "mangled": "_Z13G0TextureLoadii",
+      "address": "0x713b8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0TextureLoad(int, int)"
+    },
+    {
+      "mangled": "_Z13MacDeleteFilePc",
+      "address": "0x78898",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacDeleteFile(char*)"
+    },
+    {
+      "mangled": "_Z13MacGCGetTableiiii",
+      "address": "0x78cc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCGetTable(int, int, int, int)"
+    },
+    {
+      "mangled": "_Z13RShellDatInitPc",
+      "address": "0xdce0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellDatInit(char*)"
+    },
+    {
+      "mangled": "_Z13RShellWarningPcz",
+      "address": "0xd1cc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellWarning(char*, ...)"
+    },
+    {
+      "mangled": "_Z14FontASCIIRemapc",
+      "address": "0xefcc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "FontASCIIRemap(char)"
+    },
+    {
+      "mangled": "_Z14G0MemoryValuesv",
+      "address": "0x7f38",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0MemoryValues()"
+    },
+    {
+      "mangled": "_Z14G0RenderCamerafffffP7tMatrixS0_bbff",
+      "address": "0x72170",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0RenderCamera(float, float, float, float, float, tMatrix*, tMatrix*, bool, bool, float, float)"
+    },
+    {
+      "mangled": "_Z14G0RenderObjectP8cRObjectP7tMatrixffP12tColourSmallb",
+      "address": "0x724ec",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)"
+    },
+    {
+      "mangled": "_Z14GCGetHighScorev",
+      "address": "0x7b5a4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "GCGetHighScore()"
+    },
+    {
+      "mangled": "_Z14GCSetHighScorev",
+      "address": "0x7b424",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "GCSetHighScore()"
+    },
+    {
+      "mangled": "_Z14MacGCAddArcadei",
+      "address": "0x781c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCAddArcade(int)"
+    },
+    {
+      "mangled": "_Z14MacGetFileNamePcS_",
+      "address": "0x787d0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGetFileName(char*, char*)"
+    },
+    {
+      "mangled": "_Z14MacSwapBuffersv",
+      "address": "0x72c4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacSwapBuffers()"
+    },
+    {
+      "mangled": "_Z14MathType10to32sf",
+      "address": "0xa150",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MathType10to32(short, float)"
+    },
+    {
+      "mangled": "_Z14MathType16to32sf",
+      "address": "0xa0f4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MathType16to32(short, float)"
+    },
+    {
+      "mangled": "_Z14MathType32to10ff",
+      "address": "0xa11c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MathType32to10(float, float)"
+    },
+    {
+      "mangled": "_Z14MathType32to16ff",
+      "address": "0xa0cc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MathType32to16(float, float)"
+    },
+    {
+      "mangled": "_Z14MouseCalcScalef",
+      "address": "0xe4fc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MouseCalcScale(float)"
+    },
+    {
+      "mangled": "_Z14ObjectProcNullP8cRObject",
+      "address": "0x15e94",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "ObjectProcNull(cRObject*)"
+    },
+    {
+      "mangled": "_Z14ObjectTextLoadPcP8cRObject",
+      "address": "0x173d8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "ObjectTextLoad(char*, cRObject*)"
+    },
+    {
+      "mangled": "_Z14RShellFindFilePcb",
+      "address": "0xd86c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellFindFile(char*, bool)"
+    },
+    {
+      "mangled": "_Z14RShellFontLoadPciff",
+      "address": "0xc680",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellFontLoad(char*, int, float, float)"
+    },
+    {
+      "mangled": "_Z14RShellLoadFilePcPi",
+      "address": "0xd754",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellLoadFile(char*, int*)"
+    },
+    {
+      "mangled": "_Z14RShellLoadFilePcPvPi",
+      "address": "0xd3f4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellLoadFile(char*, void*, int*)"
+    },
+    {
+      "mangled": "_Z14RShellSaveFilePcPvi",
+      "address": "0xd3d4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellSaveFile(char*, void*, int)"
+    },
+    {
+      "mangled": "_Z14RShellSetMouseiff",
+      "address": "0xcecc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellSetMouse(int, float, float)"
+    },
+    {
+      "mangled": "_Z14RTextCompStartPcS_",
+      "address": "0xc008",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RTextCompStart(char*, char*)"
+    },
+    {
+      "mangled": "_Z15FontPrintRenderi",
+      "address": "0x10ff4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "FontPrintRender(int)"
+    },
+    {
+      "mangled": "_Z15G0FontRenderEndv",
+      "address": "0x71d20",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0FontRenderEnd()"
+    },
+    {
+      "mangled": "_Z15G0TextureReLoadiPc",
+      "address": "0x71b00",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0TextureReLoad(int, char*)"
+    },
+    {
+      "mangled": "_Z15HideWindowMouseb",
+      "address": "0xe504",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "HideWindowMouse(bool)"
+    },
+    {
+      "mangled": "_Z15MacConvertTouchffPfS_PiS_S_",
+      "address": "0xe8e4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacConvertTouch(float, float, float*, float*, int*, float*, float*)"
+    },
+    {
+      "mangled": "_Z15MacGCMatchStartv",
+      "address": "0x6f94",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCMatchStart()"
+    },
+    {
+      "mangled": "_Z15RShellMusicPlayPciS_",
+      "address": "0xc670",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellMusicPlay(char*, int, char*)"
+    },
+    {
+      "mangled": "_Z15RShellPrintTextPcz",
+      "address": "0xd170",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellPrintText(char*, ...)"
+    },
+    {
+      "mangled": "_Z15RShellSoundPlayifff",
+      "address": "0xc588",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellSoundPlay(int, float, float, float)"
+    },
+    {
+      "mangled": "_Z15RShellVoicePlayifff",
+      "address": "0xc4e0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellVoicePlay(int, float, float, float)"
+    },
+    {
+      "mangled": "_Z15RTextExtractIntPPc",
+      "address": "0xc1a0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RTextExtractInt(char**)"
+    },
+    {
+      "mangled": "_Z15startConsoleWiniiiiPc",
+      "address": "0xe018",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "startConsoleWin(int, int, int, int, char*)"
+    },
+    {
+      "mangled": "_Z16G0RenderBackdropP11cGLVertexUVjiP9cRTexture",
+      "address": "0x73cac",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0RenderBackdrop(cGLVertexUV*, unsigned int, int, cRTexture*)"
+    },
+    {
+      "mangled": "_Z16G0RenderSprite3DP7tVectorP8cRSprite",
+      "address": "0x72cc4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0RenderSprite3D(tVector*, cRSprite*)"
+    },
+    {
+      "mangled": "_Z16G0TextureSetLoadi",
+      "address": "0x71a18",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0TextureSetLoad(int)"
+    },
+    {
+      "mangled": "_Z16GCInitHighScoresv",
+      "address": "0x7b2dc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "GCInitHighScores()"
+    },
+    {
+      "mangled": "_Z16GCLoadHighScoresv",
+      "address": "0x7b0b0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "GCLoadHighScores()"
+    },
+    {
+      "mangled": "_Z16GCSaveHighScoresv",
+      "address": "0x7b32c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "GCSaveHighScores()"
+    },
+    {
+      "mangled": "_Z16LoadFileDataInfoPKcRP17OpaqueAudioFileIDR27AudioStreamBasicDescriptionRy",
+      "address": "0x74274",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "LoadFileDataInfo(char const*, OpaqueAudioFileID*&, AudioStreamBasicDescription&, unsigned long long&)"
+    },
+    {
+      "mangled": "_Z16MacMultipleTouchb",
+      "address": "0x7bfc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacMultipleTouch(bool)"
+    },
+    {
+      "mangled": "_Z16ObjectProcFringeP8cRObjectiiiiPc",
+      "address": "0x163f4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "ObjectProcFringe(cRObject*, int, int, int, int, char*)"
+    },
+    {
+      "mangled": "_Z16RShellDeleteFilePc",
+      "address": "0xd3e4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellDeleteFile(char*)"
+    },
+    {
+      "mangled": "_Z16RShellFindSamplePc",
+      "address": "0xd2b4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellFindSample(char*)"
+    },
+    {
+      "mangled": "_Z16RShellInkeyInputv",
+      "address": "0xc690",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellInkeyInput()"
+    },
+    {
+      "mangled": "_Z16RShellMemoryFreePv",
+      "address": "0xd3b4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellMemoryFree(void*)"
+    },
+    {
+      "mangled": "_Z17G0FontRenderStartv",
+      "address": "0x73a3c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0FontRenderStart()"
+    },
+    {
+      "mangled": "_Z17MacAudioNormalizefff",
+      "address": "0x782ec",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacAudioNormalize(float, float, float)"
+    },
+    {
+      "mangled": "_Z17MacAudioPlayMusicPc",
+      "address": "0x78544",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacAudioPlayMusic(char*)"
+    },
+    {
+      "mangled": "_Z17MacAudioStopMusicv",
+      "address": "0x78324",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacAudioStopMusic()"
+    },
+    {
+      "mangled": "_Z17MacGCAddArcadeProi",
+      "address": "0x77b4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCAddArcadePro(int)"
+    },
+    {
+      "mangled": "_Z17MacGCAddChallengei",
+      "address": "0x774c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCAddChallenge(int)"
+    },
+    {
+      "mangled": "_Z17MacGCGetHighScorev",
+      "address": "0x7884",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCGetHighScore()"
+    },
+    {
+      "mangled": "_Z17MacGCMatchEndGamev",
+      "address": "0x7ea0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCMatchEndGame()"
+    },
+    {
+      "mangled": "_Z17MacGCSessionClosev",
+      "address": "0x71dc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCSessionClose()"
+    },
+    {
+      "mangled": "_Z17MacGCSessionStartv",
+      "address": "0x7224",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCSessionStart()"
+    },
+    {
+      "mangled": "_Z17MacGCSetHighScorev",
+      "address": "0x78a8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCSetHighScore()"
+    },
+    {
+      "mangled": "_Z17RShellGetFileSizePc",
+      "address": "0xdf9c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellGetFileSize(char*)"
+    },
+    {
+      "mangled": "_Z17RTextExtractFloatPPc",
+      "address": "0xc23c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RTextExtractFloat(char**)"
+    },
+    {
+      "mangled": "_Z17gRegisterLoadFilePcPv",
+      "address": "0xa0b0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "gRegisterLoadFile(char*, void*)"
+    },
+    {
+      "mangled": "_Z17gRegisterSaveFilePcPvi",
+      "address": "0xa0a0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "gRegisterSaveFile(char*, void*, int)"
+    },
+    {
+      "mangled": "_Z18MacAudioLoadSamplePc",
+      "address": "0x783dc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacAudioLoadSample(char*)"
+    },
+    {
+      "mangled": "_Z18MacAudioPlaySampleifff",
+      "address": "0x78378",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacAudioPlaySample(int, float, float, float)"
+    },
+    {
+      "mangled": "_Z18MacAudioStartMusicv",
+      "address": "0x78758",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacAudioStartMusic()"
+    },
+    {
+      "mangled": "_Z18MacGCMatchSendDataPhib",
+      "address": "0x6f2c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCMatchSendData(unsigned char*, int, bool)"
+    },
+    {
+      "mangled": "_Z18MacGCSessionInvitei",
+      "address": "0x718c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCSessionInvite(int)"
+    },
+    {
+      "mangled": "_Z18ObjectProcTileFastP8cRObjectPcf",
+      "address": "0x162f0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "ObjectProcTileFast(cRObject*, char*, float)"
+    },
+    {
+      "mangled": "_Z18RShellMemoryMallociPc",
+      "address": "0xd3c4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellMemoryMalloc(int, char*)"
+    },
+    {
+      "mangled": "_Z18RTextExtractStringPPcS_",
+      "address": "0xc138",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RTextExtractString(char**, char*)"
+    },
+    {
+      "mangled": "_Z19G0RenderSprite3DEndv",
+      "address": "0x71cb0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0RenderSprite3DEnd()"
+    },
+    {
+      "mangled": "_Z19G0TextureReloadFasti",
+      "address": "0x7131c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0TextureReloadFast(int)"
+    },
+    {
+      "mangled": "_Z19MacGCAddAchievementi",
+      "address": "0x7030",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCAddAchievement(int)"
+    },
+    {
+      "mangled": "_Z19MacGCSaveHighScoresv",
+      "address": "0x7728",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCSaveHighScores()"
+    },
+    {
+      "mangled": "_Z19RShellInputRetrieveiPiPfS0_S0_S0_S0_S0_S0_S0_S0_",
+      "address": "0xc3b0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellInputRetrieve(int, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*)"
+    },
+    {
+      "mangled": "_Z19RShellLoadDirectoryPcPiPA128_c",
+      "address": "0xd760",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellLoadDirectory(char*, int*, char (*) [128])"
+    },
+    {
+      "mangled": "_Z19RShellMemoryScratchv",
+      "address": "0xbfb8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellMemoryScratch()"
+    },
+    {
+      "mangled": "_Z19RShellReadDirectoryPcS_PiPA128_c",
+      "address": "0xbfb4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellReadDirectory(char*, char*, int*, char (*) [128])"
+    },
+    {
+      "mangled": "_Z19RShellSaveDirectoryPciPA128_c",
+      "address": "0xd7f4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellSaveDirectory(char*, int, char (*) [128])"
+    },
+    {
+      "mangled": "_Z19RShellSoundRegisterPci",
+      "address": "0xd334",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellSoundRegister(char*, int)"
+    },
+    {
+      "mangled": "_Z20G0FontRenderViewporti",
+      "address": "0x73dd8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0FontRenderViewport(int)"
+    },
+    {
+      "mangled": "_Z20MacGCMatchDisconnectv",
+      "address": "0x6ee4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCMatchDisconnect()"
+    },
+    {
+      "mangled": "_Z20MacGCMatchSendResultii",
+      "address": "0x7de0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCMatchSendResult(int, int)"
+    },
+    {
+      "mangled": "_Z20RShellGetScreenWidthv",
+      "address": "0xc4b8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellGetScreenWidth()"
+    },
+    {
+      "mangled": "_Z20RShellLoadFileHeaderPcPvi",
+      "address": "0xd9c0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellLoadFileHeader(char*, void*, int)"
+    },
+    {
+      "mangled": "_Z20RShellMemoryBookmarkv",
+      "address": "0xbfdc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellMemoryBookmark()"
+    },
+    {
+      "mangled": "_Z20RShellMemoryScratch2v",
+      "address": "0xbfc8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellMemoryScratch2()"
+    },
+    {
+      "mangled": "_Z21G0RenderSprite3DStartv",
+      "address": "0x73124",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0RenderSprite3DStart()"
+    },
+    {
+      "mangled": "_Z21MacGCLeaderboardClearv",
+      "address": "0x726c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCLeaderboardClear()"
+    },
+    {
+      "mangled": "_Z21MacGCLeaderboardStartv",
+      "address": "0x7298",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCLeaderboardStart()"
+    },
+    {
+      "mangled": "_Z21MacGCMatchReceiveDataPhi",
+      "address": "0x730c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCMatchReceiveData(unsigned char*, int)"
+    },
+    {
+      "mangled": "_Z21RShellConvertFileNamePcS_",
+      "address": "0xbf50",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellConvertFileName(char*, char*)"
+    },
+    {
+      "mangled": "_Z21RShellGetScreenHeightv",
+      "address": "0xc4cc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellGetScreenHeight()"
+    },
+    {
+      "mangled": "_Z21RShellSoundPlayLoopedi",
+      "address": "0xc650",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellSoundPlayLooped(int)"
+    },
+    {
+      "mangled": "_Z21RShellSoundStopLoopedi",
+      "address": "0xc630",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellSoundStopLooped(int)"
+    },
+    {
+      "mangled": "_Z22MacAudioSetMusicVolumef",
+      "address": "0x78368",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacAudioSetMusicVolume(float)"
+    },
+    {
+      "mangled": "_Z22MacG0TextureReloadFasti",
+      "address": "0x7718",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacG0TextureReloadFast(int)"
+    },
+    {
+      "mangled": "_Z22MacGCAchievementsStartv",
+      "address": "0x7074",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCAchievementsStart()"
+    },
+    {
+      "mangled": "_Z22MacGCMatchSendContinuei",
+      "address": "0x7d1c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCMatchSendContinue(int)"
+    },
+    {
+      "mangled": "_Z22ObjectProcJoinTexturesP8cRObject",
+      "address": "0x15d54",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "ObjectProcJoinTextures(cRObject*)"
+    },
+    {
+      "mangled": "_Z22ObjectProcTileFastRampiP8cRObject",
+      "address": "0x15ea4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "ObjectProcTileFastRamp(int, cRObject*)"
+    },
+    {
+      "mangled": "_Z23MacAudioSetSampleVolumef",
+      "address": "0x78314",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacAudioSetSampleVolume(float)"
+    },
+    {
+      "mangled": "_Z23MacGCAddParcelDeliveredv",
+      "address": "0x7af4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCAddParcelDelivered()"
+    },
+    {
+      "mangled": "_Z23MacGCLeaderboardDisplayv",
+      "address": "0x6e54",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCLeaderboardDisplay()"
+    },
+    {
+      "mangled": "_Z23ObjectProcSimplifyFacesP8cRObject",
+      "address": "0x16f20",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "ObjectProcSimplifyFaces(cRObject*)"
+    },
+    {
+      "mangled": "_Z23ObjectProcTileFloorFastP8cRObjectPcf",
+      "address": "0x1613c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "ObjectProcTileFloorFast(cRObject*, char*, float)"
+    },
+    {
+      "mangled": "_Z23ObjectProcVertexComparePKvS0_",
+      "address": "0x15d44",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "ObjectProcVertexCompare(void const*, void const*)"
+    },
+    {
+      "mangled": "_Z24MacGCMatchInviteAcceptedv",
+      "address": "0x6e9c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCMatchInviteAccepted()"
+    },
+    {
+      "mangled": "_Z24RShellInputRegisterMouseiiiiiiiibbbbb",
+      "address": "0xcf8c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellInputRegisterMouse(int, int, int, int, int, int, int, int, bool, bool, bool, bool, bool)"
+    },
+    {
+      "mangled": "_Z25ObjectProcLandScapeUpdateP8cRObjectffP9cRTextureb",
+      "address": "0x15f18",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool)"
+    },
+    {
+      "mangled": "_Z27RShellInputRegisterKeyboardiff",
+      "address": "0xc398",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellInputRegisterKeyboard(int, float, float)"
+    },
+    {
+      "mangled": "_Z28MacGCMatchSendInviteAcceptedv",
+      "address": "0x7c84",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCMatchSendInviteAccepted()"
+    },
+    {
+      "mangled": "_Z28MacGCSessionAcceptInvitationv",
+      "address": "0x7144",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCSessionAcceptInvitation()"
+    },
+    {
+      "mangled": "_Z28MacGCSessionCancelInvitationv",
+      "address": "0x70b4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCSessionCancelInvitation()"
+    },
+    {
+      "mangled": "_Z29MacGCSessionDeclineInvitationv",
+      "address": "0x70fc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCSessionDeclineInvitation()"
+    },
+    {
+      "mangled": "_Z29ObjectProcTileFloorCornerFastiP8cRObjectPc",
+      "address": "0x16258",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "ObjectProcTileFloorCornerFast(int, cRObject*, char*)"
+    },
+    {
+      "mangled": "_Z29RShellInputRegisterMouseExtraiff",
+      "address": "0xc49c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellInputRegisterMouseExtra(int, float, float)"
+    },
+    {
+      "mangled": "_Z30MacGCGetAchievementDescriptioniPcPib",
+      "address": "0x6fdc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacGCGetAchievementDescription(int, char*, int*, bool)"
+    },
+    {
+      "mangled": "_Z33RShellInputRegisterMouseClickOnlyi",
+      "address": "0xc47c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RShellInputRegisterMouseClickOnly(int)"
+    },
+    {
+      "mangled": "_Z3Cosf",
+      "address": "0xa1cc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "Cos(float)"
+    },
+    {
+      "mangled": "_Z3Sinf",
+      "address": "0xa214",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "Sin(float)"
+    },
+    {
+      "mangled": "_Z41__static_initialization_and_destruction_0ii",
+      "address": "0x2518",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "__static_initialization_and_destruction_0(int, int)"
+    },
+    {
+      "mangled": "_Z4ACosf",
+      "address": "0xae34",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "ACos(float)"
+    },
+    {
+      "mangled": "_Z4ATanff",
+      "address": "0xad00",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "ATan(float, float)"
+    },
+    {
+      "mangled": "_Z4RANDfPc",
+      "address": "0xafb4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RAND(float, char*)"
+    },
+    {
+      "mangled": "_Z4Sqrtf",
+      "address": "0xacf0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "Sqrt(float)"
+    },
+    {
+      "mangled": "_Z5KeyOnh",
+      "address": "0xee5c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "KeyOn(unsigned char)"
+    },
+    {
+      "mangled": "_Z5SRANDfPc",
+      "address": "0xaf5c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "SRAND(float, char*)"
+    },
+    {
+      "mangled": "_Z6FontAIv",
+      "address": "0xeedc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "FontAI()"
+    },
+    {
+      "mangled": "_Z6InitGLv",
+      "address": "0x70f64",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "InitGL()"
+    },
+    {
+      "mangled": "_Z6KeySeth",
+      "address": "0xee7c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "KeySet(unsigned char)"
+    },
+    {
+      "mangled": "_Z7KeyTesth",
+      "address": "0xee0c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "KeyTest(unsigned char)"
+    },
+    {
+      "mangled": "_Z7MacInitv",
+      "address": "0x8bb0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacInit()"
+    },
+    {
+      "mangled": "_Z7RstrASCc",
+      "address": "0xe07c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RstrASC(char)"
+    },
+    {
+      "mangled": "_Z7RstrcmpPcS_",
+      "address": "0xe130",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "Rstrcmp(char*, char*)"
+    },
+    {
+      "mangled": "_Z7RstrcpyPcPKc",
+      "address": "0xe3cc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "Rstrcpy(char*, char const*)"
+    },
+    {
+      "mangled": "_Z7RstrintPPc",
+      "address": "0xe19c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "Rstrint(char**)"
+    },
+    {
+      "mangled": "_Z7wprintfPcz",
+      "address": "0xe01c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "wprintf(char*, ...)"
+    },
+    {
+      "mangled": "_Z8DatBuildv",
+      "address": "0x9ba4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "DatBuild()"
+    },
+    {
+      "mangled": "_Z8FontInitv",
+      "address": "0xee94",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "FontInit()"
+    },
+    {
+      "mangled": "_Z8FontLoadPciff",
+      "address": "0xf86c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "FontLoad(char*, int, float, float)"
+    },
+    {
+      "mangled": "_Z8FontTypePciffffPfS0_S0_S0_fbifi7tColourbb",
+      "address": "0xfc14",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "FontType(char*, int, float, float, float, float, float*, float*, float*, float*, float, bool, int, float, int, tColour, bool, bool)"
+    },
+    {
+      "mangled": "_Z8G0Renderv",
+      "address": "0x71090",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "G0Render()"
+    },
+    {
+      "mangled": "_Z8KeyPressh",
+      "address": "0xee28",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "KeyPress(unsigned char)"
+    },
+    {
+      "mangled": "_Z8LoadFilePcPvPi",
+      "address": "0x9ac8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "LoadFile(char*, void*, int*)"
+    },
+    {
+      "mangled": "_Z8MacInit2v",
+      "address": "0x7a98",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacInit2()"
+    },
+    {
+      "mangled": "_Z8MouseSetiii",
+      "address": "0xe514",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MouseSet(int, int, int)"
+    },
+    {
+      "mangled": "_Z8OSDPrintiffffi7tColouri",
+      "address": "0xf5fc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "OSDPrint(int, float, float, float, float, int, tColour, int)"
+    },
+    {
+      "mangled": "_Z8OSDStateiiff",
+      "address": "0xf71c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "OSDState(int, int, float, float)"
+    },
+    {
+      "mangled": "_Z8OpenFilePKcRP17OpaqueAudioFileID",
+      "address": "0x741e4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "OpenFile(char const*, OpaqueAudioFileID*&)"
+    },
+    {
+      "mangled": "_Z8RandSeedi",
+      "address": "0xae44",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RandSeed(int)"
+    },
+    {
+      "mangled": "_Z8RstrfindPcS_",
+      "address": "0xe438",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "Rstrfind(char*, char*)"
+    },
+    {
+      "mangled": "_Z8RstrscanPcc",
+      "address": "0xe0a0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "Rstrscan(char*, char)"
+    },
+    {
+      "mangled": "_Z8SaveFilePcPvib",
+      "address": "0x99f4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "SaveFile(char*, void*, int, bool)"
+    },
+    {
+      "mangled": "_Z9MacFinishv",
+      "address": "0x7a88",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "MacFinish()"
+    },
+    {
+      "mangled": "_Z9RMathInitv",
+      "address": "0xb000",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RMathInit()"
+    },
+    {
+      "mangled": "_Z9RTextCopyPcS_",
+      "address": "0xbff0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "RTextCopy(char*, char*)"
+    },
+    {
+      "mangled": "_Z9RstrfloatPPc",
+      "address": "0xe270",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "Rstrfloat(char**)"
+    },
+    {
+      "mangled": "_Z9gluLookAtfffffffff",
+      "address": "0x7110c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "gluLookAt(float, float, float, float, float, float, float, float, float)"
+    },
+    {
+      "mangled": "_ZN10cBitStream3AddEji",
+      "address": "0x872bc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cBitStream::Add(unsigned int, int)"
+    },
+    {
+      "mangled": "_ZN10cBitStream4GetuEi",
+      "address": "0x87334",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cBitStream::Getu(int)"
+    },
+    {
+      "mangled": "_ZN10cBitStream4InitEPhi",
+      "address": "0x874ec",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cBitStream::Init(unsigned char*, int)"
+    },
+    {
+      "mangled": "_ZN10cBitStream4SizeEv",
+      "address": "0x87318",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cBitStream::Size()"
+    },
+    {
+      "mangled": "_ZN10cBitStream9AddStringEPc",
+      "address": "0x88298",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cBitStream::AddString(char*)"
+    },
+    {
+      "mangled": "_ZN10cBitStream9GetStringEPc",
+      "address": "0x87a5c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cBitStream::GetString(char*)"
+    },
+    {
+      "mangled": "_ZN10cRBackdrop10ChangeRealEv",
+      "address": "0x402d4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBackdrop::ChangeReal()"
+    },
+    {
+      "mangled": "_ZN10cRBackdrop10SetDistortEf",
+      "address": "0x400d8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBackdrop::SetDistort(float)"
+    },
+    {
+      "mangled": "_ZN10cRBackdrop2AIEv",
+      "address": "0x4043c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBackdrop::AI()"
+    },
+    {
+      "mangled": "_ZN10cRBackdrop4OpenEv",
+      "address": "0x40618",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBackdrop::Open()"
+    },
+    {
+      "mangled": "_ZN10cRBackdrop6ChangeEP11cRLandscapeb",
+      "address": "0x3fd00",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBackdrop::Change(cRLandscape*, bool)"
+    },
+    {
+      "mangled": "_ZN10cRBackdrop6RenderEv",
+      "address": "0x3fd88",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBackdrop::Render()"
+    },
+    {
+      "mangled": "_ZN10cRBackdrop7SetZoomEf",
+      "address": "0x3fcf4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBackdrop::SetZoom(float)"
+    },
+    {
+      "mangled": "_ZN10cRContinue2AIEv",
+      "address": "0x7aad8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRContinue::AI()"
+    },
+    {
+      "mangled": "_ZN10cRContinue4InitEv",
+      "address": "0x7a7c0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRContinue::Init()"
+    },
+    {
+      "mangled": "_ZN10cRCutScene2AIEv",
+      "address": "0x22494",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRCutScene::AI()"
+    },
+    {
+      "mangled": "_ZN10cRCutScene4InitEP10cRSubGoldy",
+      "address": "0x18dd8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRCutScene::Init(cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN10cRFaceQuad11RotateUVCCWEv",
+      "address": "0x122c8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRFaceQuad::RotateUVCCW()"
+    },
+    {
+      "mangled": "_ZN10cRFireWork5ShootE7tVectoriii",
+      "address": "0x1af0c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRFireWork::Shoot(tVector, int, int, int)"
+    },
+    {
+      "mangled": "_ZN10cRGCSelect11HideBordersEv",
+      "address": "0x867c8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGCSelect::HideBorders()"
+    },
+    {
+      "mangled": "_ZN10cRGCSelect2AIEv",
+      "address": "0x86d30",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGCSelect::AI()"
+    },
+    {
+      "mangled": "_ZN10cRGCSelect4InitEv",
+      "address": "0x86838",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGCSelect::Init()"
+    },
+    {
+      "mangled": "_ZN10cRMainMenu2AIEv",
+      "address": "0x62734",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRMainMenu::AI()"
+    },
+    {
+      "mangled": "_ZN10cRMainMenu4InitEv",
+      "address": "0x622a8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRMainMenu::Init()"
+    },
+    {
+      "mangled": "_ZN10cRMainMenu6UnInitEv",
+      "address": "0x626fc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRMainMenu::UnInit()"
+    },
+    {
+      "mangled": "_ZN10cRRowModel2AIEv",
+      "address": "0x2bb14",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRRowModel::AI()"
+    },
+    {
+      "mangled": "_ZN10cRSMTracks10OpenLevelsEv",
+      "address": "0x35438",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSMTracks::OpenLevels()"
+    },
+    {
+      "mangled": "_ZN10cRSMTracks6ImportEv",
+      "address": "0x334d8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSMTracks::Import()"
+    },
+    {
+      "mangled": "_ZN10cRSubGoldy10GoldyGoldyEPS_S0_",
+      "address": "0x7e934",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGoldy::GoldyGoldy(cRSubGoldy*, cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN10cRSubGoldy11FallingInitEv",
+      "address": "0x7d298",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGoldy::FallingInit()"
+    },
+    {
+      "mangled": "_ZN10cRSubGoldy12PlayShootSfxEv",
+      "address": "0x7dd14",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGoldy::PlayShootSfx()"
+    },
+    {
+      "mangled": "_ZN10cRSubGoldy13HealthCollectEP11cRSubHealth",
+      "address": "0x7e77c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGoldy::HealthCollect(cRSubHealth*)"
+    },
+    {
+      "mangled": "_ZN10cRSubGoldy13RessurectInitEi",
+      "address": "0x7d320",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGoldy::RessurectInit(int)"
+    },
+    {
+      "mangled": "_ZN10cRSubGoldy14ScoreStatsInitEv",
+      "address": "0x18554",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGoldy::ScoreStatsInit()"
+    },
+    {
+      "mangled": "_ZN10cRSubGoldy14SpeedUpCollectEv",
+      "address": "0x7d290",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGoldy::SpeedUpCollect()"
+    },
+    {
+      "mangled": "_ZN10cRSubGoldy16RessurectAIScoreEv",
+      "address": "0x7d900",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGoldy::RessurectAIScore()"
+    },
+    {
+      "mangled": "_ZN10cRSubGoldy17ScoreStatsDisplayEv",
+      "address": "0x19320",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGoldy::ScoreStatsDisplay()"
+    },
+    {
+      "mangled": "_ZN10cRSubGoldy2AIEv",
+      "address": "0x7ea64",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGoldy::AI()"
+    },
+    {
+      "mangled": "_ZN10cRSubGoldy4InitEi",
+      "address": "0x7ded0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGoldy::Init(int)"
+    },
+    {
+      "mangled": "_ZN10cRSubGoldy6UnInitEv",
+      "address": "0x7d294",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGoldy::UnInit()"
+    },
+    {
+      "mangled": "_ZN10cRSubGoldy8ScoreAddEii",
+      "address": "0x19ba8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGoldy::ScoreAdd(int, int)"
+    },
+    {
+      "mangled": "_ZN10cRSubGoldy9CollisionEv",
+      "address": "0x2dd18",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGoldy::Collision()"
+    },
+    {
+      "mangled": "_ZN10cRSubGoldy9DeathInitEv",
+      "address": "0x19ce4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGoldy::DeathInit()"
+    },
+    {
+      "mangled": "_ZN10cRSubGoldy9GhostInitEii",
+      "address": "0x7db74",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGoldy::GhostInit(int, int)"
+    },
+    {
+      "mangled": "_ZN10cRSubGoldy9ReadMouseEv",
+      "address": "0x7d344",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGoldy::ReadMouse()"
+    },
+    {
+      "mangled": "_ZN10cRSubHover2AIEv",
+      "address": "0x26680",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubHover::AI()"
+    },
+    {
+      "mangled": "_ZN10cRSubHover3EndEv",
+      "address": "0x18464",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubHover::End()"
+    },
+    {
+      "mangled": "_ZN10cRSubHover4InitEP10cRSubGoldy",
+      "address": "0x1848c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubHover::Init(cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN10cRSubHover4JetsEv",
+      "address": "0x1a674",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubHover::Jets()"
+    },
+    {
+      "mangled": "_ZN10cRSubLazer2AIEv",
+      "address": "0x2c02c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubLazer::AI()"
+    },
+    {
+      "mangled": "_ZN10cRSubLazer5ShootEP10cRSubGoldy7tVectorS2_",
+      "address": "0x1f1f0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubLazer::Shoot(cRSubGoldy*, tVector, tVector)"
+    },
+    {
+      "mangled": "_ZN10cRSubLocEx2AIEv",
+      "address": "0x32d44",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubLocEx::AI()"
+    },
+    {
+      "mangled": "_ZN10cRSubPause2AIEv",
+      "address": "0x1b79c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubPause::AI()"
+    },
+    {
+      "mangled": "_ZN10cRSubPause4InitEv",
+      "address": "0x1b418",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubPause::Init()"
+    },
+    {
+      "mangled": "_ZN10cRSubPause6UnInitEv",
+      "address": "0x1b714",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubPause::UnInit()"
+    },
+    {
+      "mangled": "_ZN10cRTextures3AddEPcP10cTgaHeaderi",
+      "address": "0x11f94",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTextures::Add(char*, cTgaHeader*, int)"
+    },
+    {
+      "mangled": "_ZN10cRTextures4InitEi",
+      "address": "0x11f84",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTextures::Init(int)"
+    },
+    {
+      "mangled": "_ZN10cRTutorial2AIEv",
+      "address": "0x68810",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTutorial::AI()"
+    },
+    {
+      "mangled": "_ZN10cRTutorial4InitEv",
+      "address": "0x687b4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTutorial::Init()"
+    },
+    {
+      "mangled": "_ZN10cRTutorial6UnInitEv",
+      "address": "0x68830",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTutorial::UnInit()"
+    },
+    {
+      "mangled": "_ZN10cRViewport9SetCameraEP8cRCamera",
+      "address": "0x6cd98",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRViewport::SetCamera(cRCamera*)"
+    },
+    {
+      "mangled": "_ZN10cRViewportC1Ev",
+      "address": "0x6cdac",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRViewport::cRViewport()"
+    },
+    {
+      "mangled": "_ZN11cRCameraman2AIEv",
+      "address": "0x19dbc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRCameraman::AI()"
+    },
+    {
+      "mangled": "_ZN11cRCameraman4InitEP10cRSubGoldy",
+      "address": "0x1948c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRCameraman::Init(cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN11cRCountDown2AIEv",
+      "address": "0x88f1c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRCountDown::AI()"
+    },
+    {
+      "mangled": "_ZN11cRCountDown4InitEP10cRSubGoldy",
+      "address": "0x891c4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRCountDown::Init(cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN11cRGameInput2AIEv",
+      "address": "0x48e2c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGameInput::AI()"
+    },
+    {
+      "mangled": "_ZN11cRGoldyFade4InitEP10cRSubGoldy",
+      "address": "0x3fcdc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGoldyFade::Init(cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN11cRGoldyFade5StartEv",
+      "address": "0x4d748",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGoldyFade::Start()"
+    },
+    {
+      "mangled": "_ZN11cRHighScore12RequestTableEv",
+      "address": "0x3af38",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRHighScore::RequestTable()"
+    },
+    {
+      "mangled": "_ZN11cRHighScore2AIEv",
+      "address": "0x3d818",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRHighScore::AI()"
+    },
+    {
+      "mangled": "_ZN11cRHighScore4InitEii",
+      "address": "0x3b004",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRHighScore::Init(int, int)"
+    },
+    {
+      "mangled": "_ZN11cRHighScore6CancelEv",
+      "address": "0x3d588",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRHighScore::Cancel()"
+    },
+    {
+      "mangled": "_ZN11cRHighScore8AddEntryEiPcii",
+      "address": "0x3aa94",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRHighScore::AddEntry(int, char*, int, int)"
+    },
+    {
+      "mangled": "_ZN11cRSnailSkin4InitEP7cRSnail",
+      "address": "0x18db0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSnailSkin::Init(cRSnail*)"
+    },
+    {
+      "mangled": "_ZN11cRSubHealth2AIEv",
+      "address": "0x2b724",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubHealth::AI()"
+    },
+    {
+      "mangled": "_ZN11cRSubTracks13ImportSegmentEPcP12cRSubSegment",
+      "address": "0x340cc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubTracks::ImportSegment(char*, cRSubSegment*)"
+    },
+    {
+      "mangled": "_ZN11cRSubTracks4InitEPP15cRSubSegmentRaw",
+      "address": "0x33f04",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubTracks::Init(cRSubSegmentRaw**)"
+    },
+    {
+      "mangled": "_ZN11cRSubTracks4InitEPc",
+      "address": "0x343d4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubTracks::Init(char*)"
+    },
+    {
+      "mangled": "_ZN11cRSubTracks4LoadEii",
+      "address": "0x1ac7c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubTracks::Load(int, int)"
+    },
+    {
+      "mangled": "_ZN11cRTimeTrial10TimeStringER6cRTime",
+      "address": "0x68734",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTimeTrial::TimeString(cRTime&)"
+    },
+    {
+      "mangled": "_ZN11tQuaternianC2ERK7tMatrix",
+      "address": "0xa9f0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tQuaternian::tQuaternian(tMatrix const&)"
+    },
+    {
+      "mangled": "_ZN12OpenALThread5EntryEPS_",
+      "address": "0x76970",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "OpenALThread::Entry(OpenALThread*)"
+    },
+    {
+      "mangled": "_ZN12cRClickStart2AIEv",
+      "address": "0x2bbe8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRClickStart::AI()"
+    },
+    {
+      "mangled": "_ZN12cRClickStart4InitEP10cRSubGoldy",
+      "address": "0x2372c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRClickStart::Init(cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN12cRCompletion14RegisterParcelEv",
+      "address": "0x632b0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRCompletion::RegisterParcel()"
+    },
+    {
+      "mangled": "_ZN12cRCompletion2AIEv",
+      "address": "0x63c04",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRCompletion::AI()"
+    },
+    {
+      "mangled": "_ZN12cRCompletion4InitEib",
+      "address": "0x63368",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRCompletion::Init(int, bool)"
+    },
+    {
+      "mangled": "_ZN12cRCompletion6UnInitEv",
+      "address": "0x63ab8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRCompletion::UnInit()"
+    },
+    {
+      "mangled": "_ZN12cRGolbRocket2AIEv",
+      "address": "0x3e258",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGolbRocket::AI()"
+    },
+    {
+      "mangled": "_ZN12cRInvincible2AIEv",
+      "address": "0x1ee28",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRInvincible::AI()"
+    },
+    {
+      "mangled": "_ZN12cRInvincible4InitEv",
+      "address": "0x1e784",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRInvincible::Init()"
+    },
+    {
+      "mangled": "_ZN12cRLoadingBar2AIEv",
+      "address": "0x17fc4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRLoadingBar::AI()"
+    },
+    {
+      "mangled": "_ZN12cRLoadingBar4InitEv",
+      "address": "0x17f44",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRLoadingBar::Init()"
+    },
+    {
+      "mangled": "_ZN12cRLoadingBar6FinishEv",
+      "address": "0x177f0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRLoadingBar::Finish()"
+    },
+    {
+      "mangled": "_ZN12cRLoadingBar6SignalEv",
+      "address": "0x17e60",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRLoadingBar::Signal()"
+    },
+    {
+      "mangled": "_ZN12cRLogoLetter2AIEv",
+      "address": "0x677c4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRLogoLetter::AI()"
+    },
+    {
+      "mangled": "_ZN12cRSubGarbage2AIEv",
+      "address": "0x2cab0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGarbage::AI()"
+    },
+    {
+      "mangled": "_ZN12cRSubSpeedUp2AIEv",
+      "address": "0x2b624",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubSpeedUp::AI()"
+    },
+    {
+      "mangled": "_ZN12cRTipManager10UnInitTipsEv",
+      "address": "0x69510",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTipManager::UnInitTips()"
+    },
+    {
+      "mangled": "_ZN12cRTipManager2AIEv",
+      "address": "0x6987c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTipManager::AI()"
+    },
+    {
+      "mangled": "_ZN12cRTipManager4InitEv",
+      "address": "0x69180",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTipManager::Init()"
+    },
+    {
+      "mangled": "_ZN12cRTipManager6TipNewEP9cRTipDataa",
+      "address": "0x6949c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTipManager::TipNew(cRTipData*, signed char)"
+    },
+    {
+      "mangled": "_ZN12tColourSmall3SetEffff",
+      "address": "0xa8c0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tColourSmall::Set(float, float, float, float)"
+    },
+    {
+      "mangled": "_ZN12tColourSmall5AlphaEf",
+      "address": "0xa91c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tColourSmall::Alpha(float)"
+    },
+    {
+      "mangled": "_ZN12tColourSmall5WhiteEv",
+      "address": "0x2674",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tColourSmall::White()"
+    },
+    {
+      "mangled": "_ZN12tColourSmallC1Ev",
+      "address": "0x2670",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tColourSmall::tColourSmall()"
+    },
+    {
+      "mangled": "_ZN12tColourSmallaSERK7tColour",
+      "address": "0xa864",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tColourSmall::operator=(tColour const&)"
+    },
+    {
+      "mangled": "_ZN13cRAnimManager2AIEv",
+      "address": "0x18968",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRAnimManager::AI()"
+    },
+    {
+      "mangled": "_ZN13cRAnimManager4InitEv",
+      "address": "0x1894c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRAnimManager::Init()"
+    },
+    {
+      "mangled": "_ZN13cRBorderStack4InitEv",
+      "address": "0x35a04",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorderStack::Init()"
+    },
+    {
+      "mangled": "_ZN13cRDamageGuage2AIEv",
+      "address": "0x22064",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRDamageGuage::AI()"
+    },
+    {
+      "mangled": "_ZN13cRDamageGuage4InitEP10cRSubGoldy",
+      "address": "0x18594",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRDamageGuage::Init(cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN13cRDamageGuage4TakeEfb",
+      "address": "0x21e70",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRDamageGuage::Take(float, bool)"
+    },
+    {
+      "mangled": "_ZN13cRDamageGuage6RenderEv",
+      "address": "0x1b118",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRDamageGuage::Render()"
+    },
+    {
+      "mangled": "_ZN13cRPathManager8NameCodeEPc",
+      "address": "0x4e950",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPathManager::NameCode(char*)"
+    },
+    {
+      "mangled": "_ZN13cRProgressBar2AIEv",
+      "address": "0x18394",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRProgressBar::AI()"
+    },
+    {
+      "mangled": "_ZN13cRProgressBar4InitEP10cRSubGoldy",
+      "address": "0x18384",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRProgressBar::Init(cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN13cRProgressBar6RenderEv",
+      "address": "0x1d864",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRProgressBar::Render()"
+    },
+    {
+      "mangled": "_ZN13cRSaltManager3AddER7tVectorP10cRSubGoldy",
+      "address": "0x1f2dc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSaltManager::Add(tVector&, cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN13cRStarManager11UpdateStarsEf",
+      "address": "0x689a8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRStarManager::UpdateStars(float)"
+    },
+    {
+      "mangled": "_ZN13cRStarManager2AIEv",
+      "address": "0x68ff8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRStarManager::AI()"
+    },
+    {
+      "mangled": "_ZN13cRStarManager4HideEv",
+      "address": "0x68908",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRStarManager::Hide()"
+    },
+    {
+      "mangled": "_ZN13cRStarManager4InitEv",
+      "address": "0x68b64",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRStarManager::Init()"
+    },
+    {
+      "mangled": "_ZN13cRStarManager4OpenEi",
+      "address": "0x68fa0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRStarManager::Open(int)"
+    },
+    {
+      "mangled": "_ZN13cRStarManager6UnHideEv",
+      "address": "0x68958",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRStarManager::UnHide()"
+    },
+    {
+      "mangled": "_ZN13cRSubRingStar6ShowerEP10cRSubGoldy",
+      "address": "0x1be80",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubRingStar::Shower(cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN13cRSubSolution5ReSetEiifiii",
+      "address": "0x3ae80",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubSolution::ReSet(int, int, float, int, int, int)"
+    },
+    {
+      "mangled": "_ZN14cAccelerometer2AIEv",
+      "address": "0x79108",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cAccelerometer::AI()"
+    },
+    {
+      "mangled": "_ZN14cAccelerometer4InitEv",
+      "address": "0x790a0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cAccelerometer::Init()"
+    },
+    {
+      "mangled": "_ZN14cAccelerometer5InputEfff",
+      "address": "0x79894",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cAccelerometer::Input(float, float, float)"
+    },
+    {
+      "mangled": "_ZN14cGCMultiAwards2AIEv",
+      "address": "0x8b3ec",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cGCMultiAwards::AI()"
+    },
+    {
+      "mangled": "_ZN14cGCMultiAwards4InitEv",
+      "address": "0x8b104",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cGCMultiAwards::Init()"
+    },
+    {
+      "mangled": "_ZN14cGLVertexArray12WorldFlattenEv",
+      "address": "0x700b0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cGLVertexArray::WorldFlatten()"
+    },
+    {
+      "mangled": "_ZN14cGLVertexArray8WorldAddEP7tVectorffP8cRObjectff",
+      "address": "0x6f954",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cGLVertexArray::WorldAdd(tVector*, float, float, cRObject*, float, float)"
+    },
+    {
+      "mangled": "_ZN14cREnemyManager4InitEv",
+      "address": "0x3e25c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cREnemyManager::Init()"
+    },
+    {
+      "mangled": "_ZN14cREnemyManager8RegisterER7tVectorfiP8cRBodPos",
+      "address": "0x3e268",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cREnemyManager::Register(tVector&, float, int, cRBodPos*)"
+    },
+    {
+      "mangled": "_ZN14cRSubHighScore10MiniDeleteEi",
+      "address": "0x3d4a0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubHighScore::MiniDelete(int)"
+    },
+    {
+      "mangled": "_ZN14cRSubHighScore11AddSurvivalEv",
+      "address": "0x3cd48",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubHighScore::AddSurvival()"
+    },
+    {
+      "mangled": "_ZN14cRSubHighScore12AddArcadeProEi",
+      "address": "0x3cee0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubHighScore::AddArcadePro(int)"
+    },
+    {
+      "mangled": "_ZN14cRSubHighScore12AddTimeTrialEib",
+      "address": "0x3ccbc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubHighScore::AddTimeTrial(int, bool)"
+    },
+    {
+      "mangled": "_ZN14cRSubHighScore12LoadMiniDataEv",
+      "address": "0x3ab18",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubHighScore::LoadMiniData()"
+    },
+    {
+      "mangled": "_ZN14cRSubHighScore12SaveMiniDataEv",
+      "address": "0x3acf4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubHighScore::SaveMiniData()"
+    },
+    {
+      "mangled": "_ZN14cRSubHighScore4InitEv",
+      "address": "0x3aa90",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubHighScore::Init()"
+    },
+    {
+      "mangled": "_ZN14cRSubHighScore8MiniInitEv",
+      "address": "0x3add4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubHighScore::MiniInit()"
+    },
+    {
+      "mangled": "_ZN14cRSubHighScore8MiniLoadEi",
+      "address": "0x3d18c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubHighScore::MiniLoad(int)"
+    },
+    {
+      "mangled": "_ZN14cRSubHighScore8MiniSaveEi",
+      "address": "0x3c970",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubHighScore::MiniSave(int)"
+    },
+    {
+      "mangled": "_ZN14cRSubHighScore9AddArcadeEi",
+      "address": "0x3d04c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubHighScore::AddArcade(int)"
+    },
+    {
+      "mangled": "_ZN14cRSubTrampRing2AIEv",
+      "address": "0x2b9e0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubTrampRing::AI()"
+    },
+    {
+      "mangled": "_ZN14cRVoiceManager2AIEv",
+      "address": "0x6ee30",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRVoiceManager::AI()"
+    },
+    {
+      "mangled": "_ZN14cRVoiceManager4InitEv",
+      "address": "0x6f37c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRVoiceManager::Init()"
+    },
+    {
+      "mangled": "_ZN14cRVoiceManager4PlayEiii",
+      "address": "0x6f14c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRVoiceManager::Play(int, int, int)"
+    },
+    {
+      "mangled": "_ZN14cRVoiceManager5ReSetEv",
+      "address": "0x6ede4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRVoiceManager::ReSet()"
+    },
+    {
+      "mangled": "_ZN15cGCAchievements14DisplayCurrentEv",
+      "address": "0x854f4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cGCAchievements::DisplayCurrent()"
+    },
+    {
+      "mangled": "_ZN15cGCAchievements2AIEv",
+      "address": "0x85d5c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cGCAchievements::AI()"
+    },
+    {
+      "mangled": "_ZN15cGCAchievements4InitEv",
+      "address": "0x857d4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cGCAchievements::Init()"
+    },
+    {
+      "mangled": "_ZN15cGCAchievements4LoadEPc",
+      "address": "0x852d4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cGCAchievements::Load(char*)"
+    },
+    {
+      "mangled": "_ZN15cGCAchievements4SaveEPc",
+      "address": "0x853c8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cGCAchievements::Save(char*)"
+    },
+    {
+      "mangled": "_ZN15cGCMultiResults2AIEv",
+      "address": "0x8ac1c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cGCMultiResults::AI()"
+    },
+    {
+      "mangled": "_ZN15cGCMultiResults4InitEv",
+      "address": "0x89c20",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cGCMultiResults::Init()"
+    },
+    {
+      "mangled": "_ZN15cGCMultiResults8GameInitEi",
+      "address": "0x89c00",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cGCMultiResults::GameInit(int)"
+    },
+    {
+      "mangled": "_ZN15cNetworkWarning2AIEv",
+      "address": "0x8b6f4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cNetworkWarning::AI()"
+    },
+    {
+      "mangled": "_ZN15cNetworkWarning4InitEv",
+      "address": "0x8b490",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cNetworkWarning::Init()"
+    },
+    {
+      "mangled": "_ZN15cRBorderManager11HideBordersEv",
+      "address": "0x389e4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorderManager::HideBorders()"
+    },
+    {
+      "mangled": "_ZN15cRBorderManager11KillBordersEv",
+      "address": "0x35908",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorderManager::KillBorders()"
+    },
+    {
+      "mangled": "_ZN15cRBorderManager13UnHideBordersEv",
+      "address": "0x388fc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorderManager::UnHideBorders()"
+    },
+    {
+      "mangled": "_ZN15cRBorderManager16SetJustifyCentreEf",
+      "address": "0x35a4c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorderManager::SetJustifyCentre(float)"
+    },
+    {
+      "mangled": "_ZN15cRBorderManager2AIEv",
+      "address": "0x35950",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorderManager::AI()"
+    },
+    {
+      "mangled": "_ZN15cRBorderManager4KillEP8cRBorder",
+      "address": "0x38a90",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorderManager::Kill(cRBorder*)"
+    },
+    {
+      "mangled": "_ZN15cRBorderManager9CentreRowEP8cRBorderbf",
+      "address": "0x36fc8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorderManager::CentreRow(cRBorder*, bool, float)"
+    },
+    {
+      "mangled": "_ZN15cRBorderManager9GetBorderEv",
+      "address": "0x35d40",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorderManager::GetBorder()"
+    },
+    {
+      "mangled": "_ZN15cRParcelManager2AIEv",
+      "address": "0x18814",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRParcelManager::AI()"
+    },
+    {
+      "mangled": "_ZN15cRSpriteManager10GetTextureEi",
+      "address": "0x1115c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSpriteManager::GetTexture(int)"
+    },
+    {
+      "mangled": "_ZN15cRSpriteManager13GetTextureRefEi",
+      "address": "0x11140",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSpriteManager::GetTextureRef(int)"
+    },
+    {
+      "mangled": "_ZN15cRSpriteManager3NewEiiii",
+      "address": "0x11a54",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSpriteManager::New(int, int, int, int)"
+    },
+    {
+      "mangled": "_ZN15cRSpriteManager4InitEv",
+      "address": "0x118e0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSpriteManager::Init()"
+    },
+    {
+      "mangled": "_ZN15cRSpriteManager4LoadEPcii",
+      "address": "0x113a8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSpriteManager::Load(char*, int, int)"
+    },
+    {
+      "mangled": "_ZN15cRSpriteManager5PauseEb",
+      "address": "0x110f8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSpriteManager::Pause(bool)"
+    },
+    {
+      "mangled": "_ZN15cRSpriteManager6GetTgaEi",
+      "address": "0x11174",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSpriteManager::GetTga(int)"
+    },
+    {
+      "mangled": "_ZN15cRSpriteManager7LoadSetEPcii",
+      "address": "0x1155c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSpriteManager::LoadSet(char*, int, int)"
+    },
+    {
+      "mangled": "_ZN15cRSpriteManager8KillGameEv",
+      "address": "0x11bcc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSpriteManager::KillGame()"
+    },
+    {
+      "mangled": "_ZN16cRPathFollowGolb4InitEP8cRSubLocR7tVectorP9cRSubGolb",
+      "address": "0x4e550",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*)"
+    },
+    {
+      "mangled": "_ZN16cRPathFollowGolb8TraverseEfR7tVectorPS0_",
+      "address": "0x50484",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPathFollowGolb::Traverse(float, tVector&, tVector*)"
+    },
+    {
+      "mangled": "_ZN17SoundEngineEffect12PlaybackProcEPv",
+      "address": "0x76d3c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "SoundEngineEffect::PlaybackProc(void*)"
+    },
+    {
+      "mangled": "_ZN17SoundEngineEffect5StartEv",
+      "address": "0x76460",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "SoundEngineEffect::Start()"
+    },
+    {
+      "mangled": "_ZN17cRHighScoreSelect2AIEv",
+      "address": "0x85144",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRHighScoreSelect::AI()"
+    },
+    {
+      "mangled": "_ZN17cRHighScoreSelect4InitEv",
+      "address": "0x84d90",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRHighScoreSelect::Init()"
+    },
+    {
+      "mangled": "_ZN17cRPathFollowGoldy4InitEP8cRSubLocR7tVectorP10cRSubGoldy",
+      "address": "0x4e598",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN17cRPathFollowGoldy8TraverseEfR7tVectorPS0_",
+      "address": "0x4e9a0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPathFollowGoldy::Traverse(float, tVector&, tVector*)"
+    },
+    {
+      "mangled": "_ZN18BackgroundTrackMgr13QueueCallbackEPvP16OpaqueAudioQueueP16AudioQueueBuffer",
+      "address": "0x77218",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "BackgroundTrackMgr::QueueCallback(void*, OpaqueAudioQueue*, AudioQueueBuffer*)"
+    },
+    {
+      "mangled": "_ZN18BackgroundTrackMgr16QueueStoppedProcEPvP16OpaqueAudioQueuem",
+      "address": "0x77d60",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "BackgroundTrackMgr::QueueStoppedProc(void*, OpaqueAudioQueue*, unsigned long)"
+    },
+    {
+      "mangled": "_ZN18cRLandscapeManager4InitEi",
+      "address": "0x64254",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRLandscapeManager::Init(int)"
+    },
+    {
+      "mangled": "_ZN18cRLandscapeManager4OpenEv",
+      "address": "0x64a1c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRLandscapeManager::Open()"
+    },
+    {
+      "mangled": "_ZN18cRLandscapeManager6ImportEPc",
+      "address": "0x64334",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRLandscapeManager::Import(char*)"
+    },
+    {
+      "mangled": "_ZN18cRLandscapeManager6UnInitEv",
+      "address": "0x64250",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRLandscapeManager::UnInit()"
+    },
+    {
+      "mangled": "_ZN19cRDuplicateVertices4InitEi",
+      "address": "0x17204",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRDuplicateVertices::Init(int)"
+    },
+    {
+      "mangled": "_ZN21cRSplashWindowManager11RenderStartEv",
+      "address": "0x17a8c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSplashWindowManager::RenderStart()"
+    },
+    {
+      "mangled": "_ZN21cRSplashWindowManager4InitEv",
+      "address": "0x17d24",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSplashWindowManager::Init()"
+    },
+    {
+      "mangled": "_ZN21cRSplashWindowManager6RenderEf",
+      "address": "0x17804",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSplashWindowManager::Render(float)"
+    },
+    {
+      "mangled": "_ZN21cRSplashWindowManager6SetBarEPcffffff",
+      "address": "0x17bdc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSplashWindowManager::SetBar(char*, float, float, float, float, float, float)"
+    },
+    {
+      "mangled": "_ZN21cRSplashWindowManager9SetSplashEPc",
+      "address": "0x17d58",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSplashWindowManager::SetSplash(char*)"
+    },
+    {
+      "mangled": "_ZN21cRSubTrampRingManager4InitEv",
+      "address": "0x18e48",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubTrampRingManager::Init()"
+    },
+    {
+      "mangled": "_ZN21cRSubTrampRingManager7AddRingEP10cRSubGoldyP8cRSubLoc",
+      "address": "0x1f040",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubTrampRingManager::AddRing(cRSubGoldy*, cRSubLoc*)"
+    },
+    {
+      "mangled": "_ZN22cGCNotificationManager2AIEv",
+      "address": "0x864b0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cGCNotificationManager::AI()"
+    },
+    {
+      "mangled": "_ZN22cGCNotificationManager3AddEi",
+      "address": "0x85284",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cGCNotificationManager::Add(int)"
+    },
+    {
+      "mangled": "_ZN22cGCNotificationManager4InitEv",
+      "address": "0x86774",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cGCNotificationManager::Init()"
+    },
+    {
+      "mangled": "_ZN22cGCNotificationManager5ReSetEv",
+      "address": "0x85ffc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cGCNotificationManager::ReSet()"
+    },
+    {
+      "mangled": "_ZN4cRGC2AIEv",
+      "address": "0x7ba44",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGC::AI()"
+    },
+    {
+      "mangled": "_ZN4cRGC4InitEv",
+      "address": "0x7b74c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGC::Init()"
+    },
+    {
+      "mangled": "_ZN5cGlow2AIEv",
+      "address": "0x798b0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cGlow::AI()"
+    },
+    {
+      "mangled": "_ZN5cRBod14IsAfterSpritesEv",
+      "address": "0x12130",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBod::IsAfterSprites()"
+    },
+    {
+      "mangled": "_ZN5cRBod2AIEv",
+      "address": "0x12190",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBod::AI()"
+    },
+    {
+      "mangled": "_ZN5cRBod8ApplyPosER7tMatrix",
+      "address": "0x136a8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBod::ApplyPos(tMatrix&)"
+    },
+    {
+      "mangled": "_ZN5cRBod8SetSceneEi",
+      "address": "0x12154",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBod::SetScene(int)"
+    },
+    {
+      "mangled": "_ZN5cRBod9SetObjectEP8cRObject",
+      "address": "0x12140",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBod::SetObject(cRObject*)"
+    },
+    {
+      "mangled": "_ZN5cRBodC1Ev",
+      "address": "0x27d8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBod::cRBod()"
+    },
+    {
+      "mangled": "_ZN5cRBodC2Ev",
+      "address": "0x13720",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBod::cRBod()"
+    },
+    {
+      "mangled": "_ZN5cRGUI2AIEv",
+      "address": "0x658f8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGUI::AI()"
+    },
+    {
+      "mangled": "_ZN5cRGUI4InitEv",
+      "address": "0x65184",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGUI::Init()"
+    },
+    {
+      "mangled": "_ZN5cRGUI4OpenEv",
+      "address": "0x64f54",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGUI::Open()"
+    },
+    {
+      "mangled": "_ZN5cRGUI6UnInitEv",
+      "address": "0x64f78",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGUI::UnInit()"
+    },
+    {
+      "mangled": "_ZN5cRTip2AIEv",
+      "address": "0x69688",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTip::AI()"
+    },
+    {
+      "mangled": "_ZN5cRTip4InitEP9cRTipDataa",
+      "address": "0x69194",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTip::Init(cRTipData*, signed char)"
+    },
+    {
+      "mangled": "_ZN5tAxisaSERK11tQuaternian",
+      "address": "0xada8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tAxis::operator=(tQuaternian const&)"
+    },
+    {
+      "mangled": "_ZN6cRBass10PlaySampleEif",
+      "address": "0xdff8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBass::PlaySample(int, float)"
+    },
+    {
+      "mangled": "_ZN6cRBass10StopSampleEi",
+      "address": "0xe014",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBass::StopSample(int)"
+    },
+    {
+      "mangled": "_ZN6cRBass13SamplePlayingEi",
+      "address": "0xe008",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBass::SamplePlaying(int)"
+    },
+    {
+      "mangled": "_ZN6cRBass16PlaySampleLoopedEi",
+      "address": "0xe000",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBass::PlaySampleLooped(int)"
+    },
+    {
+      "mangled": "_ZN6cRBass16StopSampleLoopedEi",
+      "address": "0xdffc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBass::StopSampleLooped(int)"
+    },
+    {
+      "mangled": "_ZN6cRBass2AIEv",
+      "address": "0xe010",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBass::AI()"
+    },
+    {
+      "mangled": "_ZN6cRExit2AIEv",
+      "address": "0x6e164",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRExit::AI()"
+    },
+    {
+      "mangled": "_ZN6cRExit4InitEv",
+      "address": "0x6cdec",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRExit::Init()"
+    },
+    {
+      "mangled": "_ZN6cRFace2AIEv",
+      "address": "0x1aebc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRFace::AI()"
+    },
+    {
+      "mangled": "_ZN6cRFade5StartEPFvvE",
+      "address": "0x4d98c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRFade::Start(void (*)())"
+    },
+    {
+      "mangled": "_ZN6cRFade6FadeInEv",
+      "address": "0x3fcac",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRFade::FadeIn()"
+    },
+    {
+      "mangled": "_ZN6cRFade7StartOnEv",
+      "address": "0x4d85c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRFade::StartOn()"
+    },
+    {
+      "mangled": "_ZN6cRGame2AIEv",
+      "address": "0x4db08",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGame::AI()"
+    },
+    {
+      "mangled": "_ZN6cRGame5Init0Ev",
+      "address": "0x48c70",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGame::Init0()"
+    },
+    {
+      "mangled": "_ZN6cRGame5Init1Ev",
+      "address": "0x49d98",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGame::Init1()"
+    },
+    {
+      "mangled": "_ZN6cRGame5Init2Ev",
+      "address": "0x49118",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGame::Init2()"
+    },
+    {
+      "mangled": "_ZN6cRGame5Init3Ev",
+      "address": "0x4a450",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGame::Init3()"
+    },
+    {
+      "mangled": "_ZN6cRGame5Init4Ev",
+      "address": "0x49fdc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGame::Init4()"
+    },
+    {
+      "mangled": "_ZN6cRGame5Init5Ev",
+      "address": "0x4149c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGame::Init5()"
+    },
+    {
+      "mangled": "_ZN6cRGame6RenderEv",
+      "address": "0x48000",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGame::Render()"
+    },
+    {
+      "mangled": "_ZN6cRGame8InitLastEv",
+      "address": "0x48ee0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGame::InitLast()"
+    },
+    {
+      "mangled": "_ZN6cRGame8PortraitEv",
+      "address": "0x3fd58",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGame::Portrait()"
+    },
+    {
+      "mangled": "_ZN6cRGame9LevelInitEi",
+      "address": "0x3fca4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGame::LevelInit(int)"
+    },
+    {
+      "mangled": "_ZN6cRGame9LoadPathsEv",
+      "address": "0x41520",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGame::LoadPaths()"
+    },
+    {
+      "mangled": "_ZN6cRHelp2AIEv",
+      "address": "0x6ccd8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRHelp::AI()"
+    },
+    {
+      "mangled": "_ZN6cRHelp4InitEv",
+      "address": "0x6cc34",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRHelp::Init()"
+    },
+    {
+      "mangled": "_ZN6cRLogo2AIEv",
+      "address": "0x684f4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRLogo::AI()"
+    },
+    {
+      "mangled": "_ZN6cRLogo4InitEPc",
+      "address": "0x679d8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRLogo::Init(char*)"
+    },
+    {
+      "mangled": "_ZN6cRLogo4OpenEv",
+      "address": "0x6777c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRLogo::Open()"
+    },
+    {
+      "mangled": "_ZN6cRLogo6UnInitEv",
+      "address": "0x678a4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRLogo::UnInit()"
+    },
+    {
+      "mangled": "_ZN6cRNuke2AIEv",
+      "address": "0x194f8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRNuke::AI()"
+    },
+    {
+      "mangled": "_ZN6cRNuke6UnInitEv",
+      "address": "0x192d8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRNuke::UnInit()"
+    },
+    {
+      "mangled": "_ZN6cRPath10BuildCage2EiPcS0_",
+      "address": "0x51148",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildCage2(int, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath10BuildSBendEiffbPcS0_",
+      "address": "0x540c4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildSBend(int, float, float, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath10BuildScrewEiibPcS0_",
+      "address": "0x591ec",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildScrew(int, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath10BuildSnakeEfibPcS0_",
+      "address": "0x61868",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildSnake(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath10BuildStartEfibPcS0_",
+      "address": "0x5f8e0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildStart(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath10BuildSweepEfibPcS0_",
+      "address": "0x565b0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildSweep(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath11BuildDetourEfibPcS0_",
+      "address": "0x55c8c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildDetour(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath11BuildFringeEPcf",
+      "address": "0x4fdc8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildFringe(char*, float)"
+    },
+    {
+      "mangled": "_ZN6cRPath11BuildInvertEfibPcS0_",
+      "address": "0x5c5e4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildInvert(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath11BuildShimmyEfibPcS0_",
+      "address": "0x5cc0c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildShimmy(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath11BuildSlalomEiibPcS0_",
+      "address": "0x58764",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildSlalom(int, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath11BuildWibbleEfibPcS0_",
+      "address": "0x5d1f0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildWibble(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath11CalcLengthZEv",
+      "address": "0x4e62c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::CalcLengthZ()"
+    },
+    {
+      "mangled": "_ZN6cRPath11HalfPipePosEfffR7tMatrixRf",
+      "address": "0x4e898",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::HalfPipePos(float, float, float, tMatrix&, float&)"
+    },
+    {
+      "mangled": "_ZN6cRPath11HalfPolePosEfffR7tMatrixRf",
+      "address": "0x4e7e4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::HalfPolePos(float, float, float, tMatrix&, float&)"
+    },
+    {
+      "mangled": "_ZN6cRPath12BuildInvert1EfibPcS0_",
+      "address": "0x5bf7c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildInvert1(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath12BuildLoopBowEfibPcS0_",
+      "address": "0x553bc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildLoopBow(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath12BuildLoopOutEfibPcS0_",
+      "address": "0x52e5c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildLoopOut(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath13BuildHalfPipeEfibPcS0_",
+      "address": "0x5b880",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildHalfPipe(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath13BuildHalfPoleEfibPcS0_",
+      "address": "0x5b1a8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildHalfPole(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath13BuildTurnoverEfibPcS0_",
+      "address": "0x5ee14",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildTurnover(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath13BuildTwisterAEfibPcS0_",
+      "address": "0x5aa64",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildTwisterA(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath14BuildSlalomBigEiibPcS0_",
+      "address": "0x56efc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildSlalomBig(int, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath14BuildTurnunderEfibPcS0_",
+      "address": "0x5d82c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildTurnunder(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath14BuildTwister2AEfibPcS0_",
+      "address": "0x5a320",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildTwister2A(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath15BuildSuperTrampEffibPcS0_S0_",
+      "address": "0x61344",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildSuperTramp(float, float, int, bool, char*, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath16BuildLoopTheLoopEfibPcS0_",
+      "address": "0x51824",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildLoopTheLoop(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath17BuildLoopTheLoopWEfibPcS0_",
+      "address": "0x538ac",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildLoopTheLoopW(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath17BuildSlalomDoubleEiibPcS0_",
+      "address": "0x60858",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildSlalomDouble(int, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath19BuildTurnoverDoubleEfibPcS0_",
+      "address": "0x5e354",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildTurnoverDouble(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath21BuildFringeSuperTrampEPc",
+      "address": "0x4f7cc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildFringeSuperTramp(char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath6BuildPEififfiPcS0_",
+      "address": "0x60130",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildP(int, float, int, float, float, int, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath6GetPosER7tVectoriiS1_",
+      "address": "0x503d8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::GetPos(tVector&, int, int, tVector&)"
+    },
+    {
+      "mangled": "_ZN6cRPath6MirrorEPS_",
+      "address": "0x57984",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::Mirror(cRPath*)"
+    },
+    {
+      "mangled": "_ZN6cRPath6SearchEP10cRSubGoldy7tVectorS2_S2_P8cRSubLoc",
+      "address": "0x50a58",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::Search(cRSubGoldy*, tVector, tVector, tVector, cRSubLoc*)"
+    },
+    {
+      "mangled": "_ZN6cRPath8BuildDipEfibPcS0_",
+      "address": "0x59cc8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildDip(float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath9BuildDumpEffibPcS0_",
+      "address": "0x51fd4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildDump(float, float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath9BuildHillEiffbPcS0_",
+      "address": "0x54600",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildHill(int, float, float, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath9BuildHumpEffibPcS0_",
+      "address": "0x5271c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildHump(float, float, int, bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath9BuildToadEbPcS0_",
+      "address": "0x54cc4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildToad(bool, char*, char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath9BuildWormEPc",
+      "address": "0x57cc0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::BuildWorm(char*)"
+    },
+    {
+      "mangled": "_ZN6cRPath9SearchPosE7tVectorS0_P8cRSubLoc",
+      "address": "0x50270",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPath::SearchPos(tVector, tVector, cRSubLoc*)"
+    },
+    {
+      "mangled": "_ZN6cRQuit2AIEv",
+      "address": "0x195ec",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRQuit::AI()"
+    },
+    {
+      "mangled": "_ZN6cRQuit4InitEv",
+      "address": "0x19878",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRQuit::Init()"
+    },
+    {
+      "mangled": "_ZN6cRSalt2AIEv",
+      "address": "0x2b8f0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSalt::AI()"
+    },
+    {
+      "mangled": "_ZN6cRSlug2AIEv",
+      "address": "0x2d130",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSlug::AI()"
+    },
+    {
+      "mangled": "_ZN6cRSlug3HitEi",
+      "address": "0x2db10",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSlug::Hit(int)"
+    },
+    {
+      "mangled": "_ZN6cRSlug4KillEv",
+      "address": "0x280f8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSlug::Kill()"
+    },
+    {
+      "mangled": "_ZN6cRSlug7ExplodeEP10cRSubGoldy",
+      "address": "0x1bb8c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSlug::Explode(cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN6cRSure2AIEv",
+      "address": "0x7af78",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSure::AI()"
+    },
+    {
+      "mangled": "_ZN6cRSure4InitEv",
+      "address": "0x7acbc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSure::Init()"
+    },
+    {
+      "mangled": "_ZN6cRTime3AddEf",
+      "address": "0x18604",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTime::Add(float)"
+    },
+    {
+      "mangled": "_ZN6cRTime4ZeroEv",
+      "address": "0x185e0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTime::Zero()"
+    },
+    {
+      "mangled": "_ZN6cRTime6FasterEiii",
+      "address": "0x18698",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTime::Faster(int, int, int)"
+    },
+    {
+      "mangled": "_ZN7cKeyPad2AIEv",
+      "address": "0x7a114",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cKeyPad::AI()"
+    },
+    {
+      "mangled": "_ZN7cKeyPad4InitEP8cRBorder",
+      "address": "0x7a09c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cKeyPad::Init(cRBorder*)"
+    },
+    {
+      "mangled": "_ZN7cKeyPad4OpenEv",
+      "address": "0x79e64",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cKeyPad::Open()"
+    },
+    {
+      "mangled": "_ZN7cKeyPad6RenderEv",
+      "address": "0x79bd8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cKeyPad::Render()"
+    },
+    {
+      "mangled": "_ZN7cRCheat2AIEv",
+      "address": "0x68888",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRCheat::AI()"
+    },
+    {
+      "mangled": "_ZN7cRCheat4InitEv",
+      "address": "0x6885c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRCheat::Init()"
+    },
+    {
+      "mangled": "_ZN7cRIntro2AIEv",
+      "address": "0x66ebc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRIntro::AI()"
+    },
+    {
+      "mangled": "_ZN7cRIntro4InitEv",
+      "address": "0x66968",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRIntro::Init()"
+    },
+    {
+      "mangled": "_ZN7cRMouse11ClickScreenEibffff",
+      "address": "0xe5f8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRMouse::ClickScreen(int, bool, float, float, float, float)"
+    },
+    {
+      "mangled": "_ZN7cRMouse11ClickiPhoneEibffff",
+      "address": "0xe81c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRMouse::ClickiPhone(int, bool, float, float, float, float)"
+    },
+    {
+      "mangled": "_ZN7cRMouse11SetInActiveEv",
+      "address": "0xe5b8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRMouse::SetInActive()"
+    },
+    {
+      "mangled": "_ZN7cRMouse2AIEv",
+      "address": "0xe65c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRMouse::AI()"
+    },
+    {
+      "mangled": "_ZN7cRMouse7ClickOnEi",
+      "address": "0xe5dc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRMouse::ClickOn(int)"
+    },
+    {
+      "mangled": "_ZN7cRMouse8ClickOffEi",
+      "address": "0xe7c8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRMouse::ClickOff(int)"
+    },
+    {
+      "mangled": "_ZN7cRMouse8IsActiveEv",
+      "address": "0xe5b0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRMouse::IsActive()"
+    },
+    {
+      "mangled": "_ZN7cRMouse9ClickOnlyEiffff",
+      "address": "0xe890",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRMouse::ClickOnly(int, float, float, float, float)"
+    },
+    {
+      "mangled": "_ZN7cRMouse9SetActiveEv",
+      "address": "0xecd8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRMouse::SetActive()"
+    },
+    {
+      "mangled": "_ZN7cRMovie2AIEv",
+      "address": "0x121b0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRMovie::AI()"
+    },
+    {
+      "mangled": "_ZN7cRSnail10SetJetPackEi",
+      "address": "0x26484",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSnail::SetJetPack(int)"
+    },
+    {
+      "mangled": "_ZN7cRSnail12SetAnimationEibi",
+      "address": "0x18878",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSnail::SetAnimation(int, bool, int)"
+    },
+    {
+      "mangled": "_ZN7cRSnail14ReleaseWeaponsEv",
+      "address": "0x1aa54",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSnail::ReleaseWeapons()"
+    },
+    {
+      "mangled": "_ZN7cRSnail15ExtractHotSpotsEv",
+      "address": "0x1e364",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSnail::ExtractHotSpots()"
+    },
+    {
+      "mangled": "_ZN7cRSnail2AIEv",
+      "address": "0x18810",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSnail::AI()"
+    },
+    {
+      "mangled": "_ZN7cRSnail7AIGoldyEv",
+      "address": "0x22e64",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSnail::AIGoldy()"
+    },
+    {
+      "mangled": "_ZN7cRSnail9SetWeaponEi",
+      "address": "0x26910",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSnail::SetWeapon(int)"
+    },
+    {
+      "mangled": "_ZN7cRSound10PlayLoopedEi",
+      "address": "0x640ac",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSound::PlayLooped(int)"
+    },
+    {
+      "mangled": "_ZN7cRSound10PlayVolumeEif",
+      "address": "0x640c0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSound::PlayVolume(int, float)"
+    },
+    {
+      "mangled": "_ZN7cRSound10StopLoopedEi",
+      "address": "0x64098",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSound::StopLooped(int)"
+    },
+    {
+      "mangled": "_ZN7cRSound4InitEP11cRSoundBank",
+      "address": "0x6420c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSound::Init(cRSoundBank*)"
+    },
+    {
+      "mangled": "_ZN7cRSound4PlayEi",
+      "address": "0x640e4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSound::Play(int)"
+    },
+    {
+      "mangled": "_ZN7cRSound4PlayEiR7tVector",
+      "address": "0x64108",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSound::Play(int, tVector&)"
+    },
+    {
+      "mangled": "_ZN7cRTrack6ChangeEi",
+      "address": "0x4138c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTrack::Change(int)"
+    },
+    {
+      "mangled": "_ZN7cRWorld3AddEP8cRSubLoc",
+      "address": "0x7014c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRWorld::Add(cRSubLoc*)"
+    },
+    {
+      "mangled": "_ZN7cRWorld4InitEiiii",
+      "address": "0x7087c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRWorld::Init(int, int, int, int)"
+    },
+    {
+      "mangled": "_ZN7cRWorld5ReSetEv",
+      "address": "0x70040",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRWorld::ReSet()"
+    },
+    {
+      "mangled": "_ZN7tColour3SetEfff",
+      "address": "0xa854",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tColour::Set(float, float, float)"
+    },
+    {
+      "mangled": "_ZN7tColour3SetEffff",
+      "address": "0xa83c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tColour::Set(float, float, float, float)"
+    },
+    {
+      "mangled": "_ZN7tColour4GreyEf",
+      "address": "0xa824",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tColour::Grey(float)"
+    },
+    {
+      "mangled": "_ZN7tColour5BlackEv",
+      "address": "0xaf40",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tColour::Black()"
+    },
+    {
+      "mangled": "_ZN7tColour5WhiteEv",
+      "address": "0xa93c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tColour::White()"
+    },
+    {
+      "mangled": "_ZN7tColourC1Effff",
+      "address": "0xa80c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tColour::tColour(float, float, float, float)"
+    },
+    {
+      "mangled": "_ZN7tColourC1Ev",
+      "address": "0x266c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tColour::tColour()"
+    },
+    {
+      "mangled": "_ZN7tMatrix11InterpolateEf",
+      "address": "0xb108",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tMatrix::Interpolate(float)"
+    },
+    {
+      "mangled": "_ZN7tMatrix11RotIdentityEv",
+      "address": "0xa610",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tMatrix::RotIdentity()"
+    },
+    {
+      "mangled": "_ZN7tMatrix13OrthoganalizeEv",
+      "address": "0xb46c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tMatrix::Orthoganalize()"
+    },
+    {
+      "mangled": "_ZN7tMatrix17LinearInterpolateERKS_S1_f",
+      "address": "0xbba8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tMatrix::LinearInterpolate(tMatrix const&, tMatrix const&, float)"
+    },
+    {
+      "mangled": "_ZN7tMatrix5ScaleEf",
+      "address": "0xa798",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tMatrix::Scale(float)"
+    },
+    {
+      "mangled": "_ZN7tMatrix6InvertERKS_",
+      "address": "0xa6d8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tMatrix::Invert(tMatrix const&)"
+    },
+    {
+      "mangled": "_ZN7tMatrix6InvertEv",
+      "address": "0xa650",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tMatrix::Invert()"
+    },
+    {
+      "mangled": "_ZN7tMatrix6LookAtERK7tVector",
+      "address": "0xb8f0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tMatrix::LookAt(tVector const&)"
+    },
+    {
+      "mangled": "_ZN7tMatrix7SetZDirERK7tVector",
+      "address": "0xb7ac",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tMatrix::SetZDir(tVector const&)"
+    },
+    {
+      "mangled": "_ZN7tMatrix8IdentityEv",
+      "address": "0xa5c4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tMatrix::Identity()"
+    },
+    {
+      "mangled": "_ZN7tMatrix8MultiplyERKS_",
+      "address": "0xba4c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tMatrix::Multiply(tMatrix const&)"
+    },
+    {
+      "mangled": "_ZN7tMatrix9RotLocalXEf",
+      "address": "0xa324",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tMatrix::RotLocalX(float)"
+    },
+    {
+      "mangled": "_ZN7tMatrix9RotLocalYEf",
+      "address": "0xa3dc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tMatrix::RotLocalY(float)"
+    },
+    {
+      "mangled": "_ZN7tMatrix9RotLocalZEf",
+      "address": "0xa494",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tMatrix::RotLocalZ(float)"
+    },
+    {
+      "mangled": "_ZN7tMatrixC1Effffffffffffffff",
+      "address": "0xa54c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tMatrix::tMatrix(float, float, float, float, float, float, float, float, float, float, float, float, float, float, float, float)"
+    },
+    {
+      "mangled": "_ZN7tMatrixmLERKS_",
+      "address": "0xb650",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tMatrix::operator*=(tMatrix const&)"
+    },
+    {
+      "mangled": "_ZN7tVector3DotERKS_",
+      "address": "0xa2f8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tVector::Dot(tVector const&)"
+    },
+    {
+      "mangled": "_ZN7tVector5CrossERKS_S1_",
+      "address": "0xa954",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tVector::Cross(tVector const&, tVector const&)"
+    },
+    {
+      "mangled": "_ZN7tVector6RotateERK7tMatrix",
+      "address": "0xaedc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tVector::Rotate(tMatrix const&)"
+    },
+    {
+      "mangled": "_ZN7tVector9NormalizeEv",
+      "address": "0xac98",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tVector::Normalize()"
+    },
+    {
+      "mangled": "_ZN7tVectormLE7tMatrix",
+      "address": "0xae54",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tVector::operator*=(tMatrix)"
+    },
+    {
+      "mangled": "_ZN8cRBanner2AIEv",
+      "address": "0x18e88",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBanner::AI()"
+    },
+    {
+      "mangled": "_ZN8cRBodPosC1Ev",
+      "address": "0x14b40",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBodPos::cRBodPos()"
+    },
+    {
+      "mangled": "_ZN8cRBodPosC2Ev",
+      "address": "0x14bd0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBodPos::cRBodPos()"
+    },
+    {
+      "mangled": "_ZN8cRBorder10RePositionEv",
+      "address": "0x35dc8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorder::RePosition()"
+    },
+    {
+      "mangled": "_ZN8cRBorder10SetKeyLeftEi",
+      "address": "0x358f4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorder::SetKeyLeft(int)"
+    },
+    {
+      "mangled": "_ZN8cRBorder10UnHideInitEv",
+      "address": "0x358dc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorder::UnHideInit()"
+    },
+    {
+      "mangled": "_ZN8cRBorder13AddTextNumberEi",
+      "address": "0x35508",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorder::AddTextNumber(int)"
+    },
+    {
+      "mangled": "_ZN8cRBorder13InputTextInitEiPci",
+      "address": "0x38698",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorder::InputTextInit(int, char*, int)"
+    },
+    {
+      "mangled": "_ZN8cRBorder2AIEv",
+      "address": "0x39d8c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorder::AI()"
+    },
+    {
+      "mangled": "_ZN8cRBorder4DrawEv",
+      "address": "0x364e0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorder::Draw()"
+    },
+    {
+      "mangled": "_ZN8cRBorder4InitEiPciff7tColourif",
+      "address": "0x37b08",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorder::Init(int, char*, int, float, float, tColour, int, float)"
+    },
+    {
+      "mangled": "_ZN8cRBorder4InitEiiff7tColourfi",
+      "address": "0x37730",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorder::Init(int, int, float, float, tColour, float, int)"
+    },
+    {
+      "mangled": "_ZN8cRBorder5ScaleEf",
+      "address": "0x35a14",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorder::Scale(float)"
+    },
+    {
+      "mangled": "_ZN8cRBorder8HideInitEv",
+      "address": "0x38ce0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorder::HideInit()"
+    },
+    {
+      "mangled": "_ZN8cRBorder8SetAboveEPS_",
+      "address": "0x3645c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorder::SetAbove(cRBorder*)"
+    },
+    {
+      "mangled": "_ZN8cRBorder8SetBelowEPS_",
+      "address": "0x3649c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorder::SetBelow(cRBorder*)"
+    },
+    {
+      "mangled": "_ZN8cRBorder8SetRightEPS_",
+      "address": "0x36258",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorder::SetRight(cRBorder*)"
+    },
+    {
+      "mangled": "_ZN8cRBorder9InputTextEv",
+      "address": "0x392d0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorder::InputText()"
+    },
+    {
+      "mangled": "_ZN8cRBorder9MouseTestEv",
+      "address": "0x35a5c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBorder::MouseTest()"
+    },
+    {
+      "mangled": "_ZN8cRCamera2AIEv",
+      "address": "0x3fca8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRCamera::AI()"
+    },
+    {
+      "mangled": "_ZN8cRGalaxy2AIEv",
+      "address": "0x6bb94",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGalaxy::AI()"
+    },
+    {
+      "mangled": "_ZN8cRGalaxy4InitEv",
+      "address": "0x6c418",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGalaxy::Init()"
+    },
+    {
+      "mangled": "_ZN8cRGalaxy4OpenEi",
+      "address": "0x6a6c4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGalaxy::Open(int)"
+    },
+    {
+      "mangled": "_ZN8cRGalaxy5BoxOnEi",
+      "address": "0x6ab04",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGalaxy::BoxOn(int)"
+    },
+    {
+      "mangled": "_ZN8cRGalaxy5Init2Ev",
+      "address": "0x6b19c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGalaxy::Init2()"
+    },
+    {
+      "mangled": "_ZN8cRGalaxy6BoxOffEv",
+      "address": "0x6a578",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGalaxy::BoxOff()"
+    },
+    {
+      "mangled": "_ZN8cRGalaxy6RenderEv",
+      "address": "0x6c6a4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGalaxy::Render()"
+    },
+    {
+      "mangled": "_ZN8cRGalaxy6UnInitEv",
+      "address": "0x6a5c8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGalaxy::UnInit()"
+    },
+    {
+      "mangled": "_ZN8cRGalaxy9AIControlEv",
+      "address": "0x6a570",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRGalaxy::AIControl()"
+    },
+    {
+      "mangled": "_ZN8cRObject11ApplyUVPathEfff",
+      "address": "0x124b8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObject::ApplyUVPath(float, float, float)"
+    },
+    {
+      "mangled": "_ZN8cRObject11RequestAnimEiP8cRBodPosfi",
+      "address": "0x12ff8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObject::RequestAnim(int, cRBodPos*, float, int)"
+    },
+    {
+      "mangled": "_ZN8cRObject15RequestVerticesEi",
+      "address": "0x12f70",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObject::RequestVertices(int)"
+    },
+    {
+      "mangled": "_ZN8cRObject16RequestFaceQuadsEi",
+      "address": "0x12ed4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObject::RequestFaceQuads(int)"
+    },
+    {
+      "mangled": "_ZN8cRObject17CalcTextureGroupsEv",
+      "address": "0x13878",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObject::CalcTextureGroups()"
+    },
+    {
+      "mangled": "_ZN8cRObject18BuildGLVertexArrayEv",
+      "address": "0x151a4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObject::BuildGLVertexArray()"
+    },
+    {
+      "mangled": "_ZN8cRObject19CalcFaceQuadNormalsEv",
+      "address": "0x14c60",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObject::CalcFaceQuadNormals()"
+    },
+    {
+      "mangled": "_ZN8cRObject19RequestVerticesCopyEv",
+      "address": "0x13790",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObject::RequestVerticesCopy()"
+    },
+    {
+      "mangled": "_ZN8cRObject21ApplyUVPathSuperTrampEffff",
+      "address": "0x12380",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObject::ApplyUVPathSuperTramp(float, float, float, float)"
+    },
+    {
+      "mangled": "_ZN8cRObject4LoadEPc",
+      "address": "0x13c38",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObject::Load(char*)"
+    },
+    {
+      "mangled": "_ZN8cRObject4SaveEv",
+      "address": "0x12590",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObject::Save()"
+    },
+    {
+      "mangled": "_ZN8cRObject7AddEdgeEiii",
+      "address": "0x13474",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObject::AddEdge(int, int, int)"
+    },
+    {
+      "mangled": "_ZN8cRObject7ApplyUVEff",
+      "address": "0x1230c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObject::ApplyUV(float, float)"
+    },
+    {
+      "mangled": "_ZN8cRObject9ApplyToonEi",
+      "address": "0x12194",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObject::ApplyToon(int)"
+    },
+    {
+      "mangled": "_ZN8cRObject9CalcEdgesEv",
+      "address": "0x13a44",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObject::CalcEdges()"
+    },
+    {
+      "mangled": "_ZN8cRObjectC2Ev",
+      "address": "0x14944",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObject::cRObject()"
+    },
+    {
+      "mangled": "_ZN8cRParcel2AIEv",
+      "address": "0x1dc8c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRParcel::AI()"
+    },
+    {
+      "mangled": "_ZN8cRPlayer2AIEv",
+      "address": "0x40a98",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRPlayer::AI()"
+    },
+    {
+      "mangled": "_ZN8cRResult2AIEv",
+      "address": "0x89718",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRResult::AI()"
+    },
+    {
+      "mangled": "_ZN8cRResult5ReSetEv",
+      "address": "0x8935c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRResult::ReSet()"
+    },
+    {
+      "mangled": "_ZN8cRResult6GameAIEv",
+      "address": "0x89978",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRResult::GameAI()"
+    },
+    {
+      "mangled": "_ZN8cRResult8GameInitEv",
+      "address": "0x8934c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRResult::GameInit()"
+    },
+    {
+      "mangled": "_ZN8cRSplash2AIEv",
+      "address": "0x64cc0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSplash::AI()"
+    },
+    {
+      "mangled": "_ZN8cRSplash4InitEv",
+      "address": "0x64a9c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSplash::Init()"
+    },
+    {
+      "mangled": "_ZN8cRSplash4OpenEv",
+      "address": "0x64a78",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSplash::Open()"
+    },
+    {
+      "mangled": "_ZN8cRSprite13SetTextureRefEii",
+      "address": "0x11100",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSprite::SetTextureRef(int, int)"
+    },
+    {
+      "mangled": "_ZN8cRSprite2AIEv",
+      "address": "0x11ce0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSprite::AI()"
+    },
+    {
+      "mangled": "_ZN8cRSprite3CatEv",
+      "address": "0x110e8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSprite::Cat()"
+    },
+    {
+      "mangled": "_ZN8cRSprite4KillEv",
+      "address": "0x11190",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSprite::Kill()"
+    },
+    {
+      "mangled": "_ZN8cRSprite5NoCatEv",
+      "address": "0x110d8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSprite::NoCat()"
+    },
+    {
+      "mangled": "_ZN8cRSprite9BuildTailEP7tMatrix",
+      "address": "0x11264",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSprite::BuildTail(tMatrix*)"
+    },
+    {
+      "mangled": "_ZN8cRSubLoc2AIEv",
+      "address": "0x19474",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubLoc::AI()"
+    },
+    {
+      "mangled": "_ZN8cRSubLoc2YiEv",
+      "address": "0x18df4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubLoc::Yi()"
+    },
+    {
+      "mangled": "_ZN8cRSubLoc6IsRampEv",
+      "address": "0x183d8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubLoc::IsRamp()"
+    },
+    {
+      "mangled": "_ZN8cRSubLoc7IsEmptyEv",
+      "address": "0x1842c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubLoc::IsEmpty()"
+    },
+    {
+      "mangled": "_ZN8cRSubLoc7IsFloorEv",
+      "address": "0x183a0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubLoc::IsFloor()"
+    },
+    {
+      "mangled": "_ZN8cRVapour2AIEv",
+      "address": "0x1d50c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRVapour::AI()"
+    },
+    {
+      "mangled": "_ZN8cRVapour3AddER7tMatrix",
+      "address": "0x18718",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRVapour::Add(tMatrix&)"
+    },
+    {
+      "mangled": "_ZN8cRVapour4InitEP8cRObjectf",
+      "address": "0x1e490",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRVapour::Init(cRObject*, float)"
+    },
+    {
+      "mangled": "_ZN8cRVapour5ReSetEPf",
+      "address": "0x186fc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRVapour::ReSet(float*)"
+    },
+    {
+      "mangled": "_ZN8cRWeapon2AIEv",
+      "address": "0x1880c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRWeapon::AI()"
+    },
+    {
+      "mangled": "_ZN9cRBarrier2AIEv",
+      "address": "0x18578",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRBarrier::AI()"
+    },
+    {
+      "mangled": "_ZN9cRDirectX4InitEv",
+      "address": "0x698e4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRDirectX::Init()"
+    },
+    {
+      "mangled": "_ZN9cRDirectX4LoadEPcP8cRObjecti",
+      "address": "0x6991c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRDirectX::Load(char*, cRObject*, int)"
+    },
+    {
+      "mangled": "_ZN9cRDirectX8LoadAnimEPcP8cRObject",
+      "address": "0x6a0f4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRDirectX::LoadAnim(char*, cRObject*)"
+    },
+    {
+      "mangled": "_ZN9cRDirectX8ModelAddEPc",
+      "address": "0x6a45c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRDirectX::ModelAdd(char*)"
+    },
+    {
+      "mangled": "_ZN9cRDistort11BuildMatrixEP7tMatrixS1_",
+      "address": "0x17238",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRDistort::BuildMatrix(tMatrix*, tMatrix*)"
+    },
+    {
+      "mangled": "_ZN9cRDistort4InitEv",
+      "address": "0x16120",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRDistort::Init()"
+    },
+    {
+      "mangled": "_ZN9cRJetPack2AIEv",
+      "address": "0x2b45c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRJetPack::AI()"
+    },
+    {
+      "mangled": "_ZN9cRLogoRow2AIEv",
+      "address": "0x68414",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRLogoRow::AI()"
+    },
+    {
+      "mangled": "_ZN9cRLogoRow4InitEv",
+      "address": "0x675e0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRLogoRow::Init()"
+    },
+    {
+      "mangled": "_ZN9cRNetwork10DisconnectEv",
+      "address": "0x879a0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRNetwork::Disconnect()"
+    },
+    {
+      "mangled": "_ZN9cRNetwork10GetControlEii",
+      "address": "0x8739c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRNetwork::GetControl(int, int)"
+    },
+    {
+      "mangled": "_ZN9cRNetwork11AddGameDataEiP7cRInputbbb",
+      "address": "0x876bc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRNetwork::AddGameData(int, cRInput*, bool, bool, bool)"
+    },
+    {
+      "mangled": "_ZN9cRNetwork11GetGameDataEiiP7cRInputPbS2_S2_",
+      "address": "0x8756c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRNetwork::GetGameData(int, int, cRInput*, bool*, bool*, bool*)"
+    },
+    {
+      "mangled": "_ZN9cRNetwork13SetPlayerNameEiPc",
+      "address": "0x87440",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRNetwork::SetPlayerName(int, char*)"
+    },
+    {
+      "mangled": "_ZN9cRNetwork15ReceiveGameDataEPhi",
+      "address": "0x87bf8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRNetwork::ReceiveGameData(unsigned char*, int)"
+    },
+    {
+      "mangled": "_ZN9cRNetwork4InitEv",
+      "address": "0x878fc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRNetwork::Init()"
+    },
+    {
+      "mangled": "_ZN9cRNetwork4SendEv",
+      "address": "0x88430",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRNetwork::Send()"
+    },
+    {
+      "mangled": "_ZN9cRNetwork5PauseEv",
+      "address": "0x874c0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRNetwork::Pause()"
+    },
+    {
+      "mangled": "_ZN9cRNetwork5ReSetEv",
+      "address": "0x8722c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRNetwork::ReSet()"
+    },
+    {
+      "mangled": "_ZN9cRNetwork7SendAllEv",
+      "address": "0x8896c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRNetwork::SendAll()"
+    },
+    {
+      "mangled": "_ZN9cRNetwork9LastFrameEP11cGCGameData",
+      "address": "0x87288",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRNetwork::LastFrame(cGCGameData*)"
+    },
+    {
+      "mangled": "_ZN9cRObjects12BuildObjectsEv",
+      "address": "0x15b90",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObjects::BuildObjects()"
+    },
+    {
+      "mangled": "_ZN9cRObjects3AddEv",
+      "address": "0x14998",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObjects::Add()"
+    },
+    {
+      "mangled": "_ZN9cRObjects4InitEi",
+      "address": "0x14a2c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRObjects::Init(int)"
+    },
+    {
+      "mangled": "_ZN9cROptions2AIEv",
+      "address": "0x630c8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cROptions::AI()"
+    },
+    {
+      "mangled": "_ZN9cROptions4InitEv",
+      "address": "0x62b58",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cROptions::Init()"
+    },
+    {
+      "mangled": "_ZN9cROptions5ApplyEb",
+      "address": "0x62a48",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cROptions::Apply(bool)"
+    },
+    {
+      "mangled": "_ZN9cROptions6UnInitEv",
+      "address": "0x62ac8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cROptions::UnInit()"
+    },
+    {
+      "mangled": "_ZN9cROverlay2AIEv",
+      "address": "0x47f68",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cROverlay::AI()"
+    },
+    {
+      "mangled": "_ZN9cRSquidge2AIEv",
+      "address": "0x18c14",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSquidge::AI()"
+    },
+    {
+      "mangled": "_ZN9cRSquidge4InitEv",
+      "address": "0x18bb8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSquidge::Init()"
+    },
+    {
+      "mangled": "_ZN9cRSquidge6StartYEf",
+      "address": "0x18bd8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSquidge::StartY(float)"
+    },
+    {
+      "mangled": "_ZN9cRSquidge6StartZEf",
+      "address": "0x18bf8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSquidge::StartZ(float)"
+    },
+    {
+      "mangled": "_ZN9cRSubGame10AddGarbageEP8cRSubLocP10cRSubGoldy",
+      "address": "0x208a8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN9cRSubGame10AddJetPackEP8cRSubLocP10cRSubGoldy",
+      "address": "0x1d2f0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN9cRSubGame10AddSpeedUpEP8cRSubLocP10cRSubGoldy",
+      "address": "0x18550",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::AddSpeedUp(cRSubLoc*, cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN9cRSubGame10BuildLevelEv",
+      "address": "0x23b8c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::BuildLevel()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame10GetControlEi",
+      "address": "0x18f90",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::GetControl(int)"
+    },
+    {
+      "mangled": "_ZN9cRSubGame10HideScoresEv",
+      "address": "0x19024",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::HideScores()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame10LocFromPosE7tVector",
+      "address": "0x184e0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::LocFromPos(tVector)"
+    },
+    {
+      "mangled": "_ZN9cRSubGame10RemoveBodsEv",
+      "address": "0x2fb14",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::RemoveBods()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame10StartLevelEi",
+      "address": "0x29c94",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::StartLevel(int)"
+    },
+    {
+      "mangled": "_ZN9cRSubGame10TrackBuildEv",
+      "address": "0x7bce4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::TrackBuild()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame11CalcRealPosER7tVectorRf",
+      "address": "0x20258",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::CalcRealPos(tVector&, float&)"
+    },
+    {
+      "mangled": "_ZN9cRSubGame11SetFeaturesEv",
+      "address": "0x182e0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::SetFeatures()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame11SmoothTrackEv",
+      "address": "0x1e7b0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::SmoothTrack()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame12BuildColoursEv",
+      "address": "0x1bfa8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::BuildColours()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame12PlaceParcelsEv",
+      "address": "0x20ed8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::PlaceParcels()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame13BlinkRandInitEv",
+      "address": "0x1a5ac",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::BlinkRandInit()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame13CondenseTrackEv",
+      "address": "0x1cc5c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::CondenseTrack()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame13GenerateLevelEi",
+      "address": "0x29374",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::GenerateLevel(int)"
+    },
+    {
+      "mangled": "_ZN9cRSubGame14GetSkirtColourEP12tColourSmall",
+      "address": "0x1ae60",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::GetSkirtColour(tColourSmall*)"
+    },
+    {
+      "mangled": "_ZN9cRSubGame15FringeEdgeTrackEv",
+      "address": "0x2827c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::FringeEdgeTrack()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame16SlideSmoothTrackEv",
+      "address": "0x1c2ec",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::SlideSmoothTrack()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame20PlaceParcelsSurvivalEv",
+      "address": "0x20b54",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::PlaceParcelsSurvival()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame24AspectCorrectPlayerNamesEv",
+      "address": "0x19944",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::AspectCorrectPlayerNames()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame24GetSkirtColourRandomOpenEv",
+      "address": "0x1ae98",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::GetSkirtColourRandomOpen()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame2AIEv",
+      "address": "0x31ac4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::AI()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame4GetYE7tVector",
+      "address": "0x1e220",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::GetY(tVector)"
+    },
+    {
+      "mangled": "_ZN9cRSubGame4InitEv",
+      "address": "0x1f424",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::Init()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame6UnInitEv",
+      "address": "0x310c4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::UnInit()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame7AddRingEP8cRSubRowP8cRSubLociP10cRSubGoldyf",
+      "address": "0x27690",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::AddRing(cRSubRow*, cRSubLoc*, int, cRSubGoldy*, float)"
+    },
+    {
+      "mangled": "_ZN9cRSubGame7AddSlugEP8cRSubLocP10cRSubGoldy",
+      "address": "0x20410",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN9cRSubGame7SetRateEf",
+      "address": "0x18e70",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::SetRate(float)"
+    },
+    {
+      "mangled": "_ZN9cRSubGame8CompleteEb",
+      "address": "0x1c094",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::Complete(bool)"
+    },
+    {
+      "mangled": "_ZN9cRSubGame9AddHealthEP8cRSubLocP10cRSubGoldy",
+      "address": "0x238c0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN9cRSubGame9AddParcelEP8cRSubRowP7tVectorP10cRSubGoldy",
+      "address": "0x1e4e0",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::AddParcel(cRSubRow*, tVector*, cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN9cRSubGame9DividesAIEv",
+      "address": "0x47e3c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::DividesAI()"
+    },
+    {
+      "mangled": "_ZN9cRSubGame9SetScoresEv",
+      "address": "0x19054",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::SetScores()"
+    },
+    {
+      "mangled": "_ZN9cRSubGameC2Ev",
+      "address": "0x8da8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGame::cRSubGame()"
+    },
+    {
+      "mangled": "_ZN9cRSubGolb2AIEv",
+      "address": "0x3ee44",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGolb::AI()"
+    },
+    {
+      "mangled": "_ZN9cRSubGolb4KillEv",
+      "address": "0x3ec78",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGolb::Kill()"
+    },
+    {
+      "mangled": "_ZN9cRSubGolb6CreateEP10cRSubGoldyii",
+      "address": "0x3e31c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubGolb::Create(cRSubGoldy*, int, int)"
+    },
+    {
+      "mangled": "_ZN9cRSubRing2AIEv",
+      "address": "0x2c43c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubRing::AI()"
+    },
+    {
+      "mangled": "_ZN9cRSubRing4InitEi",
+      "address": "0x2736c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRSubRing::Init(int)"
+    },
+    {
+      "mangled": "_ZN9cRTimesUp2AIEv",
+      "address": "0x1e6e4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTimesUp::AI()"
+    },
+    {
+      "mangled": "_ZN9cRTimesUp4InitEv",
+      "address": "0x1a4d8",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTimesUp::Init()"
+    },
+    {
+      "mangled": "_ZN9cRToolTip2AIEv",
+      "address": "0x38d4c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRToolTip::AI()"
+    },
+    {
+      "mangled": "_ZN9cRTwinkle2AIEv",
+      "address": "0x37328",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRTwinkle::AI()"
+    },
+    {
+      "mangled": "_ZN9cRWarning10StopSampleEv",
+      "address": "0x19cb4",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRWarning::StopSample()"
+    },
+    {
+      "mangled": "_ZN9cRWarning2AIEv",
+      "address": "0x19a08",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRWarning::AI()"
+    },
+    {
+      "mangled": "_ZN9cRWarning4InitEP10cRSubGoldy",
+      "address": "0x1977c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRWarning::Init(cRSubGoldy*)"
+    },
+    {
+      "mangled": "_ZN9cRWarning4StopEv",
+      "address": "0x19008",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "cRWarning::Stop()"
+    },
+    {
+      "mangled": "_ZNK7tVector9MagnitudeEv",
+      "address": "0xac74",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tVector::Magnitude() const"
+    },
+    {
+      "mangled": "_ZNK7tVectormlERK7tMatrix",
+      "address": "0xa25c",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "tVector::operator*(tMatrix const&) const"
+    },
+    {
+      "mangled": "_ZNSt6vectorIP16AudioQueueBufferSaIS1_EE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPS1_S3_EERKS1_",
+      "address": "0x76c14",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "std::vector<AudioQueueBuffer*, std::allocator<AudioQueueBuffer*>>::_M_insert_aux(__gnu_cxx::__normal_iterator<AudioQueueBuffer**, std::vector<AudioQueueBuffer*, std::allocator<AudioQueueBuffer*>>>, AudioQueueBuffer* const&)"
+    },
+    {
+      "mangled": "_ZNSt6vectorIPN18BackgroundTrackMgr11BG_FileInfoESaIS2_EE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPS2_S4_EERKS2_",
+      "address": "0x76aec",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "std::vector<BackgroundTrackMgr::BG_FileInfo*, std::allocator<BackgroundTrackMgr::BG_FileInfo*>>::_M_insert_aux(__gnu_cxx::__normal_iterator<BackgroundTrackMgr::BG_FileInfo**, std::vector<BackgroundTrackMgr::BG_FileInfo*, std::allocator<BackgroundTrackMgr::BG_FileInfo*>>>, BackgroundTrackMgr::BG_FileInfo* const&)"
+    },
+    {
+      "mangled": "_ZNSt8_Rb_treeImSt4pairIKmP17SoundEngineEffectESt10_Select1stIS4_ESt4lessIjESaIS4_EE15_M_insert_equalESt17_Rb_tree_iteratorIS4_ERKS4_",
+      "address": "0x76fdc",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "std::_Rb_tree<unsigned long, std::pair<unsigned long const, SoundEngineEffect*>, std::_Select1st<std::pair<unsigned long const, SoundEngineEffect*>>, std::less<unsigned int>, std::allocator<std::pair<unsigned long const, SoundEngineEffect*>>>::_M_insert_equal(std::_Rb_tree_iterator<std::pair<unsigned long const, SoundEngineEffect*>>, std::pair<unsigned long const, SoundEngineEffect*> const&)"
+    },
+    {
+      "mangled": "_ZNSt8_Rb_treeImSt4pairIKmP17SoundEngineEffectESt10_Select1stIS4_ESt4lessIjESaIS4_EE8_M_eraseEPSt13_Rb_tree_nodeIS4_E",
+      "address": "0x76e20",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "std::_Rb_tree<unsigned long, std::pair<unsigned long const, SoundEngineEffect*>, std::_Select1st<std::pair<unsigned long const, SoundEngineEffect*>>, std::less<unsigned int>, std::allocator<std::pair<unsigned long const, SoundEngineEffect*>>>::_M_erase(std::_Rb_tree_node<std::pair<unsigned long const, SoundEngineEffect*>>*)"
+    },
+    {
+      "mangled": "_ZNSt8_Rb_treeImSt4pairIKmP17SoundEngineEffectESt10_Select1stIS4_ESt4lessIjESaIS4_EE9_M_insertEPSt18_Rb_tree_node_baseSC_RKS4_",
+      "address": "0x76a54",
+      "size": null,
+      "extent_basis": "unknown",
+      "demangled": "std::_Rb_tree<unsigned long, std::pair<unsigned long const, SoundEngineEffect*>, std::_Select1st<std::pair<unsigned long const, SoundEngineEffect*>>, std::less<unsigned int>, std::allocator<std::pair<unsigned long const, SoundEngineEffect*>>>::_M_insert(std::_Rb_tree_node_base*, std::_Rb_tree_node_base*, std::pair<unsigned long const, SoundEngineEffect*> const&)"
+    }
+  ]
+}

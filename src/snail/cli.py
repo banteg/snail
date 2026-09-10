@@ -19,6 +19,7 @@ from . import (
     match_mutation,
     match_report,
 )
+from . import ports as port_evidence
 from .archive import extract_archive, parse_archive_index, summarize_archive
 from .formats import parse_text_asset
 from .match import (
@@ -356,6 +357,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
+    ports_parser = subparsers.add_parser(
+        "ports", help="List primary/reference builds and verify their identities."
+    )
+    ports_parser.add_argument("--check", action="store_true", help="Verify binaries and evidence indexes.")
+    ports_parser.add_argument("--json", action="store_true")
+
     inspect_parser = subparsers.add_parser(
         "inspect",
         help="Inspect a file or directory and print a JSON report.",
@@ -600,6 +607,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Matching-islands workflow: diff scratches against the original image.",
     )
     match_subparsers = match_parser.add_subparsers(dest="match_command", required=True)
+
+    leads_parser = match_subparsers.add_parser(
+        "leads", help="Gather build-specific cross-port leads for a Windows function."
+    )
+    leads_parser.add_argument("function")
+    leads_parser.add_argument("--json", action="store_true")
 
     match_mobile_parser = match_subparsers.add_parser(
         "mobile",
@@ -1409,6 +1422,47 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+
+    if args.command == "ports" or (
+        args.command == "match" and args.match_command == "leads"
+    ):
+        try:
+            registry = port_evidence.load_builds()
+            relationships = port_evidence.read_json(port_evidence.DEFAULT_RELATIONSHIPS)
+            if args.command == "ports":
+                errors = port_evidence.check_registry(registry, relationships) if args.check else []
+                if args.json:
+                    print(json.dumps({**registry, "errors": errors}, indent=2))
+                else:
+                    for build in registry["builds"]:
+                        print(f"{build['role']:8} {build['id']:25} {build['label']}")
+                    for error in errors:
+                        print(f"error: {error}", file=sys.stderr)
+                    if args.check and not errors:
+                        print("All build hashes and evidence identities verified.")
+                return 1 if errors else 0
+            result = port_evidence.function_leads(args.function, registry, relationships)
+            if args.json:
+                print(json.dumps(result, indent=2))
+            else:
+                print(f"{result['function']} @ {result['windows_address']} ({result['primary_build']})")
+                print(f"scratch: {result['scratch']}")
+                for lead in result["leads"]:
+                    print(f"\n{lead['build_id']} @ {lead['address']} (link-time VA): {lead['demangled']}")
+                    print(f"  {lead['association']}; {lead['body_parity']}")
+                    if "decompile" in lead:
+                        print(f"  decompile: {lead['decompile']} @ {lead['analysis_address']}")
+                for relation in result["relationships"]:
+                    print(f"\n{relation['build_id']} @ {relation.get('address', '?')}: {relation['kind']}")
+                    for evidence in relation["evidence"]:
+                        print(f"  evidence: {evidence}")
+                for constraint in result["constraints"]:
+                    print(f"constraint: {constraint['claim']}")
+                print(f"\nacceptance: {result['acceptance']}")
+            return 0
+        except (OSError, ValueError, KeyError) as error:
+            print(f"port evidence failed: {error}", file=sys.stderr)
+            return 2
 
     if args.command == "match" and args.match_command == "mutate":
         if bool(args.export_candidate) != bool(args.export_dir):
