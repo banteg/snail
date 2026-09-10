@@ -1,5 +1,18 @@
 # set_blend_mode
 
+## 2026-09-11 inline-table certification
+
+The unchanged source now compares at **100%**, 104/104 code
+instructions plus 24 bytes of explicitly compared jump-table data. All
+16 reference audits are clean and positional. Encoded-body proof is
+**exact**.
+This is corrected table-data accounting, not newly reconstructed source code.
+
+The [proof report](../../inline-jump-table-proof-20260911.md) and
+[receipt](../../inline-jump-table-proof-20260911.json) preserve the full source,
+compiled-object identity, data entries, reference audits, comparison ranges, and
+encoded-body evidence. Earlier measurements below are historical.
+
 Object blend preset mapper at `0x412d00`. Current result: **100.00%**,
 92/92 instructions, prefix 92/92, with all 16 masked operands audited and
 clean under the standard `msvc6.5 /O2 /G5 /W3` profile.

@@ -707,7 +707,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                         facequads[face_offset].vertex_3 =
                             mesh_column +
                             (mesh_row + 1) * ((unsigned short)width_cells + 1);
-                        if ((mesh_column ^ mesh_row) & 1)
+                        if ((mesh_column & 1) == (mesh_row & 1))
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(texture_a, 0, 0);
                         else
@@ -728,7 +728,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                         facequads[face_offset].vertex_3 =
                             (mesh_row + 1) * ((unsigned short)width_cells + 1) +
                             mesh_column + 1;
-                        if ((mesh_column ^ mesh_row) & 1)
+                        if ((mesh_column & 1) == (mesh_row & 1))
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(texture_b, 0, 0);
                         else

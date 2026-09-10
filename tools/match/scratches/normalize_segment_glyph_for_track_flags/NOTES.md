@@ -1,5 +1,18 @@
 # `normalize_segment_glyph_for_track_flags` recovery notes
 
+## 2026-09-11 inline-table certification
+
+The unchanged source now compares at **100%**, 210/210 code
+instructions plus 52 bytes of explicitly compared jump-table data. All
+2 reference audits are clean and positional. Encoded-body proof is
+**exact**.
+This is corrected table-data accounting, not newly reconstructed source code.
+
+The [proof report](../../inline-jump-table-proof-20260911.md) and
+[receipt](../../inline-jump-table-proof-20260911.json) preserve the full source,
+compiled-object identity, data entries, reference audits, comparison ranges, and
+encoded-body evidence. Earlier measurements below are historical.
+
 Target: `normalize_segment_glyph_for_track_flags @ 0x437270` (`thiscall`, `ret 0xc`).
 
 This helper normalizes authored segment glyphs against the active track feature

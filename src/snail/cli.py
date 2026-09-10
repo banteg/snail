@@ -2491,8 +2491,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         print(
             f"match={result.ratio:.2%} "
-            f"insns={len(result.target_lines)}/{len(result.candidate_lines)} "
-            f"prefix={result.prefix_instructions}/{len(result.target_lines)}"
+            f"insns={result.target_instruction_count}/{result.candidate_instruction_count} "
+            f"prefix={result.instruction_prefix_count}/{result.target_instruction_count}"
         )
         frame = payload["stack_frame"]
         if frame is not None:
@@ -2618,8 +2618,14 @@ def main(argv: Sequence[str] | None = None) -> int:
                 end_va=args.end,
             )
         print(f"match: {result.ratio:.2%}")
-        print(f"target: {len(result.target_lines)} insns, candidate: {len(result.candidate_lines)} insns")
-        print(f"prefix: {result.prefix_instructions}/{len(result.target_lines)} target insns")
+        print(f"target: {result.target_instruction_count} insns, candidate: {result.candidate_instruction_count} insns")
+        print(f"prefix: {result.instruction_prefix_count}/{result.target_instruction_count} target insns")
+        if result.target_inline_data_ranges or result.candidate_inline_data_ranges:
+            print(
+                "inline table data: "
+                f"target={sum(b - a for a, b in result.target_inline_data_ranges)} bytes, "
+                f"candidate={sum(b - a for a, b in result.candidate_inline_data_ranges)} bytes"
+            )
         print(f"encoded body: {'match' if result.body_byte_exact else 'not matched'}")
         if result.unexplained_target_ranges:
             print(f"unexplained target bytes: {sum(b - a for a, b in result.unexplained_target_ranges)}")

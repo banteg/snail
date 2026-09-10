@@ -1,5 +1,18 @@
 # initialize_voice_manager
 
+## 2026-09-11 inline-table certification
+
+The unchanged source now compares at **100%**, 270/270 code
+instructions plus 64 bytes of explicitly compared jump-table data. All
+62 reference audits are clean and positional. Encoded-body proof is
+**exact**.
+This is corrected table-data accounting, not newly reconstructed source code.
+
+The [proof report](../../inline-jump-table-proof-20260911.md) and
+[receipt](../../inline-jump-table-proof-20260911.json) preserve the full source,
+compiled-object identity, data entries, reference audits, comparison ranges, and
+encoded-body evidence. Earlier measurements below are historical.
+
 `VoiceManager::initialize_voice_manager` parses `Voice/_Voice.txt`, builds the
 16 named `VoiceSet` buckets, registers each listed `.ogg`, applies music/SFX/
 voice normalization scales, reads the global voice frequency, and then resets

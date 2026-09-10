@@ -1,5 +1,18 @@
 # load_frontend_level_by_mode_and_index @ 0x443650
 
+## 2026-09-11 inline-table certification
+
+The unchanged source now compares at **100%**, 58/58 code
+instructions plus 32 bytes of explicitly compared jump-table data. All
+12 reference audits are clean and positional. Encoded-body proof is
+**exact**.
+This is corrected table-data accounting, not newly reconstructed source code.
+
+The [proof report](../../inline-jump-table-proof-20260911.md) and
+[receipt](../../inline-jump-table-proof-20260911.json) preserve the full source,
+compiled-object identity, data entries, reference audits, comparison ranges, and
+encoded-body evidence. Earlier measurements below are historical.
+
 Current result (2026-09-09): **100%, 57/57 instructions, 12 clean references**.
 Compile the unchanged body immediately after `update_track_parcel` through
 `tools/match/translation_units.json`. Both belong to `SubGame.o` and are

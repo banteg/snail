@@ -1,6 +1,7 @@
 """Adversarial exact-certification and byte-accounting regressions."""
 
 from dataclasses import replace
+from pathlib import Path
 
 import pytest
 
@@ -379,3 +380,174 @@ def test_run_match_hashes_the_supplied_object_snapshot(monkeypatch, tmp_path):
 
     assert parsed == [captured]
     assert actual.candidate_object_sha256 == hashlib.sha256(captured).hexdigest()
+
+
+def inline_table_fixture(*, entries=(7, 10), native_entries=None, padding=b'\x90' * 8):
+    """A real indexed dispatch, two return blocks, then a relocated data tail."""
+    import struct
+
+    base = 0x401000
+    code = bytes.fromhex('ff24850000000031c0c3b801000000c3')
+    target = bytearray(code)
+    struct.pack_into('<I', target, 3, base + 16)
+    target += struct.pack('<II', *(base + x for x in (native_entries or entries)))
+    target += padding
+    obj_data = code + struct.pack('<II', *entries) + padding
+    obj = m.CoffObject(
+        sections=(m.CoffSection('.text', obj_data, 0x20, (
+            m.CoffRelocation(3, 1, 0x06),
+            m.CoffRelocation(16, 0, 0x06),
+            m.CoffRelocation(20, 0, 0x06),
+        )),),
+        symbols=(
+            m.CoffSymbol(0, '_foo', 0, 1, 0x20, 2),
+            m.CoffSymbol(1, '$Ltable', 16, 1, 0, 3),
+        ),
+    )
+    candidate = m.extract_object_function(obj, 'foo')
+    references = m.ReferenceSymbolManifest('test', (
+        m.ReferenceSymbol(base + 16, 'foo_table', 'jump_table', size=8),
+    ))
+    return bytes(target), candidate, references
+
+
+def compare_inline_table(target, candidate, references):
+    return m.match_function(
+        target, candidate,
+        image=m.LoadedImage(target, 0x401000, len(target)),
+        target_va=0x401000, reference_manifest=references,
+    )
+
+
+def test_inline_table_is_compared_as_data_and_resolved_without_masking_entries():
+    target, candidate, references = inline_table_fixture()
+    result = compare_inline_table(target, candidate, references)
+    assert result.exact and result.body_byte_exact
+    assert result.target_lines[-2:] == ('dd L7', 'dd La')
+    assert result.target_instruction_count == result.candidate_instruction_count == 5
+    assert result.instruction_prefix_count == 5
+    assert result.target_inline_data_ranges == ((16, 24),)
+    assert result.candidate_inline_data_ranges == ((16, 24),)
+    assert result.compared_target_ranges == ((0, 24),)
+    assert result.excluded_target_ranges == ((24, 32, 'terminal-padding'),)
+    assert not result.unexplained_target_ranges
+    assert result.masked_operand_audit.ok_count == 1
+    proof = result.encoded_body_proof
+    assert proof['body_size'] == 24
+    assert proof['masked_relocation_ranges'] == [[3, 7]]
+    assert proof['resolved_local_data_relocations'] == [
+        {'offset': 16, 'target_offset': 7}, {'offset': 20, 'target_offset': 10},
+    ]
+    assert proof['candidate_sha256'] == proof['target_sha256']
+    blocks = m.build_basic_blocks(result.target_disassembly)
+    assert all(not line.startswith('dd ') for block in blocks for line in block.lines)
+    assert all(block.end_offset <= 16 for block in blocks)
+    status = m.ScratchStatus(
+        config=m.ScratchConfig(Path('/tmp/table-test'), 'foo', 'msvc6.5', '/O2', None, None),
+        address=0x401000, **m._scratch_status_fields(len(target), result),
+    )
+    payload = m.scratch_status_payload(status)
+    assert payload['target_instructions'] == payload['prefix_instructions'] == 5
+    assert payload['target_inline_data_ranges'] == [[16, 24]]
+
+
+@pytest.mark.parametrize('entries', [(10, 7), (7, 7), (8, 10), (7, 16), (7, 25)])
+def test_inline_table_permuted_wrong_or_non_code_targets_do_not_certify(entries):
+    target, candidate, references = inline_table_fixture(
+        entries=entries, native_entries=(7, 10),
+    )
+    result = compare_inline_table(target, candidate, references)
+    assert not result.exact
+    assert not result.body_byte_exact
+
+
+@pytest.mark.parametrize('mode', ['missing', 'relative-type', 'false-addend', 'external'])
+def test_inline_table_requires_each_complete_local_dir32_relocation(mode):
+    target, candidate, references = inline_table_fixture()
+    relocs = list(candidate.relocation_references)
+    if mode == 'missing':
+        relocs.pop()
+    elif mode == 'relative-type':
+        relocs[-1] = replace(relocs[-1], relocation_type=0x14)
+    elif mode == 'false-addend':
+        relocs[-1] = replace(relocs[-1], addend=7)
+    else:
+        relocs[-1] = replace(relocs[-1], symbol_offset=None)
+    result = compare_inline_table(target, replace(candidate, relocation_references=tuple(relocs)), references)
+    assert not result.exact
+    assert not result.body_byte_exact
+
+
+def test_inline_table_needs_native_curation_and_dispatch():
+    target, candidate, references = inline_table_fixture()
+    result = compare_inline_table(target, candidate, m.ReferenceSymbolManifest('empty'))
+    assert not result.target_inline_data_ranges
+    assert not result.body_byte_exact
+    # A metadata label over the same bytes does not turn ordinary code into a table.
+    target = b'\x90' * 7 + target[7:]
+    result = compare_inline_table(target, candidate, references)
+    assert not result.target_inline_data_ranges
+    assert not result.exact
+
+
+def test_inline_table_does_not_discard_a_post_table_continuation():
+    target, candidate, references = inline_table_fixture(padding=bytes.fromhex('b802000000c3'))
+    result = compare_inline_table(target, candidate, references)
+    assert result.body_byte_exact
+    assert result.target_lines[-2:] == ('mov eax, 0x2', 'ret')
+    assert result.compared_target_ranges == ((0, 30),)
+    assert result.excluded_target_ranges == ()
+    assert any(block.start_offset == 24 for block in m.build_basic_blocks(result.target_disassembly))
+
+
+def test_public_table_evidence_requires_every_entry_and_cannot_mask_table_data():
+    import copy
+
+    target, candidate, references = inline_table_fixture()
+    result = compare_inline_table(target, candidate, references)
+    row = {
+        'address': 0x401000,
+        'target_inline_data_ranges': [[0x401010, 0x401018]],
+        'candidate_inline_data_ranges': [[16, 24]],
+        'compared_target_ranges': [[0x401000, 0x401018]],
+        'encoded_body_proof': result.encoded_body_proof,
+    }
+    report.validate_inline_table_evidence(row)
+    missing = copy.deepcopy(row)
+    missing['encoded_body_proof']['resolved_local_data_relocations'].pop()
+    with pytest.raises(ValueError, match='incomplete'):
+        report.validate_inline_table_evidence(missing)
+    masked = copy.deepcopy(row)
+    masked['encoded_body_proof']['masked_relocation_ranges'].append([16, 20])
+    with pytest.raises(ValueError, match='inline table relocation'):
+        report.validate_inline_table_evidence(masked)
+    wrong_position = copy.deepcopy(row)
+    wrong_position['candidate_inline_data_ranges'] = [[20, 28]]
+    with pytest.raises(ValueError, match='position'):
+        report.validate_inline_table_evidence(wrong_position)
+    data_destination = copy.deepcopy(row)
+    data_destination['encoded_body_proof']['resolved_local_data_relocations'][1]['target_offset'] = 16
+    with pytest.raises(ValueError, match='inline table relocation'):
+        report.validate_inline_table_evidence(data_destination)
+
+
+def test_duplicate_inline_table_relocations_are_not_consumed_as_one():
+    target, candidate, references = inline_table_fixture()
+    candidate = replace(candidate, relocation_references=(
+        *candidate.relocation_references, candidate.relocation_references[-1],
+    ))
+    result = compare_inline_table(target, candidate, references)
+    assert not result.body_byte_exact
+    assert not result.candidate_inline_data_ranges
+
+
+def test_inline_table_dispatch_addend_must_match_the_coff_bytes():
+    import struct
+
+    target, candidate, references = inline_table_fixture()
+    data = bytearray(candidate.data)
+    struct.pack_into('<I', data, 3, 4)
+    candidate = replace(candidate, data=bytes(data))
+    result = compare_inline_table(target, candidate, references)
+    assert not result.body_byte_exact
+    assert not result.candidate_inline_data_ranges

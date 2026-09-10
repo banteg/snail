@@ -1,5 +1,18 @@
 # cRBorder::Init text overload @ 0x401d30
 
+## 2026-09-11 inline-table certification
+
+The unchanged source now compares at **100%**, 430/430 code
+instructions plus 16 bytes of explicitly compared jump-table data. All
+50 reference audits are clean and positional. Encoded-body proof is
+**exact**.
+This is corrected table-data accounting, not newly reconstructed source code.
+
+The [proof report](../../inline-jump-table-proof-20260911.md) and
+[receipt](../../inline-jump-table-proof-20260911.json) preserve the full source,
+compiled-object identity, data entries, reference audits, comparison ranges, and
+encoded-body evidence. Earlier measurements below are historical.
+
 Current recovery: exact. Live Windows analysis establishes a void `thiscall`
 member with eight stack arguments and a `cRBorder*` receiver. Android and iOS
 independently retain the corresponding

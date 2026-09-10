@@ -267,3 +267,20 @@ The encoded-body tier covers **120,410 / 596,823 bytes (20.18%)**, across
 **666** owners. Relative to the preceding saved evidence, 25,051 bytes lose
 whole-function credit and 32 gain it; this is a measurement baseline transition,
 not a claim of source regression. The retained native-code denominator is unchanged.
+
+
+## 2026-09-11 inline-table scoring baseline
+
+Scoring policy 3 compares verified embedded jump-table entries as data and
+resolves each local `DIR32` address in encoded-body evidence. Table words are
+retained in the compared ranges and excluded from instruction counts and CFG
+blocks. The native code inventory and its denominator are unchanged; recognized
+table ranges overlap none of its owned code ranges. Standalone data progress
+remains unmeasured.
+
+The refreshed report has 700 normalized-matched owners and 155,463/596,823 code
+bytes (26.05%). Encoded-body equality covers 689 owners and 140,536 bytes
+(23.55%). The delta against the preceding committed evidence adds 15,428 bytes
+of normalized credit with no regressions. Because scoring changed, this is a
+measurement-baseline transition, not source reconstruction progress. See the
+[full proof report](../../tools/match/inline-jump-table-proof-20260911.md).

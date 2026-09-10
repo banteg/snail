@@ -1,5 +1,18 @@
 # update_track_parcel
 
+## 2026-09-11 inline-table certification
+
+The unchanged source now compares at **100%**, 313/313 code
+instructions plus 32 bytes of explicitly compared jump-table data. All
+35 reference audits are clean and positional. Encoded-body proof is
+**exact**.
+This is corrected table-data accounting, not newly reconstructed source code.
+
+The [proof report](../../inline-jump-table-proof-20260911.md) and
+[receipt](../../inline-jump-table-proof-20260911.json) preserve the full source,
+compiled-object identity, data entries, reference audits, comparison ranges, and
+encoded-body evidence. Earlier measurements below are historical.
+
 Structured scratch for `update_track_parcel` @ `0x4431d0`.
 
 Recovered relationships:

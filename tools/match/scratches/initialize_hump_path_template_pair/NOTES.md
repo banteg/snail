@@ -1,5 +1,9 @@
 # `initialize_hump_path_template_pair` starter
 
+2026-09-11 follow-up: parity-bit equality recovers both native texture branch
+directions, improving **92.57% → 92.86%** with 687/685 instructions and 43 clean
+aligned references. The body remains partial. See the [inline-table proof report](../../inline-jump-table-proof-20260911.md) for the independent source probe and updated evidence.
+
 Current recovery: declared semantic-complete, with native differences still under
 analysis. This is a partial recovery, not an exact match or a compiler ceiling.
 

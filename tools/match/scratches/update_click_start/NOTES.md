@@ -1,5 +1,18 @@
 # update_click_start
 
+## 2026-09-11 inline-table certification
+
+The unchanged source now compares at **100%**, 138/138 code
+instructions plus 20 bytes of explicitly compared jump-table data. All
+24 reference audits are clean and positional. Encoded-body proof is
+**exact**.
+This is corrected table-data accounting, not newly reconstructed source code.
+
+The [proof report](../../inline-jump-table-proof-20260911.md) and
+[receipt](../../inline-jump-table-proof-20260911.json) preserve the full source,
+compiled-object identity, data entries, reference audits, comparison ranges, and
+encoded-body evidence. Earlier measurements below are historical.
+
 First structured scratch for `update_click_start` @ `0x442290`.
 
 Match status: exact, 138/138 instructions with full prefix and all 24 masked

@@ -25,10 +25,10 @@ from .symbols import REPO_ROOT, load_function_symbol_manifest
 VERSION = "win32-reflexive"
 EVIDENCE_SCHEMA = 2
 SCORING_POLICY = {
-    "version": 2,
+    "version": 3,
     "references": "positional-for-normalized-exact; diagnostic-alignment-for-partials",
-    "coverage": "decoded-compared-ranges; unknown-bytes-reject-exact",
-    "encoding": "same-offsets-and-encodings; audited-external-relocations; resolved-local-branches",
+    "coverage": "decoded-code-and-verified-inline-tables; unknown-bytes-reject-exact",
+    "encoding": "same-offsets-and-encodings; audited-external-relocations; resolved-local-branches-and-table-entries",
     "padding": "untargeted-terminal-nop-int3; no-owned-code-credit",
 }
 VERIFICATION_MODE = "Source-bound local compilation evidence; CI checks freshness and report consistency."
@@ -333,6 +333,50 @@ def proof_summary(evidence: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def validate_inline_table_evidence(row: dict[str, Any]) -> None:
+    """Keep inline data distinct and require every encoded entry to be resolved."""
+    target = row.get("target_inline_data_ranges", [])
+    candidate = row.get("candidate_inline_data_ranges", [])
+    for ranges, lower in ((target, row["address"]), (candidate, 0)):
+        cursor = lower
+        for span in ranges:
+            if (
+                len(span) != 2
+                or any(type(x) is not int for x in span)
+                or not cursor <= span[0] < span[1]
+                or (span[1] - span[0]) % 4
+            ):
+                raise ValueError("invalid inline table range")
+            cursor = span[1]
+    if intersection_size(target, row["compared_target_ranges"]) != sum(
+        b - a for a, b in target
+    ):
+        raise ValueError("inline table is outside compared bytes")
+    proof = row["encoded_body_proof"]
+    if proof is None:
+        return
+    relative = [[a - row["address"], b - row["address"]] for a, b in target]
+    if relative != candidate:
+        raise ValueError("encoded inline tables differ in position")
+    expected = [offset for a, b in candidate for offset in range(a, b, 4)]
+    entries = proof.get("resolved_local_data_relocations", [])
+    if any(
+        set(entry) != {"offset", "target_offset"}
+        or any(type(value) is not int for value in entry.values())
+        for entry in entries
+    ) or [entry["offset"] for entry in entries] != expected:
+        raise ValueError("encoded inline table entries are incomplete")
+    for entry in entries:
+        offset, destination = entry["offset"], entry["target_offset"]
+        if (
+            not 0 <= destination < offset < offset + 4 <= proof["body_size"]
+            or any(a <= destination < b for a, b in candidate)
+            or any(a < offset + 4 and offset < b for a, b in proof["masked_relocation_ranges"])
+            or offset in proof["resolved_local_relocations"]
+        ):
+            raise ValueError("invalid encoded inline table relocation")
+
+
 def refresh_evidence(*, jobs: int = matchlib.DEFAULT_MATCH_JOBS) -> dict[str, Any]:
     before = repository_inputs()
     manifest = load_function_symbol_manifest(REPO_ROOT / "analysis/symbols/gameplay-functions.json")
@@ -396,6 +440,13 @@ def refresh_evidence(*, jobs: int = matchlib.DEFAULT_MATCH_JOBS) -> dict[str, An
                 "compared_target_ranges": compared,
                 "excluded_target_ranges": excluded,
                 "unexplained_target_ranges": unexplained,
+                "target_inline_data_ranges": [
+                    [status.address + a, status.address + b]
+                    for a, b in status.target_inline_data_ranges
+                ],
+                "candidate_inline_data_ranges": [
+                    list(r) for r in status.candidate_inline_data_ranges
+                ],
                 "reference_audit_mode": "positional"
                 if status.ratio == 1
                 else "diagnostic",
@@ -462,6 +513,7 @@ def validate_evidence(evidence: dict[str, Any]) -> None:
         if matchlib._function_symbols_by_name(manifest)[config.function].address != row["address"]:
             raise ValueError("candidate source targets another function")
         validate_comparison_ranges(row)
+        validate_inline_table_evidence(row)
         covered = intersection_size(row["compared_target_ranges"], row["ranges"])
         ratio = row["normalized_ratio"]
         if not math.isfinite(ratio) or not 0 <= ratio <= 1:

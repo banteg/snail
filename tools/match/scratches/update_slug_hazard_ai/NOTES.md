@@ -1,5 +1,18 @@
 # `update_slug_hazard_ai` recovery notes
 
+## 2026-09-11 inline-table certification
+
+The unchanged source now compares at **100%**, 465/465 code
+instructions plus 20 bytes of explicitly compared jump-table data. All
+71 reference audits are clean and positional. Encoded-body proof is
+**exact**.
+This is corrected table-data accounting, not newly reconstructed source code.
+
+The [proof report](../../inline-jump-table-proof-20260911.md) and
+[receipt](../../inline-jump-table-proof-20260911.json) preserve the full source,
+compiled-object identity, data entries, reference audits, comparison ranges, and
+encoded-body evidence. Earlier measurements below are historical.
+
 Target: `Slug::update_slug_hazard_ai @ 0x43f930` (`thiscall`, 1772 bytes, 464 instructions).
 
 Initial source-shaped scratch reconstructs the slug hazard runtime update:

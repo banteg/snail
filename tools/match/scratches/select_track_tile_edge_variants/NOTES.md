@@ -1,5 +1,18 @@
 # select_track_tile_edge_variants
 
+## 2026-09-11 inline-table certification
+
+The unchanged source now compares at **100%**, 220/220 code
+instructions plus 24 bytes of explicitly compared jump-table data. All
+18 reference audits are clean and positional. Encoded-body proof is
+**exact**.
+This is corrected table-data accounting, not newly reconstructed source code.
+
+The [proof report](../../inline-jump-table-proof-20260911.md) and
+[receipt](../../inline-jump-table-proof-20260911.json) preserve the full source,
+compiled-object identity, data entries, reference audits, comparison ranges, and
+encoded-body evidence. Earlier measurements below are historical.
+
 - Walks the row-major `cRSubLoc +0x3c` tile-byte view.
 - Clears `open_edge_mask`, clears `SUBLOC_FLAG_CORNER_OBJECT`, builds open-edge
   bits from left/right/back/front neighbors, and for edge masks `5`, `6`, `9`,

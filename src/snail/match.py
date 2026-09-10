@@ -96,6 +96,7 @@ class ObjectRelocationReference:
     symbol_size: int | None = None
     symbol_data: bytes | None = None
     symbol_relocation_offsets: frozenset[int] = frozenset()
+    relocation_type: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -360,6 +361,29 @@ class MatchResult:
     unexplained_target_ranges: tuple[tuple[int, int], ...] = ()
     candidate_object_sha256: str | None = None
     encoded_body_proof: dict[str, Any] | None = None
+
+    @property
+    def target_instruction_count(self) -> int:
+        return sum(not line.startswith("dd L") for line in self.target_lines)
+
+    @property
+    def candidate_instruction_count(self) -> int:
+        return sum(not line.startswith("dd L") for line in self.candidate_lines)
+
+    @property
+    def instruction_prefix_count(self) -> int:
+        return sum(
+            not line.startswith("dd L")
+            for line in self.target_lines[:self.prefix_instructions]
+        )
+
+    @property
+    def target_inline_data_ranges(self) -> tuple[tuple[int, int], ...]:
+        return _inline_data_ranges(self.target_disassembly)
+
+    @property
+    def candidate_inline_data_ranges(self) -> tuple[tuple[int, int], ...]:
+        return _inline_data_ranges(self.candidate_disassembly)
 
     @property
     def exact(self) -> bool:
@@ -1069,6 +1093,7 @@ def extract_object_function(
                 key=key,
                 explained=explained,
                 addend=addend,
+                relocation_type=relocation.relocation_type,
                 symbol_offset=(
                     symbol.value - target.value
                     if symbol.section_number == target.section_number
@@ -1399,6 +1424,152 @@ def _prefers_rdata_f32(insn, operand) -> bool:
     return operand.size == 4 and insn.mnemonic in _X87_F32_MEMORY_MNEMONICS
 
 
+def _inline_jump_tables(
+    data: bytes,
+    instructions: list[capstone.CsInsn],
+    *,
+    base_address: int,
+    relocation_by_offset: dict[int, ObjectRelocationReference],
+    reference_manifest: ReferenceSymbolManifest | None,
+) -> dict[int, tuple[int, ...]]:
+    """Recognize only dispatched, bounded tables of local code addresses.
+
+    PE ranges require a curated jump-table symbol. COFF ranges require a local
+    table symbol and a contiguous run of DIR32 relocations. Neither arbitrary
+    address-looking bytes nor the contents of a label alone establish data.
+    """
+    symbols = _reference_symbol_by_address(reference_manifest)
+    boundaries = {insn.address - base_address for insn in instructions}
+    tables: dict[int, tuple[int, ...]] = {}
+    for insn in instructions:
+        if insn.mnemonic != "jmp" or len(insn.operands) != 1:
+            continue
+        operand = insn.operands[0]
+        if (
+            operand.type != capstone.x86.X86_OP_MEM
+            or operand.mem.base
+            or not operand.mem.index
+            or operand.mem.scale != 4
+            or insn.disp_size != 4
+        ):
+            continue
+        dispatch_offset = insn.address - base_address + insn.disp_offset
+        reference = relocation_by_offset.get(dispatch_offset)
+        if reference is not None:
+            if (
+                reference.relocation_type != IMAGE_REL_I386_DIR32
+                or not _canonical_symbol_name(reference.symbol_name).startswith("$L")
+                or reference.symbol_offset is None
+                or reference.symbol_size is None
+                or reference.addend not in (None, 0)
+                or reference.addend != _read_u32(data, dispatch_offset)
+            ):
+                continue
+            offset = reference.symbol_offset
+            limit = min(len(data), offset + reference.symbol_size)
+            entries = []
+            for at in range(offset, limit - 3, 4):
+                entry = relocation_by_offset.get(at)
+                if (
+                    entry is None
+                    or entry.relocation_type != IMAGE_REL_I386_DIR32
+                    or entry.symbol_offset is None
+                    or entry.addend != _read_u32(data, at)
+                ):
+                    break
+                entries.append(entry.symbol_offset + (entry.addend or 0))
+        else:
+            symbol = symbols.get(operand.mem.disp)
+            if (
+                symbol is None
+                or symbol.kind != "jump_table"
+                or symbol.size is None
+                or symbol.size <= 0
+                or symbol.size % 4
+            ):
+                continue
+            offset = symbol.address - base_address
+            if not 0 <= offset <= len(data) - symbol.size:
+                continue
+            entries = [
+                struct.unpack_from("<I", data, at)[0] - base_address
+                for at in range(offset, offset + symbol.size, 4)
+            ]
+        if (
+            not entries
+            or offset not in boundaries
+            or any(entry not in boundaries or not 0 <= entry < offset for entry in entries)
+        ):
+            continue
+        # Do not reinterpret fallthrough code as data, even with a bad manifest.
+        preceding = [i for i in instructions if i.address - base_address < offset]
+        while preceding and (
+            preceding[-1].mnemonic in {"nop", "int3"}
+            or bytes(preceding[-1].bytes) == b"\x8b\xff"  # VC6 two-byte alignment nop
+        ):
+            preceding.pop()
+        if not preceding or preceding[-1].mnemonic not in {"ret", "retf", "jmp"}:
+            continue
+        padding_start = preceding[-1].address - base_address + preceding[-1].size
+        end = offset + 4 * len(entries)
+        if any(padding_start <= entry < offset for entry in entries):
+            continue
+        direct_targets = []
+        for instruction in instructions:
+            if not (capstone.CS_GRP_JUMP in instruction.groups
+                    or capstone.CS_GRP_CALL in instruction.groups):
+                continue
+            for operand in instruction.operands:
+                if operand.type != capstone.x86.X86_OP_IMM:
+                    continue
+                branch = relocation_by_offset.get(
+                    instruction.address - base_address + instruction.imm_offset
+                )
+                destination = (
+                    branch.symbol_offset + (branch.addend or 0)
+                    if branch is not None and branch.symbol_offset is not None
+                    else operand.imm - base_address
+                )
+                direct_targets.append(destination)
+        if any(padding_start <= destination < end for destination in direct_targets):
+            continue
+        tables[offset] = tuple(entries)
+    # Conflicting interpretations remain ordinary bytes, never silently merge.
+    return {
+        offset: entries
+        for offset, entries in tables.items()
+        if not any(
+            other != offset
+            and offset < other + 4 * len(other_entries)
+            and other < offset + 4 * len(entries)
+            for other, other_entries in tables.items()
+        )
+        and not any(
+            other <= destination < other + 4 * len(other_entries)
+            for destination in entries
+            for other, other_entries in tables.items()
+        )
+    }
+
+
+def _is_inline_data(line: DisassemblyLine) -> bool:
+    return line.text.startswith("dd L")
+
+
+def _inline_data_ranges(
+    lines: tuple[DisassemblyLine, ...],
+) -> tuple[tuple[int, int], ...]:
+    ranges: list[tuple[int, int]] = []
+    for line in lines:
+        if not _is_inline_data(line):
+            continue
+        if ranges and ranges[-1][1] == line.offset:
+            ranges[-1] = ranges[-1][0], line.offset + line.size
+        else:
+            ranges.append((line.offset, line.offset + line.size))
+    return tuple(ranges)
+
+
 def disassemble_normalized_function(
     data: bytes,
     *,
@@ -1615,8 +1786,35 @@ def disassemble_normalized_function(
             normalized_code=resolved.normalized_code,
         )
 
+    instructions = list(md.disasm(data, base_address))
+    tables = _inline_jump_tables(
+        data, instructions, base_address=base_address,
+        relocation_by_offset=relocation_by_offset,
+        reference_manifest=reference_manifest,
+    ) if len(relocation_by_offset) == len(relocation_references) else {}
+    events = []
+    start = 0
+    for table_offset, entries in [*sorted(tables.items()), (len(data), ())]:
+        segment = list(md.disasm(data[start:table_offset], base_address + start))
+        events.extend(segment)
+        decoded_end = segment[-1].address - base_address + segment[-1].size if segment else start
+        events.extend(
+            DisassemblyLine(at, base_address + at, f"db 0x{data[at]:02x}", size=1)
+            for at in range(decoded_end, table_offset)
+        )
+        events.extend(
+            DisassemblyLine(table_offset + 4 * index,
+                            base_address + table_offset + 4 * index,
+                            f"dd L{entry:x}", size=4)
+            for index, entry in enumerate(entries)
+        )
+        start = table_offset + 4 * len(entries)
+
     lines: list[DisassemblyLine] = []
-    for insn in md.disasm(data, base_address):
+    for insn in events:
+        if isinstance(insn, DisassemblyLine):
+            lines.append(insn)
+            continue
         insn_offset = insn.address - base_address
         is_branch = capstone.CS_GRP_JUMP in insn.groups or capstone.CS_GRP_CALL in insn.groups
         imm_relocation = relocation_in_span(
@@ -1703,14 +1901,6 @@ def disassemble_normalized_function(
                 masked_references=tuple(masked_references),
             )
         )
-    decoded_end = lines[-1].offset + lines[-1].size if lines else 0
-    # Capstone stops at an invalid encoding. Never silently lose its suffix.
-    for offset in range(decoded_end, len(data)):
-        lines.append(
-            DisassemblyLine(
-                offset, base_address + offset, f"db 0x{data[offset]:02x}", size=1
-            )
-        )
     return _strip_trailing_unreferenced_lines(tuple(lines))
 
 
@@ -1727,7 +1917,10 @@ def _strip_trailing_unreferenced_lines(
         trim_start -= 1
     if not trim_start or trim_start == len(lines):
         return lines
-    if lines[trim_start - 1].text.partition(" ")[0] not in {"ret", "retf", "jmp"}:
+    if (
+        lines[trim_start - 1].text.partition(" ")[0] not in {"ret", "retf", "jmp"}
+        and not _is_inline_data(lines[trim_start - 1])
+    ):
         return lines
     tail_offsets = {line.offset for line in lines[trim_start:]}
     for line in lines[:trim_start]:
@@ -2546,6 +2739,8 @@ def encoded_body_evidence(
         audit.problem_count
         or not target_lines
         or len(target_lines) != len(candidate_lines)
+        or len({r.offset for r in candidate.relocation_references})
+        != len(candidate.relocation_references)
     ):
         return None
     if any(
@@ -2561,10 +2756,34 @@ def encoded_body_evidence(
     consumed_relocations: set[int] = set()
     masked_ranges: list[list[int]] = []
     resolved_local: list[int] = []
+    resolved_data: list[dict[str, int]] = []
+    relocations = {r.offset: r for r in candidate.relocation_references}
     left_body, right_body = bytearray(), bytearray()
     for a, b in zip(target_lines, candidate_lines):
         left = bytearray(target_data[a.offset : a.offset + a.size])
         right = bytearray(candidate.data[b.offset : b.offset + b.size])
+        if _is_inline_data(a):
+            destination = int(a.text[4:], 16)
+            relocation = relocations.get(b.offset)
+            if (
+                a.size != 4
+                or b.offset not in candidate.relocation_offsets
+                or relocation is None
+                or relocation.relocation_type != IMAGE_REL_I386_DIR32
+                or relocation.symbol_offset is None
+                or relocation.addend != int.from_bytes(right, "little")
+                or relocation.symbol_offset + (relocation.addend or 0) != destination
+                or int.from_bytes(left, "little") - (a.address - a.offset) != destination
+            ):
+                return None
+            # Resolve the absolute local address to its function-relative value;
+            # preserve the complete entry in the digest instead of masking it.
+            left[:] = right[:] = destination.to_bytes(4, "little")
+            consumed_relocations.add(b.offset)
+            resolved_data.append({"offset": b.offset, "target_offset": destination})
+            left_body.extend(left)
+            right_body.extend(right)
+            continue
         target_insn = next(md.disasm(bytes(left), a.offset), None)
         candidate_insn = next(md.disasm(bytes(right), b.offset), None)
         if target_insn is None or candidate_insn is None:
@@ -2612,6 +2831,7 @@ def encoded_body_evidence(
         "body_size": body_end,
         "masked_relocation_ranges": masked_ranges,
         "resolved_local_relocations": resolved_local,
+        "resolved_local_data_relocations": resolved_data,
     }
 
 
@@ -2696,9 +2916,16 @@ def build_basic_blocks(lines: tuple[DisassemblyLine, ...]) -> tuple[BasicBlock, 
 
     if not lines:
         return ()
-    index_by_offset = {line.offset: index for index, line in enumerate(lines)}
+    index_by_offset = {
+        line.offset: index for index, line in enumerate(lines) if not _is_inline_data(line)
+    }
     leaders = {0}
     for index, line in enumerate(lines):
+        if _is_inline_data(line):
+            leaders.add(index)
+            if index + 1 < len(lines):
+                leaders.add(index + 1)
+            continue
         leaders.update(
             index_by_offset[offset]
             for offset in _local_branch_offsets(line)
@@ -2710,6 +2937,7 @@ def build_basic_blocks(lines: tuple[DisassemblyLine, ...]) -> tuple[BasicBlock, 
     ranges = [
         (start, starts[index + 1] if index + 1 < len(starts) else len(lines))
         for index, start in enumerate(starts)
+        if not _is_inline_data(lines[start])
     ]
     block_by_offset = {
         lines[start].offset: index
@@ -2730,6 +2958,7 @@ def build_basic_blocks(lines: tuple[DisassemblyLine, ...]) -> tuple[BasicBlock, 
         fallthrough = (
             block_index + 1
             if _has_fallthrough(last) and block_index + 1 < len(ranges)
+            and end == ranges[block_index + 1][0]
             else None
         )
         if fallthrough is not None:
@@ -3297,9 +3526,11 @@ def match_result_payload(
         ],
         "candidate_object_sha256": result.candidate_object_sha256,
         "match_ratio": result.ratio,
-        "prefix_instructions": result.prefix_instructions,
-        "target_instructions": len(result.target_lines),
-        "candidate_instructions": len(result.candidate_lines),
+        "prefix_instructions": result.instruction_prefix_count,
+        "target_instructions": result.target_instruction_count,
+        "candidate_instructions": result.candidate_instruction_count,
+        "target_inline_data_ranges": [list(r) for r in result.target_inline_data_ranges],
+        "candidate_inline_data_ranges": [list(r) for r in result.candidate_inline_data_ranges],
         "masked_references": {
             "ok": result.masked_operand_audit.ok_count,
             "unresolved": result.masked_operand_audit.unresolved_count,
@@ -3471,6 +3702,8 @@ class ScratchStatus:
     unexplained_target_ranges: tuple[tuple[int, int], ...] = ()
     candidate_object_sha256: str | None = None
     encoded_body_proof: dict[str, Any] | None = None
+    target_inline_data_ranges: tuple[tuple[int, int], ...] = ()
+    candidate_inline_data_ranges: tuple[tuple[int, int], ...] = ()
 
     @property
     def state(self) -> str:
@@ -4787,9 +5020,11 @@ def evaluate_scratch(
             address=address,
             target_size=target_size,
             ratio=result.ratio,
-            prefix_instructions=result.prefix_instructions,
-            target_instructions=len(result.target_lines),
-            candidate_instructions=len(result.candidate_lines),
+            prefix_instructions=result.instruction_prefix_count,
+            target_instructions=result.target_instruction_count,
+            candidate_instructions=result.candidate_instruction_count,
+            target_inline_data_ranges=result.target_inline_data_ranges,
+            candidate_inline_data_ranges=result.candidate_inline_data_ranges,
             masked_ok=result.masked_operand_audit.ok_count,
             masked_unresolved=result.masked_operand_audit.unresolved_count,
             masked_mismatches=result.masked_operand_audit.mismatch_count,
@@ -4939,6 +5174,8 @@ def scratch_status_payload(status: ScratchStatus) -> dict:
         "fuzzy_gap_bytes": status.fuzzy_gap_bytes,
         "target_instructions": status.target_instructions,
         "candidate_instructions": status.candidate_instructions,
+        "target_inline_data_ranges": [list(r) for r in status.target_inline_data_ranges],
+        "candidate_inline_data_ranges": [list(r) for r in status.candidate_inline_data_ranges],
         "match_ratio": status.ratio,
         "prefix_instructions": status.prefix_instructions,
         "first_mismatch": {
@@ -5723,9 +5960,11 @@ def _scratch_status_fields(target_size: int, result: MatchResult) -> dict:
         "unexplained_target_ranges": result.unexplained_target_ranges,
         "candidate_object_sha256": result.candidate_object_sha256,
         "ratio": result.ratio,
-        "prefix_instructions": result.prefix_instructions,
-        "target_instructions": len(result.target_lines),
-        "candidate_instructions": len(result.candidate_lines),
+        "prefix_instructions": result.instruction_prefix_count,
+        "target_instructions": result.target_instruction_count,
+        "candidate_instructions": result.candidate_instruction_count,
+        "target_inline_data_ranges": result.target_inline_data_ranges,
+        "candidate_inline_data_ranges": result.candidate_inline_data_ranges,
         "masked_ok": result.masked_operand_audit.ok_count,
         "masked_unresolved": result.masked_operand_audit.unresolved_count,
         "masked_mismatches": result.masked_operand_audit.mismatch_count,

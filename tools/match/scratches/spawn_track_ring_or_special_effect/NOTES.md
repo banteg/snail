@@ -1,5 +1,18 @@
 # spawn_track_ring_or_special_effect @ 0x43df10
 
+## 2026-09-11 inline-table certification
+
+The unchanged source now compares at **100%**, 347/347 code
+instructions plus 36 bytes of explicitly compared jump-table data. All
+75 reference audits are clean and positional. Encoded-body proof is
+**exact**.
+This is corrected table-data accounting, not newly reconstructed source code.
+
+The [proof report](../../inline-jump-table-proof-20260911.md) and
+[receipt](../../inline-jump-table-proof-20260911.json) preserve the full source,
+compiled-object identity, data entries, reference audits, comparison ranges, and
+encoded-body evidence. Earlier measurements below are historical.
+
 Live source map for the authored ring/special-effect spawner.
 
 Current match:

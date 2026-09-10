@@ -516,6 +516,21 @@ paired by the normalized whole-function alignment; table length and case order
 must still agree. This permits honest block-size and instruction-scheduling
 shifts without treating a reordered or unproven switch as matched.
 
+Inline jump tables stay in the compared body as `dd L<offset>` data entries.
+Recognition requires an indexed dispatch, a bounded native jump-table symbol,
+and local COFF `DIR32` entries on the candidate side. Destinations must be code
+instruction boundaries before the table; overlapping interpretations, code
+fallthrough into the table, and branches into its data are rejected. Post-table
+continuations and unknown bytes remain visible.
+
+Encoded-body evidence resolves each table word to its function-relative code
+destination and includes that value in the digest. It does not mask table words
+or grant equality from dispatch shape alone. Diagnostics expose separate
+`target_inline_data_ranges` and `candidate_inline_data_ranges`; instruction
+counts and CFG blocks exclude the data entries. The fuzzy sequence includes
+both instructions and table entries. Public code credit still uses the
+independent native code inventory, without adding table-data bytes to it.
+
 Function extents come from the symbol manifest: start at the curated address,
 end at the next curated address with int3/nop padding trimmed. When uncurated
 functions sit in the gap, set `END=0x...` in `scratch.conf`. If the compiled
