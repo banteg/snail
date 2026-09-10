@@ -62,6 +62,20 @@
           ]
         }
       ]
+    },
+    {
+      "windows_id": "initialize_snake_path_template_pair",
+      "relationships": [],
+      "constraints": [
+        {
+          "claim": "Separate winding/texture and UV dispatch from Wii Slalom supplies a scoped mesh lead. Windows direct sample expressions and branch-local lateral computation complete Snake under the existing normalized instruction rules; two equivalent SIB encodings remain explicitly accounted for.",
+          "evidence": [
+            "tools/match/snake-branch-lateral-recovery-20260910.md",
+            "tools/match/snake-branch-lateral-recovery-20260910.json",
+            "tools/match/wii-path-face-recovery-20260910.s"
+          ]
+        }
+      ]
     }
   ]
 }

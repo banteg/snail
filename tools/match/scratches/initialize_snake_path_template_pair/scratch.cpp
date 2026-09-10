@@ -219,28 +219,29 @@ void cRPath::initialize_snake_path_template_pair(
             column = 0;
             if (this->width_cells >= 0) {
                 do {
-                    double lateral =
-                        (float)column - (float)this->width_cells * 0.5f;
                     if (row != this->segment_count) {
-                        PathTemplateSample* sample =
-                            (PathTemplateSample*)((char*)this->primary_samples
-                                + sample_offset);
+                        float lateral =
+                            (float)column - (float)this->width_cells * 0.5f;
                         Vector3 lateral_offset =
-                            sample->transform.basis_right * lateral;
+                            ((PathTemplateSample*)((char*)this->primary_samples
+                                + sample_offset))->transform.basis_right * lateral;
                         Vector3 generated_position =
-                            sample->transform.position + lateral_offset;
+                            ((PathTemplateSample*)((char*)this->primary_samples
+                                + sample_offset))->transform.position + lateral_offset;
                         Vector3* vertex =
-                            &vertices[column
-                                + row * (this->width_cells + 1)];
+                            &vertices[column + row * (this->width_cells + 1)];
                         *vertex = generated_position;
                     } else {
-                        Vector3 generated_position = (((PathTemplateSample*)((char*)this->primary_samples
-                                + sample_offset))[-1].transform.position + Vector3(0.0f, 0.0f, 1.0f)) + (((PathTemplateSample*)((char*)this->primary_samples
-                                + sample_offset))[-1].transform.basis_right
-                            * lateral);
+                        float lateral =
+                            (float)column - (float)this->width_cells * 0.5f;
+                        Vector3 generated_position =
+                            (((PathTemplateSample*)((char*)this->primary_samples
+                                + sample_offset))[-1].transform.position
+                                + Vector3(0.0f, 0.0f, 1.0f))
+                            + (((PathTemplateSample*)((char*)this->primary_samples
+                                + sample_offset))[-1].transform.basis_right * lateral);
                         Vector3* vertex =
-                            &vertices[column
-                                + row * (this->width_cells + 1)];
+                            &vertices[column + row * (this->width_cells + 1)];
                         *vertex = generated_position;
                     }
                     ++column;
@@ -281,14 +282,6 @@ void cRPath::initialize_snake_path_template_pair(
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(texture_a, 0, 0);
                         }
-                        facequads[face_offset].uv[0].u = u0;
-                        facequads[face_offset].uv[0].v = v0;
-                        facequads[face_offset].uv[1].u = u1;
-                        facequads[face_offset].uv[1].v = v0;
-                        facequads[face_offset].uv[2].u = u1;
-                        facequads[face_offset].uv[2].v = v1;
-                        facequads[face_offset].uv[3].u = u0;
-                        facequads[face_offset].uv[3].v = v1;
                     } else {
                         facequads[face_offset].header_word = 0;
                         facequads[face_offset].vertex_0 = row * ((unsigned short)this->width_cells + 1) + column + 1;
@@ -304,6 +297,17 @@ void cRPath::initialize_snake_path_template_pair(
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(texture_b, 0, 0);
                         }
+                    }
+                    if (face_index == 0) {
+                        facequads[face_offset].uv[0].u = u0;
+                        facequads[face_offset].uv[0].v = v0;
+                        facequads[face_offset].uv[1].u = u1;
+                        facequads[face_offset].uv[1].v = v0;
+                        facequads[face_offset].uv[2].u = u1;
+                        facequads[face_offset].uv[2].v = v1;
+                        facequads[face_offset].uv[3].u = u0;
+                        facequads[face_offset].uv[3].v = v1;
+                    } else {
                         facequads[face_offset].uv[0].u = u1;
                         facequads[face_offset].uv[0].v = v0;
                         facequads[face_offset].uv[1].u = u0;

@@ -87,3 +87,9 @@ uses a shared mesh operation inside Wii Slalom to recover separate winding
 and UV dispatches. Windows S-bend then matches 579/579 instructions and all
 39 references. The registry records a scoped source constraint rather than
 a whole-function relationship between the two different path builders.
+
+The same shared face-dispatch lead also helps recover Windows Snake.
+[Branch-local lateral computation](../../tools/match/snake-branch-lateral-recovery-20260910.md)
+completes all 652 normalized instructions and 40 positional references. Its
+receipt distinguishes the two equivalent SIB encoding bytes from literal
+body-byte identity.

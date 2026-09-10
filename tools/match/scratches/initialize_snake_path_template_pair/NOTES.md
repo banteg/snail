@@ -656,3 +656,24 @@ The full recipes and receipts are retained here. Results, the accepted Sweep
 counter recovery, and the remaining cross-builder differences are recorded in
 [the shared mesh report](../../shared-path-mesh-recovery-20260907.md).
 No common body or extra texture interface is promoted from this comparison.
+
+## 2026-09-10 exact face dispatch and branch-local lateral recovery
+
+**100%, 652/652 instructions, prefix 652, all 40 references clean.** The
+separate winding/texture and UV dispatch recovered from Wii Slalom's shared
+mesh also applies here. Direct sample expressions in the ordinary vertex
+branch recover the complete instruction sequence apart from three uses of
+one compiler-generated integer-to-float temporary: the candidate uses
+`esp+0x1c` where Windows uses `esp+0x18`.
+
+Computing lateral displacement inside each vertex branch resolves those three
+operands. Separate float locals, separate double locals, and inline arithmetic
+all produce the exact native body. The retained source uses float locals;
+exactness does not establish a unique original spelling. A shared lateral
+helper and declaration hoisting do not fix the preceding candidate. Compiler,
+headers, ABI, and matching rules remain unchanged. Earlier partial results above
+remain historical evidence rather than current residual classifications.
+
+The complete source probe is recorded as
+`branch-local-lateral-completes-wii-mesh-recovery`, with export at
+`artifacts/match/wii-snake-branch-recovery-20260910`.
