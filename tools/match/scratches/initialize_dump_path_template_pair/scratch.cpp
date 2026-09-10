@@ -1,7 +1,9 @@
 // initialize_dump_path_template_pair @ 0x41da30 (thiscall, ret 0x1c)
 
 #define PATH_FUNCTION initialize_dump_path_template_pair
-#define PATH_SIGNATURE float curve_source, float height_scale, int width_cells_, bool side_exit, char* texture_a, char* texture_b, char* cap_texture
+#define PATH_SIGNATURE                                                                 \
+    float curve_source, float height_scale, int width_cells_, bool side_exit,          \
+        char *texture_a, char *texture_b, char *cap_texture
 #define PATH_CURVE_COUNT ((int)(curve_source * 4.0f))
 #define PATH_HEIGHT_SCALE (height_scale)
 #define PATH_VARIANT 4
@@ -17,14 +19,11 @@ float Cos(float angle);
 
 typedef AttachmentSample PathAttachmentSample;
 
-static inline void initialize_sample_pair(
-    PathAttachmentSample* primary,
-    PathAttachmentSample* secondary,
-    float center_x,
-    float primary_y,
-    float secondary_y,
-    float z,
-    int seed_delta_length)
+static inline void initialize_sample_pair(PathAttachmentSample *primary,
+                                          PathAttachmentSample *secondary,
+                                          float center_x, float primary_y,
+                                          float secondary_y, float z,
+                                          int seed_delta_length)
 {
     primary->center_x = center_x;
     primary->rotation_scalar_98 = 0.0f;
@@ -46,53 +45,236 @@ static inline void initialize_sample_pair(
         secondary->delta_length = 1.0f;
 }
 
-static inline void orient_loop_sample(
-    PathAttachmentSample* sample,
-    float up_y,
-    float up_z)
+static inline void orient_loop_sample(PathAttachmentSample *sample, float up_y,
+                                      float up_z)
 {
     sample->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
     sample->transform.basis_up = Vector3(0.0f, up_y, up_z);
     sample->transform.basis_up.Normalize();
-    sample->transform.basis_forward.Cross(
-        sample->transform.basis_right,
-        sample->transform.basis_up);
+    sample->transform.basis_forward.Cross(sample->transform.basis_right,
+                                          sample->transform.basis_up);
 }
 
-static inline void orient_previous_with_fixed_right(
-    PathAttachmentSample* previous,
-    PathAttachmentSample* next)
+static inline void orient_previous_with_fixed_right(PathAttachmentSample *previous,
+                                                    PathAttachmentSample *next)
 {
     previous->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
-    previous->transform.basis_forward = Vector3(
-        next->transform.position.x - previous->transform.position.x,
-        next->transform.position.y - previous->transform.position.y,
-        next->transform.position.z - previous->transform.position.z);
+    previous->transform.basis_forward =
+        Vector3(next->transform.position.x - previous->transform.position.x,
+                next->transform.position.y - previous->transform.position.y,
+                next->transform.position.z - previous->transform.position.z);
     previous->transform.basis_forward.Normalize();
-    previous->transform.basis_up.Cross(
-        previous->transform.basis_forward,
-        previous->transform.basis_right);
+    previous->transform.basis_up.Cross(previous->transform.basis_forward,
+                                       previous->transform.basis_right);
 }
 
-static inline void orient_previous_with_fixed_up(
-    PathAttachmentSample* previous,
-    PathAttachmentSample* next,
-    float up_x,
-    float up_y,
-    float up_z,
-    float roll)
+static inline void orient_previous_with_fixed_up(PathAttachmentSample *previous,
+                                                 PathAttachmentSample *next, float up_x,
+                                                 float up_y, float up_z, float roll)
 {
     previous->transform.basis_up = Vector3(up_x, up_y, up_z);
-    previous->transform.basis_forward = Vector3(
-        next->transform.position.x - previous->transform.position.x,
-        next->transform.position.y - previous->transform.position.y,
-        next->transform.position.z - previous->transform.position.z);
+    previous->transform.basis_forward =
+        Vector3(next->transform.position.x - previous->transform.position.x,
+                next->transform.position.y - previous->transform.position.y,
+                next->transform.position.z - previous->transform.position.z);
     previous->transform.basis_forward.Normalize();
-    previous->transform.basis_right.Cross(
-        previous->transform.basis_up,
-        previous->transform.basis_forward);
+    previous->transform.basis_right.Cross(previous->transform.basis_up,
+                                          previous->transform.basis_forward);
     if (roll != 0.0f)
         previous->transform.RotLocalZ(roll);
+}
+
+static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *texture_b)
+{
+    path->strip_mesh->RequestVertices((path->width_cells + 1) *
+                                      (path->segment_count + 1));
+    path->strip_mesh->RequestFaceQuads(2 * path->width_cells * path->segment_count);
+
+    Vector3 *vertices = path->strip_mesh->vertices;
+    cRFaceQuad *facequads = path->strip_mesh->facequads;
+
+    int row = 0;
+    int column;
+    int face_index;
+    if (path->segment_count >= 0)
+    {
+        int sample_offset = 0;
+        do
+        {
+            column = 0;
+            if (path->width_cells >= 0)
+            {
+                do
+                {
+                    double lateral = (float)column - (float)path->width_cells * 0.5f;
+                    if (row != path->segment_count)
+                    {
+                        PathAttachmentSample *sample =
+                            (PathAttachmentSample *)((char *)path->primary_samples +
+                                                     sample_offset);
+                        Vector3 lateral_offset =
+                            sample->transform.basis_right * lateral;
+                        Vector3 generated_position =
+                            sample->transform.position + lateral_offset;
+                        Vector3 *vertex =
+                            &vertices[column + row * (path->width_cells + 1)];
+                        *vertex = generated_position;
+                    }
+                    else
+                    {
+                        Vector3 generated_position =
+                            (((PathAttachmentSample *)((char *)path->primary_samples +
+                                                       sample_offset))[-1]
+                                 .transform.position +
+                             Vector3(0.0f, 0.0f, 1.0f)) +
+                            (((PathAttachmentSample *)((char *)path->primary_samples +
+                                                       sample_offset))[-1]
+                                 .transform.basis_right *
+                             lateral);
+                        Vector3 *vertex =
+                            &vertices[column + row * (path->width_cells + 1)];
+                        *vertex = generated_position;
+                    }
+                    ++column;
+                } while (column <= path->width_cells);
+            }
+            ++row;
+            sample_offset += sizeof(PathAttachmentSample);
+        } while (row <= path->segment_count);
+    }
+
+    for (row = 0; row < path->segment_count; ++row)
+    {
+        column = 0;
+        if (path->width_cells > 0)
+        {
+            float v0 = (float)(row % 8) * 0.125f;
+            float v1 = (float)(row % 8 + 1) * 0.125f;
+            do
+            {
+                float u0 = (float)column * 0.125f;
+                float u1 = (float)(column + 1) * 0.125f;
+
+                for (face_index = 0; face_index < 2; ++face_index)
+                {
+                    int face_offset =
+                        2 * column + 2 * row * path->width_cells + face_index;
+                    if (face_index == 0)
+                    {
+                        facequads[face_offset].header_word = 0;
+                        facequads[face_offset].vertex_0 =
+                            column + row * ((unsigned short)path->width_cells + 1);
+                        facequads[face_offset].vertex_1 =
+                            row * ((unsigned short)path->width_cells + 1) + column + 1;
+                        facequads[face_offset].vertex_2 =
+                            (row + 1) * ((unsigned short)path->width_cells + 1) +
+                            column + 1;
+                        facequads[face_offset].vertex_3 =
+                            column +
+                            (row + 1) * ((unsigned short)path->width_cells + 1);
+                        if (((column ^ row) & 1) == 0)
+                            facequads[face_offset].texture_ref =
+                                g_texture_refs.Add(texture_a, 0, 0);
+                        else
+                            facequads[face_offset].texture_ref =
+                                g_texture_refs.Add(texture_a, 0, 0);
+                    }
+                    else
+                    {
+                        facequads[face_offset].header_word = 0;
+                        facequads[face_offset].vertex_0 =
+                            row * ((unsigned short)path->width_cells + 1) + column + 1;
+                        facequads[face_offset].vertex_1 =
+                            column + row * ((unsigned short)path->width_cells + 1);
+                        facequads[face_offset].vertex_2 =
+                            column +
+                            (row + 1) * ((unsigned short)path->width_cells + 1);
+                        facequads[face_offset].vertex_3 =
+                            (row + 1) * ((unsigned short)path->width_cells + 1) +
+                            column + 1;
+                        if (((column ^ row) & 1) == 0)
+                            facequads[face_offset].texture_ref =
+                                g_texture_refs.Add(texture_b, 0, 0);
+                        else
+                            facequads[face_offset].texture_ref =
+                                g_texture_refs.Add(texture_b, 0, 0);
+                    }
+                    if (face_index == 0)
+                    {
+                        facequads[face_offset].uv[0].u = u0;
+                        facequads[face_offset].uv[0].v = v0;
+                        facequads[face_offset].uv[1].u = u1;
+                        facequads[face_offset].uv[1].v = v0;
+                        facequads[face_offset].uv[2].u = u1;
+                        facequads[face_offset].uv[2].v = v1;
+                        facequads[face_offset].uv[3].u = u0;
+                        facequads[face_offset].uv[3].v = v1;
+                    }
+                    else
+                    {
+                        facequads[face_offset].uv[0].u = u1;
+                        facequads[face_offset].uv[0].v = v0;
+                        facequads[face_offset].uv[1].u = u0;
+                        facequads[face_offset].uv[1].v = v0;
+                        facequads[face_offset].uv[2].u = u0;
+                        facequads[face_offset].uv[2].v = v1;
+                        facequads[face_offset].uv[3].u = u1;
+                        facequads[face_offset].uv[3].v = v1;
+                    }
+                }
+                ++column;
+            } while (column < path->width_cells);
+        }
+    }
+}
+
+static __forceinline void compute_terminal_deltas(Path *path)
+{
+    int i = 0;
+    if (path->segment_count - 1 > 0)
+    {
+        int delta_offset = 0;
+        do
+        {
+            ((PathAttachmentSample *)((char *)path->primary_samples + delta_offset))
+                ->delta_dir_to_next =
+                ((PathAttachmentSample *)((char *)path->primary_samples +
+                                          delta_offset) +
+                 1)
+                    ->transform.position -
+                ((PathAttachmentSample *)((char *)path->primary_samples + delta_offset))
+                    ->transform.position;
+            ((PathAttachmentSample *)((char *)path->primary_samples + delta_offset))
+                ->delta_length =
+                ((PathAttachmentSample *)((char *)path->primary_samples + delta_offset))
+                    ->delta_dir_to_next.Normalize();
+
+            ((PathAttachmentSample *)((char *)path->secondary_samples + delta_offset))
+                ->delta_dir_to_next =
+                ((PathAttachmentSample *)((char *)path->secondary_samples +
+                                          delta_offset) +
+                 1)
+                    ->transform.position -
+                ((PathAttachmentSample *)((char *)path->secondary_samples +
+                                          delta_offset))
+                    ->transform.position;
+            ((PathAttachmentSample *)((char *)path->secondary_samples + delta_offset))
+                ->delta_length =
+                ((PathAttachmentSample *)((char *)path->secondary_samples +
+                                          delta_offset))
+                    ->delta_dir_to_next.Normalize();
+
+            ++i;
+            delta_offset += (int)sizeof(PathAttachmentSample);
+        } while (i < path->segment_count - 1);
+    }
+
+    path->primary_samples[path->segment_count - 1].delta_dir_to_next =
+        Vector3(0.0f, 0.0f, 1.0f);
+    path->primary_samples[path->segment_count - 1].delta_length = 1.0f;
+    path->secondary_samples[path->segment_count - 1].delta_dir_to_next =
+        Vector3(0.0f, 0.0f, 1.0f);
+    path->secondary_samples[path->segment_count - 1].delta_length = 1.0f;
 }
 
 void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
@@ -114,7 +296,8 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
 #if PATH_VARIANT == 0 || PATH_VARIANT == 1
     float loop_wiggle = 0.0f;
     kind = PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY;
-    if (width_cells_ == 4) {
+    if (width_cells_ == 4)
+    {
 #if PATH_VARIANT == 1
         kind = PATH_TEMPLATE_KIND_LOOPTHELOOPW;
 #else
@@ -129,44 +312,37 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     GetNodes();
     has_entry_mesh_transition = 1;
 
-    for (i = 0; i < 7; ++i) {
+    for (i = 0; i < 7; ++i)
+    {
         float z = (float)i;
-        float center = (float)width_cells * 0.5f - 4.0f
-            - z * 0.14285715f * loop_wiggle;
-        initialize_sample_pair(
-            &primary_samples[i],
-            &secondary_samples[i],
-            center,
-            0.0f,
-            0.49000001f,
-            z,
-            1);
+        float center = (float)width_cells * 0.5f - 4.0f - z * 0.14285715f * loop_wiggle;
+        initialize_sample_pair(&primary_samples[i], &secondary_samples[i], center, 0.0f,
+                               0.49000001f, z, 1);
     }
 
-    for (i = 0; i < 7; ++i) {
+    for (i = 0; i < 7; ++i)
+    {
         int sample_index = curve_count + 7 + i;
         float z = (float)(i + 7);
-        float center = (1.0f - (float)i * 0.16666667f) * loop_wiggle
-            + 4.0f - (float)width_cells * 0.5f;
-        initialize_sample_pair(
-            &primary_samples[sample_index],
-            &secondary_samples[sample_index],
-            center,
-            0.0f,
-            0.49000001f,
-            z,
-            1);
+        float center = (1.0f - (float)i * 0.16666667f) * loop_wiggle + 4.0f -
+                       (float)width_cells * 0.5f;
+        initialize_sample_pair(&primary_samples[sample_index],
+                               &secondary_samples[sample_index], center, 0.0f,
+                               0.49000001f, z, 1);
     }
 
-    if (curve_count > 0) {
+    if (curve_count > 0)
+    {
         float secondary_radius = loop_radius - 0.49000001f;
-        for (i = 0; i < curve_count; ++i) {
+        for (i = 0; i < curve_count; ++i)
+        {
             int sample_index = i + 7;
             float sample_f = (float)i;
             float angle = sample_f * 6.2831855f / curve_count_f;
-            float center = (primary_samples[curve_count + 7].center_x
-                    - primary_samples[0].center_x)
-                * sample_f / curve_count_f + primary_samples[0].center_x;
+            float center = (primary_samples[curve_count + 7].center_x -
+                            primary_samples[0].center_x) *
+                               sample_f / curve_count_f +
+                           primary_samples[0].center_x;
             center += Sin(angle * 0.5f + 4.712389f) * loop_wiggle;
 
             primary_samples[sample_index].center_x = center;
@@ -215,45 +391,38 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     GetNodes();
     has_entry_mesh_transition = 1;
 
-    for (i = 0; i < 10; ++i) {
+    for (i = 0; i < 10; ++i)
+    {
         float z = (float)i;
-        float center = (float)width_cells * 0.5f - 4.0f
-            - z * 0.11111111f * 0.30000001f;
-        initialize_sample_pair(
-            &primary_samples[i],
-            &secondary_samples[i],
-            center,
-            0.0f,
-            0.49000001f,
-            z,
-            1);
+        float center = (float)width_cells * 0.5f - 4.0f - z * 0.11111111f * 0.30000001f;
+        initialize_sample_pair(&primary_samples[i], &secondary_samples[i], center, 0.0f,
+                               0.49000001f, z, 1);
     }
 
-    for (i = 0; i < 4; ++i) {
+    for (i = 0; i < 4; ++i)
+    {
         int sample_index = curve_count + 10 + i;
         float z = (float)(i + 10);
-        float center = (1.0f - (float)i * 0.33333334f) * 0.30000001f
-            + 4.0f - (float)width_cells * 0.5f;
-        initialize_sample_pair(
-            &primary_samples[sample_index],
-            &secondary_samples[sample_index],
-            center,
-            0.0f,
-            0.49000001f,
-            z,
-            1);
+        float center = (1.0f - (float)i * 0.33333334f) * 0.30000001f + 4.0f -
+                       (float)width_cells * 0.5f;
+        initialize_sample_pair(&primary_samples[sample_index],
+                               &secondary_samples[sample_index], center, 0.0f,
+                               0.49000001f, z, 1);
     }
 
-    if (curve_count > 0) {
+    if (curve_count > 0)
+    {
         float center_y = -loop_radius;
         float secondary_radius = loop_radius + 0.49000001f;
-        for (i = 0; i < curve_count; ++i) {
+        for (i = 0; i < curve_count; ++i)
+        {
             int sample_index = i + 10;
             float sample_f = (float)i;
             float angle = sample_f * 6.2831855f / curve_count_f;
-            float center = (primary_samples[curve_count + 10].center_x
-                    - primary_samples[0].center_x)
-                * sample_f / curve_count_f + primary_samples[0].center_x;
+            float center = (primary_samples[curve_count + 10].center_x -
+                            primary_samples[0].center_x) *
+                               sample_f / curve_count_f +
+                           primary_samples[0].center_x;
             center += Sin(angle * 0.5f + 4.712389f) * 0.30000001f;
 
             primary_samples[sample_index].center_x = center;
@@ -311,9 +480,9 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     GetNodes();
     has_entry_mesh_transition = 0;
 
-    for (i = 0; i < 7; ++i) {
-        primary_samples[i].center_x =
-            -((float)width_cells * 0.5f - 4.0f);
+    for (i = 0; i < 7; ++i)
+    {
+        primary_samples[i].center_x = -((float)width_cells * 0.5f - 4.0f);
         primary_samples[i].rotation_scalar_98 = 0.0f;
         primary_samples[i].rotation_scalar_94 = 0.0f;
         primary_samples[i].special_scalar = 0.0f;
@@ -329,104 +498,126 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
         secondary_samples[i].transform.position.z = z;
     }
 
-    do {
-        primary_samples[departure_index].center_x =
-            -(4.0f - (float)width_cells * 0.5f);
-        primary_samples[departure_index].rotation_scalar_98 = 0.0f;
-        primary_samples[departure_index].rotation_scalar_94 = 0.0f;
-        primary_samples[departure_index].special_scalar = 0.0f;
-        primary_samples[departure_index].lateral_scale = 1.0f;
-        primary_samples[departure_index].transform.Identity();
-        float z = (float)departure_index;
-        primary_samples[departure_index].transform.position.x =
-            primary_samples[departure_index].center_x;
-        primary_samples[departure_index].transform.position.y = 0.0f;
-        primary_samples[departure_index].transform.position.z = z;
-        secondary_samples[departure_index].transform.Identity();
-        secondary_samples[departure_index].transform.position.x =
-            primary_samples[departure_index].center_x;
-        secondary_samples[departure_index].transform.position.y = 0.49000001f;
-        secondary_samples[departure_index].transform.position.z = z;
-        ++departure_index;
-    } while (departure_index - 7 - curve_count < 7);
+    i = departure_index;
+    int departure_origin = -7 - curve_count;
+    do
+    {
+        primary_samples[i].center_x = -(4.0f - (float)width_cells * 0.5f);
+        primary_samples[i].rotation_scalar_98 = 0.0f;
+        primary_samples[i].rotation_scalar_94 = 0.0f;
+        primary_samples[i].special_scalar = 0.0f;
+        primary_samples[i].lateral_scale = 1.0f;
+        primary_samples[i].transform.Identity();
+        float z = (float)i;
+        primary_samples[i].transform.position.x = primary_samples[i].center_x;
+        primary_samples[i].transform.position.y = 0.0f;
+        primary_samples[i].transform.position.z = z;
+        secondary_samples[i].transform.Identity();
+        secondary_samples[i].transform.position.x = primary_samples[i].center_x;
+        secondary_samples[i].transform.position.y = 0.49000001f;
+        secondary_samples[i].transform.position.z = z;
+        ++i;
+    } while (i + departure_origin < 7);
 
-    if (curve_count > 0) {
+    if (curve_count > 0)
+    {
         i = 0;
         int sample_offset = 7 * (int)sizeof(PathAttachmentSample);
-        do {
+        do
+        {
             int sample_index = i + 7;
             float angle = (float)i * 6.2831855f / curve_count_f;
-            ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
                 ->center_x = Cos(angle * 0.5f) * primary_samples[0].center_x;
-            ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
                 ->rotation_scalar_98 = 0.0f;
-            ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
                 ->rotation_scalar_94 = 0.0f;
-            ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
                 ->special_scalar = 0.0f;
-            ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
                 ->lateral_scale = 1.0f;
-            ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
                 ->transform.Identity();
-            ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
                 ->transform.position.x =
-                ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+                ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
                     ->center_x;
-            ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
                 ->transform.position.y =
                 -((1.0f - Cos(angle)) * curve_source * PATH_HEIGHT_SCALE);
             float z = (float)sample_index;
-            ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
                 ->transform.position.z = z;
-            ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))
                 ->transform.Identity();
-            ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))
                 ->transform.position.x =
-                ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+                ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
                     ->center_x;
-            ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))
                 ->transform.position.y =
                 0.49000001f - (1.0f - Cos(angle)) * curve_source * PATH_HEIGHT_SCALE;
-            ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))
                 ->transform.position.z = z;
-            if (sample_offset > 7 * (int)sizeof(PathAttachmentSample)) {
-                ((PathAttachmentSample*)((char*)primary_samples + sample_offset)
-                    - 1)->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
-                ((PathAttachmentSample*)((char*)primary_samples + sample_offset)
-                    - 1)->transform.basis_forward =
-                    ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
+            if (sample_offset > 7 * (int)sizeof(PathAttachmentSample))
+            {
+                ((PathAttachmentSample *)((char *)primary_samples + sample_offset) - 1)
+                    ->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
+                ((PathAttachmentSample *)((char *)primary_samples + sample_offset) - 1)
+                    ->transform.basis_forward =
+                    ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
                         ->transform.position -
-                    ((PathAttachmentSample*)((char*)primary_samples + sample_offset)
-                        - 1)->transform.position;
-                ((PathAttachmentSample*)((char*)primary_samples + sample_offset)
-                    - 1)->transform.basis_forward.Normalize();
-                ((PathAttachmentSample*)((char*)primary_samples + sample_offset)
-                    - 1)->transform.basis_up.Cross(
-                    ((PathAttachmentSample*)((char*)primary_samples + sample_offset)
-                        - 1)->transform.basis_forward,
-                    ((PathAttachmentSample*)((char*)primary_samples + sample_offset)
-                        - 1)->transform.basis_right);
-                ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)
-                    - 1)->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
-                ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)
-                    - 1)->transform.basis_forward =
-                    ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
+                    ((PathAttachmentSample *)((char *)primary_samples + sample_offset) -
+                     1)
+                        ->transform.position;
+                ((PathAttachmentSample *)((char *)primary_samples + sample_offset) - 1)
+                    ->transform.basis_forward.Normalize();
+                ((PathAttachmentSample *)((char *)primary_samples + sample_offset) - 1)
+                    ->transform.basis_up.Cross(
+                        ((PathAttachmentSample *)((char *)primary_samples +
+                                                  sample_offset) -
+                         1)
+                            ->transform.basis_forward,
+                        ((PathAttachmentSample *)((char *)primary_samples +
+                                                  sample_offset) -
+                         1)
+                            ->transform.basis_right);
+                ((PathAttachmentSample *)((char *)secondary_samples + sample_offset) -
+                 1)
+                    ->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
+                ((PathAttachmentSample *)((char *)secondary_samples + sample_offset) -
+                 1)
+                    ->transform.basis_forward =
+                    ((PathAttachmentSample *)((char *)secondary_samples +
+                                              sample_offset))
                         ->transform.position -
-                    ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)
-                        - 1)->transform.position;
-                ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)
-                    - 1)->transform.basis_forward.Normalize();
-                ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)
-                    - 1)->transform.basis_up.Cross(
-                    ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)
-                        - 1)->transform.basis_forward,
-                    ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)
-                        - 1)->transform.basis_right);
-            } else {
-                ((PathAttachmentSample*)((char*)primary_samples + sample_offset)
-                    - 1)->transform.RotIdentity();
-                ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)
-                    - 1)->transform.RotIdentity();
+                    ((PathAttachmentSample *)((char *)secondary_samples +
+                                              sample_offset) -
+                     1)
+                        ->transform.position;
+                ((PathAttachmentSample *)((char *)secondary_samples + sample_offset) -
+                 1)
+                    ->transform.basis_forward.Normalize();
+                ((PathAttachmentSample *)((char *)secondary_samples + sample_offset) -
+                 1)
+                    ->transform.basis_up.Cross(
+                        ((PathAttachmentSample *)((char *)secondary_samples +
+                                                  sample_offset) -
+                         1)
+                            ->transform.basis_forward,
+                        ((PathAttachmentSample *)((char *)secondary_samples +
+                                                  sample_offset) -
+                         1)
+                            ->transform.basis_right);
+            }
+            else
+            {
+                ((PathAttachmentSample *)((char *)primary_samples + sample_offset) - 1)
+                    ->transform.RotIdentity();
+                ((PathAttachmentSample *)((char *)secondary_samples + sample_offset) -
+                 1)
+                    ->transform.RotIdentity();
             }
             ++i;
             sample_offset += (int)sizeof(PathAttachmentSample);
@@ -441,46 +632,33 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     GetNodes();
     has_entry_mesh_transition = 0;
 
-    initialize_sample_pair(
-        &primary_samples[0],
-        &secondary_samples[0],
-        0.0f,
-        0.0f,
-        0.49000001f,
-        0.0f,
-        0);
-    initialize_sample_pair(
-        &primary_samples[curve_count + 1],
-        &secondary_samples[curve_count + 1],
-        0.0f,
-        0.0f,
-        0.49000001f,
-        (float)(curve_count + 1),
-        0);
+    initialize_sample_pair(&primary_samples[0], &secondary_samples[0], 0.0f, 0.0f,
+                           0.49000001f, 0.0f, 0);
+    initialize_sample_pair(&primary_samples[curve_count + 1],
+                           &secondary_samples[curve_count + 1], 0.0f, 0.0f, 0.49000001f,
+                           (float)(curve_count + 1), 0);
 
-    if (curve_count > 0) {
-        for (i = 0; i < curve_count; ++i) {
+    if (curve_count > 0)
+    {
+        for (i = 0; i < curve_count; ++i)
+        {
             int sample_index = i + 1;
             float angle = (float)i * 6.2831855f / curve_count_f;
             float y = -((1.0f - Cos(angle)) * dip_radius);
-            initialize_sample_pair(
-                &primary_samples[sample_index],
-                &secondary_samples[sample_index],
-                0.0f,
-                y,
-                y + 0.49000001f,
-                (float)(i + 1),
-                0);
-            if (sample_index <= 1) {
+            initialize_sample_pair(&primary_samples[sample_index],
+                                   &secondary_samples[sample_index], 0.0f, y,
+                                   y + 0.49000001f, (float)(i + 1), 0);
+            if (sample_index <= 1)
+            {
                 primary_samples[sample_index - 1].transform.RotIdentity();
                 secondary_samples[sample_index - 1].transform.RotIdentity();
-            } else {
-                orient_previous_with_fixed_right(
-                    &primary_samples[sample_index - 1],
-                    &primary_samples[sample_index]);
-                orient_previous_with_fixed_right(
-                    &secondary_samples[sample_index - 1],
-                    &secondary_samples[sample_index]);
+            }
+            else
+            {
+                orient_previous_with_fixed_right(&primary_samples[sample_index - 1],
+                                                 &primary_samples[sample_index]);
+                orient_previous_with_fixed_right(&secondary_samples[sample_index - 1],
+                                                 &secondary_samples[sample_index]);
             }
         }
     }
@@ -491,66 +669,49 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     GetNodes();
     has_entry_mesh_transition = 0;
 
-    for (i = 0; i < 3; ++i) {
-        initialize_sample_pair(
-            &primary_samples[i],
-            &secondary_samples[i],
-            0.5f,
-            0.0f,
-            0.49000001f,
-            (float)i,
-            0);
+    for (i = 0; i < 3; ++i)
+    {
+        initialize_sample_pair(&primary_samples[i], &secondary_samples[i], 0.5f, 0.0f,
+                               0.49000001f, (float)i, 0);
     }
 
-    for (i = 0; i < 5; ++i) {
+    for (i = 0; i < 5; ++i)
+    {
         int sample_index = curve_count + 3 + i;
-        initialize_sample_pair(
-            &primary_samples[sample_index],
-            &secondary_samples[sample_index],
-            -0.5f,
-            0.0f,
-            0.49000001f,
-            (float)(curve_count + 3 + i),
-            0);
+        initialize_sample_pair(&primary_samples[sample_index],
+                               &secondary_samples[sample_index], -0.5f, 0.0f,
+                               0.49000001f, (float)(curve_count + 3 + i), 0);
     }
 
-    if (curve_count > 0) {
+    if (curve_count > 0)
+    {
         float curve_count_f = (float)curve_count;
-        for (i = 0; i < curve_count; ++i) {
+        for (i = 0; i < curve_count; ++i)
+        {
             int sample_index = i + 3;
             float angle = (float)i * 6.2831855f / curve_count_f;
             float center = Cos(angle * 0.5f) * 0.5f;
-            initialize_sample_pair(
-                &primary_samples[sample_index],
-                &secondary_samples[sample_index],
-                center,
-                0.0f,
-                Cos(angle) * 0.49000001f,
-                (float)(i + 3),
-                0);
+            initialize_sample_pair(&primary_samples[sample_index],
+                                   &secondary_samples[sample_index], center, 0.0f,
+                                   Cos(angle) * 0.49000001f, (float)(i + 3), 0);
             primary_samples[sample_index].rotation_scalar_94 = angle;
             secondary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x - Sin(angle) * 0.49000001f;
-            if (sample_index <= 3) {
+            if (sample_index <= 3)
+            {
                 primary_samples[sample_index - 1].transform.RotIdentity();
                 secondary_samples[sample_index - 1].transform.RotIdentity();
-            } else {
+            }
+            else
+            {
                 float up_x = -Sin(angle);
                 float up_y = Cos(angle);
-                orient_previous_with_fixed_up(
-                    &primary_samples[sample_index - 1],
-                    &primary_samples[sample_index],
-                    up_x,
-                    up_y,
-                    0.0f,
-                    0.0f);
-                orient_previous_with_fixed_up(
-                    &secondary_samples[sample_index - 1],
-                    &secondary_samples[sample_index],
-                    up_x,
-                    up_y,
-                    0.0f,
-                    0.0f);
+                orient_previous_with_fixed_up(&primary_samples[sample_index - 1],
+                                              &primary_samples[sample_index], up_x,
+                                              up_y, 0.0f, 0.0f);
+                orient_previous_with_fixed_up(&secondary_samples[sample_index - 1],
+                                              &secondary_samples[sample_index], up_x,
+                                              up_y, 0.0f, 0.0f);
             }
         }
     }
@@ -561,32 +722,25 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     GetNodes();
     has_entry_mesh_transition = 0;
 
-    for (i = 0; i < 4; ++i) {
-        initialize_sample_pair(
-            &primary_samples[i],
-            &secondary_samples[i],
-            0.0f,
-            0.0f,
-            0.49000001f,
-            (float)i,
-            0);
+    for (i = 0; i < 4; ++i)
+    {
+        initialize_sample_pair(&primary_samples[i], &secondary_samples[i], 0.0f, 0.0f,
+                               0.49000001f, (float)i, 0);
     }
 
-    for (i = 0; i < 4; ++i) {
+    for (i = 0; i < 4; ++i)
+    {
         int sample_index = curve_count + 4 + i;
-        initialize_sample_pair(
-            &primary_samples[sample_index],
-            &secondary_samples[sample_index],
-            0.0f,
-            0.0f,
-            0.49000001f,
-            (float)(curve_count + 4 + i),
-            0);
+        initialize_sample_pair(&primary_samples[sample_index],
+                               &secondary_samples[sample_index], 0.0f, 0.0f,
+                               0.49000001f, (float)(curve_count + 4 + i), 0);
     }
 
-    if (curve_count > 0) {
+    if (curve_count > 0)
+    {
         float curve_count_f = (float)curve_count;
-        for (i = 0; i < curve_count; ++i) {
+        for (i = 0; i < curve_count; ++i)
+        {
             int sample_index = i + 4;
             float t = (float)i / curve_count_f;
             float angle = t * 6.2831855f;
@@ -594,167 +748,31 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             if (falloff < 0.0f)
                 falloff = -falloff;
             float center = Sin(angle) * (1.0f - falloff) * (1.0f - falloff) * 5.0f;
-            initialize_sample_pair(
-                &primary_samples[sample_index],
-                &secondary_samples[sample_index],
-                center,
-                0.0f,
-                0.49000001f,
-                (float)(i + 4),
-                0);
-            if (sample_index <= 4) {
+            initialize_sample_pair(&primary_samples[sample_index],
+                                   &secondary_samples[sample_index], center, 0.0f,
+                                   0.49000001f, (float)(i + 4), 0);
+            if (sample_index <= 4)
+            {
                 primary_samples[sample_index - 1].transform.RotIdentity();
                 secondary_samples[sample_index - 1].transform.RotIdentity();
-            } else {
+            }
+            else
+            {
                 float roll = primary_samples[sample_index - 1].center_x * 0.2617994f;
-                orient_previous_with_fixed_up(
-                    &primary_samples[sample_index - 1],
-                    &primary_samples[sample_index],
-                    0.0f,
-                    1.0f,
-                    0.0f,
-                    roll);
-                orient_previous_with_fixed_up(
-                    &secondary_samples[sample_index - 1],
-                    &secondary_samples[sample_index],
-                    0.0f,
-                    1.0f,
-                    0.0f,
-                    roll);
+                orient_previous_with_fixed_up(&primary_samples[sample_index - 1],
+                                              &primary_samples[sample_index], 0.0f,
+                                              1.0f, 0.0f, roll);
+                orient_previous_with_fixed_up(&secondary_samples[sample_index - 1],
+                                              &secondary_samples[sample_index], 0.0f,
+                                              1.0f, 0.0f, roll);
             }
         }
     }
 #endif
 
-    if (segment_count - 1 > 0) {
-        for (i = 0; i < segment_count - 1; ++i) {
-            primary_samples[i].delta_dir_to_next =
-                primary_samples[i + 1].transform.position -
-                primary_samples[i].transform.position;
-            primary_samples[i].delta_length =
-                primary_samples[i].delta_dir_to_next.Normalize();
+    compute_terminal_deltas(this);
 
-            secondary_samples[i].delta_dir_to_next =
-                secondary_samples[i + 1].transform.position -
-                secondary_samples[i].transform.position;
-            secondary_samples[i].delta_length =
-                secondary_samples[i].delta_dir_to_next.Normalize();
-        }
-    }
-
-    primary_samples[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    primary_samples[segment_count - 1].delta_length = 1.0f;
-    secondary_samples[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    secondary_samples[segment_count - 1].delta_length = 1.0f;
-
-    strip_mesh->RequestVertices((width_cells + 1) * (segment_count + 1));
-    strip_mesh->RequestFaceQuads(2 * width_cells * segment_count);
-
-    Vector3* vertices = strip_mesh->vertices;
-    cRFaceQuad* facequads = strip_mesh->facequads;
-
-    int mesh_column;
-    int mesh_row = 0;
-    if (mesh_row <= segment_count) {
-        int mesh_sample_offset = 0;
-        do {
-            for (mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {
-                double lateral = (float)mesh_column - (float)width_cells * 0.5f;
-                if (mesh_row != segment_count) {
-                    PathAttachmentSample* sample =
-                        (PathAttachmentSample*)((char*)primary_samples
-                            + mesh_sample_offset);
-                    Vector3 lateral_offset =
-                        sample->transform.basis_right * lateral;
-                    Vector3 generated_position =
-                        sample->transform.position + lateral_offset;
-                    Vector3* vertex =
-                        &vertices[mesh_column + mesh_row * (width_cells + 1)];
-                    *vertex = generated_position;
-                } else {
-                    PathAttachmentSample* sample =
-                        (PathAttachmentSample*)((char*)primary_samples
-                            + mesh_sample_offset);
-                    Vector3 lateral_offset =
-                        sample[-1].transform.basis_right * lateral;
-                    Vector3 endpoint = sample[-1].transform.position
-                        + Vector3(0.0f, 0.0f, 1.0f);
-                    Vector3 generated_position =
-                        endpoint + lateral_offset;
-                    Vector3* vertex =
-                        &vertices[mesh_column + mesh_row * (width_cells + 1)];
-                    *vertex = generated_position;
-                }
-            }
-            ++mesh_row;
-            mesh_sample_offset += (int)sizeof(PathAttachmentSample);
-        } while (mesh_row <= segment_count);
-    }
-
-    for (mesh_row = 0; mesh_row < segment_count; ++mesh_row) {
-        mesh_column = 0;
-        if (width_cells > 0) {
-            float v0 = (float)(mesh_row % 8) * 0.125f;
-            float v1 = (float)(mesh_row % 8 + 1) * 0.125f;
-            int next_column;
-            do {
-                next_column = mesh_column + 1;
-                float u0 = (float)mesh_column * 0.125f;
-                float u1 = (float)(mesh_column + 1) * 0.125f;
-                for (int face_index = 0; face_index < 2; ++face_index) {
-                    int face_offset =
-                        face_index
-                        + 2 * (mesh_row * width_cells + mesh_column);
-                    if (face_index == 0) {
-                        facequads[face_offset].header_word = 0;
-                        facequads[face_offset].vertex_0 = mesh_column + mesh_row * ((unsigned short)width_cells + 1);
-                        facequads[face_offset].vertex_1 = mesh_row * ((unsigned short)width_cells + 1) + mesh_column + 1;
-                        facequads[face_offset].vertex_2 =
-                            (mesh_row + 1) * ((unsigned short)width_cells + 1) + mesh_column + 1;
-                        facequads[face_offset].vertex_3 =
-                            mesh_column + (mesh_row + 1) * ((unsigned short)width_cells + 1);
-                        if ((mesh_column ^ mesh_row) & 1)
-                            facequads[face_offset].texture_ref =
-                                g_texture_refs.Add(texture_a, 0, 0);
-                        else
-                            facequads[face_offset].texture_ref =
-                                g_texture_refs.Add(texture_a, 0, 0);
-                        facequads[face_offset].uv[0].u = u0;
-                        facequads[face_offset].uv[0].v = v0;
-                        facequads[face_offset].uv[1].u = u1;
-                        facequads[face_offset].uv[1].v = v0;
-                        facequads[face_offset].uv[2].u = u1;
-                        facequads[face_offset].uv[2].v = v1;
-                        facequads[face_offset].uv[3].u = u0;
-                        facequads[face_offset].uv[3].v = v1;
-                    } else {
-                        facequads[face_offset].header_word = 0;
-                        facequads[face_offset].vertex_0 = mesh_row * ((unsigned short)width_cells + 1) + mesh_column + 1;
-                        facequads[face_offset].vertex_1 = mesh_column + mesh_row * ((unsigned short)width_cells + 1);
-                        facequads[face_offset].vertex_2 =
-                            mesh_column + (mesh_row + 1) * ((unsigned short)width_cells + 1);
-                        facequads[face_offset].vertex_3 =
-                            (mesh_row + 1) * ((unsigned short)width_cells + 1) + mesh_column + 1;
-                        if ((mesh_column ^ mesh_row) & 1)
-                            facequads[face_offset].texture_ref =
-                                g_texture_refs.Add(texture_b, 0, 0);
-                        else
-                            facequads[face_offset].texture_ref =
-                                g_texture_refs.Add(texture_b, 0, 0);
-                        facequads[face_offset].uv[0].u = u1;
-                        facequads[face_offset].uv[0].v = v0;
-                        facequads[face_offset].uv[1].u = u0;
-                        facequads[face_offset].uv[1].v = v0;
-                        facequads[face_offset].uv[2].u = u0;
-                        facequads[face_offset].uv[2].v = v1;
-                        facequads[face_offset].uv[3].u = u1;
-                        facequads[face_offset].uv[3].v = v1;
-                    }
-                }
-                mesh_column = next_column;
-            } while (next_column < width_cells);
-        }
-    }
+    build_strip_mesh(this, texture_a, texture_b);
 
     CalcLengthZ();
     (void)side_exit;

@@ -1,9 +1,25 @@
 # `initialize_halfpipe_path_template_pair` reconstruction notes
 
-Current recovery: semantic-complete (`compiler` residual). The verified
-Android/iOS builder bodies establish the portable sample/control graph; the
-live Windows body and scratch additionally cover the native mesh/face tail.
-All references are clean, and the remaining differences are code layout.
+Current recovery: declared semantic-complete, with native differences still under
+analysis. This is a partial recovery, not an exact match or a compiler ceiling.
+
+2026-09-11 current measurement: **68.96% → 75.41%**,
+688 → 688 candidate instructions / 707 native, with a
+18-instruction exact prefix. All 55 aligned references are clean;
+only 21 share the native instruction index and 15 share the byte
+offset. `body_byte_exact` is false. Compiler, flags, shared headers, ABI, and
+matcher rules are unchanged.
+
+The retained source separates face UV dispatch and traverses the 34 middle samples with a byte offset, using vector subtraction for the forward basis. Kind-42 attachment transforms and radius-dependent vertex adjustment are preserved.
+
+Lead/exit temporary lifetimes, departure addressing, middle/delta scheduling, and custom mesh details still differ. Applying physical traversal to the departure phase regresses the body.
+
+The [recovery report](../../path-builder-source-recovery-20260911.md) and
+[complete receipt](../../path-builder-source-recovery-20260911.json) contain the
+before/after sources, identities, remaining assembly diff, reference positions,
+and compared/excluded ranges. The promotion is recorded in `experiments.jsonl`.
+Earlier observations below remain historical; finite controls do not establish
+source exhaustion.
 
 ## Recovered behavior
 

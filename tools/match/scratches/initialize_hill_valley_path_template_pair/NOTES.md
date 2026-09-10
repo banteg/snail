@@ -1,9 +1,25 @@
 # initialize_hill_valley_path_template_pair
 
-Current recovery: semantic-complete (`compiler` residual). The verified
-Android/iOS builder bodies establish the portable sample/control graph; the
-live Windows body and scratch additionally cover the native mesh/face tail.
-All references are clean, and the remaining differences are code layout.
+Current recovery: declared semantic-complete, with native differences still under
+analysis. This is a partial recovery, not an exact match or a compiler ceiling.
+
+2026-09-11 current measurement: **83.92% → 97.60%**,
+669 → 668 candidate instructions / 668 native, with a
+21-instruction exact prefix. All 41 aligned references are clean;
+only 27 share the native instruction index and 27 share the byte
+offset. `body_byte_exact` is false. Compiler, flags, shared headers, ABI, and
+matcher rules are unchanged.
+
+The retained source separates face UV dispatch, uses branch-local mesh vectors and physical delta traversal, and guards previous-sample orientation by the native byte offset. Testing parity-bit equality recovers both native texture branch directions while preserving the equal-texture arms.
+
+Endpoint logical-index retention, scaling order, one secondary receiver calculation, and associated branch displacements remain different.
+
+The [recovery report](../../path-builder-source-recovery-20260911.md) and
+[complete receipt](../../path-builder-source-recovery-20260911.json) contain the
+before/after sources, identities, remaining assembly diff, reference positions,
+and compared/excluded ranges. The promotion is recorded in `experiments.jsonl`.
+Earlier observations below remain historical; finite controls do not establish
+source exhaustion.
 
 Starter reconstruction for `initialize_hill_valley_path_template_pair @ 0x42d570`.
 

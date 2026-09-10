@@ -1,9 +1,25 @@
 # initialize_wibble_path_template_pair
 
-Current recovery: semantic-complete (`compiler` residual). The verified
-Android/iOS builder bodies establish the portable sample/control graph; the
-live Windows body and scratch additionally cover the native mesh/face tail.
-All references are clean, and the remaining differences are code layout.
+Current recovery: declared semantic-complete, with native differences still under
+analysis. This is a partial recovery, not an exact match or a compiler ceiling.
+
+2026-09-11 current measurement: **80.10% → 89.14%**,
+608 → 608 candidate instructions / 608 native, with a
+85-instruction exact prefix. All 39 aligned references are clean;
+only 23 share the native instruction index and 17 share the byte
+offset. `body_byte_exact` is false. Compiler, flags, shared headers, ABI, and
+matcher rules are unchanged.
+
+Separate face UV dispatch and branch-local mesh vectors improve this fixed 32-sample builder. Its indexed curve and existing delta loop remain stronger than the tested physical-counter forms.
+
+Curve phase lifetime, transform-copy addressing, loop termination, and delta traversal still differ despite equal total instruction counts.
+
+The [recovery report](../../path-builder-source-recovery-20260911.md) and
+[complete receipt](../../path-builder-source-recovery-20260911.json) contain the
+before/after sources, identities, remaining assembly diff, reference positions,
+and compared/excluded ranges. The promotion is recorded in `experiments.jsonl`.
+Earlier observations below remain historical; finite controls do not establish
+source exhaustion.
 
 Ownership reconstruction for `initialize_wibble_path_template_pair @ 0x4289a0`.
 

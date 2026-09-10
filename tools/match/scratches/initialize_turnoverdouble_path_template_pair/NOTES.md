@@ -1,9 +1,25 @@
 # initialize_turnoverdouble_path_template_pair
 
-Current recovery: semantic-complete (`compiler` residual). The verified
-Android/iOS builder bodies establish the portable sample/control graph; the
-live Windows body and scratch additionally cover the native mesh/face tail.
-All references are clean, and the remaining differences are code layout.
+Current recovery: declared semantic-complete, with native differences still under
+analysis. This is a partial recovery, not an exact match or a compiler ceiling.
+
+2026-09-11 current measurement: **75.72% → 94.27%**,
+683 → 682 candidate instructions / 680 native, with a
+80-instruction exact prefix. All 46 aligned references are clean;
+only 8 share the native instruction index and 8 share the byte
+offset. `body_byte_exact` is false. Compiler, flags, shared headers, ABI, and
+matcher rules are unchanged.
+
+The retained source uses branch-local mesh vectors, separate UV dispatch, one curve counter, nested roll sine evaluation, an aggregate secondary offset, and physical delta traversal.
+
+The native departure bound still differs: the candidate derives a separate loop counter. Curve preheader and scalar-store scheduling also remain different.
+
+The [recovery report](../../path-builder-source-recovery-20260911.md) and
+[complete receipt](../../path-builder-source-recovery-20260911.json) contain the
+before/after sources, identities, remaining assembly diff, reference positions,
+and compared/excluded ranges. The promotion is recorded in `experiments.jsonl`.
+Earlier observations below remain historical; finite controls do not establish
+source exhaustion.
 
 Ownership recovery for `initialize_turnoverdouble_path_template_pair @ 0x427640`.
 

@@ -1,9 +1,25 @@
 # `initialize_dip_path_template_pair` starter
 
-Current recovery: semantic-complete (`compiler` residual). The verified
-Android/iOS builder bodies establish the portable sample/control graph; the
-live Windows body and scratch additionally cover the native mesh/face tail.
-All references are clean, and the remaining differences are code layout.
+Current recovery: declared semantic-complete, with native differences still under
+analysis. This is a partial recovery, not an exact match or a compiler ceiling.
+
+2026-09-11 current measurement: **66.46% → 75.96%**,
+642 → 643 candidate instructions / 655 native, with a
+8-instruction exact prefix. All 37 aligned references are clean;
+only 2 share the native instruction index and 5 share the byte
+offset. `body_byte_exact` is false. Compiler, flags, shared headers, ABI, and
+matcher rules are unchanged.
+
+The retained change recovers the ordinary/terminal vertex lifetimes and separates face UV assignment from texture selection.
+
+Endpoint index allocation, previous-sample orientation ownership, and curve/mesh scheduling still differ. Direct physical orientation and delta controls do not improve this retained body.
+
+The [recovery report](../../path-builder-source-recovery-20260911.md) and
+[complete receipt](../../path-builder-source-recovery-20260911.json) contain the
+before/after sources, identities, remaining assembly diff, reference positions,
+and compared/excluded ranges. The promotion is recorded in `experiments.jsonl`.
+Earlier observations below remain historical; finite controls do not establish
+source exhaustion.
 
 This is an honest semantic starter for the path-template initializer at
 `0x41e440`.
