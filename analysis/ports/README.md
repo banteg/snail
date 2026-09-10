@@ -72,3 +72,12 @@ s0; the native helper uses r0. m2c may omit paired-single stores. The detailed
 reports retain controls for both issues. Independent code generators constrain
 shared source, but neither decompiler consensus nor a matching name establishes
 the original C++ or equality across game revisions.
+
+## First result after organizing
+
+The [hotspot extraction investigation](../../tools/match/hotspot-wii-normalization-20260910.md)
+uses the mobile names to identify the routine and Wii's preserved count-and-normalize
+operation to explain six Windows copy instructions. The recovered C++ matches
+74/74 Windows instructions and all seven references, advancing coverage to
+598/662. Its scoped relationship and source constraint are registered in
+`functions.json` and displayed by `snail match leads extract_snail_local_hotspots`.

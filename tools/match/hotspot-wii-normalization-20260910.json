@@ -1,0 +1,478 @@
+{
+  "schema": 1,
+  "function": "extract_snail_local_hotspots",
+  "address": "0x445d50",
+  "native_image_sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5",
+  "source_sha256": "a1dcde538e5bcf53a281620dae529499ad23b4838db843363df51c64b0e9469c",
+  "config_sha256": "a9999ff0a7f66261cde37829052b88f6661f049983d0203e21ad91c78442eac5",
+  "compiler": "msvc6.5",
+  "cflags": "/O2 /G5 /W3",
+  "probe": {
+    "baseline": {
+      "address": 4480336,
+      "candidate_instructions": 68,
+      "cflags": "/O2 /G5 /W3",
+      "code_sha256": "ba2778de2d352c1a48b3b991ffdec63a310befac31940fef9d8ada08cd3d001e",
+      "compiler": "msvc6.5",
+      "error": null,
+      "first_mismatch": {
+        "candidate_offset": 78,
+        "target_offset": 78
+      },
+      "function": "extract_snail_local_hotspots",
+      "fuzzy_gap_bytes": 17.577464788732385,
+      "fuzzy_weighted_bytes": 190.42253521126761,
+      "match_ratio": 0.9154929577464789,
+      "prefix_instructions": 31,
+      "recovery": "semantic-complete",
+      "references": {
+        "mismatch": 0,
+        "ok": 7,
+        "unaudited": 0,
+        "unresolved": 0
+      },
+      "residuals": [
+        "analysis"
+      ],
+      "scratch": "/Users/banteg/dev/banteg/snail-mail/tools/match/scratches/extract_snail_local_hotspots",
+      "state": "wip",
+      "target_bytes": 208,
+      "target_instructions": 74
+    },
+    "delta": {
+      "candidate_instructions": 6,
+      "fuzzy_weighted_bytes": 17.577464788732385,
+      "match_ratio": 0.08450704225352113,
+      "prefix_instructions": 43,
+      "references": {
+        "mismatch": 0,
+        "ok": 0,
+        "unaudited": 0,
+        "unresolved": 0
+      }
+    },
+    "diagnostic_export": "artifacts/match/hotspot-wii-normalization-20260910",
+    "label": "wii-hotspot-count-and-component-normalization",
+    "probe": {
+      "address": 4480336,
+      "candidate_instructions": 74,
+      "cflags": "/O2 /G5 /W3",
+      "code_sha256": "9e6191e5cb04ec69006296eb09b016f68e0c2ad96584b2c22641cb19ef6a83c6",
+      "compiler": "msvc6.5",
+      "error": null,
+      "first_mismatch": {
+        "candidate_offset": null,
+        "target_offset": null
+      },
+      "function": "extract_snail_local_hotspots",
+      "fuzzy_gap_bytes": 0.0,
+      "fuzzy_weighted_bytes": 208.0,
+      "match_ratio": 1.0,
+      "prefix_instructions": 74,
+      "recovery": "exact",
+      "references": {
+        "mismatch": 0,
+        "ok": 7,
+        "unaudited": 0,
+        "unresolved": 0
+      },
+      "residuals": [],
+      "scratch": "<shadow>",
+      "state": "match",
+      "target_bytes": 208,
+      "target_instructions": 74
+    },
+    "recorded_to": "/Users/banteg/dev/banteg/snail-mail/tools/match/scratches/extract_snail_local_hotspots/experiments.jsonl",
+    "source_sha256": "a1dcde538e5bcf53a281620dae529499ad23b4838db843363df51c64b0e9469c",
+    "tradeoffs": []
+  },
+  "controls": [
+    {
+      "label": "base",
+      "state": "wip",
+      "code_sha256": "ba2778de2d352c1a48b3b991ffdec63a310befac31940fef9d8ada08cd3d001e",
+      "function": "extract_snail_local_hotspots",
+      "address": 4480336,
+      "target_bytes": 208,
+      "fuzzy_weighted_bytes": 190.42253521126761,
+      "fuzzy_gap_bytes": 17.577464788732385,
+      "target_instructions": 74,
+      "candidate_instructions": 68,
+      "match_ratio": 0.9154929577464789,
+      "prefix_instructions": 31,
+      "first_mismatch": {
+        "target_offset": 78,
+        "candidate_offset": 78
+      },
+      "references": {
+        "ok": 7,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "compiler": "msvc6.5",
+      "cflags": "/O2 /G5 /W3",
+      "recovery": "semantic-complete",
+      "residuals": [
+        "analysis"
+      ],
+      "error": null,
+      "source": "// extract_snail_local_hotspots @ 0x445d50 (thiscall, ret)\n\n#include \"object_render_types.h\"\n#include \"player.h\"\n#include \"sprite.h\"\n\nint report_errorf(char* format, ...);\n\nextern char* g_snail_hotspot_texture_names[]; // data_4a4aa0\nextern char* g_snail_hotspot_texture_names_end[]; // 0x4a4aec, first string after the pointer table\n\nvoid cRSnail::ExtractHotSpots()\n{\n    Object* model = snail_hotspot_body.object;\n    char** name_cursor = g_snail_hotspot_texture_names;\n    float* hotspot_z = &snail_hotspots_local[0].z;\n\n    do {\n        *hotspot_z = 0.0f;\n        hotspot_z[-1] = 0.0f;\n        hotspot_z[-2] = 0.0f;\n\n        char* texture_name = *name_cursor;\n        cRTexture* texture = g_texture_refs.Add(texture_name, 0, 0);\n        int facequad_count = model->facequad_count;\n        int face_index = 0;\n        cRFaceQuad* facequad;\n        int vertex_index;\n        Vector3* vertex;\n\n        if (facequad_count <= 0)\n            goto missing_hotspot;\n\n        facequad = model->facequads;\n        while (1) {\n            if (facequad->texture_ref == texture)\n                break;\n            ++face_index;\n            ++facequad;\n            if (face_index >= facequad_count)\n                goto missing_hotspot;\n        }\n\n        vertex_index = model->facequads[face_index].vertex_0;\n        vertex = &model->vertices[vertex_index];\n        hotspot_z[-2] += vertex->x;\n        hotspot_z[-1] += vertex->y;\n        *hotspot_z += vertex->z;\n        goto next_hotspot;\n\n    missing_hotspot:\n        report_errorf(\"Cannot find HotPoint Texture %s\", *name_cursor);\n\n    next_hotspot:\n        ++name_cursor;\n        hotspot_z += 3;\n    } while ((int)name_cursor < (int)g_snail_hotspot_texture_names_end);\n\n    snail_hotspots_local[SNAIL_HOTSPOT_CAMERA_INTRO_TALK].y += 0.300000012f;\n}\n",
+      "source_sha256": "3aa1766ffde2338744da87a40014bec1cac7b7850124f54fa7e0fb97a6205159"
+    },
+    {
+      "label": "float-value",
+      "state": "wip",
+      "code_sha256": "a9d7c303df895a176765e1bda11bf536e2e5a278bc6038fbe69f4765abea6065",
+      "function": "extract_snail_local_hotspots",
+      "address": 4480336,
+      "target_bytes": 208,
+      "fuzzy_weighted_bytes": 72.34782608695652,
+      "fuzzy_gap_bytes": 135.6521739130435,
+      "target_instructions": 74,
+      "candidate_instructions": 87,
+      "match_ratio": 0.34782608695652173,
+      "prefix_instructions": 0,
+      "first_mismatch": {
+        "target_offset": 0,
+        "candidate_offset": 0
+      },
+      "references": {
+        "ok": 7,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "compiler": "msvc6.5",
+      "cflags": "/O2 /G5 /W3",
+      "recovery": "semantic-complete",
+      "residuals": [
+        "analysis"
+      ],
+      "error": null,
+      "source": "// extract_snail_local_hotspots @ 0x445d50 (thiscall, ret)\n\n#include \"object_render_types.h\"\n#include \"player.h\"\n#include \"sprite.h\"\n\nint report_errorf(char* format, ...);\n\nextern char* g_snail_hotspot_texture_names[]; // data_4a4aa0\nextern char* g_snail_hotspot_texture_names_end[]; // 0x4a4aec, first string after the pointer table\n\nvoid cRSnail::ExtractHotSpots()\n{\n    Object* model = snail_hotspot_body.object;\n    char** name_cursor = g_snail_hotspot_texture_names;\n    float* hotspot_z = &snail_hotspots_local[0].z;\n\n    do {\n        *hotspot_z = 0.0f;\n        hotspot_z[-1] = 0.0f;\n        hotspot_z[-2] = 0.0f;\n\n        char* texture_name = *name_cursor;\n        cRTexture* texture = g_texture_refs.Add(texture_name, 0, 0);\n        float count = 0;\n        for (int face_index = 0; face_index < model->facequad_count; ++face_index) {\n            if (model->facequads[face_index].texture_ref == texture) {\n                Vector3* vertex = &model->vertices[model->facequads[face_index].vertex_0];\n                hotspot_z[-2] += vertex->x;\n                hotspot_z[-1] += vertex->y;\n                *hotspot_z += vertex->z;\n                ++count;\n                break;\n            }\n        }\n        if (count == 0) {\n            report_errorf(\"Cannot find HotPoint Texture %s\", *name_cursor);\n        } else {\n            *(Vector3*)(hotspot_z - 2) = *(Vector3*)(hotspot_z - 2) * (1.0f / count);\n        }\n\n        ++name_cursor;\n        hotspot_z += 3;\n    } while ((int)name_cursor < (int)g_snail_hotspot_texture_names_end);\n\n    snail_hotspots_local[SNAIL_HOTSPOT_CAMERA_INTRO_TALK].y += 0.300000012f;\n}\n",
+      "source_sha256": "285b1fdedf466050cf4ea067ddcd96e3c64a0dbd3fcc4b9ac252a2f56b4d0fa5"
+    },
+    {
+      "label": "float-inplace",
+      "state": "wip",
+      "code_sha256": "f26415a6932820b242c0c84652ed4e9a90290935b3cd10d05bd4ed13c609cc15",
+      "function": "extract_snail_local_hotspots",
+      "address": 4480336,
+      "target_bytes": 208,
+      "fuzzy_weighted_bytes": 101.33333333333333,
+      "fuzzy_gap_bytes": 106.66666666666667,
+      "target_instructions": 74,
+      "candidate_instructions": 82,
+      "match_ratio": 0.48717948717948717,
+      "prefix_instructions": 0,
+      "first_mismatch": {
+        "target_offset": 0,
+        "candidate_offset": 0
+      },
+      "references": {
+        "ok": 7,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "compiler": "msvc6.5",
+      "cflags": "/O2 /G5 /W3",
+      "recovery": "semantic-complete",
+      "residuals": [
+        "analysis"
+      ],
+      "error": null,
+      "source": "// extract_snail_local_hotspots @ 0x445d50 (thiscall, ret)\n\n#include \"object_render_types.h\"\n#include \"player.h\"\n#include \"sprite.h\"\n\nint report_errorf(char* format, ...);\n\nextern char* g_snail_hotspot_texture_names[]; // data_4a4aa0\nextern char* g_snail_hotspot_texture_names_end[]; // 0x4a4aec, first string after the pointer table\n\nvoid cRSnail::ExtractHotSpots()\n{\n    Object* model = snail_hotspot_body.object;\n    char** name_cursor = g_snail_hotspot_texture_names;\n    float* hotspot_z = &snail_hotspots_local[0].z;\n\n    do {\n        *hotspot_z = 0.0f;\n        hotspot_z[-1] = 0.0f;\n        hotspot_z[-2] = 0.0f;\n\n        char* texture_name = *name_cursor;\n        cRTexture* texture = g_texture_refs.Add(texture_name, 0, 0);\n        float count = 0;\n        for (int face_index = 0; face_index < model->facequad_count; ++face_index) {\n            if (model->facequads[face_index].texture_ref == texture) {\n                Vector3* vertex = &model->vertices[model->facequads[face_index].vertex_0];\n                hotspot_z[-2] += vertex->x;\n                hotspot_z[-1] += vertex->y;\n                *hotspot_z += vertex->z;\n                ++count;\n                break;\n            }\n        }\n        if (count == 0) {\n            report_errorf(\"Cannot find HotPoint Texture %s\", *name_cursor);\n        } else {\n            *(Vector3*)(hotspot_z - 2) *= 1.0f / count;\n        }\n\n        ++name_cursor;\n        hotspot_z += 3;\n    } while ((int)name_cursor < (int)g_snail_hotspot_texture_names_end);\n\n    snail_hotspots_local[SNAIL_HOTSPOT_CAMERA_INTRO_TALK].y += 0.300000012f;\n}\n",
+      "source_sha256": "649b25dc41231e91c201bfdcc38142e14b3861b1e6f35be52910c181a2e4ab2e"
+    },
+    {
+      "label": "float-components",
+      "state": "match",
+      "code_sha256": "9e6191e5cb04ec69006296eb09b016f68e0c2ad96584b2c22641cb19ef6a83c6",
+      "function": "extract_snail_local_hotspots",
+      "address": 4480336,
+      "target_bytes": 208,
+      "fuzzy_weighted_bytes": 208.0,
+      "fuzzy_gap_bytes": 0.0,
+      "target_instructions": 74,
+      "candidate_instructions": 74,
+      "match_ratio": 1.0,
+      "prefix_instructions": 74,
+      "first_mismatch": {
+        "target_offset": null,
+        "candidate_offset": null
+      },
+      "references": {
+        "ok": 7,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "compiler": "msvc6.5",
+      "cflags": "/O2 /G5 /W3",
+      "recovery": "exact",
+      "residuals": [],
+      "error": null,
+      "source": "// extract_snail_local_hotspots @ 0x445d50 (thiscall, ret)\n\n#include \"object_render_types.h\"\n#include \"player.h\"\n#include \"sprite.h\"\n\nint report_errorf(char* format, ...);\n\nextern char* g_snail_hotspot_texture_names[]; // data_4a4aa0\nextern char* g_snail_hotspot_texture_names_end[]; // 0x4a4aec, first string after the pointer table\n\nvoid cRSnail::ExtractHotSpots()\n{\n    Object* model = snail_hotspot_body.object;\n    char** name_cursor = g_snail_hotspot_texture_names;\n    float* hotspot_z = &snail_hotspots_local[0].z;\n\n    do {\n        *hotspot_z = 0.0f;\n        hotspot_z[-1] = 0.0f;\n        hotspot_z[-2] = 0.0f;\n\n        char* texture_name = *name_cursor;\n        cRTexture* texture = g_texture_refs.Add(texture_name, 0, 0);\n        float count = 0;\n        for (int face_index = 0; face_index < model->facequad_count; ++face_index) {\n            if (model->facequads[face_index].texture_ref == texture) {\n                Vector3* vertex = &model->vertices[model->facequads[face_index].vertex_0];\n                hotspot_z[-2] += vertex->x;\n                hotspot_z[-1] += vertex->y;\n                *hotspot_z += vertex->z;\n                ++count;\n                break;\n            }\n        }\n        if (count == 0) {\n            report_errorf(\"Cannot find HotPoint Texture %s\", *name_cursor);\n        } else {\n            float scale = 1.0f / count;\n            hotspot_z[-2] *= scale;\n            hotspot_z[-1] *= scale;\n            *hotspot_z *= scale;\n        }\n\n        ++name_cursor;\n        hotspot_z += 3;\n    } while ((int)name_cursor < (int)g_snail_hotspot_texture_names_end);\n\n    snail_hotspots_local[SNAIL_HOTSPOT_CAMERA_INTRO_TALK].y += 0.300000012f;\n}\n",
+      "source_sha256": "a1dcde538e5bcf53a281620dae529499ad23b4838db843363df51c64b0e9469c"
+    },
+    {
+      "label": "int-value",
+      "state": "wip",
+      "code_sha256": "a9d7c303df895a176765e1bda11bf536e2e5a278bc6038fbe69f4765abea6065",
+      "function": "extract_snail_local_hotspots",
+      "address": 4480336,
+      "target_bytes": 208,
+      "fuzzy_weighted_bytes": 72.34782608695652,
+      "fuzzy_gap_bytes": 135.6521739130435,
+      "target_instructions": 74,
+      "candidate_instructions": 87,
+      "match_ratio": 0.34782608695652173,
+      "prefix_instructions": 0,
+      "first_mismatch": {
+        "target_offset": 0,
+        "candidate_offset": 0
+      },
+      "references": {
+        "ok": 7,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "compiler": "msvc6.5",
+      "cflags": "/O2 /G5 /W3",
+      "recovery": "semantic-complete",
+      "residuals": [
+        "analysis"
+      ],
+      "error": null,
+      "source": "// extract_snail_local_hotspots @ 0x445d50 (thiscall, ret)\n\n#include \"object_render_types.h\"\n#include \"player.h\"\n#include \"sprite.h\"\n\nint report_errorf(char* format, ...);\n\nextern char* g_snail_hotspot_texture_names[]; // data_4a4aa0\nextern char* g_snail_hotspot_texture_names_end[]; // 0x4a4aec, first string after the pointer table\n\nvoid cRSnail::ExtractHotSpots()\n{\n    Object* model = snail_hotspot_body.object;\n    char** name_cursor = g_snail_hotspot_texture_names;\n    float* hotspot_z = &snail_hotspots_local[0].z;\n\n    do {\n        *hotspot_z = 0.0f;\n        hotspot_z[-1] = 0.0f;\n        hotspot_z[-2] = 0.0f;\n\n        char* texture_name = *name_cursor;\n        cRTexture* texture = g_texture_refs.Add(texture_name, 0, 0);\n        int count = 0;\n        for (int face_index = 0; face_index < model->facequad_count; ++face_index) {\n            if (model->facequads[face_index].texture_ref == texture) {\n                Vector3* vertex = &model->vertices[model->facequads[face_index].vertex_0];\n                hotspot_z[-2] += vertex->x;\n                hotspot_z[-1] += vertex->y;\n                *hotspot_z += vertex->z;\n                ++count;\n                break;\n            }\n        }\n        if (count == 0) {\n            report_errorf(\"Cannot find HotPoint Texture %s\", *name_cursor);\n        } else {\n            *(Vector3*)(hotspot_z - 2) = *(Vector3*)(hotspot_z - 2) * (1.0f / count);\n        }\n\n        ++name_cursor;\n        hotspot_z += 3;\n    } while ((int)name_cursor < (int)g_snail_hotspot_texture_names_end);\n\n    snail_hotspots_local[SNAIL_HOTSPOT_CAMERA_INTRO_TALK].y += 0.300000012f;\n}\n",
+      "source_sha256": "442e44500634c90e1d38dd6f90035621191fb788d2faddc39832984d1dd850c2"
+    },
+    {
+      "label": "int-inplace",
+      "state": "wip",
+      "code_sha256": "228457c3eaba23fdb56cf60562ea5e8dbdf8f7ff173c45d5908225538f87f2d5",
+      "function": "extract_snail_local_hotspots",
+      "address": 4480336,
+      "target_bytes": 208,
+      "fuzzy_weighted_bytes": 101.33333333333333,
+      "fuzzy_gap_bytes": 106.66666666666667,
+      "target_instructions": 74,
+      "candidate_instructions": 82,
+      "match_ratio": 0.48717948717948717,
+      "prefix_instructions": 0,
+      "first_mismatch": {
+        "target_offset": 0,
+        "candidate_offset": 0
+      },
+      "references": {
+        "ok": 7,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "compiler": "msvc6.5",
+      "cflags": "/O2 /G5 /W3",
+      "recovery": "semantic-complete",
+      "residuals": [
+        "analysis"
+      ],
+      "error": null,
+      "source": "// extract_snail_local_hotspots @ 0x445d50 (thiscall, ret)\n\n#include \"object_render_types.h\"\n#include \"player.h\"\n#include \"sprite.h\"\n\nint report_errorf(char* format, ...);\n\nextern char* g_snail_hotspot_texture_names[]; // data_4a4aa0\nextern char* g_snail_hotspot_texture_names_end[]; // 0x4a4aec, first string after the pointer table\n\nvoid cRSnail::ExtractHotSpots()\n{\n    Object* model = snail_hotspot_body.object;\n    char** name_cursor = g_snail_hotspot_texture_names;\n    float* hotspot_z = &snail_hotspots_local[0].z;\n\n    do {\n        *hotspot_z = 0.0f;\n        hotspot_z[-1] = 0.0f;\n        hotspot_z[-2] = 0.0f;\n\n        char* texture_name = *name_cursor;\n        cRTexture* texture = g_texture_refs.Add(texture_name, 0, 0);\n        int count = 0;\n        for (int face_index = 0; face_index < model->facequad_count; ++face_index) {\n            if (model->facequads[face_index].texture_ref == texture) {\n                Vector3* vertex = &model->vertices[model->facequads[face_index].vertex_0];\n                hotspot_z[-2] += vertex->x;\n                hotspot_z[-1] += vertex->y;\n                *hotspot_z += vertex->z;\n                ++count;\n                break;\n            }\n        }\n        if (count == 0) {\n            report_errorf(\"Cannot find HotPoint Texture %s\", *name_cursor);\n        } else {\n            *(Vector3*)(hotspot_z - 2) *= 1.0f / count;\n        }\n\n        ++name_cursor;\n        hotspot_z += 3;\n    } while ((int)name_cursor < (int)g_snail_hotspot_texture_names_end);\n\n    snail_hotspots_local[SNAIL_HOTSPOT_CAMERA_INTRO_TALK].y += 0.300000012f;\n}\n",
+      "source_sha256": "9b6b3e2d6ef8fbc535b5488a58fe9efacba78e99d1c8f63eeebc9225d51b2276"
+    },
+    {
+      "label": "int-components",
+      "state": "match",
+      "code_sha256": "9e6191e5cb04ec69006296eb09b016f68e0c2ad96584b2c22641cb19ef6a83c6",
+      "function": "extract_snail_local_hotspots",
+      "address": 4480336,
+      "target_bytes": 208,
+      "fuzzy_weighted_bytes": 208.0,
+      "fuzzy_gap_bytes": 0.0,
+      "target_instructions": 74,
+      "candidate_instructions": 74,
+      "match_ratio": 1.0,
+      "prefix_instructions": 74,
+      "first_mismatch": {
+        "target_offset": null,
+        "candidate_offset": null
+      },
+      "references": {
+        "ok": 7,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "compiler": "msvc6.5",
+      "cflags": "/O2 /G5 /W3",
+      "recovery": "exact",
+      "residuals": [],
+      "error": null,
+      "source": "// extract_snail_local_hotspots @ 0x445d50 (thiscall, ret)\n\n#include \"object_render_types.h\"\n#include \"player.h\"\n#include \"sprite.h\"\n\nint report_errorf(char* format, ...);\n\nextern char* g_snail_hotspot_texture_names[]; // data_4a4aa0\nextern char* g_snail_hotspot_texture_names_end[]; // 0x4a4aec, first string after the pointer table\n\nvoid cRSnail::ExtractHotSpots()\n{\n    Object* model = snail_hotspot_body.object;\n    char** name_cursor = g_snail_hotspot_texture_names;\n    float* hotspot_z = &snail_hotspots_local[0].z;\n\n    do {\n        *hotspot_z = 0.0f;\n        hotspot_z[-1] = 0.0f;\n        hotspot_z[-2] = 0.0f;\n\n        char* texture_name = *name_cursor;\n        cRTexture* texture = g_texture_refs.Add(texture_name, 0, 0);\n        int count = 0;\n        for (int face_index = 0; face_index < model->facequad_count; ++face_index) {\n            if (model->facequads[face_index].texture_ref == texture) {\n                Vector3* vertex = &model->vertices[model->facequads[face_index].vertex_0];\n                hotspot_z[-2] += vertex->x;\n                hotspot_z[-1] += vertex->y;\n                *hotspot_z += vertex->z;\n                ++count;\n                break;\n            }\n        }\n        if (count == 0) {\n            report_errorf(\"Cannot find HotPoint Texture %s\", *name_cursor);\n        } else {\n            float scale = 1.0f / count;\n            hotspot_z[-2] *= scale;\n            hotspot_z[-1] *= scale;\n            *hotspot_z *= scale;\n        }\n\n        ++name_cursor;\n        hotspot_z += 3;\n    } while ((int)name_cursor < (int)g_snail_hotspot_texture_names_end);\n\n    snail_hotspots_local[SNAIL_HOTSPOT_CAMERA_INTRO_TALK].y += 0.300000012f;\n}\n",
+      "source_sha256": "0496835aa684ec5e060ed117641d9f1757b28d1ca373179c50243a76c3688dae"
+    },
+    {
+      "label": "float-pointer-search",
+      "state": "wip",
+      "code_sha256": "06a6b1106179881cfe75b3303b3ec36071e9aa0c0bffa3c4f65b2eed82fcde98",
+      "function": "extract_snail_local_hotspots",
+      "address": 4480336,
+      "target_bytes": 208,
+      "fuzzy_weighted_bytes": 64.59627329192546,
+      "fuzzy_gap_bytes": 143.40372670807454,
+      "target_instructions": 74,
+      "candidate_instructions": 87,
+      "match_ratio": 0.3105590062111801,
+      "prefix_instructions": 0,
+      "first_mismatch": {
+        "target_offset": 0,
+        "candidate_offset": 0
+      },
+      "references": {
+        "ok": 7,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "compiler": "msvc6.5",
+      "cflags": "/O2 /G5 /W3",
+      "recovery": "semantic-complete",
+      "residuals": [
+        "analysis"
+      ],
+      "error": null,
+      "source": "// extract_snail_local_hotspots @ 0x445d50 (thiscall, ret)\n\n#include \"object_render_types.h\"\n#include \"player.h\"\n#include \"sprite.h\"\n\nint report_errorf(char* format, ...);\n\nextern char* g_snail_hotspot_texture_names[]; // data_4a4aa0\nextern char* g_snail_hotspot_texture_names_end[]; // 0x4a4aec, first string after the pointer table\n\nvoid cRSnail::ExtractHotSpots()\n{\n    Object* model = snail_hotspot_body.object;\n    char** name_cursor = g_snail_hotspot_texture_names;\n    float* hotspot_z = &snail_hotspots_local[0].z;\n\n    do {\n        *hotspot_z = 0.0f;\n        hotspot_z[-1] = 0.0f;\n        hotspot_z[-2] = 0.0f;\n\n        char* texture_name = *name_cursor;\n        cRTexture* texture = g_texture_refs.Add(texture_name, 0, 0);\n        float count = 0;\n        int facequad_count = model->facequad_count;\n        int face_index = 0;\n        cRFaceQuad* facequad;\n        int vertex_index;\n        Vector3* vertex;\n\n        if (facequad_count <= 0)\n            goto missing_hotspot;\n\n        facequad = model->facequads;\n        while (1) {\n            if (facequad->texture_ref == texture)\n                break;\n            ++face_index;\n            ++facequad;\n            if (face_index >= facequad_count)\n                goto missing_hotspot;\n        }\n\n        vertex_index = model->facequads[face_index].vertex_0;\n        vertex = &model->vertices[vertex_index];\n        hotspot_z[-2] += vertex->x;\n        hotspot_z[-1] += vertex->y;\n        *hotspot_z += vertex->z;\n        ++count;\n        *(Vector3*)(hotspot_z - 2) = *(Vector3*)(hotspot_z - 2) * (1.0f / count);\n        goto next_hotspot;\n\n    missing_hotspot:\n        report_errorf(\"Cannot find HotPoint Texture %s\", *name_cursor);\n\n    next_hotspot:\n        ++name_cursor;\n        hotspot_z += 3;\n    } while ((int)name_cursor < (int)g_snail_hotspot_texture_names_end);\n\n    snail_hotspots_local[SNAIL_HOTSPOT_CAMERA_INTRO_TALK].y += 0.300000012f;\n}\n",
+      "source_sha256": "c55e5c73a7a23f3a227531835f7719953f9a98d968276213e0b1af1063853a04"
+    },
+    {
+      "label": "int-pointer-search",
+      "state": "wip",
+      "code_sha256": "06a6b1106179881cfe75b3303b3ec36071e9aa0c0bffa3c4f65b2eed82fcde98",
+      "function": "extract_snail_local_hotspots",
+      "address": 4480336,
+      "target_bytes": 208,
+      "fuzzy_weighted_bytes": 64.59627329192546,
+      "fuzzy_gap_bytes": 143.40372670807454,
+      "target_instructions": 74,
+      "candidate_instructions": 87,
+      "match_ratio": 0.3105590062111801,
+      "prefix_instructions": 0,
+      "first_mismatch": {
+        "target_offset": 0,
+        "candidate_offset": 0
+      },
+      "references": {
+        "ok": 7,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "compiler": "msvc6.5",
+      "cflags": "/O2 /G5 /W3",
+      "recovery": "semantic-complete",
+      "residuals": [
+        "analysis"
+      ],
+      "error": null,
+      "source": "// extract_snail_local_hotspots @ 0x445d50 (thiscall, ret)\n\n#include \"object_render_types.h\"\n#include \"player.h\"\n#include \"sprite.h\"\n\nint report_errorf(char* format, ...);\n\nextern char* g_snail_hotspot_texture_names[]; // data_4a4aa0\nextern char* g_snail_hotspot_texture_names_end[]; // 0x4a4aec, first string after the pointer table\n\nvoid cRSnail::ExtractHotSpots()\n{\n    Object* model = snail_hotspot_body.object;\n    char** name_cursor = g_snail_hotspot_texture_names;\n    float* hotspot_z = &snail_hotspots_local[0].z;\n\n    do {\n        *hotspot_z = 0.0f;\n        hotspot_z[-1] = 0.0f;\n        hotspot_z[-2] = 0.0f;\n\n        char* texture_name = *name_cursor;\n        cRTexture* texture = g_texture_refs.Add(texture_name, 0, 0);\n        int count = 0;\n        int facequad_count = model->facequad_count;\n        int face_index = 0;\n        cRFaceQuad* facequad;\n        int vertex_index;\n        Vector3* vertex;\n\n        if (facequad_count <= 0)\n            goto missing_hotspot;\n\n        facequad = model->facequads;\n        while (1) {\n            if (facequad->texture_ref == texture)\n                break;\n            ++face_index;\n            ++facequad;\n            if (face_index >= facequad_count)\n                goto missing_hotspot;\n        }\n\n        vertex_index = model->facequads[face_index].vertex_0;\n        vertex = &model->vertices[vertex_index];\n        hotspot_z[-2] += vertex->x;\n        hotspot_z[-1] += vertex->y;\n        *hotspot_z += vertex->z;\n        ++count;\n        *(Vector3*)(hotspot_z - 2) = *(Vector3*)(hotspot_z - 2) * (1.0f / count);\n        goto next_hotspot;\n\n    missing_hotspot:\n        report_errorf(\"Cannot find HotPoint Texture %s\", *name_cursor);\n\n    next_hotspot:\n        ++name_cursor;\n        hotspot_z += 3;\n    } while ((int)name_cursor < (int)g_snail_hotspot_texture_names_end);\n\n    snail_hotspots_local[SNAIL_HOTSPOT_CAMERA_INTRO_TALK].y += 0.300000012f;\n}\n",
+      "source_sha256": "80438fe125bd82772d9ea596fef31e97f18610c3cb39132b84b1d37476c6432c"
+    }
+  ],
+  "match": {
+    "exact": true,
+    "match_ratio": 1.0,
+    "prefix_instructions": 74,
+    "target_instructions": 74,
+    "candidate_instructions": 74,
+    "masked_references": {
+      "ok": 7,
+      "unresolved": 0,
+      "mismatch": 0,
+      "unaudited": 0
+    },
+    "stack_frame": null,
+    "regions": [],
+    "candidate_source_caveat": null
+  },
+  "body_encoding": {
+    "target_bytes": 208,
+    "candidate_bytes": 208,
+    "target_sha256": "075d0d5a8db7a2e4499e6986d11ae2d6bc603cfda0869787b0fb7635c7f61b26",
+    "candidate_sha256": "51b4bd22b8967aab31181ffcf5032c86cc2c7aa91e7869cb93f8ee8f0e49790b",
+    "raw_body_byte_exact": false,
+    "positional_references_exact": true,
+    "compared_non_relocation_bytes": 180,
+    "coff_relocation_offsets": [
+      16,
+      29,
+      47,
+      82,
+      87,
+      170,
+      195
+    ],
+    "non_relocation_mismatch_offsets": [],
+    "unexplained_bytes": 0
+  },
+  "wii_reference": {
+    "build_id": "wii-usa-ppc",
+    "binary": "artifacts/wii/reference/SnailMail-USA.dol",
+    "binary_sha256": "523f848f2a0b8ef8c9dfe2714744bf0479a4feec79b25f0d1f5e035a6487c096",
+    "function_start": "0x80052a00",
+    "function_end_exclusive": "0x80052d60",
+    "function_bytes": 864,
+    "function_sha256": "14798f81149e3ad55c468758c2470410d7ffa29720cd875df797636d2a2a2b5b",
+    "listing": "tools/match/hotspot-wii-normalization-20260910.asm",
+    "listing_bytes_verified": true,
+    "r2": "0x808fc860",
+    "constants": [
+      {
+        "address": "0x808f5378",
+        "bytes": "00000000",
+        "float": 0.0
+      },
+      {
+        "address": "0x808f537c",
+        "bytes": "3f800000",
+        "float": 1.0
+      }
+    ],
+    "counter_initialization": "0x80052a70: f28 = f30 (zero)",
+    "counter_increment": "0x80052c58: f28 = f30 + f29 (zero plus one); branch exits face search",
+    "missing_test": "0x80052c6c: compare zero to count",
+    "reciprocal": "0x80052c98: f1 = f29 / f28",
+    "component_multiplications": [
+      "0x80052ca0",
+      "0x80052cac",
+      "0x80052cb8"
+    ],
+    "correspondence": "Ordered hotspot-name records, texture resolution, first matching face and first vertex, missing-hotspot diagnostic, coordinate accumulation and post-adjustments. Wii changes vertex compression, layout, table termination and post-adjustments.",
+    "scope": "Wii supplies a source constraint. Only the Windows compilation receives exactness credit."
+  },
+  "source_inference_limits": [
+    "Both integer and float counters compile identically on Windows; Wii floating-point operations favor the float hypothesis without uniquely recovering the original spelling.",
+    "Breaking after the first matching face bounds the count to zero or one. No literal self-copy is inserted in source.",
+    "Android/iOS existing named bodies corroborate the routine identity but do not expose this normalization; no body equality across ports is asserted."
+  ],
+  "full_status_validation": {
+    "function_rows": 785,
+    "changed_rows": [
+      "extract_snail_local_hotspots"
+    ],
+    "core_before": "597/662",
+    "core_after": "598/662",
+    "proof_bytes_before": 141220,
+    "proof_bytes_after": 141428,
+    "proof_bytes_total": 294937,
+    "platform_unchanged": "114/120",
+    "unit_context": "isolated function; no headers, compiler flags, or registered source groups changed"
+  },
+  "validation": {
+    "pytest": "989 passed",
+    "strict_experiments": "2429 records; 0 errors; 0 strict errors",
+    "mutation_specs": "1666 total, 1653 historical, 13 active/runnable, 0 stale"
+  }
+}

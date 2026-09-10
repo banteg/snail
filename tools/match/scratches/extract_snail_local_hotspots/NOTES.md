@@ -1,5 +1,24 @@
 # cRSnail::ExtractHotSpots @ 0x445d50
 
+## Current result: exact, 2026-09-10
+
+The Wii reference at `0x80052a00` retains the missing source operation:
+count matching faces, break after the first match, then normalize each component
+by the reciprocal count. The canonical source now models that operation.
+MSVC folds the successful count to one and emits exactly the six native copy
+instructions that previously lacked a source explanation.
+
+The Windows result is **74/74 instructions**, prefix **74**, and **7/7 positional
+references**. All **208 bytes** are accounted for: 180 identical non-relocation
+bytes and 28 bytes in audited relocations, with no unexplained bytes. The raw
+unlinked body differs in relocation fields. No shared header or compiler profile
+changed. See the [cross-port evidence and controls](../../hotspot-wii-normalization-20260910.md).
+
+## Historical recovery and controls
+
+The following notes describe the previous 91.55% source and its bounded negative
+experiments; the normalization recovered above supersedes that residual.
+
 Authored void `cRSnail::ExtractHotSpots()` over the exact 0x19b4-byte Snail
 owner. Its sole Windows caller has just loaded `TurboHOTSPOTS.X` into the
 Snail's hotspot body and passes the embedded `cRSnail` in ECX. Binary Ninja

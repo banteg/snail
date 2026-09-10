@@ -22,36 +22,26 @@ void cRSnail::ExtractHotSpots()
 
         char* texture_name = *name_cursor;
         cRTexture* texture = g_texture_refs.Add(texture_name, 0, 0);
-        int facequad_count = model->facequad_count;
-        int face_index = 0;
-        cRFaceQuad* facequad;
-        int vertex_index;
-        Vector3* vertex;
-
-        if (facequad_count <= 0)
-            goto missing_hotspot;
-
-        facequad = model->facequads;
-        while (1) {
-            if (facequad->texture_ref == texture)
+        float count = 0;
+        for (int face_index = 0; face_index < model->facequad_count; ++face_index) {
+            if (model->facequads[face_index].texture_ref == texture) {
+                Vector3* vertex = &model->vertices[model->facequads[face_index].vertex_0];
+                hotspot_z[-2] += vertex->x;
+                hotspot_z[-1] += vertex->y;
+                *hotspot_z += vertex->z;
+                ++count;
                 break;
-            ++face_index;
-            ++facequad;
-            if (face_index >= facequad_count)
-                goto missing_hotspot;
+            }
+        }
+        if (count == 0) {
+            report_errorf("Cannot find HotPoint Texture %s", *name_cursor);
+        } else {
+            float scale = 1.0f / count;
+            hotspot_z[-2] *= scale;
+            hotspot_z[-1] *= scale;
+            *hotspot_z *= scale;
         }
 
-        vertex_index = model->facequads[face_index].vertex_0;
-        vertex = &model->vertices[vertex_index];
-        hotspot_z[-2] += vertex->x;
-        hotspot_z[-1] += vertex->y;
-        *hotspot_z += vertex->z;
-        goto next_hotspot;
-
-    missing_hotspot:
-        report_errorf("Cannot find HotPoint Texture %s", *name_cursor);
-
-    next_hotspot:
         ++name_cursor;
         hotspot_z += 3;
     } while ((int)name_cursor < (int)g_snail_hotspot_texture_names_end);

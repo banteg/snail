@@ -24,6 +24,30 @@
           ]
         }
       ]
+    },
+    {
+      "windows_id": "extract_snail_local_hotspots",
+      "relationships": [
+        {
+          "build_id": "wii-usa-ppc",
+          "address": "0x80052a00",
+          "kind": "same-algorithm",
+          "scope": "Hotspot search and coordinate accumulation, with later-port compressed vertices, changed layout/table termination, and additional post-adjustments. Not whole-function behavioral equality.",
+          "evidence": [
+            "tools/match/hotspot-wii-normalization-20260910.md",
+            "tools/match/hotspot-wii-normalization-20260910.json"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "claim": "A floating count starts at zero, increments after the first matching face, and gates a reciprocal followed by three component multiplications. Windows constant-folds this normalization after the loop break.",
+          "evidence": [
+            "tools/match/hotspot-wii-normalization-20260910.asm",
+            "tools/match/hotspot-wii-normalization-20260910.json"
+          ]
+        }
+      ]
     }
   ]
 }
