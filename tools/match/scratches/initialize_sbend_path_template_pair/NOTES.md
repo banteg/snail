@@ -574,3 +574,21 @@ body fingerprint: 91.0977%, 578/579 instructions, prefix 443 and 39 clean
 references. No source is retained and no source-form or compiler ceiling is
 inferred. The first six single probes and the complete fifteen-case grid are
 both preserved as separate append-only records.
+
+
+## 2026-09-10 Wii-guided face dispatch recovery
+
+The retained body is now exact: 579/579 instructions, a full exact prefix,
+and all 39 positional references clean. Wii BuildSlalom at 0x8005cbc8 retains
+two separate winding tests: indices/texture first, then UV assignment. Applying
+that structure to the Windows S-bend mesh closes the face-stride and alternate
+texture-call continuation. Testing the even checkerboard branch first closes
+the remaining two branch-direction differences. Both Windows checkerboard
+arms intentionally retain their existing texture argument.
+
+The source preserves all sample and vertex construction, headers, compiler
+settings, call contracts and texture semantics. The Wii version has compressed
+vertex storage and a mesh-enable gate; those version-specific details are not
+imported. The successful probe and its baseline are recorded in experiments.jsonl;
+complete assembly/reference artifacts can be regenerated with `snail match probe`.
+Earlier partial results below their dates remain historical evidence.

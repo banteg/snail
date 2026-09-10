@@ -48,6 +48,20 @@
           ]
         }
       ]
+    },
+    {
+      "windows_id": "initialize_sbend_path_template_pair",
+      "relationships": [],
+      "constraints": [
+        {
+          "claim": "The shared strip-mesh operation inside Wii Slalom (0x8005cbc8) separates index/texture winding dispatch from UV winding dispatch. This is a scoped source-structure lead, not whole-function correspondence with Windows S-bend. Windows retains its own header-store placement and checkerboard branches.",
+          "evidence": [
+            "tools/match/wii-path-face-recovery-20260910.md",
+            "tools/match/wii-path-face-recovery-20260910.json",
+            "tools/match/wii-path-face-recovery-20260910.s"
+          ]
+        }
+      ]
     }
   ]
 }

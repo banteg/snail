@@ -128,20 +128,12 @@ static __forceinline void build_strip_mesh(
                             column
                             + (row + 1)
                                 * ((unsigned short)path->width_cells + 1);
-                        if ((column ^ row) & 1)
+                        if (((column ^ row) & 1) == 0)
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(texture_a, 0, 0);
                         else
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(texture_a, 0, 0);
-                        facequads[face_offset].uv[0].u = u0;
-                        facequads[face_offset].uv[0].v = v0;
-                        facequads[face_offset].uv[1].u = u1;
-                        facequads[face_offset].uv[1].v = v0;
-                        facequads[face_offset].uv[2].u = u1;
-                        facequads[face_offset].uv[2].v = v1;
-                        facequads[face_offset].uv[3].u = u0;
-                        facequads[face_offset].uv[3].v = v1;
                     } else {
                         facequads[face_offset].header_word = 0;
                         facequads[face_offset].vertex_0 =
@@ -159,12 +151,23 @@ static __forceinline void build_strip_mesh(
                             (row + 1)
                                 * ((unsigned short)path->width_cells + 1)
                             + column + 1;
-                        if ((column ^ row) & 1)
+                        if (((column ^ row) & 1) == 0)
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(texture_b, 0, 0);
                         else
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(texture_b, 0, 0);
+                    }
+                    if (face_index == 0) {
+                        facequads[face_offset].uv[0].u = u0;
+                        facequads[face_offset].uv[0].v = v0;
+                        facequads[face_offset].uv[1].u = u1;
+                        facequads[face_offset].uv[1].v = v0;
+                        facequads[face_offset].uv[2].u = u1;
+                        facequads[face_offset].uv[2].v = v1;
+                        facequads[face_offset].uv[3].u = u0;
+                        facequads[face_offset].uv[3].v = v1;
+                    } else {
                         facequads[face_offset].uv[0].u = u1;
                         facequads[face_offset].uv[0].v = v0;
                         facequads[face_offset].uv[1].u = u0;

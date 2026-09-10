@@ -81,3 +81,9 @@ operation to explain six Windows copy instructions. The recovered C++ matches
 74/74 Windows instructions and all seven references, advancing coverage to
 598/662. Its scoped relationship and source constraint are registered in
 `functions.json` and displayed by `snail match leads extract_snail_local_hotspots`.
+
+The [S-bend investigation](../../tools/match/wii-path-face-recovery-20260910.md)
+uses a shared mesh operation inside Wii Slalom to recover separate winding
+and UV dispatches. Windows S-bend then matches 579/579 instructions and all
+39 references. The registry records a scoped source constraint rather than
+a whole-function relationship between the two different path builders.
