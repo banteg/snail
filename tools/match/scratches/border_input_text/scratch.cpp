@@ -5,11 +5,12 @@
 #include "game_root.h"
 #include "input_ok_state.h"
 
-
 char read_repeating_text_input_key_code();
 
 void cRBorder::InputText()
 {
+    char* insertion_end;
+    char final_character;
     char key = read_repeating_text_input_key_code();
 
     if ((input_flags & 0x0c) != 0) {
@@ -31,16 +32,16 @@ void cRBorder::InputText()
 
             char carry = ' ';
             char next = text_buffer[input_cursor];
-            char* slot = &text_buffer[input_cursor];
+            insertion_end = &text_buffer[input_cursor];
+            final_character = carry;
             while (next != 0) {
-                *slot = carry;
-                ++slot;
-                carry = next;
-                next = *slot;
+                char displaced = next;
+                *insertion_end++ = carry;
+                next = *insertion_end;
+                carry = displaced;
+                final_character = displaced;
             }
-            *slot = carry;
-            slot[1] = 0;
-            ++input_length;
+            goto finish_insertion;
         }
     } else if (key == 3) {
         int cursor = input_cursor;
@@ -182,7 +183,7 @@ void cRBorder::InputText()
         }
 
         input_cursor = pos;
-        char* insert = &text_buffer[pos];
+        char* insert = &text_buffer[input_cursor];
         char carry = *insert;
         do {
             char next = insert[1];
@@ -220,19 +221,26 @@ void cRBorder::InputText()
             ++input_cursor;
 
             char carry = ' ';
-            char* slot = &text_buffer[input_cursor];
-            while (*slot != 0) {
-                char next = *slot;
-                *slot = carry;
-                ++slot;
-                carry = next;
+            char next = text_buffer[input_cursor];
+            insertion_end = &text_buffer[input_cursor];
+            final_character = carry;
+            while (next != 0) {
+                char displaced = next;
+                *insertion_end++ = carry;
+                next = *insertion_end;
+                carry = displaced;
+                final_character = displaced;
             }
-            *slot = carry;
-            slot[1] = 0;
-            ++input_length;
+            goto finish_insertion;
         }
     }
 
+    goto input_postprocess;
+finish_insertion:
+    *insertion_end = final_character;
+    insertion_end[1] = 0;
+    ++input_length;
+input_postprocess:
     if ((input_flags & 2) != 0) {
         int index = 0;
         char ch = text_buffer[0];

@@ -1,5 +1,25 @@
 # cRBorder::InputText @ 0x4035b0
 
+## 2026-09-11: shared insertion and Home recovery
+
+Current agreement is **98.76265467%**, **443/446 instructions**, prefix **6**,
+with **eight clean references**. Shared terminal insertion publication,
+displaced-character lifetimes and Home insertion through the published cursor
+improve the previous 75.25423729% source. Four local encoded certificates cover
+**1,514/1,581 body bytes**. The opening load width, two hidden SIB differences
+and completion publication remain different; the function is still partial.
+
+The [report and complete receipt](../../border-input-insertion-home-owners-20260911.md)
+preserve source controls, reversals, exact byte ranges and references, and a
+**35,568-case native comparison** of complete widget contents and callback order
+at explicit harness seams. All 1,104 tests and 785 scratch checks pass.
+
+### Earlier observations
+
+The entries below describe historical source versions. Their current-result
+figures and compiler-residual labels are superseded above. Finite experiments
+do not establish a compiler limit.
+
 Current recovery: semantic-complete (`compiler` residual). Binary Ninja types
 the Windows entry as `void __thiscall(FrontendWidget*)`, and its sole Windows
 caller ignores `eax`. Android and iOS independently retain the same owner and
