@@ -404,25 +404,27 @@ void cRSubGame::AI()
                                     AddRing(
                                         &runtime_cells[cell_index][attachment_count], SUB_RING_KIND_NORMAL_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
+                                    player.last_ring_spawn_z =
+                                        runtime_cells[cell_index][attachment_count].position.z;
                                 } else if ((ring_flags & SUBROW_FLAG_RING_POWER_UP) != 0) {
                                     AddRing(
                                         &runtime_cells[cell_index][attachment_count], SUB_RING_KIND_POWER_UP_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
+                                    player.last_ring_spawn_z =
+                                        runtime_cells[cell_index][attachment_count].position.z;
                                 } else if ((ring_flags & SUBROW_FLAG_RING_EXPLODE) != 0) {
                                     AddRing(
                                         &runtime_cells[cell_index][attachment_count], SUB_RING_KIND_EXPLODE_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
+                                    player.last_ring_spawn_z =
+                                        runtime_cells[cell_index][attachment_count].position.z;
                                 } else if ((ring_flags & SUBROW_FLAG_RING_SLOW) != 0) {
                                     AddRing(
                                         &runtime_cells[cell_index][attachment_count], SUB_RING_KIND_SLOW_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
-                                } else {
-                                    goto after_authored_ring;
+                                    player.last_ring_spawn_z =
+                                        runtime_cells[cell_index][attachment_count].position.z;
                                 }
-                                player.last_ring_spawn_z =
-                                    runtime_cells[cell_index][attachment_count].position.z;
-after_authored_ring:
-                                ;
                             } else if ((runtime_cells[cell_index][attachment_count].tile_id
                                             == SUBLOC_TILE_RAMP_LEFT_BRACE
                                     || runtime_cells[cell_index][attachment_count].tile_id

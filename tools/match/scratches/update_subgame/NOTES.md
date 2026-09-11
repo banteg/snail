@@ -1,8 +1,24 @@
 # `update_subgame` recovery notes
 
-## 2026-09-11 current source and encoded checks
+## 2026-09-11 current authored-ring publication recovery
 
-The current result is **79.2201617%, 1037/1034 instructions, prefix 9,
+The current source reaches **80.51453073%, 1033/1034 instructions, prefix 9,
+129 clean references** with the same 60-byte frame. Each authored ring branch
+owns its after-call last-ring position update. VC6 merges the repeated source
+into the native shared argument/call/publication tail, removing four instructions.
+The obsolete bypass goto is gone. Android preserves these branch-local updates;
+iOS supports the same kind priority and after-call publication.
+
+A **766-byte / 201-instruction** ring region is relocation-audited encoded equal,
+including **16 positional references and 42 internal branch destinations**.
+The complete function remains partial; all native bytes and inline tables stay
+accounted for. The independent reversal restores the previous fingerprint.
+See [the source, byte proof and controls](../../subgame-authored-ring-publication-20260911.md).
+The following sections are historical and do not supersede this result.
+
+## 2026-09-11 earlier source and encoded checks
+
+The earlier result was **79.2201617%, 1037/1034 instructions, prefix 9,
 129 clean references**, with encoded equality still false. Older counts and
 scores below are historical and predate the current terminal-byte policy.
 
