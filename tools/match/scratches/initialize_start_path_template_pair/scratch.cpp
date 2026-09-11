@@ -30,18 +30,16 @@ static __forceinline void build_direct_strip_mesh(Path* path, char* texture)
             column = 0;
             if (path->width_cells >= 0) {
                 do {
-                    PathTemplateSample* sample =
-                        &path->primary_samples[row];
                     float lateral =
                         (float)column - (float)path->width_cells * 0.5f;
                     Vector3* vertex =
                         &vertices[column + row * (path->width_cells + 1)];
                     Vector3 lateral_offset(
-                        lateral * sample->transform.basis_right.x,
-                        lateral * sample->transform.basis_right.y,
-                        lateral * sample->transform.basis_right.z);
+                        lateral * path->primary_samples[row].transform.basis_right.x,
+                        lateral * path->primary_samples[row].transform.basis_right.y,
+                        lateral * path->primary_samples[row].transform.basis_right.z);
                     Vector3 generated_position =
-                        sample->transform.position + lateral_offset;
+                        path->primary_samples[row].transform.position + lateral_offset;
                     *vertex = generated_position;
                     ++column;
                 } while (column <= path->width_cells);
@@ -81,14 +79,6 @@ static __forceinline void build_direct_strip_mesh(Path* path, char* texture)
                         facequads[face_offset].texture_ref =
                             g_texture_refs.Add(texture, 0, 0);
                     }
-                    facequads[face_offset].uv[0].u = u0;
-                    facequads[face_offset].uv[0].v = v0;
-                    facequads[face_offset].uv[1].u = u1;
-                    facequads[face_offset].uv[1].v = v0;
-                    facequads[face_offset].uv[2].u = u1;
-                    facequads[face_offset].uv[2].v = v1;
-                    facequads[face_offset].uv[3].u = u0;
-                    facequads[face_offset].uv[3].v = v1;
                 } else {
                     facequads[face_offset].header_word = 4;
                     facequads[face_offset].vertex_0 = row
@@ -109,6 +99,17 @@ static __forceinline void build_direct_strip_mesh(Path* path, char* texture)
                         facequads[face_offset].texture_ref =
                             g_texture_refs.Add(texture, 0, 0);
                     }
+                }
+                if (face_index == 0) {
+                    facequads[face_offset].uv[0].u = u0;
+                    facequads[face_offset].uv[0].v = v0;
+                    facequads[face_offset].uv[1].u = u1;
+                    facequads[face_offset].uv[1].v = v0;
+                    facequads[face_offset].uv[2].u = u1;
+                    facequads[face_offset].uv[2].v = v1;
+                    facequads[face_offset].uv[3].u = u0;
+                    facequads[face_offset].uv[3].v = v1;
+                } else {
                     facequads[face_offset].uv[0].u = u1;
                     facequads[face_offset].uv[0].v = v0;
                     facequads[face_offset].uv[1].u = u0;

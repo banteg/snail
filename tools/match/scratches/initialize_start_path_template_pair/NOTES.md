@@ -1,6 +1,6 @@
 # initialize_start_path_template_pair
 
-Current recovery: incomplete (`analysis,compiler` residuals). The verified
+Current recovery: incomplete (`analysis` residual). The verified
 Android/iOS builder bodies establish the portable sample/control graph, and
 the live Windows body covers the native mesh/face tail, but current-state
 retests have disproved the former compiler-only classification. All references
@@ -15,13 +15,41 @@ sample, decrements `segment_count`, and uses the final allocated sample directly
 for the mesh row. The scratch models that allocation shape, the raised starting
 plateau, the cosine descent, the flat tail, deltas, mesh, and finalization.
 
-The retained scratch now matches 87.94% at 609/610 candidate/target
-instructions, with a 148-instruction exact prefix and masked operands at 35
-ok, 0 unresolved, 0 mismatch, 0 unaudited. The candidate frame agrees with
-the target at 0x44, and the mesh setup now snapshots both native banks before
-using a separate row/sample induction. The face pass now also resets its
-two-face counter at the native column boundary; branch-local record address
-formation remains open.
+The retained scratch now matches **96.0655738% at 610/610 instructions**, with
+a 148-instruction exact prefix and all 35 reference operands clean. The native
+0x44 frame is preserved. Separate topology/texture and UV winding dispatches
+recover the full face pass, and direct row-sample accesses recover the mesh
+sample-address load. The first-sample curve guard remains open.
+
+## 2026-09-11 face/UV dispatch and direct mesh samples
+
+The exact normalized Snake and Twister builders use separate winding tests for
+vertex/texture setup and UV assignment. Applying that authored structure to
+Start restores the native branch-local face scale, both texture-call tails,
+and all UV writes, moving **87.9409352% to 95.7377049%** without losing the
+148-instruction prefix or clean references. Direct access through
+`path->primary_samples[row]` then recovers the native load/add order and moves
+the result to **96.0655738%**. No shared header, compiler, or matcher changes.
+
+The final 310 instructions, from native `+0x4b4` to `+0x8af`, have identical
+encoded bytes after audited external-relocation resolution. The candidate
+range is uniformly two bytes earlier (`+0x4b2..+0x8ad`); every reference in
+that suffix is at the same instruction index. This is local evidence for the
+retained source changes, not whole-function encoded credit. The constructor
+remains partial and recovery remains incomplete.
+
+The outstanding native guard compares the strength-reduced sample offset in
+EDI against `0x348`, while the candidate tests the saved logical curve index
+against zero. That comparison's position, branch opcode, and size still differ.
+The equivalent branch destinations elsewhere consequently differ by two bytes.
+
+The forward recipe records 42 source variants, including face-address forms,
+sample borrows, guard scopes, and counter lifetimes. Independent reverse probes
+remove each retained owner in turn. Six ordinary VC6.0/VC6.3 controls preserve
+the corresponding source results. Those finite tests do not close the curve
+induction or first-sample guard work. See the
+[current source proof](../../start-source-owners-20260911.md) for the complete
+before/after evidence, encoded suffix, sibling controls, and limitations.
 
 2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
 Forcing those helpers inline moves focused Wibo from 10.90% (124/610
