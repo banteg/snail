@@ -1,9 +1,22 @@
 # initialize_invert_path_template_pair
 
-Current recovery: semantic-complete (`compiler` residual). The verified
-Android/iOS builder bodies establish the portable sample/control graph; the
-live Windows body and scratch additionally cover the native mesh/face tail.
-All references are clean, and the remaining differences are code layout.
+Current recovery: **normalized exact**, 600/600 instructions and 35 clean
+references, with the native `0x54` frame. Encoded-body exactness remains false:
+13 scale-one DS SIB base/index bytes differ. No target bytes are unexplained.
+
+## 2026-09-11 curve, frame and texture recovery
+
+Physical interior traversal, primary/frame operation boundaries, a derived Z
+argument, branch-local vertex construction and separate face UV dispatch raise
+**84.45552785% to 100%**. The native strip uses `texture_a` and `texture_b`,
+correcting the former argument-5/6 routing. Argument 6 is unused. The July 15
+texture interpretation below is superseded. Every retained helper argument is
+used; the neutral double-lateral control does not establish its original type.
+
+The [report](../../invert-curve-frame-texture-recovery-20260911.md) and complete
+receipt preserve all 600 instruction positions, 35 strict reference checks,
+2,182 compared bytes, 23 local branches, 148 forward observations and nine
+reversals. Earlier scores below describe earlier source/dependency epochs.
 
 Ownership reconstruction for `initialize_invert_path_template_pair @ 0x429250`.
 
@@ -11,7 +24,7 @@ Models the fixed 34-sample invert template with `0x29` kind, runtime flag `+0x9c
 set, terminal `pi` rotation scalar, half-angle interior rotation scalar,
 secondary offsets, deltas, strip mesh generation, and finalization.
 
-Current focused result: 70.69% (611/600 candidate/target instructions), with
+Historical focused result: 70.69% (611/600 candidate/target instructions), with
 35 masked operands ok, 0 unresolved, and 0 mismatched. The exact prefix covers
 109 target instructions and the candidate retains the native `0x54` frame.
 Residuals are primarily commutative address encodings, interior stack coloring,
@@ -78,7 +91,8 @@ secondary samples receive only the 0x40-byte transform before their basis-up
 offset. This source shape scored 51.27% (539/600), with 32 ok, 0 unresolved,
 0 mismatch before the mesh argument ownership correction below.
 
-2026-07-15 strip texture ownership: target stack references prove that face 0
+2026-07-15 strip texture ownership (**superseded by the 2026-09-11 stack audit**):
+the earlier interpretation claimed that face 0
 uses `texture_b` and face 1 uses `vertical_texture`; `texture_a` is not consumed
 by this generated strip. The generic row/column parity branch remains in the
 native code even though both arms select the same respective texture pointer.
