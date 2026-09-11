@@ -190,8 +190,9 @@ void cRPath::initialize_cage2_path_template_pair(
                 float u0 = (float)mesh_column * 0.125f;
                 float u1 = (float)(mesh_column + 1) * 0.125f;
                 for (int face_index = 0; face_index < 2; ++face_index) {
+                    cRFaceQuad* face;
                     if (face_index == 0) {
-                        cRFaceQuad* face =
+                        face =
                             &facequads[2 * mesh_column
                                 + 2 * mesh_cursor * width_cells + face_index];
                         face->header_word = 0;
@@ -209,16 +210,8 @@ void cRPath::initialize_cage2_path_template_pair(
                         else
                             face->texture_ref =
                                 g_texture_refs.Add(texture_a, 0, 0);
-                        face->uv[0].u = u0;
-                        face->uv[0].v = v0;
-                        face->uv[1].u = u1;
-                        face->uv[1].v = v0;
-                        face->uv[2].u = u1;
-                        face->uv[2].v = v1;
-                        face->uv[3].u = u0;
-                        face->uv[3].v = v1;
                     } else {
-                        cRFaceQuad* face =
+                        face =
                             &facequads[2 * mesh_column
                                 + 2 * mesh_cursor * width_cells + face_index];
                         face->header_word = 0;
@@ -236,6 +229,17 @@ void cRPath::initialize_cage2_path_template_pair(
                         else
                             face->texture_ref =
                                 g_texture_refs.Add(texture_b, 0, 0);
+                    }
+                    if (face_index == 0) {
+                        face->uv[0].u = u0;
+                        face->uv[0].v = v0;
+                        face->uv[1].u = u1;
+                        face->uv[1].v = v0;
+                        face->uv[2].u = u1;
+                        face->uv[2].v = v1;
+                        face->uv[3].u = u0;
+                        face->uv[3].v = v1;
+                    } else {
                         face->uv[0].u = u1;
                         face->uv[0].v = v0;
                         face->uv[1].u = u0;

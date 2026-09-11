@@ -1,9 +1,20 @@
 # `initialize_screw_path_template_pair` starter
 
-Current recovery: semantic-complete (`compiler,references` residual). The
-verified Android/iOS bodies establish the portable sample/control graph, and
-the Windows scratch covers its native mesh/face tail. Two known per-lane trig
-calls remain unaudited; no reference is unresolved or mismatched.
+## 2026-09-11: separate UV dispatch and native source owners
+
+Separate topology/texture and UV branches improve screw while preserving its
+existing prefix and native stack allocation. Fresh Cos/Sin calls for each lane
+and direct previous-sample basis fields restore the two missing native
+references. A guarded do/while recovers the curve loop guard more closely. The
+reference residual is closed by the actual calls; the departure base and cold-
+branch placement remain open. Forward recipes, independent reversals, full
+bytes and positional reference proof are retained in [the family
+report](../../path-uv-and-screw-owners-20260911.md).
+
+Current recovery: semantic-complete (`analysis` residual). The 2026-09-11
+UV/owner recovery improves **71.7119765% to 86.9438366%**, with
+**40 clean references**. It remains a partial normalized and encoded match.
+The remaining source and instruction-layout differences are open analysis.
 
 This is an honest semantic starter for the path-template initializer at
 `0x41eda0`.

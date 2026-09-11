@@ -494,7 +494,8 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
         ++departure_index;
     } while (departure_index - 3 - curve_count < 5);
 
-    if (curve_count > 0) {
+    i = 0;
+    if (i < curve_count) {
         float curve_count_f = (float)curve_count;
         int curve_sample_offset = 3 * (int)sizeof(PathAttachmentSample);
 #define PRIMARY_CURVE_SAMPLE \
@@ -507,8 +508,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
 #define PREVIOUS_SECONDARY_CURVE_SAMPLE \
     ((PathAttachmentSample*)((char*)secondary_samples + curve_sample_offset - \
         sizeof(PathAttachmentSample)))
-        for (i = 0; i < curve_count;
-             ++i, curve_sample_offset += sizeof(PathAttachmentSample)) {
+        do {
             int sample_index = i + 3;
             float angle = (float)i * 6.2831855f / curve_count_f;
             PRIMARY_CURVE_SAMPLE->center_x = Cos(angle * 0.5f) * 0.5f;
@@ -533,24 +533,33 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                 PREVIOUS_PRIMARY_CURVE_SAMPLE->transform.RotIdentity();
                 PREVIOUS_SECONDARY_CURVE_SAMPLE->transform.RotIdentity();
             } else {
-                float up_y = Cos(angle);
-                float up_x = -Sin(angle);
-                orient_previous_with_fixed_up(
-                    PREVIOUS_PRIMARY_CURVE_SAMPLE,
-                    PRIMARY_CURVE_SAMPLE,
-                    up_x,
-                    up_y,
-                    0.0f,
-                    0.0f);
-                orient_previous_with_fixed_up(
-                    PREVIOUS_SECONDARY_CURVE_SAMPLE,
-                    SECONDARY_CURVE_SAMPLE,
-                    up_x,
-                    up_y,
-                    0.0f,
-                    0.0f);
+                float primary_up_y = Cos(angle);
+                float primary_up_x = -Sin(angle);
+                PREVIOUS_PRIMARY_CURVE_SAMPLE->transform.basis_up =
+                    Vector3(primary_up_x, primary_up_y, 0.0f);
+                PREVIOUS_PRIMARY_CURVE_SAMPLE->transform.basis_forward =
+                    PRIMARY_CURVE_SAMPLE->transform.position -
+                    PREVIOUS_PRIMARY_CURVE_SAMPLE->transform.position;
+                PREVIOUS_PRIMARY_CURVE_SAMPLE->transform.basis_forward.Normalize();
+                PREVIOUS_PRIMARY_CURVE_SAMPLE->transform.basis_right.Cross(
+                    PREVIOUS_PRIMARY_CURVE_SAMPLE->transform.basis_up,
+                    PREVIOUS_PRIMARY_CURVE_SAMPLE->transform.basis_forward);
+
+                float secondary_up_y = Cos(angle);
+                float secondary_up_x = -Sin(angle);
+                PREVIOUS_SECONDARY_CURVE_SAMPLE->transform.basis_up =
+                    Vector3(secondary_up_x, secondary_up_y, 0.0f);
+                PREVIOUS_SECONDARY_CURVE_SAMPLE->transform.basis_forward =
+                    SECONDARY_CURVE_SAMPLE->transform.position -
+                    PREVIOUS_SECONDARY_CURVE_SAMPLE->transform.position;
+                PREVIOUS_SECONDARY_CURVE_SAMPLE->transform.basis_forward.Normalize();
+                PREVIOUS_SECONDARY_CURVE_SAMPLE->transform.basis_right.Cross(
+                    PREVIOUS_SECONDARY_CURVE_SAMPLE->transform.basis_up,
+                    PREVIOUS_SECONDARY_CURVE_SAMPLE->transform.basis_forward);
             }
-        }
+            ++i;
+            curve_sample_offset += sizeof(PathAttachmentSample);
+        } while (i < curve_count);
 #undef PREVIOUS_SECONDARY_CURVE_SAMPLE
 #undef PREVIOUS_PRIMARY_CURVE_SAMPLE
 #undef SECONDARY_CURVE_SAMPLE
@@ -712,14 +721,6 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                         else
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(texture_a, 0, 0);
-                        facequads[face_offset].uv[0].u = u0;
-                        facequads[face_offset].uv[0].v = v0;
-                        facequads[face_offset].uv[1].u = u1;
-                        facequads[face_offset].uv[1].v = v0;
-                        facequads[face_offset].uv[2].u = u1;
-                        facequads[face_offset].uv[2].v = v1;
-                        facequads[face_offset].uv[3].u = u0;
-                        facequads[face_offset].uv[3].v = v1;
                     } else {
                         facequads[face_offset].vertex_0 = mesh_row * ((unsigned short)width_cells + 1) + mesh_column + 1;
                         facequads[face_offset].vertex_1 = mesh_column + mesh_row * ((unsigned short)width_cells + 1);
@@ -733,6 +734,17 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                         else
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(texture_b, 0, 0);
+                    }
+                    if (face_index == 0) {
+                        facequads[face_offset].uv[0].u = u0;
+                        facequads[face_offset].uv[0].v = v0;
+                        facequads[face_offset].uv[1].u = u1;
+                        facequads[face_offset].uv[1].v = v0;
+                        facequads[face_offset].uv[2].u = u1;
+                        facequads[face_offset].uv[2].v = v1;
+                        facequads[face_offset].uv[3].u = u0;
+                        facequads[face_offset].uv[3].v = v1;
+                    } else {
                         facequads[face_offset].uv[0].u = u1;
                         facequads[face_offset].uv[0].v = v0;
                         facequads[face_offset].uv[1].u = u0;

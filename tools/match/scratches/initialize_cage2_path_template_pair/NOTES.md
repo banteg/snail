@@ -1,9 +1,16 @@
 # `initialize_cage2_path_template_pair` reconstruction notes
 
-Current recovery: semantic-complete (`compiler` residual). The verified
-Android/iOS builder bodies establish the portable sample/control graph; the
-live Windows body and scratch additionally cover the native mesh/face tail.
-All references are clean, and the remaining differences are code layout.
+## 2026-09-11: separate UV dispatch and native source owners
+
+Separate topology/texture and UV branches improve cage2 while preserving its
+existing prefix and native stack allocation. Forward recipes, independent
+reversals, full bytes and positional reference proof are retained in [the
+family report](../../path-uv-and-screw-owners-20260911.md).
+
+Current recovery: semantic-complete (`analysis` residual). The 2026-09-11
+UV/owner recovery improves **69.7388633% to 75.5760369%**, with
+**46 clean references**. It remains a partial normalized and encoded match.
+The remaining source and instruction-layout differences are open analysis.
 
 ## Recovered behavior
 

@@ -1,9 +1,16 @@
 # initialize_turnunder_path_template_pair
 
+## 2026-09-11: separate UV dispatch and native source owners
+
+Separate topology/texture and UV branches improve turnunder while preserving
+its existing prefix and native stack allocation. Forward recipes, independent
+reversals, full bytes and positional reference proof are retained in [the
+family report](../../path-uv-and-screw-owners-20260911.md).
+
 Current recovery: semantic-complete (`analysis` residual). The 2026-09-11
-source recovery improves **57.2276% to 78.1659%**, with **687/687 instructions**,
-a 56-instruction prefix, and **45 clean aligned references**. It remains
-partial: most reference positions differ and `body_byte_exact` is false.
+UV/owner recovery improves **78.1659389% to 78.4570597%**, with
+**45 clean references**. It remains a partial normalized and encoded match.
+The remaining source and instruction-layout differences are open analysis.
 
 The departure phase uses the native two-sample bound relative to the curve
 count. Bank-reference initialization, nested half/full-angle sine evaluation,

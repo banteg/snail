@@ -138,8 +138,7 @@ static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *te
                         &facequads[2 * column + 2 * row * path->width_cells +
                                    face_index];
                     face->header_word = 0;
-                    if (face_index == 0)
-                    {
+                    if (face_index == 0) {
                         face->vertex_0 =
                             column + row * ((unsigned short)path->width_cells + 1);
                         face->vertex_1 =
@@ -158,6 +157,27 @@ static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *te
                         {
                             face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);
                         }
+                    } else {
+                        face->vertex_0 =
+                            row * ((unsigned short)path->width_cells + 1) + column + 1;
+                        face->vertex_1 =
+                            column + row * ((unsigned short)path->width_cells + 1);
+                        face->vertex_2 =
+                            column +
+                            (row + 1) * ((unsigned short)path->width_cells + 1);
+                        face->vertex_3 =
+                            (row + 1) * ((unsigned short)path->width_cells + 1) +
+                            column + 1;
+                        if (((column ^ row) & 1) == 0)
+                        {
+                            face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);
+                        }
+                        else
+                        {
+                            face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);
+                        }
+                    }
+                    if (face_index == 0) {
                         face->uv[0].u = u0;
                         face->uv[0].v = v0;
                         face->uv[1].u = u1;
@@ -165,27 +185,7 @@ static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *te
                         face->uv[2].u = u1;
                         face->uv[2].v = v1;
                         face->uv[3].u = u0;
-                    }
-                    else
-                    {
-                        face->vertex_0 =
-                            row * ((unsigned short)path->width_cells + 1) + column + 1;
-                        face->vertex_1 =
-                            column + row * ((unsigned short)path->width_cells + 1);
-                        face->vertex_2 =
-                            column +
-                            (row + 1) * ((unsigned short)path->width_cells + 1);
-                        face->vertex_3 =
-                            (row + 1) * ((unsigned short)path->width_cells + 1) +
-                            column + 1;
-                        if (((column ^ row) & 1) == 0)
-                        {
-                            face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);
-                        }
-                        else
-                        {
-                            face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);
-                        }
+                    } else {
                         face->uv[0].u = u1;
                         face->uv[0].v = v0;
                         face->uv[1].u = u0;
