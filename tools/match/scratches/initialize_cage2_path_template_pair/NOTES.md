@@ -1,5 +1,25 @@
 # `initialize_cage2_path_template_pair` reconstruction notes
 
+## 2026-09-11: curve, lateral and delta ownership
+
+Current canonical source is **82.96067849%, 649/648 instructions**, with the
+strict **10-instruction / 27-byte encoded prefix**, native **0x54** frame and
+all **46 references clean**. Extended lateral/vector scaling, physical curve
+bounds, shared Z and derived-first orientation, the face-column lifetime, and
+physical delta scheduling improve the previous 75.5760% source.
+
+The [report and complete receipt](../../cage2-curve-mesh-vector-owners-20260911.md)
+include seven independent reversals, a full baseline reversal, 94 distinct
+forward sources, two explicit encoded-equal regions, and five unmasked SIB
+differences in a normalized orientation block. Both whole bodies remain partial.
+
+### Earlier observations
+
+The dated entries below describe their historical sources. Earlier canonical
+metrics, rejected-transfer decisions and closed-neighborhood language are
+superseded where the recovery above supplies new evidence. Finite observations
+do not establish source exhaustion or a compiler limit.
+
 ## 2026-09-11: separate UV dispatch and native source owners
 
 Separate topology/texture and UV branches improve cage2 while preserving its
