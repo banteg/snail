@@ -268,6 +268,18 @@ def progress_delta(
         for k in ("target", "inventory", "ownership", "scoring", "toolchains")
         if prior_ids.get(k) != current["identities"][k]
     ]
+    changed_spans = [
+        {
+            "address": row["address"],
+            "previous": [row["address"], row["address"] + old[row["address"]]["scratch_target_bytes"]],
+            "current": [row["address"], row["address"] + row["scratch_target_bytes"]],
+        }
+        for row in sorted(current["functions"], key=lambda r: r["address"])
+        if row.get("candidate") == "source"
+        and row["address"] in old
+        and old[row["address"]].get("candidate") == "source"
+        and row["scratch_target_bytes"] != old[row["address"]]["scratch_target_bytes"]
+    ]
     old_bytes = {
         a
         for r in old.values()
@@ -285,9 +297,10 @@ def progress_delta(
     added, regressed = len(new_bytes - old_bytes), len(old_bytes - new_bytes)
     return {
         "interpretation": "measurement-baseline-change"
-        if changed
+        if changed or changed_spans
         else "comparable-source-progress",
         "changed_identities": changed if prior_ids else [],
+        "changed_target_spans": changed_spans,
         "baseline_established": not bool(prior_ids),
         "previous_identities": prior_ids,
         "previous_evidence_sha256": _identity(previous) if previous else None,
@@ -551,6 +564,9 @@ def validate_evidence(evidence: dict[str, Any]) -> None:
         manifest = load_function_symbol_manifest(REPO_ROOT / "analysis/symbols/gameplay-functions.json")
         if matchlib._function_symbols_by_name(manifest)[config.function].address != row["address"]:
             raise ValueError("candidate source targets another function")
+        start, end = matchlib.resolve_function_extent(manifest, config.function, config.end_va)
+        if row["scratch_target_bytes"] != end - start:
+            raise ValueError("comparison span differs from scratch configuration")
         validate_comparison_ranges(row)
         validate_inline_table_evidence(row)
         covered = intersection_size(row["compared_target_ranges"], row["ranges"])
@@ -616,6 +632,45 @@ def validate_evidence(evidence: dict[str, Any]) -> None:
         if row["matched"] != (exact and covered == row["size"]):
             raise ValueError("matched credit lacks complete source/reference evidence")
     delta = evidence["progress_delta"]
+    changed_spans = delta.get("changed_target_spans", [])
+    by_address = {row["address"]: row for row in evidence["functions"]}
+    prior_address = -1
+    for span in changed_spans:
+        if set(span) != {"address", "previous", "current"}:
+            raise ValueError("invalid target span change")
+        address = span["address"]
+        if (
+            type(address) is not int
+            or address <= prior_address
+            or address not in by_address
+            or by_address[address].get("candidate") != "source"
+            or any(
+                len(bounds) != 2
+                or any(type(value) is not int for value in bounds)
+                or bounds[0] != address
+                or bounds[1] <= address
+                for bounds in (span["previous"], span["current"])
+            )
+            or span["previous"] == span["current"]
+            or span["current"][1] != address + by_address[address]["scratch_target_bytes"]
+        ):
+            raise ValueError("invalid target span change")
+        prior_address = address
+    prior_ids = delta["previous_identities"]
+    changed_ids = [
+        key for key in ("target", "inventory", "ownership", "scoring", "toolchains")
+        if prior_ids.get(key) != evidence["identities"][key]
+    ] if prior_ids else []
+    if (
+        delta["changed_identities"] != changed_ids
+        or delta["baseline_established"] != (not bool(prior_ids))
+        or delta["interpretation"] != (
+            "measurement-baseline-change"
+            if changed_ids or changed_spans or not prior_ids
+            else "comparable-source-progress"
+        )
+    ):
+        raise ValueError("progress delta misclassifies a measurement change")
     delta_fields = (
         "newly_matched_bytes",
         "regressed_bytes",

@@ -1,5 +1,21 @@
 # append_bod_to_end @ 0x411420
 
+## 2026-09-11 initializer boundary proof
+
+The unchanged source has a complete **33/33 instruction encoded-body match**,
+with two positional references and 104 native code bytes. `END=0x411490`
+retains the eight alignment NOPs after the `ret 4` at `0x411485` while stopping
+before the independently owned initializer. Binary Ninja and IDA both assign
+that initializer's jump and return to separate ranges. The raw CRT table slot
+`0x4a1018` points to `0x411490`, which jumps to the return at `0x4114a0`.
+The initializer remains unmatched; its bytes are not credited to this method.
+
+The previous next-curated-symbol span included the initializer, producing a
+75.86% result despite the complete matching 33-instruction prefix. This is a
+comparison-boundary correction, not a C++ source improvement. The
+[receipt](../../initializer-boundaries-20260911.json) preserves raw code,
+table pointers, native ranges, padding, and both positional operand proofs.
+
 Out-of-line tail insertion on the same `BodList` owner at `GameRoot +0x5a8`.
 The root initializer uses it for the border/UI node at `GameRoot +0xb4c`, while
 other startup nodes are inserted at the front by `add_bod_to_front`.

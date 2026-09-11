@@ -38,6 +38,16 @@ on.
 
 ## Historical scratch status
 
+The subsequent `post-lookup-position-lifetimes-20260911.json` recipe tests
+seven forms against the retained 85.8815% source. Removing the eager segment
+cursor initialization reaches 80.2781% with prefix 77; replacing cell clearing
+with a vector value reaches 79.5190% with prefix zero. Explicit indexed or
+reference position owners preserve the metrics but have different relocation
+identities; only the chained cell-zero stores preserve the code/relocation
+identity. No source change is retained. The
+[initializer-boundary receipt](../../initializer-boundaries-20260911.json)
+contains the complete results under the current report-aware epoch.
+
 Promoted to a matcher scratch on 2026-06-13. Historical result after the
 glyph-dispatch, authored-row, attachment, clear-loop, segment-scoped row
 builder, direct runtime-row, segment-extension, ring/lane, switch-field

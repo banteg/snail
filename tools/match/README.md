@@ -555,7 +555,12 @@ the inline data exactly, without gaps, overlaps, or relocation masks.
 
 Function extents come from the symbol manifest: start at the curated address,
 end at the next curated address with int3/nop padding trimmed. When uncurated
-functions sit in the gap, set `END=0x...` in `scratch.conf`. If the compiled
+functions sit in the gap, set `END=0x...` in `scratch.conf`, backed by native
+entry/control-flow evidence. Saved reports bind the compared span to that
+configuration. `progress_delta.changed_target_spans` records changes to an
+existing source candidate's target span, even with identical measurement
+identities; such a delta is a measurement-baseline change. Adding a first source
+candidate is ordinary source progress. If the compiled
 function symbol differs from `FUNCTION`, set `SYMBOL=<object symbol>` there too.
 Do not use `MATCH_ARGS` in `scratch.conf`; the shell wrapper and Python status
 path both consume explicit config keys so status generation and one-off diffs

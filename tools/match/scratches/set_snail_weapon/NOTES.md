@@ -1,6 +1,6 @@
 # cRSnail::SetWeapon @ 0x445920
 
-Current recovery: semantic-complete (`compiler` residual). Live Windows
+Current recovery: semantic-complete (`analysis` residual). Live Windows
 analysis establishes a void `cRSnail` member with one integer argument;
 Android and iOS both retain `cRSnail::SetWeapon(int)` in `SubGame.o`.
 
@@ -10,10 +10,27 @@ through `cRWeapon::SetAnimation`, publishes each selected state, and emits the
 appropriate activation/deactivation sound feedback. The sparse movement lookup
 and jump tables remain explicit curated references.
 
-Focused VC6 result: **73.02%**, 245/248 candidate/target instructions, prefix
-1/248, with all 24 relocation operands audited and clean. Remaining drift is
-compiler register allocation and repeated transition scheduling, not missing
-state cases.
+Focused VC6 result under scoring policy 5: **83.5386%**, 246/249 candidate/native
+code instructions, prefix 1/249, with all 24 reference operands audited and
+clean. The guarded remap is literal data, not code. Remaining state lifetimes,
+register allocation, and transition scheduling require further analysis.
+
+## 2026-09-11 lookup-aware lifetime replay
+
+The current recipe records 38 initialization, channel-borrow, and chained
+target-assignment controls. Two chains score 83.7626%, but merely reorder
+assignments across the still-wrong state register allocation: native channel
+targets use EDI/EBP, while those candidates retain EBP/EBX. They preserve the
+same three missing instructions and do not recover the early input load or
+the channel-zero address lifetime. No source is promoted from that score gain.
+
+The other controls are neutral or regress; eager initialization also changes
+the audited jump-table structure. The default path and uninitialized third
+target remain as observed in the Windows body. These bounded results do not
+close the mapping or transition work. The recipe and
+[receipt](../../initializer-boundaries-20260911.json) preserve every current
+result and the relevant native/candidate assembly differences. The September 5
+measurements below used older source dependencies and scoring.
 
 The matcher source now uses authored `SetWeapon` and exact VC6 symbol
 `?SetWeapon@cRSnail@@QAEXH@Z`; `set_snail_weapon` remains only the stable scratch

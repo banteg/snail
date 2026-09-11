@@ -281,8 +281,9 @@ def source_evidence(monkeypatch, tmp_path):
     monkeypatch.setattr(
         report.matchlib,
         "load_scratch_config",
-        lambda _: SimpleNamespace(function="test"),
+        lambda _: SimpleNamespace(function="test", end_va=None),
     )
+    monkeypatch.setattr(report.matchlib, "resolve_function_extent", lambda *_: (100, 101))
     monkeypatch.setattr(report.matchlib, "validate_scratch_source", lambda _: None)
     inputs = {"test/scratch.cpp": "pinned"}
     monkeypatch.setattr(report, "repository_inputs", lambda: inputs)
@@ -339,6 +340,68 @@ def test_progress_delta_distinguishes_measurement_change(source_evidence):
     delta = report.progress_delta(previous, source_evidence)
     assert delta["interpretation"] == "measurement-baseline-change"
     assert delta["changed_identities"] == ["scoring"]
+
+
+def test_progress_delta_tracks_target_span_without_scorer_change(source_evidence):
+    from copy import deepcopy
+
+    previous = deepcopy(source_evidence)
+    previous["functions"][0].update(matched=False, scratch_target_bytes=20)
+    delta = report.progress_delta(previous, source_evidence)
+    assert delta["changed_identities"] == []
+    assert delta["changed_target_spans"] == [
+        {"address": 100, "previous": [100, 120], "current": [100, 101]}
+    ]
+    assert delta["interpretation"] == "measurement-baseline-change"
+    assert delta["newly_matched_bytes"] == 1
+    source_evidence["progress_delta"] = delta
+    report.validate_evidence(source_evidence)
+    delta["interpretation"] = "comparable-source-progress"
+    with pytest.raises(ValueError, match="misclassifies"):
+        report.validate_evidence(source_evidence)
+
+
+def test_progress_delta_new_source_is_not_an_extent_change(source_evidence):
+    from copy import deepcopy
+
+    previous = deepcopy(source_evidence)
+    previous["functions"][0].update(candidate=None, source=None, matched=False)
+    previous["functions"][0].pop("scratch_target_bytes")
+    delta = report.progress_delta(previous, source_evidence)
+    assert delta["changed_target_spans"] == []
+    assert delta["interpretation"] == "comparable-source-progress"
+
+
+@pytest.mark.parametrize("span", [
+    {"address": 100, "previous": [100, 101], "current": [100, 101]},
+    {"address": 100, "previous": [100, 120], "current": [100, 102]},
+    {"address": 100, "previous": [99, 120], "current": [100, 101]},
+    {"address": True, "previous": [100, 120], "current": [100, 101]},
+    {"address": 101, "previous": [101, 120], "current": [101, 102]},
+])
+def test_saved_evidence_rejects_invalid_span_change(source_evidence, span):
+    source_evidence["progress_delta"]["changed_target_spans"] = [span]
+    with pytest.raises(ValueError, match="target span change"):
+        report.validate_evidence(source_evidence)
+
+
+def test_saved_evidence_rejects_duplicate_span_changes(source_evidence):
+    span = {"address": 100, "previous": [100, 120], "current": [100, 101]}
+    source_evidence["progress_delta"]["changed_target_spans"] = [span, span]
+    with pytest.raises(ValueError, match="target span change"):
+        report.validate_evidence(source_evidence)
+
+
+def test_saved_evidence_binds_extent_to_config(source_evidence):
+    source_evidence["functions"][0]["scratch_target_bytes"] = 2
+    with pytest.raises(ValueError, match="scratch configuration"):
+        report.validate_evidence(source_evidence)
+
+
+def test_saved_evidence_rejects_false_delta_identity_list(source_evidence):
+    source_evidence["progress_delta"]["changed_identities"] = ["scoring"]
+    with pytest.raises(ValueError, match="misclassifies"):
+        report.validate_evidence(source_evidence)
 
 
 def test_progress_delta_reconciles_removed_owned_ranges(source_evidence):

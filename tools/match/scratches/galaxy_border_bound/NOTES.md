@@ -1,5 +1,21 @@
 # galaxy_border_bound @ 0x40a0c0
 
+## 2026-09-11 initializer boundary proof
+
+The unchanged source has a complete **63/63 instruction encoded-body match**,
+with two positional references and 202 native code bytes. `END=0x40a190`
+retains six alignment NOPs after the `ret 0x14` at `0x40a187` and stops before
+an independently owned initializer. The raw CRT table slot `0x4a1010` points
+to `0x40a190`, whose jump reaches the return at `0x40a1a0`. Binary Ninja and
+IDA both record that jump/return separately from this method.
+
+The previous next-curated-symbol span included the initializer, making the
+function appear 86.90% despite its complete matching 63-instruction prefix.
+The initializer remains unmatched. This correction changes the comparison
+boundary, not C++ source or the native code denominator. See the
+[receipt](../../initializer-boundaries-20260911.json) for raw byte/range
+accounting and complete positional references.
+
 Exact scratch for the small galaxy-route bounds helper called by
 `open_galaxy_route`.
 
