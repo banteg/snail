@@ -153,3 +153,32 @@ def test_invalid_reference_bounds_fail_closed(mutation):
         line = replace(line, size=2)
     with pytest.raises(ValueError):
         exporter.lift(data, (line,), 0)
+
+
+def test_trailing_data_boundary_preserves_all_bytes_and_relocations():
+    data = bytes.fromhex("e800000000c3") + bytes(range(16))
+    ref = m.MaskedReference(0, "imm", "reloc", None, "callee", "ref:callee", True)
+    lines = (
+        m.DisassemblyLine(0, 0, "call ADDR", 5, (ref,)),
+        m.DisassemblyLine(5, 5, "ret", 1),
+        m.DisassemblyLine(6, 6, "dd L0", 16),
+    )
+    end = exporter.display_code_end(data, lines, ((6, 22),))
+    blob, refs = exporter.lift(data, lines, 0, code_end=end)
+    obj = m.parse_coff_object(blob)
+    assert end == 6
+    assert obj.sections[0].data == data
+    assert obj.symbols[-1].name == "_snail_data_and_padding"
+    assert obj.symbols[-1].value == 6
+    relocation = obj.sections[0].relocations[0]
+    assert obj.symbols[relocation.symbol_index].name == refs[0]["symbol"]
+
+
+def test_interior_data_does_not_hide_later_instructions():
+    lines = (
+        m.DisassemblyLine(0, 0, "ret", 1),
+        m.DisassemblyLine(1, 1, "dd L0", 4),
+        m.DisassemblyLine(5, 5, "ret", 1),
+    )
+    with pytest.raises(ValueError, match="precedes more code"):
+        exporter.display_code_end(b"\xc3\0\0\0\0\xc3", lines, ((1, 5),))

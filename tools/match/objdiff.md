@@ -48,14 +48,20 @@ workflow. The export command downloads and launches no external tools.
   bytes, reference key, relocation type, alternatives, and explanation status.
 - `native-diagnostics.json` and `native.diff`: native matcher results and audit.
 - `receipt.json`: target/compiler-output identities, experiment epoch, exporter
-  identity, byte-restoration checks, and hashes of all other snapshot files.
+  identity, byte-restoration checks, code-view boundaries, and hashes of all other
+  snapshot files.
 
 Display objects are generated single-function COFF containers. They preserve
 literal bytes and represent masked operands using each side's independently
 resolved reference keys. They do not reconstruct original translation units or
 referenced data. Alternate reference keys are retained in the receipts but are
 not merged for presentation, so even an accepted native match can show an
-objdiff difference. Objdiff can also omit padding when inferring function size.
+objdiff difference. A separate `_snail_data_and_padding` symbol bounds the main
+code view before matcher-identified trailing jump tables and padding. Those
+bytes remain intact in the object section and saved `.bin` files. Interior data
+followed by more code is rejected because one shortened view would hide code.
+Objdiff can still omit alignment bytes within the declared code boundary; the
+native diagnostics and byte receipts retain them.
 
 Export checks target identity and stable matching inputs, and verifies that
 restoring every converted field exactly recovers its input bytes. Unknown keys,
@@ -72,9 +78,14 @@ Export never updates `STATUS.md`, experiment logs, or published progress.
 The supported exporter was replayed on all eight pilot scratches with the pinned
 objdiff 3.8.1 CLI. It reproduced all eight diagnostic scores, passed both
 wrong-reference controls, and opened the mirror snapshot in the interactive
-viewer. Unit and CLI checks cover field restoration and identity, invalid
+viewer. Subsequent use on `update_subgame` exposed trailing jump-table bytes
+being decoded as instructions; the explicit code-boundary fix was replayed on
+the same eight functions. The bounded viewer percentages can differ from the
+original pilot percentages; native scoring is unchanged.
+
+Unit and CLI checks cover field restoration and identity, invalid
 references, wrong images, changing inputs, existing output preservation, partial
-write cleanup, and short-name resolution:
+write cleanup, short-name resolution, and data boundaries:
 
 ```sh
 uv run pytest tests/test_match_objdiff.py tests/test_differ_pilot.py \

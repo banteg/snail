@@ -36,11 +36,16 @@ def display_symbol(key):
     return label + "_" + sha(key.encode())[:16]
 
 
-def coff(code, refs, symbol="_snail_snapshot"):
+def coff(code, refs, symbol=DISPLAY_SYMBOL, *, code_end=None):
     """Write one i386 code section with external symbolic reference fields."""
     if len(refs) > 0xFFFF:
         raise ValueError("Too many display relocations for a single COFF section")
     names = [symbol] + list(dict.fromkeys(r["symbol"] for r in refs))
+    if code_end is not None:
+        if not 0 < code_end <= len(code):
+            raise ValueError("Invalid display code boundary")
+        if code_end < len(code):
+            names.append("_snail_data_and_padding")
     indexes = {name: i for i, name in enumerate(names)}
     strings = bytearray(b"\0" * 4)
     symbols = bytearray()
@@ -55,10 +60,10 @@ def coff(code, refs, symbol="_snail_snapshot"):
             field
             + struct.pack(
                 "<IhHBB",
-                0,
-                1 if i == 0 else 0,
+                code_end if name == "_snail_data_and_padding" else 0,
+                1 if i == 0 or name == "_snail_data_and_padding" else 0,
                 0x20 if i == 0 else 0,
-                2,
+                3 if name == "_snail_data_and_padding" else 2,
                 0,
             )
         )
@@ -94,7 +99,7 @@ def coff(code, refs, symbol="_snail_snapshot"):
     return blob
 
 
-def lift(data, lines, base):
+def lift(data, lines, base, *, code_end=None):
     """Represent the matcher's independent reference keys as COFF relocations.
 
     Round-trip checks preserve every input byte. This does not certify the keys,
@@ -160,13 +165,38 @@ def lift(data, lines, base):
                 }
             )
             body[off : off + size] = b"\0" * size
-    blob = coff(bytes(body), refs)
+    blob = coff(bytes(body), refs, code_end=code_end)
     restored = bytearray(m.parse_coff_object(blob).sections[0].data)
     for ref in refs:
         restored[ref["offset"] : ref["offset"] + 4] = bytes.fromhex(ref["original"])
     if restored != data:
         raise ValueError("Display-object round trip changed input bytes")
     return blob, refs
+
+
+def display_code_end(data, lines, inline_ranges):
+    """Bound the code view using native matcher data classifications.
+
+    The complete bytes stay in the section under a separate trailing symbol.
+    Interior data cannot be hidden by shortening the function's code view.
+    """
+    end = max((line.offset + line.size for line in lines), default=0)
+    if inline_ranges:
+        end = min(start for start, _ in inline_ranges)
+        if any(
+            line.offset >= end
+            and not any(
+                start <= line.offset and line.offset + line.size <= stop
+                for start, stop in inline_ranges
+            )
+            for line in lines
+        ):
+            raise ValueError(
+                "Inline data precedes more code; cannot export a single code view"
+            )
+    if not 0 < end <= len(data):
+        raise ValueError("No bounded code view")
+    return end
 
 
 def export_snapshot(
@@ -234,11 +264,24 @@ def export_snapshot(
         "reference_model": "independent matcher keys; alternate keys are not merged",
         "objects": {},
     }
-    for side, data, lines, base in (
-        ("target", target, result.target_disassembly, start),
-        ("candidate", candidate.data, result.candidate_disassembly, 0),
+    for side, data, lines, base, inline_ranges in (
+        (
+            "target",
+            target,
+            result.target_disassembly,
+            start,
+            result.target_inline_data_ranges,
+        ),
+        (
+            "candidate",
+            candidate.data,
+            result.candidate_disassembly,
+            0,
+            result.candidate_inline_data_ranges,
+        ),
     ):
-        blob, refs = lift(data, lines, base)
+        code_end = display_code_end(data, lines, inline_ranges)
+        blob, refs = lift(data, lines, base, code_end=code_end)
         artifacts[f"{side}.obj"] = blob
         artifacts[f"{side}.bin"] = data
         artifacts[f"{side}-refs.json"] = (json.dumps(refs, indent=2) + "\n").encode()
@@ -246,6 +289,8 @@ def export_snapshot(
             "input_sha256": sha(data),
             "display_object_sha256": sha(blob),
             "bytes": len(data),
+            "code_view_bytes": code_end,
+            "trailing_data_and_padding_bytes": len(data) - code_end,
             "reference_fields": len(refs),
             "round_trip": True,
             "unexplained_fields": sum(not ref["explained"] for ref in refs),
