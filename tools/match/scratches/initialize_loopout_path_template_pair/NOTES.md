@@ -1,25 +1,33 @@
 # `initialize_loopout_path_template_pair` starter
 
-Current recovery: declared semantic-complete, with native differences still under
-analysis. This is a partial recovery, not an exact match or a compiler ceiling.
+Current recovery: semantic-complete (`analysis` residual). The 2026-09-11
+source reaches **98.88579387%**, with **718/718 instructions**, normalized
+prefix **17**, the native **0x50** frame and **52 strict positional references**.
+Eight normalized stack operands and ten encoded instructions remain different.
+This is a partial recovery, not an exact match or a compiler ceiling.
 
-2026-09-11 current measurement: **68.15% → 72.68%**,
-723 → 724 candidate instructions / 718 native, with a
-0-instruction exact prefix. All 52 aligned references are clean;
-only 40 share the native instruction index and 40 share the byte
-offset. `body_byte_exact` is false. Compiler, flags, shared headers, ABI, and
-matcher rules are unchanged.
+## 2026-09-11: circle center, sample arrays and mesh vectors
 
-The retained change separates face UV assignment from texture selection while preserving the builder-specific vertices, ten-sample lead, four-sample departure, and curve/orientation source.
+The selected skeleton body is materialized without changing raw COFF function
+bytes. A geometric circle-center vector, direct mesh sample arrays, vector
+deltas, curve/face preheaders and checkerboard bit equality improve the prior
+**72.67683773% / 724 instructions** to **98.88579387% / 718 instructions**.
+The frame shrinks from 0x54 to native 0x50. All 52 references now match the
+native instruction indices, byte offsets and operand fields under strict
+identity checks (previously 40 shared positions).
 
-Stack-frame and temporary allocation, curve preheader/scheduling, and other native instructions still differ. Whole-mesh transfers and the tested physical curve counter do not improve this source.
+The first conversion temporary and exchanged vertex/width stack homes account
+for eight normalized differences. Two additional scale-one SIB encodings differ
+in bytes. A separate relocation-audited comparison proves the final **609-byte
+suffix**, with nine references, but no whole-body exact credit is claimed.
+The quantized-radius parameter alternative has a longer normalized prefix
+(440), a shorter encoded prefix (177), and a lower full-body score (97.21%).
 
-The [recovery report](../../path-builder-source-recovery-20260911.md) and
-[complete receipt](../../path-builder-source-recovery-20260911.json) contain the
-before/after sources, identities, remaining assembly diff, reference positions,
-and compared/excluded ranges. The promotion is recorded in `experiments.jsonl`.
-Earlier observations below remain historical; finite controls do not establish
-source exhaustion.
+See the [report and complete receipt](../../loopout-circle-center-mesh-owners-20260911.md)
+for 95 forward controls, nine independent reversals, byte/reference evidence
+and remaining source questions. Compiler, flags, headers, ABI and matcher rules
+are unchanged. Earlier measurements and source-form conclusions below remain
+historical; finite controls do not establish source exhaustion.
 
 This is an honest semantic starter for the path-template initializer at
 `0x41c5f0`.
