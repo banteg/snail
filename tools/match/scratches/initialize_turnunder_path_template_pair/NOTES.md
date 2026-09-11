@@ -1,3 +1,29 @@
+## Current canonical source: endpoint, face and phase owners (2026-09-11)
+
+Canonical Turnunder improves **78.45705968% → 95.84850692%**, with
+**686/687 instructions**, **45 clean references**, and the native **0x54-byte**
+frame. The relocation-audited encoded prefix grows **56/213 → 80/309
+instructions/bytes**. Source changes preserve a shared departure endpoint,
+indexed face expressions with branch-local header and full UV writes,
+a shared logical sample phase, and a curve `for` loop.
+
+The **330-instruction/1,117-byte** suffix native **[0x42853a,0x428997)**,
+candidate **[1368,2485)**, is encoded-equal after 13 strict positional reference
+checks and 19 local-branch destination checks. The reachable post-return block
+is included. The preceding delta loop still has ten SIB differences; the
+larger suffix is not encoded-exact. Whole-function, linked-code and data
+exactness are not claimed. Entrance stores, departure receiver preparation,
+curve preheader/up-vector scheduling and encoded addresses remain open.
+
+See [the current receipt](../../turnunder-endpoint-face-phase-owners-20260911.md)
+and JSON for complete source, native bytes, positional proofs, 71 distinct
+forward controls and seven reversals. All controls compile; three rejected
+controls retain explicit reference debt. Each independent reversal regresses,
+and all-reverse restores the old function fingerprint. Native extent remains
+2496 bytes: [0,2487) compared, [2487,2496) recognized terminal padding, with
+no unexplained bytes. Older entries below are historical measurements and do
+not prove a compiler ceiling.
+
 # initialize_turnunder_path_template_pair
 
 ## 2026-09-11: separate UV dispatch and native source owners

@@ -134,67 +134,68 @@ static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *te
 
                 for (face_index = 0; face_index < 2; ++face_index)
                 {
-                    cRFaceQuad *face =
-                        &facequads[2 * column + 2 * row * path->width_cells +
-                                   face_index];
-                    face->header_word = 0;
+                    int face_offset =
+                        2 * column + 2 * row * path->width_cells + face_index;
                     if (face_index == 0) {
-                        face->vertex_0 =
+                        facequads[face_offset].header_word = 0;
+                        facequads[face_offset].vertex_0 =
                             column + row * ((unsigned short)path->width_cells + 1);
-                        face->vertex_1 =
+                        facequads[face_offset].vertex_1 =
                             row * ((unsigned short)path->width_cells + 1) + column + 1;
-                        face->vertex_2 =
+                        facequads[face_offset].vertex_2 =
                             (row + 1) * ((unsigned short)path->width_cells + 1) +
                             column + 1;
-                        face->vertex_3 =
+                        facequads[face_offset].vertex_3 =
                             column +
                             (row + 1) * ((unsigned short)path->width_cells + 1);
                         if (((column ^ row) & 1) == 0)
                         {
-                            face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);
+                            facequads[face_offset].texture_ref = g_texture_refs.Add(texture_a, 0, 0);
                         }
                         else
                         {
-                            face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);
+                            facequads[face_offset].texture_ref = g_texture_refs.Add(texture_a, 0, 0);
                         }
                     } else {
-                        face->vertex_0 =
+                        facequads[face_offset].header_word = 0;
+                        facequads[face_offset].vertex_0 =
                             row * ((unsigned short)path->width_cells + 1) + column + 1;
-                        face->vertex_1 =
+                        facequads[face_offset].vertex_1 =
                             column + row * ((unsigned short)path->width_cells + 1);
-                        face->vertex_2 =
+                        facequads[face_offset].vertex_2 =
                             column +
                             (row + 1) * ((unsigned short)path->width_cells + 1);
-                        face->vertex_3 =
+                        facequads[face_offset].vertex_3 =
                             (row + 1) * ((unsigned short)path->width_cells + 1) +
                             column + 1;
                         if (((column ^ row) & 1) == 0)
                         {
-                            face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);
+                            facequads[face_offset].texture_ref = g_texture_refs.Add(texture_b, 0, 0);
                         }
                         else
                         {
-                            face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);
+                            facequads[face_offset].texture_ref = g_texture_refs.Add(texture_b, 0, 0);
                         }
                     }
                     if (face_index == 0) {
-                        face->uv[0].u = u0;
-                        face->uv[0].v = v0;
-                        face->uv[1].u = u1;
-                        face->uv[1].v = v0;
-                        face->uv[2].u = u1;
-                        face->uv[2].v = v1;
-                        face->uv[3].u = u0;
+                        facequads[face_offset].uv[0].u = u0;
+                        facequads[face_offset].uv[0].v = v0;
+                        facequads[face_offset].uv[1].u = u1;
+                        facequads[face_offset].uv[1].v = v0;
+                        facequads[face_offset].uv[2].u = u1;
+                        facequads[face_offset].uv[2].v = v1;
+                        facequads[face_offset].uv[3].u = u0;
+                        facequads[face_offset].uv[3].v = v1;
                     } else {
-                        face->uv[0].u = u1;
-                        face->uv[0].v = v0;
-                        face->uv[1].u = u0;
-                        face->uv[1].v = v0;
-                        face->uv[2].u = u0;
-                        face->uv[2].v = v1;
-                        face->uv[3].u = u1;
+                        facequads[face_offset].uv[0].u = u1;
+                        facequads[face_offset].uv[0].v = v0;
+                        facequads[face_offset].uv[1].u = u0;
+                        facequads[face_offset].uv[1].v = v0;
+                        facequads[face_offset].uv[2].u = u0;
+                        facequads[face_offset].uv[2].v = v1;
+                        facequads[face_offset].uv[3].u = u1;
+                        facequads[face_offset].uv[3].v = v1;
                     }
-                    face->uv[3].v = v1;
                 }
                 ++column;
             } while (column < path->width_cells);
@@ -248,7 +249,7 @@ void cRPath::initialize_turnunder_path_template_pair(float turns, int width_cell
     GetNodes();
     has_entry_mesh_transition = 0;
 
-    int lead_z_index = 0;
+    int sample_step = 0;
     int i = 0;
     do
     {
@@ -259,7 +260,7 @@ void cRPath::initialize_turnunder_path_template_pair(float turns, int width_cell
         primary_samples[i].lateral_scale = 1.0f;
         primary_samples[i].transform.Identity();
         primary_samples[i].transform.position.x = primary_samples[i].center_x;
-        float z = (float)lead_z_index;
+        float z = (float)sample_step;
         primary_samples[i].transform.position.y = 0.0f;
         primary_samples[i].transform.position.z = z;
         primary_samples[i].delta_length = 1.0f;
@@ -270,10 +271,11 @@ void cRPath::initialize_turnunder_path_template_pair(float turns, int width_cell
         secondary_samples[i].transform.position.z = z;
         ++i;
         secondary_samples[i - 1].delta_length = 1.0f;
-        ++lead_z_index;
+        ++sample_step;
     } while (i < 6);
 
-    i = interior_count + 6;
+    int endpoint_index = interior_count + 6;
+    i = endpoint_index;
     int tail_sample_offset = i * sizeof(AttachmentSample);
     int tail_origin = -6 - interior_count;
     do
@@ -284,17 +286,16 @@ void cRPath::initialize_turnunder_path_template_pair(float turns, int width_cell
         ++i;
     } while (i + tail_origin < 2);
 
-    int curve_index = 0;
+    sample_step = 0;
     if (interior_count > 0)
     {
-        i = 6;
-        do
+        for (i = 6; sample_step < interior_count; ++sample_step)
         {
-            float t = (float)curve_index;
+            float t = (float)sample_step;
             float angle = t * -6.2831855f / interior_count_f;
 
             primary_samples[i].center_x =
-                (primary_samples[interior_count + 6].center_x -
+                (primary_samples[endpoint_index].center_x -
                  primary_samples[0].center_x) *
                     t / interior_count_f +
                 primary_samples[0].center_x;
@@ -306,7 +307,7 @@ void cRPath::initialize_turnunder_path_template_pair(float turns, int width_cell
 
             primary_samples[i].transform.position.x =
                 primary_samples[i].center_x - (Sin(angle) * Sin(angle * 0.5f) * 2.0f);
-            primary_samples[i].transform.position.z = (float)(curve_index + 6);
+            primary_samples[i].transform.position.z = (float)(sample_step + 6);
             primary_samples[i].transform.position.y =
                 (turns - Cos(angle) * turns) * -0.2f;
 
@@ -331,8 +332,7 @@ void cRPath::initialize_turnunder_path_template_pair(float turns, int width_cell
             secondary_position->z += secondary_offset.z;
 
             ++i;
-            ++curve_index;
-        } while (curve_index < interior_count);
+        }
     }
 
     compute_path_deltas(this);
