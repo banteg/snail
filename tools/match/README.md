@@ -205,7 +205,7 @@ match; its diagnostic build does not receive exact or linked credit.
    extent resolution, normalization, and operand audit as the status sweep.
 3. Iterate the source until the diff is empty. Exit code 0 means 100%.
 
-The `scratch`, `inspect`, `listing`, `probe`, `mutate`, `contracts`, and
+The `scratch`, `inspect`, `objdiff`, `listing`, `probe`, `mutate`, `contracts`, and
 `experiment-audit` CLI commands accept a scratch directory path or its short
 directory name. For example, `uv run snail match inspect
 initialize_sbend_path_template_pair` resolves the directory under
@@ -216,6 +216,14 @@ never fall back to the scratch collection. Short names are directory basenames;
 manifest function aliases are not searched.
 
 Useful analysis helpers:
+
+- Optional external view: `uv run snail match objdiff update_subgame --out
+  artifacts/objdiff/my-snapshot` exports a new objdiff diagnostic project without
+  installing a viewer. See the [objdiff workflow](objdiff.md) for viewer setup,
+  opening snapshots, reference checks, and saved diagnostics.
+  The [external differ pilot](differ-pilot-20260911.md) adopts objdiff for
+  snapshots only and records the measured limitations of asm-differ, BinDiff,
+  and reccmp. Native matching and reference/byte accounting remain authoritative.
 
 - `uv run tools/match/compare_loaders_native.py --runtime-library <VC6-MSVCRT.LIB>`
   compares recovered level/segment loaders with original routines on all shipped

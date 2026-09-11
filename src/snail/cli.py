@@ -17,6 +17,7 @@ from . import (
     match_export,
     match_history,
     match_mutation,
+    match_objdiff,
     match_report,
 )
 from . import ports as port_evidence
@@ -607,6 +608,17 @@ def build_parser() -> argparse.ArgumentParser:
         help="Matching-islands workflow: diff scratches against the original image.",
     )
     match_subparsers = match_parser.add_subparsers(dest="match_command", required=True)
+
+    objdiff_parser = match_subparsers.add_parser(
+        "objdiff", help="Export a static objdiff diagnostic project for one scratch."
+    )
+    _add_scratch_directory_arguments(objdiff_parser)
+    objdiff_parser.add_argument("--out", type=Path, required=True, help="New snapshot directory.")
+    objdiff_parser.add_argument(
+        "--manifest", type=Path, default=DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+    )
+    objdiff_parser.add_argument("--image", type=Path, help="Image matching the manifest SHA-256.")
+    objdiff_parser.add_argument("--json", action="store_true", help="Print the export receipt as JSON.")
 
     leads_parser = match_subparsers.add_parser(
         "leads", help="Gather build-specific cross-port leads for a Windows function."
@@ -2437,6 +2449,28 @@ def main(argv: Sequence[str] | None = None) -> int:
             if args.paths:
                 for path in finding.paths:
                     print(f"  {path}")
+        return 0
+
+    if args.command == "match" and args.match_command == "objdiff":
+        try:
+            payload = match_objdiff.export_snapshot(
+                args.directory, args.out, match_root=args.match_root,
+                manifest_path=args.manifest, image_path=args.image,
+            )
+        except Exception as error:  # noqa: BLE001
+            print(f"objdiff export failed: {str(error).splitlines()[0]}", file=sys.stderr)
+            return 2
+        if args.json:
+            print(json.dumps(payload, indent=2))
+        else:
+            import shlex
+
+            print(f"Snapshot: {payload['output']}")
+            print("Diagnostic view only; native diagnostics and reference receipts are included.")
+            print(shlex.join([
+                "objdiff-cli", "diff", "-p", payload["output"], "-u", payload["unit"],
+                payload["symbol"],
+            ]))
         return 0
 
     if args.command == "match" and args.match_command == "listing":
