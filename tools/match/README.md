@@ -98,6 +98,26 @@ is an observation, not proof of the compiler's internal mechanism.
 
 ## Setup
 
+The native image and compiler bundles are untracked. Download the canonical
+matching target from the project's public R2 bucket:
+
+```sh
+uv sync --frozen
+uv run tools/match/fetch_target.py
+```
+
+The expected output is `artifacts/bin/SnailMail_unwrapped.exe`, 741,376 bytes,
+SHA-256 `d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5`.
+The downloader verifies the manifest's SHA-256 before installing the file and
+reuses an already verified local copy. CI uses the same download and check.
+To regenerate it yourself, copy `SnailMail.RWG` and its `ReflexiveArcade`
+directory from the Reflexive Windows installation into `artifacts/bin/`, then
+run `uv run snail unwrap`. See the
+[wrapper notes](../../docs/re/reflexive-wrapper.md) for provenance and build
+differences. Matching does not require running the game or installing
+a commercial disassembler; tracked decompile exports and headers are available
+in the repository.
+
 1. wibo runner. Put a current `wibo` binary on `PATH`, set
    `WIBO=/path/to/wibo`, or place it at `tools/match/bin/wibo`. The 1.1.0 and
    1.1.1 releases do not include the `kernel32!lstrcpynA` shim needed by some
@@ -118,12 +138,26 @@ is an observation, not proof of the compiler's internal mechanism.
 2. Compilers (gitignored, ~40 MB each) — the decomp.me production bundles:
 
    ```sh
+   mkdir -p tools/match/compilers
    cd tools/match/compilers
    for v in msvc6.0 msvc6.5 msvc6.5pp msvc6.6; do
      curl -sL -o $v.tar.gz https://github.com/OmniBlade/decomp.me/releases/download/msvcwin9x/$v.tar.gz
      mkdir -p $v && tar xzf $v.tar.gz -C $v && rm $v.tar.gz
    done
    ```
+
+Most scratches use `msvc6.5`; that bundle is sufficient for the matching
+challenges unless the selected `scratch.conf` specifies another compiler.
+From the repository root, reproduce a compact challenge with:
+
+```sh
+uv run snail match scratch tools/match/scratches/switch_track_mirror --regions --max-regions 8
+```
+
+For a partial match, this command prints the comparison and exits with status 1.
+Use the scratch's configured compiler and flags, preserve native behavior, and
+include before/after comparison results. Partial improvements and new findings
+are welcome. A high percentage or a short function does not imply an easy match.
 
 ## Workflow
 

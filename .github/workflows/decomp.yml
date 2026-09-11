@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --frozen
 
+      - name: Fetch and verify native matching target
+        run: uv run --no-sync tools/match/fetch_target.py
+
       - name: Verify source-bound evidence and export progress
         run: uv run --no-sync snail match report
 

@@ -27,6 +27,8 @@ new runtime. There is no active port implementation in this repository.
 
 ## Start Here
 
+- [Matching challenges](https://github.com/banteg/snail/issues/24) - pick a
+  function to work on; partial improvements and new findings are welcome
 - [DEVELOPING.md](DEVELOPING.md) - local setup, daily workflow, validation
   commands, and contribution rules
 - [tools/match/README.md](tools/match/README.md) - matching decompilation
