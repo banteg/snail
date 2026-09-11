@@ -25,6 +25,10 @@ the later platform glue should be small enough to audit directly.
 
 ## Setup
 
+The native matching target is a public download, separate from Git. Run
+`uv run tools/match/fetch_target.py` from a fresh checkout to download it and
+verify its SHA-256. No original game installation is needed for matching.
+
 Python work should run through `uv`:
 
 ```sh

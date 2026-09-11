@@ -39,8 +39,19 @@ new runtime. There is no active port implementation in this repository.
 
 ## Important Artifacts
 
-- [`artifacts/bin/SnailMail_unwrapped.exe`](artifacts/bin/SnailMail_unwrapped.exe)
-  is the canonical gameplay reversing and matching target.
+The executable is hosted publicly and is not included in Git. From a fresh
+checkout, download and verify it with:
+
+```sh
+uv run tools/match/fetch_target.py
+```
+
+This saves the SHA-256-verified matching target to
+`artifacts/bin/SnailMail_unwrapped.exe`. No game installation or login is needed.
+See [matching setup](tools/match/README.md#setup) for the compiler and runner.
+
+- [Download `SnailMail_unwrapped.exe`](https://reflexive.banteg.xyz/snail/d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5/SnailMail_unwrapped.exe)
+  (724 KiB) — the canonical gameplay reversing and matching target.
 - [`artifacts/bin/SnailMail.RWG`](artifacts/bin/SnailMail.RWG) is the shipped
   wrapped gameplay image kept for provenance.
 - [`artifacts/bin/SnailMail.exe`](artifacts/bin/SnailMail.exe) is the Reflexive
@@ -51,6 +62,7 @@ new runtime. There is no active port implementation in this repository.
 ## Quick Commands
 
 ```sh
+uv run tools/match/fetch_target.py
 uv run snail match status --write tools/match/STATUS.md
 tools/match/match.sh tools/match/scratches/<function>
 uv run pytest
