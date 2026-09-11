@@ -1,9 +1,26 @@
 # `initialize_looptheloop_path_template_pair` starter
 
-Current recovery: semantic-complete (`compiler` residual). The verified
-Android/iOS builder bodies establish the portable sample/control graph; the
-live Windows body and scratch additionally cover the native mesh/face tail.
-All references are clean, and the remaining differences are code layout.
+## 2026-09-11: sample progress, mesh vectors and UV dispatch
+
+Materializing the selected skeleton variant is raw-byte neutral. Recovering
+approach/departure progress, delta-index initialization, direct mesh arrays,
+vector endpoint addition, early face-index initialization and separate UV
+dispatch improves **78.5566% to 94.4444%**, with prefix **44 to 159**. The
+candidate has 719 native-comparison instructions versus the previous 720 and
+native 721; instruction count is not being used as matching proof.
+
+A higher 95.21% approach reversal is preserved as a diagnostic because it
+changes the native multiplication order at instruction 44. The retained source
+has a verified 159-instruction / 642-byte encoded prefix and no whole-body
+exact claim. All 104 forward observations (96 distinct sources) and eight
+independent reversals are recorded. See the [report and byte evidence](../../looptheloop-sample-mesh-uv-owners-20260911.md).
+
+Current recovery: semantic-complete (`analysis` residual). The retained
+2026-09-11 source reaches **94.44444444%**, with **719/721 instructions**,
+prefix **159**, **49 clean references** and the native **0x54** frame. The
+first 642 bytes have a separate relocation-audited encoded-prefix proof.
+The whole body remains partial; curve address preparation, mesh stack homes,
+and checkerboard branches remain open source questions.
 
 This is an honest semantic starter for the path-template initializer at
 `0x41b0f0`.
