@@ -291,3 +291,13 @@ one index across the ordinary/terminal mesh branch loses 120 weighted bytes,
 falls to **68.11%**, and shortens the candidate from 739 to 738 instructions.
 Both rejected transfers preserve the 10/745 prefix and all 55 clean
 references, and both are recorded as complete one-site sweeps.
+
+## 2026-09-11: local array-owner controls
+
+Five LoopOut-inspired array-owner controls were measured independently. A bank
+pointer for the departure center alone is byte-neutral. Caching across departure
+metadata stores reaches 92.9102%, but loses normalized prefix (118 to 110) and
+grows the instruction deficit (737 to 736 / 745). Curve-bank controls regress
+to 91.3014%. Canonical W source is unchanged. See the
+[LoopOut array-owner report](../../loopout-interpolation-array-owner-20260911.md)
+for the recorded controls and native reload distinction.

@@ -90,11 +90,12 @@ void cRPath::initialize_loopout_path_template_pair(
             int sample_index = i + 10;
             float sample_f = (float)i;
             float angle = sample_f * 6.2831855f / curve_count_f;
-            primary_samples[sample_index].center_x =
-                (primary_samples[departure_start].center_x -
-                 primary_samples[0].center_x) *
+            PathAttachmentSample *curve_samples = primary_samples;
+            curve_samples[sample_index].center_x =
+                (curve_samples[departure_start].center_x -
+                 curve_samples[0].center_x) *
                     sample_f / curve_count_f +
-                primary_samples[0].center_x;
+                curve_samples[0].center_x;
             primary_samples[sample_index].center_x +=
                 Sin(angle * 0.5f + 4.712389f) * 0.30000001f;
             primary_samples[sample_index].rotation_scalar_98 = 0.0f;

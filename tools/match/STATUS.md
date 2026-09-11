@@ -39,7 +39,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 19 | initialize_screw_path_template_pair | 326 | semantic-complete | analysis | current-active | 1/41 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
 | 20 | build_subgame_level | 296 | semantic-complete | analysis | historical-only | 0/21 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 21 | initialize_wibble_path_template_pair | 241 | semantic-complete | analysis | historical-only | 0/29 | repeated-variants,repeated-specs,metric-tradeoffs,historical-only,stale-dependencies |
-| 22 | initialize_looptheloopw_path_template_pair | 199 | semantic-complete | analysis | current-active | 1/13 | repeated-variants,metric-tradeoffs,stale-dependencies |
+| 22 | initialize_looptheloopw_path_template_pair | 199 | semantic-complete | analysis | current-active | 2/14 | repeated-variants,metric-tradeoffs,stale-dependencies |
 | 23 | initialize_hump_path_template_pair | 183 | semantic-complete | analysis | historical-only | 0/30 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 24 | initialize_p_path_template_pair | 178 | semantic-complete | analysis | historical-only | 0/24 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 25 | set_snail_weapon | 155 | semantic-complete | analysis | current-active | 1/11 | repeated-variants,stale-dependencies |
@@ -61,7 +61,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 41 | select_level_track_texture_set | 39 | semantic-complete | analysis,references | historical-only | 0/9 | variant-errors,historical-only,stale-dependencies |
 | 42 | refresh_object_vertex_buffer | 38 | semantic-complete | analysis | historical-only | 0/10 | historical-only,stale-dependencies |
 | 43 | try_enter_track_attachment_from_swept_motion | 34 | semantic-complete | analysis | historical-only | 0/12 | historical-only,stale-dependencies |
-| 44 | initialize_loopout_path_template_pair | 29 | semantic-complete | analysis | current-active | 1/22 | metric-tradeoffs,variant-errors,stale-dependencies |
+| 44 | initialize_loopout_path_template_pair | 29 | semantic-complete | analysis | current-active | 1/24 | metric-tradeoffs,variant-errors,stale-dependencies |
 | 45 | set_snail_jetpack | 27 | semantic-complete | analysis | historical-only | 0/9 | repeated-variants,historical-only,stale-dependencies |
 | 46 | create_golb | 20 | semantic-complete | analysis | historical-only | 0/24 | variant-errors,historical-only,stale-dependencies |
 | 47 | firework_shoot | 19 | semantic-complete | analysis | historical-only | 0/11 | repeated-variants,historical-only,stale-dependencies |

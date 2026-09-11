@@ -3,8 +3,17 @@
 Current recovery: semantic-complete (`analysis` residual). The 2026-09-11
 source reaches **98.88579387%**, with **718/718 instructions**, normalized
 prefix **17**, the native **0x50** frame and **52 strict positional references**.
-Eight normalized stack operands and ten encoded instructions remain different.
+Eight normalized stack operands and nine encoded instructions remain different.
 This is a partial recovery, not an exact match or a compiler ceiling.
+
+## 2026-09-11: interpolation array owner and encoded store
+
+A local sample-array owner for the call-free interpolation expression recovers
+the native SIB byte at **0x41c8f2**. All normalized instructions, the 98.8858%
+ratio, 718/718 count, frame and 52 positional references remain unchanged.
+Encoded differences fall **ten to nine**; the body remains partial. See the
+[fresh byte receipt and controls](../../loopout-interpolation-array-owner-20260911.md).
+The earlier ten-difference measurement below is historical.
 
 ## 2026-09-11: circle center, sample arrays and mesh vectors
 
