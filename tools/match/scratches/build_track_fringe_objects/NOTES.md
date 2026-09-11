@@ -1,5 +1,26 @@
 # build_track_fringe_objects
 
+## 2026-09-11: exact direction-local edge selectors
+
+The canonical builder now has **normalized and encoded-body equality**:
+**495/495 instructions**, **1,428 compared bytes**, native **0x50** stack
+allocation, and **53 strict positional references**. Direction-local `edge_a`
+declarations with explicit alternate zero assignments replace the carried
+function-wide selector and four post-color resets. The previous canonical
+source was 64.45115811%, 498/495 instructions with a 0x54 frame.
+
+The [report and complete receipt](../../fringe-direction-local-edge-owners-20260911.md)
+include the full same-index encoded proof, all 52 local branches, explicit
+12-byte terminal-padding exclusion, 23 distinct forward sources and five
+reverse controls. Reversing any direction loses exactness. No compiler, flags,
+headers, ABI, extent or matcher changes were needed.
+
+### Earlier observations
+
+The dated notes below describe historical sources. Their current-source metrics,
+reference debt and register-scheduling assessments are superseded by the exact
+recovery above. They do not establish source exhaustion or a compiler limit.
+
 build_track_fringe_objects @ 0x434be0 emits directional fringe objects around
 the normalized runtime track cells.
 

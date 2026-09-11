@@ -20,7 +20,6 @@ void cRSubGame::FringeEdgeTrack()
 {
     g_game->subgame.fringe_manager.Init();
 
-    int edge_a = 0;
     int row = 0;
     if (runtime_row_count > 0) {
 
@@ -70,8 +69,11 @@ void cRSubGame::FringeEdgeTrack()
                     runtime_cells[row][lane].fringe_back = 0;
                 } else if (TestLoc(&runtime_cells[row][lane], 0, 0) == 1) {
                     if (!TestLoc(&runtime_cells[row][lane], 0, 1)) {
+                        int edge_a;
                         if (TestLoc(&runtime_cells[row][lane], 1, 1) != 1)
                             edge_a = (TestLoc(&runtime_cells[row][lane], 1, 0) != 1) + 1;
+                        else
+                            edge_a = 0;
                         int edge_b;
                         if (TestLoc(&runtime_cells[row][lane], -1, 1) == 1)
                             edge_b = 0;
@@ -91,14 +93,16 @@ void cRSubGame::FringeEdgeTrack()
                         tColour color0;
                         tColour* skirt_color = g_game->subgame.GetSkirtColour(&color0);
                         runtime_cells[row][lane].fringe_front->color = *skirt_color;
-                        edge_a = 0;
                     } else {
                         runtime_cells[row][lane].fringe_front = 0;
                     }
 
                     if (!TestLoc(&runtime_cells[row][lane], 1, 0)) {
+                        int edge_a;
                         if (TestLoc(&runtime_cells[row][lane], 1, -1) != 1)
                             edge_a = (TestLoc(&runtime_cells[row][lane], 0, -1) != 1) + 1;
+                        else
+                            edge_a = 0;
                         int edge_b;
                         if (TestLoc(&runtime_cells[row][lane], 1, 1) == 1)
                             edge_b = 0;
@@ -115,14 +119,16 @@ void cRSubGame::FringeEdgeTrack()
                         tColour color1;
                         tColour* skirt_color = g_game->subgame.GetSkirtColour(&color1);
                         runtime_cells[row][lane].fringe_right->color = *skirt_color;
-                        edge_a = 0;
                     } else {
                         runtime_cells[row][lane].fringe_right = 0;
                     }
 
                     if (!TestLoc(&runtime_cells[row][lane], -1, 0)) {
+                        int edge_a;
                         if (TestLoc(&runtime_cells[row][lane], -1, 1) != 1)
                             edge_a = (TestLoc(&runtime_cells[row][lane], 0, 1) != 1) + 1;
+                        else
+                            edge_a = 0;
                         int edge_b;
                         if (TestLoc(&runtime_cells[row][lane], -1, -1) == 1)
                             edge_b = 0;
@@ -139,14 +145,16 @@ void cRSubGame::FringeEdgeTrack()
                         tColour color2;
                         tColour* skirt_color = g_game->subgame.GetSkirtColour(&color2);
                         runtime_cells[row][lane].fringe_left->color = *skirt_color;
-                        edge_a = 0;
                     } else {
                         runtime_cells[row][lane].fringe_left = 0;
                     }
 
                     if (!TestLoc(&runtime_cells[row][lane], 0, -1)) {
+                        int edge_a;
                         if (TestLoc(&runtime_cells[row][lane], -1, -1) != 1)
                             edge_a = (TestLoc(&runtime_cells[row][lane], -1, 0) != 1) + 1;
+                        else
+                            edge_a = 0;
                         int edge_b;
                         if (TestLoc(&runtime_cells[row][lane], 1, -1) == 1)
                             edge_b = 0;
@@ -163,7 +171,6 @@ void cRSubGame::FringeEdgeTrack()
                         tColour color3;
                         tColour* skirt_color = g_game->subgame.GetSkirtColour(&color3);
                         runtime_cells[row][lane].fringe_back->color = *skirt_color;
-                        edge_a = 0;
                     } else {
                         runtime_cells[row][lane].fringe_back = 0;
                     }
