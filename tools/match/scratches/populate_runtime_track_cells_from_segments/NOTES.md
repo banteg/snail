@@ -1,5 +1,24 @@
 # populate_runtime_track_cells_from_segments
 
+## 2026-09-11: entry anchor, guarded loop and typed segment recovery
+
+The current source is **86.13245518%**, **1,243/1,246 instructions**, prefix
+**76**, with **165 clean references** and the unchanged **68-byte frame**.
+Resetting entry X before its Z calculation restores the native x87 lifetime;
+the guarded outer `do` loop restores the initial row-count test. Typed segment
+selection and authored flags preserve the complete recovered candidate bytes,
+with verified compiler-local table renames.
+
+The [report and complete receipt](../../trackcell-entry-guard-segment-owners-20260911.md)
+preserve 78 successful formal forward sources, two malformed controls, four
+reversals, local encoded proof and full current validation. The function remains
+partial. Higher-score controls with extra non-native operations are rejected.
+
+### Earlier observations
+
+The subsequent current-result figures describe earlier sources and are
+superseded above. Their bounded outcomes do not establish a compiler limit.
+
 Current recovery: semantic-complete (`analysis` residual). Exact
 Android/iOS `cRSubGame::BuildLevel()` bodies, the live Windows member, and the
 complete Windows producer/consumer chain establish session setup, segment and

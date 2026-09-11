@@ -383,16 +383,16 @@ void cRSubGame::BuildLevel()
         return;
 
     char* base = (char*)this;
-    char* active_segment;
-    while (build_row < runtime_row_count) {
+    SubSegment* active_segment;
+    do {
         if (build_row == 0) {
-            active_segment = base + LEVEL_FIRST_SEGMENT_BASE;
+            active_segment = &level_definition.first_segment;
             first_or_last_row = 1;
-            ((SubSegment*)active_segment)->row_base = build_row;
+            active_segment->row_base = build_row;
         } else if (build_row == completion_row_start && level_definition.random_enabled == 0) {
-            active_segment = base + LEVEL_LAST_SEGMENT_BASE;
+            active_segment = &level_definition.last_segment;
             first_or_last_row = 1;
-            ((SubSegment*)active_segment)->row_base = build_row;
+            active_segment->row_base = build_row;
         } else {
             base_subgame_rate = 1.0f;
             if (level_definition.random_enabled == 1) {
@@ -410,23 +410,23 @@ void cRSubGame::BuildLevel()
                 int picked = (int)picked_value;
                 picked = (int)((float)picked * base_subgame_rate);
                 active_segment =
-                    base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;
-                ((SubSegment*)active_segment)->visited = 1;
+                    &level_definition.segment_slots[picked];
+                active_segment->visited = 1;
             } else {
                 int picked = segment_cursor;
                 ++segment_cursor;
                 active_segment =
-                    base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;
+                    &level_definition.segment_slots[picked];
             }
         }
         SwitchMirror();
-        ((SubSegment*)active_segment)->row_base = build_row;
-        if (((SubSegment*)active_segment)->row_count < 0)
+        active_segment->row_base = build_row;
+        if (active_segment->row_count < 0)
             report_errorf("Negative Segment Length");
 
         int segment_row = 0;
         while (build_row < runtime_row_count) {
-            if (segment_row >= ((SubSegment*)active_segment)->row_count)
+            if (segment_row >= active_segment->row_count)
                 break;
             if (level_mode != 2 && build_row >= completion_row_start) {
                 if (level_mode == 0
@@ -434,31 +434,31 @@ void cRSubGame::BuildLevel()
                     || level_mode == 1
                     || level_mode == 7
                     || level_mode == 3)
-                    active_segment = base + LEVEL_LAST_SEGMENT_BASE;
+                    active_segment = &level_definition.last_segment;
                 else
                     active_segment =
-                        base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment);
+                        &level_definition_scratch.segment_slots[1];
                 if (build_row == completion_row_start)
                     segment_row = 0;
             }
 
             if (level_mode != 2) {
                 int segment_end =
-                    ((SubSegment*)active_segment)->row_count - segment_row + build_row;
+                    active_segment->row_count - segment_row + build_row;
                 if (segment_end > completion_row_start
                     && active_segment
-                        != base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment)
+                        != &level_definition_scratch.segment_slots[1]
                     && active_segment
-                        != base + SCRATCH_SEGMENT_SLOTS_BASE + 3 * sizeof(SubSegment)
+                        != &level_definition_scratch.segment_slots[3]
                     && active_segment
-                        != base + SCRATCH_SEGMENT_SLOTS_BASE + 4 * sizeof(SubSegment)
+                        != &level_definition_scratch.segment_slots[4]
                     && (level_mode == 0
                         || level_mode == 4
                         || level_mode == 1
                         || level_mode == 7
                         || level_mode == 3)
-                    && active_segment != base + LEVEL_LAST_SEGMENT_BASE) {
-                    int extra_rows = ((SubSegment*)active_segment)->row_count
+                    && active_segment != &level_definition.last_segment) {
+                    int extra_rows = active_segment->row_count
                         - completion_row_start - segment_row + build_row;
                     completion_row_start += extra_rows;
                     runtime_row_count += extra_rows;
@@ -470,23 +470,23 @@ void cRSubGame::BuildLevel()
                     SUBROW_FLAG_MIRRORED;
 
             char* authored_row_owner =
-                active_segment + sizeof(AuthoredSegmentRow) * segment_row;
-            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
+                (char*)active_segment + sizeof(AuthoredSegmentRow) * segment_row;
+            if ((active_segment->rows[segment_row].flags
                     & AUTHORED_SEGMENT_ROW_FLAG_NO_FALL)
                 != 0)
                 *(int*)(base + sizeof(SubRow) * build_row + RUNTIME_ROWS_BASE) |=
                     SUBROW_FLAG_NO_FALL;
-            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
+            if ((active_segment->rows[segment_row].flags
                     & AUTHORED_SEGMENT_ROW_FLAG_JETPACK_OFF)
                 != 0)
                 *(int*)(base + sizeof(SubRow) * build_row + RUNTIME_ROWS_BASE) |=
                     SUBROW_FLAG_JETPACK_OFF;
 
             runtime_rows[build_row].source_segment =
-                (SubSegment*)active_segment;
+                active_segment;
             runtime_rows[build_row].row_event_id = row_event_owner;
 
-            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
+            if ((active_segment->rows[segment_row].flags
                     & AUTHORED_SEGMENT_ROW_FLAG_3D_MODEL)
                 != 0) {
                 runtime_rows[build_row].flags |= SUBROW_FLAG_ROW_MODEL_PRESENT;
@@ -503,7 +503,7 @@ void cRSubGame::BuildLevel()
                 *(float*)((char*)&runtime_rows[build_row] + ROW_MODEL_POSITION_Z) +=
                     (float)build_row;
 
-                if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
+                if ((active_segment->rows[segment_row].flags
                         & AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY)
                     != 0) {
                     runtime_rows[build_row].flags |=
@@ -522,19 +522,19 @@ void cRSubGame::BuildLevel()
                 }
             }
 
-            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
+            if ((active_segment->rows[segment_row].flags
                     & AUTHORED_SEGMENT_ROW_FLAG_PARCEL)
                 != 0) {
                 runtime_rows[build_row].flags |=
                     SUBROW_FLAG_PARCEL_CANDIDATE | SUBROW_FLAG_PARCEL_Z_IS_LOCAL;
                 runtime_rows[build_row].parcel_set_id =
-                    ((SubSegment*)active_segment)->rows[segment_row].parcel_set_id;
+                    active_segment->rows[segment_row].parcel_set_id;
                 runtime_rows[build_row].parcel_spawn_position =
                     *(Vector3*)(
                         authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE
                         + AUTHORED_ROW_LOCAL_X);
             }
-            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
+            if ((active_segment->rows[segment_row].flags
                     & AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY)
                 != 0) {
                 runtime_rows[build_row].flags |=
@@ -544,28 +544,28 @@ void cRSubGame::BuildLevel()
                         authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE
                         + AUTHORED_ROW_PATH_TEMPLATE_INDEX);
             }
-            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
+            if ((active_segment->rows[segment_row].flags
                     & AUTHORED_SEGMENT_ROW_FLAG_SUPPRESS_TRACK_RENDER)
                 != 0)
                 runtime_rows[build_row].flags |=
                     SUBROW_FLAG_SUPPRESS_TRACK_RENDER;
-            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
+            if ((active_segment->rows[segment_row].flags
                     & AUTHORED_SEGMENT_ROW_FLAG_RING_NONE)
                 != 0)
                 runtime_rows[build_row].flags |= SUBROW_FLAG_RING_NONE;
-            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
+            if ((active_segment->rows[segment_row].flags
                     & AUTHORED_SEGMENT_ROW_FLAG_RING_NORMAL)
                 != 0)
                 runtime_rows[build_row].flags |= SUBROW_FLAG_RING_NORMAL;
-            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
+            if ((active_segment->rows[segment_row].flags
                     & AUTHORED_SEGMENT_ROW_FLAG_RING_POWER_UP)
                 != 0)
                 runtime_rows[build_row].flags |= SUBROW_FLAG_RING_POWER_UP;
-            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
+            if ((active_segment->rows[segment_row].flags
                     & AUTHORED_SEGMENT_ROW_FLAG_RING_EXPLODE)
                 != 0)
                 runtime_rows[build_row].flags |= SUBROW_FLAG_RING_EXPLODE;
-            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
+            if ((active_segment->rows[segment_row].flags
                     & AUTHORED_SEGMENT_ROW_FLAG_RING_SLOW)
                 != 0)
                 runtime_rows[build_row].flags |= SUBROW_FLAG_RING_SLOW;
@@ -611,7 +611,7 @@ void cRSubGame::BuildLevel()
                 // keep the raw cursor so the large VC6 switch retains its shape.
                 ((BodBase*)(cell + CELL_BOD_BASE))->SetObject(0);
 
-                char* glyph_ptr = active_segment
+                char* glyph_ptr = (char*)active_segment
                     + authored_lane * SEGMENT_GLYPH_ROW_STRIDE + segment_row
                     + SEGMENT_GLYPH_ROWS_BASE;
                 char normalized = LevelConvert(
@@ -860,7 +860,7 @@ void cRSubGame::BuildLevel()
                             (char*)&runtime_rows[build_row]
                             + ROW_ATTACHMENT_LIST_FLAGS) |= 0x20;
                         runtime_rows[build_row].installed_heading_delta =
-                            *(float*)(active_segment + SEGMENT_ANGLE_RADIANS);
+                            active_segment->angle_radians.value;
 
                         SubRow* stamped_row = &runtime_rows[build_row];
                         int span_index = 0;
@@ -932,7 +932,7 @@ void cRSubGame::BuildLevel()
                         "TrackError:%c in Segment %s\n",
                         LevelConvert(
                             *glyph_ptr, build_row, 1),
-                        ((SubSegment*)active_segment)->source_name);
+                        active_segment->source_name);
                     break;
                 }
 
@@ -955,8 +955,8 @@ void cRSubGame::BuildLevel()
                 float row_anchor_z;
                 if (tile == SUBLOC_TILE_PATH_ENTRY_LOWERCASE
                     || tile == SUBLOC_TILE_PATH_ENTRY_UPPERCASE) {
-                    row_anchor_z = (float)build_row + 0.5f;
                     cell_position->x = 0.0f;
+                    row_anchor_z = (float)build_row + 0.5f;
                     cell_position->z = row_anchor_z - 0.5f;
                     if ((g_runtime_config.render_flags & RUNTIME_RENDER_TRACK_FRINGE) != 0) {
                         *(int*)(
@@ -1057,7 +1057,7 @@ void cRSubGame::BuildLevel()
         if (level_mode != 3 || first_or_last_row == 0) {
             ++row_event_owner;
         }
-    }
+    } while (build_row < runtime_row_count);
 
     (void)trampoline_counter;
 }

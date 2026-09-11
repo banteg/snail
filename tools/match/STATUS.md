@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**606/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **162761/299952** bytes (**54.26%**) are proof-grade, and overall fuzzy is **93.97%**.
+**606/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **162761/299952** bytes (**54.26%**) are proof-grade, and overall fuzzy is **93.98%**.
 
 **113/120** platform helpers matched, **120/120** have a scratch, **17576/23008** bytes (**76.39%**) are proof-grade, and overall fuzzy is **96.83%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -10,9 +10,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**56** non-exact scratch-backed functions hold **12625 fuzzy-gap bytes**. The top 5 hold **56.8%** of that gap; the top 10 hold **70.9%**.
+**56** non-exact scratch-backed functions hold **12613 fuzzy-gap bytes**. The top 5 hold **56.8%** of that gap; the top 10 hold **70.9%**.
 
-Current-baseline experiments cover **17 functions / 4222 gap bytes**; **39 / 8403** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **17 functions / 4209 gap bytes**; **39 / 8403** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -21,7 +21,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 1 | initialize_game_assets_and_world | 3750 | semantic-complete | analysis,references | historical-only | 0/19 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 2 | update_subgoldy | 1408 | semantic-complete | analysis,references | historical-only | 0/14 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 3 | update_subgame | 781 | semantic-complete | analysis | historical-only | 0/14 | historical-only,stale-dependencies |
-| 4 | populate_runtime_track_cells_from_segments | 714 | semantic-complete | analysis | current-active | 1/148 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
+| 4 | populate_runtime_track_cells_from_segments | 701 | semantic-complete | analysis | current-active | 1/150 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
 | 5 | initialize_worm_path_template_pair | 521 | semantic-complete | analysis | current-active | 1/12 | repeated-variants,metric-tradeoffs,variant-errors,stale-dependencies |
 | 6 | initialize_cage2_path_template_pair | 414 | semantic-complete | analysis | current-active | 1/20 | repeated-variants,metric-tradeoffs,variant-errors,stale-dependencies |
 | 7 | initialize_halfpipe_path_template_pair | 355 | semantic-complete | analysis | current-active | 1/24 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
@@ -740,7 +740,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 2432 | 649/648 | 82.96% | 10/648 | 46 ok |  | core |
 | 🚧 | add_object_edge | 0x4305a0 | 784 | 225/227 | 91.59% | 15/227 | 3 unaudited, 34 ok |  | core |
 | 🚧 | switch_track_mirror | 0x435e60 | 80 | 27/30 | 91.23% | 20/30 | 3 ok |  | core |
-| 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5056 | 1244/1246 | 85.88% | 76/1246 | 165 ok |  | core |
+| 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5056 | 1243/1246 | 86.13% | 76/1246 | 165 ok |  | core |
 | 🚧 | build_subgame_level | 0x437eb0 | 2128 | 556/555 | 86.09% | 177/555 | 108 ok |  | core |
 | 🚧 | update_subgoldy | 0x43b120 | 8464 | 2094/2087 | 83.36% | 12/2087 | 1 unaudited, 315 ok |  | core |
 | 🚧 | release_snail_weapons | 0x442e40 | 560 | 125/125 | 92.80% | 13/125 | 33 ok |  | core |
