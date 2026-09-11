@@ -1,6 +1,24 @@
 # `update_subgame` recovery notes
 
-Target: `update_subgame @ 0x438b90` (`thiscall`, 3748 bytes, 1033 instructions).
+## 2026-09-11 current source and encoded checks
+
+The current result is **79.2201617%, 1037/1034 instructions, prefix 9,
+129 clean references**, with encoded equality still false. Older counts and
+scores below are historical and predate the current terminal-byte policy.
+
+The redundant mutable numeric locals have been removed. The complete unlinked
+function bytes and all audited references remain unchanged. Eighteen local
+COFF label names change, but their positions and contents agree. The recorded
+13-variant scan/list/constant controls do not improve the normalized frontier.
+Only the numeric-local simplification is retained; no list header or scan
+control flow is changed. The remaining source recovery is still open.
+
+See [the current report](../../encoded-frontier-and-subgame-20260911.md) and
+its complete byte/reference receipt. The historical semantic-complete label
+below describes represented behavior; it does not prove a compiler ceiling or
+close the remaining native source-shape work.
+
+Target: `update_subgame @ 0x438b90` (`thiscall`, 3748 compared bytes, 1034 instructions).
 
 This scratch reconstructs the outer gameplay state machine and the state-2 runtime update path rather than using a minimal placeholder. The source was shaped against both decompile exports and repeatedly measured with the VC6.5 `/O2 /G5 /W3` matcher toolchain.
 

@@ -51,12 +51,11 @@ void cRSubGame::AI()
     tColour skirt_color;
 
     CalcRate();
-    int one = 1;
 
     switch (subgame_state) {
     case 3:
         subgame_state = 4;
-        subgame_pause_gate = (unsigned char)one;
+        subgame_pause_gate = (unsigned char)1;
         pause_fade = pause_fade_step;
         sub_pause.Init();
         // Native fallthrough: initialization immediately receives one update.
@@ -65,29 +64,29 @@ void cRSubGame::AI()
         return;
 
     case 7:
-        if (selected_level_record_persistent == one) {
-            selected_level_record_active = (unsigned char)one;
+        if (selected_level_record_persistent == 1) {
+            selected_level_record_active = (unsigned char)1;
             StartLevel(0);
             subgame_state = 2;
-            g_game->render_skip_count = one;
+            g_game->render_skip_count = 1;
             return;
         }
         selected_level_record_active = 0;
         StartLevel(0);
         subgame_state = 2;
-        g_game->render_skip_count = one;
+        g_game->render_skip_count = 1;
         return;
 
     case 0: {
         int selector = subgame_rebuild_selector;
-        subgame_state = one;
-        if (selector == one)
+        subgame_state = 1;
+        if (selector == 1)
             break;
         if (selector == 0 || selector == 3)
             goto build_selected_level;
 
-        if (selected_level_record_persistent == one) {
-            selected_level_record_active = (unsigned char)one;
+        if (selected_level_record_persistent == 1) {
+            selected_level_record_active = (unsigned char)1;
             StartLevel(selected_level_record->replay_level_index);
             return;
         }
@@ -108,14 +107,14 @@ void cRSubGame::AI()
         switch (level_mode) {
         case 0:
             result = galaxy.AI();
-            if (result == one) {
+            if (result == 1) {
                 subgame_rebuild_selector = 3;
                 g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;
                 StartLevel(level_mode_arg);
                 return;
             }
             if (result == 2) {
-                subgame_rebuild_selector = one;
+                subgame_rebuild_selector = 1;
                 g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;
                 StartLevel(level_mode_arg);
                 return;
@@ -128,7 +127,7 @@ void cRSubGame::AI()
 
         case 4:
             result = galaxy.AI();
-            if (result == one) {
+            if (result == 1) {
                 subgame_rebuild_selector = 2;
                 g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;
                 goto build_selected_level;
@@ -141,7 +140,7 @@ void cRSubGame::AI()
 
         case 1:
             result = gui.AI();
-            if (result == one) {
+            if (result == 1) {
                 subgame_rebuild_selector = 2;
                 StartLevel(0);
                 return;
@@ -161,11 +160,9 @@ void cRSubGame::AI()
     }
 
     case 2: {
-        int zero = 0;
-        int three = 3;
-        if (selected_level_record_active == one
-            && g_game->intro.hide_for_replay_latch == zero) {
-            if (level_mode == three) {
+        if (selected_level_record_active == 1
+            && g_game->intro.hide_for_replay_latch == 0) {
+            if (level_mode == 3) {
                 OSDPrintUV(
                     27, 580.0f, 6.0f, 64.0f, 64.0f, 0x1000000,
                     replay_color.Set(1.0f, 1.0f, 1.0f, 0.400000006f),
@@ -178,8 +175,7 @@ void cRSubGame::AI()
             }
         }
 
-        int two = 2;
-        if (player.completion_handoff_active == zero
+        if (player.completion_handoff_active == 0
             && player.click_start.state != CLICK_START_STATE_WAITING_FOR_START)
             player.stopwatch.Add(1.0f);
 
@@ -188,25 +184,25 @@ void cRSubGame::AI()
 
         slug_voice_manager.AI();
 
-        if (resume_requested == one) {
-            subgame_pause_gate = (unsigned char)zero;
-            resume_requested = (unsigned char)zero;
+        if (resume_requested == 1) {
+            subgame_pause_gate = (unsigned char)0;
+            resume_requested = (unsigned char)0;
             g_sprite_manager.Pause(0);
         }
 
         GameRoot* app = g_game;
-        if (!((selected_level_record_active != zero
+        if (!((selected_level_record_active != 0
                 && pause_fade == 0.0f
                 && (player.control_source->control_flags_a
                         & INPUT_BUTTON_PRIMARY)
                     != 0)
-            || app->intro.hide_for_replay_latch != zero)) {
+            || app->intro.hide_for_replay_latch != 0)) {
 
-        if ((read_pressed_text_input_key_code() == 11 || g_window_deactivated == one)
-            && g_game->fade.state == zero) {
-            subgame_pause_gate = (unsigned char)one;
-            subgame_state = three;
-            g_sprite_manager.Pause((char)one);
+        if ((read_pressed_text_input_key_code() == 11 || g_window_deactivated == 1)
+            && g_game->fade.state == 0) {
+            subgame_pause_gate = (unsigned char)1;
+            subgame_state = 3;
+            g_sprite_manager.Pause((char)1);
             if (player.click_start.state == CLICK_START_STATE_WAITING_FOR_START)
                 player.click_start.prompt->HideInit();
             return;
@@ -221,16 +217,16 @@ void cRSubGame::AI()
                 player.click_start.prompt->UnHideInit();
         }
 
-        if (scan_reset != zero) {
-            runtime_row_scan_begin = zero;
-            if (level_mode == two)
+        if (scan_reset != 0) {
+            runtime_row_scan_begin = 0;
+            if (level_mode == 2)
                 runtime_row_scan_end = runtime_row_count;
             else
                 runtime_row_scan_end = (int)player.active_window_min_z + 46;
         } else {
             int old_end = runtime_row_scan_end;
             runtime_row_scan_begin = old_end;
-            if (level_mode == two) {
+            if (level_mode == 2) {
                 runtime_row_scan_end = runtime_row_count;
             } else {
                 int new_end = (int)player.active_window_min_z + 46;
@@ -247,26 +243,26 @@ void cRSubGame::AI()
         while (cell_index < runtime_row_scan_end) {
             if ((runtime_rows[cell_index].flags
                     & SUBROW_FLAG_ROW_MODEL_PRESENT)
-                != zero) {
+                != 0) {
                 BodNode* row_node = &runtime_rows[cell_index].row_model;
                 g_game->active_bod_list.add_bod(row_node);
             }
 
             if ((runtime_rows[cell_index].flags
                     & SUBROW_FLAG_PARCEL_SPAWN_REQUESTED)
-                != zero
-                && (runtime_flags & SUBGAME_RUNTIME_FLAG_PARCEL_SPAWNS) != zero)
+                != 0
+                && (runtime_flags & SUBGAME_RUNTIME_FLAG_PARCEL_SPAWNS) != 0)
                 AddParcel(
                     &runtime_rows[cell_index].parcel_spawn_position,
                     &player);
 
-            attachment_count = zero;
+            attachment_count = 0;
             while (attachment_count < SUBGAME_TRACK_LANE_COUNT) {
-                if (cell_index >= zero && cell_index < runtime_row_count) {
-                    if ((runtime_cells[cell_index][attachment_count].list_flags & BOD_FLAG_LINKED) == zero) {
+                if (cell_index >= 0 && cell_index < runtime_row_count) {
+                    if ((runtime_cells[cell_index][attachment_count].list_flags & BOD_FLAG_LINKED) == 0) {
                         if ((runtime_cells[cell_index][attachment_count].lane_and_flags
                                 & SUBLOC_FLAG_UNCACHED_BODY)
-                            != zero) {
+                            != 0) {
                             unsigned char tile = runtime_cells[cell_index][attachment_count].tile_id;
                             if (tile == 29 || tile == 30) {
                                 if (runtime_cells[cell_index][attachment_count].object != 0) {
@@ -305,11 +301,11 @@ void cRSubGame::AI()
                             }
                             ++fringe;
                             --fringe_count;
-                        } while (fringe_count != zero);
+                        } while (fringe_count != 0);
 
                         if (runtime_cells[cell_index][attachment_count].tile_id == SUBLOC_TILE_HEALTH_PICKUP
                             && (runtime_flags & SUBGAME_RUNTIME_FLAG_HEALTH_PICKUPS)
-                                != zero
+                                != 0
                             && cell_index >= first_block_row_count
                             && cell_index < completion_row_start)
                             AddHealth(&runtime_cells[cell_index][attachment_count], &player);
@@ -518,7 +514,7 @@ after_authored_ring:
                 ++attachment_count;
             }
             ++cell_index;
-            scan_reset = (unsigned char)zero;
+            scan_reset = (unsigned char)0;
         }
 
         segment_cache.update_track_render_cache_rows();
@@ -527,7 +523,7 @@ after_authored_ring:
             char* text = time_trial.format_time_trial_string(&player.stopwatch);
             Rstrcpy(top_score_widget->text_buffer, text);
             if (sub_high_score.time_trial_route_records[level_mode_arg].active
-                == one) {
+                == 1) {
                 text = time_trial.format_time_trial_string(
                     &sub_high_score.time_trial_route_records[level_mode_arg].timer);
                 Rstrcpy(bottom_score_widget->text_buffer, text);
@@ -538,18 +534,18 @@ after_authored_ring:
             return;
         }
 
-        top_score_widget->text_buffer[0] = (char)zero;
+        top_score_widget->text_buffer[0] = (char)0;
         top_score_widget->AddTextNumber(player.total_score);
         if (player.total_score > active_level_score) {
             active_level_score = player.total_score;
-            bottom_score_widget->text_buffer[0] = (char)zero;
+            bottom_score_widget->text_buffer[0] = (char)0;
             bottom_score_widget->AddTextNumber(active_level_score);
             update_subgame_camera();
             return;
         }
         break;
         } else {
-            if (selected_level_record_persistent != zero) {
+            if (selected_level_record_persistent != 0) {
                 app->players[0].saved_frontend_state =
                     app->players[0].frontend_state;
                 g_game->players[0].frontend_state = 0x1a;
@@ -559,7 +555,7 @@ after_authored_ring:
                 g_game->players[0].frontend_state = 0x1b;
             }
             if (g_game->intro.attract_reset_progress <= 1.0f)
-                g_game->intro.hide_for_replay_latch = zero;
+                g_game->intro.hide_for_replay_latch = 0;
             return;
         }
     }

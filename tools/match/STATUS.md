@@ -21,7 +21,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 1 | initialize_game_assets_and_world | 3750 | semantic-complete | analysis,references | historical-only | 0/19 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 2 | update_subgoldy | 1408 | semantic-complete | analysis,references | historical-only | 0/14 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 3 | initialize_toad_path_template_pair | 807 | semantic-complete | analysis | historical-only | 0/62 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 4 | update_subgame | 781 | semantic-complete | analysis | historical-only | 0/13 | historical-only,stale-dependencies |
+| 4 | update_subgame | 781 | semantic-complete | analysis | historical-only | 0/14 | historical-only,stale-dependencies |
 | 5 | initialize_loopbow_path_template_pair | 749 | semantic-complete | analysis | historical-only | 0/13 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 6 | initialize_cage2_path_template_pair | 736 | semantic-complete | analysis | historical-only | 0/16 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 7 | initialize_loopout_path_template_pair | 717 | semantic-complete | analysis | historical-only | 0/20 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
