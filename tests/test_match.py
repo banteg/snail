@@ -3544,7 +3544,12 @@ def test_residual_frontier_separates_current_history_without_stopping_labels(
     ]
 
 
-def test_scratch_experiment_epoch_tracks_baseline_inputs(tmp_path: Path) -> None:
+def test_scratch_experiment_epoch_tracks_baseline_inputs(tmp_path: Path, monkeypatch) -> None:
+    import snail.match as match_module
+
+    scoring = tmp_path / "matcher.py"
+    scoring.write_text("decoder-a\n", encoding="utf-8")
+    monkeypatch.setattr(match_module, "_EXPERIMENT_SCORING_INPUTS", (scoring,))
     match_root = tmp_path / "match"
     scratch = match_root / "scratches" / "foo"
     scratch.mkdir(parents=True)
@@ -3590,12 +3595,25 @@ def test_scratch_experiment_epoch_tracks_baseline_inputs(tmp_path: Path) -> None
         manifest_path=manifest_path,
     )
 
-    assert len({baseline, source_epoch, image_epoch, manifest_epoch}) == 4
+    manifest_path.write_text("manifest-a\n", encoding="utf-8")
+    scoring.write_text("decoder-b\n", encoding="utf-8")
+    scoring_epoch = scratch_experiment_epoch(
+        config, match_root, image_path=image, manifest_path=manifest_path,
+    )
+    scoring.write_text("decoder-a\n", encoding="utf-8")
+    monkeypatch.setattr(match_module.capstone, "__version__", "different-decoder-runtime")
+    runtime_epoch = scratch_experiment_epoch(
+        config, match_root, image_path=image, manifest_path=manifest_path,
+    )
+
+    assert len({baseline, source_epoch, image_epoch, manifest_epoch, scoring_epoch, runtime_epoch}) == 6
     assert all(len(epoch) == 64 for epoch in (
         baseline,
         source_epoch,
         image_epoch,
         manifest_epoch,
+        scoring_epoch,
+        runtime_epoch,
     ))
 
 

@@ -25,10 +25,10 @@ from .symbols import REPO_ROOT, load_function_symbol_manifest
 VERSION = "win32-reflexive"
 EVIDENCE_SCHEMA = 2
 SCORING_POLICY = {
-    "version": 4,
+    "version": 5,
     "references": "positional-for-normalized-exact; diagnostic-alignment-for-partials",
     "coverage": "decoded-code-and-verified-inline-tables; unknown-bytes-reject-exact",
-    "encoding": "same-offsets-and-encodings; audited-external-relocations; resolved-local-branches-and-table-entries",
+    "encoding": "same-offsets-and-encodings; audited-external-relocations; resolved-local-branches-and-table-entries; literal-lookup-bytes",
     "padding": "untargeted-terminal-nop-int3; no-owned-code-credit",
 }
 VERIFICATION_MODE = "Source-bound local compilation evidence; CI checks freshness and report consistency."
@@ -334,20 +334,25 @@ def proof_summary(evidence: dict[str, Any]) -> dict[str, Any]:
 
 
 def validate_inline_table_evidence(row: dict[str, Any]) -> None:
-    """Keep inline data distinct and require every encoded entry to be resolved."""
+    """Cover inline data exactly with resolved addresses or literal byte ranges."""
     target = row.get("target_inline_data_ranges", [])
     candidate = row.get("candidate_inline_data_ranges", [])
-    for ranges, lower in ((target, row["address"]), (candidate, 0)):
+    target_lookup = row.get("target_inline_lookup_ranges", [])
+    candidate_lookup = row.get("candidate_inline_lookup_ranges", [])
+    for ranges, lower in ((target, row["address"]), (candidate, 0),
+                          (target_lookup, row["address"]), (candidate_lookup, 0)):
         cursor = lower
         for span in ranges:
             if (
                 len(span) != 2
                 or any(type(x) is not int for x in span)
                 or not cursor <= span[0] < span[1]
-                or (span[1] - span[0]) % 4
             ):
                 raise ValueError("invalid inline table range")
             cursor = span[1]
+    for lookup, tables in ((target_lookup, target), (candidate_lookup, candidate)):
+        if intersection_size(lookup, tables) != sum(b - a for a, b in lookup):
+            raise ValueError("literal lookup table is outside inline data")
     if intersection_size(target, row["compared_target_ranges"]) != sum(
         b - a for a, b in target
     ):
@@ -358,13 +363,14 @@ def validate_inline_table_evidence(row: dict[str, Any]) -> None:
     relative = [[a - row["address"], b - row["address"]] for a, b in target]
     if relative != candidate:
         raise ValueError("encoded inline tables differ in position")
-    expected = [offset for a, b in candidate for offset in range(a, b, 4)]
+    if [[a - row["address"], b - row["address"]] for a, b in target_lookup] != candidate_lookup:
+        raise ValueError("encoded lookup tables differ in position")
     entries = proof.get("resolved_local_data_relocations", [])
     if any(
         set(entry) != {"offset", "target_offset"}
         or any(type(value) is not int for value in entry.values())
         for entry in entries
-    ) or [entry["offset"] for entry in entries] != expected:
+    ) or [entry["offset"] for entry in entries] != sorted({entry["offset"] for entry in entries}):
         raise ValueError("encoded inline table entries are incomplete")
     for entry in entries:
         offset, destination = entry["offset"], entry["target_offset"]
@@ -375,6 +381,32 @@ def validate_inline_table_evidence(row: dict[str, Any]) -> None:
             or offset in proof["resolved_local_relocations"]
         ):
             raise ValueError("invalid encoded inline table relocation")
+    literals = proof.get("literal_inline_data_ranges", [])
+    if literals != candidate_lookup:
+        raise ValueError("encoded literal bytes differ from declared lookup ranges")
+    cursor = 0
+    for span in literals:
+        if (
+            len(span) != 2
+            or any(type(value) is not int for value in span)
+            or not cursor <= span[0] < span[1] <= proof["body_size"]
+            or any(a < span[1] and span[0] < b for a, b in proof["masked_relocation_ranges"])
+            or any(span[0] <= offset < span[1] for offset in proof["resolved_local_relocations"])
+        ):
+            raise ValueError("invalid literal inline table range")
+        cursor = span[1]
+    coverage: list[list[int]] = []
+    for start, end in sorted(
+        [[entry["offset"], entry["offset"] + 4] for entry in entries] + literals
+    ):
+        if coverage and coverage[-1][1] > start:
+            raise ValueError("overlapping encoded inline table entries")
+        if coverage and coverage[-1][1] == start:
+            coverage[-1][1] = end
+        else:
+            coverage.append([start, end])
+    if coverage != candidate:
+        raise ValueError("encoded inline table entries are incomplete")
 
 
 def refresh_evidence(*, jobs: int = matchlib.DEFAULT_MATCH_JOBS) -> dict[str, Any]:
@@ -446,6 +478,13 @@ def refresh_evidence(*, jobs: int = matchlib.DEFAULT_MATCH_JOBS) -> dict[str, An
                 ],
                 "candidate_inline_data_ranges": [
                     list(r) for r in status.candidate_inline_data_ranges
+                ],
+                "target_inline_lookup_ranges": [
+                    [status.address + a, status.address + b]
+                    for a, b in status.target_inline_lookup_ranges
+                ],
+                "candidate_inline_lookup_ranges": [
+                    list(r) for r in status.candidate_inline_lookup_ranges
                 ],
                 "reference_audit_mode": "positional"
                 if status.ratio == 1

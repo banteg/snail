@@ -429,18 +429,15 @@ void cRSubGame::BuildLevel()
             if (segment_row >= ((SubSegment*)active_segment)->row_count)
                 break;
             if (level_mode != 2 && build_row >= completion_row_start) {
-                if (level_mode != 0
-                    && level_mode != 4
-                    && level_mode != 1
-                    && level_mode != 7)
-                    active_segment =
-                        base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment);
                 if (level_mode == 0
                     || level_mode == 4
                     || level_mode == 1
                     || level_mode == 7
                     || level_mode == 3)
                     active_segment = base + LEVEL_LAST_SEGMENT_BASE;
+                else
+                    active_segment =
+                        base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment);
                 if (build_row == completion_row_start)
                     segment_row = 0;
             }
@@ -531,9 +528,7 @@ void cRSubGame::BuildLevel()
                 runtime_rows[build_row].flags |=
                     SUBROW_FLAG_PARCEL_CANDIDATE | SUBROW_FLAG_PARCEL_Z_IS_LOCAL;
                 runtime_rows[build_row].parcel_set_id =
-                    *(int*)(
-                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE
-                        + AUTHORED_ROW_PARCEL_SET_ID);
+                    ((SubSegment*)active_segment)->rows[segment_row].parcel_set_id;
                 runtime_rows[build_row].parcel_spawn_position =
                     *(Vector3*)(
                         authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE
@@ -845,21 +840,21 @@ void cRSubGame::BuildLevel()
                     int template_index =
                         runtime_rows[build_row].attachment_template_index;
                     if (base[TRACK_MIRROR_FLAG_OFFSET])
-                        runtime_cell->attachment_template_record = (Path*)(
+                        runtime_cells[build_row][lane].attachment_template_record = (Path*)(
                             base + PATH_PAIRS_BASE + PATH_PAIR_SECONDARY_DELTA
                             + template_index * sizeof(PathPair));
                     else
-                        runtime_cell->attachment_template_record = (Path*)(
+                        runtime_cells[build_row][lane].attachment_template_record = (Path*)(
                             base + PATH_PAIRS_BASE + template_index * sizeof(PathPair));
 
                     *glyph_list_flags &= 0xffffffdf;
                     if (attachment_entry_installed == 0) {
                         attachment_entry_installed = 1;
                         ((BodBase*)(cell + CELL_BOD_BASE))->SetObject(
-                            runtime_cell->attachment_template_record->object);
+                            runtime_cells[build_row][lane].attachment_template_record->object);
                         *glyph_list_flags |= 0x20;
                         runtime_rows[build_row].attachment_body.SetObject(
-                            runtime_cell->attachment_template_record
+                            runtime_cells[build_row][lane].attachment_template_record
                                 ->fringe_mesh_bod.object);
                         *(int*)(
                             (char*)&runtime_rows[build_row]
@@ -869,15 +864,16 @@ void cRSubGame::BuildLevel()
 
                         SubRow* stamped_row = &runtime_rows[build_row];
                         int span_index = 0;
-                        if (runtime_cell->attachment_template_record->row_span_count > 0) {
+                        if (runtime_cells[build_row][lane].attachment_template_record->row_span_count > 0) {
                             do {
-                                int stamped_flags = stamped_row->flags;
+                                unsigned int& row_flags = stamped_row->flags;
+                                unsigned int stamped_flags = row_flags;
                                 if ((stamped_flags & SUBROW_FLAG_PRIMARY_ATTACHMENT) != 0) {
-                                    stamped_row->flags =
+                                    row_flags =
                                         stamped_flags | SUBROW_FLAG_SECONDARY_ATTACHMENT;
                                     stamped_row->secondary_attachment_cell = runtime_cell;
                                 } else {
-                                    stamped_row->flags =
+                                    row_flags =
                                         stamped_flags | SUBROW_FLAG_PRIMARY_ATTACHMENT;
                                     stamped_row->primary_attachment_cell = runtime_cell;
                                 }
@@ -885,7 +881,7 @@ void cRSubGame::BuildLevel()
                                 ++stamped_row;
                             } while (
                                 span_index
-                                < runtime_cell->attachment_template_record->row_span_count);
+                                < runtime_cells[build_row][lane].attachment_template_record->row_span_count);
                         }
                     }
                     break;

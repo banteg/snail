@@ -1,21 +1,44 @@
 # populate_runtime_track_cells_from_segments
 
-Current recovery: semantic-complete (`compiler,references` residual). Exact
+Current recovery: semantic-complete (`analysis` residual). Exact
 Android/iOS `cRSubGame::BuildLevel()` bodies, the live Windows member, and the
 complete Windows producer/consumer chain establish session setup, segment and
 row selection, all glyph dispatch arms, runtime cell/row construction,
 attachments, parcels, rings, fringe objects, and completion handling. The
-current 1,253/1,245 candidate has 163 clean references and four unaudited
-row-model/parcel-transfer references; those four are alignment debt around
-proven field owners, not unknown behavior.
+current candidate has 1,244/1,246 code instructions, a 76-instruction prefix,
+and 165 clean aligned references with no reference debt. The function remains
+partial at 85.8815%; its reference alignment is diagnostic, not positional
+proof of exactness.
+
+## 2026-09-11 completion and field-owner recovery
+
+One completion-mode `if`/`else`, indexed authored-row parcel selection,
+indexed runtime-cell attachment-template accesses, and a borrowed unsigned
+stamped-row flags field recover native branch and store scheduling. The last
+change restores the flag store before each primary/secondary cell-pointer
+store. The 68-byte frame is unchanged. The Windows and exact mobile bodies
+establish the behavior; the remaining code differences still require analysis.
+
+Scoring policy 5 now recognizes the 94-byte guarded glyph remap as literal
+data rather than instructions. The old source scores 75.8017% under that same
+policy, versus the retained 85.8815%. Its previously published 74.6988% used
+policy 4 and is not a directly comparable source baseline.
+
+The two dated mutation recipes record 13 final controls under epoch v2.
+None improves this source. Only the flags-pointer control has identical
+code/relocation identity; negative selection and a `for` stamp loop preserve
+the metrics with different identities. These are bounded results, not evidence
+of a compiler ceiling. See the [report](../../buildlevel-and-lookup-20260911.md)
+and [complete receipt](../../buildlevel-and-lookup-20260911.json) for source and
+assembly differences, all reference rows, table ranges, and replay controls.
 
 populate_runtime_track_cells_from_segments @ 0x435eb0. The function that
 DEFINES the grid conventions the 2026-06-13 grid-alignment audit hinges
 on.
 
-## Scratch status
+## Historical scratch status
 
-Promoted to a matcher scratch on 2026-06-13. Current result after the
+Promoted to a matcher scratch on 2026-06-13. Historical result after the
 glyph-dispatch, authored-row, attachment, clear-loop, segment-scoped row
 builder, direct runtime-row, segment-extension, ring/lane, switch-field
 ownership, and producer-backed trampoline cadence slices: 75.79%, 1254/1245

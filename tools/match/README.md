@@ -325,9 +325,10 @@ Useful analysis helpers:
   and instruction-count shape. `--record` appends the full sweep and its
   canonical baseline epoch to the scratch's `experiments.jsonl`. The epoch
   hashes the source/build inputs, target image, and curated symbol/reference
-  manifests so older experiments stay useful without masquerading as current
-  evidence. `--write-best` writes only an improving winner and refuses to
-  overwrite the tracked `scratch.cpp`.
+  manifests, plus the matcher implementation, scoring policy, dependency lock,
+  and decoder version. Epoch v2 keeps measurements made by an older matcher
+  historical even when their C++ source is unchanged. `--write-best` writes only
+  an improving winner and refuses to overwrite the tracked `scratch.cpp`.
 
   Add `--hypothesis "why this code shape is worth testing" --record` to retain
   the reasoning alongside the recipe and scores. `code_groups` in the JSON
@@ -532,6 +533,14 @@ VC6 self-`lea` alignment before a table is recognized only when it leaves the
 encoded-body comparison. Real branches and table entries into alignment or
 table data prevent recognition.
 
+Byte remaps feeding an indexed jump are represented as `db.lookup 0xNN`.
+Recognition requires the adjacent unsigned `cmp`/`ja` guard, a byte load into
+the jump index (with zero extension), and the bounded jump table. The native
+lookup symbol must have exactly the guarded byte count; the candidate needs
+a complete local COFF label and literal bytes with no overlapping relocation.
+Every byte must index an existing jump-table entry. Branches into the guard's
+interior, table data, or preceding alignment reject the interpretation.
+
 Encoded-body evidence resolves each table word to its function-relative code
 destination and includes that value in the digest. It does not mask table words
 or grant equality from dispatch shape alone. Diagnostics expose separate
@@ -539,6 +548,10 @@ or grant equality from dispatch shape alone. Diagnostics expose separate
 counts and CFG blocks exclude the data entries. The fuzzy sequence includes
 both instructions and table entries. Public code credit still uses the
 independent native code inventory, without adding table-data bytes to it.
+The `target_inline_lookup_ranges` and `candidate_inline_lookup_ranges` subsets
+identify literal bytes, which are compared unchanged in the encoded digest.
+Report checks require those bytes and the resolved address entries to cover
+the inline data exactly, without gaps, overlaps, or relocation masks.
 
 Function extents come from the symbol manifest: start at the curated address,
 end at the next curated address with int3/nop padding trimmed. When uncurated

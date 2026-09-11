@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "completion-selection",
+      "find": "            if (level_mode != 2 && build_row >= completion_row_start) {\n                if (level_mode == 0\n                    || level_mode == 4\n                    || level_mode == 1\n                    || level_mode == 7\n                    || level_mode == 3)\n                    active_segment = base + LEVEL_LAST_SEGMENT_BASE;\n                else\n                    active_segment =\n                        base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment);\n",
+      "replacements": [
+        {
+          "name": "two-checks",
+          "text": "            if (level_mode != 2 && build_row >= completion_row_start) {\n                if (level_mode != 0\n                    && level_mode != 4\n                    && level_mode != 1\n                    && level_mode != 7)\n                    active_segment =\n                        base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment);\n                if (level_mode == 0\n                    || level_mode == 4\n                    || level_mode == 1\n                    || level_mode == 7\n                    || level_mode == 3)\n                    active_segment = base + LEVEL_LAST_SEGMENT_BASE;\n"
+        },
+        {
+          "name": "negative-ifelse",
+          "text": "            if (level_mode != 2 && build_row >= completion_row_start) {\n                if (level_mode != 0\n                    && level_mode != 4\n                    && level_mode != 1\n                    && level_mode != 7\n                    && level_mode != 3)\n                    active_segment =\n                        base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment);\n                else\n                    active_segment = base + LEVEL_LAST_SEGMENT_BASE;\n"
+        },
+        {
+          "name": "last-default",
+          "text": "            if (level_mode != 2 && build_row >= completion_row_start) {\n                active_segment = base + LEVEL_LAST_SEGMENT_BASE;\n                if (level_mode != 0\n                    && level_mode != 4\n                    && level_mode != 1\n                    && level_mode != 7\n                    && level_mode != 3)\n                    active_segment =\n                        base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment);\n"
+        }
+      ]
+    },
+    {
+      "name": "parcel-source",
+      "find": "                runtime_rows[build_row].parcel_set_id =\n                    ((SubSegment*)active_segment)->rows[segment_row].parcel_set_id;\n",
+      "replacements": [
+        {
+          "name": "cached-authored-row",
+          "text": "                runtime_rows[build_row].parcel_set_id =\n                    *(int*)(\n                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_PARCEL_SET_ID);\n"
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,27 @@
 # game_window_proc
 
+## 2026-09-11 complete code and inline-data certificate
+
+The unchanged C++ source now has a normalized and encoded-body match under
+scoring policy 5: **142/142 code instructions and 39 positional references**.
+The matcher recognizes the guarded 255-byte message remap as literal data,
+separately from its 24-byte and 40-byte address tables. Data ranges are
+`[508,787)` and `[788,828)`; the lookup is `[532,787)`. The alignment byte at
+787 remains compared and terminal `[828,832)` is excluded.
+
+All references agree at the same instruction indices and byte offsets. The
+encoded 828-byte body includes literal lookup bytes and resolved table
+destinations, with digest
+`c1128a6f27a5186ec22c80c9661a9882a25980e9f90850048aca91ad2cfbe983`.
+The independent inventory credits **508 code bytes**, excluding tables and
+alignment. This restores measurement of the September 7 source recovery;
+no new C++ change is claimed here. See the
+[report](../../buildlevel-and-lookup-20260911.md) and
+[positional receipt](../../buildlevel-and-lookup-20260911.json).
+
+The older counts and partial measurements below are historical and superseded
+by this complete body certificate.
+
 ## 2026-09-07 exact message-dispatch recovery
 
 The ordinary single `switch (message)` now matches **141/141 instructions**,
@@ -36,7 +58,7 @@ The decompile and BN disassembly agree that `WM_MOUSEMOVE` (`0x200`) and
 `WM_MOUSEWHEEL` (`0x20a`) share the signed high-word `wparam` path. Normal
 mouse movement therefore returns zero without changing the wheel latch.
 
-## Current match notes
+## Historical match notes
 
 Focused matcher result: 94.33%, 141 candidate instructions versus 141 target
 instructions, with 37 clean masked operands, 0 unresolved operands, and 2

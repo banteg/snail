@@ -47,6 +47,12 @@ DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH = (
     REPO_ROOT / "analysis/symbols/gameplay-references.json"
 )
 CONTENT_AUDITED_REFERENCE_KINDS = frozenset(("data_blob", "lookup_table"))
+_EXPERIMENT_SCORING_INPUTS = (
+    Path(__file__).resolve(),
+    Path(__file__).with_name("match_report.py").resolve(),
+    Path(__file__).with_name("symbols.py").resolve(),
+    REPO_ROOT / "uv.lock",
+)
 DEFAULT_MATCH_JOBS = min(8, max(1, os.cpu_count() or 1))
 SOURCE_INCLUDE_RE = re.compile(
     r'^\s*#\s*include\s*(?:"([^"\r\n]+)"|<([^>\r\n]+)>)', re.MULTILINE
@@ -364,16 +370,16 @@ class MatchResult:
 
     @property
     def target_instruction_count(self) -> int:
-        return sum(not line.startswith("dd L") for line in self.target_lines)
+        return sum(not line.startswith(("dd L", "db.lookup ")) for line in self.target_lines)
 
     @property
     def candidate_instruction_count(self) -> int:
-        return sum(not line.startswith("dd L") for line in self.candidate_lines)
+        return sum(not line.startswith(("dd L", "db.lookup ")) for line in self.candidate_lines)
 
     @property
     def instruction_prefix_count(self) -> int:
         return sum(
-            not line.startswith("dd L")
+            not line.startswith(("dd L", "db.lookup "))
             for line in self.target_lines[:self.prefix_instructions]
         )
 
@@ -384,6 +390,18 @@ class MatchResult:
     @property
     def candidate_inline_data_ranges(self) -> tuple[tuple[int, int], ...]:
         return _inline_data_ranges(self.candidate_disassembly)
+
+    @property
+    def target_inline_lookup_ranges(self) -> tuple[tuple[int, int], ...]:
+        return _inline_data_ranges(tuple(
+            line for line in self.target_disassembly if line.text.startswith("db.lookup ")
+        ))
+
+    @property
+    def candidate_inline_lookup_ranges(self) -> tuple[tuple[int, int], ...]:
+        return _inline_data_ranges(tuple(
+            line for line in self.candidate_disassembly if line.text.startswith("db.lookup ")
+        ))
 
     @property
     def exact(self) -> bool:
@@ -1440,22 +1458,155 @@ def _is_inline_table_alignment(insn: capstone.CsInsn) -> bool:
     )
 
 
-def _inline_jump_tables(
+@dataclass(frozen=True, slots=True)
+class _InlineDataTable:
+    size: int
+    entries: tuple[int, ...] = ()
+    lookup_guard: tuple[int, ...] = ()
+    jump_table_offset: int | None = None
+    default_target: int | None = None
+
+
+def _inline_lookup_table(
+    data: bytes,
+    instructions: list[capstone.CsInsn],
+    dispatch_index: int,
+    jump_table_offset: int,
+    jump_table: _InlineDataTable,
+    *,
+    base_address: int,
+    relocation_by_offset: dict[int, ObjectRelocationReference],
+    symbols: dict[int, ReferenceSymbol],
+) -> tuple[int, _InlineDataTable] | None:
+    """Bound a VC6 byte remap by its adjacent unsigned guard and dispatch.
+
+    A local label or readable-looking bytes alone are not a table. Require the
+    complete cmp/ja/(xor)/byte-load/jmp chain, matching index registers, a real
+    bounded jump table, and one byte per accepted input. The shared code/data
+    validator additionally rejects branches that bypass this guard.
+    """
+    x86 = capstone.x86
+    if dispatch_index < 3:
+        return None
+    dispatch = instructions[dispatch_index]
+    load = instructions[dispatch_index - 1]
+    if (
+        load.mnemonic not in {"mov", "movzx"}
+        or len(load.operands) != 2
+        or load.operands[0].type != x86.X86_OP_REG
+        or load.operands[1].type != x86.X86_OP_MEM
+        or load.operands[1].size != 1
+        or load.disp_size != 4
+    ):
+        return None
+    memory = load.operands[1].mem
+    index_register = memory.base or memory.index
+    if (
+        not index_register
+        or (memory.base and memory.index)
+        or memory.scale != 1
+        or memory.segment
+    ):
+        return None
+    destination = dispatch.operands[0].mem.index
+    guard_index = dispatch_index - 3
+    if load.mnemonic == "movzx":
+        if load.operands[0].size != 4 or load.operands[0].reg != destination:
+            return None
+    else:
+        low_registers = {
+            x86.X86_REG_AL: x86.X86_REG_EAX,
+            x86.X86_REG_BL: x86.X86_REG_EBX,
+            x86.X86_REG_CL: x86.X86_REG_ECX,
+            x86.X86_REG_DL: x86.X86_REG_EDX,
+        }
+        if low_registers.get(load.operands[0].reg) != destination or dispatch_index < 4:
+            return None
+        zero = instructions[dispatch_index - 2]
+        if (
+            zero.mnemonic != "xor"
+            or len(zero.operands) != 2
+            or any(op.type != x86.X86_OP_REG or op.reg != destination
+                   or op.size != 4 for op in zero.operands)
+            or destination == index_register
+        ):
+            return None
+        guard_index -= 1
+    compare, branch = instructions[guard_index:guard_index + 2]
+    if (
+        compare.mnemonic != "cmp"
+        or len(compare.operands) != 2
+        or compare.operands[0].type != x86.X86_OP_REG
+        or compare.operands[0].size != 4
+        or compare.operands[0].reg != index_register
+        or compare.operands[1].type != x86.X86_OP_IMM
+        or not 0 <= compare.operands[1].imm < 256
+        or branch.mnemonic != "ja"
+        or len(branch.operands) != 1
+        or branch.operands[0].type != x86.X86_OP_IMM
+    ):
+        return None
+    chain = instructions[guard_index:dispatch_index + 1]
+    if any(a.address + a.size != b.address for a, b in zip(chain, chain[1:])):
+        return None
+    size = compare.operands[1].imm + 1
+    displacement_offset = load.address - base_address + load.disp_offset
+    reference = relocation_by_offset.get(displacement_offset)
+    if reference is not None:
+        if (
+            reference.relocation_type != IMAGE_REL_I386_DIR32
+            or not _canonical_symbol_name(reference.symbol_name).startswith("$L")
+            or reference.symbol_offset is None
+            or reference.symbol_size is None
+            or reference.symbol_size < size
+            or reference.addend not in (None, 0)
+            or reference.addend != _read_u32(data, displacement_offset)
+        ):
+            return None
+        offset = reference.symbol_offset
+    else:
+        symbol = symbols.get(memory.disp)
+        if symbol is None or symbol.kind != "lookup_table" or symbol.size != size:
+            return None
+        offset = symbol.address - base_address
+    if (
+        not 0 <= offset < offset + size <= len(data)
+        or any(at < offset + size and offset < at + 4 for at in relocation_by_offset)
+        or any(value >= len(jump_table.entries) for value in data[offset:offset + size])
+    ):
+        return None
+    branch_reference = relocation_by_offset.get(
+        branch.address - base_address + branch.imm_offset
+    )
+    default = (
+        branch_reference.symbol_offset + (branch_reference.addend or 0)
+        if branch_reference is not None and branch_reference.symbol_offset is not None
+        else branch.operands[0].imm - base_address
+    )
+    return offset, _InlineDataTable(
+        size=size,
+        lookup_guard=tuple(insn.address - base_address for insn in chain),
+        jump_table_offset=jump_table_offset,
+        default_target=default,
+    )
+
+
+def _inline_data_tables(
     data: bytes,
     instructions: list[capstone.CsInsn],
     *,
     base_address: int,
     relocation_by_offset: dict[int, ObjectRelocationReference],
     reference_manifest: ReferenceSymbolManifest | None,
-) -> dict[int, tuple[int, ...]]:
-    """Recognize only dispatched, bounded tables of local code addresses.
+) -> dict[int, _InlineDataTable]:
+    """Recognize dispatched local address tables and guarded byte remaps.
 
     PE ranges require a curated jump-table symbol. COFF ranges require a local
     table symbol and a contiguous run of DIR32 relocations. Neither arbitrary
     address-looking bytes nor the contents of a label alone establish data.
     """
     symbols = _reference_symbol_by_address(reference_manifest)
-    tables: dict[int, tuple[int, ...]] = {}
+    tables: dict[int, _InlineDataTable] = {}
     dispatches: dict[int, set[int]] = {}
     conflicting_offsets: set[int] = set()
     for insn in instructions:
@@ -1467,6 +1618,8 @@ def _inline_jump_tables(
             or operand.mem.base
             or not operand.mem.index
             or operand.mem.scale != 4
+            or operand.mem.segment
+            or operand.size != 4
             or insn.disp_size != 4
         ):
             continue
@@ -1518,22 +1671,40 @@ def _inline_jump_tables(
             or any(not 0 <= entry < offset for entry in entries)
         ):
             continue
-        values = tuple(entries)
-        if offset in tables and tables[offset] != values:
+        table = _InlineDataTable(size=4 * len(entries), entries=tuple(entries))
+        if offset in tables and tables[offset] != table:
             conflicting_offsets.add(offset)
-        tables[offset] = values
+        tables[offset] = table
         dispatches.setdefault(offset, set()).add(insn.address - base_address)
+
+    jump_tables = dict(tables)
+    for index, insn in enumerate(instructions):
+        for jump_offset, jump_table in jump_tables.items():
+            if insn.address - base_address not in dispatches[jump_offset]:
+                continue
+            lookup = _inline_lookup_table(
+                data, instructions, index, jump_offset, jump_table,
+                base_address=base_address, relocation_by_offset=relocation_by_offset,
+                symbols=symbols,
+            )
+            if lookup is None:
+                continue
+            offset, table = lookup
+            if offset in tables and tables[offset] != table:
+                conflicting_offsets.add(offset)
+            tables[offset] = table
+            dispatches.setdefault(offset, set()).add(insn.address - base_address)
 
     # Conflicting interpretations remain ordinary bytes, never silently merge.
     tables = {
-        offset: entries
-        for offset, entries in tables.items()
+        offset: table
+        for offset, table in tables.items()
         if offset not in conflicting_offsets
         and not any(
             other != offset
-            and offset < other + 4 * len(other_entries)
-            and other < offset + 4 * len(entries)
-            for other, other_entries in tables.items()
+            and offset < other + other_table.size
+            and other < offset + table.size
+            for other, other_table in tables.items()
         )
     }
     decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
@@ -1544,17 +1715,17 @@ def _inline_jump_tables(
         code = []
         table_boundaries = set()
         cursor = 0
-        for offset, entries in sorted(tables.items()):
+        for offset, table in sorted(tables.items()):
             span = list(decoder.disasm(data[cursor:offset], base_address + cursor))
             code.extend(span)
             if cursor == offset or (
                 span and span[-1].address - base_address + span[-1].size == offset
             ):
                 table_boundaries.add(offset)
-            cursor = offset + 4 * len(entries)
+            cursor = offset + table.size
         code.extend(decoder.disasm(data[cursor:], base_address + cursor))
         boundaries = {insn.address - base_address for insn in code}
-        table_targets = [entry for entries in tables.values() for entry in entries]
+        table_targets = [entry for table in tables.values() for entry in table.entries]
         direct_targets = []
         for instruction in code:
             if not (capstone.CS_GRP_JUMP in instruction.groups
@@ -1574,11 +1745,21 @@ def _inline_jump_tables(
                 direct_targets.append(destination)
 
         rejected = set()
-        for offset, entries in tables.items():
+        for offset, table in tables.items():
             if (
                 offset not in table_boundaries
                 or not dispatches[offset].intersection(boundaries)
-                or any(entry not in boundaries for entry in entries)
+                or any(entry not in boundaries for entry in table.entries)
+            ):
+                rejected.add(offset)
+                continue
+            if table.lookup_guard and (
+                table.jump_table_offset not in tables
+                or not tables[table.jump_table_offset].entries
+                or not set(table.lookup_guard).issubset(boundaries)
+                or table.default_target not in boundaries
+                or any(table.lookup_guard[0] < destination <= table.lookup_guard[-1]
+                       for destination in (*table_targets, *direct_targets))
             ):
                 rejected.add(offset)
                 continue
@@ -1589,7 +1770,7 @@ def _inline_jump_tables(
                 rejected.add(offset)
                 continue
             padding_start = preceding[-1].address - base_address + preceding[-1].size
-            end = offset + 4 * len(entries)
+            end = offset + table.size
             if (
                 any(padding_start <= entry < end for entry in table_targets)
                 or any(padding_start <= destination < end for destination in direct_targets)
@@ -1599,12 +1780,12 @@ def _inline_jump_tables(
             return tables
         # A rejected region becomes code/unknown bytes again. Recheck survivors
         # so a rejected table cannot conceal a branch or justify another table.
-        tables = {offset: entries for offset, entries in tables.items() if offset not in rejected}
+        tables = {offset: table for offset, table in tables.items() if offset not in rejected}
     return {}
 
 
 def _is_inline_data(line: DisassemblyLine) -> bool:
-    return line.text.startswith("dd L")
+    return line.text.startswith(("dd L", "db.lookup "))
 
 
 def _inline_data_ranges(
@@ -1838,14 +2019,14 @@ def disassemble_normalized_function(
         )
 
     instructions = list(md.disasm(data, base_address))
-    tables = _inline_jump_tables(
+    tables = _inline_data_tables(
         data, instructions, base_address=base_address,
         relocation_by_offset=relocation_by_offset,
         reference_manifest=reference_manifest,
     ) if len(relocation_by_offset) == len(relocation_references) else {}
     events = []
     start = 0
-    for table_offset, entries in [*sorted(tables.items()), (len(data), ())]:
+    for table_offset, table in [*sorted(tables.items()), (len(data), _InlineDataTable(0))]:
         segment = list(md.disasm(data[start:table_offset], base_address + start))
         events.extend(segment)
         decoded_end = segment[-1].address - base_address + segment[-1].size if segment else start
@@ -1853,13 +2034,19 @@ def disassemble_normalized_function(
             DisassemblyLine(at, base_address + at, f"db 0x{data[at]:02x}", size=1)
             for at in range(decoded_end, table_offset)
         )
-        events.extend(
-            DisassemblyLine(table_offset + 4 * index,
-                            base_address + table_offset + 4 * index,
-                            f"dd L{entry:x}", size=4)
-            for index, entry in enumerate(entries)
-        )
-        start = table_offset + 4 * len(entries)
+        if table.entries:
+            events.extend(
+                DisassemblyLine(table_offset + 4 * index,
+                                base_address + table_offset + 4 * index,
+                                f"dd L{entry:x}", size=4)
+                for index, entry in enumerate(table.entries)
+            )
+        else:
+            events.extend(
+                DisassemblyLine(at, base_address + at, f"db.lookup 0x{data[at]:02x}", size=1)
+                for at in range(table_offset, table_offset + table.size)
+            )
+        start = table_offset + table.size
 
     lines: list[DisassemblyLine] = []
     for insn in events:
@@ -2808,12 +2995,23 @@ def encoded_body_evidence(
     masked_ranges: list[list[int]] = []
     resolved_local: list[int] = []
     resolved_data: list[dict[str, int]] = []
+    literal_data: list[list[int]] = []
     relocations = {r.offset: r for r in candidate.relocation_references}
     left_body, right_body = bytearray(), bytearray()
     for a, b in zip(target_lines, candidate_lines):
         left = bytearray(target_data[a.offset : a.offset + a.size])
         right = bytearray(candidate.data[b.offset : b.offset + b.size])
-        if _is_inline_data(a):
+        if a.text.startswith("db.lookup "):
+            if a.size != 1 or left != right or b.offset in candidate.relocation_offsets:
+                return None
+            if literal_data and literal_data[-1][1] == b.offset:
+                literal_data[-1][1] += b.size
+            else:
+                literal_data.append([b.offset, b.offset + b.size])
+            left_body.extend(left)
+            right_body.extend(right)
+            continue
+        if a.text.startswith("dd L"):
             destination = int(a.text[4:], 16)
             relocation = relocations.get(b.offset)
             if (
@@ -2883,6 +3081,7 @@ def encoded_body_evidence(
         "masked_relocation_ranges": masked_ranges,
         "resolved_local_relocations": resolved_local,
         "resolved_local_data_relocations": resolved_data,
+        "literal_inline_data_ranges": literal_data,
     }
 
 
@@ -3582,6 +3781,8 @@ def match_result_payload(
         "candidate_instructions": result.candidate_instruction_count,
         "target_inline_data_ranges": [list(r) for r in result.target_inline_data_ranges],
         "candidate_inline_data_ranges": [list(r) for r in result.candidate_inline_data_ranges],
+        "target_inline_lookup_ranges": [list(r) for r in result.target_inline_lookup_ranges],
+        "candidate_inline_lookup_ranges": [list(r) for r in result.candidate_inline_lookup_ranges],
         "masked_references": {
             "ok": result.masked_operand_audit.ok_count,
             "unresolved": result.masked_operand_audit.unresolved_count,
@@ -3755,6 +3956,8 @@ class ScratchStatus:
     encoded_body_proof: dict[str, Any] | None = None
     target_inline_data_ranges: tuple[tuple[int, int], ...] = ()
     candidate_inline_data_ranges: tuple[tuple[int, int], ...] = ()
+    target_inline_lookup_ranges: tuple[tuple[int, int], ...] = ()
+    candidate_inline_lookup_ranges: tuple[tuple[int, int], ...] = ()
 
     @property
     def state(self) -> str:
@@ -4378,7 +4581,7 @@ def scratch_experiment_epoch(
     image_path: Path | None = None,
     manifest_path: Path = DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
 ) -> str:
-    """Hash the canonical inputs that determine one experiment baseline."""
+    """Hash source, toolchain, target, and measurement inputs for a baseline."""
 
     match_root = match_root.resolve()
     manifest_path = manifest_path.resolve()
@@ -4391,9 +4594,10 @@ def scratch_experiment_epoch(
         "end_va": config.end_va,
         "function": config.function,
         "symbol": config.symbol,
-        "version": 1,
+        "decoder_version": capstone.__version__,
+        "version": 2,
     }
-    digest = hashlib.sha256(b"snail-scratch-experiment-epoch-v1\0")
+    digest = hashlib.sha256(b"snail-scratch-experiment-epoch-v2\0")
     digest.update(
         json.dumps(profile, separators=(",", ":"), sort_keys=True).encode()
     )
@@ -4408,6 +4612,7 @@ def scratch_experiment_epoch(
             DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH.resolve(),
         }
     )
+    dependencies.update(path.resolve() for path in _EXPERIMENT_SCORING_INPUTS)
     for path in sorted(
         dependencies,
         key=lambda value: (
@@ -5076,6 +5281,8 @@ def evaluate_scratch(
             candidate_instructions=result.candidate_instruction_count,
             target_inline_data_ranges=result.target_inline_data_ranges,
             candidate_inline_data_ranges=result.candidate_inline_data_ranges,
+            target_inline_lookup_ranges=result.target_inline_lookup_ranges,
+            candidate_inline_lookup_ranges=result.candidate_inline_lookup_ranges,
             masked_ok=result.masked_operand_audit.ok_count,
             masked_unresolved=result.masked_operand_audit.unresolved_count,
             masked_mismatches=result.masked_operand_audit.mismatch_count,
@@ -5227,6 +5434,8 @@ def scratch_status_payload(status: ScratchStatus) -> dict:
         "candidate_instructions": status.candidate_instructions,
         "target_inline_data_ranges": [list(r) for r in status.target_inline_data_ranges],
         "candidate_inline_data_ranges": [list(r) for r in status.candidate_inline_data_ranges],
+        "target_inline_lookup_ranges": [list(r) for r in status.target_inline_lookup_ranges],
+        "candidate_inline_lookup_ranges": [list(r) for r in status.candidate_inline_lookup_ranges],
         "match_ratio": status.ratio,
         "prefix_instructions": status.prefix_instructions,
         "first_mismatch": {
@@ -6016,6 +6225,8 @@ def _scratch_status_fields(target_size: int, result: MatchResult) -> dict:
         "candidate_instructions": result.candidate_instruction_count,
         "target_inline_data_ranges": result.target_inline_data_ranges,
         "candidate_inline_data_ranges": result.candidate_inline_data_ranges,
+        "target_inline_lookup_ranges": result.target_inline_lookup_ranges,
+        "candidate_inline_lookup_ranges": result.candidate_inline_lookup_ranges,
         "masked_ok": result.masked_operand_audit.ok_count,
         "masked_unresolved": result.masked_operand_audit.unresolved_count,
         "masked_mismatches": result.masked_operand_audit.mismatch_count,
