@@ -20,7 +20,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 |---:|---|---:|---|---|---|---:|---|
 | 1 | initialize_game_assets_and_world | 3750 | semantic-complete | analysis,references | historical-only | 0/19 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 2 | update_subgoldy | 1408 | semantic-complete | analysis,references | historical-only | 0/14 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 3 | initialize_toad_path_template_pair | 807 | semantic-complete | analysis | current-active | 2/64 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
+| 3 | initialize_toad_path_template_pair | 807 | semantic-complete | analysis | current-active | 3/65 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
 | 4 | update_subgame | 781 | semantic-complete | analysis | historical-only | 0/14 | historical-only,stale-dependencies |
 | 5 | populate_runtime_track_cells_from_segments | 714 | semantic-complete | analysis | current-active | 1/148 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
 | 6 | initialize_worm_path_template_pair | 643 | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,variant-errors,historical-only,stale-dependencies |

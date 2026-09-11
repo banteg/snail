@@ -1,5 +1,24 @@
 # initialize_toad_path_template_pair
 
+## 2026-09-11: logical-loop and vector diagnostics; canonical prefix proof
+
+Canonical source remains **66.8175%, 663/663 instructions, prefix 89**. A fresh
+strict byte audit now proves the first **89 instructions / 371 bytes** equal
+after relocation auditing, with three same-index references. This adds no
+whole-function exact credit.
+
+The new logical-loop/vector diagnostic reaches **89.7590%, 665/663**, but has
+only a **16-instruction / 53-byte** encoded prefix. The **85.9729%** alternative
+restores 663 instructions but retains the same short prefix. A named tail-start
+form reaches 89.6915% and restores the sign home, with prefix 38 / 161 bytes,
+but has 666 instructions. All stay outside the canonical scratch.
+
+The [report and full receipt](../../toad-logical-vector-diagnostics-20260911.md)
+preserve 210 compiled source controls, seven independent reversals, the native
+loop/address and stack-home differences, six origin-vector controls with
+additional unaudited references, and standalone diagnostic sources. These are
+bounded observations, not a compiler limit.
+
 ## 2026-09-11: coupled-owner diagnostic and prefix investigation
 
 The indexed-face / split-UV lead improves from 74.3764% to **83.3710%** when
