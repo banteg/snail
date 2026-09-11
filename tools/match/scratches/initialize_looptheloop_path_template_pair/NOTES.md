@@ -303,3 +303,12 @@ vertex index above the ordinary/terminal branch and writing
 `vertices[index]` loses 28 weighted bytes and falls to **73.74%** at 722/721
 instructions. The branch-local `Vector3*` owner remains, and the complete
 one-site rejection is recorded.
+
+## 2026-09-11: W-sibling scalar-lifetime controls
+
+The shared sample float, natural approach division, and their combination all
+retain the canonical 94.4444%, 719/721 instructions, prefix 159 and 49 clean
+references. Sharing the float keeps the code hash; division spellings change
+it despite identical normalized metrics. No source change or encoded-equality
+claim follows from these controls. The three-source recipe is recorded; see
+the [W-sibling receipt](../../looptheloopw-sample-progress-owners-20260911.md).

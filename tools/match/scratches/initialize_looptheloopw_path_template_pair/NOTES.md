@@ -1,9 +1,27 @@
 # `initialize_looptheloopw_path_template_pair` starter
 
-Current recovery: semantic-complete (`compiler` residual). The verified
-Android/iOS builder bodies establish the portable sample/control graph; the
-live Windows body and scratch additionally cover the native mesh/face tail.
-All references are clean, and the remaining differences are code layout.
+## 2026-09-11: shared sample progress, mesh vectors and UV dispatch
+
+Materialization alone preserves raw COFF function bytes. A shared logical
+sample float restores early native stack homes; approach division restores
+native multiplication order. Delta-index placement, direct mesh vectors and
+separate topology/UV dispatch improve **74.3935% to 92.7126%**, with normalized
+prefix **10 to 118**. The instruction-count deficit grows from six to eight;
+the body remains partial. All 55 references remain clean.
+
+The first 432 bytes have a separate encoded proof. Five later SIB differences
+within the normalized prefix prevent calling all 118 instructions byte-exact.
+The 94.21% approach reversal is preserved as a diagnostic because it swaps
+native multiplication order at instruction 44. See the [report and full byte
+receipt](../../looptheloopw-sample-progress-owners-20260911.md) for 66 forward
+observations / 63 distinct sources, eight reversals and remaining differences.
+
+Current recovery: semantic-complete (`analysis` residual). The 2026-09-11
+source reaches **92.71255061%**, with **737/745 instructions**, normalized
+prefix **118**, **55 clean references** and the native **0x60** frame.
+A separate proof establishes the first **109 instructions / 432 bytes** as
+relocation-audited encoded-equal. Departure/curve address preparation, mesh
+stack homes and checkerboard branch direction remain open source questions.
 
 This is an honest semantic starter for the path-template initializer at
 `0x41bb40`.
