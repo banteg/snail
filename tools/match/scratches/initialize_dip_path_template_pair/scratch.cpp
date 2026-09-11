@@ -512,13 +512,13 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
         ->lateral_scale = height_scale_value;
     ((PathAttachmentSample *)((char *)primary_samples + endpoint_sample_offset))
         ->transform.Identity();
-    float endpoint_z = (float)endpoint_index;
     ((PathAttachmentSample *)((char *)primary_samples + endpoint_sample_offset))
         ->transform.position.x =
         ((PathAttachmentSample *)((char *)primary_samples + endpoint_sample_offset))
             ->center_x;
     ((PathAttachmentSample *)((char *)primary_samples + endpoint_sample_offset))
         ->transform.position.y = 0.0f;
+    float endpoint_z = (float)endpoint_index;
     ((PathAttachmentSample *)((char *)primary_samples + endpoint_sample_offset))
         ->transform.position.z = endpoint_z;
     ((PathAttachmentSample *)((char *)secondary_samples + endpoint_sample_offset))
@@ -532,10 +532,10 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     ((PathAttachmentSample *)((char *)secondary_samples + endpoint_sample_offset))
         ->transform.position.z = endpoint_z;
 
+    int i = 0;
+    int curve_phase_index = 0;
     if (width_cells_ > 0)
     {
-        int i = 0;
-        int curve_phase_index = 0;
         int sample_offset = (int)sizeof(PathAttachmentSample);
         do
         {
@@ -575,32 +575,47 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                 ->transform.position.z = z;
             if (sample_offset > (int)sizeof(PathAttachmentSample))
             {
-                PathAttachmentSample *previous_primary =
-                    (PathAttachmentSample *)((char *)primary_samples + sample_offset) -
-                    1;
-                PathAttachmentSample *previous_secondary =
-                    (PathAttachmentSample *)((char *)secondary_samples +
-                                             sample_offset) -
-                    1;
-                orient_previous_with_fixed_right(
-                    previous_primary,
-                    (PathAttachmentSample *)((char *)primary_samples + sample_offset));
-                orient_previous_with_fixed_right(
-                    previous_secondary,
-                    (PathAttachmentSample *)((char *)secondary_samples +
-                                             sample_offset));
+                ((PathAttachmentSample *)((char *)primary_samples + sample_offset))[-1]
+                    .transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
+                ((PathAttachmentSample *)((char *)primary_samples + sample_offset))[-1]
+                    .transform.basis_forward =
+                    ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
+                        ->transform.position -
+                    ((PathAttachmentSample *)((char *)primary_samples + sample_offset))[-1]
+                        .transform.position;
+                ((PathAttachmentSample *)((char *)primary_samples + sample_offset))[-1]
+                    .transform.basis_forward.Normalize();
+                ((PathAttachmentSample *)((char *)primary_samples + sample_offset))[-1]
+                    .transform.basis_up.Cross(
+                        ((PathAttachmentSample *)((char *)primary_samples + sample_offset))[-1]
+                            .transform.basis_forward,
+                        ((PathAttachmentSample *)((char *)primary_samples + sample_offset))[-1]
+                            .transform.basis_right);
+                ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))[-1]
+                    .transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
+                ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))[-1]
+                    .transform.basis_forward =
+                    ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))
+                        ->transform.position -
+                    ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))[-1]
+                        .transform.position;
+                ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))[-1]
+                    .transform.basis_forward.Normalize();
+                ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))[-1]
+                    .transform.basis_up.Cross(
+                        ((PathAttachmentSample *)((char *)secondary_samples +
+                                                  sample_offset))[-1]
+                            .transform.basis_forward,
+                        ((PathAttachmentSample *)((char *)secondary_samples +
+                                                  sample_offset))[-1]
+                            .transform.basis_right);
             }
             else
             {
-                PathAttachmentSample *previous_primary =
-                    (PathAttachmentSample *)((char *)primary_samples + sample_offset) -
-                    1;
-                PathAttachmentSample *previous_secondary =
-                    (PathAttachmentSample *)((char *)secondary_samples +
-                                             sample_offset) -
-                    1;
-                previous_primary->transform.RotIdentity();
-                previous_secondary->transform.RotIdentity();
+                ((PathAttachmentSample *)((char *)primary_samples + sample_offset))[-1]
+                    .transform.RotIdentity();
+                ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))[-1]
+                    .transform.RotIdentity();
             }
             sample_offset += (int)sizeof(PathAttachmentSample);
             curve_phase_index = i;

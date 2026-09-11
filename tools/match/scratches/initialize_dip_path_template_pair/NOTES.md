@@ -1,3 +1,28 @@
+## Current canonical source: orientation and counter owners (2026-09-11)
+
+The canonical source improves **75.96302003% → 85.78016910%**, with
+**646/655** instructions, **37 clean aligned references**, and the native
+**0x50-byte** frame. Its encoded prefix remains **8 instructions / 22 bytes**.
+Direct sample-bank expressions replace helper-held pointers around
+Normalize/Cross and RotIdentity; vector subtraction, curve/phase preheaders
+and endpoint Z lifetime supply the coupled native source structure.
+
+The 91-instruction region **[0x41e6d0, 0x41e84b)** maps to candidate
+**[651, 1030)** with six strict positional references and a verified local
+jump. Three SIB bytes differ, so this region is not encoded-exact. Full native
+extent remains 2400 bytes, with [0,2390) compared and [2390,2400) recognized
+terminal padding; no unexplained bytes. Whole-function, linked-code and data
+exactness are not claimed. Header/register lifetimes, counters, encoded
+addressing and mesh/face details remain open.
+
+See [the current receipt](../../dip-orientation-counter-owners-20260911.md)
+and its JSON for full sources, bytes, instruction positions, controls and
+validation. The 58 distinct forward sources and nine reversals are replayable
+on their stated parents. All eight individual reversals regress and all-reverse
+restores the original function fingerprint. The slightly higher logical-cursor
+alternative remains preserved, not promoted. Finite controls establish no
+compiler ceiling. All entries below are historical measurements.
+
 # `initialize_dip_path_template_pair` starter
 
 Current recovery: declared semantic-complete, with native differences still under
