@@ -110,8 +110,9 @@ char cRGame::initialize_game_assets_and_world()
     unknown_000514 = 0;
     fixed_update_accumulator = 0.0f;
     frame_counter = 0;
-    inactive_bod_sentinel.list_next = 0;
-    active_bod_list.free_top = &inactive_bod_sentinel;
+    BodNode* inactive_node = &inactive_bod_sentinel;
+    inactive_node->list_next = 0;
+    active_bod_list.free_top = inactive_node;
     active_bod_list.first = 0;
     unknown_000b48 = 0;
     memset(g_sprite_depth_buckets, 0, sizeof(g_sprite_depth_buckets));
@@ -2993,8 +2994,6 @@ char cRGame::initialize_game_assets_and_world()
     subgame.barrier.object->blend_mode = 7;
     subgame.segment_cache.initialize_track_render_cache_manager();
 
-    BodBase* fringe_bod =
-        &root_bod_catalog.fringe_catalog.entries[0][0][0][0];
     int fringe_family = 0;
     do {
         int fringe_direction = 0;
@@ -3003,18 +3002,19 @@ char cRGame::initialize_game_assets_and_world()
             do {
                 int fringe_column = 0;
                 do {
-                    fringe_bod->SetObject(
+                    BodBase& fringe_bod = root_bod_catalog.fringe_catalog
+                        .entries[fringe_family][fringe_direction][fringe_row][fringe_column];
+                    fringe_bod.SetObject(
                         g_object_list.Add());
                     ObjectProcFringe(
-                        fringe_bod->object,
+                        fringe_bod.object,
                         fringe_family,
                         fringe_direction,
                         fringe_row - 1,
                         fringe_column - 1,
                         (char*)"Objects/Universe/Fringe.tga");
-                    fringe_bod->object->blend_mode = 5;
+                    fringe_bod.object->blend_mode = 5;
                     ++fringe_column;
-                    ++fringe_bod;
                 } while (fringe_column < TRACK_FRINGE_EDGE_VARIANT_COUNT);
                 ++fringe_row;
             } while (fringe_row < TRACK_FRINGE_EDGE_VARIANT_COUNT);

@@ -1,5 +1,26 @@
 # initialize_game_assets_and_world @ 0x40acf0
 
+## 2026-09-11 sentinel and indexed fringe recovery
+
+Current source: **84.02662230%**, **5,407/5,411 instructions**, exact prefix
+**53**, unchanged **300-byte frame**, **1,880 clean references** and the same
+**two unaudited vapour-stride entries**. Borrowing the inactive sentinel extends
+the encoded prefix from 182 to 233 bytes. Indexed fringe ownership recovers
+native object-field induction, the direction pointer carry and counter owners.
+A readable per-element reference has the same complete function fingerprint
+and instruction/reference records as direct indexed expressions.
+
+The [report and complete receipt](../../world-sentinel-fringe-owners-20260911.md)
+preserve 53 successful forward sources, three reversals, five full source/byte
+snapshots and 300 bytes of selected positional encoded proof. Live vapour and
+rocket reloads clear both reference residuals but alter later register allocation;
+the best combined clean control is 81.8947%. Those native reloads remain open
+source evidence, not semantically rejected or a proven compiler limit.
+
+Earlier entries below are historical. Their current-score language is
+superseded by this entry; the immediately preceding source measured 83.7463%.
+
+
 ## 2026-09-11 player matrix and overlay branch recovery
 
 Current source improves **81.3425% to 83.7463%**, preserving 5,405/5,411

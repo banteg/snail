@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**606/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **162761/299952** bytes (**54.26%**) are proof-grade, and overall fuzzy is **94.02%**.
+**606/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **162761/299952** bytes (**54.26%**) are proof-grade, and overall fuzzy is **94.04%**.
 
 **113/120** platform helpers matched, **120/120** have a scratch, **17576/23008** bytes (**76.39%**) are proof-grade, and overall fuzzy is **96.83%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -10,15 +10,15 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**56** non-exact scratch-backed functions hold **12494 fuzzy-gap bytes**. The top 5 hold **56.4%** of that gap; the top 10 hold **70.6%**.
+**56** non-exact scratch-backed functions hold **12429 fuzzy-gap bytes**. The top 5 hold **56.1%** of that gap; the top 10 hold **70.4%**.
 
-Current-baseline experiments cover **18 functions / 5499 gap bytes**; **38 / 6995** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **19 functions / 9184 gap bytes**; **37 / 3245** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
 | rank | function | fuzzy gap | recovery | residual | evidence | current/all | flags |
 |---:|---|---:|---|---|---|---:|---|
-| 1 | initialize_game_assets_and_world | 3750 | semantic-complete | analysis,references | historical-only | 0/19 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 1 | initialize_game_assets_and_world | 3685 | semantic-complete | analysis,references | current-active | 1/21 | repeated-variants,metric-tradeoffs,variant-errors,stale-dependencies |
 | 2 | update_subgoldy | 1289 | semantic-complete | analysis | current-active | 1/16 | repeated-variants,metric-tradeoffs,variant-errors,stale-dependencies |
 | 3 | update_subgame | 781 | semantic-complete | analysis | historical-only | 0/14 | historical-only,stale-dependencies |
 | 4 | populate_runtime_track_cells_from_segments | 701 | semantic-complete | analysis | current-active | 1/150 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
@@ -719,7 +719,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
-| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23072 | 5405/5411 | 83.75% | 43/5411 | 2 unaudited, 1880 ok |  | core |
+| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23072 | 5407/5411 | 84.03% | 53/5411 | 2 unaudited, 1880 ok |  | core |
 | 🚧 | refresh_object_vertex_buffer | 0x412250 | 400 | 137/139 | 90.58% | 7/139 | 4 ok |  | boundary |
 | 🚧 | initialize_loading_screen | 0x418b50 | 768 | 253/253 | 83.00% | 5/253 | 54 ok |  | core |
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1856 | 522/521 | 93.38% | 88/521 | 66 ok | msvc6.0 /O2 /G5 /W3 | core |
