@@ -12,10 +12,6 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
                                                     char *texture_b,
                                                     char *vertical_texture)
 {
-    scale = scale;
-    side_exit = side_exit;
-    vertical_texture = vertical_texture;
-
     kind = PATH_TEMPLATE_KIND_NONLINEAR_42;
     is_mirrored_x = 0;
     side_exit_mode = 0;
@@ -26,11 +22,11 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
     GetNodes();
     has_entry_mesh_transition = 0;
 
-    int lead_index = 0;
+    int sample_step = 0;
     int lead_sample_offset = 0;
     do
     {
-        float index = (float)lead_index;
+        float index = (float)sample_step;
         float angle_base = index * 0.0625f;
         float angle = angle_base * 3.1415927f + 1.5707964f;
         float depth = ((0.5f - Sin(angle) * 0.5f) * 0.94999999f + 0.050000001f) * 4.0f;
@@ -69,39 +65,38 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
             ->transform.position.z = index;
         ((AttachmentSample *)((char *)secondary_samples + lead_sample_offset))
             ->delta_length = 1.0f;
+        ++sample_step;
         lead_sample_offset += sizeof(AttachmentSample);
-        ++lead_index;
     } while (lead_sample_offset < 16 * (int)sizeof(AttachmentSample));
-    int i;
 
-    int exit_index = 0;
+    sample_step = 0;
     do
     {
-        float angle_base = 1.0f - (float)exit_index * 0.0625f;
+        int sample_index = sample_step + 50;
+        float angle_base = 1.0f - (float)sample_step * 0.0625f;
         float angle = angle_base * 3.1415927f + 1.5707964f;
         float depth = ((0.5f - Sin(angle) * 0.5f) * 0.94999999f + 0.050000001f) * 4.0f;
-        primary_samples[exit_index + 50].center_x = 4.0f - (float)width_cells * 0.5f;
-        primary_samples[exit_index + 50].rotation_scalar_98 = 0.0f;
-        primary_samples[exit_index + 50].rotation_scalar_94 = 0.0f;
-        primary_samples[exit_index + 50].special_scalar =
+        primary_samples[sample_index].center_x = 4.0f - (float)width_cells * 0.5f;
+        primary_samples[sample_index].rotation_scalar_98 = 0.0f;
+        primary_samples[sample_index].rotation_scalar_94 = 0.0f;
+        primary_samples[sample_index].special_scalar =
             (depth * depth + 16.0f) / (depth + depth);
-        primary_samples[exit_index + 50].lateral_scale = 1.0f;
-        primary_samples[exit_index + 50].transform.Identity();
-        primary_samples[exit_index + 50].transform.position.x =
-            primary_samples[exit_index + 50].center_x;
-        int sample_index = exit_index + 50;
-        primary_samples[exit_index + 50].transform.position.y = 0.0f;
-        primary_samples[exit_index + 50].transform.position.z = (float)sample_index;
-        primary_samples[exit_index + 50].delta_length = 1.0f;
+        primary_samples[sample_index].lateral_scale = 1.0f;
+        primary_samples[sample_index].transform.Identity();
+        primary_samples[sample_index].transform.position.x =
+            primary_samples[sample_index].center_x;
+        primary_samples[sample_index].transform.position.y = 0.0f;
+        primary_samples[sample_index].transform.position.z = (float)sample_index;
+        primary_samples[sample_index].delta_length = 1.0f;
 
-        secondary_samples[exit_index + 50].transform.Identity();
-        secondary_samples[exit_index + 50].transform.position.x =
-            primary_samples[exit_index + 50].center_x;
-        secondary_samples[exit_index + 50].transform.position.y = 0.49000001f;
-        secondary_samples[exit_index + 50].transform.position.z = (float)sample_index;
-        secondary_samples[exit_index + 50].delta_length = 1.0f;
-        ++exit_index;
-    } while (exit_index < 16);
+        secondary_samples[sample_index].transform.Identity();
+        secondary_samples[sample_index].transform.position.x =
+            primary_samples[sample_index].center_x;
+        secondary_samples[sample_index].transform.position.y = 0.49000001f;
+        secondary_samples[sample_index].transform.position.z = (float)sample_index;
+        secondary_samples[sample_index].delta_length = 1.0f;
+        ++sample_step;
+    } while (sample_step < 16);
 
     float out_angle;
     int middle = 0;
@@ -169,22 +164,14 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
         do
         {
             primary_samples[sample_index].delta_dir_to_next =
-                Vector3(primary_samples[sample_index + 1].transform.position.x -
-                            primary_samples[sample_index].transform.position.x,
-                        primary_samples[sample_index + 1].transform.position.y -
-                            primary_samples[sample_index].transform.position.y,
-                        primary_samples[sample_index + 1].transform.position.z -
-                            primary_samples[sample_index].transform.position.z);
+                primary_samples[sample_index + 1].transform.position -
+                primary_samples[sample_index].transform.position;
             primary_samples[sample_index].delta_length =
                 primary_samples[sample_index].delta_dir_to_next.Normalize();
 
             secondary_samples[sample_index].delta_dir_to_next =
-                Vector3(secondary_samples[sample_index + 1].transform.position.x -
-                            secondary_samples[sample_index].transform.position.x,
-                        secondary_samples[sample_index + 1].transform.position.y -
-                            secondary_samples[sample_index].transform.position.y,
-                        secondary_samples[sample_index + 1].transform.position.z -
-                            secondary_samples[sample_index].transform.position.z);
+                secondary_samples[sample_index + 1].transform.position -
+                secondary_samples[sample_index].transform.position;
             secondary_samples[sample_index].delta_length =
                 secondary_samples[sample_index].delta_dir_to_next.Normalize();
             ++sample_index;
@@ -214,36 +201,34 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
             TransformMatrix *transform =
                 (TransformMatrix *)((char *)&primary_samples[0].transform +
                                     sample_offset);
-            Vector3 *vertex = &vertices[column + row * (width_cells + 1)];
             if (row != segment_count)
             {
                 Vector3 lateral_offset = transform->basis_right * lateral;
                 Vector3 generated_position(transform->position.x + lateral_offset.x,
                                            transform->position.y + lateral_offset.y,
                                            transform->position.z + lateral_offset.z);
-                *vertex = generated_position;
+                vertices[column + row * (width_cells + 1)] = generated_position;
             }
             else
             {
                 TransformMatrix *previous =
                     (TransformMatrix *)((char *)transform - sizeof(AttachmentSample));
                 Vector3 lateral_offset = previous->basis_right * lateral;
-                Vector3 endpoint(previous->position.x, previous->position.y,
-                                 previous->position.z + 1.0f);
+                Vector3 endpoint = previous->position + Vector3(0.0f, 0.0f, 1.0f);
                 Vector3 generated_position = endpoint + lateral_offset;
-                *vertex = generated_position;
+                vertices[column + row * (width_cells + 1)] = generated_position;
             }
 
             int radius_sample = row - 1;
             if (row != segment_count)
                 radius_sample = row;
             compute_kind42_attachment_transform(
-                primary_samples[radius_sample].special_scalar, vertex->x, 0.0f,
+                primary_samples[radius_sample].special_scalar, vertices[column + row * (width_cells + 1)].x, 0.0f,
                 &kind42_transform, &out_angle);
             if (sample_offset > sizeof(AttachmentSample) && row != segment_count)
             {
-                vertex->x = kind42_transform.position.x;
-                vertex->y = kind42_transform.position.y;
+                vertices[column + row * (width_cells + 1)].x = kind42_transform.position.x;
+                vertices[column + row * (width_cells + 1)].y = kind42_transform.position.y;
             }
         }
         sample_offset += sizeof(AttachmentSample);

@@ -1,25 +1,34 @@
 # `initialize_halfpipe_path_template_pair` reconstruction notes
 
-Current recovery: declared semantic-complete, with native differences still under
-analysis. This is a partial recovery, not an exact match or a compiler ceiling.
+Current recovery: declared semantic-complete, with native source and encoded
+differences still under analysis. This is a partial recovery, not a compiler
+ceiling.
 
-2026-09-11 current measurement: **68.96% → 75.41%**,
-688 → 688 candidate instructions / 707 native, with a
-18-instruction exact prefix. All 55 aligned references are clean;
-only 21 share the native instruction index and 15 share the byte
-offset. `body_byte_exact` is false. Compiler, flags, shared headers, ABI, and
-matcher rules are unchanged.
+Fresh 2026-09-11 measurement: **75.41218638% → 86.32175762%**,
+**688 → 704 candidate instructions / 707 native**. The relocation-audited
+encoded prefix grows **18 instructions / 72 bytes → 137 / 575 bytes**, with
+**29 strict positional references** in the retained prefix. All **55** full
+alignment references are clean but remain diagnostic outside the prefix.
+Both candidates use the native **0x9c-byte** local frame. The full 2,592-byte
+extent is compared without excluded or unexplained ranges; `body_byte_exact`
+remains false.
 
-The retained source separates face UV dispatch and traverses the 34 middle samples with a byte offset, using vector subtraction for the forward basis. Kind-42 attachment transforms and radius-dependent vertex adjustment are preserved.
+The source shares entrance/departure sample progress, advances the entrance
+counter before its byte cursor, uses one departure sample index, recalculates
+mesh vertex addresses around the kind-42 call, and uses vector delta/endpoint
+expressions. Seven independent reversals verify each retained contribution;
+an eighth restores the baseline fingerprint. All 75 forward and 8 reverse
+controls compile with clean references. Unused self-assignments/local `i` are
+removed without changing compiled function fingerprints.
 
-Lead/exit temporary lifetimes, departure addressing, middle/delta scheduling, and custom mesh details still differ. Applying physical traversal to the departure phase regresses the body.
+See the [current source recovery and byte proof](../../halfpipe-sample-receiver-vector-owners-20260911.md)
+and [complete receipt](../../halfpipe-sample-receiver-vector-owners-20260911.json).
+Receiver preparation first differs at **0x429d5f**. Middle/delta temporary
+locations, copy/address scheduling, mesh and face details remain open.
 
-The [recovery report](../../path-builder-source-recovery-20260911.md) and
-[complete receipt](../../path-builder-source-recovery-20260911.json) contain the
-before/after sources, identities, remaining assembly diff, reference positions,
-and compared/excluded ranges. The promotion is recorded in `experiments.jsonl`.
-Earlier observations below remain historical; finite controls do not establish
-source exhaustion.
+The prior [path-builder report](../../path-builder-source-recovery-20260911.md)
+and observations below are historical. Their measurements and hypotheses are
+bounded records, not current source exclusions or compiler limits.
 
 ## Recovered behavior
 
