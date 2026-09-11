@@ -1,5 +1,15 @@
 # initialize_worm_path_template_pair match result
 
+Current (2026-09-11): **81.17727584%**, **725/736 instructions**, **37 clean
+references**. The frame remains **0x68/0x80** and the body remains partial.
+See [the current before/after byte proof and controls](../../worm-sample-column-colour-owners-20260911.md).
+
+## Historical matching snapshots
+
+The measurements and source hypotheses below precede the current matcher and
+source. They are retained as bounded history, not current compiler limits or
+proof that alternative source forms are excluded.
+
 Measured with:
 
 ```sh

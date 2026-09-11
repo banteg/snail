@@ -1,15 +1,35 @@
 # initialize_worm_path_template_pair @ 0x420170
 
-Current recovery: semantic-complete (`compiler` residual). The verified
-Android/iOS builder bodies establish the portable sample/control graph; the
-live Windows body and scratch additionally cover the native mesh/face tail.
-All references are clean, and the remaining differences are code layout.
+Current recovery: semantic-complete with an open `analysis` residual.
+The fresh 2026-09-11 result is **81.17727584%**, **725/736 instructions**,
+zero whole-function prefix and **37 clean references**. The native/candidate
+frames remain **0x80/0x68**. Source/control and encoded differences remain;
+the frame delta does not identify a missing number of source locals.
+
+The retained source reuses the entrance sample counter for mesh rows, reuses
+the column float for angular/U coordinates, and passes the alpha expression
+directly to the colour call. Strict byte proof establishes a **163-byte**
+constructor region after the differing frame instruction and a **188-byte**
+colour/terminal-row/underside region. The native checkerboard texture branch,
+vector staging, receiver setup and middle-predicate encoding remain open.
+
+See [the current source controls and byte proof](../../worm-sample-column-colour-owners-20260911.md).
+The forward record contains 168 distinct full sources; seven independent and
+combined reversals verify the retained changes. All compile with clean
+references. These are partial results, not a compiler ceiling.
+
+## Historical recovery narrative
+
+The older snapshots below retain their original measurements and hypotheses.
+Their “best,” provenance-closure and compiler-shape language describes those
+bounded experiments, not a current exclusion of other faithful source forms.
+Use the current receipt above for present source, metrics and byte claims.
 
 This scratch reconstructs the worm attachment-path constructor and its generated
 strip mesh using the shared native `AttachmentSample`, `Path`, and
 `ObjectFaceQuad` owners.
 
-Current focused result:
+Historical focused result:
 
 - match: **72.81%**;
 - target/candidate instructions: **736 / 728**;
@@ -89,7 +109,7 @@ Measured milestones from the focused pass were:
 | Named radius/y temporaries and direct texture call | 67.90% |
 | Native vertex-row branch polarity | 72.28% |
 
-## Residuals
+## Historical residual assessment
 
 The remaining mismatch is compiler shape rather than a known missing semantic
 lane:
