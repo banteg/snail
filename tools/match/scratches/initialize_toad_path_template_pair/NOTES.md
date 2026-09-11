@@ -1,5 +1,32 @@
 # initialize_toad_path_template_pair
 
+## 2026-09-11: guarded lead/delta traversal and vector recovery
+
+Current canonical source is **95.46827795%, 661/663 instructions**, with its
+**89-instruction / 371-byte encoded prefix**, native **0x54** frame and all
+**33 references clean**. The guarded lead schedule combines earlier vector,
+array and face/UV dependencies without losing the prefix. A guarded physical
+delta cursor resolves ten hidden SIB bytes at unchanged normalized agreement.
+
+Two independently audited encoded-equal regions cover **1,136 bytes** through
+tail/curve/deltas/allocation and **231 mesh-vertex bytes**, with explicit
+native/candidate position mapping. The full mapped suffix retains five byte
+differences; the shorter tail preheader is separately outside it. Whole bodies
+remain partial and receive no new exact credit.
+
+The [report and full receipt](../../toad-lead-tail-vector-owners-20260911.md)
+preserve 70 distinct forward sources, 12 final reverse controls, the native
+range/reference proof and the remaining preheader, width-home and parity
+opcode differences. All eleven source groups have independent reversals;
+reversing all reproduces the baseline fingerprint.
+
+### Earlier observations
+
+The entries below describe their dated source snapshots. Their old canonical
+metrics and diagnostic-only decisions are superseded by the recovery above.
+Historical closed-neighborhood wording records finite observations, not source
+exhaustion or a compiler limit.
+
 ## 2026-09-11: logical-loop and vector diagnostics; canonical prefix proof
 
 Canonical source remains **66.8175%, 663/663 instructions, prefix 89**. A fresh
