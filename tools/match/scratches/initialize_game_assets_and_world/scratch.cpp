@@ -62,16 +62,16 @@ static __forceinline void link_root_bod(BodBase* bod)
 
     BodNode** head = &g_game->active_bod_list.first;
     BodNode* first = *head;
-    if (first != 0) {
+    if (first == 0) {
+        *head = node;
+        node->list_prev = 0;
+        (*head)->list_next = 0;
+    } else {
         first->list_prev = node;
         (*head)->list_prev->list_next = *head;
         first = (*head)->list_prev;
         *head = first;
         first->list_prev = 0;
-    } else {
-        *head = node;
-        node->list_prev = 0;
-        (*head)->list_next = 0;
     }
     *flags |= BOD_FLAG_LINKED;
 }
@@ -3046,7 +3046,7 @@ char cRGame::initialize_game_assets_and_world()
             players[player_index].camera.fov_degrees = 110.0f;
             players[player_index].game_input = &game_inputs[player_index];
             players[player_index].transform =
-                *transform.initialize_matrix_from_values(
+                TransformMatrix(
                 0.0733430013f, 0.0f, -0.997310996f, 0.0f,
                 0.152129993f, 0.988296986f, 0.0111880004f, 0.0f,
                 0.985638976f, -0.152539998f, 0.0724840015f, 0.0f,

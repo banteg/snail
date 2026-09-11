@@ -1,6 +1,27 @@
 # initialize_game_assets_and_world @ 0x40acf0
 
-Current recovery: semantic-complete (`compiler,references` residual). The live
+## 2026-09-11 player matrix and overlay branch recovery
+
+Current source improves **81.3425% to 83.7463%**, preserving 5,405/5,411
+instructions, 1,880 aligned clean references and two unaudited vapour-stride
+references. A separate sixteen-float `TransformMatrix` value recovers the native
+300-byte frame and player constructor operand `[esp+0x13c]`; the prefix grows
+from zero to 43 instructions. The July 14 temporary rejection below is historical:
+the shared vector default constructor has since been recovered as empty.
+
+The three inline overlay insertions now place the empty-list case first, as
+native does. Stores, head reloads and error/flag behavior are unchanged. Together
+these changes recover 554.62 fuzzy-weighted bytes, without claiming an exact body.
+
+`initialization-lifetimes-20260911.json` records six controls against this retained
+source. One form is byte/relocation-equivalent, one preserves metrics with a
+different relocation identity, and two matrix forms regress. Two indexed
+input-owner forms recover the interior cursor but lose six instructions and
+alter later scheduling. None is promoted. The report preserves the retained
+local evidence, complete reference audit, and bounded results:
+[world initializer recovery](../../world-initializer-lifetimes-20260911.md).
+
+Current recovery: semantic-complete (`analysis,references` residual). The live
 Windows `GameRoot` member and its exact constructor/caller, plus independently
 recovered producers and consumers for every embedded bank, establish the full
 one-function Windows bootstrap: root defaults, services, paths, world assets,

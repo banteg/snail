@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "list-branch",
+      "find": "    if (first == 0) {\n        *head = node;\n        node->list_prev = 0;\n        (*head)->list_next = 0;\n    } else {\n        first->list_prev = node;\n        (*head)->list_prev->list_next = *head;\n        first = (*head)->list_prev;\n        *head = first;\n        first->list_prev = 0;\n    }\n",
+      "replacements": [
+        {
+          "name": "reload-node",
+          "text": "    if (first == 0) {\n        *head = node;\n        node->list_prev = 0;\n        (*head)->list_next = 0;\n    } else {\n        first->list_prev = node;\n        (*head)->list_prev->list_next = *head;\n        node = (*head)->list_prev;\n        *head = node;\n        node->list_prev = 0;\n    }\n"
+        }
+      ]
+    },
+    {
+      "name": "input-owner",
+      "find": "    BodList* active_bods = &active_bod_list;\n    cRGameInput* game_input = &game_inputs[0];\n    int input_index = 0;\n    do {\n        active_bods->add_bod_to_front(game_input);\n        game_input->input.controller_slot = input_index;\n        game_input->input.Init();\n        ++input_index;\n        ++game_input;\n    } while (input_index < GAME_ROOT_PLAYER_SLOT_COUNT);\n",
+      "replacements": [
+        {
+          "name": "indexed",
+          "text": "    BodList* active_bods = &active_bod_list;\n    int input_index = 0;\n    do {\n        active_bods->add_bod_to_front(&game_inputs[input_index]);\n        game_inputs[input_index].input.controller_slot = input_index;\n        game_inputs[input_index].input.Init();\n        ++input_index;\n    } while (input_index < GAME_ROOT_PLAYER_SLOT_COUNT);\n"
+        },
+        {
+          "name": "owner-reference",
+          "text": "    BodList* active_bods = &active_bod_list;\n    int input_index = 0;\n    do {\n        cRGameInput& input_owner = game_inputs[input_index];\n        active_bods->add_bod_to_front(&input_owner);\n        input_owner.input.controller_slot = input_index;\n        input_owner.input.Init();\n        ++input_index;\n    } while (input_index < GAME_ROOT_PLAYER_SLOT_COUNT);\n"
+        }
+      ]
+    },
+    {
+      "name": "player-matrix",
+      "find": "            players[player_index].game_input = &game_inputs[player_index];\n            players[player_index].transform =\n                TransformMatrix(\n                0.0733430013f, 0.0f, -0.997310996f, 0.0f,\n                0.152129993f, 0.988296986f, 0.0111880004f, 0.0f,\n                0.985638976f, -0.152539998f, 0.0724840015f, 0.0f,\n                -8.62666702f, 3.11352801f, 4.47740698f, 1.0f);\n",
+      "replacements": [
+        {
+          "name": "reuse-pillar",
+          "text": "            players[player_index].game_input = &game_inputs[player_index];\n            players[player_index].transform =\n                *transform.initialize_matrix_from_values(\n                0.0733430013f, 0.0f, -0.997310996f, 0.0f,\n                0.152129993f, 0.988296986f, 0.0111880004f, 0.0f,\n                0.985638976f, -0.152539998f, 0.0724840015f, 0.0f,\n                -8.62666702f, 3.11352801f, 4.47740698f, 1.0f);\n"
+        },
+        {
+          "name": "named-constructor",
+          "text": "            players[player_index].game_input = &game_inputs[player_index];\n            TransformMatrix player_transform(\n                0.0733430013f, 0.0f, -0.997310996f, 0.0f,\n                0.152129993f, 0.988296986f, 0.0111880004f, 0.0f,\n                0.985638976f, -0.152539998f, 0.0724840015f, 0.0f,\n                -8.62666702f, 3.11352801f, 4.47740698f, 1.0f);\n            players[player_index].transform = player_transform;\n"
+        },
+        {
+          "name": "named-call",
+          "text": "            players[player_index].game_input = &game_inputs[player_index];\n            TransformMatrix player_transform;\n            players[player_index].transform =\n                *player_transform.initialize_matrix_from_values(\n                0.0733430013f, 0.0f, -0.997310996f, 0.0f,\n                0.152129993f, 0.988296986f, 0.0111880004f, 0.0f,\n                0.985638976f, -0.152539998f, 0.0724840015f, 0.0f,\n                -8.62666702f, 3.11352801f, 4.47740698f, 1.0f);\n"
+        }
+      ]
+    }
+  ]
+}
