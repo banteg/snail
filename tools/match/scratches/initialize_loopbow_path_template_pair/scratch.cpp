@@ -222,46 +222,43 @@ void cRPath::initialize_loopbow_path_template_pair(
     strip_mesh->RequestFaceQuads(
         2 * segment_count * width_cells);
 
-    cRFaceQuad* facequads = strip_mesh->facequads;
-    Vector3* vertices = strip_mesh->vertices;
+    Vector3 *vertices = strip_mesh->vertices;
+    cRFaceQuad *facequads = strip_mesh->facequads;
 
     int row = 0;
-    if (segment_count >= 0) {
-        do {
-            int column = 0;
-            if (width_cells >= 0) {
-                do {
-                    double lateral =
-                        (float)column - (float)width_cells * 0.5f;
-                    if (row != segment_count) {
-                        Vector3 lateral_offset(
-                            lateral * primary_samples[row].transform.basis_right.x,
-                            lateral * primary_samples[row].transform.basis_right.y,
-                            lateral * primary_samples[row].transform.basis_right.z);
-                        Vector3 point(
-                            lateral_offset.x + primary_samples[row].transform.position.x,
-                            lateral_offset.y + primary_samples[row].transform.position.y,
-                            lateral_offset.z + primary_samples[row].transform.position.z);
-                        int vertex_index =
-                            column + row * (width_cells + 1);
-                        vertices[vertex_index] = point;
-                    } else {
+    if (segment_count >= 0)
+    {
+        do
+        {
+            i = 0;
+            if (width_cells >= 0)
+            {
+                do
+                {
+                    double lateral = (float)i - (float)width_cells * 0.5f;
+                    if (row != segment_count)
+                    {
                         Vector3 lateral_offset =
-                            primary_samples[row - 1].transform.basis_right * lateral;
-                        Vector3 endpoint(
-                            primary_samples[row - 1].transform.position.x,
-                            primary_samples[row - 1].transform.position.y,
-                            primary_samples[row - 1].transform.position.z + 1.0f);
-                        Vector3 point(
-                            lateral_offset.x + endpoint.x,
-                            lateral_offset.y + endpoint.y,
-                            lateral_offset.z + endpoint.z);
-                        int vertex_index =
-                            column + row * (width_cells + 1);
+                            primary_samples[row].transform.basis_right * lateral;
+                        Vector3 point =
+                            lateral_offset + primary_samples[row].transform.position;
+                        int vertex_index = i + row * (width_cells + 1);
                         vertices[vertex_index] = point;
                     }
-                    ++column;
-                } while (column <= width_cells);
+                    else
+                    {
+                        Vector3 lateral_offset =
+                            primary_samples[row - 1].transform.basis_right * lateral;
+                        Vector3 endpoint(primary_samples[row - 1].transform.position.x,
+                                         primary_samples[row - 1].transform.position.y,
+                                         primary_samples[row - 1].transform.position.z +
+                                             1.0f);
+                        Vector3 point = endpoint + lateral_offset;
+                        int vertex_index = i + row * (width_cells + 1);
+                        vertices[vertex_index] = point;
+                    }
+                    ++i;
+                } while (i <= width_cells);
             }
             ++row;
         } while (row <= segment_count);

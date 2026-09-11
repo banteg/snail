@@ -1,5 +1,28 @@
 # Reconstruction notes
 
+## 2026-09-11: mesh index and vector owners
+
+Current measurement: **84.25692695% → 93.07304786%**, **792/796
+instructions**, native **0x9c frame**, and **63 clean references**. Reusing the
+sample index for mesh columns, authored vector multiplication/addition and
+vertex-before-face buffer capture recover native source ownership.
+
+The strict encoded prefix grows **10/27 → 22/79 instructions/bytes**. Three
+separately audited regions of **415, 196 and 456 bytes** have encoded equality
+with strict positional reference and local-branch checks. The full normalized
+and encoded bodies remain partial; stack homes, pivot scheduling and terminal
+mesh/face details remain open. No compiler-limit or whole-image claim is made.
+
+The [current report](../../loopbow-mesh-index-vector-owners-20260911.md) and
+[complete receipt](../../loopbow-mesh-index-vector-owners-20260911.json)
+preserve 59 full forward sources, six reversals, byte proofs and validation.
+Compiler, flags, shared headers, ABI, native extent and matcher are unchanged.
+
+## Historical observations
+
+Earlier bounded sweeps below do not establish closed source neighborhoods or
+compiler limits. Their measurements are superseded by the current receipt.
+
 ## 2026-09-11: UV dispatch and direct mesh owners
 
 Separate topology/UV dispatch, direct sample array access, ordinary-first mesh
