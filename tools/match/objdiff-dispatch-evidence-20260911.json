@@ -1,0 +1,2317 @@
+{
+  "schema": 1,
+  "purpose": "diagnostic source controls; no native matches claimed",
+  "base_commit": "59a61a5b82659da55636ee8422637da6b31009ab",
+  "script_sha256": "b179fece22de548d047a3fbe3f6b55369f474d5d10cde62c82b38d7a8dcb3594",
+  "exporter_sha256": "046c33e864bed3ffd9afe19f22c7ee57bcec71632456f14c8fae43d384e63164",
+  "objdiff_sha256": "98f8275c27900c4fe2248fce3af37617658be49648fa7dbb5b376371f046dfdb",
+  "baseline": {
+    "source_sha256": "f8a233b052c1a91136502bc14adeaa4821c4537579b9f171239abd7230cded9c",
+    "snapshot_receipt_sha256": "da76515018adb052e033398b2ba6fabe39a02fa43afc6b7d1dda58b82efddaea",
+    "snapshot": "/Users/banteg/dev/banteg/snail-mail/artifacts/objdiff/dispatch-certified-final/baseline",
+    "candidate_function_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+    "native_match": 0.8051453072891853,
+    "native_instructions": 1034,
+    "candidate_instructions": 1033,
+    "references": {
+      "ok": 129,
+      "unresolved": 0,
+      "mismatch": 0,
+      "unaudited": 0
+    },
+    "frame": {
+      "target_prologue_allocation_bytes": 60,
+      "candidate_prologue_allocation_bytes": 60,
+      "target_minus_candidate_bytes": 0,
+      "classification": "same-prologue-allocation",
+      "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+    },
+    "body_byte_exact": false,
+    "objects": {
+      "target": {
+        "input_sha256": "29793803e5e380683df0064f2cafbc7fd66a20d090bea04db314614f43de4865",
+        "display_object_sha256": "2964b67f5a845d528971ef80cbbba626a031dc6ca09ac51c2c5a8cf89c6f7fd6",
+        "bytes": 3760,
+        "code_view_bytes": 3684,
+        "trailing_data_and_padding_bytes": 76,
+        "reference_fields": 129,
+        "round_trip": true,
+        "unexplained_fields": 0
+      },
+      "candidate": {
+        "input_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+        "display_object_sha256": "ce956205d28a91f6a1d82c83a6871df684e93a052817ca5d14cdf89392abda4e",
+        "bytes": 3744,
+        "code_view_bytes": 3676,
+        "trailing_data_and_padding_bytes": 68,
+        "reference_fields": 129,
+        "round_trip": true,
+        "unexplained_fields": 0
+      }
+    },
+    "objdiff": {
+      "percent": 99.07648,
+      "rows": {
+        "equal": 975,
+        "DIFF_ARG_MISMATCH": 50,
+        "DIFF_REPLACE": 6,
+        "DIFF_DELETE": 2,
+        "DIFF_INSERT": 1
+      }
+    }
+  },
+  "recipes": {
+    "objdiff-backdrop-lifetimes-20260911.json": "0cf200128ef49a03210c7a0d9d5589d541142a6ea6f745c4f6ba5c3f019eb0a6",
+    "objdiff-mode-snapshot-20260911.json": "c661e7d548ba6bd34fa7297c7dd2672e4ed76a4342f0924e026738601ea6bf7a"
+  },
+  "controls": [
+    {
+      "source_sha256": "22f8b76a0b4024b9f24995494e7c3f13c32bbe3d42069a4d4a97384e1051d252",
+      "snapshot_receipt_sha256": "5a1b7e640b17bb3b289bdfb575eb758ff513ac5dbbceb42a2e7cacaae0f8b2f9",
+      "snapshot": "/Users/banteg/dev/banteg/snail-mail/artifacts/objdiff/dispatch-certified-final/control-1",
+      "candidate_function_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+      "native_match": 0.8051453072891853,
+      "native_instructions": 1034,
+      "candidate_instructions": 1033,
+      "references": {
+        "ok": 129,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "frame": {
+        "target_prologue_allocation_bytes": 60,
+        "candidate_prologue_allocation_bytes": 60,
+        "target_minus_candidate_bytes": 0,
+        "classification": "same-prologue-allocation",
+        "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+      },
+      "body_byte_exact": false,
+      "objects": {
+        "target": {
+          "input_sha256": "29793803e5e380683df0064f2cafbc7fd66a20d090bea04db314614f43de4865",
+          "display_object_sha256": "2964b67f5a845d528971ef80cbbba626a031dc6ca09ac51c2c5a8cf89c6f7fd6",
+          "bytes": 3760,
+          "code_view_bytes": 3684,
+          "trailing_data_and_padding_bytes": 76,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        },
+        "candidate": {
+          "input_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+          "display_object_sha256": "9b835e7257070ce416f4e1767fed3b945cce829da503dd47a81903a389039598",
+          "bytes": 3744,
+          "code_view_bytes": 3676,
+          "trailing_data_and_padding_bytes": 68,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        }
+      },
+      "objdiff": {
+        "percent": 99.07648,
+        "rows": {
+          "equal": 975,
+          "DIFF_ARG_MISMATCH": 50,
+          "DIFF_REPLACE": 6,
+          "DIFF_DELETE": 2,
+          "DIFF_INSERT": 1
+        }
+      },
+      "recipe": "objdiff-backdrop-lifetimes-20260911.json",
+      "label": "challenge-select/capture-before-selector",
+      "same_function_bytes": true
+    },
+    {
+      "source_sha256": "83f1694051d2a2a9d12c160575e3f49300b9b9982014e715af2c17eb65c29c48",
+      "snapshot_receipt_sha256": "664ecf99f59e4f8b8790ff8e9203aa9f24a9d022dc09575b6ac2f307c2bd9700",
+      "snapshot": "/Users/banteg/dev/banteg/snail-mail/artifacts/objdiff/dispatch-certified-final/control-2",
+      "candidate_function_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+      "native_match": 0.8051453072891853,
+      "native_instructions": 1034,
+      "candidate_instructions": 1033,
+      "references": {
+        "ok": 129,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "frame": {
+        "target_prologue_allocation_bytes": 60,
+        "candidate_prologue_allocation_bytes": 60,
+        "target_minus_candidate_bytes": 0,
+        "classification": "same-prologue-allocation",
+        "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+      },
+      "body_byte_exact": false,
+      "objects": {
+        "target": {
+          "input_sha256": "29793803e5e380683df0064f2cafbc7fd66a20d090bea04db314614f43de4865",
+          "display_object_sha256": "2964b67f5a845d528971ef80cbbba626a031dc6ca09ac51c2c5a8cf89c6f7fd6",
+          "bytes": 3760,
+          "code_view_bytes": 3684,
+          "trailing_data_and_padding_bytes": 76,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        },
+        "candidate": {
+          "input_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+          "display_object_sha256": "9b835e7257070ce416f4e1767fed3b945cce829da503dd47a81903a389039598",
+          "bytes": 3744,
+          "code_view_bytes": 3676,
+          "trailing_data_and_padding_bytes": 68,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        }
+      },
+      "objdiff": {
+        "percent": 99.07648,
+        "rows": {
+          "equal": 975,
+          "DIFF_ARG_MISMATCH": 50,
+          "DIFF_REPLACE": 6,
+          "DIFF_DELETE": 2,
+          "DIFF_INSERT": 1
+        }
+      },
+      "recipe": "objdiff-backdrop-lifetimes-20260911.json",
+      "label": "galaxy-advance/capture-before-selector",
+      "same_function_bytes": true
+    },
+    {
+      "source_sha256": "7ada5d023ec3e78b72d027d24d3dfeae799dc15717415c8fb1d56df7e1290eb6",
+      "snapshot_receipt_sha256": "045d978d8cf3e9e394a8be49c87122eb2ca355da8222bc6ed718fe9d4e3d3dc3",
+      "snapshot": "/Users/banteg/dev/banteg/snail-mail/artifacts/objdiff/dispatch-certified-final/control-3",
+      "candidate_function_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+      "native_match": 0.8051453072891853,
+      "native_instructions": 1034,
+      "candidate_instructions": 1033,
+      "references": {
+        "ok": 129,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "frame": {
+        "target_prologue_allocation_bytes": 60,
+        "candidate_prologue_allocation_bytes": 60,
+        "target_minus_candidate_bytes": 0,
+        "classification": "same-prologue-allocation",
+        "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+      },
+      "body_byte_exact": false,
+      "objects": {
+        "target": {
+          "input_sha256": "29793803e5e380683df0064f2cafbc7fd66a20d090bea04db314614f43de4865",
+          "display_object_sha256": "2964b67f5a845d528971ef80cbbba626a031dc6ca09ac51c2c5a8cf89c6f7fd6",
+          "bytes": 3760,
+          "code_view_bytes": 3684,
+          "trailing_data_and_padding_bytes": 76,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        },
+        "candidate": {
+          "input_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+          "display_object_sha256": "4c52504d978d20f577e01d7280923449eee5dc9482a2154281defb95e1a01621",
+          "bytes": 3744,
+          "code_view_bytes": 3676,
+          "trailing_data_and_padding_bytes": 68,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        }
+      },
+      "objdiff": {
+        "percent": 99.07648,
+        "rows": {
+          "equal": 975,
+          "DIFF_ARG_MISMATCH": 50,
+          "DIFF_REPLACE": 6,
+          "DIFF_DELETE": 2,
+          "DIFF_INSERT": 1
+        }
+      },
+      "recipe": "objdiff-backdrop-lifetimes-20260911.json",
+      "label": "galaxy-advance/capture-before-selector+challenge-select/capture-before-selector",
+      "same_function_bytes": true
+    },
+    {
+      "source_sha256": "87462bd29551c534731fab240f6c9db975316aa44581bd65889857af936c35ca",
+      "snapshot_receipt_sha256": "52474cdf2908d2fad995c7a11fd33ceffb5d6a6a8de290ba1fcf39fa2973032f",
+      "snapshot": "/Users/banteg/dev/banteg/snail-mail/artifacts/objdiff/dispatch-certified-final/control-4",
+      "candidate_function_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+      "native_match": 0.8051453072891853,
+      "native_instructions": 1034,
+      "candidate_instructions": 1033,
+      "references": {
+        "ok": 129,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "frame": {
+        "target_prologue_allocation_bytes": 60,
+        "candidate_prologue_allocation_bytes": 60,
+        "target_minus_candidate_bytes": 0,
+        "classification": "same-prologue-allocation",
+        "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+      },
+      "body_byte_exact": false,
+      "objects": {
+        "target": {
+          "input_sha256": "29793803e5e380683df0064f2cafbc7fd66a20d090bea04db314614f43de4865",
+          "display_object_sha256": "2964b67f5a845d528971ef80cbbba626a031dc6ca09ac51c2c5a8cf89c6f7fd6",
+          "bytes": 3760,
+          "code_view_bytes": 3684,
+          "trailing_data_and_padding_bytes": 76,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        },
+        "candidate": {
+          "input_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+          "display_object_sha256": "9b835e7257070ce416f4e1767fed3b945cce829da503dd47a81903a389039598",
+          "bytes": 3744,
+          "code_view_bytes": 3676,
+          "trailing_data_and_padding_bytes": 68,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        }
+      },
+      "objdiff": {
+        "percent": 99.07648,
+        "rows": {
+          "equal": 975,
+          "DIFF_ARG_MISMATCH": 50,
+          "DIFF_REPLACE": 6,
+          "DIFF_DELETE": 2,
+          "DIFF_INSERT": 1
+        }
+      },
+      "recipe": "objdiff-backdrop-lifetimes-20260911.json",
+      "label": "galaxy-select/capture-before-selector",
+      "same_function_bytes": true
+    },
+    {
+      "source_sha256": "11f9f53963f9477bd9122cdd1ebbcbb0ff30f07791124fee3b9296cf7af761b8",
+      "snapshot_receipt_sha256": "38ec861f208284f03629c0b84381c9a088a7c2ff07dbf0202b2aaf497682c694",
+      "snapshot": "/Users/banteg/dev/banteg/snail-mail/artifacts/objdiff/dispatch-certified-final/control-5",
+      "candidate_function_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+      "native_match": 0.8051453072891853,
+      "native_instructions": 1034,
+      "candidate_instructions": 1033,
+      "references": {
+        "ok": 129,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "frame": {
+        "target_prologue_allocation_bytes": 60,
+        "candidate_prologue_allocation_bytes": 60,
+        "target_minus_candidate_bytes": 0,
+        "classification": "same-prologue-allocation",
+        "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+      },
+      "body_byte_exact": false,
+      "objects": {
+        "target": {
+          "input_sha256": "29793803e5e380683df0064f2cafbc7fd66a20d090bea04db314614f43de4865",
+          "display_object_sha256": "2964b67f5a845d528971ef80cbbba626a031dc6ca09ac51c2c5a8cf89c6f7fd6",
+          "bytes": 3760,
+          "code_view_bytes": 3684,
+          "trailing_data_and_padding_bytes": 76,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        },
+        "candidate": {
+          "input_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+          "display_object_sha256": "4c52504d978d20f577e01d7280923449eee5dc9482a2154281defb95e1a01621",
+          "bytes": 3744,
+          "code_view_bytes": 3676,
+          "trailing_data_and_padding_bytes": 68,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        }
+      },
+      "objdiff": {
+        "percent": 99.07648,
+        "rows": {
+          "equal": 975,
+          "DIFF_ARG_MISMATCH": 50,
+          "DIFF_REPLACE": 6,
+          "DIFF_DELETE": 2,
+          "DIFF_INSERT": 1
+        }
+      },
+      "recipe": "objdiff-backdrop-lifetimes-20260911.json",
+      "label": "galaxy-select/capture-before-selector+challenge-select/capture-before-selector",
+      "same_function_bytes": true
+    },
+    {
+      "source_sha256": "fa712406f6ec3b3110fea7b723c69e8436f9510d782a4de8b29adcd3d294c848",
+      "snapshot_receipt_sha256": "0f6a983360eee391534e0e25bc66bb63721eab9fb1147c06fa9a0185c6620e15",
+      "snapshot": "/Users/banteg/dev/banteg/snail-mail/artifacts/objdiff/dispatch-certified-final/control-6",
+      "candidate_function_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+      "native_match": 0.8051453072891853,
+      "native_instructions": 1034,
+      "candidate_instructions": 1033,
+      "references": {
+        "ok": 129,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "frame": {
+        "target_prologue_allocation_bytes": 60,
+        "candidate_prologue_allocation_bytes": 60,
+        "target_minus_candidate_bytes": 0,
+        "classification": "same-prologue-allocation",
+        "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+      },
+      "body_byte_exact": false,
+      "objects": {
+        "target": {
+          "input_sha256": "29793803e5e380683df0064f2cafbc7fd66a20d090bea04db314614f43de4865",
+          "display_object_sha256": "2964b67f5a845d528971ef80cbbba626a031dc6ca09ac51c2c5a8cf89c6f7fd6",
+          "bytes": 3760,
+          "code_view_bytes": 3684,
+          "trailing_data_and_padding_bytes": 76,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        },
+        "candidate": {
+          "input_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+          "display_object_sha256": "4c52504d978d20f577e01d7280923449eee5dc9482a2154281defb95e1a01621",
+          "bytes": 3744,
+          "code_view_bytes": 3676,
+          "trailing_data_and_padding_bytes": 68,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        }
+      },
+      "objdiff": {
+        "percent": 99.07648,
+        "rows": {
+          "equal": 975,
+          "DIFF_ARG_MISMATCH": 50,
+          "DIFF_REPLACE": 6,
+          "DIFF_DELETE": 2,
+          "DIFF_INSERT": 1
+        }
+      },
+      "recipe": "objdiff-backdrop-lifetimes-20260911.json",
+      "label": "galaxy-select/capture-before-selector+galaxy-advance/capture-before-selector",
+      "same_function_bytes": true
+    },
+    {
+      "source_sha256": "aef9ff6541b21776fb175410e3dad9f45abad3a6685849bca9f1a6f11ea2a26a",
+      "snapshot_receipt_sha256": "010e899f0d53d1893e52dc984d9022515f9875b86b2fc82c8bd471fbce28904b",
+      "snapshot": "/Users/banteg/dev/banteg/snail-mail/artifacts/objdiff/dispatch-certified-final/control-7",
+      "candidate_function_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+      "native_match": 0.8051453072891853,
+      "native_instructions": 1034,
+      "candidate_instructions": 1033,
+      "references": {
+        "ok": 129,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "frame": {
+        "target_prologue_allocation_bytes": 60,
+        "candidate_prologue_allocation_bytes": 60,
+        "target_minus_candidate_bytes": 0,
+        "classification": "same-prologue-allocation",
+        "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+      },
+      "body_byte_exact": false,
+      "objects": {
+        "target": {
+          "input_sha256": "29793803e5e380683df0064f2cafbc7fd66a20d090bea04db314614f43de4865",
+          "display_object_sha256": "2964b67f5a845d528971ef80cbbba626a031dc6ca09ac51c2c5a8cf89c6f7fd6",
+          "bytes": 3760,
+          "code_view_bytes": 3684,
+          "trailing_data_and_padding_bytes": 76,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        },
+        "candidate": {
+          "input_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+          "display_object_sha256": "2916e7ce979c95bf76a0ac9a2bb104fce5a292fe345fd5400e545ae24e5822db",
+          "bytes": 3744,
+          "code_view_bytes": 3676,
+          "trailing_data_and_padding_bytes": 68,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        }
+      },
+      "objdiff": {
+        "percent": 99.07648,
+        "rows": {
+          "equal": 975,
+          "DIFF_ARG_MISMATCH": 50,
+          "DIFF_REPLACE": 6,
+          "DIFF_DELETE": 2,
+          "DIFF_INSERT": 1
+        }
+      },
+      "recipe": "objdiff-backdrop-lifetimes-20260911.json",
+      "label": "galaxy-select/capture-before-selector+galaxy-advance/capture-before-selector+challenge-select/capture-before-selector",
+      "same_function_bytes": true
+    },
+    {
+      "source_sha256": "6969b67fae7889e3f6cd2a29328a084899993be694f373f28d2ac0276935c2c9",
+      "snapshot_receipt_sha256": "70d897114548fe70dbfa5db5e10ae5d4c2cf53b4a44915a08ba97cb3f6ccc049",
+      "snapshot": "/Users/banteg/dev/banteg/snail-mail/artifacts/objdiff/dispatch-certified-final/control-8",
+      "candidate_function_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+      "native_match": 0.8051453072891853,
+      "native_instructions": 1034,
+      "candidate_instructions": 1033,
+      "references": {
+        "ok": 129,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "frame": {
+        "target_prologue_allocation_bytes": 60,
+        "candidate_prologue_allocation_bytes": 60,
+        "target_minus_candidate_bytes": 0,
+        "classification": "same-prologue-allocation",
+        "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+      },
+      "body_byte_exact": false,
+      "objects": {
+        "target": {
+          "input_sha256": "29793803e5e380683df0064f2cafbc7fd66a20d090bea04db314614f43de4865",
+          "display_object_sha256": "2964b67f5a845d528971ef80cbbba626a031dc6ca09ac51c2c5a8cf89c6f7fd6",
+          "bytes": 3760,
+          "code_view_bytes": 3684,
+          "trailing_data_and_padding_bytes": 76,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        },
+        "candidate": {
+          "input_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+          "display_object_sha256": "9b835e7257070ce416f4e1767fed3b945cce829da503dd47a81903a389039598",
+          "bytes": 3744,
+          "code_view_bytes": 3676,
+          "trailing_data_and_padding_bytes": 68,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        }
+      },
+      "objdiff": {
+        "percent": 99.07648,
+        "rows": {
+          "equal": 975,
+          "DIFF_ARG_MISMATCH": 50,
+          "DIFF_REPLACE": 6,
+          "DIFF_DELETE": 2,
+          "DIFF_INSERT": 1
+        }
+      },
+      "recipe": "objdiff-mode-snapshot-20260911.json",
+      "label": "dispatch-owner/before-config",
+      "same_function_bytes": true
+    },
+    {
+      "source_sha256": "3cd6b9a5262fb2e6ebdf9099f834e6532f55f93fed62f23db83428d66165bda2",
+      "snapshot_receipt_sha256": "68d807dda8cd1ba575403b9a8a634d461458963e1fd71dcd98a2f5aadd9fc0ad",
+      "snapshot": "/Users/banteg/dev/banteg/snail-mail/artifacts/objdiff/dispatch-certified-final/control-9",
+      "candidate_function_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+      "native_match": 0.8051453072891853,
+      "native_instructions": 1034,
+      "candidate_instructions": 1033,
+      "references": {
+        "ok": 129,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "frame": {
+        "target_prologue_allocation_bytes": 60,
+        "candidate_prologue_allocation_bytes": 60,
+        "target_minus_candidate_bytes": 0,
+        "classification": "same-prologue-allocation",
+        "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+      },
+      "body_byte_exact": false,
+      "objects": {
+        "target": {
+          "input_sha256": "29793803e5e380683df0064f2cafbc7fd66a20d090bea04db314614f43de4865",
+          "display_object_sha256": "2964b67f5a845d528971ef80cbbba626a031dc6ca09ac51c2c5a8cf89c6f7fd6",
+          "bytes": 3760,
+          "code_view_bytes": 3684,
+          "trailing_data_and_padding_bytes": 76,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        },
+        "candidate": {
+          "input_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+          "display_object_sha256": "9b835e7257070ce416f4e1767fed3b945cce829da503dd47a81903a389039598",
+          "bytes": 3744,
+          "code_view_bytes": 3676,
+          "trailing_data_and_padding_bytes": 68,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        }
+      },
+      "objdiff": {
+        "percent": 99.07648,
+        "rows": {
+          "equal": 975,
+          "DIFF_ARG_MISMATCH": 50,
+          "DIFF_REPLACE": 6,
+          "DIFF_DELETE": 2,
+          "DIFF_INSERT": 1
+        }
+      },
+      "recipe": "objdiff-mode-snapshot-20260911.json",
+      "label": "dispatch-owner/after-speed-read",
+      "same_function_bytes": true
+    },
+    {
+      "source_sha256": "9831d54fcffb757c3d58960afb0c16afd1a01e406f9b6850a1eda45efde22474",
+      "snapshot_receipt_sha256": "827c893da65734060426b07a9edc919cb3dafe8b50e5e1d1b8a81f37cfbeca8d",
+      "snapshot": "/Users/banteg/dev/banteg/snail-mail/artifacts/objdiff/dispatch-certified-final/control-10",
+      "candidate_function_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+      "native_match": 0.8051453072891853,
+      "native_instructions": 1034,
+      "candidate_instructions": 1033,
+      "references": {
+        "ok": 129,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "frame": {
+        "target_prologue_allocation_bytes": 60,
+        "candidate_prologue_allocation_bytes": 60,
+        "target_minus_candidate_bytes": 0,
+        "classification": "same-prologue-allocation",
+        "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+      },
+      "body_byte_exact": false,
+      "objects": {
+        "target": {
+          "input_sha256": "29793803e5e380683df0064f2cafbc7fd66a20d090bea04db314614f43de4865",
+          "display_object_sha256": "2964b67f5a845d528971ef80cbbba626a031dc6ca09ac51c2c5a8cf89c6f7fd6",
+          "bytes": 3760,
+          "code_view_bytes": 3684,
+          "trailing_data_and_padding_bytes": 76,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        },
+        "candidate": {
+          "input_sha256": "18e6d2de9f9bc216127f4955c171346ae6a6a4bac4ad1c2ad425537c27a0dbb3",
+          "display_object_sha256": "9b835e7257070ce416f4e1767fed3b945cce829da503dd47a81903a389039598",
+          "bytes": 3744,
+          "code_view_bytes": 3676,
+          "trailing_data_and_padding_bytes": 68,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        }
+      },
+      "objdiff": {
+        "percent": 99.07648,
+        "rows": {
+          "equal": 975,
+          "DIFF_ARG_MISMATCH": 50,
+          "DIFF_REPLACE": 6,
+          "DIFF_DELETE": 2,
+          "DIFF_INSERT": 1
+        }
+      },
+      "recipe": "objdiff-mode-snapshot-20260911.json",
+      "label": "dispatch-owner/before-publication",
+      "same_function_bytes": true
+    },
+    {
+      "source_sha256": "57d1b06f40c5aaf88c1188060f5067d08a3bd66051e7c106134d30349a466969",
+      "snapshot_receipt_sha256": "242040a824a45fb1248632ab574ab9b8959ce27ba3ea19c0dd471ebd6331ddec",
+      "snapshot": "/Users/banteg/dev/banteg/snail-mail/artifacts/objdiff/dispatch-certified-final/control-11",
+      "candidate_function_sha256": "38530ca462b6577120f47bc12423e6143a5dc726f57d95e325ee054e0d4d12fd",
+      "native_match": 0.8032396379228204,
+      "native_instructions": 1034,
+      "candidate_instructions": 1033,
+      "references": {
+        "ok": 129,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "frame": {
+        "target_prologue_allocation_bytes": 60,
+        "candidate_prologue_allocation_bytes": 60,
+        "target_minus_candidate_bytes": 0,
+        "classification": "same-prologue-allocation",
+        "caveat": "Diagnostic only: prologue allocation includes compiler temporaries and stack-slot coloring; its delta does not imply missing source locals byte-for-byte."
+      },
+      "body_byte_exact": false,
+      "objects": {
+        "target": {
+          "input_sha256": "29793803e5e380683df0064f2cafbc7fd66a20d090bea04db314614f43de4865",
+          "display_object_sha256": "2964b67f5a845d528971ef80cbbba626a031dc6ca09ac51c2c5a8cf89c6f7fd6",
+          "bytes": 3760,
+          "code_view_bytes": 3684,
+          "trailing_data_and_padding_bytes": 76,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        },
+        "candidate": {
+          "input_sha256": "38530ca462b6577120f47bc12423e6143a5dc726f57d95e325ee054e0d4d12fd",
+          "display_object_sha256": "30c3abd4235bce74e431041e81b4e0839adbb60512a6d2749db5c0d52304e006",
+          "bytes": 3744,
+          "code_view_bytes": 3676,
+          "trailing_data_and_padding_bytes": 68,
+          "reference_fields": 129,
+          "round_trip": true,
+          "unexplained_fields": 0
+        }
+      },
+      "objdiff": {
+        "percent": 98.96515,
+        "rows": {
+          "equal": 974,
+          "DIFF_ARG_MISMATCH": 52,
+          "DIFF_REPLACE": 4,
+          "DIFF_INSERT": 2,
+          "DIFF_DELETE": 3
+        }
+      },
+      "recipe": "objdiff-mode-snapshot-20260911.json",
+      "label": "dispatch-owner/direct-before-config",
+      "same_function_bytes": false
+    }
+  ],
+  "changed_rows": [
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 31,
+        "size": 7,
+        "instruction": "jmp dword ptr [eax*0x4+ref_update_subgame_state_jump_table_05d16509e8c37815]"
+      },
+      "candidate": {
+        "offset": 31,
+        "size": 7,
+        "instruction": "jmp dword ptr [eax*0x4+name__L6860_8d9f5276af79840a]"
+      }
+    },
+    {
+      "kind": "DIFF_REPLACE",
+      "target": {
+        "offset": 38,
+        "size": 7,
+        "instruction": "mov dword ptr [esi+0x3c], 0x4"
+      },
+      "candidate": {
+        "offset": 38,
+        "size": 3,
+        "instruction": "mov eax, [esi+0x10]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 45,
+        "size": 4,
+        "instruction": "mov byte ptr [esi+0x9], 0x1"
+      },
+      "candidate": {
+        "offset": 41,
+        "size": 7,
+        "instruction": "mov dword ptr [esi+0x3c], 0x4"
+      }
+    },
+    {
+      "kind": "DIFF_REPLACE",
+      "target": {
+        "offset": 49,
+        "size": 3,
+        "instruction": "mov eax, [esi+0x10]"
+      },
+      "candidate": {
+        "offset": 48,
+        "size": 4,
+        "instruction": "mov byte ptr [esi+0x9], 0x1"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 105,
+        "size": 5,
+        "instruction": "call name_build_subgame_level_0e491465c283a477"
+      },
+      "candidate": {
+        "offset": 105,
+        "size": 5,
+        "instruction": "call name_StartLevel_931a2ed52d10010e"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 148,
+        "size": 5,
+        "instruction": "call name_build_subgame_level_0e491465c283a477"
+      },
+      "candidate": {
+        "offset": 148,
+        "size": 5,
+        "instruction": "call name_StartLevel_931a2ed52d10010e"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 242,
+        "size": 5,
+        "instruction": "call name_build_subgame_level_0e491465c283a477"
+      },
+      "candidate": {
+        "offset": 242,
+        "size": 5,
+        "instruction": "call name_StartLevel_931a2ed52d10010e"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 291,
+        "size": 6,
+        "instruction": "mov ecx, [ref_g_challenge_speed_percent_4958e89af83e9ddb]"
+      },
+      "candidate": {
+        "offset": 291,
+        "size": 5,
+        "instruction": "mov eax, [ref_g_runtime_config_0x48_885e9f9e142cad19]"
+      }
+    },
+    {
+      "kind": "DIFF_REPLACE",
+      "target": {
+        "offset": 297,
+        "size": 3,
+        "instruction": "mov eax, [esi+0x40]"
+      },
+      "candidate": {
+        "offset": 296,
+        "size": 6,
+        "instruction": "mov ecx, [ref_g_runtime_config_0x40_f8cf50f24267fb92]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 300,
+        "size": 3,
+        "instruction": "mov [esi+0x28], ecx"
+      },
+      "candidate": {
+        "offset": 302,
+        "size": 3,
+        "instruction": "mov [esi+0x2c], eax"
+      }
+    },
+    {
+      "kind": "DIFF_REPLACE",
+      "target": {
+        "offset": 303,
+        "size": 6,
+        "instruction": "mov edx, [ref_g_challenge_difficulty_percent_c3344c2c46447eac]"
+      },
+      "candidate": {
+        "offset": 305,
+        "size": 3,
+        "instruction": "mov eax, [esi+0x40]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 317,
+        "size": 3,
+        "instruction": "mov [esi+0x2c], edx"
+      },
+      "candidate": {
+        "offset": 316,
+        "size": 3,
+        "instruction": "mov [esi+0x28], ecx"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 326,
+        "size": 7,
+        "instruction": "jmp dword ptr [eax*0x4+ref_update_subgame_level_state_jump_table_d1bcb3d418efd7f5]"
+      },
+      "candidate": {
+        "offset": 325,
+        "size": 7,
+        "instruction": "jmp dword ptr [eax*0x4+name__L6861_d084ec2a39e31272]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 348,
+        "size": 3,
+        "instruction": "mov eax, [esi+0x44]"
+      },
+      "candidate": {
+        "offset": 347,
+        "size": 3,
+        "instruction": "mov edx, [esi+0x44]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 361,
+        "size": 5,
+        "instruction": "mov [ref_g_landscape_backdrop_variant_selector_3f4d0a525096ed29], eax"
+      },
+      "candidate": {
+        "offset": 360,
+        "size": 6,
+        "instruction": "mov [ref_g_runtime_config_0xa4_e6f0c6f921f7a0c0], edx"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 366,
+        "size": 3,
+        "instruction": "mov ecx, [esi+0x44]"
+      },
+      "candidate": {
+        "offset": 366,
+        "size": 3,
+        "instruction": "mov eax, [esi+0x44]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 369,
+        "size": 1,
+        "instruction": "push ecx"
+      },
+      "candidate": {
+        "offset": 369,
+        "size": 1,
+        "instruction": "push eax"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 372,
+        "size": 5,
+        "instruction": "call name_build_subgame_level_0e491465c283a477"
+      },
+      "candidate": {
+        "offset": 372,
+        "size": 5,
+        "instruction": "call name_StartLevel_931a2ed52d10010e"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 390,
+        "size": 3,
+        "instruction": "mov edx, [esi+0x44]"
+      },
+      "candidate": {
+        "offset": 390,
+        "size": 3,
+        "instruction": "mov ecx, [esi+0x44]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 399,
+        "size": 6,
+        "instruction": "mov [ref_g_landscape_backdrop_variant_selector_3f4d0a525096ed29], edx"
+      },
+      "candidate": {
+        "offset": 399,
+        "size": 6,
+        "instruction": "mov [ref_g_runtime_config_0xa4_e6f0c6f921f7a0c0], ecx"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 405,
+        "size": 3,
+        "instruction": "mov eax, [esi+0x44]"
+      },
+      "candidate": {
+        "offset": 405,
+        "size": 3,
+        "instruction": "mov edx, [esi+0x44]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 408,
+        "size": 1,
+        "instruction": "push eax"
+      },
+      "candidate": {
+        "offset": 408,
+        "size": 1,
+        "instruction": "push edx"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 411,
+        "size": 5,
+        "instruction": "call name_build_subgame_level_0e491465c283a477"
+      },
+      "candidate": {
+        "offset": 411,
+        "size": 5,
+        "instruction": "call name_StartLevel_931a2ed52d10010e"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 439,
+        "size": 3,
+        "instruction": "mov edx, [esi+0x44]"
+      },
+      "candidate": {
+        "offset": 439,
+        "size": 3,
+        "instruction": "mov ecx, [esi+0x44]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 452,
+        "size": 6,
+        "instruction": "mov [ref_g_landscape_backdrop_variant_selector_3f4d0a525096ed29], edx"
+      },
+      "candidate": {
+        "offset": 452,
+        "size": 6,
+        "instruction": "mov [ref_g_runtime_config_0xa4_e6f0c6f921f7a0c0], ecx"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 458,
+        "size": 3,
+        "instruction": "mov eax, [esi+0x44]"
+      },
+      "candidate": {
+        "offset": 458,
+        "size": 3,
+        "instruction": "mov edx, [esi+0x44]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 463,
+        "size": 1,
+        "instruction": "push eax"
+      },
+      "candidate": {
+        "offset": 463,
+        "size": 1,
+        "instruction": "push edx"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 464,
+        "size": 5,
+        "instruction": "call name_build_subgame_level_0e491465c283a477"
+      },
+      "candidate": {
+        "offset": 464,
+        "size": 5,
+        "instruction": "call name_StartLevel_931a2ed52d10010e"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 488,
+        "size": 5,
+        "instruction": "call name_destroy_subgame_f6656d6fcf31dee0"
+      },
+      "candidate": {
+        "offset": 488,
+        "size": 5,
+        "instruction": "call name_UnInit_138ad024d3cb9123"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 493,
+        "size": 6,
+        "instruction": "mov ecx, [ref_g_game_base_2dd98f8e54bfbda7]"
+      },
+      "candidate": {
+        "offset": 493,
+        "size": 5,
+        "instruction": "mov eax, [ref_g_game_base_2dd98f8e54bfbda7]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 502,
+        "size": 10,
+        "instruction": "mov dword ptr [ecx+0x1b8], 0x2"
+      },
+      "candidate": {
+        "offset": 501,
+        "size": 10,
+        "instruction": "mov dword ptr [eax+0x1b8], 0x2"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 546,
+        "size": 5,
+        "instruction": "call name_build_subgame_level_0e491465c283a477"
+      },
+      "candidate": {
+        "offset": 545,
+        "size": 5,
+        "instruction": "call name_StartLevel_931a2ed52d10010e"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 570,
+        "size": 5,
+        "instruction": "call name_destroy_subgame_f6656d6fcf31dee0"
+      },
+      "candidate": {
+        "offset": 569,
+        "size": 5,
+        "instruction": "call name_UnInit_138ad024d3cb9123"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 575,
+        "size": 6,
+        "instruction": "mov edx, [ref_g_game_base_2dd98f8e54bfbda7]"
+      },
+      "candidate": {
+        "offset": 574,
+        "size": 6,
+        "instruction": "mov ecx, [ref_g_game_base_2dd98f8e54bfbda7]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 584,
+        "size": 10,
+        "instruction": "mov dword ptr [edx+0x1b8], 0x2"
+      },
+      "candidate": {
+        "offset": 583,
+        "size": 10,
+        "instruction": "mov dword ptr [ecx+0x1b8], 0x2"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 620,
+        "size": 5,
+        "instruction": "mov eax, [ref_g_game_base_2dd98f8e54bfbda7]"
+      },
+      "candidate": {
+        "offset": 619,
+        "size": 6,
+        "instruction": "mov edx, [ref_g_game_base_2dd98f8e54bfbda7]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 625,
+        "size": 6,
+        "instruction": "mov cl, [eax+0x4f2e0]"
+      },
+      "candidate": {
+        "offset": 625,
+        "size": 6,
+        "instruction": "mov al, [edx+0x4f2e0]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 631,
+        "size": 2,
+        "instruction": "test cl, cl"
+      },
+      "candidate": {
+        "offset": 631,
+        "size": 2,
+        "instruction": "test al, al"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 883,
+        "size": 6,
+        "instruction": "mov edx, [esi+0x3bbba0]"
+      },
+      "candidate": {
+        "offset": 883,
+        "size": 6,
+        "instruction": "mov eax, [esi+0x3bbba0]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 889,
+        "size": 3,
+        "instruction": "mov eax, [edx+0x4]"
+      },
+      "candidate": {
+        "offset": 889,
+        "size": 3,
+        "instruction": "mov edx, [eax+0x4]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 892,
+        "size": 3,
+        "instruction": "test ah, 0x40"
+      },
+      "candidate": {
+        "offset": 892,
+        "size": 3,
+        "instruction": "test dh, 0x40"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 933,
+        "size": 5,
+        "instruction": "mov eax, [ref_g_game_base_2dd98f8e54bfbda7]"
+      },
+      "candidate": {
+        "offset": 933,
+        "size": 6,
+        "instruction": "mov ecx, [ref_g_game_base_2dd98f8e54bfbda7]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 938,
+        "size": 3,
+        "instruction": "cmp [eax+0x24], ebx"
+      },
+      "candidate": {
+        "offset": 939,
+        "size": 3,
+        "instruction": "cmp [ecx+0x24], ebx"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 1068,
+        "size": 3,
+        "instruction": "mov ecx, [esi+0x54]"
+      },
+      "candidate": {
+        "offset": 1069,
+        "size": 3,
+        "instruction": "mov edx, [esi+0x54]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 1071,
+        "size": 3,
+        "instruction": "mov [esi+0x24], ecx"
+      },
+      "candidate": {
+        "offset": 1072,
+        "size": 3,
+        "instruction": "mov [esi+0x24], edx"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 1105,
+        "size": 3,
+        "instruction": "mov edx, [esi+0x54]"
+      },
+      "candidate": {
+        "offset": 1106,
+        "size": 3,
+        "instruction": "mov eax, [esi+0x54]"
+      }
+    },
+    {
+      "kind": "DIFF_DELETE",
+      "target": {
+        "offset": 1108,
+        "size": 3,
+        "instruction": "mov [esi+0x24], edx"
+      },
+      "candidate": null
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 1111,
+        "size": 2,
+        "instruction": "jmp short 0x46e"
+      },
+      "candidate": {
+        "offset": 1109,
+        "size": 2,
+        "instruction": "jmp short 0x469"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 1172,
+        "size": 3,
+        "instruction": "lea eax, [eax+eax*0x4]"
+      },
+      "candidate": {
+        "offset": 1170,
+        "size": 3,
+        "instruction": "lea ecx, [eax+eax*0x4]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 1175,
+        "size": 4,
+        "instruction": "lea ecx, [ebp+eax*0x4]"
+      },
+      "candidate": {
+        "offset": 1173,
+        "size": 4,
+        "instruction": "lea edx, [ebp+ecx*0x4]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 1179,
+        "size": 7,
+        "instruction": "mov al, [esi+ecx*0x4+ref_g_zero_parcel_buckets_0x8f938_ed0987df1521fb1c]"
+      },
+      "candidate": {
+        "offset": 1177,
+        "size": 7,
+        "instruction": "mov al, [esi+edx*0x4+ref_g_zero_parcel_buckets_0x8f938_ed0987df1521fb1c]"
+      }
+    },
+    {
+      "kind": "DIFF_DELETE",
+      "target": {
+        "offset": 1186,
+        "size": 2,
+        "instruction": "test al, 0x2"
+      },
+      "candidate": null
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 1188,
+        "size": 3,
+        "instruction": "lea edi, [esi+ecx*0x4]"
+      },
+      "candidate": {
+        "offset": 1184,
+        "size": 3,
+        "instruction": "lea edi, [esi+edx*0x4]"
+      }
+    },
+    {
+      "kind": "DIFF_INSERT",
+      "target": null,
+      "candidate": {
+        "offset": 1187,
+        "size": 2,
+        "instruction": "test al, 0x2"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 1229,
+        "size": 6,
+        "instruction": "mov edx, [ref_g_game_base_2dd98f8e54bfbda7]"
+      },
+      "candidate": {
+        "offset": 1227,
+        "size": 5,
+        "instruction": "mov eax, [ref_g_game_base_2dd98f8e54bfbda7]"
+      }
+    },
+    {
+      "kind": "DIFF_REPLACE",
+      "target": {
+        "offset": 1235,
+        "size": 6,
+        "instruction": "lea eax, [edx+0x5ac]"
+      },
+      "candidate": {
+        "offset": 1232,
+        "size": 5,
+        "instruction": "add eax, 0x5ac"
+      }
+    },
+    {
+      "kind": "DIFF_REPLACE",
+      "target": {
+        "offset": 1241,
+        "size": 6,
+        "instruction": "mov edx, [edx+0x5ac]"
+      },
+      "candidate": {
+        "offset": 1237,
+        "size": 2,
+        "instruction": "mov edx, [eax]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 1256,
+        "size": 2,
+        "instruction": "mov eax, [eax]"
+      },
+      "candidate": {
+        "offset": 1248,
+        "size": 2,
+        "instruction": "mov edx, [eax]"
+      }
+    },
+    {
+      "kind": "DIFF_ARG_MISMATCH",
+      "target": {
+        "offset": 1258,
+        "size": 3,
+        "instruction": "mov [eax+0xc], ebx"
+      },
+      "candidate": {
+        "offset": 1250,
+        "size": 3,
+        "instruction": "mov [edx+0xc], ebx"
+      }
+    }
+  ],
+  "tail_certificate": {
+    "purpose": "Existing partial-body evidence; no new native function credit",
+    "target_offsets": [
+      1261,
+      3684
+    ],
+    "candidate_offsets": [
+      1253,
+      3676
+    ],
+    "covered_bytes": 2423,
+    "encoded_equal_bytes": 2417,
+    "reference_fields": 72,
+    "positional_reference_audit": [
+      {
+        "target_offset": 1295,
+        "candidate_offset": 1287,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 0,
+            "key": "ref:g_zero_parcel_buckets+0x8f938"
+          }
+        ]
+      },
+      {
+        "target_offset": 1304,
+        "candidate_offset": 1296,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 1,
+            "key": "ref:g_sprite_manager+0x6f0d0"
+          }
+        ]
+      },
+      {
+        "target_offset": 1319,
+        "candidate_offset": 1311,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 1,
+            "key": "ref:g_zero_parcel_buckets+0x8f9c8"
+          }
+        ]
+      },
+      {
+        "target_offset": 1329,
+        "candidate_offset": 1321,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:spawn_track_parcel"
+          }
+        ]
+      },
+      {
+        "target_offset": 1449,
+        "candidate_offset": 1441,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "str:List ADDafter"
+          }
+        ]
+      },
+      {
+        "target_offset": 1454,
+        "candidate_offset": 1446,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "name:report_errorf"
+          }
+        ]
+      },
+      {
+        "target_offset": 1538,
+        "candidate_offset": 1530,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "str:List ADDafter"
+          }
+        ]
+      },
+      {
+        "target_offset": 1543,
+        "candidate_offset": 1535,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "name:report_errorf"
+          }
+        ]
+      },
+      {
+        "target_offset": 1604,
+        "candidate_offset": 1596,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 1,
+            "key": "ref:g_zero_parcel_buckets+0x8f9e8"
+          }
+        ]
+      },
+      {
+        "target_offset": 1616,
+        "candidate_offset": 1608,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 0,
+            "key": "const:f32:3e000000"
+          }
+        ]
+      },
+      {
+        "target_offset": 1636,
+        "candidate_offset": 1628,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "str:List ADDafter"
+          }
+        ]
+      },
+      {
+        "target_offset": 1641,
+        "candidate_offset": 1633,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "name:report_errorf"
+          }
+        ]
+      },
+      {
+        "target_offset": 1688,
+        "candidate_offset": 1680,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 1,
+            "key": "ref:g_zero_parcel_buckets+0x8f9f8"
+          }
+        ]
+      },
+      {
+        "target_offset": 1758,
+        "candidate_offset": 1750,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "str:List ADDafter"
+          }
+        ]
+      },
+      {
+        "target_offset": 1763,
+        "candidate_offset": 1755,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "name:report_errorf"
+          }
+        ]
+      },
+      {
+        "target_offset": 1804,
+        "candidate_offset": 1796,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 1,
+            "key": "ref:g_game_base"
+          }
+        ]
+      },
+      {
+        "target_offset": 1821,
+        "candidate_offset": 1813,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:get_track_skirt_color"
+          }
+        ]
+      },
+      {
+        "target_offset": 1914,
+        "candidate_offset": 1906,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:spawn_track_health_pickup"
+          }
+        ]
+      },
+      {
+        "target_offset": 1954,
+        "candidate_offset": 1946,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:spawn_track_speedup"
+          }
+        ]
+      },
+      {
+        "target_offset": 1994,
+        "candidate_offset": 1986,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:spawn_track_jetpack_pickup"
+          }
+        ]
+      },
+      {
+        "target_offset": 2063,
+        "candidate_offset": 2055,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "str:G"
+          }
+        ]
+      },
+      {
+        "target_offset": 2073,
+        "candidate_offset": 2065,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:random_float_below"
+          }
+        ]
+      },
+      {
+        "target_offset": 2078,
+        "candidate_offset": 2070,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 0,
+            "key": "const:f32:3f800000"
+          }
+        ]
+      },
+      {
+        "target_offset": 2093,
+        "candidate_offset": 2085,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 0,
+            "key": "const:f32:3e4ccccd"
+          }
+        ]
+      },
+      {
+        "target_offset": 2099,
+        "candidate_offset": 2091,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 0,
+            "key": "const:f32:3f4ccccd"
+          }
+        ]
+      },
+      {
+        "target_offset": 2212,
+        "candidate_offset": 2204,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "str:G2"
+          }
+        ]
+      },
+      {
+        "target_offset": 2222,
+        "candidate_offset": 2214,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:random_float_below"
+          }
+        ]
+      },
+      {
+        "target_offset": 2230,
+        "candidate_offset": 2222,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 0,
+            "key": "const:f32:3e99999a"
+          }
+        ]
+      },
+      {
+        "target_offset": 2239,
+        "candidate_offset": 2231,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 0,
+            "key": "const:f32:3f333333"
+          }
+        ]
+      },
+      {
+        "target_offset": 2261,
+        "candidate_offset": 2253,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "str:G3"
+          }
+        ]
+      },
+      {
+        "target_offset": 2271,
+        "candidate_offset": 2263,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:random_float_below"
+          }
+        ]
+      },
+      {
+        "target_offset": 2279,
+        "candidate_offset": 2271,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 0,
+            "key": "const:f32:3f19999a"
+          }
+        ]
+      },
+      {
+        "target_offset": 2288,
+        "candidate_offset": 2280,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 0,
+            "key": "const:f32:3ecccccd"
+          }
+        ]
+      },
+      {
+        "target_offset": 2319,
+        "candidate_offset": 2311,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:spawn_track_garbage_hazard"
+          }
+        ]
+      },
+      {
+        "target_offset": 2392,
+        "candidate_offset": 2384,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "str:S"
+          }
+        ]
+      },
+      {
+        "target_offset": 2402,
+        "candidate_offset": 2394,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:random_float_below"
+          }
+        ]
+      },
+      {
+        "target_offset": 2407,
+        "candidate_offset": 2399,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 0,
+            "key": "const:f32:3f800000"
+          }
+        ]
+      },
+      {
+        "target_offset": 2422,
+        "candidate_offset": 2414,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 0,
+            "key": "const:f32:3ca3d70a"
+          }
+        ]
+      },
+      {
+        "target_offset": 2428,
+        "candidate_offset": 2420,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 0,
+            "key": "const:f32:3f7ae148"
+          }
+        ]
+      },
+      {
+        "target_offset": 2466,
+        "candidate_offset": 2458,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:spawn_salt_hazard"
+          }
+        ]
+      },
+      {
+        "target_offset": 2512,
+        "candidate_offset": 2504,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:spawn_slug_hazard"
+          }
+        ]
+      },
+      {
+        "target_offset": 2521,
+        "candidate_offset": 2513,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 1,
+            "key": "ref:g_zero_parcel_buckets+0x8f938"
+          }
+        ]
+      },
+      {
+        "target_offset": 2755,
+        "candidate_offset": 2747,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 0,
+            "key": "const:f32:41200000"
+          }
+        ]
+      },
+      {
+        "target_offset": 2831,
+        "candidate_offset": 2823,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:spawn_track_ring_or_special_effect"
+          }
+        ]
+      },
+      {
+        "target_offset": 2891,
+        "candidate_offset": 2883,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:spawn_track_ring_or_special_effect"
+          }
+        ]
+      },
+      {
+        "target_offset": 2951,
+        "candidate_offset": 2943,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:spawn_track_ring_or_special_effect"
+          }
+        ]
+      },
+      {
+        "target_offset": 2977,
+        "candidate_offset": 2969,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "str:R"
+          }
+        ]
+      },
+      {
+        "target_offset": 2987,
+        "candidate_offset": 2979,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:random_float_below"
+          }
+        ]
+      },
+      {
+        "target_offset": 2992,
+        "candidate_offset": 2984,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 0,
+            "key": "const:f32:3f333333"
+          }
+        ]
+      },
+      {
+        "target_offset": 3068,
+        "candidate_offset": 3060,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:spawn_track_ring_or_special_effect"
+          }
+        ]
+      },
+      {
+        "target_offset": 3092,
+        "candidate_offset": 3084,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 0,
+            "key": "const:f32:420c0000"
+          }
+        ]
+      },
+      {
+        "target_offset": 3134,
+        "candidate_offset": 3126,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 0,
+            "key": "const:f32:41200000"
+          }
+        ]
+      },
+      {
+        "target_offset": 3186,
+        "candidate_offset": 3178,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "str:R2"
+          }
+        ]
+      },
+      {
+        "target_offset": 3196,
+        "candidate_offset": 3188,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:random_float_below"
+          }
+        ]
+      },
+      {
+        "target_offset": 3201,
+        "candidate_offset": 3193,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 0,
+            "key": "const:f32:3f333333"
+          }
+        ]
+      },
+      {
+        "target_offset": 3223,
+        "candidate_offset": 3215,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 1,
+            "key": "ref:g_zero_parcel_buckets+0x8f938"
+          }
+        ]
+      },
+      {
+        "target_offset": 3254,
+        "candidate_offset": 3246,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:spawn_track_ring_or_special_effect"
+          }
+        ]
+      },
+      {
+        "target_offset": 3307,
+        "candidate_offset": 3299,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "name:update_track_render_cache_rows"
+          }
+        ]
+      },
+      {
+        "target_offset": 3337,
+        "candidate_offset": 3329,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "name:format_time_trial_string"
+          }
+        ]
+      },
+      {
+        "target_offset": 3356,
+        "candidate_offset": 3348,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:rstrcpy_checked_ascii"
+          }
+        ]
+      },
+      {
+        "target_offset": 3405,
+        "candidate_offset": 3397,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "name:format_time_trial_string"
+          }
+        ]
+      },
+      {
+        "target_offset": 3424,
+        "candidate_offset": 3416,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:rstrcpy_checked_ascii"
+          }
+        ]
+      },
+      {
+        "target_offset": 3434,
+        "candidate_offset": 3426,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "name:update_subgame_camera"
+          }
+        ]
+      },
+      {
+        "target_offset": 3453,
+        "candidate_offset": 3445,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:hide_border_init"
+          }
+        ]
+      },
+      {
+        "target_offset": 3460,
+        "candidate_offset": 3452,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "name:update_subgame_camera"
+          }
+        ]
+      },
+      {
+        "target_offset": 3499,
+        "candidate_offset": 3491,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:border_add_text_number"
+          }
+        ]
+      },
+      {
+        "target_offset": 3552,
+        "candidate_offset": 3544,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "ref:border_add_text_number"
+          }
+        ]
+      },
+      {
+        "target_offset": 3559,
+        "candidate_offset": 3551,
+        "references": [
+          {
+            "kind": "imm",
+            "operand_index": 0,
+            "key": "name:update_subgame_camera"
+          }
+        ]
+      },
+      {
+        "target_offset": 3594,
+        "candidate_offset": 3586,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 1,
+            "key": "ref:g_game_base"
+          }
+        ]
+      },
+      {
+        "target_offset": 3624,
+        "candidate_offset": 3616,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 1,
+            "key": "ref:g_game_base"
+          }
+        ]
+      },
+      {
+        "target_offset": 3639,
+        "candidate_offset": 3631,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 1,
+            "key": "ref:g_game_base"
+          }
+        ]
+      },
+      {
+        "target_offset": 3651,
+        "candidate_offset": 3643,
+        "references": [
+          {
+            "kind": "disp",
+            "operand_index": 0,
+            "key": "const:f32:3f800000"
+          }
+        ]
+      }
+    ],
+    "differing_byte_offsets": [
+      3300
+    ],
+    "unmatched_backedge": {
+      "target": {
+        "offset": 3298,
+        "bytes": "0f8ca6f7ffff",
+        "instruction": "jl 0x48e"
+      },
+      "candidate": {
+        "offset": 3290,
+        "bytes": "0f8cacf7ffff",
+        "instruction": "jl 0x48c"
+      }
+    },
+    "regions": [
+      {
+        "target_offsets": [
+          1261,
+          3298
+        ],
+        "candidate_offsets": [
+          1253,
+          3290
+        ],
+        "bytes": 2037,
+        "audited_encoded_sha256": "8fe387b6b79f09d36df99a30a238106caa9a9f8c5a36c00ebaecad55c3cdd8ec",
+        "target_bytes": "eb17894a088b108b5a0889530c8b1033db8b52088910895a088b410480cc02894104f687c8ca5c0010741ef7464c0000800074158d8664b73b0081c758cb5c0050578bcee86aa60000895c241085ed0f8c850700003b6e540f8d7c0700008b4c24108d0ce98d04cd000000002bc18d14408b8496ccfa3b00f6c4028d3c960f85560700008b8708fb3b00f6c4400f843c0100008a8704fb3b003c1d744f3c1e744b8b9fccfa3b008d87c8fa3b00ba000200008d8e9c5b350085da741268c0104a00e87d8bffff83c404e9f30000008948088b590c89580c89410c8b480c85c97403894108095004e9d50000008b87ecfa3b0085c00f84c70000008b9fccfa3b008d87c8fa3b00ba000200008d8eb45c350085da740f68c0104a00e8248bffff83c404eb198948088b590c89580c89410c8b480c85c974038941080950048bc5250700008079054883c8f8408b5c241889442414db4424148d8378cb5c008d8e645b3500d80d28744900d99fe8fa3b008b5004f6c602740f68c0104a00e8c28affff83c404eb1f8948088b510c89500c89410c8b480c85c974038941088b480480cd028948048d87d8fa3b0081c388cb5c008b08890b8b50048953048b40088943088b97c8fa3b008d8fc8fa3b00ff128d9f0cfb3b00c7442414040000008b0385c0746d8b50048d8e645b3500f6c602740f68c0104a00e8488affff83c404eb1f8948088b510c89500c89410c8b480c85c974038941088b480480cd028948048b0d04f94d008d44243c5081c118460700e86e8e00008b138b0883c228890a8b4804894a048b4808894a088b400c89420c8b44241483c30448894424140f857bffffff80bf04fb3b001775278b464cf6c408741f3b6e507c1a3b6e587d158d8e64b73b008d97c8fa3b0051528bcee8b143000080bf04fb3b0018751f3b6e507c1a3b6e587d158d8664b73b008d8fc8fa3b0050518bcee84945000080bf04fb3b0019751f3b6e507c1a3b6e587d158d9664b73b008d87c8fa3b0052508bcee8314500008a8704fb3b003c2175138d8e64b73b008d97c8fa3b005152e921010000f68708fb3b00100f851b0100003c0174083c150f850f010000f6464c020f840501000068bc4d4a00680000803fe8e2480100d90520724900d8a6d8ff250183c408d80d70724900d80550724900ded9dfe0f6c4010f84ce0000008b4c241085c9741a8a87b0fa3b003c0174103c14740c3c1574083c200f85ac00000083f907741a8a8758fb3b003c0174103c14740c3c1574083c200f858d0000003b6e500f8c840000003b6e587d7f83be84b83b00027476837e4004752a68b84d4a00680000803fe84d480100d94648d80dd873490083c408d80500724900ded9dfe0f6c40175468b464085c0752a68b44d4a00680000803fe81c480100d94648d80dd473490083c408d805e0734900ded9dfe0f6c40175158d8664b73b008d8fc8fa3b0050518bcee8dc4500008a8704fb3b003c2275173b6e500f8c800000003b6e587d7b8d97d8fa3b0052eb67f68708fb3b000875693c0174043c0f756183be84b83b00027458f7464c00000100744f68b04d4a00680000803fe899470100d90520724900d8a6dcff250183c408d80d70754900d8056c754900ded9dfe0f6c401741c3b6e507c173b6e587d128d87d8fa3b00508d8ec0783500e829800000f6464c80742880bf04fb3b0012751f3b6e507c1a3b6e587d158d8e64b73b008d97c8fa3b0051528bcee81b4700008b5c24188b93c8ca5c00f6c6020f85df0200008a8f04fb3b0080f9230f85a4000000f6c60474238d846d142401008d04808d8c855c6100008d8664b73b008b148e52506a05e98e020000f6c62074238d846d142401008d04808d8c855c6100008d8664b73b008b148e52506a08e966020000f6c60874238d846d142401008d04808d8c855c6100008d8664b73b008b148e52506a06e93e020000f6c6100f844f0200008d846d142401008d04808d8c855c6100008d8664b73b008b148e52506a07e91202000080f902741d80f903741880f904741380f905740e80f906740980f9070f8568010000d986e0ba3b00d80500744900d89fe0fa3b00dfe0f6c4010f844b0100003b6e580f8d42010000f6c62074378d846d142401008d04808d8c855c6100008d8664b73b008b148e8d8f880a3c0052506a08518bcee86c4800008b97a00a3c00e9a2010000f6c60874378d846d142401008d04808d8c855c6100008d8664b73b008b148e8d8f880a3c0052506a06518bcee8304800008b97a00a3c00e966010000f6c61074378d846d142401008d04808d8c855c6100008d8664b73b008b148e8d8f880a3c0052506a07518bcee8f44700008b97a00a3c00e92a010000f6464c080f842601000068ac4d4a00680000803fe850450100d81d0072490083c408dfe0f6c441740a837e40070f85fd0000008a8704fb3b003c050f84ef0000003c060f84e70000003c070f84df0000008d8664b73b006a00508d8fc8fa3b006a04518bcee87f47000083be68bb3b000a0f8cad000000d987e0fa3b00d80544754900d99ee0ba3b00e9a200000080f908740e80f909740980f90a0f858f000000d986e0ba3b00d80500744900d89fe0fa3b00dfe0f6c40174763b6e587d71f6c60874178d846d142401008d04808d8c855c6100008b148e52eb3268a84d4a00680000803fe87f440100d81d0072490083c408dfe0f6c4417411837e4007740b8b83c8ca5c00f6c40874256a008d8664b73b00506a028d8fc8fa3b00518bcee8c54600008b97e0fa3b008996e0ba3b008b4424104083f808894424100f8c61f8ffff8b4624453be8c60600",
+        "candidate_bytes": "eb17894a088b108b5a0889530c8b1033db8b52088910895a088b410480cc02894104f687c8ca5c0010741ef7464c0000800074158d8664b73b0081c758cb5c0050578bcee800000000895c241085ed0f8c850700003b6e540f8d7c0700008b4c24108d0ce98d04cd000000002bc18d14408b8496ccfa3b00f6c4028d3c960f85560700008b8708fb3b00f6c4400f843c0100008a8704fb3b003c1d744f3c1e744b8b9fccfa3b008d87c8fa3b00ba000200008d8e9c5b350085da74126800000000e80000000083c404e9f30000008948088b590c89580c89410c8b480c85c97403894108095004e9d50000008b87ecfa3b0085c00f84c70000008b9fccfa3b008d87c8fa3b00ba000200008d8eb45c350085da740f6800000000e80000000083c404eb198948088b590c89580c89410c8b480c85c974038941080950048bc5250700008079054883c8f8408b5c241889442414db4424148d8378cb5c008d8e645b3500d80d00000000d99fe8fa3b008b5004f6c602740f6800000000e80000000083c404eb1f8948088b510c89500c89410c8b480c85c974038941088b480480cd028948048d87d8fa3b0081c388cb5c008b08890b8b50048953048b40088943088b97c8fa3b008d8fc8fa3b00ff128d9f0cfb3b00c7442414040000008b0385c0746d8b50048d8e645b3500f6c602740f6800000000e80000000083c404eb1f8948088b510c89500c89410c8b480c85c974038941088b480480cd028948048b0d000000008d44243c5081c118460700e8000000008b138b0883c228890a8b4804894a048b4808894a088b400c89420c8b44241483c30448894424140f857bffffff80bf04fb3b001775278b464cf6c408741f3b6e507c1a3b6e587d158d8e64b73b008d97c8fa3b0051528bcee80000000080bf04fb3b0018751f3b6e507c1a3b6e587d158d8664b73b008d8fc8fa3b0050518bcee80000000080bf04fb3b0019751f3b6e507c1a3b6e587d158d9664b73b008d87c8fa3b0052508bcee8000000008a8704fb3b003c2175138d8e64b73b008d97c8fa3b005152e921010000f68708fb3b00100f851b0100003c0174083c150f850f010000f6464c020f84050100006800000000680000803fe800000000d90500000000d8a6d8ff250183c408d80d00000000d80500000000ded9dfe0f6c4010f84ce0000008b4c241085c9741a8a87b0fa3b003c0174103c14740c3c1574083c200f85ac00000083f907741a8a8758fb3b003c0174103c14740c3c1574083c200f858d0000003b6e500f8c840000003b6e587d7f83be84b83b00027476837e4004752a6800000000680000803fe800000000d94648d80d0000000083c408d80500000000ded9dfe0f6c40175468b464085c0752a6800000000680000803fe800000000d94648d80d0000000083c408d80500000000ded9dfe0f6c40175158d8664b73b008d8fc8fa3b0050518bcee8000000008a8704fb3b003c2275173b6e500f8c800000003b6e587d7b8d97d8fa3b0052eb67f68708fb3b000875693c0174043c0f756183be84b83b00027458f7464c00000100744f6800000000680000803fe800000000d90500000000d8a6dcff250183c408d80d00000000d80500000000ded9dfe0f6c401741c3b6e507c173b6e587d128d87d8fa3b00508d8ec0783500e800000000f6464c80742880bf04fb3b0012751f3b6e507c1a3b6e587d158d8e64b73b008d97c8fa3b0051528bcee8000000008b5c24188b93c8ca5c00f6c6020f85df0200008a8f04fb3b0080f9230f85a4000000f6c60474238d846d142401008d04808d8c855c6100008d8664b73b008b148e52506a05e98e020000f6c62074238d846d142401008d04808d8c855c6100008d8664b73b008b148e52506a08e966020000f6c60874238d846d142401008d04808d8c855c6100008d8664b73b008b148e52506a06e93e020000f6c6100f844f0200008d846d142401008d04808d8c855c6100008d8664b73b008b148e52506a07e91202000080f902741d80f903741880f904741380f905740e80f906740980f9070f8568010000d986e0ba3b00d80500000000d89fe0fa3b00dfe0f6c4010f844b0100003b6e580f8d42010000f6c62074378d846d142401008d04808d8c855c6100008d8664b73b008b148e8d8f880a3c0052506a08518bcee8000000008b97a00a3c00e9a2010000f6c60874378d846d142401008d04808d8c855c6100008d8664b73b008b148e8d8f880a3c0052506a06518bcee8000000008b97a00a3c00e966010000f6c61074378d846d142401008d04808d8c855c6100008d8664b73b008b148e8d8f880a3c0052506a07518bcee8000000008b97a00a3c00e92a010000f6464c080f84260100006800000000680000803fe800000000d81d0000000083c408dfe0f6c441740a837e40070f85fd0000008a8704fb3b003c050f84ef0000003c060f84e70000003c070f84df0000008d8664b73b006a00508d8fc8fa3b006a04518bcee80000000083be68bb3b000a0f8cad000000d987e0fa3b00d80500000000d99ee0ba3b00e9a200000080f908740e80f909740980f90a0f858f000000d986e0ba3b00d80500000000d89fe0fa3b00dfe0f6c40174763b6e587d71f6c60874178d846d142401008d04808d8c855c6100008b148e52eb326800000000680000803fe800000000d81d0000000083c408dfe0f6c4417411837e4007740b8b83c8ca5c00f6c40874256a008d8664b73b00506a028d8fc8fa3b00518bcee8000000008b97e0fa3b008996e0ba3b008b4424104083f808894424100f8c61f8ffff8b4624453be8c60600"
+      },
+      {
+        "target_offsets": [
+          3304,
+          3684
+        ],
+        "candidate_offsets": [
+          3296,
+          3676
+        ],
+        "bytes": 380,
+        "audited_encoded_sha256": "7e815aa88d9dcc375e19606dacebc8ba2c245d7f4e1445601c62ffc4f4b24119",
+        "target_bytes": "8d4e5ce8b0a2ffff837e40040f85970000008dbee025ff008d864cba3b00508bcfe8c2f000008b8e88bb35005081c1cc02000051e8ff4c01008b464483c4088bd0c1e2062bd08d0c908d14888d0450c1e00603c683b85041940001753205584194008bcf50e87ef000008b8e8cbb35005081c1cc02000051e8bb4c010083c4088bcee821c700005f5e5d5b83c43cc38b8e8cbb3500e8ce77fcff8bcee807c700005f5e5d5b83c43cc38b9688bb3500c682cc020000008b8648ba3b008b8e88bb350050e8f076fcff8b8648ba3b008b8e945d35003bc17ea88b8e8cbb35008986945d3500c681cc020000008b96945d35008b8e8cbb350052e8bb76fcff8bcee8a4c600005f5e5d5b83c43cc38a86d125ff0084c0741e8b81b80100008981bc0100008b0d04f94d00c781b80100001a000000eb1b8b91b80100008991bc010000a104f94d00c780b80100001b0000008b0d04f94d00d981e4f20400d81d20724900dfe0f6c4410f841bffffff5f5e5dc681e0f20400005b83c43cc390",
+        "candidate_bytes": "8d4e5ce800000000837e40040f85970000008dbee025ff008d864cba3b00508bcfe8000000008b8e88bb35005081c1cc02000051e8000000008b464483c4088bd0c1e2062bd08d0c908d14888d0450c1e00603c683b85041940001753205584194008bcf50e8000000008b8e8cbb35005081c1cc02000051e80000000083c4088bcee8000000005f5e5d5b83c43cc38b8e8cbb3500e8000000008bcee8000000005f5e5d5b83c43cc38b9688bb3500c682cc020000008b8648ba3b008b8e88bb350050e8000000008b8648ba3b008b8e945d35003bc17ea88b8e8cbb35008986945d3500c681cc020000008b96945d35008b8e8cbb350052e8000000008bcee8000000005f5e5d5b83c43cc38a86d125ff0084c0741e8b81b80100008981bc0100008b0d00000000c781b80100001a000000eb1b8b91b80100008991bc010000a100000000c780b80100001b0000008b0d00000000d981e4f20400d81d00000000dfe0f6c4410f841bffffff5f5e5dc681e0f20400005b83c43cc390"
+      }
+    ]
+  }
+}

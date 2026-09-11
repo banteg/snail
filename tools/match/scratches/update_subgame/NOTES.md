@@ -1,5 +1,20 @@
 # `update_subgame` recovery notes
 
+## 2026-09-11 objdiff-guided dispatch controls and tail certificate
+
+The supported viewer concentrates its changed rows before native offset
+`0x4ed`. Seven backdrop-index lifetime combinations and four early mode-snapshot
+forms yield no improvement: ten preserve all candidate function bytes and one
+regresses to 80.32396379%. The canonical source remains 80.51453073%, with the
+same 1,033/1,034 instructions, nine-instruction prefix and 129 clean references.
+
+An independent positional audit of 72 reference fields verifies 2,417 bytes in
+two existing tail regions within `[0x4ed,0xe64)`. The intervening six-byte row-loop
+backedge differs in one displacement byte, which is retained as a residual.
+This extends evidence coverage around the prior ring certificate and grants no
+new source or whole-function credit. See the [controls, encoded receipt, and
+remaining-work map](../../objdiff-dispatch-evidence-20260911.md).
+
 ## 2026-09-11 current authored-ring publication recovery
 
 The current source reaches **80.51453073%, 1033/1034 instructions, prefix 9,

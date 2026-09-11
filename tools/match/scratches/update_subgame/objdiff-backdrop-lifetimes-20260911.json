@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "galaxy-select",
+      "find": "                subgame_rebuild_selector = 3;\n                g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;",
+      "replacements": [
+        {
+          "name": "capture-before-selector",
+          "text": "                int backdrop = level_mode_arg;\n                subgame_rebuild_selector = 3;\n                g_runtime_config.landscape_backdrop_variant_selector = backdrop;"
+        }
+      ]
+    },
+    {
+      "name": "galaxy-advance",
+      "find": "                subgame_rebuild_selector = 1;\n                g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;",
+      "replacements": [
+        {
+          "name": "capture-before-selector",
+          "text": "                int backdrop = level_mode_arg;\n                subgame_rebuild_selector = 1;\n                g_runtime_config.landscape_backdrop_variant_selector = backdrop;"
+        }
+      ]
+    },
+    {
+      "name": "challenge-select",
+      "find": "                subgame_rebuild_selector = 2;\n                g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;",
+      "replacements": [
+        {
+          "name": "capture-before-selector",
+          "text": "                int backdrop = level_mode_arg;\n                subgame_rebuild_selector = 2;\n                g_runtime_config.landscape_backdrop_variant_selector = backdrop;"
+        }
+      ]
+    }
+  ]
+}

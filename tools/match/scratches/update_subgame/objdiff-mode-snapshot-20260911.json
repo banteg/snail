@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "dispatch-owner",
+      "find": "        int challenge_speed = g_runtime_config.challenge_speed_percent;\n        int challenge_difficulty =\n            g_runtime_config.challenge_difficulty_percent;\n        challenge_speed_value = challenge_speed;\n        challenge_difficulty_value = challenge_difficulty;\n\n        int result;\n        switch (level_mode) {\n",
+      "replacements": [
+        {
+          "name": "before-config",
+          "text": "        int mode = level_mode;\n        int challenge_speed = g_runtime_config.challenge_speed_percent;\n        int challenge_difficulty =\n            g_runtime_config.challenge_difficulty_percent;\n        challenge_speed_value = challenge_speed;\n        challenge_difficulty_value = challenge_difficulty;\n\n        int result;\n        switch (mode) {\n"
+        },
+        {
+          "name": "after-speed-read",
+          "text": "        int challenge_speed = g_runtime_config.challenge_speed_percent;\n        int mode = level_mode;\n        int challenge_difficulty =\n            g_runtime_config.challenge_difficulty_percent;\n        challenge_speed_value = challenge_speed;\n        challenge_difficulty_value = challenge_difficulty;\n\n        int result;\n        switch (mode) {\n"
+        },
+        {
+          "name": "before-publication",
+          "text": "        int challenge_speed = g_runtime_config.challenge_speed_percent;\n        int challenge_difficulty =\n            g_runtime_config.challenge_difficulty_percent;\n        int mode = level_mode;\n        challenge_speed_value = challenge_speed;\n        challenge_difficulty_value = challenge_difficulty;\n\n        int result;\n        switch (mode) {\n"
+        },
+        {
+          "name": "direct-before-config",
+          "text": "        int mode = level_mode;\n        challenge_speed_value = g_runtime_config.challenge_speed_percent;\n        challenge_difficulty_value = g_runtime_config.challenge_difficulty_percent;\n\n        int result;\n        switch (mode) {\n"
+        }
+      ]
+    }
+  ]
+}
