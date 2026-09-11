@@ -1,5 +1,27 @@
 # initialize_turnover_path_template_pair
 
+2026-09-11 current measurement: **78.125% → 100% normalized agreement**,
+**671/671 instructions**, all **41 strict same-position references** clean.
+The retained source recovers endpoint, face, lead and up-vector ownership and
+uses typed terminal delta arrays. Native and candidate stack frames are `0x54`.
+
+**Encoded-body equality remains false:** two interpolation SIB bytes differ at
+body offsets 628 and 653. Typed delta arrays recover ten other encoded bytes.
+The verified encoded prefix grows **209 → 626 bytes**; a **1,775-byte suffix**
+also agrees after positional relocation audit. Full body range `[0,2433)` and
+15 bytes of recognized terminal padding are explicitly accounted for.
+
+The [current report](../../turnover-endpoint-face-vector-owners-20260911.md) and
+[complete receipt](../../turnover-endpoint-face-vector-owners-20260911.json)
+preserve sources, 88 forward variants, 13 final reversals, native instruction
+bytes and strict positional proofs. Compiler, flags, shared headers, ABI,
+extent and matcher are unchanged. No linked-image or runtime claim is made.
+The two remaining encoded differences are open work, not a compiler ceiling.
+
+## Earlier observations
+
+The measurements below are historical and superseded by the current receipt.
+
 Current recovery: declared semantic-complete, with native differences still under
 analysis. This is a partial recovery, not an exact match or a compiler ceiling.
 
