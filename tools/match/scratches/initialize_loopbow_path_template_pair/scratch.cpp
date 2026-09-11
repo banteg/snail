@@ -227,40 +227,35 @@ void cRPath::initialize_loopbow_path_template_pair(
 
     int row = 0;
     if (segment_count >= 0) {
-        int sample_offset = 0;
         do {
             int column = 0;
             if (width_cells >= 0) {
                 do {
                     double lateral =
                         (float)column - (float)width_cells * 0.5f;
-                    if (row == segment_count) {
-                        AttachmentSample* sample =
-                            (AttachmentSample*)((char*)primary_samples + sample_offset);
-                        Vector3 lateral_offset =
-                            sample[-1].transform.basis_right * lateral;
-                        Vector3 endpoint;
-                        endpoint.x = sample[-1].transform.position.x;
-                        endpoint.y = sample[-1].transform.position.y;
-                        endpoint.z = sample[-1].transform.position.z + 1.0f;
+                    if (row != segment_count) {
+                        Vector3 lateral_offset(
+                            lateral * primary_samples[row].transform.basis_right.x,
+                            lateral * primary_samples[row].transform.basis_right.y,
+                            lateral * primary_samples[row].transform.basis_right.z);
                         Vector3 point(
-                            lateral_offset.x + endpoint.x,
-                            lateral_offset.y + endpoint.y,
-                            lateral_offset.z + endpoint.z);
+                            lateral_offset.x + primary_samples[row].transform.position.x,
+                            lateral_offset.y + primary_samples[row].transform.position.y,
+                            lateral_offset.z + primary_samples[row].transform.position.z);
                         int vertex_index =
                             column + row * (width_cells + 1);
                         vertices[vertex_index] = point;
                     } else {
-                        AttachmentSample* sample =
-                            (AttachmentSample*)((char*)primary_samples + sample_offset);
-                        Vector3 lateral_offset(
-                            lateral * sample->transform.basis_right.x,
-                            lateral * sample->transform.basis_right.y,
-                            lateral * sample->transform.basis_right.z);
+                        Vector3 lateral_offset =
+                            primary_samples[row - 1].transform.basis_right * lateral;
+                        Vector3 endpoint(
+                            primary_samples[row - 1].transform.position.x,
+                            primary_samples[row - 1].transform.position.y,
+                            primary_samples[row - 1].transform.position.z + 1.0f);
                         Vector3 point(
-                            lateral_offset.x + sample->transform.position.x,
-                            lateral_offset.y + sample->transform.position.y,
-                            lateral_offset.z + sample->transform.position.z);
+                            lateral_offset.x + endpoint.x,
+                            lateral_offset.y + endpoint.y,
+                            lateral_offset.z + endpoint.z);
                         int vertex_index =
                             column + row * (width_cells + 1);
                         vertices[vertex_index] = point;
@@ -269,7 +264,6 @@ void cRPath::initialize_loopbow_path_template_pair(
                 } while (column <= width_cells);
             }
             ++row;
-            sample_offset += sizeof(AttachmentSample);
         } while (row <= segment_count);
     }
 
@@ -310,15 +304,6 @@ void cRPath::initialize_loopbow_path_template_pair(
                                     g_texture_refs.Add(
                                         texture_a, 0, 0);
                             }
-
-                            facequads[face_offset].u0 = u0;
-                            facequads[face_offset].v0 = v0;
-                            facequads[face_offset].u1 = u1;
-                            facequads[face_offset].v1 = v0;
-                            facequads[face_offset].u2 = u1;
-                            facequads[face_offset].v2 = v1;
-                            facequads[face_offset].u3 = u0;
-                            facequads[face_offset].v3 = v1;
                         } else {
                             facequads[face_offset].header_word = 0;
                             facequads[face_offset].vertex_0 =
@@ -340,7 +325,17 @@ void cRPath::initialize_loopbow_path_template_pair(
                                     g_texture_refs.Add(
                                         texture_b, 0, 0);
                             }
-
+                        }
+                        if (side == 0) {
+                            facequads[face_offset].u0 = u0;
+                            facequads[face_offset].v0 = v0;
+                            facequads[face_offset].u1 = u1;
+                            facequads[face_offset].v1 = v0;
+                            facequads[face_offset].u2 = u1;
+                            facequads[face_offset].v2 = v1;
+                            facequads[face_offset].u3 = u0;
+                            facequads[face_offset].v3 = v1;
+                        } else {
                             facequads[face_offset].u0 = u1;
                             facequads[face_offset].v0 = v0;
                             facequads[face_offset].u1 = u0;

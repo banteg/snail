@@ -1,9 +1,17 @@
 # Reconstruction notes
 
-Current recovery: semantic-complete (`compiler` residual). The verified
-Android/iOS builder bodies establish the portable sample/control graph; the
-live Windows body and scratch additionally cover the native mesh/face tail.
-All references are clean, and the remaining differences are code layout.
+## 2026-09-11: UV dispatch and direct mesh owners
+
+Separate topology/UV dispatch, direct sample array access, ordinary-first mesh
+branches and an endpoint vector constructor improve **74.55919395% to
+84.25692695%**. All four changes have independently measured reverse controls;
+there are no canonical tradeoffs against the previous committed source.
+See the [report and byte proof](../../loopbow-and-toad-owners-20260911.md).
+
+Current recovery: semantic-complete (`analysis` residual). The 2026-09-11
+UV and mesh recovery reaches **84.25692695%**, with **792/796 instructions**,
+prefix **10** and **63 clean references**. Normalized and encoded matching
+remain partial; local stack homes and instruction scheduling remain open.
 
 ## Scope
 

@@ -1,9 +1,25 @@
 # initialize_toad_path_template_pair
 
-Current recovery: semantic-complete (`compiler` residual). The verified
-Android/iOS builder bodies establish the portable sample/control graph; the
-live Windows body and scratch additionally cover the native mesh/face tail.
-All references are clean, and the remaining differences are code layout.
+## 2026-09-11: coupled-owner diagnostic and prefix investigation
+
+The indexed-face / split-UV lead improves from 74.3764% to **83.3710%** when
+combined with direct delta-lane owners, vector lane offsets, direct mesh arrays
+and vector position addition. The native bank reloads after both Normalize
+calls are reproduced. The diagnostic keeps 33 clean references but has
+666/663 instructions and prefix 16; the canonical scratch is unchanged.
+
+All 31 nonempty combinations of five owner changes are measured. The complete
+investigation has 102 observations / 90 distinct source variants, with aliases
+recorded explicitly. Helper flattening is neutral on the examined sources.
+The [report](../../loopbow-and-toad-owners-20260911.md) includes a standalone
+source seed, native byte/reference proof and the remaining stack-home and
+lead-address preparation differences. These bounded results do not establish
+a compiler limit.
+
+Current recovery: semantic-complete (`analysis` residual). The canonical
+source remains **66.81749623%, 663/663 instructions, prefix 89**, with all
+**33 references clean**. Higher-score coupled-owner sources remain diagnostic
+because their prefix and instruction-count differences are unresolved.
 
 Starter reconstruction for `initialize_toad_path_template_pair @ 0x42cbf0`.
 
