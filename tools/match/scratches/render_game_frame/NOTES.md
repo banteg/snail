@@ -1,5 +1,27 @@
 # render_game_frame
 
+## 2026-09-11: exact camera, bucket and replay recovery
+
+The canonical renderer now has **normalized and encoded-body equality**:
+**439/439 instructions**, **1,460 compared bytes**, **34 strict positional
+references** and **56 contained local branches**, with the unchanged **0x80**
+stack allocation. It improves the previous 69.77272727%, 441/439-instruction
+source through shared camera initialization/count traversal, predecessor-index
+shifts, direct BOD staging, bucket-table cursor acquisition and guarded draining,
+and replay cursor/slot/position ownership.
+
+The [report and complete receipt](../../render-frame-camera-bucket-replay-owners-20260911.md)
+preserve full byte/reference/branch proof, 74 distinct forward sources, nine
+reversals and a separate byte-neutral formatting control. All 785 scratch checks
+pass; compiler, flags, headers, ABI, extent and matcher are unchanged.
+
+### Earlier observations
+
+The entries below describe historical sources. Their current-source metrics
+and compiler-residual labels are superseded by the exact recovery above.
+Finite prior experiments did not establish a compiler limit. The original
+non-appending camera-order behavior remains preserved.
+
 Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
 `cRGame::Render()` bodies and the live Windows GameRoot method establish the
 complete viewport ordering, BOD/animation synchronization, first and
