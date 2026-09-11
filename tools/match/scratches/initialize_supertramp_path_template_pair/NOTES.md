@@ -1,6 +1,27 @@
 # initialize_supertramp_path_template_pair
 
-Current recovery: semantic-complete (`compiler` residual). The verified
+## 2026-09-11: count, radius and mesh ownership
+
+Current canonical source is **92.01451906%, 550/552 instructions**, with a
+strict **37-instruction / 125-byte encoded prefix**, native **0x2c** frame and
+all **36 references clean**. Separate UV dispatch, count predecessor, curve
+scope, quantized radius in the incoming parameter, direct mesh arrays and a
+shared mesh/face column improve the previous 79.74452555% source.
+
+The [report and complete receipt](../../supertramp-count-radius-mesh-owners-20260911.md)
+include 89 distinct forward sources, six independent reversals and a full
+baseline reversal. The 801-byte arc/delta/allocation region has explicit
+position-mapped encoded proof. Four SIB differences limit the 45-instruction
+normalized prefix to 37 encoded-equal instructions. Both whole bodies stay
+partial; the remaining difference is not attributed to a compiler limit.
+
+### Earlier observations
+
+The entries below describe historical sources and evidence. Their current-source
+metrics and compiler-residual labels are superseded by the recovery above.
+Finite controls do not establish source exhaustion or a compiler limit.
+
+Historical declaration: semantic-complete (then labeled `compiler` residual). The verified
 Android/iOS builder bodies establish the portable sample/control graph; the
 live Windows body and scratch additionally cover the native mesh/face tail.
 All references are clean, and the remaining differences are code layout.
@@ -14,7 +35,7 @@ uses the final allocated sample directly in the mesh. The scratch models the
 flat approach, circular supertramp arc, separate secondary radius, direct mesh
 rows, deltas, and finalization.
 
-The retained scratch now matches 68.00% (545/552 candidate/target
+The historical scratch matched 68.00% (545/552 candidate/target
 instructions), with a 16-instruction exact prefix, an exact 0x2c stack frame,
 and masked operands at 36 ok, 0 unresolved, 0 mismatch, 0 unaudited. Residuals
 are primarily register allocation, stack-home selection, and store scheduling;
