@@ -819,14 +819,15 @@ steering_stored:
                     g_game->players[0].frontend_state = 26;
                     g_game->players[0].saved_frontend_state = 2;
                 } else {
-                    unsigned char persistent =
-                        exit_game->selected_level_record_persistent;
-                    g_game->players[0].saved_frontend_state =
-                        g_game->players[0].frontend_state;
-                    if (persistent)
+                    if (exit_game->selected_level_record_persistent) {
+                        g_game->players[0].saved_frontend_state =
+                            g_game->players[0].frontend_state;
                         g_game->players[0].frontend_state = 26;
-                    else
+                    } else {
+                        g_game->players[0].saved_frontend_state =
+                            g_game->players[0].frontend_state;
                         g_game->players[0].frontend_state = 27;
+                    }
                 }
                 return;
             }
@@ -903,10 +904,9 @@ steering_stored:
                 cursor =
                     TIME_TRIAL_RECORD_AT(record_block)->replay_sample_count;
             int anchor = replay_start_cursor;
-            int offset_cursor;
             float ghost_z;
             if (!anchor
-                || (offset_cursor =
+                || (cursor =
                         TIME_TRIAL_RECORD_AT(record_block)->replay_start_cursor
                             - anchor + cursor)
                     == 0)
@@ -917,7 +917,7 @@ steering_stored:
             else
                 ghost_z = MathType16to32(
                               (unsigned short)TIME_TRIAL_RECORD_AT(record_block)
-                                  ->run_records[offset_cursor].delta_z,
+                                  ->run_records[cursor].delta_z,
                               32.0f)
                         + g_subgoldy_ghost_z;
             g_subgoldy_ghost_z = ghost_z;

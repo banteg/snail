@@ -1,12 +1,24 @@
-# update_subgoldy @ 0x43b120 — 83.54%, 2093/2087 insns, structure complete
+# update_subgoldy @ 0x43b120
 
-The boss of bosses (2087 normalized instructions, 8456 bytes) has a full
-scratch: every block of the function is transcribed and the diff is dominated
-by register-allocation residuals, not semantics. The track-mode slice
-(steering, replay record/playback, completion handoff, ghost marking,
-emitters) is pinned. Dual-mobile evidence now aligns the native follow scalar,
-both cruise-window speed snapshots, and the complete Windows wall-probe value
-copy.
+## 2026-09-11: replay cursor and persistence branch ownership
+
+Current source: **84.76599809%**, **2,093/2,087 instructions**, prefix **12**,
+**315 clean references with no debt**, and the unchanged **64-byte frame**.
+Updating the clamped ghost cursor in place restores native cursor and later
+zero ownership. Copying saved frontend state inside each persistence branch
+recovers the complete native 69-byte block and removes the extra root load.
+The cursor block has a separate 26-byte positional encoded certificate.
+
+The [report and complete receipt](../../subgoldy-replay-persistence-owners-20260911.md)
+preserve 39 successful forward sources, two failed historical typedef controls,
+three reversals, native/mobile witnesses and full byte-range accounting.
+The higher 85.7484% cursor-only control retains an unaudited reference and is
+not promoted. This function remains partial; ghost branch order, comparison
+and value lifetimes, and register/stack allocation still differ.
+
+Earlier entries below are historical, including their scores and residual
+claims. The previous current source measured 83.36118405%, 2,094 instructions
+and one unaudited reference under the unchanged current matcher.
 
 ## 2026-08-09 active-window lower-bound closure
 
