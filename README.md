@@ -5,8 +5,7 @@
 [Public reporting policy](analysis/progress/README.md) ·
 [Library and ownership findings](analysis/ownership/README.md)
 
-Reverse-engineering workspace for Snail Mail and the original Windows artifacts
-in [`artifacts/bin`](artifacts/bin).
+Reverse-engineering workspace for the original Windows version of Snail Mail.
 
 The active focus is matching decompilation against the original gameplay
 executable: recover plausible C/C++ source shapes, prove them against the
@@ -16,7 +15,7 @@ new runtime. There is no active port implementation in this repository.
 ## Current Focus
 
 - Match gameplay functions from
-  [`SnailMail_unwrapped.exe`](artifacts/bin/SnailMail_unwrapped.exe) with the
+  [the canonical executable](#important-artifacts) with the
   harness under [`tools/match`](tools/match).
 - Keep recovered names, types, decompiles, and runtime notes synchronized under
   [`analysis`](analysis) and [`docs/re`](docs/re).
@@ -52,12 +51,14 @@ See [matching setup](tools/match/README.md#setup) for the compiler and runner.
 
 - [Download `SnailMail_unwrapped.exe`](https://reflexive.banteg.xyz/snail/d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5/SnailMail_unwrapped.exe)
   (724 KiB) — the canonical gameplay reversing and matching target.
-- [`artifacts/bin/SnailMail.RWG`](artifacts/bin/SnailMail.RWG) is the shipped
-  wrapped gameplay image kept for provenance.
-- [`artifacts/bin/SnailMail.exe`](artifacts/bin/SnailMail.exe) is the Reflexive
-  launcher/wrapper layer.
-- [`artifacts/bin/SnailMail.dat`](artifacts/bin/SnailMail.dat) is the original
-  asset archive consumed by the inspection tools.
+
+Wrapper and asset analysis additionally use these files from the original game
+installation. They are not included in Git or in the matching-target download;
+place them in `artifacts/bin/` if needed:
+
+- `SnailMail.RWG` — the wrapped gameplay image kept for provenance.
+- `SnailMail.exe` — the Reflexive launcher/wrapper layer.
+- `SnailMail.dat` — the original asset archive consumed by the inspection tools.
 
 ## Quick Commands
 
