@@ -1,5 +1,26 @@
 # cRSMTracks::Import
 
+## 2026-09-11: exact catalog row and text-cursor recovery
+
+The canonical importer now has **normalized and encoded-body equality**:
+**571/571 instructions**, **1,937 compared bytes** and **91 strict positional
+references**, with the unchanged **0x114e0** stack probe. Direct catalog row/count
+access, one row-text cursor, direct glyph assignment and three native scheduling
+dependencies improve the previous 68.43501326%, 560/571-instruction source.
+
+The [report and complete receipt](../../segment-loader-catalog-row-cursor-owners-20260911.md)
+preserve full byte/reference/branch proof, 67 distinct forward sources and eight
+reversals. The current source also passes refreshed shipped and synthetic
+original-code corpus comparisons. No compiler, flags, headers, ABI, extent or
+matcher changes were needed.
+
+### Earlier observations
+
+The entries below describe historical sources. Their current-source metrics
+and compiler-residual labels are superseded by the exact recovery above.
+The 2026-09-09 corpus comparison remains evidence for its recorded source;
+fresh comparisons are bound to the current recovery in the new receipt.
+
 `0x448160` is the authored `cRSMTracks::Import()` member from `Subtrack.o`,
 retained by Android and iOS. It parses `Segments/*.txt` into the exact
 0x25cfb4-byte catalog: 150 entries of 0x4088 bytes, each with a filename,
