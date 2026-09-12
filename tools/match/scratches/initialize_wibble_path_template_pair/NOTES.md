@@ -1,5 +1,17 @@
 # initialize_wibble_path_template_pair
 
+## 2026-09-12 whole-function normalized match
+
+Current result: **100% normalized**, 608/608 instructions and all 39 references
+at identical instruction positions and byte offsets. Physical curve traversal,
+live-bank primary and secondary operations, nested phase expressions and native
+delta reloads recover the complete normalized body. Thirteen encoded SIB bytes
+remain different; `body_byte_exact` remains false. See the [source recovery and
+full-byte receipt](../../house-style-pair-recovery-20260912.md). This supersedes
+the partial metrics and earlier physical-counter controls below.
+
+## Previous recovery
+
 Current recovery: declared semantic-complete, with native differences still under
 analysis. This is a partial recovery, not an exact match or a compiler ceiling.
 

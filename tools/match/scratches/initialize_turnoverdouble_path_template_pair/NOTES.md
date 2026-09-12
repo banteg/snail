@@ -1,5 +1,17 @@
 # initialize_turnoverdouble_path_template_pair
 
+## 2026-09-12 whole-function normalized match
+
+Current result: **100% normalized**, 680/680 instructions and all 46 references
+at identical instruction positions and byte offsets. The shared departure start,
+relative-bound lifetime and persistent up-vector follow the solved Turnover
+source pattern. One encoded SIB byte remains different at body offset 691;
+`body_byte_exact` remains false. See the [source recovery and full-byte
+receipt](../../house-style-pair-recovery-20260912.md). This supersedes the
+partial metrics below.
+
+## Previous recovery
+
 Current recovery: declared semantic-complete, with native differences still under
 analysis. This is a partial recovery, not an exact match or a compiler ceiling.
 

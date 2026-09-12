@@ -27,13 +27,14 @@ def reconstruct(baseline, control):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--receipt", type=Path, default=RECEIPT)
     parser.add_argument("--function")
     parser.add_argument("--batch")
     parser.add_argument("--label")
     parser.add_argument("--source-out", type=Path)
     parser.add_argument("--replay", action="store_true")
     args = parser.parse_args()
-    receipt = json.loads(RECEIPT.read_text())
+    receipt = json.loads(args.receipt.read_text())
     for name, baseline in receipt["baselines"].items():
         if (
             hashlib.sha256(baseline["source"].encode()).hexdigest()

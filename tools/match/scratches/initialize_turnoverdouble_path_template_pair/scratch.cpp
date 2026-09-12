@@ -11,52 +11,8 @@ float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
-static __forceinline void initialize_pair_sample(Path *path, int index, float center_x,
-                                                 float y, float z)
-{
-    PathTemplateSample *primary = &path->primary_samples[index];
-    PathTemplateSample *secondary = &path->secondary_samples[index];
 
-    primary->center_x = center_x;
-    primary->rotation_scalar_98 = 0.0f;
-    primary->rotation_scalar_94 = 0.0f;
-    primary->special_scalar = 0.0f;
-    primary->lateral_scale = 1.0f;
-    primary->transform.Identity();
-    primary->transform.position.x = center_x;
-    primary->transform.position.y = y;
-    primary->transform.position.z = z;
-    primary->delta_length = 1.0f;
 
-    secondary->transform.Identity();
-    secondary->transform.position.x = center_x;
-    secondary->transform.position.y = y + 0.49000001f;
-    secondary->transform.position.z = z;
-    secondary->delta_length = 1.0f;
-}
-
-static __forceinline void orient_turnover_sample(PathTemplateSample *sample,
-                                                 PathTemplateSample *previous,
-                                                 float angle)
-{
-    sample->transform.basis_up = Vector3(Sin(angle), Cos(angle), 0.0f);
-    sample->transform.basis_forward =
-        Vector3(sample->transform.position.x - previous->transform.position.x,
-                sample->transform.position.y - previous->transform.position.y,
-                sample->transform.position.z - previous->transform.position.z);
-    sample->transform.basis_forward.Normalize();
-    sample->transform.basis_right.Cross(sample->transform.basis_up,
-                                        sample->transform.basis_forward);
-}
-
-static __forceinline void copy_secondary_from_primary(PathTemplateSample *secondary,
-                                                      PathTemplateSample *primary)
-{
-    secondary->transform = primary->transform;
-    secondary->transform.position.x += primary->transform.basis_up.x * 0.49000001f;
-    secondary->transform.position.y += primary->transform.basis_up.y * 0.49000001f;
-    secondary->transform.position.z += primary->transform.basis_up.z * 0.49000001f;
-}
 
 static __forceinline void compute_terminal_deltas(Path *path)
 {
@@ -269,7 +225,7 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
     GetNodes();
     has_entry_mesh_transition = 0;
 
-    int i = 0;
+    int sample_index = 0;
     int lead_sample_offset = 0;
     do
     {
@@ -289,7 +245,7 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
             ->transform.position.x =
             ((AttachmentSample *)((char *)primary_samples + lead_sample_offset))
                 ->center_x;
-        float z = (float)i;
+        float z = (float)sample_index;
         ((AttachmentSample *)((char *)primary_samples + lead_sample_offset))
             ->transform.position.y = 0.0f;
         ((AttachmentSample *)((char *)primary_samples + lead_sample_offset))
@@ -307,15 +263,16 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
             ->transform.position.y = 0.49000001f;
         ((AttachmentSample *)((char *)secondary_samples + lead_sample_offset))
             ->transform.position.z = z;
-        ++i;
+        ++sample_index;
         ((AttachmentSample *)((char *)secondary_samples + lead_sample_offset))
             ->delta_length = 1.0f;
         lead_sample_offset += sizeof(AttachmentSample);
     } while (lead_sample_offset < 6 * (int)sizeof(AttachmentSample));
 
-    i = curve_segments + 6;
+    int tail_start = curve_segments + 6;
+    sample_index = tail_start;
+    int tail_sample_offset = tail_start * sizeof(AttachmentSample);
     int tail_control_base = -6 - curve_segments;
-    int tail_sample_offset = (curve_segments + 6) * sizeof(AttachmentSample);
     do
     {
         ((AttachmentSample *)((char *)primary_samples + tail_sample_offset))->center_x =
@@ -330,7 +287,7 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
             ->lateral_scale = 1.0f;
         ((AttachmentSample *)((char *)primary_samples + tail_sample_offset))
             ->transform.Identity();
-        float z = (float)i;
+        float z = (float)sample_index;
         ((AttachmentSample *)((char *)primary_samples + tail_sample_offset))
             ->transform.position.x =
             ((AttachmentSample *)((char *)primary_samples + tail_sample_offset))
@@ -355,16 +312,17 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
         ((AttachmentSample *)((char *)secondary_samples + tail_sample_offset))
             ->delta_length = 1.0f;
         tail_sample_offset += sizeof(AttachmentSample);
-        ++i;
-    } while (i + tail_control_base < 2);
+        ++sample_index;
+    } while (sample_index + tail_control_base < 2);
 
-    i = 0;
+    sample_index = 0;
     if (curve_segments > 0)
     {
+        Vector3 up(0.0f, 0.0f, 0.0f);
         int curve_sample_offset = 6 * sizeof(AttachmentSample);
         do
         {
-            float t = (float)i;
+            float t = (float)sample_index;
             float slalom_angle = t * 6.2831855f / curve_segments_f;
             float roll_angle = t * 12.566371f / curve_segments_f;
             if (roll_angle > 6.2831855f)
@@ -390,15 +348,17 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
                     ->center_x -
                 Sin(roll_angle) * Sin(roll_angle * 0.5f) * 2.0f;
             ((AttachmentSample *)((char *)primary_samples + curve_sample_offset))
-                ->transform.position.z = (float)(i + 6);
+                ->transform.position.z = (float)(sample_index + 6);
             ((AttachmentSample *)((char *)primary_samples + curve_sample_offset))
                 ->transform.position.y =
                 (length - Cos(roll_angle) * length) * 0.40000001f;
 
             float up_y = Cos(roll_angle);
             float up_x = Sin(roll_angle);
+            up.x = up_x;
+            up.y = up_y;
             ((AttachmentSample *)((char *)primary_samples + curve_sample_offset))
-                ->transform.basis_up = Vector3(up_x, up_y, 0.0f);
+                ->transform.basis_up = up;
             ((AttachmentSample *)((char *)primary_samples + curve_sample_offset))
                 ->transform.basis_forward =
                 ((AttachmentSample *)((char *)primary_samples + curve_sample_offset))
@@ -432,9 +392,9 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
             secondary_position->y += secondary_offset.y;
             secondary_position->z += secondary_offset.z;
 
-            ++i;
+            ++sample_index;
             curve_sample_offset += sizeof(AttachmentSample);
-        } while (i < curve_segments);
+        } while (sample_index < curve_segments);
     }
 
     compute_terminal_deltas(this);
