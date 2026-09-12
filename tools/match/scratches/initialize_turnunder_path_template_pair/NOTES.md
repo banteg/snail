@@ -1,5 +1,15 @@
 ## Current canonical source: endpoint, face and phase owners (2026-09-11)
 
+## 2026-09-13 entrance publication order
+
+Publishing the secondary entrance sample's delta length before advancing its
+indices improves **95.84850692% to 95.99417334%**, with unchanged 686/687
+instructions and 45 clean aligned references. The normalized prefix grows
+**80 to 105**; the relocation-audited encoded prefix grows **309 to 384 bytes**
+(80 to 99 instructions). Instruction 99 retains an unequal SIB byte. The
+complete body remains partial. See the [trio controls and proof](../../template-trio-controls-20260913.md).
+This supersedes the current metrics below.
+
 Canonical Turnunder improves **78.45705968% → 95.84850692%**, with
 **686/687 instructions**, **45 clean references**, and the native **0x54-byte**
 frame. The relocation-audited encoded prefix grows **56/213 → 80/309

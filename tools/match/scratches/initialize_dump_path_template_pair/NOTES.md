@@ -1,5 +1,14 @@
 # `initialize_dump_path_template_pair` starter
 
+## 2026-09-13 terminal-delta address recovery
+
+Typed array traversal from solved Hump/Slalom recovers seven SIB bytes in the
+terminal-delta loop. The full candidate changes only at those seven bytes;
+all seven complete instructions now equal native instructions literally.
+The normalized result remains **95.57650471%, 689/690, prefix 51**, with all
+43 aligned references and their positions unchanged. The body remains partial.
+See the [trio controls and encoded proof](../../template-trio-controls-20260913.md).
+
 ## 2026-09-12 departure and curve-entry recovery
 
 Current result: **95.57650471%**, 689/690 instructions, prefix 51 and all 43

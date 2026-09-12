@@ -269,8 +269,8 @@ void cRPath::initialize_turnunder_path_template_pair(float turns, int width_cell
         secondary_samples[i].transform.position.x = primary_samples[i].center_x;
         secondary_samples[i].transform.position.y = 0.49000001f;
         secondary_samples[i].transform.position.z = z;
+        secondary_samples[i].delta_length = 1.0f;
         ++i;
-        secondary_samples[i - 1].delta_length = 1.0f;
         ++sample_step;
     } while (i < 6);
 

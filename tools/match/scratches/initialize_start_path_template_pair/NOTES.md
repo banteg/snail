@@ -1,5 +1,14 @@
 # initialize_start_path_template_pair
 
+## 2026-09-13 guarded curve-loop diagnostic
+
+A physical-offset first-sample guard and guarded `for` initializer reach
+**99.67213115%, 610/610**, with all 35 references clean. Counter initialization
+and advancement still differ. The prefix drops 148 to 146, so the diagnostic
+is **not promoted**: canonical Start stays at **96.06557377%**, prefix 148.
+The [trio receipt](../../template-trio-controls-20260913.md) preserves source
+reconstruction, full native comparison and the official tradeoff probe.
+
 Current recovery: incomplete (`analysis` residual). The verified
 Android/iOS builder bodies establish the portable sample/control graph, and
 the live Windows body covers the native mesh/face tail, but current-state

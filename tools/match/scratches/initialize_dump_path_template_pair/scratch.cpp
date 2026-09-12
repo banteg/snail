@@ -160,39 +160,21 @@ static __forceinline void compute_terminal_deltas(Path *path)
     int i = 0;
     if (path->segment_count - 1 > 0)
     {
-        int delta_offset = 0;
         do
         {
-            ((PathAttachmentSample *)((char *)path->primary_samples + delta_offset))
-                ->delta_dir_to_next =
-                ((PathAttachmentSample *)((char *)path->primary_samples +
-                                          delta_offset) +
-                 1)
-                    ->transform.position -
-                ((PathAttachmentSample *)((char *)path->primary_samples + delta_offset))
-                    ->transform.position;
-            ((PathAttachmentSample *)((char *)path->primary_samples + delta_offset))
-                ->delta_length =
-                ((PathAttachmentSample *)((char *)path->primary_samples + delta_offset))
-                    ->delta_dir_to_next.Normalize();
+            path->primary_samples[i].delta_dir_to_next =
+                path->primary_samples[i + 1].transform.position -
+                path->primary_samples[i].transform.position;
+            path->primary_samples[i].delta_length =
+                path->primary_samples[i].delta_dir_to_next.Normalize();
 
-            ((PathAttachmentSample *)((char *)path->secondary_samples + delta_offset))
-                ->delta_dir_to_next =
-                ((PathAttachmentSample *)((char *)path->secondary_samples +
-                                          delta_offset) +
-                 1)
-                    ->transform.position -
-                ((PathAttachmentSample *)((char *)path->secondary_samples +
-                                          delta_offset))
-                    ->transform.position;
-            ((PathAttachmentSample *)((char *)path->secondary_samples + delta_offset))
-                ->delta_length =
-                ((PathAttachmentSample *)((char *)path->secondary_samples +
-                                          delta_offset))
-                    ->delta_dir_to_next.Normalize();
+            path->secondary_samples[i].delta_dir_to_next =
+                path->secondary_samples[i + 1].transform.position -
+                path->secondary_samples[i].transform.position;
+            path->secondary_samples[i].delta_length =
+                path->secondary_samples[i].delta_dir_to_next.Normalize();
 
             ++i;
-            delta_offset += (int)sizeof(PathAttachmentSample);
         } while (i < path->segment_count - 1);
     }
 
