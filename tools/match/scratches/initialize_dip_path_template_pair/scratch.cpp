@@ -171,7 +171,7 @@ static __forceinline void initialize_primary_curve_position(
 
 static __forceinline void initialize_secondary_curve(
     PathAttachmentSample *&primary, PathAttachmentSample *&secondary,
-    int offset, float angle, float radius, float z)
+    int offset, float angle, float radius, const float &z)
 {
     ((PathAttachmentSample *)((char *)secondary + offset))
         ->transform.Identity();

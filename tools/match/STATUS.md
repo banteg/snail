@@ -10,9 +10,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**49** non-exact scratch-backed functions hold **10810 fuzzy-gap bytes**. The top 5 hold **64.1%** of that gap; the top 10 hold **77.7%**.
+**49** non-exact scratch-backed functions hold **10796 fuzzy-gap bytes**. The top 5 hold **64.2%** of that gap; the top 10 hold **77.8%**.
 
-Current-baseline experiments cover **8 functions / 459 gap bytes**; **41 / 10351** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **9 functions / 600 gap bytes**; **40 / 10196** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -30,8 +30,8 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 10 | initialize_looptheloopw_path_template_pair | 199 | semantic-complete | analysis | historical-only | 0/14 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
 | 11 | initialize_p_path_template_pair | 178 | semantic-complete | analysis | historical-only | 0/24 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 12 | set_snail_weapon | 155 | semantic-complete | analysis | historical-only | 0/11 | repeated-variants,historical-only,stale-dependencies |
-| 13 | initialize_supertramp_path_template_pair | 155 | semantic-complete | analysis | historical-only | 0/21 | repeated-variants,repeated-specs,metric-tradeoffs,historical-only,stale-dependencies |
-| 14 | initialize_looptheloop_path_template_pair | 147 | semantic-complete | analysis | historical-only | 0/14 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
+| 13 | initialize_looptheloop_path_template_pair | 147 | semantic-complete | analysis | historical-only | 0/14 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
+| 14 | initialize_supertramp_path_template_pair | 144 | semantic-complete | analysis | current-active | 1/23 | repeated-variants,repeated-specs,metric-tradeoffs,stale-dependencies |
 | 15 | initialize_loading_screen | 131 | semantic-complete | analysis | historical-only | 0/8 | variant-errors,historical-only,stale-dependencies |
 | 16 | initialize_intro_screen | 123 | semantic-complete | analysis | historical-only | 0/13 | repeated-variants,variant-errors,historical-only,stale-dependencies |
 | 17 | register_font_texture_sheet | 121 | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
@@ -46,7 +46,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 26 | add_object_edge | 66 | semantic-complete | analysis,references | historical-only | 0/16 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 27 | initialize_tip | 63 | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
 | 28 | initialize_hill_valley_path_template_pair | 59 | semantic-complete | analysis | current-active | 2/41 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
-| 29 | initialize_dip_path_template_pair | 55 | semantic-complete | analysis | current-active | 1/53 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
+| 29 | initialize_dip_path_template_pair | 51 | semantic-complete | analysis | current-active | 1/55 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
 | 30 | release_snail_weapons | 40 | semantic-complete | analysis | historical-only | 0/13 | variant-errors,historical-only,stale-dependencies |
 | 31 | select_level_track_texture_set | 39 | semantic-complete | analysis,references | historical-only | 0/9 | variant-errors,historical-only,stale-dependencies |
 | 32 | refresh_object_vertex_buffer | 38 | semantic-complete | analysis | historical-only | 0/10 | historical-only,stale-dependencies |
@@ -700,7 +700,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | create_golb | 0x415280 | 2352 | 582/582 | 99.14% | 156/582 | 48 ok |  | core |
 | 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2624 | 718/718 | 98.89% | 17/718 | 52 ok |  | core |
 | 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2576 | 689/690 | 95.58% | 51/690 | 43 ok |  | core |
-| 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2400 | 655/655 | 97.71% | 22/655 | 37 ok |  | core |
+| 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2400 | 655/655 | 97.86% | 22/655 | 37 ok |  | core |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2752 | 726/726 | 97.25% | 194/726 | 65 ok |  | core |
 | 🚧 | traverse_path_follow_golb | 0x4217b0 | 1552 | 425/425 | 99.29% | 96/425 | 7 ok |  | core |
 | 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2432 | 652/652 | 99.69% | 90/652 | 37 ok |  | core |
@@ -726,7 +726,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2640 | 719/721 | 94.44% | 159/721 | 49 ok |  | core |
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2736 | 737/745 | 92.71% | 118/745 | 55 ok |  | core |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2768 | 725/736 | 81.18% | 0/736 | 37 ok |  | core |
-| 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1936 | 550/552 | 92.01% | 45/552 | 36 ok |  | core |
+| 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1936 | 550/552 | 92.56% | 45/552 | 36 ok |  | core |
 | 🚧 | initialize_p_path_template_pair | 0x425a40 | 2496 | 678/679 | 92.85% | 6/679 | 41 ok |  | core |
 | 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 704/707 | 86.32% | 137/707 | 55 ok |  | core |
 | 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2944 | 792/796 | 93.07% | 22/796 | 63 ok |  | core |

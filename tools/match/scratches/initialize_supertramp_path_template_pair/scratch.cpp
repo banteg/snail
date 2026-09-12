@@ -59,9 +59,9 @@ static __forceinline void build_direct_strip_mesh(Path *path, char *top_texture,
             float v1 = (float)(face_row % 8 + 1) * 0.125f;
             do
             {
+                int side = 0;
                 float u0 = (float)column * 0.125f;
                 float u1 = (float)(column + 1) * 0.125f;
-                int side = 0;
                 do
                 {
                     int face_offset =
@@ -85,7 +85,7 @@ static __forceinline void build_direct_strip_mesh(Path *path, char *top_texture,
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(cap_texture, 0, 0);
                         }
-                        else if ((column ^ face_row) & 1)
+                        else if ((column & 1) == (face_row & 1))
                         {
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(top_texture, 0, 0);
@@ -110,7 +110,7 @@ static __forceinline void build_direct_strip_mesh(Path *path, char *top_texture,
                         facequads[face_offset].vertex_3 =
                             (face_row + 1) * ((unsigned short)path->width_cells + 1) +
                             column + 1;
-                        if ((column ^ face_row) & 1)
+                        if ((column & 1) == (face_row & 1))
                         {
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(bottom_texture, 0, 0);
