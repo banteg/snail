@@ -168,32 +168,22 @@ void cRPath::initialize_snake_path_template_pair(
 
     int delta_index = 0;
     if (segment_count - 1 > 0) {
-        int delta_offset = 0;
+        PathTemplateSample *const &primary_bank = primary_samples;
+        PathTemplateSample *const &secondary_bank = secondary_samples;
         do {
-            ((PathTemplateSample*)((char*)primary_samples + delta_offset))
-                ->delta_dir_to_next =
-                ((PathTemplateSample*)((char*)primary_samples + delta_offset) + 1)
-                    ->transform.position -
-                ((PathTemplateSample*)((char*)primary_samples + delta_offset))
-                    ->transform.position;
-            ((PathTemplateSample*)((char*)primary_samples + delta_offset))
-                ->delta_length =
-                ((PathTemplateSample*)((char*)primary_samples + delta_offset))
-                    ->delta_dir_to_next.Normalize();
+            primary_bank[delta_index].delta_dir_to_next =
+                primary_bank[delta_index + 1].transform.position -
+                primary_bank[delta_index].transform.position;
+            primary_bank[delta_index].delta_length =
+                primary_bank[delta_index].delta_dir_to_next.Normalize();
 
-            ((PathTemplateSample*)((char*)secondary_samples + delta_offset))
-                ->delta_dir_to_next =
-                ((PathTemplateSample*)((char*)secondary_samples + delta_offset) + 1)
-                    ->transform.position -
-                ((PathTemplateSample*)((char*)secondary_samples + delta_offset))
-                    ->transform.position;
-            ((PathTemplateSample*)((char*)secondary_samples + delta_offset))
-                ->delta_length =
-                ((PathTemplateSample*)((char*)secondary_samples + delta_offset))
-                    ->delta_dir_to_next.Normalize();
+            secondary_bank[delta_index].delta_dir_to_next =
+                secondary_bank[delta_index + 1].transform.position -
+                secondary_bank[delta_index].transform.position;
+            secondary_bank[delta_index].delta_length =
+                secondary_bank[delta_index].delta_dir_to_next.Normalize();
 
             ++delta_index;
-            delta_offset += (int)sizeof(PathTemplateSample);
         } while (delta_index < segment_count - 1);
     }
 
