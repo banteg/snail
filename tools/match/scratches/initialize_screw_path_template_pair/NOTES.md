@@ -1,5 +1,16 @@
 # `initialize_screw_path_template_pair` starter
 
+## 2026-09-13: entrance and mesh source recovery
+
+The current source improves **86.94383662% to 93.72262774%**, reaches the native
+**685/685 instruction count**, and grows the prefix from **58 to 68
+instructions**. Direct mesh sample arrays, earlier face-column initialization
+and entrance increment order preserve **40 clean references** and the native
+`0x50` frame. A separate positional audit proves the first **264 bytes** after
+strict relocation handling. The function remains partial; the full body is
+not encoded-exact. Independent reversals and 174 follow-up observations are
+preserved in [the recovery report](../../template-followup-controls-20260913.md).
+
 ## 2026-09-11: separate UV dispatch and native source owners
 
 Separate topology/texture and UV branches improve screw while preserving its
@@ -11,7 +22,7 @@ branch placement remain open. Forward recipes, independent reversals, full
 bytes and positional reference proof are retained in [the family
 report](../../path-uv-and-screw-owners-20260911.md).
 
-Current recovery: semantic-complete (`analysis` residual). The 2026-09-11
+Recovery remains semantic-complete (`analysis` residual). The 2026-09-11
 UV/owner recovery improves **71.7119765% to 86.9438366%**, with
 **40 clean references**. It remains a partial normalized and encoded match.
 The remaining source and instruction-layout differences are open analysis.

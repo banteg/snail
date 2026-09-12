@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**612/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **177353/299952** bytes (**59.13%**) are proof-grade, and overall fuzzy is **94.38%**.
+**612/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **177353/299952** bytes (**59.13%**) are proof-grade, and overall fuzzy is **94.43%**.
 
 **114/120** platform helpers matched, **120/120** have a scratch, **17633/23008** bytes (**76.64%**) are proof-grade, and overall fuzzy is **96.81%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -10,9 +10,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**50** non-exact scratch-backed functions hold **11422 fuzzy-gap bytes**. The top 5 hold **60.7%** of that gap; the top 10 hold **75.8%**.
+**50** non-exact scratch-backed functions hold **11253 fuzzy-gap bytes**. The top 5 hold **61.6%** of that gap; the top 10 hold **75.9%**.
 
-Current-baseline experiments cover **7 functions / 404 gap bytes**; **43 / 11018** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **8 functions / 561 gap bytes**; **42 / 10692** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -26,11 +26,11 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 6 | initialize_cage2_path_template_pair | 414 | semantic-complete | analysis | historical-only | 0/20 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 7 | initialize_halfpipe_path_template_pair | 355 | semantic-complete | analysis | historical-only | 0/24 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 8 | initialize_dip_path_template_pair | 341 | semantic-complete | analysis | historical-only | 0/50 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 9 | initialize_screw_path_template_pair | 326 | semantic-complete | analysis | historical-only | 0/41 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 10 | build_subgame_level | 296 | semantic-complete | analysis | historical-only | 0/21 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 11 | initialize_loopbow_path_template_pair | 204 | semantic-complete | analysis | historical-only | 0/17 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 12 | initialize_looptheloopw_path_template_pair | 199 | semantic-complete | analysis | historical-only | 0/14 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
-| 13 | initialize_p_path_template_pair | 178 | semantic-complete | analysis | historical-only | 0/24 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 9 | build_subgame_level | 296 | semantic-complete | analysis | historical-only | 0/21 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 10 | initialize_loopbow_path_template_pair | 204 | semantic-complete | analysis | historical-only | 0/17 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 11 | initialize_looptheloopw_path_template_pair | 199 | semantic-complete | analysis | historical-only | 0/14 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
+| 12 | initialize_p_path_template_pair | 178 | semantic-complete | analysis | historical-only | 0/24 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 13 | initialize_screw_path_template_pair | 157 | semantic-complete | analysis | current-active | 1/44 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
 | 14 | set_snail_weapon | 155 | semantic-complete | analysis | historical-only | 0/11 | repeated-variants,historical-only,stale-dependencies |
 | 15 | initialize_supertramp_path_template_pair | 155 | semantic-complete | analysis | historical-only | 0/21 | repeated-variants,repeated-specs,metric-tradeoffs,historical-only,stale-dependencies |
 | 16 | initialize_looptheloop_path_template_pair | 147 | semantic-complete | analysis | historical-only | 0/14 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
@@ -725,7 +725,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2640 | 719/721 | 94.44% | 159/721 | 49 ok |  | core |
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2736 | 737/745 | 92.71% | 118/745 | 55 ok |  | core |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2400 | 646/655 | 85.78% | 8/655 | 37 ok |  | core |
-| 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2496 | 686/685 | 86.94% | 58/685 | 40 ok |  | core |
+| 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2496 | 685/685 | 93.72% | 68/685 | 40 ok |  | core |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2768 | 725/736 | 81.18% | 0/736 | 37 ok |  | core |
 | 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1936 | 550/552 | 92.01% | 45/552 | 36 ok |  | core |
 | 🚧 | initialize_p_path_template_pair | 0x425a40 | 2496 | 678/679 | 92.85% | 6/679 | 41 ok |  | core |

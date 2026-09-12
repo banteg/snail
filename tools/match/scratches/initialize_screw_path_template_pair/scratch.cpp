@@ -451,8 +451,8 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             ->transform.position.y = 0.49000001f;
         ((PathAttachmentSample*)((char*)secondary_samples + lead_sample_offset))
             ->transform.position.z = z;
-        lead_sample_offset += sizeof(PathAttachmentSample);
         ++i;
+        lead_sample_offset += sizeof(PathAttachmentSample);
     } while (lead_sample_offset < 3 * (int)sizeof(PathAttachmentSample));
 
     int departure_index = curve_count + 3;
@@ -672,19 +672,17 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
         for (mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {
             double lateral = (float)mesh_column - (float)width_cells * 0.5f;
             if (mesh_row != segment_count) {
-                PathAttachmentSample* sample = &primary_samples[mesh_row];
                 Vector3 lateral_offset =
-                    sample->transform.basis_right * lateral;
+                    primary_samples[mesh_row].transform.basis_right * lateral;
                 Vector3 generated_position =
-                    sample->transform.position + lateral_offset;
+                    primary_samples[mesh_row].transform.position + lateral_offset;
                 Vector3* vertex =
                     &vertices[mesh_column + mesh_row * (width_cells + 1)];
                 *vertex = generated_position;
             } else {
-                PathAttachmentSample* previous = &primary_samples[mesh_row - 1];
                 Vector3 lateral_offset =
-                    previous->transform.basis_right * lateral;
-                Vector3 endpoint = previous->transform.position
+                    primary_samples[mesh_row - 1].transform.basis_right * lateral;
+                Vector3 endpoint = primary_samples[mesh_row - 1].transform.position
                     + Vector3(0.0f, 0.0f, 1.0f);
                 Vector3 generated_position =
                     endpoint + lateral_offset;
@@ -696,10 +694,10 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     }
 
     for (mesh_row = 0; mesh_row < segment_count; ++mesh_row) {
+        mesh_column = 0;
         if (width_cells > 0) {
             float v0 = (float)(mesh_row % 8) * 0.125f;
             float v1 = (float)(mesh_row % 8 + 1) * 0.125f;
-            mesh_column = 0;
             int next_column;
             do {
                 next_column = mesh_column + 1;
