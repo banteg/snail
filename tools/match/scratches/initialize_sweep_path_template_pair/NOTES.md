@@ -1,5 +1,16 @@
 # initialize_sweep_path_template_pair
 
+## 2026-09-12 shared primary position recovery
+
+Current result: **99.69%**, 652/652 instructions, prefix 90, with all 37
+references at identical instruction and byte positions. Sharing the primary
+position operation across all three phases recovers the lead-in and curve
+receiver setup. Unequal relocation-audited body bytes fall from 42 to 22.
+The departure receiver setup and encoded differences remain; this is partial.
+See the [source and byte receipt](../../sweep-primary-positions-20260912.md)
+and [bounded controls](../../four-builder-controls-20260912.md).
+This result supersedes the metrics below without establishing source exhaustion.
+
 ## 2026-09-11 partial source recovery
 
 Current result: **99.39%**, 652/652 instructions, prefix 45,

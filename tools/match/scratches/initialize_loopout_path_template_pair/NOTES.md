@@ -1,5 +1,16 @@
 # `initialize_loopout_path_template_pair` starter
 
+## 2026-09-12 mesh and storage controls
+
+Canonical source remains at **98.88579387%**, 718/718 instructions, prefix 17.
+Thirty bounded controls test mesh/vertex ownership and radius/width lifetime.
+The radius-parameter form improves the prefix to 440 but regresses the full
+score to 97.21448468%; borrowed vertex storage is neutral. Neither is retained.
+See the [reconstructible controls](../../four-builder-controls-20260912.md).
+These results do not establish exhaustion or compiler provenance.
+
+## Previous recovery
+
 Current recovery: semantic-complete (`analysis` residual). The 2026-09-11
 source reaches **98.88579387%**, with **718/718 instructions**, normalized
 prefix **17**, the native **0x50** frame and **52 strict positional references**.

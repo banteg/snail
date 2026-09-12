@@ -185,6 +185,21 @@ static __forceinline void initialize_secondary(PathTemplateSample *&secondary,
     ((PathTemplateSample *)((char *)secondary + offset))->transform.position.z = z;
 }
 
+static __forceinline float initialize_primary_position(
+    PathTemplateSample *&bank, int offset, int index, float angle, bool curved)
+{
+    ((PathTemplateSample *)((char *)bank + offset))->transform.position.x =
+        ((PathTemplateSample *)((char *)bank + offset))->center_x;
+    if (curved)
+        ((PathTemplateSample *)((char *)bank + offset))->transform.position.y =
+            Sin(angle) * -0.30000001f;
+    float z = (float)(index + (curved ? 3 : 0));
+    if (!curved)
+        ((PathTemplateSample *)((char *)bank + offset))->transform.position.y = 0.0f;
+    ((PathTemplateSample *)((char *)bank + offset))->transform.position.z = z;
+    return z;
+}
+
 void cRPath::initialize_sweep_path_template_pair(float scale_arg, int width_cells_,
                                                  bool side_exit, char *texture_a,
                                                  char *texture_b, char *cap_texture)
@@ -217,14 +232,7 @@ void cRPath::initialize_sweep_path_template_pair(float scale_arg, int width_cell
             .lateral_scale = 1.0f;
         ((PathTemplateSample *)((char *)primary_samples + lead_offset))[0]
             .transform.Identity();
-        ((PathTemplateSample *)((char *)primary_samples + lead_offset))[0]
-            .transform.position.x =
-            ((PathTemplateSample *)((char *)primary_samples + lead_offset))[0].center_x;
-        float z = (float)i;
-        ((PathTemplateSample *)((char *)primary_samples + lead_offset))[0]
-            .transform.position.y = 0.0f;
-        ((PathTemplateSample *)((char *)primary_samples + lead_offset))[0]
-            .transform.position.z = z;
+        float z = initialize_primary_position(primary_samples, lead_offset, i, 0.0f, false);
 
         initialize_secondary(secondary_samples, primary_samples, lead_offset, z, false);
     }
@@ -245,15 +253,7 @@ void cRPath::initialize_sweep_path_template_pair(float scale_arg, int width_cell
             ->lateral_scale = 1.0f;
         ((PathTemplateSample *)((char *)primary_samples + departure_offset))
             ->transform.Identity();
-        float z = (float)departure_index;
-        ((PathTemplateSample *)((char *)primary_samples + departure_offset))
-            ->transform.position.x =
-            ((PathTemplateSample *)((char *)primary_samples + departure_offset))
-                ->center_x;
-        ((PathTemplateSample *)((char *)primary_samples + departure_offset))
-            ->transform.position.y = 0.0f;
-        ((PathTemplateSample *)((char *)primary_samples + departure_offset))
-            ->transform.position.z = z;
+        float z = initialize_primary_position(primary_samples, departure_offset, departure_index, 0.0f, false);
 
         initialize_secondary(secondary_samples, primary_samples, departure_offset, z,
                              false);
@@ -275,12 +275,7 @@ void cRPath::initialize_sweep_path_template_pair(float scale_arg, int width_cell
         ((PathTemplateSample *)((char *)primary_samples + i))->special_scalar = 0.0f;
         ((PathTemplateSample *)((char *)primary_samples + i))->lateral_scale = 1.0f;
         ((PathTemplateSample *)((char *)primary_samples + i))->transform.Identity();
-        ((PathTemplateSample *)((char *)primary_samples + i))->transform.position.x =
-            ((PathTemplateSample *)((char *)primary_samples + i))->center_x;
-        ((PathTemplateSample *)((char *)primary_samples + i))->transform.position.y =
-            Sin(angle) * -0.30000001f;
-        float z = (float)(curve_index + 3);
-        ((PathTemplateSample *)((char *)primary_samples + i))->transform.position.z = z;
+        float z = initialize_primary_position(primary_samples, i, curve_index, angle, true);
 
         initialize_secondary(secondary_samples, primary_samples, i, z, true);
         if (i > 3 * (int)sizeof(PathTemplateSample))

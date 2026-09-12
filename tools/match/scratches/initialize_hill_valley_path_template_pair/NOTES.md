@@ -1,5 +1,17 @@
 # initialize_hill_valley_path_template_pair
 
+## 2026-09-12 endpoint and receiver controls
+
+Canonical source remains at **97.60479042%**, 668/668 instructions, prefix 21.
+Seventy-four bounded controls test endpoint ownership and lifetime, logical
+and physical traversal, and curve receiver borrowing. A path endpoint helper
+regresses to 92.97458894%; borrowing the last index is neutral. The transferred
+array delta loop is byte-neutral. No source change is retained. See the
+[reconstructible controls](../../four-builder-controls-20260912.md).
+These results do not establish exhaustion or compiler provenance.
+
+## Previous recovery
+
 Current recovery: declared semantic-complete, with native differences still under
 analysis. This is a partial recovery, not an exact match or a compiler ceiling.
 
