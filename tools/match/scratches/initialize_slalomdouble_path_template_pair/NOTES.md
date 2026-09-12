@@ -1,5 +1,15 @@
 # initialize_slalomdouble_path_template_pair
 
+## 2026-09-12 paired array traversal
+
+Using the existing logical index in both terminal-delta sample banks removes
+the redundant byte cursor and recovers five secondary-bank SIB bytes. Every
+other relocation-audited body byte is unchanged. The normalized result stays
+99.7072%, 683/683 instructions, prefix 84, with all 45 references at the same
+instruction and byte positions. An independent reversal restores all five old
+bytes. The departure receiver remains unresolved; no exact credit is added.
+See the [receipt and byte audit](../../slalomdouble-array-deltas-20260912.md).
+
 Current recovery: semantic-complete (`analysis` residual). The 2026-09-11
 source recovery reaches **99.7072%**, with **683/683 instructions** and **45
 clean references at identical instruction and byte positions**. Both formerly

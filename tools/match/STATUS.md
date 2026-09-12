@@ -12,7 +12,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 **53** non-exact scratch-backed functions hold **12025 fuzzy-gap bytes**. The top 5 hold **57.6%** of that gap; the top 10 hold **72.0%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **53 / 12025** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **1 functions / 7 gap bytes**; **52 / 12017** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -66,7 +66,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 46 | explode_slug_hazard | 11 | semantic-complete | analysis | historical-only | 0/20 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 47 | traverse_path_follow_golb | 11 | semantic-complete | analysis | historical-only | 0/34 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 48 | read_repeating_text_input_key_code | 9 | semantic-complete | analysis | historical-only | 0/15 | variant-errors,historical-only,stale-dependencies |
-| 49 | initialize_slalomdouble_path_template_pair | 7 | semantic-complete | analysis | historical-only | 0/31 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 49 | initialize_slalomdouble_path_template_pair | 7 | semantic-complete | analysis | current-active | 1/33 | repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
 | 50 | border_mouse_test | 7 | semantic-complete | analysis | historical-only | 0/14 | variant-errors,historical-only,stale-dependencies |
 | 51 | switch_track_mirror | 7 | semantic-complete | analysis | historical-only | 0/6 | historical-only,stale-dependencies |
 | 52 | load_galaxy_layout | 7 | semantic-complete | analysis | historical-only | 0/33 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
