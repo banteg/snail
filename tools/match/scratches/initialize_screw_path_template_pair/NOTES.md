@@ -1,5 +1,17 @@
 # `initialize_screw_path_template_pair` starter
 
+## 2026-09-13: coupled departure, curve and delta recovery
+
+The current source improves **93.72262774% to 99.12408759%**, preserving
+**685/685 instructions** and **40 clean references**. Sharing the departure
+counter, precomputing its origin, using one guarded delta loop and placing the
+normal curve orientation first recover the first **403 instructions / 1,579
+bytes**. The even parity condition then recovers both native branch opcodes.
+Exactly **nine relocation-audited body bytes** remain different, all in
+multiplication operand selection. Screw remains a partial normalized and
+encoded match. [The recovery report](../../screw-counter-curve-recovery-20260913.md)
+contains full-body positional evidence, independent reversals and 82 controls.
+
 ## 2026-09-13: entrance and mesh source recovery
 
 The current source improves **86.94383662% to 93.72262774%**, reaches the native
