@@ -1,5 +1,17 @@
 # `initialize_dump_path_template_pair` starter
 
+## 2026-09-12 departure and curve-entry recovery
+
+Current result: **95.57650471%**, 689/690 instructions, prefix 51 and all 43
+aligned references clean. Physical departure traversal and the curve index's
+pre-guard lifetime improve the native sequence. Ten reference instructions
+share native indices and seventeen share offsets; this remains partial.
+The inactive builder branches and unused helpers are removed with an independent
+byte-preserving cleanup check. See the [source recovery and
+controls](../../hump-dump-house-style-20260912.md). This supersedes the metrics below.
+
+## Previous recovery
+
 Current recovery: declared semantic-complete, with native differences still under
 analysis. This is a partial recovery, not an exact match or a compiler ceiling.
 

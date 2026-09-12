@@ -1,5 +1,17 @@
 # `initialize_hump_path_template_pair` starter
 
+## 2026-09-12 complete encoded-body match
+
+Current result: **100%, byte-exact**, 685/685 instructions and all 43 strict
+positional references. Physical sample traversal, the solved sibling mesh
+structure, shared primary-position output ownership and paired logical delta
+arrays recover the complete 2,553-byte body. Seven terminal padding bytes are
+excluded, with no unexplained ranges. See the [full source and byte
+proof](../../hump-dump-house-style-20260912.md). This supersedes the partial
+metrics below.
+
+## Previous recovery
+
 2026-09-11 follow-up: parity-bit equality recovers both native texture branch
 directions, improving **92.57% → 92.86%** with 687/685 instructions and 43 clean
 aligned references. The body remains partial. See the [inline-table proof report](../../inline-jump-table-proof-20260911.md) for the independent source probe and updated evidence.
