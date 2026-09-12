@@ -1,0 +1,363 @@
+{
+  "schema": 1,
+  "function": "release_direct3d_device_interfaces",
+  "native_image_sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5",
+  "source_sha256": "44118fdd35537dc7c3fc9676f0c2aaff1bac361a5ab7be4e5cb0242fe8a346c1",
+  "compiler": "msvc6.5",
+  "cflags": "/O2 /G5 /W3",
+  "object_sha256": "8c3d31f0e8d205763ff13f440d17a262101d4acfef2b09079865b9613a9b80fd",
+  "start": "0x411960",
+  "default_end": "0x4119c0",
+  "verified_end": "0x411999",
+  "body_hex": "568bf18b8694bb000085c074108b0850ff5108c78694bb0000000000008b8690bb000085c074108b1050ff5208c78690bb0000000000005ec3",
+  "candidate_terminal_padding_hex": "90909090909090",
+  "following_native_bytes_hex": "90909090909090e90b0000009090909090909090909090c3909090909090909090909090909090",
+  "native_disassembly": [
+    {
+      "address": "0x411960",
+      "bytes": "56",
+      "instruction": "push esi"
+    },
+    {
+      "address": "0x411961",
+      "bytes": "8bf1",
+      "instruction": "mov esi, ecx"
+    },
+    {
+      "address": "0x411963",
+      "bytes": "8b8694bb0000",
+      "instruction": "mov eax, dword ptr [esi + 0xbb94]"
+    },
+    {
+      "address": "0x411969",
+      "bytes": "85c0",
+      "instruction": "test eax, eax"
+    },
+    {
+      "address": "0x41196b",
+      "bytes": "7410",
+      "instruction": "je 0x41197d"
+    },
+    {
+      "address": "0x41196d",
+      "bytes": "8b08",
+      "instruction": "mov ecx, dword ptr [eax]"
+    },
+    {
+      "address": "0x41196f",
+      "bytes": "50",
+      "instruction": "push eax"
+    },
+    {
+      "address": "0x411970",
+      "bytes": "ff5108",
+      "instruction": "call dword ptr [ecx + 8]"
+    },
+    {
+      "address": "0x411973",
+      "bytes": "c78694bb000000000000",
+      "instruction": "mov dword ptr [esi + 0xbb94], 0"
+    },
+    {
+      "address": "0x41197d",
+      "bytes": "8b8690bb0000",
+      "instruction": "mov eax, dword ptr [esi + 0xbb90]"
+    },
+    {
+      "address": "0x411983",
+      "bytes": "85c0",
+      "instruction": "test eax, eax"
+    },
+    {
+      "address": "0x411985",
+      "bytes": "7410",
+      "instruction": "je 0x411997"
+    },
+    {
+      "address": "0x411987",
+      "bytes": "8b10",
+      "instruction": "mov edx, dword ptr [eax]"
+    },
+    {
+      "address": "0x411989",
+      "bytes": "50",
+      "instruction": "push eax"
+    },
+    {
+      "address": "0x41198a",
+      "bytes": "ff5208",
+      "instruction": "call dword ptr [edx + 8]"
+    },
+    {
+      "address": "0x41198d",
+      "bytes": "c78690bb000000000000",
+      "instruction": "mov dword ptr [esi + 0xbb90], 0"
+    },
+    {
+      "address": "0x411997",
+      "bytes": "5e",
+      "instruction": "pop esi"
+    },
+    {
+      "address": "0x411998",
+      "bytes": "c3",
+      "instruction": "ret"
+    },
+    {
+      "address": "0x411999",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x41199a",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x41199b",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x41199c",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x41199d",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x41199e",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x41199f",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119a0",
+      "bytes": "e90b000000",
+      "instruction": "jmp 0x4119b0"
+    },
+    {
+      "address": "0x4119a5",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119a6",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119a7",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119a8",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119a9",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119aa",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119ab",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119ac",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119ad",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119ae",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119af",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119b0",
+      "bytes": "c3",
+      "instruction": "ret"
+    },
+    {
+      "address": "0x4119b1",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119b2",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119b3",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119b4",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119b5",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119b6",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119b7",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119b8",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119b9",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119ba",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119bb",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119bc",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119bd",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119be",
+      "bytes": "90",
+      "instruction": "nop"
+    },
+    {
+      "address": "0x4119bf",
+      "bytes": "90",
+      "instruction": "nop"
+    }
+  ],
+  "controls": {
+    "next-curated-function": {
+      "exact": false,
+      "encoded_body_proof": null,
+      "body_byte_exact": false,
+      "compared_target_ranges": [
+        [
+          0,
+          81
+        ]
+      ],
+      "excluded_target_ranges": [
+        [
+          81,
+          96,
+          "terminal-padding"
+        ]
+      ],
+      "unexplained_target_ranges": [],
+      "candidate_object_sha256": "8c3d31f0e8d205763ff13f440d17a262101d4acfef2b09079865b9613a9b80fd",
+      "match_ratio": 0.6428571428571429,
+      "prefix_instructions": 18,
+      "target_instructions": 38,
+      "candidate_instructions": 18,
+      "target_inline_data_ranges": [],
+      "candidate_inline_data_ranges": [],
+      "target_inline_lookup_ranges": [],
+      "candidate_inline_lookup_ranges": [],
+      "masked_references": {
+        "ok": 0,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "post_return_target_tail": {
+        "return_end_offset": 57,
+        "return_end_address": 4266393,
+        "target_tail_end_offset": 81,
+        "target_tail_end_address": 4266417,
+        "target_tail_instructions": 20,
+        "caveat": "The candidate ends at a matching return, but the target continues. Inspect native branches and independent function-boundary evidence before setting END: this can be an overlong extent or missing cold code. No target bytes have been excluded by this diagnostic."
+      }
+    },
+    "verified-return-end": {
+      "exact": true,
+      "encoded_body_proof": {
+        "target_sha256": "9561df5c4718c962b962157612c26456797fa56b3da4eaa4c3519a4012eb2851",
+        "candidate_sha256": "9561df5c4718c962b962157612c26456797fa56b3da4eaa4c3519a4012eb2851",
+        "body_size": 57,
+        "masked_relocation_ranges": [],
+        "resolved_local_relocations": [],
+        "resolved_local_data_relocations": [],
+        "literal_inline_data_ranges": []
+      },
+      "body_byte_exact": true,
+      "compared_target_ranges": [
+        [
+          0,
+          57
+        ]
+      ],
+      "excluded_target_ranges": [],
+      "unexplained_target_ranges": [],
+      "candidate_object_sha256": "8c3d31f0e8d205763ff13f440d17a262101d4acfef2b09079865b9613a9b80fd",
+      "match_ratio": 1.0,
+      "prefix_instructions": 18,
+      "target_instructions": 18,
+      "candidate_instructions": 18,
+      "target_inline_data_ranges": [],
+      "candidate_inline_data_ranges": [],
+      "target_inline_lookup_ranges": [],
+      "candidate_inline_lookup_ranges": [],
+      "masked_references": {
+        "ok": 0,
+        "unresolved": 0,
+        "mismatch": 0,
+        "unaudited": 0
+      },
+      "post_return_target_tail": null
+    }
+  }
+}

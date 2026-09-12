@@ -3711,6 +3711,38 @@ def stack_frame_diagnostic_payload(result: MatchResult) -> dict[str, Any] | None
     }
 
 
+def post_return_target_tail_payload(result: MatchResult) -> dict[str, Any] | None:
+    """Locate a target-only suffix after a fully matching candidate return.
+
+    This is a boundary-review lead, never an extent or reachability proof.
+    Earlier branches may still reach cold code beyond the candidate's return.
+    """
+    count = len(result.candidate_lines)
+    if (
+        not count
+        or result.prefix_instructions != count
+        or count >= len(result.target_lines)
+        or len(result.target_disassembly) != len(result.target_lines)
+        or result.candidate_lines[-1].partition(" ")[0] not in {"ret", "retf"}
+    ):
+        return None
+    last = result.target_disassembly[count - 1]
+    tail = result.target_disassembly[count:]
+    return {
+        "return_end_offset": last.offset + last.size,
+        "return_end_address": last.address + last.size,
+        "target_tail_end_offset": tail[-1].offset + tail[-1].size,
+        "target_tail_end_address": tail[-1].address + tail[-1].size,
+        "target_tail_instructions": sum(not _is_inline_data(line) for line in tail),
+        "caveat": (
+            "The candidate ends at a matching return, but the target continues. "
+            "Inspect native branches and independent function-boundary evidence before "
+            "setting END: this can be an overlong extent or missing cold code. "
+            "No target bytes have been excluded by this diagnostic."
+        ),
+    }
+
+
 def match_result_payload(
     result: MatchResult,
     *,
@@ -3790,6 +3822,7 @@ def match_result_payload(
             "unaudited": result.masked_operand_audit.unaudited_count,
         },
         "stack_frame": stack_frame_diagnostic_payload(result),
+        "post_return_target_tail": post_return_target_tail_payload(result),
         "regions": region_payloads,
         "cfg_alignment": cfg_alignment_payload(cfg) if cfg is not None else None,
         "candidate_source_caveat": (

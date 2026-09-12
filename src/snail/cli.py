@@ -2529,6 +2529,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             f"prefix={result.instruction_prefix_count}/{result.target_instruction_count}"
         )
         frame = payload["stack_frame"]
+        tail = payload["post_return_target_tail"]
+        if tail is not None:
+            print(
+                "target-tail: after matching return "
+                f"0x{tail['return_end_address']:08x}.."
+                f"0x{tail['target_tail_end_address']:08x} "
+                f"insns={tail['target_tail_instructions']} diagnostic-only"
+            )
+            print(tail["caveat"])
         if frame is not None:
             target_frame = frame["target_prologue_allocation_bytes"]
             candidate_frame = frame["candidate_prologue_allocation_bytes"]

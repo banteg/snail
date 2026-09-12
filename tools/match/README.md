@@ -287,7 +287,12 @@ Useful analysis helpers:
   displaced exact blocks and similar blocks remain visible as heuristic pairs,
   but cannot manufacture anchored edge conflicts. `anchors=` is therefore the
   trusted subset of `exact=`. None of these diagnostics change the canonical
-  instruction match or masked-reference audit.
+  instruction match or masked-reference audit. When the complete candidate
+  matches a target prefix ending in a return, `inspect` also locates any
+  remaining target suffix (`post_return_target_tail` in JSON and diagnostic
+  exports). Review native branches and independent boundary evidence before
+  setting `END`: the suffix may contain separate functions or missing cold
+  code. The diagnostic never removes bytes or grants matching credit.
 - `uv run snail match listing <scratch>` recompiles the selected VC profile
   with `/FAsc` in isolation and writes its mixed source/assembly listing under
   the ignored match cache. It refuses to publish unless the extracted function,
