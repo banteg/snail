@@ -16,36 +16,21 @@ static __forceinline void compute_terminal_deltas(Path *path)
     int i = 0;
     if (path->segment_count - 1 > 0)
     {
-        int delta_offset = 0;
         do
         {
-            ((PathTemplateSample *)((char *)path->primary_samples + delta_offset))
-                ->delta_dir_to_next =
-                ((PathTemplateSample *)((char *)path->primary_samples + delta_offset) +
-                 1)
-                    ->transform.position -
-                ((PathTemplateSample *)((char *)path->primary_samples + delta_offset))
-                    ->transform.position;
-            ((PathTemplateSample *)((char *)path->primary_samples + delta_offset))
-                ->delta_length =
-                ((PathTemplateSample *)((char *)path->primary_samples + delta_offset))
-                    ->delta_dir_to_next.Normalize();
+            path->primary_samples[i].delta_dir_to_next =
+                path->primary_samples[i + 1].transform.position -
+                path->primary_samples[i].transform.position;
+            path->primary_samples[i].delta_length =
+                path->primary_samples[i].delta_dir_to_next.Normalize();
 
-            ((PathTemplateSample *)((char *)path->secondary_samples + delta_offset))
-                ->delta_dir_to_next =
-                ((PathTemplateSample *)((char *)path->secondary_samples +
-                                        delta_offset) +
-                 1)
-                    ->transform.position -
-                ((PathTemplateSample *)((char *)path->secondary_samples + delta_offset))
-                    ->transform.position;
-            ((PathTemplateSample *)((char *)path->secondary_samples + delta_offset))
-                ->delta_length =
-                ((PathTemplateSample *)((char *)path->secondary_samples + delta_offset))
-                    ->delta_dir_to_next.Normalize();
+            path->secondary_samples[i].delta_dir_to_next =
+                path->secondary_samples[i + 1].transform.position -
+                path->secondary_samples[i].transform.position;
+            path->secondary_samples[i].delta_length =
+                path->secondary_samples[i].delta_dir_to_next.Normalize();
 
             ++i;
-            delta_offset += (int)sizeof(PathTemplateSample);
         } while (i < path->segment_count - 1);
     }
 
@@ -57,12 +42,12 @@ static __forceinline void compute_terminal_deltas(Path *path)
     path->secondary_samples[path->segment_count - 1].delta_length = 1.0f;
 }
 
-static __forceinline void build_extrapolated_strip_mesh(Path *path, char *texture_a,
-                                                        char *texture_b)
+static __forceinline void build_extrapolated_strip_mesh(
+    Path *path, const int &width_cells, char *texture_a, char *texture_b)
 {
-    path->strip_mesh->RequestVertices((path->width_cells + 1) *
+    path->strip_mesh->RequestVertices((width_cells + 1) *
                                       (path->segment_count + 1));
-    path->strip_mesh->RequestFaceQuads(2 * path->width_cells * path->segment_count);
+    path->strip_mesh->RequestFaceQuads(2 * width_cells * path->segment_count);
 
     Vector3 *vertices = path->strip_mesh->vertices;
     cRFaceQuad *facequads = path->strip_mesh->facequads;
@@ -76,13 +61,13 @@ static __forceinline void build_extrapolated_strip_mesh(Path *path, char *textur
         do
         {
             column = 0;
-            if (path->width_cells >= 0)
+            if (width_cells >= 0)
             {
                 do
                 {
                     if (row != path->segment_count)
                     {
-                        float lateral = (float)column - (float)path->width_cells * 0.5f;
+                        float lateral = (float)column - (float)width_cells * 0.5f;
                         Vector3 lateral_offset =
                             ((PathTemplateSample *)((char *)path->primary_samples +
                                                     sample_offset))
@@ -94,12 +79,12 @@ static __forceinline void build_extrapolated_strip_mesh(Path *path, char *textur
                                 ->transform.position +
                             lateral_offset;
                         Vector3 *vertex =
-                            &vertices[column + row * (path->width_cells + 1)];
+                            &vertices[column + row * (width_cells + 1)];
                         *vertex = generated_position;
                     }
                     else
                     {
-                        float lateral = (float)column - (float)path->width_cells * 0.5f;
+                        float lateral = (float)column - (float)width_cells * 0.5f;
                         Vector3 generated_position =
                             (((PathTemplateSample *)((char *)path->primary_samples +
                                                      sample_offset))[-1]
@@ -110,11 +95,11 @@ static __forceinline void build_extrapolated_strip_mesh(Path *path, char *textur
                                  .transform.basis_right *
                              lateral);
                         Vector3 *vertex =
-                            &vertices[column + row * (path->width_cells + 1)];
+                            &vertices[column + row * (width_cells + 1)];
                         *vertex = generated_position;
                     }
                     ++column;
-                } while (column <= path->width_cells);
+                } while (column <= width_cells);
             }
             ++row;
             sample_offset += sizeof(PathTemplateSample);
@@ -123,25 +108,25 @@ static __forceinline void build_extrapolated_strip_mesh(Path *path, char *textur
 
     for (row = 0; row < path->segment_count; ++row)
     {
-        for (column = 0; column < path->width_cells; ++column)
+        for (column = 0; column < width_cells; ++column)
         {
 
             for (face_index = 0; face_index < 2; ++face_index)
             {
-                int face_offset = 2 * column + 2 * row * path->width_cells + face_index;
+                int face_offset = 2 * column + 2 * row * width_cells + face_index;
                 facequads[face_offset].header_word = 0;
 
                 if (face_index == 0)
                 {
                     facequads[face_offset].vertex_0 =
-                        column + row * ((unsigned short)path->width_cells + 1);
+                        column + row * ((unsigned short)width_cells + 1);
                     facequads[face_offset].vertex_1 =
-                        row * ((unsigned short)path->width_cells + 1) + column + 1;
+                        row * ((unsigned short)width_cells + 1) + column + 1;
                     facequads[face_offset].vertex_2 =
-                        (row + 1) * ((unsigned short)path->width_cells + 1) + column +
+                        (row + 1) * ((unsigned short)width_cells + 1) + column +
                         1;
                     facequads[face_offset].vertex_3 =
-                        column + (row + 1) * ((unsigned short)path->width_cells + 1);
+                        column + (row + 1) * ((unsigned short)width_cells + 1);
                     if (((column ^ row) & 1) == 0)
                     {
                         facequads[face_offset].texture_ref =
@@ -156,13 +141,13 @@ static __forceinline void build_extrapolated_strip_mesh(Path *path, char *textur
                 else
                 {
                     facequads[face_offset].vertex_0 =
-                        row * ((unsigned short)path->width_cells + 1) + column + 1;
+                        row * ((unsigned short)width_cells + 1) + column + 1;
                     facequads[face_offset].vertex_1 =
-                        column + row * ((unsigned short)path->width_cells + 1);
+                        column + row * ((unsigned short)width_cells + 1);
                     facequads[face_offset].vertex_2 =
-                        column + (row + 1) * ((unsigned short)path->width_cells + 1);
+                        column + (row + 1) * ((unsigned short)width_cells + 1);
                     facequads[face_offset].vertex_3 =
-                        (row + 1) * ((unsigned short)path->width_cells + 1) + column +
+                        (row + 1) * ((unsigned short)width_cells + 1) + column +
                         1;
                     if (((column ^ row) & 1) == 0)
                     {
@@ -431,7 +416,7 @@ void cRPath::initialize_slalombig_path_template_pair(int curve_segments,
     }
 
     compute_terminal_deltas(this);
-    build_extrapolated_strip_mesh(this, texture_a, texture_b);
+    build_extrapolated_strip_mesh(this, width_cells, texture_a, texture_b);
     CalcLengthZ();
     (void)side_exit;
     (void)cap_texture;

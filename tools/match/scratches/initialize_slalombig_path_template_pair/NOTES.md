@@ -1,5 +1,25 @@
 # initialize_slalombig_path_template_pair
 
+## 2026-09-12 encoded-body closure
+
+Current result: **100.00%, 696/696 instructions, 696-instruction prefix**, with
+**2,564 byte-exact body bytes** and **40/40 clean references**. The curated
+2,576-byte extent ends with 12 verified padding bytes. This is a `core` port
+function; both normalized and encoded matching are complete.
+
+The strip-mesh helper borrows the live width member by const reference,
+preserving its rereads across external calls. Both terminal-delta banks use
+ordinary sample-array indexing, eliminating the redundant byte cursor.
+Neither individual change proves the body: the width borrow alone leaves
+five scale-one SIB encoding differences; paired array indexing alone leaves
+the face-index multiplication mismatch. Together they reproduce the native
+body under the unchanged standard VC6 profile.
+
+See the [closure report](../../slalom-exact-20260912.md) and its hash-bound
+sources, two-function controls, and complete reference audits. Earlier partial
+results below are historical and are superseded by this fresh evidence.
+
+
 ## 2026-09-11 partial source recovery
 
 Current result: **99.71%**, 696/696 instructions, prefix 560,
@@ -17,7 +37,7 @@ Android/iOS builder bodies establish the portable sample/control graph; the
 live Windows body and scratch additionally cover the native mesh/face tail.
 All references are clean, and the remaining differences are code layout.
 
-Honest starter scratch for `initialize_slalombig_path_template_pair @ 0x4221f0`.
+Honest scratch for `initialize_slalombig_path_template_pair @ 0x4221f0`.
 
 Recovered from the IDA/Binja decompiles and the constructor callsite in
 `initialize_game_assets_and_world`: the native cleanup is `ret 0x18`, so the
