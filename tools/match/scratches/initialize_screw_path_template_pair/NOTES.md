@@ -1,4 +1,15 @@
-# `initialize_screw_path_template_pair` starter
+# `initialize_screw_path_template_pair`
+
+## 2026-09-13: complete encoded match
+
+The complete **2,495-byte body** now matches native: **685/685 instructions**,
+**40 strict positional external references** and **28 verified local branches**.
+Borrowing the live mesh dimensions, mesh pointer and sample bank in the complete
+mesh operation recovers all nine remaining bytes. Read-only bindings and removal
+of inactive template source preserve the exact code. Only the one recognized
+terminal padding byte is excluded; the post-return texture branch remains
+compared. [The exact-match report](../../screw-exact-mesh-inputs-20260913.md)
+contains full-body proof, 19 Screw controls and eight transfers to other builders.
 
 ## 2026-09-13: coupled departure, curve and delta recovery
 
