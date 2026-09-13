@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**617/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **187449/299952** bytes (**62.49%**) are proof-grade, and overall fuzzy is **94.73%**.
+**618/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **190025/299952** bytes (**63.35%**) are proof-grade, and overall fuzzy is **94.74%**.
 
 **114/120** platform helpers matched, **120/120** have a scratch, **17633/23008** bytes (**76.64%**) are proof-grade, and overall fuzzy is **96.81%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -10,9 +10,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**45** non-exact scratch-backed functions hold **10352 fuzzy-gap bytes**. The top 5 hold **66.9%** of that gap; the top 10 hold **80.9%**.
+**44** non-exact scratch-backed functions hold **10344 fuzzy-gap bytes**. The top 5 hold **67.0%** of that gap; the top 10 hold **81.0%**.
 
-Current-baseline experiments cover **8 functions / 539 gap bytes**; **37 / 9812** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **7 functions / 532 gap bytes**; **37 / 9812** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -58,14 +58,13 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 38 | explode_slug_hazard | 11 | semantic-complete | analysis | historical-only | 0/20 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 39 | traverse_path_follow_golb | 11 | semantic-complete | analysis | historical-only | 0/34 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 40 | read_repeating_text_input_key_code | 9 | semantic-complete | analysis | historical-only | 0/15 | variant-errors,historical-only,stale-dependencies |
-| 41 | initialize_dump_path_template_pair | 7 | semantic-complete | analysis | current-active | 1/34 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
-| 42 | border_mouse_test | 7 | semantic-complete | analysis | historical-only | 0/14 | variant-errors,historical-only,stale-dependencies |
-| 43 | switch_track_mirror | 7 | semantic-complete | analysis | historical-only | 0/6 | historical-only,stale-dependencies |
-| 44 | load_galaxy_layout | 7 | semantic-complete | analysis | historical-only | 0/33 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 45 | draw_frontend_widget | 7 | semantic-complete | analysis | historical-only | 0/21 | historical-only,stale-dependencies |
+| 41 | border_mouse_test | 7 | semantic-complete | analysis | historical-only | 0/14 | variant-errors,historical-only,stale-dependencies |
+| 42 | switch_track_mirror | 7 | semantic-complete | analysis | historical-only | 0/6 | historical-only,stale-dependencies |
+| 43 | load_galaxy_layout | 7 | semantic-complete | analysis | historical-only | 0/33 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 44 | draw_frontend_widget | 7 | semantic-complete | analysis | historical-only | 0/21 | historical-only,stale-dependencies |
 
 
-## Proof Grade (617)
+## Proof Grade (618)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -268,6 +267,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ✅ | apply_audio_config_volumes | 0x41b070 | 48 | 11/11 | 100.00% | 11/11 | 7 ok |  | boundary |
 | ✅ | get_path_nodes | 0x41b0a0 | 80 | 23/23 | 100.00% | 23/23 | 4 ok |  | core |
 | ✅ | initialize_hump_path_template_pair | 0x41d030 | 2560 | 685/685 | 100.00% | 685/685 | 43 ok |  | core |
+| ✅ | initialize_dump_path_template_pair | 0x41da30 | 2576 | 690/690 | 100.00% | 690/690 | 43 ok |  | core |
 | ✅ | initialize_screw_path_template_pair | 0x41eda0 | 2496 | 685/685 | 100.00% | 685/685 | 40 ok |  | core |
 | ✅ | initialize_slalom_path_template_pair | 0x41f760 | 2576 | 696/696 | 100.00% | 696/696 | 40 ok |  | core |
 | ✅ | begin_track_attachment_follow_state | 0x420c40 | 112 | 27/27 | 100.00% | 27/27 | 4 ok |  | core |
@@ -687,7 +687,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ✅ | attach_render_camera_source | 0x44e900 | 32 | 6/6 | 100.00% | 6/6 | - |  | boundary |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 
-## Near Match (95-99.99%) (22)
+## Near Match (95-99.99%) (21)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -701,7 +701,6 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2640 | 720/721 | 95.21% | 159/721 | 49 ok |  | core |
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2736 | 745/745 | 99.19% | 335/745 | 55 ok |  | core |
 | 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2624 | 718/718 | 98.89% | 17/718 | 52 ok |  | core |
-| 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2576 | 690/690 | 99.71% | 59/690 | 43 ok |  | core |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2400 | 655/655 | 97.86% | 22/655 | 37 ok |  | core |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2752 | 726/726 | 97.25% | 194/726 | 65 ok |  | core |
 | 🚧 | traverse_path_follow_golb | 0x4217b0 | 1552 | 425/425 | 99.29% | 96/425 | 7 ok |  | core |

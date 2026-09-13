@@ -222,10 +222,11 @@ void cRPath::initialize_dump_path_template_pair(float curve_source, float height
         float z = (float)i;
         primary_samples[i].transform.position.y = 0.0f;
         primary_samples[i].transform.position.z = z;
-        secondary_bank[i].transform.Identity();
-        secondary_bank[i].transform.position.x = primary_samples[i].center_x;
-        secondary_bank[i].transform.position.y = 0.49000001f;
-        secondary_bank[i].transform.position.z = z;
+        PathAttachmentSample* const& lead_secondary = secondary_samples;
+        lead_secondary[i].transform.Identity();
+        lead_secondary[i].transform.position.x = primary_samples[i].center_x;
+        lead_secondary[i].transform.position.y = 0.49000001f;
+        lead_secondary[i].transform.position.z = z;
     }
 
     i = departure_index;

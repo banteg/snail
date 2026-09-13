@@ -1,6 +1,16 @@
 # `initialize_dump_path_template_pair` starter
 
-## 2026-09-14 current result: 99.71%, still partial
+## 2026-09-14 complete encoded-body match
+
+Binding the lead secondary-bank reference after publishing primary position
+closes all 12 remaining ordinary bytes. Dump now matches 690/690 instructions
+and the complete 2,563-byte body, with 43 strict positional references and
+27 literal local branches. The native extent and its 13 terminal NOP bytes
+are unchanged. See the [proof, controls and preserving compiler observations](../../dump-lead-bank-publication-20260914.md).
+
+The dated partial results below are historical.
+
+## 2026-09-14 preceding result: 99.71%, still partial
 
 The secondary bank now has one live field reference spanning sample setup;
 the approach writes primary X before converting Z, and the mesh reads its
