@@ -168,7 +168,7 @@ static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *te
     }
 }
 
-static __forceinline void initialize_secondary(PathTemplateSample *&secondary,
+static __forceinline void initialize_secondary(PathTemplateSample *const &secondary,
                                                PathTemplateSample *&primary, int offset,
                                                float z, bool copy_primary_y)
 {
@@ -214,6 +214,7 @@ void cRPath::initialize_sweep_path_template_pair(float scale_arg, int width_cell
     GetNodes();
     has_entry_mesh_transition = 0;
 
+    PathTemplateSample *const &secondary_bank = secondary_samples;
     int i;
     i = 0;
     int lead_offset = 0;
@@ -234,7 +235,7 @@ void cRPath::initialize_sweep_path_template_pair(float scale_arg, int width_cell
             .transform.Identity();
         float z = initialize_primary_position(primary_samples, lead_offset, i, 0.0f, false);
 
-        initialize_secondary(secondary_samples, primary_samples, lead_offset, z, false);
+        initialize_secondary(secondary_bank, primary_samples, lead_offset, z, false);
     }
 
     int departure_index = 27;
@@ -255,7 +256,7 @@ void cRPath::initialize_sweep_path_template_pair(float scale_arg, int width_cell
             ->transform.Identity();
         float z = initialize_primary_position(primary_samples, departure_offset, departure_index, 0.0f, false);
 
-        initialize_secondary(secondary_samples, primary_samples, departure_offset, z,
+        initialize_secondary(secondary_bank, primary_samples, departure_offset, z,
                              false);
         departure_offset += (int)sizeof(PathTemplateSample);
         ++departure_index;
@@ -277,7 +278,7 @@ void cRPath::initialize_sweep_path_template_pair(float scale_arg, int width_cell
         ((PathTemplateSample *)((char *)primary_samples + i))->transform.Identity();
         float z = initialize_primary_position(primary_samples, i, curve_index, angle, true);
 
-        initialize_secondary(secondary_samples, primary_samples, i, z, true);
+        initialize_secondary(secondary_bank, primary_samples, i, z, true);
         if (i > 3 * (int)sizeof(PathTemplateSample))
         {
             ((PathTemplateSample *)((char *)primary_samples + i) - 1)
