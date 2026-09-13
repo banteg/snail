@@ -1,5 +1,22 @@
 # initialize_slalomdouble_path_template_pair
 
+## 2026-09-13 complete body through staged bank ownership
+
+The complete 2,536-byte body now matches: 683/683 instructions, 45 strict
+positional references, 29 literal local branches, and every ordinary SIB byte.
+The unchanged native extent is 2,544 bytes; its final eight NOP padding bytes
+are separately accounted for. Recovery is complete.
+
+A live secondary-bank reference spans the sample phases; the primary-bank
+reference belongs to curved sample initialization. The departure secondary
+initializer obtains its primary input through the Path owner after Identity.
+All bank reloads across calls remain intact.
+
+The successful path retained the lower-scoring shared-bank stage because its
+flat loops matched, then closed the curve encodings and one final departure
+read. See the [staged controls and independent proof](../../slalomdouble-decomposition-20260913.md).
+The partial-match descriptions below are historical.
+
 ## 2026-09-12 paired array traversal
 
 Using the existing logical index in both terminal-delta sample banks removes

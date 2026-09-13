@@ -85,6 +85,12 @@ For this C++ function, the recorded line words are relative to the function
 body and inlined operations inherit their callsite line; they are not direct
 physical line numbers in `scratch.cpp`.
 
-Changing bank ownership and helper parameter order produced additional partial
-controls but no full match. The canonical scratch, matching policy, references,
-compiler flags, function extent and published progress remain unchanged.
+The receiver reproducer uses the frozen pre-match source from the
+[decomposition receipt](../slalomdouble-decomposition-20260913.json), so these
+observations remain reproducible after the live scratch changes.
+
+The subsequent [SlalomDouble decomposition](../slalomdouble-decomposition-20260913.md)
+retained a regressed shared-bank control, then recovered the curved primary
+owner and the departure primary read. It closes the complete native body.
+Compiler observations still earn no acceptance credit; the result has a
+separate positional reference, branch and literal-byte proof.

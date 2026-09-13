@@ -99,7 +99,13 @@ def main():
     parser.add_argument("--out", required=True, type=Path)
     args = parser.parse_args()
     args.out.mkdir(parents=True, exist_ok=False)
-    source = (SCRATCH / "scratch.cpp").read_text()
+    # Preserve the original experiment after the live scratch becomes exact.
+    evidence = json.loads(
+        (SCRATCH.parents[1] / "slalomdouble-decomposition-20260913.json").read_text()
+    )
+    frozen = evidence["baselines"][SCRATCH.name]
+    source = frozen["source"]
+    assert replay.sha(source.encode()) == frozen["source_sha256"]
     control = departure_control(source)
     runs = []
     for name, text in [("canonical", source), ("departure", control)]:

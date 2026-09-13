@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**615/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **184505/299952** bytes (**61.51%**) are proof-grade, and overall fuzzy is **94.62%**.
+**616/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **187049/299952** bytes (**62.36%**) are proof-grade, and overall fuzzy is **94.63%**.
 
 **114/120** platform helpers matched, **120/120** have a scratch, **17633/23008** bytes (**76.64%**) are proof-grade, and overall fuzzy is **96.81%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -10,9 +10,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**47** non-exact scratch-backed functions hold **10680 fuzzy-gap bytes**. The top 5 hold **64.9%** of that gap; the top 10 hold **78.6%**.
+**46** non-exact scratch-backed functions hold **10673 fuzzy-gap bytes**. The top 5 hold **64.9%** of that gap; the top 10 hold **78.7%**.
 
-Current-baseline experiments cover **8 functions / 631 gap bytes**; **39 / 10049** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **7 functions / 624 gap bytes**; **39 / 10049** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -60,14 +60,13 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 40 | explode_slug_hazard | 11 | semantic-complete | analysis | historical-only | 0/20 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 41 | traverse_path_follow_golb | 11 | semantic-complete | analysis | historical-only | 0/34 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 42 | read_repeating_text_input_key_code | 9 | semantic-complete | analysis | historical-only | 0/15 | variant-errors,historical-only,stale-dependencies |
-| 43 | initialize_slalomdouble_path_template_pair | 7 | semantic-complete | analysis | current-active | 1/33 | repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
-| 44 | border_mouse_test | 7 | semantic-complete | analysis | historical-only | 0/14 | variant-errors,historical-only,stale-dependencies |
-| 45 | switch_track_mirror | 7 | semantic-complete | analysis | historical-only | 0/6 | historical-only,stale-dependencies |
-| 46 | load_galaxy_layout | 7 | semantic-complete | analysis | historical-only | 0/33 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 47 | draw_frontend_widget | 7 | semantic-complete | analysis | historical-only | 0/21 | historical-only,stale-dependencies |
+| 43 | border_mouse_test | 7 | semantic-complete | analysis | historical-only | 0/14 | variant-errors,historical-only,stale-dependencies |
+| 44 | switch_track_mirror | 7 | semantic-complete | analysis | historical-only | 0/6 | historical-only,stale-dependencies |
+| 45 | load_galaxy_layout | 7 | semantic-complete | analysis | historical-only | 0/33 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 46 | draw_frontend_widget | 7 | semantic-complete | analysis | historical-only | 0/21 | historical-only,stale-dependencies |
 
 
-## Proof Grade (615)
+## Proof Grade (616)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -279,6 +278,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ✅ | initialize_snake_path_template_pair | 0x423580 | 2448 | 652/652 | 100.00% | 652/652 | 40 ok |  | core |
 | ✅ | build_track_fringe_mesh | 0x4246a0 | 1072 | 318/318 | 100.00% | 318/318 | 23 ok |  | core |
 | ✅ | build_track_fringe_supertramp_mesh | 0x424ad0 | 1408 | 421/421 | 100.00% | 421/421 | 25 ok |  | core |
+| ✅ | initialize_slalomdouble_path_template_pair | 0x425050 | 2544 | 683/683 | 100.00% | 683/683 | 45 ok |  | core |
 | ✅ | initialize_start_path_template_pair | 0x426400 | 2224 | 610/610 | 100.00% | 610/610 | 35 ok |  | core |
 | ✅ | initialize_turnover_path_template_pair | 0x426cb0 | 2448 | 671/671 | 100.00% | 671/671 | 41 ok |  | core |
 | ✅ | initialize_turnoverdouble_path_template_pair | 0x427640 | 2464 | 680/680 | 100.00% | 680/680 | 46 ok |  | core |
@@ -687,7 +687,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ✅ | attach_render_camera_source | 0x44e900 | 32 | 6/6 | 100.00% | 6/6 | - |  | boundary |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 
-## Near Match (95-99.99%) (22)
+## Near Match (95-99.99%) (21)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -704,7 +704,6 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2400 | 655/655 | 97.86% | 22/655 | 37 ok |  | core |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2752 | 726/726 | 97.25% | 194/726 | 65 ok |  | core |
 | 🚧 | traverse_path_follow_golb | 0x4217b0 | 1552 | 425/425 | 99.29% | 96/425 | 7 ok |  | core |
-| 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2544 | 683/683 | 99.71% | 84/683 | 45 ok |  | core |
 | 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2496 | 686/687 | 95.99% | 105/687 | 45 ok |  | core |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 199/204 | 95.78% | 16/204 | 47 ok |  | core |
 | 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2432 | 661/663 | 95.47% | 89/663 | 33 ok |  | core |
