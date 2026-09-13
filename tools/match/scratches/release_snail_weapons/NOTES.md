@@ -1,5 +1,17 @@
 # cRSnail::ReleaseWeapons @ 0x442e40
 
+## 2026-09-14 first vector component ownership
+
+The retained source improves **92.80% to 94.40%**, with 125/125 instructions,
+prefix 15 and 33 clean references. Constructing the first input vector directly
+recovers native's shared storage for its random-X spill and reload. Exactly two
+ordinary bytes change, at offsets 55 and 92; both complete changed instructions
+now equal native bytes. The RNG call order, all other candidate bytes and the
+reference audit are unchanged. This remains a partial body match.
+
+See the [controls, raw byte proof and reversal evidence](../../release-component-and-bank-controls-20260914.md).
+The measurements below describe the previous source.
+
 Current recovery: semantic-complete (`compiler` residual). Live Windows
 analysis establishes a void no-argument `cRSnail` member, and Android/iOS both
 retain `cRSnail::ReleaseWeapons()` in `SubGame.o`.

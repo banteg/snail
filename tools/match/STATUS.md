@@ -10,9 +10,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**44** non-exact scratch-backed functions hold **10344 fuzzy-gap bytes**. The top 5 hold **67.0%** of that gap; the top 10 hold **81.0%**.
+**44** non-exact scratch-backed functions hold **10335 fuzzy-gap bytes**. The top 5 hold **67.0%** of that gap; the top 10 hold **81.1%**.
 
-Current-baseline experiments cover **7 functions / 532 gap bytes**; **37 / 9812** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **8 functions / 563 gap bytes**; **36 / 9772** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -44,9 +44,9 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 24 | initialize_tip | 63 | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
 | 25 | initialize_hill_valley_path_template_pair | 59 | semantic-complete | analysis | current-active | 2/41 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
 | 26 | initialize_dip_path_template_pair | 51 | semantic-complete | analysis | current-active | 1/55 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
-| 27 | release_snail_weapons | 40 | semantic-complete | analysis | historical-only | 0/13 | variant-errors,historical-only,stale-dependencies |
-| 28 | select_level_track_texture_set | 39 | semantic-complete | analysis,references | historical-only | 0/9 | variant-errors,historical-only,stale-dependencies |
-| 29 | try_enter_track_attachment_from_swept_motion | 34 | semantic-complete | analysis | historical-only | 0/12 | historical-only,stale-dependencies |
+| 27 | select_level_track_texture_set | 39 | semantic-complete | analysis,references | historical-only | 0/9 | variant-errors,historical-only,stale-dependencies |
+| 28 | try_enter_track_attachment_from_swept_motion | 34 | semantic-complete | analysis | historical-only | 0/12 | historical-only,stale-dependencies |
+| 29 | release_snail_weapons | 31 | semantic-complete | analysis | current-active | 1/15 | variant-errors,stale-dependencies |
 | 30 | initialize_loopout_path_template_pair | 29 | semantic-complete | analysis | current-active | 2/26 | metric-tradeoffs,variant-errors,stale-dependencies |
 | 31 | set_snail_jetpack | 27 | semantic-complete | analysis | historical-only | 0/9 | repeated-variants,historical-only,stale-dependencies |
 | 32 | initialize_looptheloopw_path_template_pair | 22 | semantic-complete | analysis | current-active | 1/16 | repeated-variants,metric-tradeoffs,stale-dependencies |
@@ -732,7 +732,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | build_subgame_level | 0x437eb0 | 2128 | 556/555 | 86.09% | 177/555 | 108 ok |  | core |
 | 🚧 | update_subgame | 0x438b90 | 3760 | 1033/1034 | 80.51% | 9/1034 | 129 ok |  | core |
 | 🚧 | update_subgoldy | 0x43b120 | 8464 | 2093/2087 | 84.77% | 12/2087 | 315 ok |  | core |
-| 🚧 | release_snail_weapons | 0x442e40 | 560 | 125/125 | 92.80% | 13/125 | 33 ok |  | core |
+| 🚧 | release_snail_weapons | 0x442e40 | 560 | 125/125 | 94.40% | 15/125 | 33 ok |  | core |
 | 🚧 | place_challenge_parcels_on_track | 0x444240 | 624 | 173/171 | 81.40% | 0/171 | 2 unaudited, 33 ok |  | core |
 | 🚧 | set_snail_jetpack | 0x445860 | 192 | 61/62 | 86.18% | 0/62 | 8 ok |  | core |
 | 🚧 | set_snail_weapon | 0x445920 | 944 | 246/249 | 83.54% | 1/249 | 24 ok |  | core |

@@ -8,17 +8,16 @@ int gRMathRand2();
 void cRSnail::ReleaseWeapons()
 {
     if (channel_release_steps_active == 0) {
+        jetpack_channel.release_step = Vector3(
+            ((float)gRMathRand2() - 16384.0f) * 0.000061035156f,
+            RAND(1.0f, 0) + 0.5f,
+            owner_player->velocity.z) * 0.30000001f;
+
         float random_x =
             ((float)gRMathRand2() - 16384.0f) * 0.000061035156f;
         float random_y = RAND(1.0f, 0) + 0.5f;
         float forward_z = owner_player->velocity.z;
-        Vector3* release_step = &jetpack_channel.release_step;
-        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;
-
-        random_x = ((float)gRMathRand2() - 16384.0f) * 0.000061035156f;
-        random_y = RAND(1.0f, 0) + 0.5f;
-        forward_z = owner_player->velocity.z;
-        release_step = &weapon_channels[0].release_step;
+        Vector3* release_step = &weapon_channels[0].release_step;
         *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;
 
         random_x = ((float)gRMathRand2() - 16384.0f) * 0.000061035156f;
