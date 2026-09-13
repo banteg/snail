@@ -267,7 +267,7 @@ void cRSubGoldy::Collision()
                         SUB_RING_STATE_COLLECT_PENDING;
                     if (!completion_handoff_active) {
                         cRSubGame* effect_game = game;
-                        SubRingKind kind = game->ring_effects.slots[jj].kind;
+                        SubRingKind kind = effect_game->ring_effects.slots[jj].kind;
                         if (kind == SUB_RING_KIND_SLOW_DEFAULT
                             || kind == SUB_RING_KIND_SLOW_AUTHORED) {
                             velocity.z = -0.1f;
@@ -278,7 +278,7 @@ void cRSubGoldy::Collision()
                     }
                     cRSubGame* ladder_game = game;
                     SubRingKind effect_kind =
-                        game->ring_effects.slots[jj].kind;
+                        ladder_game->ring_effects.slots[jj].kind;
                     if (effect_kind == SUB_RING_KIND_NORMAL_DEFAULT
                         || effect_kind == SUB_RING_KIND_NORMAL_AUTHORED) {
                         int current_lives = lives;
