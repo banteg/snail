@@ -16,7 +16,7 @@ int report_errorf(char* format, ...);
     normal_tally[(index_value)] += (weight_value)
 
 #define CURRENT_FACE \
-    ((cRFaceQuad*)((char*)facequads + face_offset))
+    ((cRFaceQuad*)((char*)quad_bank + face_offset))
 
 void cRObject::CalcFaceQuadNormals()
 {
@@ -31,6 +31,8 @@ void cRObject::CalcFaceQuadNormals()
     if (facequad_count > 0) {
         normal_offset = 0;
         do {
+            cRFaceQuad *const &quad_bank = facequads;
+
             Vector3 lhs = vertices[CURRENT_FACE->vertex_1] - vertices[CURRENT_FACE->vertex_0];
             Vector3 rhs = vertices[CURRENT_FACE->vertex_2] - vertices[CURRENT_FACE->vertex_0];
 
