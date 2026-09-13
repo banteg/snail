@@ -8,6 +8,8 @@ extern cRSpriteManager g_sprite_manager; // data_790f30
 
 unsigned char cRBorder::MouseTest()
 {
+    int x = 0;
+    int y = 0;
     cRMouse* mouse = &g_game->players[0].mouse_cursor;
 
     if (texture_hit_test_enabled) {
@@ -27,9 +29,9 @@ unsigned char cRBorder::MouseTest()
                 g_sprite_manager.GetTga(texture_hit_test_sprite);
 
             int width = mask->width;
-            int x = (int)((float)width * u);
+            x = (int)((float)width * u);
             int height = mask->height;
-            int y = (int)((float)height * v);
+            y = (int)((float)height * v);
 
             if (x < 0) {
                 x = 0;

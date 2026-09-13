@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**618/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **190025/299952** bytes (**63.35%**) are proof-grade, and overall fuzzy is **94.75%**.
+**619/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **190457/299952** bytes (**63.50%**) are proof-grade, and overall fuzzy is **94.75%**.
 
 **114/120** platform helpers matched, **120/120** have a scratch, **17633/23008** bytes (**76.64%**) are proof-grade, and overall fuzzy is **96.81%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -10,9 +10,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**44** non-exact scratch-backed functions hold **10313 fuzzy-gap bytes**. The top 5 hold **67.2%** of that gap; the top 10 hold **81.0%**.
+**43** non-exact scratch-backed functions hold **10305 fuzzy-gap bytes**. The top 5 hold **67.2%** of that gap; the top 10 hold **81.1%**.
 
-Current-baseline experiments cover **9 functions / 895 gap bytes**; **35 / 9418** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **9 functions / 895 gap bytes**; **34 / 9410** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -58,13 +58,12 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 38 | explode_slug_hazard | 11 | semantic-complete | analysis | historical-only | 0/20 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 39 | traverse_path_follow_golb | 11 | semantic-complete | analysis | historical-only | 0/34 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 40 | read_repeating_text_input_key_code | 9 | semantic-complete | analysis | historical-only | 0/15 | variant-errors,historical-only,stale-dependencies |
-| 41 | border_mouse_test | 7 | semantic-complete | analysis | historical-only | 0/14 | variant-errors,historical-only,stale-dependencies |
-| 42 | switch_track_mirror | 7 | semantic-complete | analysis | historical-only | 0/6 | historical-only,stale-dependencies |
-| 43 | load_galaxy_layout | 7 | semantic-complete | analysis | historical-only | 0/33 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 44 | draw_frontend_widget | 7 | semantic-complete | analysis | historical-only | 0/21 | historical-only,stale-dependencies |
+| 41 | switch_track_mirror | 7 | semantic-complete | analysis | historical-only | 0/6 | historical-only,stale-dependencies |
+| 42 | load_galaxy_layout | 7 | semantic-complete | analysis | historical-only | 0/33 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 43 | draw_frontend_widget | 7 | semantic-complete | analysis | historical-only | 0/21 | historical-only,stale-dependencies |
 
 
-## Proof Grade (618)
+## Proof Grade (619)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -98,6 +97,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ✅ | initialize_border_stack | 0x404350 | 16 | 3/3 | 100.00% | 3/3 | - |  | core |
 | ✅ | apply_all_border_visibility_mode | 0x404360 | 480 | 138/138 | 100.00% | 138/138 | 1 ok |  | core |
 | ✅ | border_sprite_extend | 0x404540 | 64 | 14/14 | 100.00% | 14/14 | - |  | core |
+| ✅ | border_mouse_test | 0x404580 | 432 | 117/117 | 100.00% | 117/117 | 5 ok |  | core |
 | ✅ | set_border_justify_centre | 0x404730 | 16 | 3/3 | 100.00% | 3/3 | - |  | core |
 | ✅ | initialize_cheat | 0x404740 | 16 | 5/5 | 100.00% | 5/5 | - |  | core |
 | ✅ | update_cheat | 0x404750 | 128 | 52/52 | 100.00% | 52/52 | 7 ok |  | core |
@@ -687,14 +687,13 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ✅ | attach_render_camera_source | 0x44e900 | 32 | 6/6 | 100.00% | 6/6 | - |  | boundary |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 
-## Near Match (95-99.99%) (21)
+## Near Match (95-99.99%) (20)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
 | 🚧 | draw_frontend_widget | 0x401130 | 2368 | 712/712 | 99.72% | 253/712 | 68 ok |  | core |
 | 🚧 | update_frontend_widget_interaction | 0x402820 | 2688 | 649/647 | 95.83% | 127/647 | 2 unaudited, 96 ok |  | core |
 | 🚧 | border_input_text | 0x4035b0 | 1584 | 443/446 | 98.76% | 6/446 | 8 ok |  | core |
-| 🚧 | border_mouse_test | 0x404580 | 432 | 117/117 | 98.29% | 73/117 | 5 ok |  | core |
 | 🚧 | load_galaxy_layout | 0x4088e0 | 816 | 233/233 | 99.14% | 194/233 | 42 ok |  | core |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 695/694 | 99.50% | 417/694 | 71 ok |  | core |
 | 🚧 | create_golb | 0x415280 | 2352 | 582/582 | 99.14% | 156/582 | 48 ok |  | core |

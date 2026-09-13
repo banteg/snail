@@ -1,5 +1,15 @@
 # cRBorder::MouseTest @ 0x404580
 
+## 2026-09-14 complete native match
+
+Initializing the existing pixel-coordinate locals together recovers the native
+row multiplication and address encoding. All 421 body bytes, 117 instructions,
+five strict positional references and 16 local branches now agree. Normalized
+matching improves from 98.29% to 100%; ordinary bytes 272 and 275 are fixed.
+The initial coordinate zeros emit no code but change compiler symbol ordering.
+See the [controls and independent full-byte proof](../../mouse-pixel-coordinate-lifetimes-20260914.md).
+The partial measurements and compiler-limit claims below are historical.
+
 Current recovery: semantic-complete with an unresolved source-shape difference. Live Windows
 analysis establishes an unsigned-byte `thiscall` member, while Android and iOS
 independently retain `cRBorder::MouseTest()` in `Border.o`.
