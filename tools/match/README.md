@@ -723,3 +723,11 @@ ranges cover every owned code byte. Its independent code inventory differs from
 the legacy status board's curated address spans. See
 [`analysis/progress/README.md`](../../analysis/progress/README.md) for metric tiers,
 readable report names, scoring epochs and the exported proof summary.
+
+## Preserving compiler traces
+
+The optional [Crimson C2 bridge](c2/README.md) observes the pinned VC6 optimizer
+and allocator while requiring unchanged whole-object output and Snail matcher
+results. Its first Snail case locates SlalomDouble's receiver-operand reversal
+inside an early expression pass. These observations are diagnostics, not match
+credit.

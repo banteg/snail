@@ -1,0 +1,134 @@
+{
+  "c2_sha256": "d50100ac2380d58f3f6f756961fb1319d35f5248e5fa6cafb866ca657e5dda4a",
+  "scope": "Read-only analysis of the pinned C2 DLL; no compiler choices or native bytes patched. HLIL signatures of internal fragments can be incomplete; the comparator is also retained as literal disassembly.",
+  "functions": [
+    {
+      "address": "0x1070fc45",
+      "hlil": "data_1079f1ac = arg2\nint32_t* eax = *(arg1 + 8)\nvoid** result = *(*eax + 0x1c)\nint32_t ebx = *(eax[1] + 0x20)\nint32_t** edx_1 = *result\n\nif (edx_1 != ebx)\n    while (true)\n        int16_t eax_1 = edx_1[4].w\n        int32_t* edi_1 = *edx_1\n        \n        if (eax_1 != 0)\n            int32_t ecx_1 = *(arg1 + 0x24)\n            data_107ac360 = eax_1\n            data_107ac354 = ecx_1 + zx.d(eax_1)\n        \n        int32_t eax_3 = 0\n        data_107ae238 = 0\n        eax_3.b = edx_1[2].b\n        result = eax_3 - 0xc\n        int32_t ecx_3 = 0\n        ecx_3.b = *(result + &lookup_table_1070fe40)\n        \n        switch (ecx_3)\n            case 0\n                return sub_1070fc6a(ecx_3, edx_1, arg1, edi_1) __tailcall\n            case 1\n                result = sub_1070bb78()\n            label_1070fc8b:\n                edx_1 = edi_1\n                \n                if (edi_1 == ebx)\n                    break\n                \n                continue\n            case 2\n                goto label_1070fc8b\n\nreturn result"
+    },
+    {
+      "address": "0x1070fcda",
+      "hlil": "int32_t result = 0\nsub_1070fd5a(*(**(arg1 + 8) + 0x1c))\nvoid** i = data_1079bc50\n\nif (i == 0)\n    return 0\n\ndo\n    void* j = &i[3]\n    \n    if (j u< i[1])\n        do\n            char eax_2 = *(j + 4)\n            \n            if (eax_2 != 0x10 && eax_2 == 3 && *(j + 8) == j)\n                int32_t edx_1 = 0\n                void* k = j\n                \n                if (j != 0)\n                    do\n                        eax_2 = *(k + 6)\n                        \n                        if ((eax_2 & 2) != 0)\n                            edx_1 = 1\n                            *(k + 6) = eax_2 & 0xfd\n                        \n                        k = *(k + 0xc)\n                    while (k != 0)\n                \n                if (j == 0 || edx_1 == 0)\n                    result += 1\n                    sub_10706247()\n            \n            j += 0x54\n        while (j u< i[1])\n    \n    i = *i\nwhile (i != 0)\n\nreturn result"
+    },
+    {
+      "address": "0x107053de",
+      "hlil": "sub_107054a4()\nsub_1070440d()\nsub_10712d16()\nsub_1070451b()\nsub_1070453f()\nreturn sub_1070540b() __tailcall"
+    },
+    {
+      "address": "0x1070bf4c",
+      "hlil": "int32_t esi\nint32_t var_c = esi\nint32_t edi\nint32_t var_10 = edi\nvoid* eax = sub_10701ef1(*(arg1 + 0x1c))\nint32_t ecx_2\necx_2.w = *(*(arg1 + 0x1c) + 0xa)\nsub_107028d3(sub_10702add())\nvoid* ecx_4 = *(*(arg1 + 0x1c) + 0x14)\n\nif (*(*(ecx_4 + 8) + 0xc) != 0)\n    sub_1070ef1c()\nelse\n    *(ecx_4 + 0x14) = arg1\n\nsub_1070c148()\nint32_t edi_2 = 1\nvoid* esi_2\n\nwhile (true)\n    data_1079f1a8 = 0\n    esi_2 = sub_1070d234(sub_1070c2d5(0), 0)\n    \n    if (data_1079f1a8 == 0)\n        break\n    \n    if ((1 << (*(esi_2 + 8) & 0x1f) & 0xffe) != 0)\n        break\n    \n    edi_2 += 1\n    \n    if (edi_2 s> 0x64)\n        sub_10796d99(1, \"E:\\8966\\vc98\\p2\\src\\P2\\optimize.c\", 0x1c9)\n    label_107924f4:\n        sub_10796d99(1, \"E:\\8966\\vc98\\p2\\src\\P2\\optimize.c\", 0x1dc)\n    label_10792505:\n        sub_10796d99(1, \"E:\\8966\\vc98\\p2\\src\\P2\\optimize.c\", 0x1ee)\n        return eax\n\nif ((1 << (*(esi_2 + 8) & 0x1f) & 0xffe) == 0)\n    int32_t edi_3 = 1\n    \n    while (true)\n        data_1079f1a8 = 0\n        esi_2 = sub_1070c2d5(1)\n        \n        if (data_1079f1a8 == 0)\n            break\n        \n        if ((1 << (*(esi_2 + 8) & 0x1f) & 0xffe) != 0)\n            break\n        \n        edi_3 += 1\n        \n        if (edi_3 s> 0x64)\n            goto label_107924f4\n\nif ((1 << (*(esi_2 + 8) & 0x1f) & 0xffe) == 0)\n    int32_t edi_4 = 1\n    \n    while (true)\n        data_1079f1a8 = 0\n        esi_2 = sub_1070cfaf()\n        \n        if (data_1079f1a8 == 0)\n            break\n        \n        if ((1 << (*(esi_2 + 8) & 0x1f) & 0xffe) != 0)\n            break\n        \n        edi_4 += 1\n        \n        if (edi_4 s> 0x64)\n            goto label_10792505\n\nif ((1 << (*(esi_2 + 8) & 0x1f) & 0xffe) == 0)\n    esi_2 = sub_1070df74()\n\nif ((1 << (*(esi_2 + 8) & 0x1f) & 0xffe) != 0)\n    int32_t edx_11\n    edx_11.w = *(eax + 0xa)\n    esi_2 = sub_10702b46(eax, esi_2, 0, 0)\n    sub_1070be5b()\n    *(esi_2 + 0x12) = 2\nelse\n    *(*(*(esi_2 + 0x1c) + 0x14) + 8)\n    sub_10706247()\n    sub_107028d3(eax)\n\nif (((1 << (*(eax + 8) & 0x1f)).b & 6) != 0)\n    void* ecx_22 = *(eax + 0x14)\n    \n    if (*(ecx_22 + 0x14) != 0)\n        if (*(*(ecx_22 + 8) + 0xc) == 0)\n            *(ecx_22 + 0x14) = esi_2\n            return esi_2\n        \n        sub_1070ef1c()\n\nreturn esi_2"
+    },
+    {
+      "address": "0x1070d90c",
+      "hlil": "uint32_t var_4 = arg1\nuint32_t result = arg1\nvoid** i = *(result + 0x18)\nuint32_t result_1 = result\nvoid* ebp = 1\n\nif (i != 0)\n    do\n        int32_t edx_1 = 1 << (i[2].b & 0x1f)\n        \n        if ((edx_1.b & 6) != 0 && *(i[5] + 0x14) != 0)\n            arg1 = *(sub_1070d90c() + 0xc)\n            int32_t edx_3 = 0\n            edx_3.b = *(i + 0x11)\n            i[3] = arg1\n            ebp &= edx_3 u>> 7\n        else\n            if ((edx_1.b & 0x60) == 0)\n                goto label_1070d93b\n            \n            void* edi_1 = i[0xa]\n            \n            if (edi_1 != 0 && (((1 << (*(edi_1 + 8) & 0x1f)).b & 6) == 0 || *(*(edi_1 + 0x14) + 0x14) == 0))\n                goto label_1070d93b\n            \n            void* eax_10 = i[0xb]\n            \n            if (eax_10 == 0)\n                goto label_1070d9f6\n            \n            if (((1 << (*(eax_10 + 8) & 0x1f)).b & 6) == 0 || *(*(eax_10 + 0x14) + 0x14) == 0)\n                result = result_1\n            label_1070d93b:\n                \n                if ((edx_1 & 0xffe) == 0)\n                    sub_1070d90c()\n                    int32_t eax_13 = 0\n                    eax_13.b = *(i[7] + 0x11)\n                    ebp &= eax_13 u>> 7\n                else\n                    i[3] = sub_1070da9a()\n            else\n                result = result_1\n            label_1070d9f6:\n                \n                if (edi_1 == eax_10)\n                    goto label_1070d93b\n                \n                *(*(edi_1 + 0x14) + 0x14)\n                int32_t eax_12 = *(sub_1070d90c() + 0xc)\n                int32_t ecx_10 = 0\n                ecx_10.b = *(i + 0x11)\n                i[3] = eax_12\n                ebp &= ecx_10 u>> 7\n        \n        i = *i\n    while (i != 0)\n    \n    for (void** i_1 = *(result + 0x1c); i_1 != 0; i_1 = *i_1)\n        if (((1 << (i_1[2].b & 0x1f)).b & 0x60) != 0)\n            void* edi_2 = i_1[0xa]\n            \n            if (edi_2 == 0)\n            label_1070da5c:\n                void* eax_17 = i_1[0xb]\n                \n                if (eax_17 == 0)\n                label_1070da67:\n                    \n                    if (edi_2 != eax_17)\n                        *(*(edi_2 + 0x14) + 0x14)\n                        i_1[3] = *(sub_1070d90c() + 0xc)\n                else if (((1 << (*(eax_17 + 8) & 0x1f)).b & 6) != 0 && *(*(eax_17 + 0x14) + 0x14) != 0)\n                    goto label_1070da67\n            else if (((1 << (*(edi_2 + 8) & 0x1f)).b & 6) != 0 && *(*(edi_2 + 0x14) + 0x14) != 0)\n                goto label_1070da5c\n    \n    if (sub_107062ec() != 0)\n        *(result + 0x18)\n        *(result + 0x18) = sub_1070f584()\n    \n    *(result + 0xc) = sub_1070db59(result) | sub_1070da9a()\n\nreturn result"
+    },
+    {
+      "address": "0x1070bd4e",
+      "hlil": "int32_t* esi = *(arg1 + 0x1c)\n\nif (sub_10702f99(arg1) != 0)\n    *(arg1 + 0x12) = 1\nelse\n    void* eax_1\n    \n    if (esi[2].b == 1)\n        eax_1 = esi[5]\n    \n    if (esi[2].b == 1 && *(eax_1 + 4) == 3 && *(eax_1 + 0x14) != 0)\n        if (sub_1070fa4c() == 0 && *(arg1 + 8) != 0x12)\n            goto label_1070bd94\n        \n        *(arg1 + 0x12) = 1\n    else if (*(arg1 + 8) == 0x12)\n        *(arg1 + 0x12) = 1\n    else\n    label_1070bd94:\n        int32_t eax_3 = data_107ae234\n        *(arg1 + 0x12) = 2\n        \n        if (eax_3 == 0)\n            eax_3.w = *(arg1 + 0xa)\n            \n            if ((eax_3 & 0xf000) != 0x5000 && *esi == 0)\n                if (((1 << (esi[2].b & 0x1f)).b & 6) == 0)\n                label_1070bdd7:\n                    int32_t eax_6 = *(arg1 + 4) - 0x15b\n                    \n                    if (eax_6 u> 0x35)\n                        return 0\n                    \n                    int32_t edx_1 = 0\n                    edx_1.b = lookup_table_1070e648[eax_6]\n                    \n                    switch (edx_1)\n                        case 1\n                            return 0\n                else\n                    void* eax_5 = esi[5]\n                    int32_t ecx_3 = *(eax_5 + 0x14)\n                    \n                    if (ecx_3 == 0 || *(eax_5 + 8) == eax_5)\n                        goto label_1070bdd7\n                    \n                    if (arg2 != 0)\n                        eax_5.w = *(esi + 0xa)\n                        ecx_3.w = *(arg2 + 0xa)\n                        \n                        if ((ecx_3 & 0xfff) u<= (eax_5 & 0xfff))\n                            goto label_1070bdd7\n\nreturn 1"
+    },
+    {
+      "address": "0x1070be21",
+      "hlil": "for (void** i = *(arg1 + 0x18); i != 0; i = *i)\n    if ((i[4].b & 0x20) == 0)\n        char eax_1 = (1 << (i[2].b & 0x1f)).b\n        void* edi_1\n        \n        if ((eax_1 & 6) != 0)\n            edi_1 = *(i[5] + 0x14)\n        \n        if ((eax_1 & 6) != 0 && edi_1 != 0)\n            if (sub_1070bd4e(edi_1, i) != 0)\n                sub_1070bc39(edi_1)\n            else\n                sub_1070be21()\n        else if ((eax_1 & 0x60) != 0)\n            void* edi_2 = i[0xa]\n            \n            if (edi_2 == 0)\n            label_1070bf0c:\n                void* eax_5 = i[0xb]\n                \n                if (eax_5 == 0)\n                label_1070bf17:\n                    \n                    if (edi_2 != eax_5)\n                        sub_1070bc39(*(*(edi_2 + 0x14) + 0x14))\n                else if (((1 << (*(eax_5 + 8) & 0x1f)).b & 6) != 0 && *(*(eax_5 + 0x14) + 0x14) != 0)\n                    goto label_1070bf17\n            else if (((1 << (*(edi_2 + 8) & 0x1f)).b & 6) != 0 && *(*(edi_2 + 0x14) + 0x14) != 0)\n                goto label_1070bf0c\n\nsub_10703937()\nreturn sub_1070be5b() __tailcall"
+    },
+    {
+      "address": "0x1070be5b",
+      "hlil": "for (void** i = *(arg1 + 0x1c); i != 0; i = *i)\n    if (((1 << (i[2].b & 0x1f)).b & 0x60) != 0)\n        *(i + 0x11) |= 0x20\n\nint32_t* result = *(arg1 + 0x18)\nint32_t* result_1 = nullptr\n\nif (result != 0)\n    int32_t* i_1\n    \n    do\n        i_1 = *result\n        int32_t edx_2 = 1 << (result[2].b & 0x1f)\n        \n        if ((edx_2.b & 0x60) != 0)\n            *(result + 0x11) |= 0x20\n        \n        if ((edx_2 & 0xffe) == 0 || (result[4].b & 0x20) == 0)\n            result_1 = result\n        else\n            *result_1 = i_1\n            *result = 0\n        \n        result = i_1\n    while (i_1 != 0)\n\nreturn result"
+    },
+    {
+      "address": "0x1070f584",
+      "hlil": "int32_t* result = arg1\nint32_t* result_4 = nullptr\nint32_t* esi = nullptr\nint32_t edx = 1\nint32_t* result_1 = result\nint32_t var_c = 1\n\nif (result != 0)\n    while (esi != result)\n        int32_t* result_2 = result\n        int32_t* ebx_1 = &result_1\n        \n        if (result != 0)\n            while (true)\n                int32_t* result_3 = result_2\n                result_4 = result_2\n                int32_t ecx = 1\n                \n                if (*result_2 != 0)\n                    while (ecx s< edx)\n                        result_3 = *result_3\n                        ecx += 1\n                        \n                        if (*result_3 == 0)\n                            break\n                \n                esi = *result_3\n                \n                if (esi == 0)\n                    *ebx_1 = result_2\n                    result = result_1\n                    esi = nullptr\n                    break\n                \n                *result_3 = 0\n                int32_t* eax = esi\n                int32_t ecx_1 = 1\n                \n                if (*esi != 0)\n                    while (ecx_1 s< edx)\n                        eax = *eax\n                        ecx_1 += 1\n                        \n                        if (*eax == 0)\n                            break\n                \n                result_2 = *eax\n                *eax = 0\n                *ebx_1 = sub_1070f65c(arg2)\n                \n                if (result_2 == 0)\n                    result = result_1\n                    edx = var_c\n                    break\n                \n                int32_t i_1 = var_c * 2\n                \n                if (i_1 s>= 1)\n                    int32_t i\n                    \n                    do\n                        ebx_1 = *ebx_1\n                        i = i_1\n                        i_1 -= 1\n                    while (i != 1)\n                \n                edx = var_c\n        \n        var_c = edx * 2\n        \n        if (result_4 == result)\n            break\n        \n        edx = var_c\n\nreturn result"
+    },
+    {
+      "address": "0x1070da9a",
+      "hlil": "void* var_4_1 = arg1\nchar ecx = *(arg1 + 8)\n\nif ((1 << (ecx & 0x1f) & 0xffe) != 0)\n    return zx.d(sub_1070db59(arg1)) | zx.d((neg.d((1 << (*(arg1 + 8) & 0x1f) & 0x380) != 0 ? 1 : 0)).b + 1) << 0x10\n\nint32_t* eax_4 = *(arg1 + 0x18)\nint32_t edx_6 = 0\nint32_t esi = eax_4[3]\nint32_t* i_1 = *eax_4\nedx_6.b = esi:2.b\nuint32_t esi_1 = esi u>> 0x18\nint32_t edi = edx_6 + 1\n\nif (i_1 != 0)\n    int32_t* i\n    \n    do\n        i = *i_1\n        int32_t eax_5 = i_1[3]\n        int32_t ebx_1 = 0\n        ebx_1.b = eax_5:2.b\n        uint32_t eax_6 = eax_5 u>> 0x18\n        edi += ebx_1\n        \n        if (eax_6 u> esi_1)\n            esi_1 = eax_6 + 1\n        else if (eax_6 == esi_1)\n            esi_1 += 1\n        \n        i_1 = i\n    while (i != 0)\n\nif (ecx == 0xe)\n    esi_1 += 7\nelse if (ecx == 0x12)\n    esi_1 += 5\n\nreturn zx.d(sub_1070db59(arg1)) | ((edi & 0xff) | esi_1 << 8) << 0x10"
+    },
+    {
+      "address": "0x1070db59",
+      "hlil": "int32_t ebx = 0\nebx.b = *(zx.d(*(arg1 + 8)) + &lookup_table_1070e7ff)\n\nswitch (jump_table_1070e7e0[ebx])\n    case sub_1070db7d\n        return sub_1070db7d() __tailcall\n    case sub_1070dba9\n        return sub_1070dba9() __tailcall\n    case sub_1070dbc5\n        return sub_1070dbc5() __tailcall\n    case sub_1070dc01\n        return sub_1070dc01() __tailcall\n    case sub_1070dc72\n        return sub_1070dc72() __tailcall\n    case sub_107930f7\n        return sub_107930f7() __tailcall"
+    },
+    {
+      "address": "0x107062ec",
+      "hlil": "return sub_107062ef(*(arg1 + 4)) __tailcall"
+    },
+    {
+      "address": "0x1070f65c",
+      "hlil": "int32_t* i = arg1\nint32_t* i_2 = arg2\nint32_t* i_1 = &arg3\n\nif (i != 0)\n    int32_t ebp_1 = arg3\n    \n    do\n        if (i_2 == 0)\n            goto label_1070f6a1\n        \n        if (ebp_1() s> 0)\n            *i_1 = i_2\n            i_1 = i_2\n            i_2 = *i_2\n        else\n            *i_1 = i\n            i_1 = i\n            i = *i\n    while (i != 0)\n\nif (i_2 != 0)\n    *i_1 = i_2\n    return arg3\n\nlabel_1070f6a1:\n*i_1 = i\nreturn arg3"
+    },
+    {
+      "address": "0x1070db7d",
+      "hlil": "*(arg1 + 0x18)\n*(arg1 + 0x1c)\nint32_t eax_1 = sub_10701d74() ^ *(arg1 + 0x18)\nreturn zx.d((eax_1 s>> 0x10).w) ^ (zx.d(eax_1.w) & 0xffff)"
+    },
+    {
+      "address": "0x1070dba9",
+      "hlil": "int32_t eax = **(arg1 + 0x14)\nreturn zx.d((eax s>> 0x10).w) ^ (zx.d(eax.w) & 0xffff)"
+    },
+    {
+      "address": "0x1070dbc5",
+      "hlil": "int32_t eax_7 = *(arg1 + 0x24)\nvoid* ecx_3 = *(arg1 + 0x28)\n\nif (ecx_3 == 0)\n    return zx.d(((eax_7 s>> 0x10).w ^ (eax_7.w & 0xffff)) + *(arg1 + 4) - 0x145)\n\nint32_t eax_1\nint16_t esi_1\neax_1, esi_1 = sub_1070db59(ecx_3)\nreturn zx.d(esi_1 + (eax_1 << 8).w)"
+    },
+    {
+      "address": "0x1070dc01",
+      "hlil": "int32_t eax_1 = 1 << (arg1 & 0x1f) & 6\n\nif (eax_1 != 0)\n    void* ecx_1 = *(*(arg3 + 0x14) + 0x14)\n    \n    if (ecx_1 != 0)\n        return zx.d(sub_1070db59(ecx_1))\n\nif (eax_1 != 0)\n    void* eax_2 = *(arg3 + 0x14)\n    \n    if (*(eax_2 + 4) == 3)\n        return zx.d((*(eax_2 + 0x1c) << 6).w)\n\nint32_t eax_4 = *(*(arg3 + 0x14) + 0x1c)\nint32_t esi_2 = eax_4 u>> 0x10 ^ (eax_4 & 0xffff)\n\nif (arg2 == 3)\n    return zx.d(esi_2.w)\n\nreturn zx.d((esi_2 << 5 s>> 0x10).w) ^ zx.d(((esi_2 & 0x7ff) << 5).w)"
+    },
+    {
+      "address": "0x1070dc72",
+      "hlil": "int32_t eax = *(*(arg1 + 0x14) + 0x28)\nreturn zx.d((eax u>> 0x10).w) ^ (zx.d(eax.w) & 0xffff)"
+    },
+    {
+      "address": "0x1070f6ae",
+      "hlil": "int32_t eax_3 = *(arg1 + 0xc)\nint32_t ecx = *(arg2 + 0xc)\n\nif (eax_3 u< ecx)\n    return 1\n\nreturn neg.d(eax_3 - ecx != 0 ? 1 : 0)"
+    }
+  ],
+  "comparator": [
+    {
+      "address": "0x1070f6ae",
+      "bytes": "8b410c",
+      "instruction": "mov eax, dword ptr [ecx + 0xc]"
+    },
+    {
+      "address": "0x1070f6b1",
+      "bytes": "8b4a0c",
+      "instruction": "mov ecx, dword ptr [edx + 0xc]"
+    },
+    {
+      "address": "0x1070f6b4",
+      "bytes": "3bc1",
+      "instruction": "cmp eax, ecx"
+    },
+    {
+      "address": "0x1070f6b6",
+      "bytes": "7207",
+      "instruction": "jb 0x1070f6bf"
+    },
+    {
+      "address": "0x1070f6b8",
+      "bytes": "2bc1",
+      "instruction": "sub eax, ecx"
+    },
+    {
+      "address": "0x1070f6ba",
+      "bytes": "f7d8",
+      "instruction": "neg eax"
+    },
+    {
+      "address": "0x1070f6bc",
+      "bytes": "1bc0",
+      "instruction": "sbb eax, eax"
+    },
+    {
+      "address": "0x1070f6be",
+      "bytes": "c3",
+      "instruction": "ret"
+    },
+    {
+      "address": "0x1070f6bf",
+      "bytes": "b801000000",
+      "instruction": "mov eax, 1"
+    },
+    {
+      "address": "0x1070f6c4",
+      "bytes": "c3",
+      "instruction": "ret"
+    }
+  ]
+}

@@ -1,0 +1,6661 @@
+{
+  "schema_version": 1,
+  "harness_sha256": "3c1131d89bb4014b1e3961056ff098db2facca83fa73274b91d82fff56051dce",
+  "scope": "Compiler diagnostics only; no native match credit or compiler decision patches.",
+  "runs": [
+    {
+      "name": "canonical",
+      "early": false,
+      "receipt": {
+        "schema_version": 1,
+        "kind": "preserving-c2-trace",
+        "profile": "msvc6.5-c2-d50100ac",
+        "function": "initialize_slalomdouble_path_template_pair",
+        "cflags": "/O2 /G5 /W3",
+        "source_sha256": "846c87d756ad94374d36f00161900bc2db863c542eac28ed314a53eda5a05266",
+        "build_key": {
+          "compiler": "msvc6.5",
+          "runner_command": "/Users/banteg/dev/banteg/crimson/tools/match/bin/wibo",
+          "argv": [
+            "/Users/banteg/dev/banteg/snail-mail/tools/match/cl.sh",
+            "/c",
+            "/O2",
+            "/G5",
+            "/W3",
+            "scratch.cpp"
+          ],
+          "dependencies": [
+            [
+              "/private/tmp/snail-c2-verified/canonical-passes/source/scratch.cpp",
+              1789321560562911738
+            ],
+            [
+              "cl.sh",
+              1786688309419941555
+            ],
+            [
+              "/Users/banteg/dev/banteg/crimson/tools/match/bin/wibo",
+              1788964564006479536
+            ],
+            [
+              "compilers/msvc6.5/Bin/CL.EXE",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/C1.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/C1XX.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/C2.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/MSPDB60.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/PROFILE.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Include/stddef.h",
+              1686239261000000000
+            ],
+            [
+              "include/attachment_sample.h",
+              1786567396033893075
+            ],
+            [
+              "include/bod_flags.h",
+              1786567396037526205
+            ],
+            [
+              "include/bod_fwd.h",
+              1786567396037810455
+            ],
+            [
+              "include/bod_list.h",
+              1789067484138042630
+            ],
+            [
+              "include/bod_types.h",
+              1786572045346990182
+            ],
+            [
+              "include/contact_target.h",
+              1786567396041359544
+            ],
+            [
+              "include/direct3d_device8_view.h",
+              1786567396042182378
+            ],
+            [
+              "include/fringe_fwd.h",
+              1786567396046049551
+            ],
+            [
+              "include/object_fwd.h",
+              1786567396058080360
+            ],
+            [
+              "include/object_render_types.h",
+              1786570788512583377
+            ],
+            [
+              "include/player_fwd.h",
+              1786567396061479615
+            ],
+            [
+              "include/quaternion_fwd.h",
+              1786567396062659742
+            ],
+            [
+              "include/render_scene.h",
+              1786567396064150036
+            ],
+            [
+              "include/rerror.h",
+              1789067484138370089
+            ],
+            [
+              "include/sprite.h",
+              1788802707057824804
+            ],
+            [
+              "include/sprite_fwd.h",
+              1786567396069492127
+            ],
+            [
+              "include/sub_loc_fwd.h",
+              1786567396071078962
+            ],
+            [
+              "include/sub_loc_tile_ids.h",
+              1786567396071310129
+            ],
+            [
+              "include/texture_fwd.h",
+              1786567396073238132
+            ],
+            [
+              "include/track_attachment_types.h",
+              1786572503835104750
+            ],
+            [
+              "include/transform_matrix.h",
+              1789067484138727588
+            ],
+            [
+              "include/transform_matrix_fwd.h",
+              1786567396079237516
+            ],
+            [
+              "include/vector3.h",
+              1789067484138846546
+            ],
+            [
+              "include/vector_types.h",
+              1786567396080712810
+            ],
+            [
+              "include/vertex_buffer_view.h",
+              1786567396080926935
+            ]
+          ]
+        },
+        "input_hashes": {
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/replay.c": "802be11aff53e7e7b433c6ac8b6ace36f103a2c2b1387fa1eff2839791e60e64",
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/observer.c.in": "5fa704e4c2c68b8e77717e30405a9c2e4c589115fce23f16ef3d559940d762b0",
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/README.md": "40ef1e54e8ffc6eea032f95bbfb1930d67ca80eabff71b026a5dbb5981bb8031",
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/capture.c": "d9b643973050efe630d6262fcc0754bc177a642a57fee2315339fc797f034cc8",
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/profile.json": "56d119b4d999a73d1ca00ef5bc9af50732c8285e9def92223cc183fb760a43ff",
+          "/Users/banteg/dev/banteg/crimson/src/crimson/match_c2.py": "f69ef8df1170cc762d1d1692224ef55b8408e3dd12b0da8b970faa15ae1265ac",
+          "/Users/banteg/dev/banteg/crimson/src/crimson/match_c2_replay.py": "23023a2cb1933c722c4d2b6b780bcaa83f4de27bd9221a222cdf3f1561dc4fe5",
+          "/Users/banteg/dev/banteg/crimson/tools/match/bin/wibo": "917017253dac31557825aecffb117fc0c96221271b5c812fac3f704407fd0cc7",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/CL.EXE": "1bf99f206271ecdbd13da2829192ea2c02e2a44c740b8d72935d5d9cb753b156",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/C1.DLL": "0792033fc3d2fec262ff95478c6a9e70a06e836ed55f0a9710200fa06c204754",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/C1XX.DLL": "f014b3bee650224adf6cb44e51f0eeac5abbf5da666fa299d5250b2f3d1937c6",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/C2.DLL": "d50100ac2380d58f3f6f756961fb1319d35f5248e5fa6cafb866ca657e5dda4a",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/MSPDB60.DLL": "d9f1d9b5c5a99868bc172752a98ea700bce10ddb2afdbcb5e4faeafaec3489df",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/LINK.EXE": "9672e578fdfaa43bdb8e9c16071682988665cb90bba2904bf02f6a5576d8ffbc",
+          "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/kernel32-dll.lib": "2d888d4e23e83f4b88f33ebea5ac2a1e1d99c2b5be19d7df47f5b8de1e9ba613",
+          "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/kernel32-dll-aliases.obj": "a30398d91a11d69b2330dee9681140364d16326ecdecdfeebc5f56eb35cca2fa",
+          "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/msvc6-runtime-kernel32.lib": "08205ba676a77920e49f9273857334a0eee91f34a2cfad01b28aefc443e7bc97",
+          "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/msvc6-runtime-kernel32-aliases.obj": "9581e2b93b73cccec1c30992814835329236fb5bbf491ab361c4968cb7713bb0"
+        },
+        "stream_hashes": {
+          "ex": "89ea243aff0c265b322d1bfc7fbd7f53fa81d7c98e6666a1de2b70a318cb9e89",
+          "in": "b99b6bd2c946c1f7731dc861b89b223ce6018f460a49b8fbcb5362a0fff45a7f",
+          "sy": "df6d3a7264014505d37cf3398c50c12ace77bcd411a8eb4733879b8c3bf1e1fc",
+          "gl": "d5a6756c1ae0cad8d3a617432666e9738b7f4b986c33d883ac6c8bcbef8e731f"
+        },
+        "whole_coff_equal_except_timestamp": true,
+        "normalized_coff_sha256": "1849732d6efdc0e56968e56695685fbfd2eec6ff0040c611ce86dabaedc84d51",
+        "missing_stream_rejected": true,
+        "compiler_decisions_modified": false,
+        "passes_only": true,
+        "metrics": {
+          "ratio": 0.9970717423133236,
+          "target_instructions": 683,
+          "candidate_instructions": 683,
+          "prefix_instructions": 84,
+          "references_ok": 45,
+          "reference_problems": 0,
+          "exact": false,
+          "body_byte_exact": false
+        },
+        "events": 12,
+        "object_paths": [
+          "source/build/scratch.obj",
+          "captured-source/build/scratch.obj",
+          "replay/replay.obj",
+          "observed/replay.obj"
+        ],
+        "profile_sha256": "556661cb87612adfbe0155be66c344b3147a05731dabfb8df244ee2fc0934284",
+        "trace_sha256": "7543c7e05c85538cbcc30123409220e0cf878f9c1087c13ad376c3e70c5be5f1",
+        "snapshots_sha256": "fee70bb0704a57eccfae0195a53eaf5c0ffbbc3a5726840f1bb2a667000bab24",
+        "snail_adapter_sha256": "7757254faa9476e6a226f9160aedd13e73b62519ba01d5dfeb4d30703a7639b1",
+        "snail_dependency_sha256": "a7d4a73637a754f5bd3eaa13fcce2843a57e1c6f8075fbdd4baf62a618bdeede",
+        "snail_inputs": {
+          "/Users/banteg/dev/banteg/snail-mail/src/snail/match.py": "f0e712f9d85b31885884f1b10b63e0d1b7c43c3163c815365e077fcb4b223681",
+          "/Users/banteg/dev/banteg/snail-mail/tools/match/cl.sh": "9710ae622fb1ac66bfe799c5dfc7c0cd462203c21be966e8146c9b47c31d0c1c"
+        },
+        "early_addresses": false
+      }
+    },
+    {
+      "name": "canonical",
+      "early": true,
+      "receipt": {
+        "schema_version": 1,
+        "kind": "preserving-c2-trace",
+        "profile": "msvc6.5-c2-d50100ac-early-addresses",
+        "function": "initialize_slalomdouble_path_template_pair",
+        "cflags": "/O2 /G5 /W3",
+        "source_sha256": "846c87d756ad94374d36f00161900bc2db863c542eac28ed314a53eda5a05266",
+        "build_key": {
+          "compiler": "msvc6.5",
+          "runner_command": "/Users/banteg/dev/banteg/crimson/tools/match/bin/wibo",
+          "argv": [
+            "/Users/banteg/dev/banteg/snail-mail/tools/match/cl.sh",
+            "/c",
+            "/O2",
+            "/G5",
+            "/W3",
+            "scratch.cpp"
+          ],
+          "dependencies": [
+            [
+              "/private/tmp/snail-c2-verified/canonical-early/source/scratch.cpp",
+              1789321560562911738
+            ],
+            [
+              "cl.sh",
+              1786688309419941555
+            ],
+            [
+              "/Users/banteg/dev/banteg/crimson/tools/match/bin/wibo",
+              1788964564006479536
+            ],
+            [
+              "compilers/msvc6.5/Bin/CL.EXE",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/C1.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/C1XX.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/C2.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/MSPDB60.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/PROFILE.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Include/stddef.h",
+              1686239261000000000
+            ],
+            [
+              "include/attachment_sample.h",
+              1786567396033893075
+            ],
+            [
+              "include/bod_flags.h",
+              1786567396037526205
+            ],
+            [
+              "include/bod_fwd.h",
+              1786567396037810455
+            ],
+            [
+              "include/bod_list.h",
+              1789067484138042630
+            ],
+            [
+              "include/bod_types.h",
+              1786572045346990182
+            ],
+            [
+              "include/contact_target.h",
+              1786567396041359544
+            ],
+            [
+              "include/direct3d_device8_view.h",
+              1786567396042182378
+            ],
+            [
+              "include/fringe_fwd.h",
+              1786567396046049551
+            ],
+            [
+              "include/object_fwd.h",
+              1786567396058080360
+            ],
+            [
+              "include/object_render_types.h",
+              1786570788512583377
+            ],
+            [
+              "include/player_fwd.h",
+              1786567396061479615
+            ],
+            [
+              "include/quaternion_fwd.h",
+              1786567396062659742
+            ],
+            [
+              "include/render_scene.h",
+              1786567396064150036
+            ],
+            [
+              "include/rerror.h",
+              1789067484138370089
+            ],
+            [
+              "include/sprite.h",
+              1788802707057824804
+            ],
+            [
+              "include/sprite_fwd.h",
+              1786567396069492127
+            ],
+            [
+              "include/sub_loc_fwd.h",
+              1786567396071078962
+            ],
+            [
+              "include/sub_loc_tile_ids.h",
+              1786567396071310129
+            ],
+            [
+              "include/texture_fwd.h",
+              1786567396073238132
+            ],
+            [
+              "include/track_attachment_types.h",
+              1786572503835104750
+            ],
+            [
+              "include/transform_matrix.h",
+              1789067484138727588
+            ],
+            [
+              "include/transform_matrix_fwd.h",
+              1786567396079237516
+            ],
+            [
+              "include/vector3.h",
+              1789067484138846546
+            ],
+            [
+              "include/vector_types.h",
+              1786567396080712810
+            ],
+            [
+              "include/vertex_buffer_view.h",
+              1786567396080926935
+            ]
+          ]
+        },
+        "input_hashes": {
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/replay.c": "802be11aff53e7e7b433c6ac8b6ace36f103a2c2b1387fa1eff2839791e60e64",
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/observer.c.in": "5fa704e4c2c68b8e77717e30405a9c2e4c589115fce23f16ef3d559940d762b0",
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/README.md": "40ef1e54e8ffc6eea032f95bbfb1930d67ca80eabff71b026a5dbb5981bb8031",
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/capture.c": "d9b643973050efe630d6262fcc0754bc177a642a57fee2315339fc797f034cc8",
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/profile.json": "56d119b4d999a73d1ca00ef5bc9af50732c8285e9def92223cc183fb760a43ff",
+          "/Users/banteg/dev/banteg/crimson/src/crimson/match_c2.py": "f69ef8df1170cc762d1d1692224ef55b8408e3dd12b0da8b970faa15ae1265ac",
+          "/Users/banteg/dev/banteg/crimson/src/crimson/match_c2_replay.py": "23023a2cb1933c722c4d2b6b780bcaa83f4de27bd9221a222cdf3f1561dc4fe5",
+          "/Users/banteg/dev/banteg/crimson/tools/match/bin/wibo": "917017253dac31557825aecffb117fc0c96221271b5c812fac3f704407fd0cc7",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/CL.EXE": "1bf99f206271ecdbd13da2829192ea2c02e2a44c740b8d72935d5d9cb753b156",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/C1.DLL": "0792033fc3d2fec262ff95478c6a9e70a06e836ed55f0a9710200fa06c204754",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/C1XX.DLL": "f014b3bee650224adf6cb44e51f0eeac5abbf5da666fa299d5250b2f3d1937c6",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/C2.DLL": "d50100ac2380d58f3f6f756961fb1319d35f5248e5fa6cafb866ca657e5dda4a",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/MSPDB60.DLL": "d9f1d9b5c5a99868bc172752a98ea700bce10ddb2afdbcb5e4faeafaec3489df",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/LINK.EXE": "9672e578fdfaa43bdb8e9c16071682988665cb90bba2904bf02f6a5576d8ffbc",
+          "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/kernel32-dll.lib": "2d888d4e23e83f4b88f33ebea5ac2a1e1d99c2b5be19d7df47f5b8de1e9ba613",
+          "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/kernel32-dll-aliases.obj": "a30398d91a11d69b2330dee9681140364d16326ecdecdfeebc5f56eb35cca2fa",
+          "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/msvc6-runtime-kernel32.lib": "08205ba676a77920e49f9273857334a0eee91f34a2cfad01b28aefc443e7bc97",
+          "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/msvc6-runtime-kernel32-aliases.obj": "9581e2b93b73cccec1c30992814835329236fb5bbf491ab361c4968cb7713bb0"
+        },
+        "stream_hashes": {
+          "ex": "89ea243aff0c265b322d1bfc7fbd7f53fa81d7c98e6666a1de2b70a318cb9e89",
+          "in": "b99b6bd2c946c1f7731dc861b89b223ce6018f460a49b8fbcb5362a0fff45a7f",
+          "sy": "df6d3a7264014505d37cf3398c50c12ace77bcd411a8eb4733879b8c3bf1e1fc",
+          "gl": "d5a6756c1ae0cad8d3a617432666e9738b7f4b986c33d883ac6c8bcbef8e731f"
+        },
+        "whole_coff_equal_except_timestamp": true,
+        "normalized_coff_sha256": "1849732d6efdc0e56968e56695685fbfd2eec6ff0040c611ce86dabaedc84d51",
+        "missing_stream_rejected": true,
+        "compiler_decisions_modified": false,
+        "passes_only": true,
+        "metrics": {
+          "ratio": 0.9970717423133236,
+          "target_instructions": 683,
+          "candidate_instructions": 683,
+          "prefix_instructions": 84,
+          "references_ok": 45,
+          "reference_problems": 0,
+          "exact": false,
+          "body_byte_exact": false
+        },
+        "events": 12,
+        "object_paths": [
+          "source/build/scratch.obj",
+          "captured-source/build/scratch.obj",
+          "replay/replay.obj",
+          "observed/replay.obj"
+        ],
+        "profile_sha256": "3f54b0c5f6c89314405732a29d52afed5cadefb1217c57b5a4ae6ace268a710f",
+        "trace_sha256": "4d69d6258f18ceb7ebadd5198dcf0cfee7e33b70262f8fb663eb88bc7a1f167b",
+        "snapshots_sha256": "ca9c9b7bc5dc38ce7dfadf7b0840886829f1d6044dee0f7203aab02e61ab0622",
+        "snail_adapter_sha256": "7757254faa9476e6a226f9160aedd13e73b62519ba01d5dfeb4d30703a7639b1",
+        "snail_dependency_sha256": "a7d4a73637a754f5bd3eaa13fcce2843a57e1c6f8075fbdd4baf62a618bdeede",
+        "snail_inputs": {
+          "/Users/banteg/dev/banteg/snail-mail/src/snail/match.py": "f0e712f9d85b31885884f1b10b63e0d1b7c43c3163c815365e077fcb4b223681",
+          "/Users/banteg/dev/banteg/snail-mail/tools/match/cl.sh": "9710ae622fb1ac66bfe799c5dfc7c0cd462203c21be966e8146c9b47c31d0c1c"
+        },
+        "early_addresses": true
+      },
+      "before": [
+        {
+          "add_node": 1814107876,
+          "call_node": 1814108100,
+          "line_raw": 20,
+          "source_kinds": [
+            6,
+            2,
+            2
+          ],
+          "cost_words": [
+            0,
+            1,
+            0
+          ],
+          "raw_add": {
+            "id": 1814107876,
+            "op": 365,
+            "line": 20,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  1814107404,
+                  332,
+                  268697606,
+                  0,
+                  16,
+                  0,
+                  0
+                ],
+                "kind": 6,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814107772,
+                  330,
+                  268697602,
+                  1,
+                  16,
+                  1813418032,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  330,
+                  268697602,
+                  0,
+                  48,
+                  1813419712,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814102920,
+                  1814102920
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814102920,
+                  0,
+                  4100,
+                  1814107876,
+                  0,
+                  393,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_copy": {
+            "id": 1814107936,
+            "op": 346,
+            "line": 20,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814102920,
+                  1814102920
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814102920,
+                  0,
+                  4100,
+                  1814107876,
+                  0,
+                  393,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814103004,
+                  1814103004
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814103004,
+                  0,
+                  4100,
+                  1814107936,
+                  0,
+                  394,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_call": {
+            "id": 1814108100,
+            "op": 388,
+            "line": 20,
+            "flags": 268697870,
+            "src": [
+              {
+                "raw": [
+                  1814108140,
+                  339,
+                  268697604,
+                  0,
+                  16,
+                  1813395116,
+                  0
+                ],
+                "kind": 4,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814604108,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814103004,
+                  1814103004
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814103004,
+                  0,
+                  4100,
+                  1814107936,
+                  0,
+                  394,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "add_node": 1814110012,
+          "call_node": 1814110236,
+          "line_raw": 20,
+          "source_kinds": [
+            6,
+            2,
+            2
+          ],
+          "cost_words": [
+            0,
+            1,
+            0
+          ],
+          "raw_add": {
+            "id": 1814110012,
+            "op": 365,
+            "line": 20,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  1814109536,
+                  332,
+                  268697606,
+                  0,
+                  16,
+                  0,
+                  0
+                ],
+                "kind": 6,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814109908,
+                  330,
+                  268697602,
+                  1,
+                  16,
+                  1813418032,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  330,
+                  268697602,
+                  0,
+                  48,
+                  1814093544,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814104096,
+                  1814104096
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814104096,
+                  0,
+                  4100,
+                  1814110012,
+                  0,
+                  407,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_copy": {
+            "id": 1814110072,
+            "op": 346,
+            "line": 20,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814104096,
+                  1814104096
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814104096,
+                  0,
+                  4100,
+                  1814110012,
+                  0,
+                  407,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814104180,
+                  1814104180
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814104180,
+                  0,
+                  4100,
+                  1814110072,
+                  0,
+                  408,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_call": {
+            "id": 1814110236,
+            "op": 388,
+            "line": 20,
+            "flags": 268697870,
+            "src": [
+              {
+                "raw": [
+                  1814110276,
+                  339,
+                  268697604,
+                  0,
+                  16,
+                  1813395116,
+                  0
+                ],
+                "kind": 4,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814604156,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814104180,
+                  1814104180
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814104180,
+                  0,
+                  4100,
+                  1814110072,
+                  0,
+                  408,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "add_node": 1814124876,
+          "call_node": 1813474536,
+          "line_raw": 30,
+          "source_kinds": [
+            6,
+            2,
+            2
+          ],
+          "cost_words": [
+            0,
+            1,
+            0
+          ],
+          "raw_add": {
+            "id": 1814124876,
+            "op": 365,
+            "line": 30,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  1814124404,
+                  332,
+                  268697606,
+                  0,
+                  16,
+                  0,
+                  0
+                ],
+                "kind": 6,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814124772,
+                  330,
+                  268697602,
+                  1,
+                  16,
+                  1813418200,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  330,
+                  268697602,
+                  0,
+                  48,
+                  1814093880,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814113244,
+                  1814113244
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814113244,
+                  0,
+                  4100,
+                  1814124876,
+                  0,
+                  426,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_copy": {
+            "id": 1814124936,
+            "op": 346,
+            "line": 30,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814113244,
+                  1814113244
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814113244,
+                  0,
+                  4100,
+                  1814124876,
+                  0,
+                  426,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814113328,
+                  1814113328
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814113328,
+                  0,
+                  4100,
+                  1814124936,
+                  0,
+                  427,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_call": {
+            "id": 1813474536,
+            "op": 388,
+            "line": 30,
+            "flags": 268697870,
+            "src": [
+              {
+                "raw": [
+                  1814125100,
+                  339,
+                  268697604,
+                  0,
+                  16,
+                  1813395116,
+                  0
+                ],
+                "kind": 4,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814604204,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814113328,
+                  1814113328
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814113328,
+                  0,
+                  4100,
+                  1814124936,
+                  0,
+                  427,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "add_node": 1813477784,
+          "call_node": 1813477692,
+          "line_raw": 41,
+          "source_kinds": [
+            6,
+            2,
+            2
+          ],
+          "cost_words": [
+            0,
+            1,
+            0
+          ],
+          "raw_add": {
+            "id": 1813477784,
+            "op": 365,
+            "line": 41,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  1814137992,
+                  332,
+                  268697606,
+                  0,
+                  16,
+                  0,
+                  0
+                ],
+                "kind": 6,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1813478024,
+                  330,
+                  268697602,
+                  1,
+                  16,
+                  1813418200,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  330,
+                  268697602,
+                  0,
+                  48,
+                  1814094048,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1813429028,
+                  1813429028
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1813429028,
+                  0,
+                  4100,
+                  1813477784,
+                  0,
+                  84,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_copy": {
+            "id": 1813477872,
+            "op": 346,
+            "line": 41,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1813429028,
+                  1813429028
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1813429028,
+                  0,
+                  4100,
+                  1813477784,
+                  0,
+                  84,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1813429112,
+                  1813429112
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1813429112,
+                  0,
+                  4100,
+                  1813477872,
+                  0,
+                  85,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_call": {
+            "id": 1813477692,
+            "op": 388,
+            "line": 41,
+            "flags": 268697870,
+            "src": [
+              {
+                "raw": [
+                  1814133716,
+                  339,
+                  268697604,
+                  0,
+                  16,
+                  1813395116,
+                  0
+                ],
+                "kind": 4,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814604252,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1813429112,
+                  1813429112
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1813429112,
+                  0,
+                  4100,
+                  1813477872,
+                  0,
+                  85,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "after": [
+        {
+          "add_node": 1814107876,
+          "call_node": 1814108100,
+          "line_raw": 20,
+          "source_kinds": [
+            6,
+            2,
+            2
+          ],
+          "cost_words": [
+            122887,
+            65888,
+            0
+          ],
+          "raw_add": {
+            "id": 1814107876,
+            "op": 365,
+            "line": 20,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  1814107404,
+                  332,
+                  268697606,
+                  122887,
+                  16,
+                  0,
+                  0
+                ],
+                "kind": 6,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814107772,
+                  330,
+                  268697602,
+                  65888,
+                  16,
+                  1813418032,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  330,
+                  268697602,
+                  0,
+                  48,
+                  1813419712,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814102920,
+                  1814102920
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814102920,
+                  0,
+                  4100,
+                  1814107876,
+                  0,
+                  393,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_copy": {
+            "id": 1814107936,
+            "op": 346,
+            "line": 20,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814102920,
+                  1814102920
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814102920,
+                  0,
+                  4100,
+                  1814107876,
+                  0,
+                  393,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814103004,
+                  1814103004
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814103004,
+                  0,
+                  4100,
+                  1814107936,
+                  0,
+                  394,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_call": {
+            "id": 1814108100,
+            "op": 388,
+            "line": 20,
+            "flags": 268697870,
+            "src": [
+              {
+                "raw": [
+                  1814108140,
+                  339,
+                  268697604,
+                  65977,
+                  16,
+                  1813395116,
+                  0
+                ],
+                "kind": 4,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814604108,
+                  329,
+                  268697601,
+                  17097476,
+                  16,
+                  1814103004,
+                  1814103004
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814103004,
+                  0,
+                  4100,
+                  1814107936,
+                  0,
+                  394,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  65536,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "add_node": 1814110012,
+          "call_node": 1814110236,
+          "line_raw": 20,
+          "source_kinds": [
+            2,
+            6,
+            2
+          ],
+          "cost_words": [
+            65888,
+            65543,
+            0
+          ],
+          "raw_add": {
+            "id": 1814110012,
+            "op": 365,
+            "line": 20,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  1814109936,
+                  330,
+                  268697602,
+                  65888,
+                  16,
+                  1813418032,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814109908,
+                  332,
+                  268697606,
+                  65543,
+                  16,
+                  0,
+                  0
+                ],
+                "kind": 6,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  330,
+                  268697602,
+                  0,
+                  48,
+                  1814093544,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814104096,
+                  1814104096
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814104096,
+                  0,
+                  4100,
+                  1814110012,
+                  0,
+                  407,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_copy": {
+            "id": 1814110072,
+            "op": 346,
+            "line": 20,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814104096,
+                  1814104096
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814104096,
+                  0,
+                  4100,
+                  1814110012,
+                  0,
+                  407,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814104180,
+                  1814104180
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814104180,
+                  0,
+                  4100,
+                  1814110072,
+                  0,
+                  408,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_call": {
+            "id": 1814110236,
+            "op": 388,
+            "line": 20,
+            "flags": 268697870,
+            "src": [
+              {
+                "raw": [
+                  1814110276,
+                  339,
+                  268697604,
+                  65977,
+                  16,
+                  1813395116,
+                  0
+                ],
+                "kind": 4,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814604156,
+                  329,
+                  268697601,
+                  17039787,
+                  16,
+                  1814104180,
+                  1814104180
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814104180,
+                  0,
+                  4100,
+                  1814110072,
+                  0,
+                  408,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  65536,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "add_node": 1814124876,
+          "call_node": 1813474536,
+          "line_raw": 30,
+          "source_kinds": [
+            6,
+            2,
+            2
+          ],
+          "cost_words": [
+            98311,
+            65952,
+            0
+          ],
+          "raw_add": {
+            "id": 1814124876,
+            "op": 365,
+            "line": 30,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  1814124404,
+                  332,
+                  268697606,
+                  98311,
+                  16,
+                  0,
+                  0
+                ],
+                "kind": 6,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814124772,
+                  330,
+                  268697602,
+                  65952,
+                  16,
+                  1813418200,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  330,
+                  268697602,
+                  0,
+                  48,
+                  1814093880,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814113244,
+                  1814113244
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814113244,
+                  0,
+                  4100,
+                  1814124876,
+                  0,
+                  426,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_copy": {
+            "id": 1814124936,
+            "op": 346,
+            "line": 30,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814113244,
+                  1814113244
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814113244,
+                  0,
+                  4100,
+                  1814124876,
+                  0,
+                  426,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814113328,
+                  1814113328
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814113328,
+                  0,
+                  4100,
+                  1814124936,
+                  0,
+                  427,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_call": {
+            "id": 1813474536,
+            "op": 388,
+            "line": 30,
+            "flags": 268697870,
+            "src": [
+              {
+                "raw": [
+                  1814125100,
+                  339,
+                  268697604,
+                  65977,
+                  16,
+                  1813395116,
+                  0
+                ],
+                "kind": 4,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814604204,
+                  329,
+                  268697601,
+                  17073028,
+                  16,
+                  1814113328,
+                  1814113328
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814113328,
+                  0,
+                  4100,
+                  1814124936,
+                  0,
+                  427,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  65536,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "add_node": 1813477784,
+          "call_node": 1813477692,
+          "line_raw": 41,
+          "source_kinds": [
+            6,
+            2,
+            2
+          ],
+          "cost_words": [
+            114695,
+            65952,
+            0
+          ],
+          "raw_add": {
+            "id": 1813477784,
+            "op": 365,
+            "line": 41,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  1814137992,
+                  332,
+                  268697606,
+                  114695,
+                  16,
+                  0,
+                  0
+                ],
+                "kind": 6,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1813478024,
+                  330,
+                  268697602,
+                  65952,
+                  16,
+                  1813418200,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  330,
+                  268697602,
+                  0,
+                  48,
+                  1814094048,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1813429028,
+                  1813429028
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1813429028,
+                  0,
+                  4100,
+                  1813477784,
+                  0,
+                  84,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_copy": {
+            "id": 1813477872,
+            "op": 346,
+            "line": 41,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1813429028,
+                  1813429028
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1813429028,
+                  0,
+                  4100,
+                  1813477784,
+                  0,
+                  84,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1813429112,
+                  1813429112
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1813429112,
+                  0,
+                  4100,
+                  1813477872,
+                  0,
+                  85,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_call": {
+            "id": 1813477692,
+            "op": 388,
+            "line": 41,
+            "flags": 268697870,
+            "src": [
+              {
+                "raw": [
+                  1814133716,
+                  339,
+                  268697604,
+                  65977,
+                  16,
+                  1813395116,
+                  0
+                ],
+                "kind": 4,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814604252,
+                  329,
+                  268697601,
+                  17089412,
+                  16,
+                  1813429112,
+                  1813429112
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1813429112,
+                  0,
+                  4100,
+                  1813477872,
+                  0,
+                  85,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  65536,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "departure",
+      "early": false,
+      "receipt": {
+        "schema_version": 1,
+        "kind": "preserving-c2-trace",
+        "profile": "msvc6.5-c2-d50100ac",
+        "function": "initialize_slalomdouble_path_template_pair",
+        "cflags": "/O2 /G5 /W3",
+        "source_sha256": "f530040c5ec51a3be0cc8310c37fb2f9050e7005afcd7f397749381beeab39a3",
+        "build_key": {
+          "compiler": "msvc6.5",
+          "runner_command": "/Users/banteg/dev/banteg/crimson/tools/match/bin/wibo",
+          "argv": [
+            "/Users/banteg/dev/banteg/snail-mail/tools/match/cl.sh",
+            "/c",
+            "/O2",
+            "/G5",
+            "/W3",
+            "scratch.cpp"
+          ],
+          "dependencies": [
+            [
+              "/private/tmp/snail-c2-verified/departure-passes/source/scratch.cpp",
+              1789321566709679293
+            ],
+            [
+              "cl.sh",
+              1786688309419941555
+            ],
+            [
+              "/Users/banteg/dev/banteg/crimson/tools/match/bin/wibo",
+              1788964564006479536
+            ],
+            [
+              "compilers/msvc6.5/Bin/CL.EXE",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/C1.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/C1XX.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/C2.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/MSPDB60.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/PROFILE.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Include/stddef.h",
+              1686239261000000000
+            ],
+            [
+              "include/attachment_sample.h",
+              1786567396033893075
+            ],
+            [
+              "include/bod_flags.h",
+              1786567396037526205
+            ],
+            [
+              "include/bod_fwd.h",
+              1786567396037810455
+            ],
+            [
+              "include/bod_list.h",
+              1789067484138042630
+            ],
+            [
+              "include/bod_types.h",
+              1786572045346990182
+            ],
+            [
+              "include/contact_target.h",
+              1786567396041359544
+            ],
+            [
+              "include/direct3d_device8_view.h",
+              1786567396042182378
+            ],
+            [
+              "include/fringe_fwd.h",
+              1786567396046049551
+            ],
+            [
+              "include/object_fwd.h",
+              1786567396058080360
+            ],
+            [
+              "include/object_render_types.h",
+              1786570788512583377
+            ],
+            [
+              "include/player_fwd.h",
+              1786567396061479615
+            ],
+            [
+              "include/quaternion_fwd.h",
+              1786567396062659742
+            ],
+            [
+              "include/render_scene.h",
+              1786567396064150036
+            ],
+            [
+              "include/rerror.h",
+              1789067484138370089
+            ],
+            [
+              "include/sprite.h",
+              1788802707057824804
+            ],
+            [
+              "include/sprite_fwd.h",
+              1786567396069492127
+            ],
+            [
+              "include/sub_loc_fwd.h",
+              1786567396071078962
+            ],
+            [
+              "include/sub_loc_tile_ids.h",
+              1786567396071310129
+            ],
+            [
+              "include/texture_fwd.h",
+              1786567396073238132
+            ],
+            [
+              "include/track_attachment_types.h",
+              1786572503835104750
+            ],
+            [
+              "include/transform_matrix.h",
+              1789067484138727588
+            ],
+            [
+              "include/transform_matrix_fwd.h",
+              1786567396079237516
+            ],
+            [
+              "include/vector3.h",
+              1789067484138846546
+            ],
+            [
+              "include/vector_types.h",
+              1786567396080712810
+            ],
+            [
+              "include/vertex_buffer_view.h",
+              1786567396080926935
+            ]
+          ]
+        },
+        "input_hashes": {
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/replay.c": "802be11aff53e7e7b433c6ac8b6ace36f103a2c2b1387fa1eff2839791e60e64",
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/observer.c.in": "5fa704e4c2c68b8e77717e30405a9c2e4c589115fce23f16ef3d559940d762b0",
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/README.md": "40ef1e54e8ffc6eea032f95bbfb1930d67ca80eabff71b026a5dbb5981bb8031",
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/capture.c": "d9b643973050efe630d6262fcc0754bc177a642a57fee2315339fc797f034cc8",
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/profile.json": "56d119b4d999a73d1ca00ef5bc9af50732c8285e9def92223cc183fb760a43ff",
+          "/Users/banteg/dev/banteg/crimson/src/crimson/match_c2.py": "f69ef8df1170cc762d1d1692224ef55b8408e3dd12b0da8b970faa15ae1265ac",
+          "/Users/banteg/dev/banteg/crimson/src/crimson/match_c2_replay.py": "23023a2cb1933c722c4d2b6b780bcaa83f4de27bd9221a222cdf3f1561dc4fe5",
+          "/Users/banteg/dev/banteg/crimson/tools/match/bin/wibo": "917017253dac31557825aecffb117fc0c96221271b5c812fac3f704407fd0cc7",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/CL.EXE": "1bf99f206271ecdbd13da2829192ea2c02e2a44c740b8d72935d5d9cb753b156",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/C1.DLL": "0792033fc3d2fec262ff95478c6a9e70a06e836ed55f0a9710200fa06c204754",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/C1XX.DLL": "f014b3bee650224adf6cb44e51f0eeac5abbf5da666fa299d5250b2f3d1937c6",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/C2.DLL": "d50100ac2380d58f3f6f756961fb1319d35f5248e5fa6cafb866ca657e5dda4a",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/MSPDB60.DLL": "d9f1d9b5c5a99868bc172752a98ea700bce10ddb2afdbcb5e4faeafaec3489df",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/LINK.EXE": "9672e578fdfaa43bdb8e9c16071682988665cb90bba2904bf02f6a5576d8ffbc",
+          "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/kernel32-dll.lib": "2d888d4e23e83f4b88f33ebea5ac2a1e1d99c2b5be19d7df47f5b8de1e9ba613",
+          "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/kernel32-dll-aliases.obj": "a30398d91a11d69b2330dee9681140364d16326ecdecdfeebc5f56eb35cca2fa",
+          "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/msvc6-runtime-kernel32.lib": "08205ba676a77920e49f9273857334a0eee91f34a2cfad01b28aefc443e7bc97",
+          "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/msvc6-runtime-kernel32-aliases.obj": "9581e2b93b73cccec1c30992814835329236fb5bbf491ab361c4968cb7713bb0"
+        },
+        "stream_hashes": {
+          "ex": "3159ff6a1b2687056b4521e76d1153a9aad9738aa68389cfaa784a5d335beac1",
+          "in": "657d90181fe772c0d0192a83e6e3fa2e86ab2a0d72d1bce55346572f4c71e30d",
+          "sy": "1109c2462c5e1d40d4ef9ed1c10e764fbe2a77734721c1adc55e738ebcca325b",
+          "gl": "4b6017d0457c0bb9fe4817c6171393cf33da63481525ff44db818941e532babf"
+        },
+        "whole_coff_equal_except_timestamp": true,
+        "normalized_coff_sha256": "d88e1dfe39a4bcc5aef58e47a173bf45e0e75ef318bb6c1296ad6a8e82d4d9e4",
+        "missing_stream_rejected": true,
+        "compiler_decisions_modified": false,
+        "passes_only": true,
+        "metrics": {
+          "ratio": 0.9970717423133236,
+          "target_instructions": 683,
+          "candidate_instructions": 683,
+          "prefix_instructions": 42,
+          "references_ok": 45,
+          "reference_problems": 0,
+          "exact": false,
+          "body_byte_exact": false
+        },
+        "events": 12,
+        "object_paths": [
+          "source/build/scratch.obj",
+          "captured-source/build/scratch.obj",
+          "replay/replay.obj",
+          "observed/replay.obj"
+        ],
+        "profile_sha256": "556661cb87612adfbe0155be66c344b3147a05731dabfb8df244ee2fc0934284",
+        "trace_sha256": "d1208cde226a8840786f6e7c2d6267be037d36e23b399337ebea9021e9f54196",
+        "snapshots_sha256": "c3e440d26a5904276bd793ac512dceb8e2cf5a70051b0e7ffeb9caa04ca53103",
+        "snail_adapter_sha256": "7757254faa9476e6a226f9160aedd13e73b62519ba01d5dfeb4d30703a7639b1",
+        "snail_dependency_sha256": "bede59b0ed877d57c00efa4ae039255c6b129677d26805f3a116d61f43460ad5",
+        "snail_inputs": {
+          "/Users/banteg/dev/banteg/snail-mail/src/snail/match.py": "f0e712f9d85b31885884f1b10b63e0d1b7c43c3163c815365e077fcb4b223681",
+          "/Users/banteg/dev/banteg/snail-mail/tools/match/cl.sh": "9710ae622fb1ac66bfe799c5dfc7c0cd462203c21be966e8146c9b47c31d0c1c"
+        },
+        "early_addresses": false
+      }
+    },
+    {
+      "name": "departure",
+      "early": true,
+      "receipt": {
+        "schema_version": 1,
+        "kind": "preserving-c2-trace",
+        "profile": "msvc6.5-c2-d50100ac-early-addresses",
+        "function": "initialize_slalomdouble_path_template_pair",
+        "cflags": "/O2 /G5 /W3",
+        "source_sha256": "f530040c5ec51a3be0cc8310c37fb2f9050e7005afcd7f397749381beeab39a3",
+        "build_key": {
+          "compiler": "msvc6.5",
+          "runner_command": "/Users/banteg/dev/banteg/crimson/tools/match/bin/wibo",
+          "argv": [
+            "/Users/banteg/dev/banteg/snail-mail/tools/match/cl.sh",
+            "/c",
+            "/O2",
+            "/G5",
+            "/W3",
+            "scratch.cpp"
+          ],
+          "dependencies": [
+            [
+              "/private/tmp/snail-c2-verified/departure-early/source/scratch.cpp",
+              1789321566709679293
+            ],
+            [
+              "cl.sh",
+              1786688309419941555
+            ],
+            [
+              "/Users/banteg/dev/banteg/crimson/tools/match/bin/wibo",
+              1788964564006479536
+            ],
+            [
+              "compilers/msvc6.5/Bin/CL.EXE",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/C1.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/C1XX.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/C2.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/MSPDB60.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Bin/PROFILE.DLL",
+              1686239260000000000
+            ],
+            [
+              "compilers/msvc6.5/Include/stddef.h",
+              1686239261000000000
+            ],
+            [
+              "include/attachment_sample.h",
+              1786567396033893075
+            ],
+            [
+              "include/bod_flags.h",
+              1786567396037526205
+            ],
+            [
+              "include/bod_fwd.h",
+              1786567396037810455
+            ],
+            [
+              "include/bod_list.h",
+              1789067484138042630
+            ],
+            [
+              "include/bod_types.h",
+              1786572045346990182
+            ],
+            [
+              "include/contact_target.h",
+              1786567396041359544
+            ],
+            [
+              "include/direct3d_device8_view.h",
+              1786567396042182378
+            ],
+            [
+              "include/fringe_fwd.h",
+              1786567396046049551
+            ],
+            [
+              "include/object_fwd.h",
+              1786567396058080360
+            ],
+            [
+              "include/object_render_types.h",
+              1786570788512583377
+            ],
+            [
+              "include/player_fwd.h",
+              1786567396061479615
+            ],
+            [
+              "include/quaternion_fwd.h",
+              1786567396062659742
+            ],
+            [
+              "include/render_scene.h",
+              1786567396064150036
+            ],
+            [
+              "include/rerror.h",
+              1789067484138370089
+            ],
+            [
+              "include/sprite.h",
+              1788802707057824804
+            ],
+            [
+              "include/sprite_fwd.h",
+              1786567396069492127
+            ],
+            [
+              "include/sub_loc_fwd.h",
+              1786567396071078962
+            ],
+            [
+              "include/sub_loc_tile_ids.h",
+              1786567396071310129
+            ],
+            [
+              "include/texture_fwd.h",
+              1786567396073238132
+            ],
+            [
+              "include/track_attachment_types.h",
+              1786572503835104750
+            ],
+            [
+              "include/transform_matrix.h",
+              1789067484138727588
+            ],
+            [
+              "include/transform_matrix_fwd.h",
+              1786567396079237516
+            ],
+            [
+              "include/vector3.h",
+              1789067484138846546
+            ],
+            [
+              "include/vector_types.h",
+              1786567396080712810
+            ],
+            [
+              "include/vertex_buffer_view.h",
+              1786567396080926935
+            ]
+          ]
+        },
+        "input_hashes": {
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/replay.c": "802be11aff53e7e7b433c6ac8b6ace36f103a2c2b1387fa1eff2839791e60e64",
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/observer.c.in": "5fa704e4c2c68b8e77717e30405a9c2e4c589115fce23f16ef3d559940d762b0",
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/README.md": "40ef1e54e8ffc6eea032f95bbfb1930d67ca80eabff71b026a5dbb5981bb8031",
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/capture.c": "d9b643973050efe630d6262fcc0754bc177a642a57fee2315339fc797f034cc8",
+          "/Users/banteg/dev/banteg/crimson/tools/match/c2/profile.json": "56d119b4d999a73d1ca00ef5bc9af50732c8285e9def92223cc183fb760a43ff",
+          "/Users/banteg/dev/banteg/crimson/src/crimson/match_c2.py": "f69ef8df1170cc762d1d1692224ef55b8408e3dd12b0da8b970faa15ae1265ac",
+          "/Users/banteg/dev/banteg/crimson/src/crimson/match_c2_replay.py": "23023a2cb1933c722c4d2b6b780bcaa83f4de27bd9221a222cdf3f1561dc4fe5",
+          "/Users/banteg/dev/banteg/crimson/tools/match/bin/wibo": "917017253dac31557825aecffb117fc0c96221271b5c812fac3f704407fd0cc7",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/CL.EXE": "1bf99f206271ecdbd13da2829192ea2c02e2a44c740b8d72935d5d9cb753b156",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/C1.DLL": "0792033fc3d2fec262ff95478c6a9e70a06e836ed55f0a9710200fa06c204754",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/C1XX.DLL": "f014b3bee650224adf6cb44e51f0eeac5abbf5da666fa299d5250b2f3d1937c6",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/C2.DLL": "d50100ac2380d58f3f6f756961fb1319d35f5248e5fa6cafb866ca657e5dda4a",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/MSPDB60.DLL": "d9f1d9b5c5a99868bc172752a98ea700bce10ddb2afdbcb5e4faeafaec3489df",
+          "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/LINK.EXE": "9672e578fdfaa43bdb8e9c16071682988665cb90bba2904bf02f6a5576d8ffbc",
+          "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/kernel32-dll.lib": "2d888d4e23e83f4b88f33ebea5ac2a1e1d99c2b5be19d7df47f5b8de1e9ba613",
+          "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/kernel32-dll-aliases.obj": "a30398d91a11d69b2330dee9681140364d16326ecdecdfeebc5f56eb35cca2fa",
+          "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/msvc6-runtime-kernel32.lib": "08205ba676a77920e49f9273857334a0eee91f34a2cfad01b28aefc443e7bc97",
+          "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/msvc6-runtime-kernel32-aliases.obj": "9581e2b93b73cccec1c30992814835329236fb5bbf491ab361c4968cb7713bb0"
+        },
+        "stream_hashes": {
+          "ex": "3159ff6a1b2687056b4521e76d1153a9aad9738aa68389cfaa784a5d335beac1",
+          "in": "657d90181fe772c0d0192a83e6e3fa2e86ab2a0d72d1bce55346572f4c71e30d",
+          "sy": "1109c2462c5e1d40d4ef9ed1c10e764fbe2a77734721c1adc55e738ebcca325b",
+          "gl": "4b6017d0457c0bb9fe4817c6171393cf33da63481525ff44db818941e532babf"
+        },
+        "whole_coff_equal_except_timestamp": true,
+        "normalized_coff_sha256": "d88e1dfe39a4bcc5aef58e47a173bf45e0e75ef318bb6c1296ad6a8e82d4d9e4",
+        "missing_stream_rejected": true,
+        "compiler_decisions_modified": false,
+        "passes_only": true,
+        "metrics": {
+          "ratio": 0.9970717423133236,
+          "target_instructions": 683,
+          "candidate_instructions": 683,
+          "prefix_instructions": 42,
+          "references_ok": 45,
+          "reference_problems": 0,
+          "exact": false,
+          "body_byte_exact": false
+        },
+        "events": 12,
+        "object_paths": [
+          "source/build/scratch.obj",
+          "captured-source/build/scratch.obj",
+          "replay/replay.obj",
+          "observed/replay.obj"
+        ],
+        "profile_sha256": "3f54b0c5f6c89314405732a29d52afed5cadefb1217c57b5a4ae6ace268a710f",
+        "trace_sha256": "f5f99a31e4d35a34d6e0a74fd1b7bd217d111f99d6a8a8e049bd8086789e81af",
+        "snapshots_sha256": "e81603344c549ad23cfb47360f0fd6addde6e40c91d5179b28d1b3f70f8cb8e0",
+        "snail_adapter_sha256": "7757254faa9476e6a226f9160aedd13e73b62519ba01d5dfeb4d30703a7639b1",
+        "snail_dependency_sha256": "bede59b0ed877d57c00efa4ae039255c6b129677d26805f3a116d61f43460ad5",
+        "snail_inputs": {
+          "/Users/banteg/dev/banteg/snail-mail/src/snail/match.py": "f0e712f9d85b31885884f1b10b63e0d1b7c43c3163c815365e077fcb4b223681",
+          "/Users/banteg/dev/banteg/snail-mail/tools/match/cl.sh": "9710ae622fb1ac66bfe799c5dfc7c0cd462203c21be966e8146c9b47c31d0c1c"
+        },
+        "early_addresses": true
+      },
+      "before": [
+        {
+          "add_node": 1814094372,
+          "call_node": 1814094596,
+          "line_raw": 20,
+          "source_kinds": [
+            6,
+            2,
+            2
+          ],
+          "cost_words": [
+            0,
+            1,
+            0
+          ],
+          "raw_add": {
+            "id": 1814094372,
+            "op": 365,
+            "line": 20,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  1814093900,
+                  332,
+                  268697606,
+                  0,
+                  16,
+                  0,
+                  0
+                ],
+                "kind": 6,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814094268,
+                  330,
+                  268697602,
+                  1,
+                  16,
+                  1813418032,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  330,
+                  268697602,
+                  0,
+                  48,
+                  1813419628,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814074484,
+                  1814074484
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814074484,
+                  0,
+                  4100,
+                  1814094372,
+                  0,
+                  344,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_copy": {
+            "id": 1814094432,
+            "op": 346,
+            "line": 20,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814074484,
+                  1814074484
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814074484,
+                  0,
+                  4100,
+                  1814094372,
+                  0,
+                  344,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814074568,
+                  1814074568
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814074568,
+                  0,
+                  4100,
+                  1814094432,
+                  0,
+                  345,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_call": {
+            "id": 1814094596,
+            "op": 388,
+            "line": 20,
+            "flags": 268697870,
+            "src": [
+              {
+                "raw": [
+                  1814094636,
+                  339,
+                  268697604,
+                  0,
+                  16,
+                  1813395400,
+                  0
+                ],
+                "kind": 4,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814628708,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814074568,
+                  1814074568
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814074568,
+                  0,
+                  4100,
+                  1814094432,
+                  0,
+                  345,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "add_node": 1814105684,
+          "call_node": 1814105908,
+          "line_raw": 20,
+          "source_kinds": [
+            6,
+            2,
+            2
+          ],
+          "cost_words": [
+            0,
+            1,
+            0
+          ],
+          "raw_add": {
+            "id": 1814105684,
+            "op": 365,
+            "line": 20,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  1814105208,
+                  332,
+                  268697606,
+                  0,
+                  16,
+                  0,
+                  0
+                ],
+                "kind": 6,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814105580,
+                  330,
+                  268697602,
+                  1,
+                  16,
+                  1813418032,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  330,
+                  268697602,
+                  0,
+                  48,
+                  1813419712,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814102668,
+                  1814102668
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814102668,
+                  0,
+                  4100,
+                  1814105684,
+                  0,
+                  390,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_copy": {
+            "id": 1814105744,
+            "op": 346,
+            "line": 20,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814102668,
+                  1814102668
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814102668,
+                  0,
+                  4100,
+                  1814105684,
+                  0,
+                  390,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814102752,
+                  1814102752
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814102752,
+                  0,
+                  4100,
+                  1814105744,
+                  0,
+                  391,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_call": {
+            "id": 1814105908,
+            "op": 388,
+            "line": 20,
+            "flags": 268697870,
+            "src": [
+              {
+                "raw": [
+                  1814105948,
+                  339,
+                  268697604,
+                  0,
+                  16,
+                  1813395400,
+                  0
+                ],
+                "kind": 4,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814628756,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814102752,
+                  1814102752
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814102752,
+                  0,
+                  4100,
+                  1814105744,
+                  0,
+                  391,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "add_node": 1814119756,
+          "call_node": 1813474476,
+          "line_raw": 30,
+          "source_kinds": [
+            6,
+            2,
+            2
+          ],
+          "cost_words": [
+            0,
+            1,
+            0
+          ],
+          "raw_add": {
+            "id": 1814119756,
+            "op": 365,
+            "line": 30,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  1814119284,
+                  332,
+                  268697606,
+                  0,
+                  16,
+                  0,
+                  0
+                ],
+                "kind": 6,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814119652,
+                  330,
+                  268697602,
+                  1,
+                  16,
+                  1813418200,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  330,
+                  268697602,
+                  0,
+                  48,
+                  1814088704,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814104264,
+                  1814104264
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814104264,
+                  0,
+                  4100,
+                  1814119756,
+                  0,
+                  409,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_copy": {
+            "id": 1814119816,
+            "op": 346,
+            "line": 30,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814104264,
+                  1814104264
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814104264,
+                  0,
+                  4100,
+                  1814119756,
+                  0,
+                  409,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814104348,
+                  1814104348
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814104348,
+                  0,
+                  4100,
+                  1814119816,
+                  0,
+                  410,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_call": {
+            "id": 1813474476,
+            "op": 388,
+            "line": 30,
+            "flags": 268697870,
+            "src": [
+              {
+                "raw": [
+                  1814119980,
+                  339,
+                  268697604,
+                  0,
+                  16,
+                  1813395400,
+                  0
+                ],
+                "kind": 4,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814628804,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814104348,
+                  1814104348
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814104348,
+                  0,
+                  4100,
+                  1814119816,
+                  0,
+                  410,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "add_node": 1814144152,
+          "call_node": 1814144376,
+          "line_raw": 31,
+          "source_kinds": [
+            6,
+            2,
+            2
+          ],
+          "cost_words": [
+            0,
+            1,
+            1
+          ],
+          "raw_add": {
+            "id": 1814144152,
+            "op": 365,
+            "line": 31,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  1814135720,
+                  332,
+                  268697606,
+                  0,
+                  16,
+                  0,
+                  0
+                ],
+                "kind": 6,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814148696,
+                  330,
+                  268697602,
+                  1,
+                  16,
+                  1813418200,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  330,
+                  268697602,
+                  1,
+                  48,
+                  1814088452,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814133220,
+                  1814133220
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814133220,
+                  0,
+                  4100,
+                  1814144152,
+                  0,
+                  420,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_copy": {
+            "id": 1814144212,
+            "op": 346,
+            "line": 31,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814133220,
+                  1814133220
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814133220,
+                  0,
+                  4100,
+                  1814144152,
+                  0,
+                  420,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814133724,
+                  1814133724
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814133724,
+                  0,
+                  4100,
+                  1814144212,
+                  0,
+                  426,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_call": {
+            "id": 1814144376,
+            "op": 388,
+            "line": 31,
+            "flags": 268697870,
+            "src": [
+              {
+                "raw": [
+                  1814144416,
+                  339,
+                  268697604,
+                  0,
+                  16,
+                  1813395400,
+                  0
+                ],
+                "kind": 4,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814628852,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814133724,
+                  1814133724
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814133724,
+                  0,
+                  4100,
+                  1814144212,
+                  0,
+                  426,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "after": [
+        {
+          "add_node": 1814094372,
+          "call_node": 1814094596,
+          "line_raw": 20,
+          "source_kinds": [
+            6,
+            2,
+            2
+          ],
+          "cost_words": [
+            114695,
+            65888,
+            0
+          ],
+          "raw_add": {
+            "id": 1814094372,
+            "op": 365,
+            "line": 20,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  1814093900,
+                  332,
+                  268697606,
+                  114695,
+                  16,
+                  0,
+                  0
+                ],
+                "kind": 6,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814094268,
+                  330,
+                  268697602,
+                  65888,
+                  16,
+                  1813418032,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  330,
+                  268697602,
+                  0,
+                  48,
+                  1813419628,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814074484,
+                  1814074484
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814074484,
+                  0,
+                  4100,
+                  1814094372,
+                  0,
+                  344,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_copy": {
+            "id": 1814094432,
+            "op": 346,
+            "line": 20,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814074484,
+                  1814074484
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814074484,
+                  0,
+                  4100,
+                  1814094372,
+                  0,
+                  344,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814074568,
+                  1814074568
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814074568,
+                  0,
+                  4100,
+                  1814094432,
+                  0,
+                  345,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_call": {
+            "id": 1814094596,
+            "op": 388,
+            "line": 20,
+            "flags": 268697870,
+            "src": [
+              {
+                "raw": [
+                  1814094636,
+                  339,
+                  268697604,
+                  65977,
+                  16,
+                  1813395400,
+                  0
+                ],
+                "kind": 4,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814628708,
+                  329,
+                  268697601,
+                  17089284,
+                  16,
+                  1814074568,
+                  1814074568
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814074568,
+                  0,
+                  4100,
+                  1814094432,
+                  0,
+                  345,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  65536,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "add_node": 1814105684,
+          "call_node": 1814105908,
+          "line_raw": 20,
+          "source_kinds": [
+            6,
+            2,
+            2
+          ],
+          "cost_words": [
+            122887,
+            65888,
+            0
+          ],
+          "raw_add": {
+            "id": 1814105684,
+            "op": 365,
+            "line": 20,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  1814105208,
+                  332,
+                  268697606,
+                  122887,
+                  16,
+                  0,
+                  0
+                ],
+                "kind": 6,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814105580,
+                  330,
+                  268697602,
+                  65888,
+                  16,
+                  1813418032,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  330,
+                  268697602,
+                  0,
+                  48,
+                  1813419712,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814102668,
+                  1814102668
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814102668,
+                  0,
+                  4100,
+                  1814105684,
+                  0,
+                  390,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_copy": {
+            "id": 1814105744,
+            "op": 346,
+            "line": 20,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814102668,
+                  1814102668
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814102668,
+                  0,
+                  4100,
+                  1814105684,
+                  0,
+                  390,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814102752,
+                  1814102752
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814102752,
+                  0,
+                  4100,
+                  1814105744,
+                  0,
+                  391,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_call": {
+            "id": 1814105908,
+            "op": 388,
+            "line": 20,
+            "flags": 268697870,
+            "src": [
+              {
+                "raw": [
+                  1814105948,
+                  339,
+                  268697604,
+                  65977,
+                  16,
+                  1813395400,
+                  0
+                ],
+                "kind": 4,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814628756,
+                  329,
+                  268697601,
+                  17097476,
+                  16,
+                  1814102752,
+                  1814102752
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814102752,
+                  0,
+                  4100,
+                  1814105744,
+                  0,
+                  391,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  65536,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "add_node": 1814119756,
+          "call_node": 1813474476,
+          "line_raw": 30,
+          "source_kinds": [
+            6,
+            2,
+            2
+          ],
+          "cost_words": [
+            90119,
+            65952,
+            0
+          ],
+          "raw_add": {
+            "id": 1814119756,
+            "op": 365,
+            "line": 30,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  1814119284,
+                  332,
+                  268697606,
+                  90119,
+                  16,
+                  0,
+                  0
+                ],
+                "kind": 6,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814119652,
+                  330,
+                  268697602,
+                  65952,
+                  16,
+                  1813418200,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  330,
+                  268697602,
+                  0,
+                  48,
+                  1814088704,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814104264,
+                  1814104264
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814104264,
+                  0,
+                  4100,
+                  1814119756,
+                  0,
+                  409,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_copy": {
+            "id": 1814119816,
+            "op": 346,
+            "line": 30,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814104264,
+                  1814104264
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814104264,
+                  0,
+                  4100,
+                  1814119756,
+                  0,
+                  409,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814104348,
+                  1814104348
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814104348,
+                  0,
+                  4100,
+                  1814119816,
+                  0,
+                  410,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_call": {
+            "id": 1813474476,
+            "op": 388,
+            "line": 30,
+            "flags": 268697870,
+            "src": [
+              {
+                "raw": [
+                  1814119980,
+                  339,
+                  268697604,
+                  65977,
+                  16,
+                  1813395400,
+                  0
+                ],
+                "kind": 4,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814628804,
+                  329,
+                  268697601,
+                  17064836,
+                  16,
+                  1814104348,
+                  1814104348
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814104348,
+                  0,
+                  4100,
+                  1814119816,
+                  0,
+                  410,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  65536,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "add_node": 1814144152,
+          "call_node": 1814144376,
+          "line_raw": 31,
+          "source_kinds": [
+            2,
+            6,
+            2
+          ],
+          "cost_words": [
+            65952,
+            65543,
+            1
+          ],
+          "raw_add": {
+            "id": 1814144152,
+            "op": 365,
+            "line": 31,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  1814144076,
+                  330,
+                  268697602,
+                  65952,
+                  16,
+                  1813418200,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814148696,
+                  332,
+                  268697606,
+                  65543,
+                  16,
+                  0,
+                  0
+                ],
+                "kind": 6,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  330,
+                  268697602,
+                  1,
+                  48,
+                  1814088452,
+                  0
+                ],
+                "kind": 2,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814133220,
+                  1814133220
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814133220,
+                  0,
+                  4100,
+                  1814144152,
+                  0,
+                  420,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_copy": {
+            "id": 1814144212,
+            "op": 346,
+            "line": 31,
+            "flags": 268697868,
+            "src": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814133220,
+                  1814133220
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814133220,
+                  0,
+                  4100,
+                  1814144152,
+                  0,
+                  420,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  329,
+                  268697601,
+                  0,
+                  16,
+                  1814133724,
+                  1814133724
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814133724,
+                  0,
+                  4100,
+                  1814144212,
+                  0,
+                  426,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          },
+          "raw_call": {
+            "id": 1814144376,
+            "op": 388,
+            "line": 31,
+            "flags": 268697870,
+            "src": [
+              {
+                "raw": [
+                  1814144416,
+                  339,
+                  268697604,
+                  65977,
+                  16,
+                  1813395400,
+                  0
+                ],
+                "kind": 4,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  1814628852,
+                  329,
+                  268697601,
+                  17039851,
+                  16,
+                  1814133724,
+                  1814133724
+                ],
+                "kind": 1,
+                "temp_words": [
+                  0,
+                  524547,
+                  1814133724,
+                  0,
+                  4100,
+                  1814144212,
+                  0,
+                  426,
+                  4,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  65536,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ],
+            "dst": [
+              {
+                "raw": [
+                  0,
+                  345,
+                  1610612747,
+                  0,
+                  16,
+                  3,
+                  0
+                ],
+                "kind": 11,
+                "temp_words": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "repeat_receipt": {
+    "schema_version": 1,
+    "kind": "preserving-c2-trace",
+    "profile": "msvc6.5-c2-d50100ac",
+    "function": "initialize_slalomdouble_path_template_pair",
+    "cflags": "/O2 /G5 /W3",
+    "source_sha256": "846c87d756ad94374d36f00161900bc2db863c542eac28ed314a53eda5a05266",
+    "build_key": {
+      "compiler": "msvc6.5",
+      "runner_command": "/Users/banteg/dev/banteg/crimson/tools/match/bin/wibo",
+      "argv": [
+        "/Users/banteg/dev/banteg/snail-mail/tools/match/cl.sh",
+        "/c",
+        "/O2",
+        "/G5",
+        "/W3",
+        "scratch.cpp"
+      ],
+      "dependencies": [
+        [
+          "/private/tmp/snail-c2-verified/repeat/source/scratch.cpp",
+          1789321560562911738
+        ],
+        [
+          "cl.sh",
+          1786688309419941555
+        ],
+        [
+          "/Users/banteg/dev/banteg/crimson/tools/match/bin/wibo",
+          1788964564006479536
+        ],
+        [
+          "compilers/msvc6.5/Bin/CL.EXE",
+          1686239260000000000
+        ],
+        [
+          "compilers/msvc6.5/Bin/C1.DLL",
+          1686239260000000000
+        ],
+        [
+          "compilers/msvc6.5/Bin/C1XX.DLL",
+          1686239260000000000
+        ],
+        [
+          "compilers/msvc6.5/Bin/C2.DLL",
+          1686239260000000000
+        ],
+        [
+          "compilers/msvc6.5/Bin/MSPDB60.DLL",
+          1686239260000000000
+        ],
+        [
+          "compilers/msvc6.5/Bin/PROFILE.DLL",
+          1686239260000000000
+        ],
+        [
+          "compilers/msvc6.5/Include/stddef.h",
+          1686239261000000000
+        ],
+        [
+          "include/attachment_sample.h",
+          1786567396033893075
+        ],
+        [
+          "include/bod_flags.h",
+          1786567396037526205
+        ],
+        [
+          "include/bod_fwd.h",
+          1786567396037810455
+        ],
+        [
+          "include/bod_list.h",
+          1789067484138042630
+        ],
+        [
+          "include/bod_types.h",
+          1786572045346990182
+        ],
+        [
+          "include/contact_target.h",
+          1786567396041359544
+        ],
+        [
+          "include/direct3d_device8_view.h",
+          1786567396042182378
+        ],
+        [
+          "include/fringe_fwd.h",
+          1786567396046049551
+        ],
+        [
+          "include/object_fwd.h",
+          1786567396058080360
+        ],
+        [
+          "include/object_render_types.h",
+          1786570788512583377
+        ],
+        [
+          "include/player_fwd.h",
+          1786567396061479615
+        ],
+        [
+          "include/quaternion_fwd.h",
+          1786567396062659742
+        ],
+        [
+          "include/render_scene.h",
+          1786567396064150036
+        ],
+        [
+          "include/rerror.h",
+          1789067484138370089
+        ],
+        [
+          "include/sprite.h",
+          1788802707057824804
+        ],
+        [
+          "include/sprite_fwd.h",
+          1786567396069492127
+        ],
+        [
+          "include/sub_loc_fwd.h",
+          1786567396071078962
+        ],
+        [
+          "include/sub_loc_tile_ids.h",
+          1786567396071310129
+        ],
+        [
+          "include/texture_fwd.h",
+          1786567396073238132
+        ],
+        [
+          "include/track_attachment_types.h",
+          1786572503835104750
+        ],
+        [
+          "include/transform_matrix.h",
+          1789067484138727588
+        ],
+        [
+          "include/transform_matrix_fwd.h",
+          1786567396079237516
+        ],
+        [
+          "include/vector3.h",
+          1789067484138846546
+        ],
+        [
+          "include/vector_types.h",
+          1786567396080712810
+        ],
+        [
+          "include/vertex_buffer_view.h",
+          1786567396080926935
+        ]
+      ]
+    },
+    "input_hashes": {
+      "/Users/banteg/dev/banteg/crimson/tools/match/c2/replay.c": "802be11aff53e7e7b433c6ac8b6ace36f103a2c2b1387fa1eff2839791e60e64",
+      "/Users/banteg/dev/banteg/crimson/tools/match/c2/observer.c.in": "5fa704e4c2c68b8e77717e30405a9c2e4c589115fce23f16ef3d559940d762b0",
+      "/Users/banteg/dev/banteg/crimson/tools/match/c2/README.md": "40ef1e54e8ffc6eea032f95bbfb1930d67ca80eabff71b026a5dbb5981bb8031",
+      "/Users/banteg/dev/banteg/crimson/tools/match/c2/capture.c": "d9b643973050efe630d6262fcc0754bc177a642a57fee2315339fc797f034cc8",
+      "/Users/banteg/dev/banteg/crimson/tools/match/c2/profile.json": "56d119b4d999a73d1ca00ef5bc9af50732c8285e9def92223cc183fb760a43ff",
+      "/Users/banteg/dev/banteg/crimson/src/crimson/match_c2.py": "f69ef8df1170cc762d1d1692224ef55b8408e3dd12b0da8b970faa15ae1265ac",
+      "/Users/banteg/dev/banteg/crimson/src/crimson/match_c2_replay.py": "23023a2cb1933c722c4d2b6b780bcaa83f4de27bd9221a222cdf3f1561dc4fe5",
+      "/Users/banteg/dev/banteg/crimson/tools/match/bin/wibo": "917017253dac31557825aecffb117fc0c96221271b5c812fac3f704407fd0cc7",
+      "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/CL.EXE": "1bf99f206271ecdbd13da2829192ea2c02e2a44c740b8d72935d5d9cb753b156",
+      "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/C1.DLL": "0792033fc3d2fec262ff95478c6a9e70a06e836ed55f0a9710200fa06c204754",
+      "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/C1XX.DLL": "f014b3bee650224adf6cb44e51f0eeac5abbf5da666fa299d5250b2f3d1937c6",
+      "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/C2.DLL": "d50100ac2380d58f3f6f756961fb1319d35f5248e5fa6cafb866ca657e5dda4a",
+      "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/MSPDB60.DLL": "d9f1d9b5c5a99868bc172752a98ea700bce10ddb2afdbcb5e4faeafaec3489df",
+      "/Users/banteg/dev/banteg/crimson/tools/match/compilers/msvc6.5/Bin/LINK.EXE": "9672e578fdfaa43bdb8e9c16071682988665cb90bba2904bf02f6a5576d8ffbc",
+      "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/kernel32-dll.lib": "2d888d4e23e83f4b88f33ebea5ac2a1e1d99c2b5be19d7df47f5b8de1e9ba613",
+      "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/kernel32-dll-aliases.obj": "a30398d91a11d69b2330dee9681140364d16326ecdecdfeebc5f56eb35cca2fa",
+      "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/msvc6-runtime-kernel32.lib": "08205ba676a77920e49f9273857334a0eee91f34a2cfad01b28aefc443e7bc97",
+      "/Users/banteg/dev/banteg/crimson/analysis/native/crimsonland.exe/link/providers/msvc6-runtime-kernel32-aliases.obj": "9581e2b93b73cccec1c30992814835329236fb5bbf491ab361c4968cb7713bb0"
+    },
+    "stream_hashes": {
+      "ex": "89ea243aff0c265b322d1bfc7fbd7f53fa81d7c98e6666a1de2b70a318cb9e89",
+      "in": "b99b6bd2c946c1f7731dc861b89b223ce6018f460a49b8fbcb5362a0fff45a7f",
+      "sy": "df6d3a7264014505d37cf3398c50c12ace77bcd411a8eb4733879b8c3bf1e1fc",
+      "gl": "d5a6756c1ae0cad8d3a617432666e9738b7f4b986c33d883ac6c8bcbef8e731f"
+    },
+    "whole_coff_equal_except_timestamp": true,
+    "normalized_coff_sha256": "1849732d6efdc0e56968e56695685fbfd2eec6ff0040c611ce86dabaedc84d51",
+    "missing_stream_rejected": true,
+    "compiler_decisions_modified": false,
+    "passes_only": true,
+    "metrics": {
+      "ratio": 0.9970717423133236,
+      "target_instructions": 683,
+      "candidate_instructions": 683,
+      "prefix_instructions": 84,
+      "references_ok": 45,
+      "reference_problems": 0,
+      "exact": false,
+      "body_byte_exact": false
+    },
+    "events": 12,
+    "object_paths": [
+      "source/build/scratch.obj",
+      "captured-source/build/scratch.obj",
+      "replay/replay.obj",
+      "observed/replay.obj"
+    ],
+    "profile_sha256": "556661cb87612adfbe0155be66c344b3147a05731dabfb8df244ee2fc0934284",
+    "trace_sha256": "764f17b449c89bc35673025728e969d279cf3a14c787db9d7a15a42ff7d79d4b",
+    "snapshots_sha256": "40da8488fab2ae585ed5fb510610e8411994d0c1c16060cc900462b23de8a7ba",
+    "snail_adapter_sha256": "7757254faa9476e6a226f9160aedd13e73b62519ba01d5dfeb4d30703a7639b1",
+    "snail_dependency_sha256": "a7d4a73637a754f5bd3eaa13fcce2843a57e1c6f8075fbdd4baf62a618bdeede",
+    "snail_inputs": {
+      "/Users/banteg/dev/banteg/snail-mail/src/snail/match.py": "f0e712f9d85b31885884f1b10b63e0d1b7c43c3163c815365e077fcb4b223681",
+      "/Users/banteg/dev/banteg/snail-mail/tools/match/cl.sh": "9710ae622fb1ac66bfe799c5dfc7c0cd462203c21be966e8146c9b47c31d0c1c"
+    },
+    "early_addresses": false
+  },
+  "repeat_comparison": {
+    "kind": "c2-shape-comparison",
+    "first_shape_difference": null,
+    "differences": [],
+    "limitations": "Pairs function ordinals and hook occurrences. Compares opcode, line, flags, operand kinds, kind-7 payloads, event-local temporary relationships and selected descriptor fields (+04,+0c,+10,+24,+3c) only at the allocation callsites (hook indices 12+). Other operands remain opaque. Equal signatures do not establish semantic equivalence; descriptor field meanings are phase-dependent. Arena IDs may be recycled even within one trace."
+  },
+  "guard_controls": {
+    "wrong_compiler_rejected": true,
+    "wrong_call_destination_rejected": true
+  }
+}
