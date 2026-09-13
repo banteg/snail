@@ -13,51 +13,53 @@ typedef AttachmentSample PathTemplateSample;
 
 
 
-static __forceinline void compute_path_deltas(Path *path)
+static __forceinline void compute_path_deltas(
+    const int &count, PathTemplateSample *const &primary,
+    PathTemplateSample *const &secondary)
 {
     int i = 0;
-    if (path->segment_count - 1 > 0)
+    if (count - 1 > 0)
     {
         int sample_offset = 0;
         do
         {
-            ((PathTemplateSample *)((char *)path->primary_samples + sample_offset))
+            ((PathTemplateSample *)((char *)primary + sample_offset))
                 ->delta_dir_to_next =
-                ((PathTemplateSample *)((char *)path->primary_samples + sample_offset) +
+                ((PathTemplateSample *)((char *)primary + sample_offset) +
                  1)
                     ->transform.position -
-                ((PathTemplateSample *)((char *)path->primary_samples + sample_offset))
+                ((PathTemplateSample *)((char *)primary + sample_offset))
                     ->transform.position;
-            ((PathTemplateSample *)((char *)path->primary_samples + sample_offset))
+            ((PathTemplateSample *)((char *)primary + sample_offset))
                 ->delta_length =
-                ((PathTemplateSample *)((char *)path->primary_samples + sample_offset))
+                ((PathTemplateSample *)((char *)primary + sample_offset))
                     ->delta_dir_to_next.Normalize();
 
-            ((PathTemplateSample *)((char *)path->secondary_samples + sample_offset))
+            ((PathTemplateSample *)((char *)secondary + sample_offset))
                 ->delta_dir_to_next =
-                ((PathTemplateSample *)((char *)path->secondary_samples +
+                ((PathTemplateSample *)((char *)secondary +
                                         sample_offset) +
                  1)
                     ->transform.position -
-                ((PathTemplateSample *)((char *)path->secondary_samples +
+                ((PathTemplateSample *)((char *)secondary +
                                         sample_offset))
                     ->transform.position;
-            ((PathTemplateSample *)((char *)path->secondary_samples + sample_offset))
+            ((PathTemplateSample *)((char *)secondary + sample_offset))
                 ->delta_length =
-                ((PathTemplateSample *)((char *)path->secondary_samples +
+                ((PathTemplateSample *)((char *)secondary +
                                         sample_offset))
                     ->delta_dir_to_next.Normalize();
             ++i;
             sample_offset += sizeof(PathTemplateSample);
-        } while (i < path->segment_count - 1);
+        } while (i < count - 1);
     }
 
-    path->primary_samples[path->segment_count - 1].delta_dir_to_next =
+    primary[count - 1].delta_dir_to_next =
         Vector3(0.0f, 0.0f, 1.0f);
-    path->primary_samples[path->segment_count - 1].delta_length = 1.0f;
-    path->secondary_samples[path->segment_count - 1].delta_dir_to_next =
+    primary[count - 1].delta_length = 1.0f;
+    secondary[count - 1].delta_dir_to_next =
         Vector3(0.0f, 0.0f, 1.0f);
-    path->secondary_samples[path->segment_count - 1].delta_length = 1.0f;
+    secondary[count - 1].delta_length = 1.0f;
 }
 
 static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *texture_b)
@@ -217,7 +219,7 @@ static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *te
     }
 }
 
-static __forceinline void initialize_wibble_primary(PathTemplateSample *&bank,
+static __forceinline void initialize_wibble_primary(PathTemplateSample *const &bank,
                                                     int offset, float t)
 {
     ((PathTemplateSample *)((char *)bank + offset))[0].center_x =
@@ -229,8 +231,8 @@ static __forceinline void initialize_wibble_primary(PathTemplateSample *&bank,
     ((PathTemplateSample *)((char *)bank + offset))[0].transform.Identity();
 }
 
-static __forceinline void copy_wibble_frame(PathTemplateSample *&primary,
-                                            PathTemplateSample *&secondary, int offset)
+static __forceinline void copy_wibble_frame(PathTemplateSample *const &primary,
+                                            PathTemplateSample *const &secondary, int offset)
 {
     ((PathTemplateSample *)((char *)secondary + offset))[0].transform =
         ((PathTemplateSample *)((char *)primary + offset))[0].transform;
@@ -242,6 +244,45 @@ static __forceinline void copy_wibble_frame(PathTemplateSample *&primary,
     secondary_position->x += secondary_offset.x;
     secondary_position->y += secondary_offset.y;
     secondary_position->z += secondary_offset.z;
+}
+
+static __forceinline void finish_wibble_sample(
+    PathTemplateSample *const &primary, PathTemplateSample *const &secondary,
+    int sample_offset, int local_index)
+{
+    float t = (float)local_index;
+    float turn_phase = t * 0.20943952f;
+
+    initialize_wibble_primary(primary, sample_offset, t);
+
+    int z_index = local_index + 1;
+    ((PathTemplateSample *)((char *)primary + sample_offset))[0]
+        .transform.position.x = 0.0f;
+    ((PathTemplateSample *)((char *)primary + sample_offset))[0]
+        .transform.position.z = (float)z_index;
+    ((PathTemplateSample *)((char *)primary + sample_offset))[0]
+        .transform.position.y = 0.0f;
+
+    float basis_y = Cos(Sin(turn_phase * 3.0f) * 0.30000001f);
+    float basis_x = Sin(Sin(turn_phase * 3.0f) * 0.30000001f);
+    ((PathTemplateSample *)((char *)primary + sample_offset))[0]
+        .transform.basis_up = Vector3(basis_x, basis_y, 0.0f);
+    ((PathTemplateSample *)((char *)primary + sample_offset))[0]
+        .transform.basis_forward =
+        ((PathTemplateSample *)((char *)primary + sample_offset))[0]
+            .transform.position -
+        ((PathTemplateSample *)((char *)primary + sample_offset))[-1]
+            .transform.position;
+    ((PathTemplateSample *)((char *)primary + sample_offset))[0]
+        .transform.basis_forward.Normalize();
+    ((PathTemplateSample *)((char *)primary + sample_offset))[0]
+        .transform.basis_right.Cross(
+            ((PathTemplateSample *)((char *)primary + sample_offset))[0]
+                .transform.basis_up,
+            ((PathTemplateSample *)((char *)primary + sample_offset))[0]
+                .transform.basis_forward);
+
+    copy_wibble_frame(primary, secondary, sample_offset);
 }
 
 void cRPath::initialize_wibble_path_template_pair(float radius, int width_cells_,
@@ -295,44 +336,13 @@ void cRPath::initialize_wibble_path_template_pair(float radius, int width_cells_
     int local_index = 0;
     do
     {
-        float t = (float)local_index;
-        float turn_phase = t * 0.20943952f;
-
-        initialize_wibble_primary(primary_samples, sample_offset, t);
-
-        int z_index = local_index + 1;
-        ((PathTemplateSample *)((char *)primary_samples + sample_offset))[0]
-            .transform.position.x = 0.0f;
-        ((PathTemplateSample *)((char *)primary_samples + sample_offset))[0]
-            .transform.position.z = (float)z_index;
-        ((PathTemplateSample *)((char *)primary_samples + sample_offset))[0]
-            .transform.position.y = 0.0f;
-
-        float basis_y = Cos(Sin(turn_phase * 3.0f) * 0.30000001f);
-        float basis_x = Sin(Sin(turn_phase * 3.0f) * 0.30000001f);
-        ((PathTemplateSample *)((char *)primary_samples + sample_offset))[0]
-            .transform.basis_up = Vector3(basis_x, basis_y, 0.0f);
-        ((PathTemplateSample *)((char *)primary_samples + sample_offset))[0]
-            .transform.basis_forward =
-            ((PathTemplateSample *)((char *)primary_samples + sample_offset))[0]
-                .transform.position -
-            ((PathTemplateSample *)((char *)primary_samples + sample_offset))[-1]
-                .transform.position;
-        ((PathTemplateSample *)((char *)primary_samples + sample_offset))[0]
-            .transform.basis_forward.Normalize();
-        ((PathTemplateSample *)((char *)primary_samples + sample_offset))[0]
-            .transform.basis_right.Cross(
-                ((PathTemplateSample *)((char *)primary_samples + sample_offset))[0]
-                    .transform.basis_up,
-                ((PathTemplateSample *)((char *)primary_samples + sample_offset))[0]
-                    .transform.basis_forward);
-
-        copy_wibble_frame(primary_samples, secondary_samples, sample_offset);
+        finish_wibble_sample(primary_samples, secondary_samples, sample_offset,
+                             local_index);
         ++local_index;
         sample_offset += sizeof(PathTemplateSample);
     } while (sample_offset < 31 * (int)sizeof(PathTemplateSample));
 
-    compute_path_deltas(this);
+    compute_path_deltas(segment_count, primary_samples, secondary_samples);
     build_strip_mesh(this, texture_a, texture_b);
     CalcLengthZ();
     (void)radius;

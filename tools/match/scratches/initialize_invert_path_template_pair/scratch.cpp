@@ -11,29 +11,53 @@ float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
-static __forceinline void compute_path_deltas(Path *path)
+static __forceinline void compute_path_deltas(
+    const int &count, PathTemplateSample *const &primary,
+    PathTemplateSample *const &secondary)
 {
-    for (int i = 0; i < path->segment_count - 1; ++i)
+    int i = 0;
+    if (count - 1 > 0)
     {
-        path->primary_samples[i].delta_dir_to_next =
-            path->primary_samples[i + 1].transform.position -
-            path->primary_samples[i].transform.position;
-        path->primary_samples[i].delta_length =
-            path->primary_samples[i].delta_dir_to_next.Normalize();
+        int sample_offset = 0;
+        do
+        {
+            ((PathTemplateSample *)((char *)primary + sample_offset))
+                ->delta_dir_to_next =
+                ((PathTemplateSample *)((char *)primary + sample_offset) +
+                 1)
+                    ->transform.position -
+                ((PathTemplateSample *)((char *)primary + sample_offset))
+                    ->transform.position;
+            ((PathTemplateSample *)((char *)primary + sample_offset))
+                ->delta_length =
+                ((PathTemplateSample *)((char *)primary + sample_offset))
+                    ->delta_dir_to_next.Normalize();
 
-        path->secondary_samples[i].delta_dir_to_next =
-            path->secondary_samples[i + 1].transform.position -
-            path->secondary_samples[i].transform.position;
-        path->secondary_samples[i].delta_length =
-            path->secondary_samples[i].delta_dir_to_next.Normalize();
+            ((PathTemplateSample *)((char *)secondary + sample_offset))
+                ->delta_dir_to_next =
+                ((PathTemplateSample *)((char *)secondary +
+                                        sample_offset) +
+                 1)
+                    ->transform.position -
+                ((PathTemplateSample *)((char *)secondary +
+                                        sample_offset))
+                    ->transform.position;
+            ((PathTemplateSample *)((char *)secondary + sample_offset))
+                ->delta_length =
+                ((PathTemplateSample *)((char *)secondary +
+                                        sample_offset))
+                    ->delta_dir_to_next.Normalize();
+            ++i;
+            sample_offset += sizeof(PathTemplateSample);
+        } while (i < count - 1);
     }
 
-    path->primary_samples[path->segment_count - 1].delta_dir_to_next =
+    primary[count - 1].delta_dir_to_next =
         Vector3(0.0f, 0.0f, 1.0f);
-    path->primary_samples[path->segment_count - 1].delta_length = 1.0f;
-    path->secondary_samples[path->segment_count - 1].delta_dir_to_next =
+    primary[count - 1].delta_length = 1.0f;
+    secondary[count - 1].delta_dir_to_next =
         Vector3(0.0f, 0.0f, 1.0f);
-    path->secondary_samples[path->segment_count - 1].delta_length = 1.0f;
+    secondary[count - 1].delta_length = 1.0f;
 }
 
 static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *texture_b)
@@ -231,6 +255,16 @@ static __forceinline void finish_invert_frame(PathTemplateSample *&primary,
 
     ((PathTemplateSample *)((char *)secondary + offset))[0].transform =
         ((PathTemplateSample *)((char *)primary + offset))[0].transform;
+    Vector3 secondary_offset =
+        ((PathTemplateSample *)((char *)primary + offset))[0]
+            .transform.basis_up *
+        0.49000001f;
+    Vector3 *secondary_position =
+        &((PathTemplateSample *)((char *)secondary + offset))[0]
+             .transform.position;
+    secondary_position->x += secondary_offset.x;
+    secondary_position->y += secondary_offset.y;
+    secondary_position->z += secondary_offset.z;
 }
 
 void cRPath::initialize_invert_path_template_pair(float radius, int width_cells_,
@@ -290,20 +324,10 @@ void cRPath::initialize_invert_path_template_pair(float radius, int width_cells_
         finish_invert_frame(primary_samples, secondary_samples, sample_offset, angle,
                             (float)(local_index + 1));
         ++local_index;
-        Vector3 secondary_offset =
-            ((PathTemplateSample *)((char *)primary_samples + sample_offset))[0]
-                .transform.basis_up *
-            0.49000001f;
-        Vector3 *secondary_position =
-            &((PathTemplateSample *)((char *)secondary_samples + sample_offset))[0]
-                 .transform.position;
-        secondary_position->x += secondary_offset.x;
-        secondary_position->y += secondary_offset.y;
-        secondary_position->z += secondary_offset.z;
         sample_offset += (int)sizeof(PathTemplateSample);
     } while (sample_offset < 33 * (int)sizeof(PathTemplateSample));
 
-    compute_path_deltas(this);
+    compute_path_deltas(segment_count, primary_samples, secondary_samples);
     build_strip_mesh(this, texture_a, texture_b);
     CalcLengthZ();
     (void)radius;
