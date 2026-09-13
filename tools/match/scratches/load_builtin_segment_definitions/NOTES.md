@@ -1,5 +1,14 @@
 # cRSubTracks::Init(cRSubSegmentRaw**)
 
+## 2026-09-14 complete encoded-body recovery
+
+The caller-owned row count and direct glyph-row input now reproduce all
+256 native body bytes, 92 instructions and six literal local branches.
+There are no external reference fields to mask. The ordinary SIB difference
+at byte 55 is resolved; normalized agreement remains 100%.
+See the [source stages and independent proof](../../glyph-row-count-ownership-20260914.md).
+Earlier normalization-based exactness statements below are historical.
+
 `0x448060` is the authored raw-table overload from `Subtrack.o`, retained by
 Android and iOS. It builds the shipped Start, Finish, Filler, and related
 segments from 0x48-byte `cRSubSegmentRaw` records and their eight glyph rows.

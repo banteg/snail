@@ -2,6 +2,17 @@
 
 #include "sub_tracks.h"
 
+// Keep the caller's row count while measuring the borrowed glyph string.
+static __forceinline void measure_glyph_row(char* row, int& count)
+{
+    count = 0;
+    if (*row != 0) {
+        do {
+            ++count;
+        } while (row[count] != 0);
+    }
+}
+
 void cRSubTracks::Init(
     cRSubSegmentRaw** raw_segments)
 {
@@ -13,18 +24,12 @@ void cRSubTracks::Init(
     if (*raw_segments[0]->glyph_rows[0] != 0) {
         do {
             int slot_index = segment_count;
-            char* first_row = raw_segments[slot_index]->glyph_rows[0];
-            int row_count = 0;
-            if (*first_row != 0) {
-                do {
-                    ++row_count;
-                } while (first_row[row_count] != 0);
-            }
+            int row_count;
+            measure_glyph_row(raw_segments[slot_index]->glyph_rows[0], row_count);
 
             slots[slot_index].row_count = row_count;
             raw_segments[segment_count]->row_count = row_count;
 
-            int grid_offset = 0;
             int row_index = 0;
             do {
                 int active_slot = segment_count;
@@ -36,7 +41,6 @@ void cRSubTracks::Init(
                     active_slot = segment_count;
                 } while (raw_segments[active_slot]->glyph_rows[row_index][column] != 0);
                 ++row_index;
-                grid_offset += 0x100;
             } while (row_index < 8);
 
             int active_slot = segment_count;
