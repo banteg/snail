@@ -312,3 +312,18 @@ references. Sharing the float keeps the code hash; division spellings change
 it despite identical normalized metrics. No source change or encoded-equality
 claim follows from these controls. The three-source recipe is recorded; see
 the [W-sibling receipt](../../looptheloopw-sample-progress-owners-20260911.md).
+
+## 2026-09-13 live circular position and orientation operations
+
+Retained result: **95.21165857%, 720/721 instructions, prefix 159**, with all
+49 aligned references clean. Separate position and orientation operations on
+live sample-bank references recover the primary Identity receiver's missing
+instruction and the secondary Identity's early offset copy. Removing either
+operation reproduces 94.44444444%, 719/721. The independently audited 642-byte
+prefix is unchanged. The rest remains partial, including basis-copy address
+preparation, mesh stack slots and checkerboard branch conditions.
+
+The [report](../../looptheloop-live-curve-operations-20260913.md) and
+[receipt](../../looptheloop-live-curve-operations-20260913.json) retain 47
+replayable controls, complete native/candidate bytes, prefix proof and reversible
+code fingerprints. No additional full match is claimed.
