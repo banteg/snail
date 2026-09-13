@@ -1,5 +1,30 @@
 # refresh_object_vertex_buffer
 
+Current result: **100%, 139/139 instructions and all 393 body bytes exact**.
+The native extent is `[0x412250, 0x4123e0)`, with seven recognized terminal
+padding bytes after the complete compared body. All seven local branches
+match literally. Three COFF relocations pass strict positional identity checks;
+the separately annotated `0x800000` flag remains a literal six-byte TEST
+instruction in the independent proof.
+
+A read-only reference to `object->vertices` spans both upload paths. It borrows
+the pointer field itself, so animation-frame publication, Distort and Lock can
+update the source before each indexed copy reads it. Binding separate references
+after each Lock recovers only the dynamic loop. Binding once before the animation
+branch recovers both source-address moves and the component-copy schedule.
+The aggregate Vector3 copies, UV indexing, buffer calls and shared types are
+unchanged.
+
+The [report and replayable receipt](../../vertex-upload-live-source-bank-20260913.md)
+preserve the baseline, intermediate stage, independent byte audit, source
+controls, reversals and preserving C2 observations. No compiler setting, shared
+header, ABI, function extent or acceptance rule changes.
+
+## Historical investigation
+
+The notes below describe earlier source versions and are superseded by the
+current exact result. They retain useful source and analysis provenance.
+
 Relationship-first scratch for the private object vertex-buffer refresher at
 `0x412250`.
 

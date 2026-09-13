@@ -5,6 +5,7 @@
 
 void refresh_object_vertex_buffer(Object* object)
 {
+    Vector3* const& source_positions = object->vertices;
     unsigned int flags = object->flags;
     if ((flags & OBJECT_FLAG_HAS_ANIMATION) != 0) {
         ObjectAnimation* animation = object->animation;
@@ -25,7 +26,7 @@ void refresh_object_vertex_buffer(Object* object)
             (void**)&vertices, 0);
 
         for (int i = 0; i < object->grouped_vertex_count; ++i) {
-            *(Vector3*)&vertices[i] = object->vertices[i];
+            *(Vector3*)&vertices[i] = source_positions[i];
         }
 
         object->render_buffers->vertex_buffer->vtbl->Unlock(object->render_buffers->vertex_buffer);
@@ -37,7 +38,7 @@ void refresh_object_vertex_buffer(Object* object)
             (void**)&vertices, 0);
 
         for (int i = 0; i < object->grouped_vertex_count; ++i) {
-            *(Vector3*)&vertices[i] = object->vertices[i];
+            *(Vector3*)&vertices[i] = source_positions[i];
             vertices[i].u = object->facequads[i / 4].uv[i & 3].u;
             vertices[i].v = object->facequads[i / 4].uv[i & 3].v;
         }
