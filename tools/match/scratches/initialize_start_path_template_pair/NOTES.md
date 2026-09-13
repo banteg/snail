@@ -577,3 +577,20 @@ those values' scopes does not repair Start's sample-index/first-sample guard
 or branch-local face-address schedule. The exact fringe helper is a useful
 control, but does not establish one universal local-variable scope for the
 other path constructors. No variant is retained.
+
+## 2026-09-13 complete curve and encoded body
+
+The physical curve cursor and logical phase now have separate owners. The
+previous-frame guard compares the physical cursor with five sample widths,
+reproducing native `cmp edi, 0x348` while retaining the phase counter's preheader
+and increment schedule. A live primary-bank borrow and paired initialization
+helpers recover both native `Identity` receiver constructions.
+
+Keeping position initialization and previous-frame orientation in one helper,
+with indices before the two bank references, removes the final eleven ordinary
+SIB-byte differences. The complete 2,223-byte body is now byte exact: 610
+instructions, 35 strict positional references, and 26 literal local branches.
+The shared texture-call tail after the first return is included; only the final
+padding byte in the 2,224-byte extent is excluded. Recovery is complete.
+
+See [the complete proof and controls](../../start-complete-curve-owners-20260913.md).

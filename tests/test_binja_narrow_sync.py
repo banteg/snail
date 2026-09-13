@@ -23008,7 +23008,9 @@ def test_supertramp_start_path_replay_preserves_mesh_owner_lifetimes() -> None:
     assert "apply_user_var_updates" in replay
     assert '0x90: ("center_x", "float")' in replay
     assert "(1035, 66," not in replay
-    assert "if (curve_index != 0)" in start_scratch
+    # The native guard compares the physical sample cursor with 5 * 0xA8.
+    # Keep the first curve sample's separate RotIdentity receiver lifetimes.
+    assert "if (sample_offset > 5 * (int)sizeof(PathTemplateSample))" in start_scratch
     assert "if (i <= 5)" not in start_scratch
     primary_declaration = start_scratch.index(
         "PathTemplateSample* primary_previous ="
