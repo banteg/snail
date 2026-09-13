@@ -1,5 +1,14 @@
 # initialize_turnoverdouble_path_template_pair
 
+## 2026-09-13 decomposed center-store constraint
+
+The canonical body still differs at ordinary byte 691 despite normalized 100%.
+Retained logical-index controls fix that center encoding while regressing other
+address constructions. Preserving compiler traces isolate the tradeoff between
+the held bank value, sample offset and bank-field load costs. See the
+[staged controls](../../turnoverdouble-decomposition-20260913.md). No additional
+match or canonical source change is claimed.
+
 ## 2026-09-12 whole-function normalized match
 
 Current result: **100% normalized**, 680/680 instructions and all 46 references
