@@ -1,5 +1,18 @@
 # `initialize_dump_path_template_pair` starter
 
+## 2026-09-14 current result: 99.71%, still partial
+
+The secondary bank now has one live field reference spanning sample setup;
+the approach writes primary X before converting Z, and the mesh reads its
+ordinary sample directly. Fresh comparison gives 690/690 instructions and
+43 strict positional references. The independent 2,563-byte body audit leaves
+12 unequal bytes: one approach receiver/store sequence and three SIB bytes.
+All 27 local branches agree literally. This is not a new full match.
+
+See the [source stages and complete receipt](../../bank-ownership-progress-20260913.md)
+for the useful regressed stage, remaining offsets, replayable controls and
+reversal evidence. Earlier scores and residual descriptions below are historical.
+
 ## 2026-09-13 terminal-delta address recovery
 
 Typed array traversal from solved Hump/Slalom recovers seven SIB bytes in the

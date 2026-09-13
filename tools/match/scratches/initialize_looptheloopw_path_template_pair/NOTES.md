@@ -1,5 +1,19 @@
 # `initialize_looptheloopw_path_template_pair` starter
 
+## 2026-09-14 current result: 99.19%, still partial
+
+Live references to both sample banks recover the geometry receiver sequences.
+The mesh consumes its real field inputs, uses even-first texture parity and
+keeps the lateral value within each vertex branch. Fresh comparison gives
+745/745 instructions and 55 strict positional references. The independent
+2,725-byte body audit leaves 12 unequal bytes: two interpolation SIB bytes,
+one rotation push/load swap and six mesh conversion-slot bytes. All 28 local
+branches agree literally. This is not a new full match.
+
+See the [source stages and complete receipt](../../bank-ownership-progress-20260913.md)
+for remaining offsets, replayable controls and reversal evidence. Earlier scores
+and residual descriptions below are historical.
+
 ## 2026-09-11: shared sample progress, mesh vectors and UV dispatch
 
 Materialization alone preserves raw COFF function bytes. A shared logical

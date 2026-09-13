@@ -36,13 +36,14 @@ static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *te
                     double lateral = (float)column - (float)path->width_cells * 0.5f;
                     if (row != path->segment_count)
                     {
-                        PathAttachmentSample *sample =
-                            (PathAttachmentSample *)((char *)path->primary_samples +
-                                                     sample_offset);
                         Vector3 lateral_offset =
-                            sample->transform.basis_right * lateral;
+                            ((PathAttachmentSample *)((char *)path->primary_samples +
+                                                      sample_offset))
+                                ->transform.basis_right * lateral;
                         Vector3 generated_position =
-                            sample->transform.position + lateral_offset;
+                            ((PathAttachmentSample *)((char *)path->primary_samples +
+                                                      sample_offset))
+                                ->transform.position + lateral_offset;
                         Vector3 *vertex =
                             &vertices[column + row * (path->width_cells + 1)];
                         *vertex = generated_position;
@@ -191,6 +192,7 @@ void cRPath::initialize_dump_path_template_pair(float curve_source, float height
                                                 char *texture_a, char *texture_b,
                                                 char *cap_texture)
 {
+    PathAttachmentSample* const& secondary_bank = secondary_samples;
     int curve_count;
     int i;
 
@@ -216,14 +218,14 @@ void cRPath::initialize_dump_path_template_pair(float curve_source, float height
         primary_samples[i].special_scalar = 0.0f;
         primary_samples[i].lateral_scale = 1.0f;
         primary_samples[i].transform.Identity();
-        float z = (float)i;
         primary_samples[i].transform.position.x = primary_samples[i].center_x;
+        float z = (float)i;
         primary_samples[i].transform.position.y = 0.0f;
         primary_samples[i].transform.position.z = z;
-        secondary_samples[i].transform.Identity();
-        secondary_samples[i].transform.position.x = primary_samples[i].center_x;
-        secondary_samples[i].transform.position.y = 0.49000001f;
-        secondary_samples[i].transform.position.z = z;
+        secondary_bank[i].transform.Identity();
+        secondary_bank[i].transform.position.x = primary_samples[i].center_x;
+        secondary_bank[i].transform.position.y = 0.49000001f;
+        secondary_bank[i].transform.position.z = z;
     }
 
     i = departure_index;
@@ -252,15 +254,15 @@ void cRPath::initialize_dump_path_template_pair(float curve_source, float height
             .transform.position.y = 0.0f;
         ((PathAttachmentSample *)((char *)primary_samples + departure_offset))[0]
             .transform.position.z = z;
-        ((PathAttachmentSample *)((char *)secondary_samples + departure_offset))[0]
+        ((PathAttachmentSample *)((char *)secondary_bank + departure_offset))[0]
             .transform.Identity();
-        ((PathAttachmentSample *)((char *)secondary_samples + departure_offset))[0]
+        ((PathAttachmentSample *)((char *)secondary_bank + departure_offset))[0]
             .transform.position.x =
             ((PathAttachmentSample *)((char *)primary_samples + departure_offset))[0]
                 .center_x;
-        ((PathAttachmentSample *)((char *)secondary_samples + departure_offset))[0]
+        ((PathAttachmentSample *)((char *)secondary_bank + departure_offset))[0]
             .transform.position.y = 0.49000001f;
-        ((PathAttachmentSample *)((char *)secondary_samples + departure_offset))[0]
+        ((PathAttachmentSample *)((char *)secondary_bank + departure_offset))[0]
             .transform.position.z = z;
         departure_offset += sizeof(PathAttachmentSample);
         ++i;
@@ -296,16 +298,16 @@ void cRPath::initialize_dump_path_template_pair(float curve_source, float height
             float z = (float)sample_index;
             ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
                 ->transform.position.z = z;
-            ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)secondary_bank + sample_offset))
                 ->transform.Identity();
-            ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)secondary_bank + sample_offset))
                 ->transform.position.x =
                 ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
                     ->center_x;
-            ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)secondary_bank + sample_offset))
                 ->transform.position.y =
                 0.49000001f - (1.0f - Cos(angle)) * curve_source * (height_scale);
-            ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)secondary_bank + sample_offset))
                 ->transform.position.z = z;
             if (sample_offset > 7 * (int)sizeof(PathAttachmentSample))
             {
@@ -330,30 +332,30 @@ void cRPath::initialize_dump_path_template_pair(float curve_source, float height
                                                   sample_offset) -
                          1)
                             ->transform.basis_right);
-                ((PathAttachmentSample *)((char *)secondary_samples + sample_offset) -
+                ((PathAttachmentSample *)((char *)secondary_bank + sample_offset) -
                  1)
                     ->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
-                ((PathAttachmentSample *)((char *)secondary_samples + sample_offset) -
+                ((PathAttachmentSample *)((char *)secondary_bank + sample_offset) -
                  1)
                     ->transform.basis_forward =
-                    ((PathAttachmentSample *)((char *)secondary_samples +
+                    ((PathAttachmentSample *)((char *)secondary_bank +
                                               sample_offset))
                         ->transform.position -
-                    ((PathAttachmentSample *)((char *)secondary_samples +
+                    ((PathAttachmentSample *)((char *)secondary_bank +
                                               sample_offset) -
                      1)
                         ->transform.position;
-                ((PathAttachmentSample *)((char *)secondary_samples + sample_offset) -
+                ((PathAttachmentSample *)((char *)secondary_bank + sample_offset) -
                  1)
                     ->transform.basis_forward.Normalize();
-                ((PathAttachmentSample *)((char *)secondary_samples + sample_offset) -
+                ((PathAttachmentSample *)((char *)secondary_bank + sample_offset) -
                  1)
                     ->transform.basis_up.Cross(
-                        ((PathAttachmentSample *)((char *)secondary_samples +
+                        ((PathAttachmentSample *)((char *)secondary_bank +
                                                   sample_offset) -
                          1)
                             ->transform.basis_forward,
-                        ((PathAttachmentSample *)((char *)secondary_samples +
+                        ((PathAttachmentSample *)((char *)secondary_bank +
                                                   sample_offset) -
                          1)
                             ->transform.basis_right);
@@ -362,7 +364,7 @@ void cRPath::initialize_dump_path_template_pair(float curve_source, float height
             {
                 ((PathAttachmentSample *)((char *)primary_samples + sample_offset) - 1)
                     ->transform.RotIdentity();
-                ((PathAttachmentSample *)((char *)secondary_samples + sample_offset) -
+                ((PathAttachmentSample *)((char *)secondary_bank + sample_offset) -
                  1)
                     ->transform.RotIdentity();
             }
