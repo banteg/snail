@@ -11,6 +11,7 @@ void cRDistort::Build(cRObject* object)
 {
     bool distorted = false;
     Vector3* source = object->vertices;
+    Vector3 *const &destination = object->copied_vertices;
 
     if (z_wave != 0.0f) {
         float z_range = MAX_FLOAT(
@@ -20,14 +21,14 @@ void cRDistort::Build(cRObject* object)
         int index = 0;
         if (object->vertex_count > 0) {
             do {
-                object->copied_vertices[index].x = source[index].x;
+                destination[index].x = source[index].x;
 
                 float z = ABS_FLOAT(object->vertices[index].z);
 
-                object->copied_vertices[index].y =
+                destination[index].y =
                     (Sin(z * 1.5707964f / z_range + 4.712389f) + 1.0f)
                     * z_wave + source[index].y;
-                object->copied_vertices[index].z = source[index].z;
+                destination[index].z = source[index].z;
                 ++index;
             } while (index < object->vertex_count);
         }
@@ -44,10 +45,10 @@ void cRDistort::Build(cRObject* object)
         int index = 0;
         if (object->vertex_count > 0) {
             do {
-                object->copied_vertices[index].x = scale_x * source[index].x;
-                object->copied_vertices[index].y =
+                destination[index].x = scale_x * source[index].x;
+                destination[index].y =
                     (source[index].y - base_y) * squash_y + base_y;
-                object->copied_vertices[index].z = source[index].z;
+                destination[index].z = source[index].z;
                 ++index;
             } while (index < object->vertex_count);
         }
@@ -60,12 +61,13 @@ void cRDistort::Build(cRObject* object)
         float scale_xy = Sin(xyz_scale * 1.5707964f) * 0.1f + 1.0f;
         float scale_z = 1.0f - Sin(xyz_scale * 1.5707964f);
 
+        Vector3 *const &output = object->copied_vertices;
         int index = 0;
         if (object->vertex_count > 0) {
             do {
-                object->copied_vertices[index].x = scale_xy * source[index].x;
-                object->copied_vertices[index].y = scale_xy * source[index].y;
-                object->copied_vertices[index].z = scale_z * source[index].z;
+                output[index].x = scale_xy * source[index].x;
+                output[index].y = scale_xy * source[index].y;
+                output[index].z = scale_z * source[index].z;
                 ++index;
             } while (index < object->vertex_count);
         }
