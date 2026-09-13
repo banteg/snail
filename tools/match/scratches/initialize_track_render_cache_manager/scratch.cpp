@@ -9,7 +9,6 @@
 
 void* allocate_tracked_memory(int size, char* name);
 
-
 struct TrackRenderCacheSlotCursor {
     char manager_prefix[offsetof(SegmentCache, slots)];
     TrackRenderCacheSlot slot; // SegmentCache::slots[0][TRACK_RENDER_CACHE_FLOOR]
@@ -29,17 +28,17 @@ void SegmentCache::initialize_track_render_cache_manager()
     max_index_counts[TRACK_RENDER_CACHE_FRINGE] = 1280;
     owner_subgame = &g_game->subgame;
 
+    int family_index = 0;
     int slot_base = 0;
     Object** skirt_object_ref =
         &slots[0][TRACK_RENDER_CACHE_FRINGE].object;
-    int i;
     do {
-        for (i = 0;
-             i < (int)(sizeof(slots[0]) / sizeof(slots[0][0]));
-             ++i) {
+        for (family_index = 0;
+             family_index < (int)(sizeof(slots[0]) / sizeof(slots[0][0]));
+             ++family_index) {
             TrackRenderCacheSlotCursor* slot =
                 (TrackRenderCacheSlotCursor*)((char*)this
-                    + (slot_base + i) * sizeof(TrackRenderCacheSlot));
+                    + (slot_base + family_index) * sizeof(TrackRenderCacheSlot));
             slot->slot.SetObject(g_object_list.Add());
 
             slot->slot.object->flags = OBJECT_FLAG_RENDER_BUFFERS_READY;
@@ -49,9 +48,9 @@ void SegmentCache::initialize_track_render_cache_manager()
             slot->slot.object->facequads = 0;
             slot->slot.object->texture_group_count = 1;
             slot->slot.object->render_buffers = g_direct3d_renderer.vertex_buffer_factory
-                .create_vertex_buffer(max_vertex_counts[i], 0x142);
+                .create_vertex_buffer(max_vertex_counts[family_index], 0x142);
             slot->slot.object->index_buffer = g_direct3d_renderer
-                .index_buffer_factory.create_index_buffer(max_index_counts[i]);
+                .index_buffer_factory.create_index_buffer(max_index_counts[family_index]);
             slot->slot.object->group_index_starts =
                 (int*)allocate_tracked_memory(4, "DX TextureGroups");
             slot->slot.object->group_index_starts[0] = 0;
@@ -60,7 +59,7 @@ void SegmentCache::initialize_track_render_cache_manager()
             slot->slot.object->group_primitive_counts =
                 (int*)allocate_tracked_memory(4, "DX TextureGroupsTexture Primcount");
 
-            if (i == TRACK_RENDER_CACHE_FRINGE)
+            if (family_index == TRACK_RENDER_CACHE_FRINGE)
                 (*skirt_object_ref)->blend_mode = 5;
         }
         slot_base += sizeof(slots[0]) / sizeof(slots[0][0]);
@@ -87,5 +86,4 @@ void SegmentCache::initialize_track_render_cache_manager()
         ++vertex_buffers;
         --count;
     } while (count != 0);
-
 }

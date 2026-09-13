@@ -1,5 +1,15 @@
 # initialize_track_render_cache_manager @ 0x433060
 
+## 2026-09-14 complete encoded-body match
+
+Initializing both grid counters together recovers the final ordinary SIB byte
+at body offset 108. All 436 body bytes, 122 instructions, 18 positional
+references and four local branches now agree. The family counter's initial
+zero is redundant with its `for` reset; the source change affects compiler
+symbol ordering rather than emitted initialization code. See the
+[controls and full-byte proof](../../cache-family-counter-lifetime-20260914.md).
+The earlier normalization-based exactness statements below are historical.
+
 Initial shape:
 
 - Seeds five render-cache capacity pairs.
