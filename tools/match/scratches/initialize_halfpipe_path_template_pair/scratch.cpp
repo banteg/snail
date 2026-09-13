@@ -19,6 +19,8 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
     width_or_scale = 1.0f;
     segment_count = 66;
     segment_count_f = 66.0f;
+    // GetNodes replaces the bank; keep this reference bound to the live field.
+    AttachmentSample* const& middle_primary = primary_samples;
     GetNodes();
     has_entry_mesh_transition = 0;
 
@@ -105,47 +107,47 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
     {
         float middle_f = (float)middle;
         out_angle = middle_f * 0.18479957f;
-        ((AttachmentSample *)((char *)primary_samples + middle_offset))->center_x =
-            (primary_samples[50].center_x - primary_samples[0].center_x) * middle_f *
+        ((AttachmentSample *)((char *)middle_primary + middle_offset))->center_x =
+            (middle_primary[50].center_x - middle_primary[0].center_x) * middle_f *
                 0.029411765f +
-            primary_samples[0].center_x;
-        ((AttachmentSample *)((char *)primary_samples + middle_offset))
+            middle_primary[0].center_x;
+        ((AttachmentSample *)((char *)middle_primary + middle_offset))
             ->rotation_scalar_98 = 0.0f;
-        ((AttachmentSample *)((char *)primary_samples + middle_offset))
+        ((AttachmentSample *)((char *)middle_primary + middle_offset))
             ->rotation_scalar_94 = 0.0f;
-        ((AttachmentSample *)((char *)primary_samples + middle_offset))
+        ((AttachmentSample *)((char *)middle_primary + middle_offset))
             ->special_scalar = 4.0f;
-        ((AttachmentSample *)((char *)primary_samples + middle_offset))->lateral_scale =
+        ((AttachmentSample *)((char *)middle_primary + middle_offset))->lateral_scale =
             1.0f;
-        ((AttachmentSample *)((char *)primary_samples + middle_offset))
+        ((AttachmentSample *)((char *)middle_primary + middle_offset))
             ->transform.Identity();
-        ((AttachmentSample *)((char *)primary_samples + middle_offset))
+        ((AttachmentSample *)((char *)middle_primary + middle_offset))
             ->transform.position.x = 0.0f;
-        ((AttachmentSample *)((char *)primary_samples + middle_offset))
+        ((AttachmentSample *)((char *)middle_primary + middle_offset))
             ->transform.position.z = (float)(middle + 16);
-        ((AttachmentSample *)((char *)primary_samples + middle_offset))
+        ((AttachmentSample *)((char *)middle_primary + middle_offset))
             ->transform.position.y = 0.0f;
-        ((AttachmentSample *)((char *)primary_samples + middle_offset))
+        ((AttachmentSample *)((char *)middle_primary + middle_offset))
             ->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
-        ((AttachmentSample *)((char *)primary_samples + middle_offset))
+        ((AttachmentSample *)((char *)middle_primary + middle_offset))
             ->transform.basis_forward =
-            ((AttachmentSample *)((char *)primary_samples + middle_offset))
+            ((AttachmentSample *)((char *)middle_primary + middle_offset))
                 ->transform.position -
-            ((AttachmentSample *)((char *)primary_samples + middle_offset))[-1]
+            ((AttachmentSample *)((char *)middle_primary + middle_offset))[-1]
                 .transform.position;
-        ((AttachmentSample *)((char *)primary_samples + middle_offset))
+        ((AttachmentSample *)((char *)middle_primary + middle_offset))
             ->transform.basis_forward.Normalize();
-        ((AttachmentSample *)((char *)primary_samples + middle_offset))
+        ((AttachmentSample *)((char *)middle_primary + middle_offset))
             ->transform.basis_right.Cross(
-                ((AttachmentSample *)((char *)primary_samples + middle_offset))
+                ((AttachmentSample *)((char *)middle_primary + middle_offset))
                     ->transform.basis_up,
-                ((AttachmentSample *)((char *)primary_samples + middle_offset))
+                ((AttachmentSample *)((char *)middle_primary + middle_offset))
                     ->transform.basis_forward);
 
         ((AttachmentSample *)((char *)secondary_samples + middle_offset))->transform =
-            ((AttachmentSample *)((char *)primary_samples + middle_offset))->transform;
+            ((AttachmentSample *)((char *)middle_primary + middle_offset))->transform;
         Vector3 secondary_offset =
-            ((AttachmentSample *)((char *)primary_samples + middle_offset))
+            ((AttachmentSample *)((char *)middle_primary + middle_offset))
                 ->transform.basis_up *
             0.49000001f;
         Vector3 *secondary_position =
@@ -225,7 +227,7 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
             compute_kind42_attachment_transform(
                 primary_samples[radius_sample].special_scalar, vertices[column + row * (width_cells + 1)].x, 0.0f,
                 &kind42_transform, &out_angle);
-            if (sample_offset > sizeof(AttachmentSample) && row != segment_count)
+            if (sample_offset > (int)sizeof(AttachmentSample) && row != segment_count)
             {
                 vertices[column + row * (width_cells + 1)].x = kind42_transform.position.x;
                 vertices[column + row * (width_cells + 1)].y = kind42_transform.position.y;
@@ -265,7 +267,7 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
                         facequads[face_offset].vertex_3 =
                             mesh_column +
                             (mesh_row + 1) * ((unsigned short)width_cells + 1);
-                        if ((mesh_column ^ mesh_row) & 1)
+                        if (((mesh_column ^ mesh_row) & 1) == 0)
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(texture_a, 0, 0);
                         else
@@ -286,7 +288,7 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
                         facequads[face_offset].vertex_3 =
                             (mesh_row + 1) * ((unsigned short)width_cells + 1) +
                             mesh_column + 1;
-                        if ((mesh_column ^ mesh_row) & 1)
+                        if (((mesh_column ^ mesh_row) & 1) == 0)
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(texture_b, 0, 0);
                         else

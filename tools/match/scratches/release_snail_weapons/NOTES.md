@@ -1,5 +1,17 @@
 # cRSnail::ReleaseWeapons @ 0x442e40
 
+## 2026-09-14 unpromoted vertical-precision diagnostic
+
+Canonical source remains at **94.40%, 125/125 instructions**, prefix 15 and
+33 clean references. A separate source reproduces the complete 554-byte native
+body, all 33 strict positional references and its literal branch, but requires
+two redundant numeric conversions with no recovered authored purpose. It is
+not promoted under the no-fakematching requirement. Preserving C2 observations,
+removal controls and named-value/array alternatives are retained as evidence
+for further source recovery, without changing the public exactness claim.
+
+See the [diagnostic source, proof, controls and compiler observations](../../halfpipe-live-bank-and-release-diagnostic-20260914.md).
+
 ## 2026-09-14 first vector component ownership
 
 The retained source improves **92.80% to 94.40%**, with 125/125 instructions,

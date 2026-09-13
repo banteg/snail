@@ -1,5 +1,19 @@
 # `initialize_halfpipe_path_template_pair` reconstruction notes
 
+## 2026-09-14 live middle bank and branch directions
+
+Current partial result: **87.19037509%, 706/707 instructions**, prefix 137,
+with 55 clean references. Binding the middle primary-bank field reference
+before `GetNodes()` recovers native Identity/copy receiver setup and up-vector
+load order. Two selected native regions totaling 201 bytes pass independent
+literal-byte/reference certificates. The existing 575-byte encoded prefix is
+preserved. Three native conditional-branch opcodes are also recovered.
+
+See the [controls, native certificates and reversal evidence](../../halfpipe-live-bank-and-release-diagnostic-20260914.md).
+The 88.46426044% branch-local mesh arithmetic control remains a diagnostic seed
+because it also moves unresolved temporary storage. The measurements below
+are historical; this source remains partial with no exact-match credit.
+
 Current recovery: declared semantic-complete, with native source and encoded
 differences still under analysis. This is a partial recovery, not a compiler
 ceiling.
