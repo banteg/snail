@@ -7,6 +7,7 @@ void cRObject::CalcTextureGroups()
 {
     int pass = 0;
     do {
+        cRFaceQuad *const &quad_bank = facequads;
         char* quads = (char*)facequads;
         int group = 0;
         int face_index = 0;
@@ -18,7 +19,7 @@ void cRObject::CalcTextureGroups()
                 if ((flags & 0x400) != 0) {
                     quads[offset] |= 2;
                     cRTexture* active_texture =
-                        *(cRTexture**)((char*)facequads + offset + 0x0c);
+                        ((cRFaceQuad*)((char*)quad_bank + offset))->texture_ref;
                     active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;
                 }
 

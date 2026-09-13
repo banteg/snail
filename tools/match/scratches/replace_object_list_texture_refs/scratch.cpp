@@ -18,10 +18,10 @@ void cRObjects::ReTextureObjects(cRTexture* new_texture,
         if (((Object*)object_cursor)->vertex_count != 0) {
             int face_index = 0;
             if (((Object*)object_cursor)->facequad_count > 0) {
+                cRFaceQuad *const &quads = ((Object*)object_cursor)->facequads;
                 int face_offset = 0;
                 do {
-                    cRFaceQuad* quad = (cRFaceQuad*)((char*)((Object*)object_cursor)->facequads
-                        + face_offset);
+                    cRFaceQuad* quad = (cRFaceQuad*)((char*)quads + face_offset);
                     cRTexture** texture_slot = &quad->texture_ref;
                     if (*texture_slot == old_texture) {
                         *texture_slot = new_texture;
