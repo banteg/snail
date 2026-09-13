@@ -11,75 +11,77 @@ float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
-static __forceinline void orient_previous_sample_pair(Path *path, int current_offset)
+static __forceinline void orient_previous_sample_pair(
+    PathTemplateSample *const &primary, PathTemplateSample *const &secondary,
+    int current_offset)
 {
     if (current_offset > (int)sizeof(PathTemplateSample))
     {
-        ((PathTemplateSample *)((char *)path->primary_samples + current_offset))[-1]
+        ((PathTemplateSample *)((char *)primary + current_offset))[-1]
             .transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
-        ((PathTemplateSample *)((char *)path->primary_samples + current_offset))[-1]
+        ((PathTemplateSample *)((char *)primary + current_offset))[-1]
             .transform.basis_forward =
-            ((PathTemplateSample *)((char *)path->primary_samples + current_offset))[0]
+            ((PathTemplateSample *)((char *)primary + current_offset))[0]
                 .transform.position -
-            ((PathTemplateSample *)((char *)path->primary_samples + current_offset))[-1]
+            ((PathTemplateSample *)((char *)primary + current_offset))[-1]
                 .transform.position;
-        ((PathTemplateSample *)((char *)path->primary_samples + current_offset))[-1]
+        ((PathTemplateSample *)((char *)primary + current_offset))[-1]
             .transform.basis_forward.Normalize();
-        ((PathTemplateSample *)((char *)path->primary_samples + current_offset))[-1]
+        ((PathTemplateSample *)((char *)primary + current_offset))[-1]
             .transform.basis_right.Cross(
-                ((PathTemplateSample *)((char *)path->primary_samples +
+                ((PathTemplateSample *)((char *)primary +
                                         current_offset))[-1]
                     .transform.basis_up,
-                ((PathTemplateSample *)((char *)path->primary_samples +
+                ((PathTemplateSample *)((char *)primary +
                                         current_offset))[-1]
                     .transform.basis_forward);
-        ((PathTemplateSample *)((char *)path->primary_samples + current_offset))[-1]
+        ((PathTemplateSample *)((char *)primary + current_offset))[-1]
             .transform.basis_up.Cross(
-                ((PathTemplateSample *)((char *)path->primary_samples +
+                ((PathTemplateSample *)((char *)primary +
                                         current_offset))[-1]
                     .transform.basis_forward,
-                ((PathTemplateSample *)((char *)path->primary_samples +
+                ((PathTemplateSample *)((char *)primary +
                                         current_offset))[-1]
                     .transform.basis_right);
-        ((PathTemplateSample *)((char *)path->primary_samples + current_offset))[-1]
+        ((PathTemplateSample *)((char *)primary + current_offset))[-1]
             .transform.Orthoganalize();
 
-        ((PathTemplateSample *)((char *)path->secondary_samples + current_offset))[-1]
+        ((PathTemplateSample *)((char *)secondary + current_offset))[-1]
             .transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
-        ((PathTemplateSample *)((char *)path->secondary_samples + current_offset))[-1]
+        ((PathTemplateSample *)((char *)secondary + current_offset))[-1]
             .transform.basis_forward =
-            ((PathTemplateSample *)((char *)path->secondary_samples +
+            ((PathTemplateSample *)((char *)secondary +
                                     current_offset))[0]
                 .transform.position -
-            ((PathTemplateSample *)((char *)path->secondary_samples +
+            ((PathTemplateSample *)((char *)secondary +
                                     current_offset))[-1]
                 .transform.position;
-        ((PathTemplateSample *)((char *)path->secondary_samples + current_offset))[-1]
+        ((PathTemplateSample *)((char *)secondary + current_offset))[-1]
             .transform.basis_forward.Normalize();
-        ((PathTemplateSample *)((char *)path->secondary_samples + current_offset))[-1]
+        ((PathTemplateSample *)((char *)secondary + current_offset))[-1]
             .transform.basis_right.Cross(
-                ((PathTemplateSample *)((char *)path->secondary_samples +
+                ((PathTemplateSample *)((char *)secondary +
                                         current_offset))[-1]
                     .transform.basis_up,
-                ((PathTemplateSample *)((char *)path->secondary_samples +
+                ((PathTemplateSample *)((char *)secondary +
                                         current_offset))[-1]
                     .transform.basis_forward);
-        ((PathTemplateSample *)((char *)path->secondary_samples + current_offset))[-1]
+        ((PathTemplateSample *)((char *)secondary + current_offset))[-1]
             .transform.basis_up.Cross(
-                ((PathTemplateSample *)((char *)path->secondary_samples +
+                ((PathTemplateSample *)((char *)secondary +
                                         current_offset))[-1]
                     .transform.basis_forward,
-                ((PathTemplateSample *)((char *)path->secondary_samples +
+                ((PathTemplateSample *)((char *)secondary +
                                         current_offset))[-1]
                     .transform.basis_right);
-        ((PathTemplateSample *)((char *)path->secondary_samples + current_offset))[-1]
+        ((PathTemplateSample *)((char *)secondary + current_offset))[-1]
             .transform.Orthoganalize();
     }
     else
     {
-        ((PathTemplateSample *)((char *)path->primary_samples + current_offset))[-1]
+        ((PathTemplateSample *)((char *)primary + current_offset))[-1]
             .transform.RotIdentity();
-        ((PathTemplateSample *)((char *)path->secondary_samples + current_offset))[-1]
+        ((PathTemplateSample *)((char *)secondary + current_offset))[-1]
             .transform.RotIdentity();
     }
 }
@@ -274,6 +276,37 @@ static __forceinline void initialize_curve_sample(PathTemplateSample *&bank,
     ((PathTemplateSample *)((char *)bank + sample_offset))[0].transform.Identity();
 }
 
+static __forceinline int finish_curve_positions(
+    PathTemplateSample *const &primary, PathTemplateSample *const &secondary,
+    int sample_offset, int local_index, float angle, float half_angle, float height)
+{
+    ((PathTemplateSample *)((char *)primary + sample_offset))[0]
+        .transform.position.x =
+        ((PathTemplateSample *)((char *)primary + sample_offset))[0]
+            .center_x;
+    float angle_sine = Sin(angle);
+    ((PathTemplateSample *)((char *)primary + sample_offset))[0]
+        .transform.position.y = Sin(half_angle) * angle_sine * height;
+    int sample_z = local_index + 1;
+    ((PathTemplateSample *)((char *)primary + sample_offset))[0]
+        .transform.position.z = (float)sample_z;
+    ((PathTemplateSample *)((char *)secondary + sample_offset))[0]
+        .transform.Identity();
+    ((PathTemplateSample *)((char *)secondary + sample_offset))[0]
+        .transform.position.x =
+        ((PathTemplateSample *)((char *)primary + sample_offset))[0]
+            .center_x;
+    ((PathTemplateSample *)((char *)secondary + sample_offset))[0]
+        .transform.position.y =
+        ((PathTemplateSample *)((char *)primary + sample_offset))[0]
+            .transform.position.y +
+        0.49000001f;
+    ((PathTemplateSample *)((char *)secondary + sample_offset))[0]
+        .transform.position.z = (float)sample_z;
+    orient_previous_sample_pair(primary, secondary, sample_offset);
+    return sample_z;
+}
+
 void cRPath::initialize_twister_path_template_pair(float height, int width_cells_,
                                                    bool handedness, char *texture_a,
                                                    char *texture_b,
@@ -337,30 +370,9 @@ void cRPath::initialize_twister_path_template_pair(float height, int width_cells
         float center = 2.5f - center_scale;
 
         initialize_curve_sample(primary_samples, sample_offset, center);
-        ((PathTemplateSample *)((char *)primary_samples + sample_offset))[0]
-            .transform.position.x =
-            ((PathTemplateSample *)((char *)primary_samples + sample_offset))[0]
-                .center_x;
-        float angle_sine = Sin(angle);
-        ((PathTemplateSample *)((char *)primary_samples + sample_offset))[0]
-            .transform.position.y = Sin(half_angle) * angle_sine * height;
-        int sample_z = local_index + 1;
-        ((PathTemplateSample *)((char *)primary_samples + sample_offset))[0]
-            .transform.position.z = (float)sample_z;
-        ((PathTemplateSample *)((char *)secondary_samples + sample_offset))[0]
-            .transform.Identity();
-        ((PathTemplateSample *)((char *)secondary_samples + sample_offset))[0]
-            .transform.position.x =
-            ((PathTemplateSample *)((char *)primary_samples + sample_offset))[0]
-                .center_x;
-        ((PathTemplateSample *)((char *)secondary_samples + sample_offset))[0]
-            .transform.position.y =
-            ((PathTemplateSample *)((char *)primary_samples + sample_offset))[0]
-                .transform.position.y +
-            0.49000001f;
-        ((PathTemplateSample *)((char *)secondary_samples + sample_offset))[0]
-            .transform.position.z = (float)sample_z;
-        orient_previous_sample_pair(this, sample_offset);
+        int sample_z = finish_curve_positions(primary_samples, secondary_samples,
+                                              sample_offset, local_index, angle,
+                                              half_angle, height);
         local_index = sample_z;
     }
 
