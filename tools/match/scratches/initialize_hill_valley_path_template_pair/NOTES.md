@@ -1,3 +1,12 @@
+## 2026-09-21 paired-receiver transfer controls
+
+Canonical source remains 97.60479042%, 668/668 instructions, prefix 21,
+with 41 clean references. Dip's new paired Identity boundary does not improve
+HillValley. Caller/helper and bank-borrowing variants are neutral or worse;
+reusing the incoming length for endpoint Z regresses. The similar early endpoint
+spill remains an independent ownership question. See the
+[controls and measurements](../../dip-identity-owners-20260921.md).
+
 # initialize_hill_valley_path_template_pair
 
 ## 2026-09-12 endpoint and receiver controls

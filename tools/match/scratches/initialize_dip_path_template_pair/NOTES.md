@@ -1,4 +1,17 @@
-## Current canonical source: branch-local lateral values (2026-09-21)
+## Current canonical source: paired Identity owners (2026-09-21)
+
+**98.77862595% → 99.54198473%, 655/655 instructions**, prefix 22;
+37 clean references, with 33 now at both the native instruction index and byte
+offset (previously 30). Primary Identity moves into the primary curve operation;
+secondary Identity moves to the caller before its position operation. Either
+move alone regresses. The pair recovers the 27-instruction region
+`[0x41e626,0x41e684)` after four independently audited relocations, with every
+candidate byte outside body offsets `[486,575)` unchanged.
+
+Header/endpoint scheduling, phase-zero ownership and 17 total SIB bytes remain.
+The body is not encoded-exact. See the [controls and byte proof](../../dip-identity-owners-20260921.md).
+
+## Previous canonical source: branch-local lateral values (2026-09-21)
 
 Current result: **98.77862595%, 655/655 instructions**, prefix 22, with
 37 clean aligned references. Computing the lateral value inside each real

@@ -1,3 +1,10 @@
+## 2026-09-21 departure ownership follow-up
+
+Canonical source remains normalized 100%, with one encoded SIB byte open at
+body offset 745. A shared physical departure cursor regresses; a departure span
+and advancing logical index are raw-byte neutral. No source change is retained.
+See the [bounded controls](../../dip-identity-owners-20260921.md).
+
 # LoopOut: normalized exact, one literal byte open (2026-09-21)
 
 The current source matches all 718 normalized instructions and 52 strict

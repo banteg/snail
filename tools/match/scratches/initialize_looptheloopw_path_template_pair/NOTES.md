@@ -1,3 +1,11 @@
+## 2026-09-21 curve-operation ownership follow-up
+
+Canonical source remains 99.86577181%, 745/745 instructions, prefix 335,
+with 55 clean references. Position, orientation and whole-sample helpers
+borrowing both banks are neutral; path-owned operations regress. Roll value/ref
+ownership does not resolve the secondary rotation schedule. Two encoded SIB
+bytes also remain. See the [bounded controls](../../dip-identity-owners-20260921.md).
+
 # LoopTheLoopW: mesh slots recovered (2026-09-21)
 
 Current result: **99.86577181%, 745/745 instructions**, prefix 335, with

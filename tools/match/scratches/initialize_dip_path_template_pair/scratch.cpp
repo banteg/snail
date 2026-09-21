@@ -158,10 +158,12 @@ static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *te
     }
 }
 
-static __forceinline void initialize_primary_curve_position(
+static __forceinline void initialize_primary_curve(
     PathAttachmentSample *&bank, int offset, int index,
     float angle, float radius, float &z)
 {
+    ((PathAttachmentSample *)((char *)bank + offset))
+        ->transform.Identity();
     ((PathAttachmentSample *)((char *)bank + offset))[0].transform.position.x =
         ((PathAttachmentSample *)((char *)bank + offset))[0].center_x;
     ((PathAttachmentSample *)((char *)bank + offset))[0].transform.position.y =
@@ -170,12 +172,10 @@ static __forceinline void initialize_primary_curve_position(
     ((PathAttachmentSample *)((char *)bank + offset))[0].transform.position.z = z;
 }
 
-static __forceinline void initialize_secondary_curve(
+static __forceinline void initialize_secondary_curve_position(
     PathAttachmentSample *&primary, PathAttachmentSample *&secondary,
     int offset, float angle, float radius, const float &z)
 {
-    ((PathAttachmentSample *)((char *)secondary + offset))
-        ->transform.Identity();
     ((PathAttachmentSample *)((char *)secondary + offset))
         ->transform.position.x =
         ((PathAttachmentSample *)((char *)primary + offset))
@@ -275,13 +275,13 @@ void cRPath::initialize_dip_path_template_pair(
             ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
                 ->lateral_scale = 1.0f;
             float angle = (float)curve_phase_index * 6.2831855f / curve_count_f;
-            ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
-                ->transform.Identity();
             float z;
-            initialize_primary_curve_position(primary_samples, sample_offset, i + 1,
+            initialize_primary_curve(primary_samples, sample_offset, i + 1,
                                               angle, curve_source, z);
             ++i;
-            initialize_secondary_curve(primary_samples, secondary_samples,
+            ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))
+                ->transform.Identity();
+            initialize_secondary_curve_position(primary_samples, secondary_samples,
                                        sample_offset, angle, curve_source, z);
             if (sample_offset > (int)sizeof(PathAttachmentSample))
             {
