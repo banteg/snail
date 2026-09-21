@@ -1,5 +1,25 @@
 # `initialize_halfpipe_path_template_pair` reconstruction notes
 
+## 2026-09-21: guarded mesh traversal and local lateral values
+
+Current partial result: **94.97523001%, 706/707 instructions**, prefix **137**,
+with all **55 references clean**. Branch-local double lateral values, the
+ordinary position-plus-offset vector operation, shared vertex/face row and
+column counters, and an explicitly guarded sample-offset traversal improve
+87.19037509%. The encoded 575-byte prefix remains unchanged. Both forward
+probes report no metric tradeoffs; the complete baseline reversal reproduces
+the earlier function code identity.
+
+The departure secondary receiver, middle-loop scheduling and mesh address
+lifetimes still differ. The candidate is 2,608 bytes against the full 2,592-byte
+native extent; no target bytes are excluded or unexplained, and this is **not**
+a full match. The earlier branch-local diagnostic becomes a useful gain only
+when combined with the shared mesh counters and guard.
+
+See the [source controls and retained evidence](../../supertramp-halfpipe-owners-20260921.md).
+Earlier current-result wording below describes historical baselines.
+
+
 ## 2026-09-14 live middle bank and branch directions
 
 Current partial result: **87.19037509%, 706/707 instructions**, prefix 137,

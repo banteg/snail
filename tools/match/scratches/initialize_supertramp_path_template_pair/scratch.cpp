@@ -13,7 +13,7 @@ typedef AttachmentSample PathTemplateSample;
 
 static __forceinline void build_direct_strip_mesh(Path *path, char *top_texture,
                                                   char *bottom_texture,
-                                                  char *cap_texture)
+                                                  char *cap_texture, int &row)
 {
     path->strip_mesh->RequestVertices((path->width_cells + 1) *
                                       (path->segment_count + 1));
@@ -21,7 +21,6 @@ static __forceinline void build_direct_strip_mesh(Path *path, char *top_texture,
 
     Vector3 *vertices = path->strip_mesh->vertices;
     cRFaceQuad *facequads = path->strip_mesh->facequads;
-    int row;
     int column;
 
     row = 0;
@@ -50,13 +49,13 @@ static __forceinline void build_direct_strip_mesh(Path *path, char *top_texture,
         } while (row <= path->segment_count);
     }
 
-    for (int face_row = 0; face_row < path->segment_count; ++face_row)
+    for (row = 0; row < path->segment_count; ++row)
     {
         column = 0;
         if (path->width_cells > 0)
         {
-            float v0 = (float)(face_row % 8) * 0.125f;
-            float v1 = (float)(face_row % 8 + 1) * 0.125f;
+            float v0 = (float)(row % 8) * 0.125f;
+            float v1 = (float)(row % 8 + 1) * 0.125f;
             do
             {
                 int side = 0;
@@ -65,27 +64,27 @@ static __forceinline void build_direct_strip_mesh(Path *path, char *top_texture,
                 do
                 {
                     int face_offset =
-                        side + 2 * (column + face_row * path->width_cells);
+                        side + 2 * (column + row * path->width_cells);
                     if (side == 0)
                     {
                         facequads[face_offset].header_word = 0;
                         facequads[face_offset].vertex_0 =
-                            column + face_row * ((unsigned short)path->width_cells + 1);
+                            column + row * ((unsigned short)path->width_cells + 1);
                         facequads[face_offset].vertex_1 =
-                            face_row * ((unsigned short)path->width_cells + 1) +
+                            row * ((unsigned short)path->width_cells + 1) +
                             column + 1;
                         facequads[face_offset].vertex_2 =
-                            (face_row + 1) * ((unsigned short)path->width_cells + 1) +
+                            (row + 1) * ((unsigned short)path->width_cells + 1) +
                             column + 1;
                         facequads[face_offset].vertex_3 =
                             column +
-                            (face_row + 1) * ((unsigned short)path->width_cells + 1);
-                        if (face_row == path->segment_count - 1)
+                            (row + 1) * ((unsigned short)path->width_cells + 1);
+                        if (row == path->segment_count - 1)
                         {
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(cap_texture, 0, 0);
                         }
-                        else if ((column & 1) == (face_row & 1))
+                        else if ((column & 1) == (row & 1))
                         {
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(top_texture, 0, 0);
@@ -100,17 +99,17 @@ static __forceinline void build_direct_strip_mesh(Path *path, char *top_texture,
                     {
                         facequads[face_offset].header_word = 0;
                         facequads[face_offset].vertex_0 =
-                            face_row * ((unsigned short)path->width_cells + 1) +
+                            row * ((unsigned short)path->width_cells + 1) +
                             column + 1;
                         facequads[face_offset].vertex_1 =
-                            column + face_row * ((unsigned short)path->width_cells + 1);
+                            column + row * ((unsigned short)path->width_cells + 1);
                         facequads[face_offset].vertex_2 =
                             column +
-                            (face_row + 1) * ((unsigned short)path->width_cells + 1);
+                            (row + 1) * ((unsigned short)path->width_cells + 1);
                         facequads[face_offset].vertex_3 =
-                            (face_row + 1) * ((unsigned short)path->width_cells + 1) +
+                            (row + 1) * ((unsigned short)path->width_cells + 1) +
                             column + 1;
-                        if ((column & 1) == (face_row & 1))
+                        if ((column & 1) == (row & 1))
                         {
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(bottom_texture, 0, 0);
@@ -151,6 +150,97 @@ static __forceinline void build_direct_strip_mesh(Path *path, char *top_texture,
     }
 }
 
+static __forceinline void initialize_flat_lead(
+    PathTemplateSample *const &primary_samples,
+    PathTemplateSample *const &secondary_samples)
+{
+    int lead_sample_index;
+    for (lead_sample_index = 0; lead_sample_index < 7; ++lead_sample_index)
+    {
+        primary_samples[lead_sample_index].center_x = 0.0f;
+        primary_samples[lead_sample_index].rotation_scalar_98 = 0.0f;
+        primary_samples[lead_sample_index].rotation_scalar_94 = 0.0f;
+        primary_samples[lead_sample_index].special_scalar = 0.0f;
+        primary_samples[lead_sample_index].lateral_scale = 1.0f;
+        primary_samples[lead_sample_index].transform.Identity();
+        primary_samples[lead_sample_index].transform.position.x =
+            primary_samples[lead_sample_index].center_x;
+        float z = (float)lead_sample_index;
+        primary_samples[lead_sample_index].transform.position.y = 0.0f;
+        primary_samples[lead_sample_index].transform.position.z = z;
+        primary_samples[lead_sample_index].delta_length = 1.0f;
+
+        secondary_samples[lead_sample_index].transform.Identity();
+        secondary_samples[lead_sample_index].transform.position.x =
+            primary_samples[lead_sample_index].center_x;
+        secondary_samples[lead_sample_index].transform.position.y = 0.49000001f;
+        secondary_samples[lead_sample_index].transform.position.z = z;
+        secondary_samples[lead_sample_index].delta_length = 1.0f;
+    }
+}
+
+static __forceinline void initialize_curve(
+    Path *path, int curve_segments, float curve_segments_f, float length,
+    int &curve_index)
+{
+    curve_index = 0;
+    if (curve_segments >= 0)
+    {
+        float secondary_radius = length - 0.49000001f;
+        do
+        {
+            int sample_index = curve_index + 7;
+            float angle = (float)curve_index * 1.0461504f / curve_segments_f;
+
+            path->primary_samples[sample_index].center_x = 0.0f;
+            path->primary_samples[sample_index].rotation_scalar_98 = 0.0f;
+            path->primary_samples[sample_index].rotation_scalar_94 = 0.0f;
+            path->primary_samples[sample_index].special_scalar = 0.0f;
+            path->primary_samples[sample_index].lateral_scale = 1.0f;
+            path->primary_samples[sample_index].transform.Identity();
+            path->primary_samples[sample_index].transform.position.x =
+                path->primary_samples[sample_index].center_x;
+            path->primary_samples[sample_index].transform.position.z =
+                Sin(angle) * length + 7.0f;
+            path->primary_samples[sample_index].transform.position.y =
+                length - Cos(angle) * length;
+
+            path->secondary_samples[sample_index].transform.Identity();
+            path->secondary_samples[sample_index].transform.position.x =
+                path->primary_samples[sample_index].center_x;
+            path->secondary_samples[sample_index].transform.position.z =
+                Sin(angle) * secondary_radius + 7.0f;
+            path->secondary_samples[sample_index].transform.position.y =
+                length - Cos(angle) * secondary_radius;
+
+            path->primary_samples[sample_index].transform.basis_right =
+                Vector3(1.0f, 0.0f, 0.0f);
+            path->primary_samples[sample_index].transform.basis_up.x = 0.0f;
+            path->primary_samples[sample_index].transform.basis_up.y =
+                length - path->primary_samples[sample_index].transform.position.y;
+            path->primary_samples[sample_index].transform.basis_up.z =
+                7.0f - path->primary_samples[sample_index].transform.position.z;
+            path->primary_samples[sample_index].transform.basis_up.Normalize();
+            path->primary_samples[sample_index].transform.basis_forward.Cross(
+                path->primary_samples[sample_index].transform.basis_right,
+                path->primary_samples[sample_index].transform.basis_up);
+
+            path->secondary_samples[sample_index].transform.basis_right =
+                Vector3(1.0f, 0.0f, 0.0f);
+            path->secondary_samples[sample_index].transform.basis_up.x = 0.0f;
+            path->secondary_samples[sample_index].transform.basis_up.y =
+                length - path->secondary_samples[sample_index].transform.position.y;
+            path->secondary_samples[sample_index].transform.basis_up.z =
+                7.0f - path->secondary_samples[sample_index].transform.position.z;
+            path->secondary_samples[sample_index].transform.basis_up.Normalize();
+            path->secondary_samples[sample_index].transform.basis_forward.Cross(
+                path->secondary_samples[sample_index].transform.basis_right,
+                path->secondary_samples[sample_index].transform.basis_up);
+            ++curve_index;
+        } while (curve_index <= curve_segments);
+    }
+}
+
 void cRPath::initialize_supertramp_path_template_pair(float length, int width_cells_,
                                                       bool side_exit, char *texture_a,
                                                       char *texture_b,
@@ -173,104 +263,11 @@ void cRPath::initialize_supertramp_path_template_pair(float length, int width_ce
     has_entry_mesh_transition = 0;
     segment_count = segment_count - 1;
 
-    int lead_sample_index;
-    int lead_offset;
-    for (lead_sample_index = 0, lead_offset = 0;
-         lead_offset < 7 * (int)sizeof(PathTemplateSample);
-         ++lead_sample_index, lead_offset += (int)sizeof(PathTemplateSample))
-    {
-        ((PathTemplateSample *)((char *)primary_samples + lead_offset))->center_x =
-            0.0f;
-        ((PathTemplateSample *)((char *)primary_samples + lead_offset))
-            ->rotation_scalar_98 = 0.0f;
-        ((PathTemplateSample *)((char *)primary_samples + lead_offset))
-            ->rotation_scalar_94 = 0.0f;
-        ((PathTemplateSample *)((char *)primary_samples + lead_offset))
-            ->special_scalar = 0.0f;
-        ((PathTemplateSample *)((char *)primary_samples + lead_offset))->lateral_scale =
-            1.0f;
-        ((PathTemplateSample *)((char *)primary_samples + lead_offset))
-            ->transform.Identity();
-        ((PathTemplateSample *)((char *)primary_samples + lead_offset))
-            ->transform.position.x =
-            ((PathTemplateSample *)((char *)primary_samples + lead_offset))->center_x;
-        float z = (float)lead_sample_index;
-        ((PathTemplateSample *)((char *)primary_samples + lead_offset))
-            ->transform.position.y = 0.0f;
-        ((PathTemplateSample *)((char *)primary_samples + lead_offset))
-            ->transform.position.z = z;
-        ((PathTemplateSample *)((char *)primary_samples + lead_offset))->delta_length =
-            1.0f;
+    initialize_flat_lead(primary_samples, secondary_samples);
 
-        ((PathTemplateSample *)((char *)secondary_samples + lead_offset))
-            ->transform.Identity();
-        ((PathTemplateSample *)((char *)secondary_samples + lead_offset))
-            ->transform.position.x =
-            ((PathTemplateSample *)((char *)primary_samples + lead_offset))->center_x;
-        ((PathTemplateSample *)((char *)secondary_samples + lead_offset))
-            ->transform.position.y = 0.49000001f;
-        ((PathTemplateSample *)((char *)secondary_samples + lead_offset))
-            ->transform.position.z = z;
-        ((PathTemplateSample *)((char *)secondary_samples + lead_offset))
-            ->delta_length = 1.0f;
-    }
-
-    int curve_index = 0;
-    if (curve_segments >= 0)
-    {
-        float secondary_radius = length - 0.49000001f;
-        do
-        {
-            int sample_index = curve_index + 7;
-            float angle = (float)curve_index * 1.0461504f / curve_segments_f;
-
-            primary_samples[sample_index].center_x = 0.0f;
-            primary_samples[sample_index].rotation_scalar_98 = 0.0f;
-            primary_samples[sample_index].rotation_scalar_94 = 0.0f;
-            primary_samples[sample_index].special_scalar = 0.0f;
-            primary_samples[sample_index].lateral_scale = 1.0f;
-            primary_samples[sample_index].transform.Identity();
-            primary_samples[sample_index].transform.position.x =
-                primary_samples[sample_index].center_x;
-            primary_samples[sample_index].transform.position.z =
-                Sin(angle) * length + 7.0f;
-            primary_samples[sample_index].transform.position.y =
-                length - Cos(angle) * length;
-
-            secondary_samples[sample_index].transform.Identity();
-            secondary_samples[sample_index].transform.position.x =
-                primary_samples[sample_index].center_x;
-            secondary_samples[sample_index].transform.position.z =
-                Sin(angle) * secondary_radius + 7.0f;
-            secondary_samples[sample_index].transform.position.y =
-                length - Cos(angle) * secondary_radius;
-
-            primary_samples[sample_index].transform.basis_right =
-                Vector3(1.0f, 0.0f, 0.0f);
-            primary_samples[sample_index].transform.basis_up.x = 0.0f;
-            primary_samples[sample_index].transform.basis_up.y =
-                length - primary_samples[sample_index].transform.position.y;
-            primary_samples[sample_index].transform.basis_up.z =
-                7.0f - primary_samples[sample_index].transform.position.z;
-            primary_samples[sample_index].transform.basis_up.Normalize();
-            primary_samples[sample_index].transform.basis_forward.Cross(
-                primary_samples[sample_index].transform.basis_right,
-                primary_samples[sample_index].transform.basis_up);
-
-            secondary_samples[sample_index].transform.basis_right =
-                Vector3(1.0f, 0.0f, 0.0f);
-            secondary_samples[sample_index].transform.basis_up.x = 0.0f;
-            secondary_samples[sample_index].transform.basis_up.y =
-                length - secondary_samples[sample_index].transform.position.y;
-            secondary_samples[sample_index].transform.basis_up.z =
-                7.0f - secondary_samples[sample_index].transform.position.z;
-            secondary_samples[sample_index].transform.basis_up.Normalize();
-            secondary_samples[sample_index].transform.basis_forward.Cross(
-                secondary_samples[sample_index].transform.basis_right,
-                secondary_samples[sample_index].transform.basis_up);
-            ++curve_index;
-        } while (curve_index <= curve_segments);
-    }
+    // Reuse the traversal index across the curve and both mesh passes.
+    int curve_index;
+    initialize_curve(this, curve_segments, curve_segments_f, length, curve_index);
 
     int delta_index = 0;
     if (segment_count > 0)
@@ -292,7 +289,7 @@ void cRPath::initialize_supertramp_path_template_pair(float length, int width_ce
             ++delta_index;
         } while (delta_index < segment_count);
     }
-    build_direct_strip_mesh(this, texture_a, texture_b, cap_texture);
+    build_direct_strip_mesh(this, texture_a, texture_b, cap_texture, curve_index);
     CalcLengthZ();
     (void)side_exit;
     (void)unused_texture;

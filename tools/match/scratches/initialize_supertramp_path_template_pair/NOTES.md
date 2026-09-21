@@ -1,5 +1,25 @@
 # initialize_supertramp_path_template_pair
 
+## 2026-09-21: complete encoded-body match
+
+Current result: **100%, 552/552 instructions, prefix 552**, all **36 references
+strictly positional and clean**, and **body_byte_exact=true**. The independent
+Capstone audit verifies all **1,935 body bytes** after masking only those
+36 individually audited relocation fields, all **26 literal local branches**,
+and the identical one-byte terminal padding. There are no unexplained ranges.
+
+The flat lead owns live bank references and a logical seven-sample index;
+the curved span is a separate inline operation. The curve traversal index is
+then reused by the mesh utility for both vertex and face rows. Separate
+reversals of either initialization operation or either shared mesh counter
+break exactness. Ordinary for/do lead traversals and mutable/const bank
+references independently recover the same encoded body. These are sufficient
+source shapes, not a claim that the original source used these helper names.
+
+See the [complete source controls and proof](../../supertramp-halfpipe-owners-20260921.md).
+All earlier partial measurements and residual descriptions below are historical.
+
+
 ## 2026-09-11: count, radius and mesh ownership
 
 Current canonical source is **92.01451906%, 550/552 instructions**, with a

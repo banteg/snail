@@ -193,81 +193,86 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
     TransformMatrix kind42_transform;
     kind42_transform.Identity();
 
-    int sample_offset = 0;
-    for (int row = 0; row <= segment_count; ++row)
+    int row, column;
+    row = 0;
+    if (segment_count >= 0)
     {
-        int column = 0;
-        for (; column <= width_cells; ++column)
+        int sample_offset = 0;
+        do
         {
-            double lateral = (float)column - (float)width_cells * 0.5f;
-            TransformMatrix *transform =
-                (TransformMatrix *)((char *)&primary_samples[0].transform +
-                                    sample_offset);
-            if (row != segment_count)
+            column = 0;
+            for (; column <= width_cells; ++column)
             {
-                Vector3 lateral_offset = transform->basis_right * lateral;
-                Vector3 generated_position(transform->position.x + lateral_offset.x,
-                                           transform->position.y + lateral_offset.y,
-                                           transform->position.z + lateral_offset.z);
-                vertices[column + row * (width_cells + 1)] = generated_position;
-            }
-            else
-            {
-                TransformMatrix *previous =
-                    (TransformMatrix *)((char *)transform - sizeof(AttachmentSample));
-                Vector3 lateral_offset = previous->basis_right * lateral;
-                Vector3 endpoint = previous->position + Vector3(0.0f, 0.0f, 1.0f);
-                Vector3 generated_position = endpoint + lateral_offset;
-                vertices[column + row * (width_cells + 1)] = generated_position;
-            }
+                TransformMatrix *transform =
+                    (TransformMatrix *)((char *)&primary_samples[0].transform +
+                                        sample_offset);
+                if (row != segment_count)
+                {
+                    double lateral = (float)column - (float)width_cells * 0.5f;
+                    Vector3 lateral_offset = transform->basis_right * lateral;
+                    Vector3 generated_position = transform->position + lateral_offset;
+                    vertices[column + row * (width_cells + 1)] = generated_position;
+                }
+                else
+                {
+                    TransformMatrix *previous =
+                        (TransformMatrix *)((char *)transform - sizeof(AttachmentSample));
+                    double lateral = (float)column - (float)width_cells * 0.5f;
+                    Vector3 lateral_offset = previous->basis_right * lateral;
+                    Vector3 endpoint = previous->position + Vector3(0.0f, 0.0f, 1.0f);
+                    Vector3 generated_position = endpoint + lateral_offset;
+                    vertices[column + row * (width_cells + 1)] = generated_position;
+                }
 
-            int radius_sample = row - 1;
-            if (row != segment_count)
-                radius_sample = row;
-            compute_kind42_attachment_transform(
-                primary_samples[radius_sample].special_scalar, vertices[column + row * (width_cells + 1)].x, 0.0f,
-                &kind42_transform, &out_angle);
-            if (sample_offset > (int)sizeof(AttachmentSample) && row != segment_count)
-            {
-                vertices[column + row * (width_cells + 1)].x = kind42_transform.position.x;
-                vertices[column + row * (width_cells + 1)].y = kind42_transform.position.y;
+                int radius_sample = row - 1;
+                if (row != segment_count)
+                    radius_sample = row;
+                compute_kind42_attachment_transform(
+                    primary_samples[radius_sample].special_scalar, vertices[column + row * (width_cells + 1)].x, 0.0f,
+                    &kind42_transform, &out_angle);
+                if (sample_offset > (int)sizeof(AttachmentSample) && row != segment_count)
+                {
+                    vertices[column + row * (width_cells + 1)].x = kind42_transform.position.x;
+                    vertices[column + row * (width_cells + 1)].y = kind42_transform.position.y;
+                }
             }
-        }
-        sample_offset += sizeof(AttachmentSample);
+            sample_offset += sizeof(AttachmentSample);
+            ++row;
+        } while (row <= segment_count);
     }
 
-    for (int mesh_row = 0; mesh_row < segment_count; ++mesh_row)
+    for (row = 0; row < segment_count; ++row)
     {
-        int mesh_column = 0;
+        column = 0;
         if (width_cells > 0)
         {
-            float v0 = (float)(mesh_row % 8) * 0.125f;
-            float v1 = (float)(mesh_row % 8 + 1) * 0.125f;
+            float v0 = (float)(row % 8) * 0.125f;
+            float v1 = (float)(row % 8 + 1) * 0.125f;
             int next_column;
             do
             {
-                next_column = mesh_column + 1;
-                float u0 = (float)mesh_column * 0.125f;
-                float u1 = (float)(mesh_column + 1) * 0.125f;
+                next_column = column + 1;
+                float u0 = (float)column * 0.125f;
+                float u1 = (float)(column + 1) * 0.125f;
                 for (int face_index = 0; face_index < 2; ++face_index)
                 {
                     int face_offset =
-                        face_index + 2 * (mesh_row * width_cells + mesh_column);
+                        face_index + 2 * (row * width_cells + column);
                     if (face_index == 0)
                     {
                         facequads[face_offset].header_word = 0;
                         facequads[face_offset].vertex_0 =
-                            mesh_column + mesh_row * ((unsigned short)width_cells + 1);
+                            column + row * ((unsigned short)width_cells + 1);
                         facequads[face_offset].vertex_1 =
-                            mesh_row * ((unsigned short)width_cells + 1) + mesh_column +
+                            row * ((unsigned short)width_cells + 1) + column +
                             1;
                         facequads[face_offset].vertex_2 =
-                            (mesh_row + 1) * ((unsigned short)width_cells + 1) +
-                            mesh_column + 1;
+                            (row + 1) * ((unsigned short)width_cells + 1) +
+                            column + 1;
                         facequads[face_offset].vertex_3 =
-                            mesh_column +
-                            (mesh_row + 1) * ((unsigned short)width_cells + 1);
-                        if (((mesh_column ^ mesh_row) & 1) == 0)
+                            column +
+                            (row + 1) * ((unsigned short)width_cells + 1);
+                        if (((column ^ row) & 1) == 0)
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(texture_a, 0, 0);
                         else
@@ -278,17 +283,17 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
                     {
                         facequads[face_offset].header_word = 0;
                         facequads[face_offset].vertex_0 =
-                            mesh_row * ((unsigned short)width_cells + 1) + mesh_column +
+                            row * ((unsigned short)width_cells + 1) + column +
                             1;
                         facequads[face_offset].vertex_1 =
-                            mesh_column + mesh_row * ((unsigned short)width_cells + 1);
+                            column + row * ((unsigned short)width_cells + 1);
                         facequads[face_offset].vertex_2 =
-                            mesh_column +
-                            (mesh_row + 1) * ((unsigned short)width_cells + 1);
+                            column +
+                            (row + 1) * ((unsigned short)width_cells + 1);
                         facequads[face_offset].vertex_3 =
-                            (mesh_row + 1) * ((unsigned short)width_cells + 1) +
-                            mesh_column + 1;
-                        if (((mesh_column ^ mesh_row) & 1) == 0)
+                            (row + 1) * ((unsigned short)width_cells + 1) +
+                            column + 1;
+                        if (((column ^ row) & 1) == 0)
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(texture_b, 0, 0);
                         else
@@ -318,7 +323,7 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
                         facequads[face_offset].uv[3].v = v1;
                     }
                 }
-                mesh_column = next_column;
+                column = next_column;
             } while (next_column < width_cells);
         }
     }
