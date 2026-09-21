@@ -225,7 +225,7 @@ void cRPath::initialize_loopbow_path_template_pair(
     Vector3 *vertices = strip_mesh->vertices;
     cRFaceQuad *facequads = strip_mesh->facequads;
 
-    int row = 0;
+    cell_index = 0;
     if (segment_count >= 0)
     {
         do
@@ -235,42 +235,42 @@ void cRPath::initialize_loopbow_path_template_pair(
             {
                 do
                 {
-                    if (row != segment_count)
+                    if (cell_index != segment_count)
                     {
                         double lateral = (float)i - (float)width_cells * 0.5f;
                         Vector3 lateral_offset =
-                            primary_samples[row].transform.basis_right * lateral;
+                            primary_samples[cell_index].transform.basis_right * lateral;
                         Vector3 point =
-                            lateral_offset + primary_samples[row].transform.position;
-                        int vertex_index = i + row * (width_cells + 1);
+                            lateral_offset + primary_samples[cell_index].transform.position;
+                        int vertex_index = i + cell_index * (width_cells + 1);
                         vertices[vertex_index] = point;
                     }
                     else
                     {
                         double lateral = (float)i - (float)width_cells * 0.5f;
                         Vector3 lateral_offset =
-                            primary_samples[row - 1].transform.basis_right * lateral;
+                            primary_samples[cell_index - 1].transform.basis_right * lateral;
                         Vector3 endpoint =
-                            primary_samples[row - 1].transform.position +
+                            primary_samples[cell_index - 1].transform.position +
                             Vector3(0.0f, 0.0f, 1.0f);
                         Vector3 point = endpoint + lateral_offset;
-                        int vertex_index = i + row * (width_cells + 1);
+                        int vertex_index = i + cell_index * (width_cells + 1);
                         vertices[vertex_index] = point;
                     }
                     ++i;
                 } while (i <= width_cells);
             }
-            ++row;
-        } while (row <= segment_count);
+            ++cell_index;
+        } while (cell_index <= segment_count);
     }
 
-    int segment = 0;
+    cell_index = 0;
     if (segment_count > 0) {
         do {
             i = 0;
             if (width_cells > 0) {
-                float v0 = (float)(segment % 8) * 0.125f;
-                float v1 = (float)(segment % 8 + 1) * 0.125f;
+                float v0 = (float)(cell_index % 8) * 0.125f;
+                float v1 = (float)(cell_index % 8 + 1) * 0.125f;
                 do {
                     int side = 0;
                     int next_cell = i + 1;
@@ -279,20 +279,20 @@ void cRPath::initialize_loopbow_path_template_pair(
                     do {
                         int face_offset =
                             side
-                            + 2 * (i + segment * width_cells);
+                            + 2 * (i + cell_index * width_cells);
                         if (side == 0) {
                             facequads[face_offset].header_word = 0;
                             facequads[face_offset].vertex_0 =
-                                i + segment * (width_cells + 1);
+                                i + cell_index * (width_cells + 1);
                             facequads[face_offset].vertex_1 =
-                                segment * (width_cells + 1) + i + 1;
+                                cell_index * (width_cells + 1) + i + 1;
                             facequads[face_offset].vertex_2 =
-                                (segment + 1) * (width_cells + 1)
+                                (cell_index + 1) * (width_cells + 1)
                                 + i + 1;
                             facequads[face_offset].vertex_3 =
-                                i + (segment + 1) * (width_cells + 1);
+                                i + (cell_index + 1) * (width_cells + 1);
 
-                            if (((i ^ segment) & 1) == 0) {
+                            if (((i ^ cell_index) & 1) == 0) {
                                 facequads[face_offset].texture_ref =
                                     g_texture_refs.Add(
                                         texture_a, 0, 0);
@@ -304,16 +304,16 @@ void cRPath::initialize_loopbow_path_template_pair(
                         } else {
                             facequads[face_offset].header_word = 0;
                             facequads[face_offset].vertex_0 =
-                                segment * (width_cells + 1) + i + 1;
+                                cell_index * (width_cells + 1) + i + 1;
                             facequads[face_offset].vertex_1 =
-                                i + segment * (width_cells + 1);
+                                i + cell_index * (width_cells + 1);
                             facequads[face_offset].vertex_2 =
-                                i + (segment + 1) * (width_cells + 1);
+                                i + (cell_index + 1) * (width_cells + 1);
                             facequads[face_offset].vertex_3 =
-                                (segment + 1) * (width_cells + 1)
+                                (cell_index + 1) * (width_cells + 1)
                                 + i + 1;
 
-                            if (((i ^ segment) & 1) == 0) {
+                            if (((i ^ cell_index) & 1) == 0) {
                                 facequads[face_offset].texture_ref =
                                     g_texture_refs.Add(
                                         texture_b, 0, 0);
@@ -347,8 +347,8 @@ void cRPath::initialize_loopbow_path_template_pair(
                     i = next_cell;
                 } while (i < width_cells);
             }
-            ++segment;
-        } while (segment < segment_count);
+            ++cell_index;
+        } while (cell_index < segment_count);
     }
 
     ::calc_path_length_z(this);

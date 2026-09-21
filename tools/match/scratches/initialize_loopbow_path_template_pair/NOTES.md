@@ -1,5 +1,22 @@
 # Reconstruction notes
 
+## 2026-09-21: shared entry and mesh counter
+
+Current verified result: **99.12060302% → 99.62311558%**, **796/796
+instructions**, prefix **336**, and **63 clean references**. Reusing the entry
+`cell_index` for both mesh rows fixes exactly four checkerboard register bytes;
+all other candidate bytes and relocation records are unchanged. Sharing only
+a fresh row counter is neutral.
+
+The independent encoded audit retains **24 unequal literal bytes**: two
+interpolation SIB bytes and the pivot-receiver schedule. All 28 local branches
+and five terminal padding bytes are verified; 62 of 63 references are strictly
+positional. The complete body remains partial.
+
+See the [current report and replay commands](../../loop-circle-owners-20260921.md).
+Older measurements and source-bound checkers below belong to their recorded
+epochs and do not supersede this result.
+
 ## 2026-09-11: mesh index and vector owners
 
 Current measurement: **84.25692695% → 93.07304786%**, **792/796

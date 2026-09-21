@@ -1,5 +1,23 @@
 # `initialize_looptheloop_path_template_pair` starter
 
+## 2026-09-21: radius, bank and mesh ownership
+
+Current verified result: **95.21165857% → 99.58391123%**, **720 → 721/721
+instructions**, prefix **159 → 230**, and **49 clean positional references**.
+Radius-parameter reuse, shared mesh counters, branch-local lateral values,
+even-first parity and one complete per-bank orientation operation recover the
+native mesh tail. The primary bank remains a live field reference.
+
+An independent encoded audit leaves **26 literal bytes**: four commuted SIB
+bytes, secondary Identity receiver preparation and the primary basis-right
+load/store schedule. All 28 local branches and ten terminal padding bytes are
+verified. The **1,574-byte / 463-instruction** tail from offset 1056 is exact,
+but the complete body remains partial.
+
+See the [current report and replay commands](../../loop-circle-owners-20260921.md)
+for full controls, byte captures and reversals. Measurements below are
+historical and do not supersede this source epoch.
+
 ## 2026-09-11: sample progress, mesh vectors and UV dispatch
 
 Materializing the selected skeleton variant is raw-byte neutral. Recovering
