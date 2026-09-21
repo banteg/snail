@@ -427,3 +427,17 @@ and 46 clean references remain unchanged.
 69.74% baseline. No source change is retained. The Twister result does not
 transfer uniformly across this family; these receipts describe only the
 examined aggregate and lateral lifetimes.
+
+## 2026-09-21 bank and mesh value ownership
+
+The [Cage2/LoopBow campaign](../../cage-loopbow-owners-20260921.md) improves
+Cage2 from 82.96068% to **99.38272%**, restores **648/648** instructions,
+and advances the normalized prefix from 10 to **538**, with all 46 references
+clean. Retained changes are a caller-local reference to the live primary bank,
+direct typed sample access and vector arithmetic in the mesh, a common face
+index, native even-parity polarity, and inline lateral expressions. No helper,
+compiler/profile, ABI, or shared-header change is retained.
+
+Independent byte checks leave **18 literal mismatches**: fourteen SIB operand
+orders and four parity register bytes. Every local branch matches literally;
+all reference instructions are positional. The full body is still partial.

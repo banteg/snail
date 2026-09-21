@@ -235,9 +235,9 @@ void cRPath::initialize_loopbow_path_template_pair(
             {
                 do
                 {
-                    double lateral = (float)i - (float)width_cells * 0.5f;
                     if (row != segment_count)
                     {
+                        double lateral = (float)i - (float)width_cells * 0.5f;
                         Vector3 lateral_offset =
                             primary_samples[row].transform.basis_right * lateral;
                         Vector3 point =
@@ -247,12 +247,12 @@ void cRPath::initialize_loopbow_path_template_pair(
                     }
                     else
                     {
+                        double lateral = (float)i - (float)width_cells * 0.5f;
                         Vector3 lateral_offset =
                             primary_samples[row - 1].transform.basis_right * lateral;
-                        Vector3 endpoint(primary_samples[row - 1].transform.position.x,
-                                         primary_samples[row - 1].transform.position.y,
-                                         primary_samples[row - 1].transform.position.z +
-                                             1.0f);
+                        Vector3 endpoint =
+                            primary_samples[row - 1].transform.position +
+                            Vector3(0.0f, 0.0f, 1.0f);
                         Vector3 point = endpoint + lateral_offset;
                         int vertex_index = i + row * (width_cells + 1);
                         vertices[vertex_index] = point;
@@ -267,32 +267,32 @@ void cRPath::initialize_loopbow_path_template_pair(
     int segment = 0;
     if (segment_count > 0) {
         do {
-            cell_index = 0;
+            i = 0;
             if (width_cells > 0) {
                 float v0 = (float)(segment % 8) * 0.125f;
                 float v1 = (float)(segment % 8 + 1) * 0.125f;
                 do {
                     int side = 0;
-                    int next_cell = cell_index + 1;
-                    float u0 = (float)cell_index * 0.125f;
-                    float u1 = (float)(cell_index + 1) * 0.125f;
+                    int next_cell = i + 1;
+                    float u0 = (float)i * 0.125f;
+                    float u1 = (float)(i + 1) * 0.125f;
                     do {
                         int face_offset =
                             side
-                            + 2 * (cell_index + segment * width_cells);
+                            + 2 * (i + segment * width_cells);
                         if (side == 0) {
                             facequads[face_offset].header_word = 0;
                             facequads[face_offset].vertex_0 =
-                                cell_index + segment * (width_cells + 1);
+                                i + segment * (width_cells + 1);
                             facequads[face_offset].vertex_1 =
-                                segment * (width_cells + 1) + cell_index + 1;
+                                segment * (width_cells + 1) + i + 1;
                             facequads[face_offset].vertex_2 =
                                 (segment + 1) * (width_cells + 1)
-                                + cell_index + 1;
+                                + i + 1;
                             facequads[face_offset].vertex_3 =
-                                cell_index + (segment + 1) * (width_cells + 1);
+                                i + (segment + 1) * (width_cells + 1);
 
-                            if (((cell_index ^ segment) & 1) == 0) {
+                            if (((i ^ segment) & 1) == 0) {
                                 facequads[face_offset].texture_ref =
                                     g_texture_refs.Add(
                                         texture_a, 0, 0);
@@ -304,16 +304,16 @@ void cRPath::initialize_loopbow_path_template_pair(
                         } else {
                             facequads[face_offset].header_word = 0;
                             facequads[face_offset].vertex_0 =
-                                segment * (width_cells + 1) + cell_index + 1;
+                                segment * (width_cells + 1) + i + 1;
                             facequads[face_offset].vertex_1 =
-                                cell_index + segment * (width_cells + 1);
+                                i + segment * (width_cells + 1);
                             facequads[face_offset].vertex_2 =
-                                cell_index + (segment + 1) * (width_cells + 1);
+                                i + (segment + 1) * (width_cells + 1);
                             facequads[face_offset].vertex_3 =
                                 (segment + 1) * (width_cells + 1)
-                                + cell_index + 1;
+                                + i + 1;
 
-                            if (((cell_index ^ segment) & 1) == 0) {
+                            if (((i ^ segment) & 1) == 0) {
                                 facequads[face_offset].texture_ref =
                                     g_texture_refs.Add(
                                         texture_b, 0, 0);
@@ -344,8 +344,8 @@ void cRPath::initialize_loopbow_path_template_pair(
                         }
                         ++side;
                     } while (side < 2);
-                    cell_index = next_cell;
-                } while (cell_index < width_cells);
+                    i = next_cell;
+                } while (i < width_cells);
             }
             ++segment;
         } while (segment < segment_count);

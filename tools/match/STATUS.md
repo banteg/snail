@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**620/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **193081/299952** bytes (**64.37%**) are proof-grade, and overall fuzzy is **94.79%**.
+**620/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **193081/299952** bytes (**64.37%**) are proof-grade, and overall fuzzy is **94.98%**.
 
 **114/120** platform helpers matched, **120/120** have a scratch, **17633/23008** bytes (**76.64%**) are proof-grade, and overall fuzzy is **96.81%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -10,9 +10,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**42** non-exact scratch-backed functions hold **10174 fuzzy-gap bytes**. The top 5 hold **68.1%** of that gap; the top 10 hold **82.1%**.
+**42** non-exact scratch-backed functions hold **9597 fuzzy-gap bytes**. The top 5 hold **72.2%** of that gap; the top 10 hold **83.7%**.
 
-Current-baseline experiments cover **9 functions / 827 gap bytes**; **33 / 9347** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **9 functions / 827 gap bytes**; **33 / 8770** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -23,33 +23,33 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 3 | update_subgame | 733 | semantic-complete | analysis | historical-only | 0/18 | metric-tradeoffs,historical-only,stale-dependencies |
 | 4 | populate_runtime_track_cells_from_segments | 701 | semantic-complete | analysis | historical-only | 0/150 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 5 | initialize_worm_path_template_pair | 521 | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 6 | initialize_cage2_path_template_pair | 414 | semantic-complete | analysis | historical-only | 0/20 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 7 | initialize_halfpipe_path_template_pair | 332 | semantic-complete | analysis | current-active | 1/26 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
-| 8 | build_subgame_level | 296 | semantic-complete | analysis | historical-only | 0/21 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 9 | initialize_loopbow_path_template_pair | 204 | semantic-complete | analysis | historical-only | 0/17 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 10 | initialize_p_path_template_pair | 178 | semantic-complete | analysis | historical-only | 0/24 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 11 | set_snail_weapon | 155 | semantic-complete | analysis | historical-only | 0/11 | repeated-variants,historical-only,stale-dependencies |
-| 12 | initialize_supertramp_path_template_pair | 144 | semantic-complete | analysis | current-active | 1/23 | repeated-variants,repeated-specs,metric-tradeoffs,stale-dependencies |
-| 13 | initialize_loading_screen | 131 | semantic-complete | analysis | historical-only | 0/8 | variant-errors,historical-only,stale-dependencies |
-| 14 | initialize_looptheloop_path_template_pair | 126 | semantic-complete | analysis | current-active | 1/16 | repeated-variants,metric-tradeoffs,stale-dependencies |
-| 15 | initialize_intro_screen | 123 | semantic-complete | analysis | historical-only | 0/13 | repeated-variants,variant-errors,historical-only,stale-dependencies |
-| 16 | register_font_texture_sheet | 121 | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
-| 17 | place_challenge_parcels_on_track | 116 | semantic-complete | analysis,references | historical-only | 0/9 | historical-only,stale-dependencies |
-| 18 | update_frontend_widget_interaction | 112 | semantic-complete | analysis,references | historical-only | 0/16 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 19 | initialize_toad_path_template_pair | 110 | semantic-complete | analysis | historical-only | 0/67 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 20 | initialize_turnunder_path_template_pair | 100 | semantic-complete | analysis | current-active | 1/38 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
-| 21 | sample_smtrack_heightmap | 76 | semantic-complete | analysis | historical-only | 0/7 | repeated-variants,historical-only,stale-dependencies |
-| 22 | update_track_attachment_follow_state | 76 | semantic-complete | analysis | historical-only | 0/24 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 23 | add_object_edge | 66 | semantic-complete | analysis,references | historical-only | 0/16 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 24 | initialize_hill_valley_path_template_pair | 59 | semantic-complete | analysis | current-active | 2/41 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
-| 25 | select_level_track_texture_set | 39 | semantic-complete | analysis,references | historical-only | 0/9 | variant-errors,historical-only,stale-dependencies |
-| 26 | try_enter_track_attachment_from_swept_motion | 34 | semantic-complete | analysis | historical-only | 0/12 | historical-only,stale-dependencies |
-| 27 | release_snail_weapons | 31 | semantic-complete | analysis | current-active | 2/16 | variant-errors,stale-dependencies |
-| 28 | set_snail_jetpack | 27 | semantic-complete | analysis | historical-only | 0/9 | repeated-variants,historical-only,stale-dependencies |
-| 29 | create_golb | 20 | semantic-complete | analysis | historical-only | 0/24 | variant-errors,historical-only,stale-dependencies |
-| 30 | initialize_tip | 20 | semantic-complete | analysis | current-active | 1/15 | repeated-variants,stale-dependencies |
-| 31 | border_input_text | 20 | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
-| 32 | firework_shoot | 19 | semantic-complete | analysis | historical-only | 0/11 | repeated-variants,historical-only,stale-dependencies |
+| 6 | initialize_halfpipe_path_template_pair | 332 | semantic-complete | analysis | current-active | 1/26 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
+| 7 | build_subgame_level | 296 | semantic-complete | analysis | historical-only | 0/21 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 8 | initialize_p_path_template_pair | 178 | semantic-complete | analysis | historical-only | 0/24 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 9 | set_snail_weapon | 155 | semantic-complete | analysis | historical-only | 0/11 | repeated-variants,historical-only,stale-dependencies |
+| 10 | initialize_supertramp_path_template_pair | 144 | semantic-complete | analysis | current-active | 1/23 | repeated-variants,repeated-specs,metric-tradeoffs,stale-dependencies |
+| 11 | initialize_loading_screen | 131 | semantic-complete | analysis | historical-only | 0/8 | variant-errors,historical-only,stale-dependencies |
+| 12 | initialize_looptheloop_path_template_pair | 126 | semantic-complete | analysis | current-active | 1/16 | repeated-variants,metric-tradeoffs,stale-dependencies |
+| 13 | initialize_intro_screen | 123 | semantic-complete | analysis | historical-only | 0/13 | repeated-variants,variant-errors,historical-only,stale-dependencies |
+| 14 | register_font_texture_sheet | 121 | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
+| 15 | place_challenge_parcels_on_track | 116 | semantic-complete | analysis,references | historical-only | 0/9 | historical-only,stale-dependencies |
+| 16 | update_frontend_widget_interaction | 112 | semantic-complete | analysis,references | historical-only | 0/16 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 17 | initialize_toad_path_template_pair | 110 | semantic-complete | analysis | historical-only | 0/67 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 18 | initialize_turnunder_path_template_pair | 100 | semantic-complete | analysis | current-active | 1/38 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
+| 19 | sample_smtrack_heightmap | 76 | semantic-complete | analysis | historical-only | 0/7 | repeated-variants,historical-only,stale-dependencies |
+| 20 | update_track_attachment_follow_state | 76 | semantic-complete | analysis | historical-only | 0/24 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 21 | add_object_edge | 66 | semantic-complete | analysis,references | historical-only | 0/16 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 22 | initialize_hill_valley_path_template_pair | 59 | semantic-complete | analysis | current-active | 2/41 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,stale-dependencies |
+| 23 | select_level_track_texture_set | 39 | semantic-complete | analysis,references | historical-only | 0/9 | variant-errors,historical-only,stale-dependencies |
+| 24 | try_enter_track_attachment_from_swept_motion | 34 | semantic-complete | analysis | historical-only | 0/12 | historical-only,stale-dependencies |
+| 25 | release_snail_weapons | 31 | semantic-complete | analysis | current-active | 2/16 | variant-errors,stale-dependencies |
+| 26 | set_snail_jetpack | 27 | semantic-complete | analysis | historical-only | 0/9 | repeated-variants,historical-only,stale-dependencies |
+| 27 | initialize_loopbow_path_template_pair | 26 | semantic-complete | analysis | historical-only | 0/19 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 28 | create_golb | 20 | semantic-complete | analysis | historical-only | 0/24 | variant-errors,historical-only,stale-dependencies |
+| 29 | initialize_tip | 20 | semantic-complete | analysis | current-active | 1/15 | repeated-variants,stale-dependencies |
+| 30 | border_input_text | 20 | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
+| 31 | firework_shoot | 19 | semantic-complete | analysis | historical-only | 0/11 | repeated-variants,historical-only,stale-dependencies |
+| 32 | initialize_cage2_path_template_pair | 15 | semantic-complete | analysis | historical-only | 0/22 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 33 | initialize_star_field | 14 | semantic-complete | analysis | historical-only | 0/21 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 34 | update_golb_ai | 13 | semantic-complete | analysis | historical-only | 0/34 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 35 | explode_slug_hazard | 11 | semantic-complete | analysis | historical-only | 0/20 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
@@ -687,7 +687,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ✅ | attach_render_camera_source | 0x44e900 | 32 | 6/6 | 100.00% | 6/6 | - |  | boundary |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 
-## Near Match (95-99.99%) (20)
+## Near Match (95-99.99%) (22)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -703,16 +703,18 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2752 | 726/726 | 97.25% | 194/726 | 65 ok |  | core |
 | 🚧 | traverse_path_follow_golb | 0x4217b0 | 1552 | 425/425 | 99.29% | 96/425 | 7 ok |  | core |
 | 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2496 | 686/687 | 95.99% | 105/687 | 45 ok |  | core |
+| 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2944 | 796/796 | 99.12% | 336/796 | 63 ok |  | core |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 199/204 | 95.78% | 16/204 | 47 ok |  | core |
 | 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2432 | 661/663 | 95.47% | 89/663 | 33 ok |  | core |
 | 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2448 | 668/668 | 97.60% | 21/668 | 41 ok |  | core |
+| 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 2432 | 648/648 | 99.38% | 538/648 | 46 ok |  | core |
 | 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1344 | 440/440 | 99.32% | 408/440 | 74 ok |  | boundary |
 | 🚧 | initialize_star_field | 0x434310 | 864 | 247/247 | 98.38% | 126/247 | 26 ok |  | core |
 | 🚧 | explode_slug_hazard | 0x43f680 | 560 | 147/147 | 97.96% | 79/147 | 32 ok |  | core |
 | 🚧 | firework_shoot | 0x441dd0 | 400 | 103/103 | 95.15% | 78/103 | 21 ok |  | core |
 | 🚧 | initialize_tip | 0x448a40 | 512 | 154/154 | 96.10% | 23/154 | 27 ok |  | core |
 
-## High Progress (80-94.99%) (20)
+## High Progress (80-94.99%) (18)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -723,8 +725,6 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1936 | 550/552 | 92.56% | 45/552 | 36 ok |  | core |
 | 🚧 | initialize_p_path_template_pair | 0x425a40 | 2496 | 678/679 | 92.85% | 6/679 | 41 ok |  | core |
 | 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 706/707 | 87.19% | 137/707 | 55 ok |  | core |
-| 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2944 | 792/796 | 93.07% | 22/796 | 63 ok |  | core |
-| 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 2432 | 649/648 | 82.96% | 10/648 | 46 ok |  | core |
 | 🚧 | add_object_edge | 0x4305a0 | 784 | 225/227 | 91.59% | 15/227 | 3 unaudited, 34 ok |  | core |
 | 🚧 | switch_track_mirror | 0x435e60 | 80 | 27/30 | 91.23% | 20/30 | 3 ok |  | core |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5056 | 1243/1246 | 86.13% | 76/1246 | 165 ok |  | core |

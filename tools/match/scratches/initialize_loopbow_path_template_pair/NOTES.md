@@ -403,3 +403,17 @@ ownership. Terminal `Vector3::operator+` remains byte-neutral at **74.31%**,
 792/796 instructions, prefix 10/796, with all 63 references clean. Ordinary
 addition instead falls to **74.18%**. The retained component forms preserve
 the closer post-face allocation.
+
+## 2026-09-21 coupled terminal point and mesh counters
+
+The [Cage2/LoopBow campaign](../../cage-loopbow-owners-20260921.md) improves
+LoopBow from 93.07305% to **99.12060%**, restores **796/796** instructions,
+and advances the normalized prefix from 22 to **336**, with 63 clean
+references. The terminal endpoint uses vector addition; lateral values stay
+inside the two vertex branches; face columns reuse the vertex-column counter.
+All three changes are needed for the retained gain.
+
+Independent byte checks retain **28 unequal bytes** after aligning each
+relocation to its actual native/candidate instruction. The residuals are two
+interpolation SIB encodings, pivot preparation scheduling, and parity register
+roles. All 28 local branches match literally. This remains a partial body.

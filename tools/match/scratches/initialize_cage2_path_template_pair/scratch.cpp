@@ -71,17 +71,21 @@ void cRPath::initialize_cage2_path_template_pair(int width_cells_, char *texture
             ->special_scalar = 0.0f;
         ((AttachmentSample *)((char *)primary_samples + curve_sample_offset))
             ->lateral_scale = 1.0f;
-        ((AttachmentSample *)((char *)primary_samples + curve_sample_offset))
-            ->transform.Identity();
-        ((AttachmentSample *)((char *)primary_samples + curve_sample_offset))
-            ->transform.position.x =
-            ((AttachmentSample *)((char *)primary_samples + curve_sample_offset))
-                ->center_x;
-        ((AttachmentSample *)((char *)primary_samples + curve_sample_offset))
-            ->transform.position.y = 0.0f;
-        float sample_z = (float)i;
-        ((AttachmentSample *)((char *)primary_samples + curve_sample_offset))
-            ->transform.position.z = sample_z;
+        float sample_z;
+        {
+            AttachmentSample *const &primary_bank = primary_samples;
+            ((AttachmentSample *)((char *)primary_bank + curve_sample_offset))
+                ->transform.Identity();
+            ((AttachmentSample *)((char *)primary_bank + curve_sample_offset))
+                ->transform.position.x =
+                ((AttachmentSample *)((char *)primary_bank + curve_sample_offset))
+                    ->center_x;
+            ((AttachmentSample *)((char *)primary_bank + curve_sample_offset))
+                ->transform.position.y = 0.0f;
+            sample_z = (float)i;
+            ((AttachmentSample *)((char *)primary_bank + curve_sample_offset))
+                ->transform.position.z = sample_z;
+        }
 
         ((AttachmentSample *)((char *)secondary_samples + curve_sample_offset))
             ->transform.Identity();
@@ -209,34 +213,26 @@ void cRPath::initialize_cage2_path_template_pair(int width_cells_, char *texture
         int column = 0;
         for (; column <= width_cells; ++column)
         {
-            double lateral = (float)column - (float)width_cells * 0.5f;
-            TransformMatrix *transform = &primary_samples[0].transform;
             if (row != segment_count)
             {
-                transform = (TransformMatrix *)((char *)transform + mesh_cursor);
-                Vector3 lateral_offset = transform->basis_right * lateral;
-                Vector3 generated_position(transform->position.x + lateral_offset.x,
-                                           transform->position.y + lateral_offset.y,
-                                           transform->position.z + lateral_offset.z);
+                Vector3 lateral_offset =
+                    primary_samples[row].transform.basis_right *
+                    ((float)column - (float)width_cells * 0.5f);
+                Vector3 generated_position =
+                    lateral_offset + primary_samples[row].transform.position;
                 Vector3 *vertex = &vertices[column + row * (width_cells + 1)];
                 *vertex = generated_position;
             }
             else
             {
-                transform = (TransformMatrix *)((char *)transform + mesh_cursor);
-                TransformMatrix *previous =
-                    (TransformMatrix *)((char *)transform - sizeof(AttachmentSample));
-                Vector3 lateral_offset = previous->basis_right * lateral;
-                Vector3 endpoint(previous->position.x, previous->position.y,
-                                 previous->position.z + 1.0f);
-                Vector3 generated_position(endpoint.x + lateral_offset.x,
-                                           endpoint.y + lateral_offset.y,
-                                           endpoint.z + lateral_offset.z);
+                Vector3 generated_position =
+                    (primary_samples[row - 1].transform.position + Vector3(0.0f, 0.0f, 1.0f)) +
+                    (primary_samples[row - 1].transform.basis_right *
+                     ((float)column - (float)width_cells * 0.5f));
                 Vector3 *vertex = &vertices[column + row * (width_cells + 1)];
                 *vertex = generated_position;
             }
         }
-        mesh_cursor += sizeof(AttachmentSample);
     }
 
     mesh_cursor = 0;
@@ -255,72 +251,68 @@ void cRPath::initialize_cage2_path_template_pair(int width_cells_, char *texture
                 float u1 = (float)(width_cells_ + 1) * 0.125f;
                 for (int face_index = 0; face_index < 2; ++face_index)
                 {
-                    cRFaceQuad *face;
+                    int face_offset = 2 * width_cells_ + 2 * mesh_cursor * width_cells + face_index;
                     if (face_index == 0)
                     {
-                        face = &facequads[2 * width_cells_ +
-                                          2 * mesh_cursor * width_cells + face_index];
-                        face->header_word = 0;
-                        face->vertex_0 =
+                        facequads[face_offset].header_word = 0;
+                        facequads[face_offset].vertex_0 =
                             width_cells_ +
                             mesh_cursor * ((unsigned short)width_cells + 1);
-                        face->vertex_1 =
+                        facequads[face_offset].vertex_1 =
                             mesh_cursor * ((unsigned short)width_cells + 1) +
                             width_cells_ + 1;
-                        face->vertex_2 =
+                        facequads[face_offset].vertex_2 =
                             (mesh_cursor + 1) * ((unsigned short)width_cells + 1) +
                             width_cells_ + 1;
-                        face->vertex_3 =
+                        facequads[face_offset].vertex_3 =
                             width_cells_ +
                             (mesh_cursor + 1) * ((unsigned short)width_cells + 1);
-                        if ((width_cells_ ^ mesh_cursor) & 1)
-                            face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);
+                        if (((width_cells_ ^ mesh_cursor) & 1) == 0)
+                            facequads[face_offset].texture_ref = g_texture_refs.Add(texture_a, 0, 0);
                         else
-                            face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);
+                            facequads[face_offset].texture_ref = g_texture_refs.Add(texture_a, 0, 0);
                     }
                     else
                     {
-                        face = &facequads[2 * width_cells_ +
-                                          2 * mesh_cursor * width_cells + face_index];
-                        face->header_word = 0;
-                        face->vertex_0 =
+                        facequads[face_offset].header_word = 0;
+                        facequads[face_offset].vertex_0 =
                             mesh_cursor * ((unsigned short)width_cells + 1) +
                             width_cells_ + 1;
-                        face->vertex_1 =
+                        facequads[face_offset].vertex_1 =
                             width_cells_ +
                             mesh_cursor * ((unsigned short)width_cells + 1);
-                        face->vertex_2 =
+                        facequads[face_offset].vertex_2 =
                             width_cells_ +
                             (mesh_cursor + 1) * ((unsigned short)width_cells + 1);
-                        face->vertex_3 =
+                        facequads[face_offset].vertex_3 =
                             (mesh_cursor + 1) * ((unsigned short)width_cells + 1) +
                             width_cells_ + 1;
-                        if ((width_cells_ ^ mesh_cursor) & 1)
-                            face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);
+                        if (((width_cells_ ^ mesh_cursor) & 1) == 0)
+                            facequads[face_offset].texture_ref = g_texture_refs.Add(texture_b, 0, 0);
                         else
-                            face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);
+                            facequads[face_offset].texture_ref = g_texture_refs.Add(texture_b, 0, 0);
                     }
                     if (face_index == 0)
                     {
-                        face->uv[0].u = u0;
-                        face->uv[0].v = v0;
-                        face->uv[1].u = u1;
-                        face->uv[1].v = v0;
-                        face->uv[2].u = u1;
-                        face->uv[2].v = v1;
-                        face->uv[3].u = u0;
-                        face->uv[3].v = v1;
+                        facequads[face_offset].uv[0].u = u0;
+                        facequads[face_offset].uv[0].v = v0;
+                        facequads[face_offset].uv[1].u = u1;
+                        facequads[face_offset].uv[1].v = v0;
+                        facequads[face_offset].uv[2].u = u1;
+                        facequads[face_offset].uv[2].v = v1;
+                        facequads[face_offset].uv[3].u = u0;
+                        facequads[face_offset].uv[3].v = v1;
                     }
                     else
                     {
-                        face->uv[0].u = u1;
-                        face->uv[0].v = v0;
-                        face->uv[1].u = u0;
-                        face->uv[1].v = v0;
-                        face->uv[2].u = u0;
-                        face->uv[2].v = v1;
-                        face->uv[3].u = u1;
-                        face->uv[3].v = v1;
+                        facequads[face_offset].uv[0].u = u1;
+                        facequads[face_offset].uv[0].v = v0;
+                        facequads[face_offset].uv[1].u = u0;
+                        facequads[face_offset].uv[1].v = v0;
+                        facequads[face_offset].uv[2].u = u0;
+                        facequads[face_offset].uv[2].v = v1;
+                        facequads[face_offset].uv[3].u = u1;
+                        facequads[face_offset].uv[3].v = v1;
                     }
                 }
                 width_cells_ = next_column;
