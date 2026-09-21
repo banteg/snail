@@ -33,9 +33,9 @@ static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *te
             {
                 do
                 {
-                    double lateral = (float)column - (float)path->width_cells * 0.5f;
                     if (row != path->segment_count)
                     {
+                        double lateral = (float)column - (float)path->width_cells * 0.5f;
                         Vector3 lateral_offset =
                             ((PathAttachmentSample *)((char *)path->primary_samples +
                                                       sample_offset))
@@ -50,6 +50,7 @@ static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *te
                     }
                     else
                     {
+                        double lateral = (float)column - (float)path->width_cells * 0.5f;
                         Vector3 generated_position =
                             (((PathAttachmentSample *)((char *)path->primary_samples +
                                                        sample_offset))[-1]

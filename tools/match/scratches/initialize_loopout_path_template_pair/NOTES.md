@@ -1,3 +1,14 @@
+# LoopOut: normalized exact, one literal byte open (2026-09-21)
+
+The current source matches all 718 normalized instructions and 52 strict
+positional references. Reusing the radius parameter and row/column counters,
+with branch-local lateral values, fixes eight ordinary bytes without changing
+any other candidate byte. The 2,615-byte body still differs at offset 745:
+native SIB `08`, candidate `01`. This is not encoded-body exact.
+
+See the [coupled controls, independent proof and replay](../../mesh-owner-frontier-20260921.md).
+All measurements below are historical.
+
 # `initialize_loopout_path_template_pair` starter
 
 ## 2026-09-12 mesh and storage controls

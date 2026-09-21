@@ -1,3 +1,15 @@
+# LoopTheLoopW: mesh slots recovered (2026-09-21)
+
+Current result: **99.86577181%, 745/745 instructions**, prefix 335, with
+55 strict positional references. Keeping the radius in its parameter and
+sharing the row/column counters in the inlined mesh body fixes exactly six
+stack displacement bytes. Every other candidate byte remains unchanged.
+Six unequal body bytes remain: interpolation SIB bytes at 835/859 and the
+secondary rotation push/load swap at 1317–1320. This remains partial.
+
+See the [coupled source controls and independent proof](../../mesh-owner-frontier-20260921.md).
+All measurements below are historical.
+
 # `initialize_looptheloopw_path_template_pair` starter
 
 ## 2026-09-14 current result: 99.19%, still partial

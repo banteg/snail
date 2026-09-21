@@ -1,4 +1,15 @@
-## Current canonical source: orientation and counter owners (2026-09-11)
+## Current canonical source: branch-local lateral values (2026-09-21)
+
+Current result: **98.77862595%, 655/655 instructions**, prefix 22, with
+37 clean aligned references. Computing the lateral value inside each real
+vertex branch fixes all six mesh stack displacement bytes; every other raw
+candidate byte is unchanged. Header/receiver differences and eight later
+SIB bytes remain. No whole-function exactness is claimed.
+
+See the [source controls, native byte proof and replay](../../mesh-owner-frontier-20260921.md).
+All measurements below are historical.
+
+## Historical source: orientation and counter owners (2026-09-11)
 
 The canonical source improves **75.96302003% → 85.78016910%**, with
 **646/655** instructions, **37 clean aligned references**, and the native

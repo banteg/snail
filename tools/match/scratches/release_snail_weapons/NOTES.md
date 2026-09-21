@@ -1,5 +1,15 @@
 # cRSnail::ReleaseWeapons @ 0x442e40
 
+## 2026-09-21 ordinary component and direction ownership controls
+
+The canonical source remains **94.40%, 125/125 instructions**, prefix 15 and
+33 clean references. Complete vector, component-array, scalar-pair and in-place
+scaling controls, followed by first/third-channel isolation, add no retained
+improvement. No authored purpose for the previous diagnostic's redundant
+conversions was recovered. The [four-target receipt](../../mesh-owner-frontier-20260921.md)
+preserves these source recipes and measurements alongside three path-builder
+gains; these finite controls do not establish exhaustion.
+
 ## 2026-09-14 unpromoted vertical-precision diagnostic
 
 Canonical source remains at **94.40%, 125/125 instructions**, prefix 15 and

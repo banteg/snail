@@ -11,120 +11,6 @@ float Cos(float angle);
 
 typedef AttachmentSample PathAttachmentSample;
 
-static __forceinline void build_strip_mesh(
-    const int& width, const int& count, Object* const& mesh,
-    AttachmentSample* const& primary, char* texture_a, char* texture_b)
-{
-    mesh->RequestVertices((width + 1) * (count + 1));
-    mesh->RequestFaceQuads(2 * width * count);
-
-    Vector3* vertices = mesh->vertices;
-    cRFaceQuad* facequads = mesh->facequads;
-
-    int mesh_row;
-    int mesh_column;
-    int face_row;
-    int face_column;
-    int face_index;
-
-    for (mesh_row = 0; mesh_row <= count; ++mesh_row) {
-        for (mesh_column = 0; mesh_column <= width; ++mesh_column) {
-            if (mesh_row != count) {
-                double lateral =
-                    (float)mesh_column - (float)width * 0.5f;
-                Vector3 lateral_offset =
-                    primary[mesh_row].transform.basis_right * lateral;
-                Vector3 generated_position =
-                    primary[mesh_row].transform.position + lateral_offset;
-                Vector3* vertex =
-                    &vertices[mesh_column + mesh_row * (width + 1)];
-                *vertex = generated_position;
-            } else {
-                double lateral =
-                    (float)mesh_column - (float)width * 0.5f;
-                Vector3 lateral_offset =
-                    primary[mesh_row - 1].transform.basis_right * lateral;
-                Vector3 endpoint = primary[mesh_row - 1].transform.position
-                    + Vector3(0.0f, 0.0f, 1.0f);
-                Vector3 generated_position = endpoint + lateral_offset;
-                Vector3* vertex =
-                    &vertices[mesh_column + mesh_row * (width + 1)];
-                *vertex = generated_position;
-            }
-        }
-    }
-
-    for (face_row = 0; face_row < count; ++face_row) {
-        face_column = 0;
-        if (width > 0) {
-            float v0 = (float)(face_row % 8) * 0.125f;
-            float v1 = (float)(face_row % 8 + 1) * 0.125f;
-            int next_column;
-            do {
-                face_index = 0;
-                next_column = face_column + 1;
-                float u0 = (float)face_column * 0.125f;
-                float u1 = (float)(face_column + 1) * 0.125f;
-                for (; face_index < 2; ++face_index) {
-                    int face_array_index =
-                        face_index
-                        + 2 * (face_row * width + face_column);
-                    if (face_index == 0) {
-                        facequads[face_array_index].header_word = 0;
-                        facequads[face_array_index].vertex_0 = face_column + face_row * ((unsigned short)width + 1);
-                        facequads[face_array_index].vertex_1 = face_row * ((unsigned short)width + 1) + face_column + 1;
-                        facequads[face_array_index].vertex_2 =
-                            (face_row + 1) * ((unsigned short)width + 1) + face_column + 1;
-                        facequads[face_array_index].vertex_3 =
-                            face_column + (face_row + 1) * ((unsigned short)width + 1);
-                        if (((face_column ^ face_row) & 1) == 0)
-                            facequads[face_array_index].texture_ref =
-                                g_texture_refs.Add(texture_a, 0, 0);
-                        else
-                            facequads[face_array_index].texture_ref =
-                                g_texture_refs.Add(texture_a, 0, 0);
-                    } else {
-                        facequads[face_array_index].header_word = 0;
-                        facequads[face_array_index].vertex_0 = face_row * ((unsigned short)width + 1) + face_column + 1;
-                        facequads[face_array_index].vertex_1 = face_column + face_row * ((unsigned short)width + 1);
-                        facequads[face_array_index].vertex_2 =
-                            face_column + (face_row + 1) * ((unsigned short)width + 1);
-                        facequads[face_array_index].vertex_3 =
-                            (face_row + 1) * ((unsigned short)width + 1) + face_column + 1;
-                        if (((face_column ^ face_row) & 1) == 0)
-                            facequads[face_array_index].texture_ref =
-                                g_texture_refs.Add(texture_b, 0, 0);
-                        else
-                            facequads[face_array_index].texture_ref =
-                                g_texture_refs.Add(texture_b, 0, 0);
-                    }
-                    if (face_index == 0) {
-                        facequads[face_array_index].uv[0].u = u0;
-                        facequads[face_array_index].uv[0].v = v0;
-                        facequads[face_array_index].uv[1].u = u1;
-                        facequads[face_array_index].uv[1].v = v0;
-                        facequads[face_array_index].uv[2].u = u1;
-                        facequads[face_array_index].uv[2].v = v1;
-                        facequads[face_array_index].uv[3].u = u0;
-                        facequads[face_array_index].uv[3].v = v1;
-                    } else {
-                        facequads[face_array_index].uv[0].u = u1;
-                        facequads[face_array_index].uv[0].v = v0;
-                        facequads[face_array_index].uv[1].u = u0;
-                        facequads[face_array_index].uv[1].v = v0;
-                        facequads[face_array_index].uv[2].u = u0;
-                        facequads[face_array_index].uv[2].v = v1;
-                        facequads[face_array_index].uv[3].u = u1;
-                        facequads[face_array_index].uv[3].v = v1;
-                    }
-                }
-                face_column = next_column;
-            } while (next_column < width);
-        }
-    }
-
-}
-
 void cRPath::initialize_looptheloopw_path_template_pair(
     float curve_source, int width_cells_, bool side_exit,
     char* texture_a, char* texture_b, char* cap_texture)
@@ -150,7 +36,7 @@ void cRPath::initialize_looptheloopw_path_template_pair(
     segment_count = loop_segment_count;
     segment_count_f = (float)loop_segment_count;
     float curve_count_f = (float)curve_count;
-    float loop_radius = curve_count_f * 0.15915494f;
+    curve_source = curve_count_f * 0.15915494f;
     GetNodes();
     has_entry_mesh_transition = 1;
 
@@ -201,7 +87,7 @@ void cRPath::initialize_looptheloopw_path_template_pair(
 
     i = 0;
     if (curve_count > 0) {
-        float secondary_radius = loop_radius - 0.49000001f;
+        float secondary_radius = curve_source - 0.49000001f;
         do {
             int sample_index = i + 7;
             sample_f = (float)i;
@@ -221,9 +107,9 @@ void cRPath::initialize_looptheloopw_path_template_pair(
             primary_bank[sample_index].transform.position.x =
                 primary_bank[sample_index].center_x;
             primary_bank[sample_index].transform.position.z =
-                Sin(angle) * loop_radius + 7.0f;
+                Sin(angle) * curve_source + 7.0f;
             primary_bank[sample_index].transform.position.y =
-                loop_radius - Cos(angle) * loop_radius;
+                curve_source - Cos(angle) * curve_source;
 
             secondary_bank[sample_index].transform.Identity();
             secondary_bank[sample_index].transform.position.x =
@@ -231,13 +117,13 @@ void cRPath::initialize_looptheloopw_path_template_pair(
             secondary_bank[sample_index].transform.position.z =
                 Sin(angle) * secondary_radius + 7.0f;
             secondary_bank[sample_index].transform.position.y =
-                loop_radius - Cos(angle) * secondary_radius;
+                curve_source - Cos(angle) * secondary_radius;
 
             primary_bank[sample_index].transform.basis_right =
                 Vector3(1.0f, 0.0f, 0.0f);
             primary_bank[sample_index].transform.basis_up.x = 0.0f;
             primary_bank[sample_index].transform.basis_up.y =
-                loop_radius - primary_bank[sample_index].transform.position.y;
+                curve_source - primary_bank[sample_index].transform.position.y;
             primary_bank[sample_index].transform.basis_up.z =
                 7.0f - primary_bank[sample_index].transform.position.z;
             primary_bank[sample_index].transform.basis_up.Normalize();
@@ -250,7 +136,7 @@ void cRPath::initialize_looptheloopw_path_template_pair(
                 Vector3(1.0f, 0.0f, 0.0f);
             secondary_bank[sample_index].transform.basis_up.x = 0.0f;
             secondary_bank[sample_index].transform.basis_up.y =
-                loop_radius - secondary_bank[sample_index].transform.position.y;
+                curve_source - secondary_bank[sample_index].transform.position.y;
             secondary_bank[sample_index].transform.basis_up.z =
                 7.0f - secondary_bank[sample_index].transform.position.z;
             secondary_bank[sample_index].transform.basis_up.Normalize();
@@ -286,8 +172,111 @@ void cRPath::initialize_looptheloopw_path_template_pair(
     secondary_bank[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
     secondary_bank[segment_count - 1].delta_length = 1.0f;
 
-    build_strip_mesh(width_cells, segment_count, strip_mesh, primary_bank,
-                     texture_a, texture_b);
+    strip_mesh->RequestVertices((width_cells + 1) * (segment_count + 1));
+    strip_mesh->RequestFaceQuads(2 * width_cells * segment_count);
+
+    Vector3* vertices = strip_mesh->vertices;
+    cRFaceQuad* facequads = strip_mesh->facequads;
+
+    int row;
+    int column;
+    int face_index;
+
+    for (row = 0; row <= segment_count; ++row) {
+        for (column = 0; column <= width_cells; ++column) {
+            if (row != segment_count) {
+                double lateral =
+                    (float)column - (float)width_cells * 0.5f;
+                Vector3 lateral_offset =
+                    primary_bank[row].transform.basis_right * lateral;
+                Vector3 generated_position =
+                    primary_bank[row].transform.position + lateral_offset;
+                Vector3* vertex =
+                    &vertices[column + row * (width_cells + 1)];
+                *vertex = generated_position;
+            } else {
+                double lateral =
+                    (float)column - (float)width_cells * 0.5f;
+                Vector3 lateral_offset =
+                    primary_bank[row - 1].transform.basis_right * lateral;
+                Vector3 endpoint = primary_bank[row - 1].transform.position
+                    + Vector3(0.0f, 0.0f, 1.0f);
+                Vector3 generated_position = endpoint + lateral_offset;
+                Vector3* vertex =
+                    &vertices[column + row * (width_cells + 1)];
+                *vertex = generated_position;
+            }
+        }
+    }
+
+    for (row = 0; row < segment_count; ++row) {
+        column = 0;
+        if (width_cells > 0) {
+            float v0 = (float)(row % 8) * 0.125f;
+            float v1 = (float)(row % 8 + 1) * 0.125f;
+            int next_column;
+            do {
+                face_index = 0;
+                next_column = column + 1;
+                float u0 = (float)column * 0.125f;
+                float u1 = (float)(column + 1) * 0.125f;
+                for (; face_index < 2; ++face_index) {
+                    int face_array_index =
+                        face_index
+                        + 2 * (row * width_cells + column);
+                    if (face_index == 0) {
+                        facequads[face_array_index].header_word = 0;
+                        facequads[face_array_index].vertex_0 = column + row * ((unsigned short)width_cells + 1);
+                        facequads[face_array_index].vertex_1 = row * ((unsigned short)width_cells + 1) + column + 1;
+                        facequads[face_array_index].vertex_2 =
+                            (row + 1) * ((unsigned short)width_cells + 1) + column + 1;
+                        facequads[face_array_index].vertex_3 =
+                            column + (row + 1) * ((unsigned short)width_cells + 1);
+                        if (((column ^ row) & 1) == 0)
+                            facequads[face_array_index].texture_ref =
+                                g_texture_refs.Add(texture_a, 0, 0);
+                        else
+                            facequads[face_array_index].texture_ref =
+                                g_texture_refs.Add(texture_a, 0, 0);
+                    } else {
+                        facequads[face_array_index].header_word = 0;
+                        facequads[face_array_index].vertex_0 = row * ((unsigned short)width_cells + 1) + column + 1;
+                        facequads[face_array_index].vertex_1 = column + row * ((unsigned short)width_cells + 1);
+                        facequads[face_array_index].vertex_2 =
+                            column + (row + 1) * ((unsigned short)width_cells + 1);
+                        facequads[face_array_index].vertex_3 =
+                            (row + 1) * ((unsigned short)width_cells + 1) + column + 1;
+                        if (((column ^ row) & 1) == 0)
+                            facequads[face_array_index].texture_ref =
+                                g_texture_refs.Add(texture_b, 0, 0);
+                        else
+                            facequads[face_array_index].texture_ref =
+                                g_texture_refs.Add(texture_b, 0, 0);
+                    }
+                    if (face_index == 0) {
+                        facequads[face_array_index].uv[0].u = u0;
+                        facequads[face_array_index].uv[0].v = v0;
+                        facequads[face_array_index].uv[1].u = u1;
+                        facequads[face_array_index].uv[1].v = v0;
+                        facequads[face_array_index].uv[2].u = u1;
+                        facequads[face_array_index].uv[2].v = v1;
+                        facequads[face_array_index].uv[3].u = u0;
+                        facequads[face_array_index].uv[3].v = v1;
+                    } else {
+                        facequads[face_array_index].uv[0].u = u1;
+                        facequads[face_array_index].uv[0].v = v0;
+                        facequads[face_array_index].uv[1].u = u0;
+                        facequads[face_array_index].uv[1].v = v0;
+                        facequads[face_array_index].uv[2].u = u0;
+                        facequads[face_array_index].uv[2].v = v1;
+                        facequads[face_array_index].uv[3].u = u1;
+                        facequads[face_array_index].uv[3].v = v1;
+                    }
+                }
+                column = next_column;
+            } while (next_column < width_cells);
+        }
+    }
 
     CalcLengthZ();
     (void)side_exit;
