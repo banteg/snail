@@ -1,5 +1,16 @@
 # initialize_intro_screen @ 0x4191e0
 
+## 2026-09-21 image, glyph and final-motion operations
+
+Canonical source remains 93.38446793%, 522/521 instructions, prefix 88,
+with 66 clean references under the existing VC6.0 profile. Forty-seven source
+controls cover coupled dimension/count/end-pointer lifetimes, complete image
+and glyph operations, final-copy operations, and shared motion vectors.
+None improves the function. A shared-motion candidate preserves the score but
+changes four tail bytes, so it is not described as byte-neutral. Stack slots
+and the final velocity/file-owner register lifetime remain open. See the
+[controls and raw evidence](../../three-initializer-owners-20260921.md).
+
 ## 2026-09-09 native parser-call cleanup profile
 
 The unchanged source now uses `msvc6.0 /O2 /G5 /W3` and improves from

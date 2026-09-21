@@ -1,5 +1,16 @@
 # initialize_game_assets_and_world @ 0x40acf0
 
+## 2026-09-21 complete pool and overlay controls
+
+Canonical source remains 84.02662230%, 5,407/5,411 instructions, prefix 53,
+with 1,880 clean and two unaudited references. Forty new source controls test
+complete projectile operations, live vapour/rocket reads, neighboring counter
+reuse, and coupled overlay flag operations. Live vapour reads clear reference
+debt but lose whole-function agreement. A boolean linked-flag operation extends
+the prefix to 64 and approaches instruction-count parity, while changing the
+test shape and slightly reducing the overall score. No source is promoted.
+See the [bounded measurements and byte snapshots](../../three-initializer-owners-20260921.md).
+
 ## 2026-09-11 sentinel and indexed fringe recovery
 
 Current source: **84.02662230%**, **5,407/5,411 instructions**, exact prefix

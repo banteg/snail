@@ -1,5 +1,20 @@
 # initialize_tip
 
+## 2026-09-21 single-button definition value
+
+**87.66233766% → 96.10389610%**, still 154/154 instructions and prefix 23.
+The single-button branch now captures `button_definition` before constructing
+its call arguments. Widget slots retain their live member reads. A complete
+operation first exposed this value-versus-borrow distinction; the final local
+produces identical bytes and relocations without adding a helper.
+
+All 27 references now pass strict positional checks. The 119-byte region
+`[0x448bc8,0x448c3f)` has 36 byte-equal instructions after six audited
+relocations; every candidate byte outside body offsets `[382,511)` is unchanged.
+Thirteen literal bytes remain in alignment, two-button placement, and definition
+load scheduling. The full body is not encoded-exact. See the
+[controls, proof and replay](../../three-initializer-owners-20260921.md).
+
 ## 2026-09-09 live flag reads and alignment lifetime
 
 The retained source improves **84.42% to 87.66%**, keeps **154/154**

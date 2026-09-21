@@ -64,6 +64,7 @@ void cRTip::Init(cRTipData* definition_, int hide_disable_button)
             widget_disable->SetBelow(widget_main);
             widget_ok->SetBelow(widget_main);
         } else {
+            cRTipData* button_definition = definition;
             widget_ok->Init(
                 FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                     | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -73,7 +74,7 @@ void cRTip::Init(cRTipData* definition_, int hide_disable_button)
                 0.0f,
                 color.Set(1.0f, 1.0f, 1.0f, 1.0f),
                 2,
-                definition->anchor_x);
+                button_definition->anchor_x);
             widget_disable = 0;
             widget_ok->SetBelow(widget_main);
         }
