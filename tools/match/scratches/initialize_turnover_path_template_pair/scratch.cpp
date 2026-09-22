@@ -316,11 +316,12 @@ void cRPath::initialize_turnover_path_template_pair(float length, int width_cell
             float t = (float)curve_index;
             float angle = t * 6.2831855f / curve_segments_f;
 
-            ((AttachmentSample *)((char *)primary_samples + curve_sample_offset))
-                ->center_x = (primary_samples[endpoint_index].center_x -
-                              primary_samples[0].center_x) *
+            AttachmentSample* const& curve_samples = primary_samples;
+            ((AttachmentSample *)((char *)curve_samples + curve_sample_offset))
+                ->center_x = (curve_samples[endpoint_index].center_x -
+                              curve_samples[0].center_x) *
                                  t / curve_segments_f +
-                             primary_samples[0].center_x;
+                             curve_samples[0].center_x;
             ((AttachmentSample *)((char *)primary_samples + curve_sample_offset))
                 ->rotation_scalar_98 = -angle;
             ((AttachmentSample *)((char *)primary_samples + curve_sample_offset))

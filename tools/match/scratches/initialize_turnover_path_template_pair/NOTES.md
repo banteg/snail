@@ -1,5 +1,19 @@
 # initialize_turnover_path_template_pair
 
+## 2026-09-22 live interpolation-bank ownership
+
+The interpolation's shared live bank reference fixes exactly the endpoint-load
+SIB byte at offset **628**. All other extracted bytes and relocation records
+are unchanged. The encoded prefix grows **626 → 651 bytes**, while normalized
+agreement stays **100%, 671/671 instructions**, with **41 strict positional
+references**. The destination-store SIB at **653** remains different, so the
+complete body is still not encoded-exact.
+
+The [current receipt and independent checker](../../turnover-bank-20260922.md)
+record 67 source controls, the full reversal, all 25 literal local branches,
+the 2,433-byte body and 15 padding bytes. Measurements below describe earlier
+source epochs; their two-byte residual is superseded by this one-byte result.
+
 2026-09-11 current measurement: **78.125% → 100% normalized agreement**,
 **671/671 instructions**, all **41 strict same-position references** clean.
 The retained source recovers endpoint, face, lead and up-vector ownership and
