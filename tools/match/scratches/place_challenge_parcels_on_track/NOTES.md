@@ -1,5 +1,21 @@
 # `place_challenge_parcels_on_track` recovery notes
 
+## 2026-09-22 coupled collection and projection ownership
+
+Canonical source remains 81.395349%, 173/171 instructions, prefix zero, with
+33 clean and two unaudited reference entries. A complete projection operation
+borrowing the row's cell-pointer field, coupled with indexed candidate
+collection, yields an unpromoted 87.976540% diagnostic with 170/171 instructions.
+Its first 401 bytes / 108 instructions are independently exact, including 17
+relocations, 13 literal branches and eleven unmasked numeric member operands.
+VC6 derives the native candidate `parcel_set_id` cursor from indexed rows.
+
+The later projection cursor shifts from the row base to its position field,
+and the cell/path register lifetimes still differ. The full audit has 33 clean
+entries and one mismatch; no source or exact-match credit is promoted.
+The [receipt, byte proof and 66 replayed controls](../../survival-projection-owners-20260922.md)
+preserve this coupled source lead and its remaining limits.
+
 Target: `place_challenge_parcels_on_track @ 0x444240` (`thiscall`, 617 bytes, 171 instructions).
 
 This is the challenge/survival-mode parcel placer called by
