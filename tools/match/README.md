@@ -105,6 +105,8 @@ The [heightmap coordinate recovery](heightmap-coordinates-20260922.md) follows
 an assignment through the preserving compiler observer, then improves the
 sampler from 79.26% to 97.25%. Its remaining pointer-base encoding difference
 has a separate address/liveness proof and remains visibly partial.
+The [pointer-origin follow-up](heightmap-address-20260922.md) records the
+earlier instruction-selection difference and 53 replayed source controls.
 
 ## Setup
 

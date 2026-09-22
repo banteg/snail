@@ -35,6 +35,14 @@ the pair fields or changing their scope preserves the 96.33% intermediate
 metrics. Header-base, channel-owner and complete-average alternatives do not
 close the encoded residual. These are bounded controls, not source exhaustion.
 
+The [pointer-origin follow-up](../../heightmap-address-20260922.md) preserves
+53 controls under this recovered coordinate lifetime. The C2 observations
+show that header-base addressing selects a destructive addition before
+scheduling, while payload-base addressing keeps a separate LEA result. Both
+retain the pointer assignment; no tested sampling helper, channel cursor or
+address record recovers native's unbiased LEA. All controls and both traces
+were replayed. The canonical 97.25% source is unchanged.
+
 ## 2026-08-13 row ownership recovery
 
 The former 60.36% candidate left the bottom-up row expression inside the
