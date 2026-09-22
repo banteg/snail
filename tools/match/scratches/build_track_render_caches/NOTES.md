@@ -1,5 +1,22 @@
 # `build_track_render_caches` reconstruction notes
 
+## 2026-09-22 folded-call receiver correction
+
+The initial empty call belongs to the cache receiver. Native saves incoming
+ECX in EBX at `0x433225`, restores it with `mov ecx,ebx` at `0x43323e`,
+then calls the folded `ret` body at `0x407b50` from `0x433248`. No audio
+object is loaded. The scratch now declares that member on `SegmentCache`
+and calls it directly, removing its unrelated `AudioBackend` cast and include.
+`noop_runtime_ai` remains the shared-address compatibility spelling; the
+original cache member name is unknown.
+
+All extracted candidate bytes are unchanged. Relocation fields and destinations
+are also unchanged: only the member's decorated spelling and six bijective
+private label names differ. The result stays normalized 100%, 476/476
+instructions and 20 clean references, with the same one-byte SIB mismatch.
+This ownership correction adds no encoded-match credit. Full scratch checks
+and the refreshed source-compilation report preserve the existing match totals.
+
 ## 2026-09-11 inline-table certification
 
 The unchanged source now compares at **100%**, 476/476 code
@@ -31,7 +48,7 @@ The public member now reproduces the native `0x4c` frame and the following
 source-level behavior:
 
 - constructs the local packed white color, packs the supplied skirt color into
-  manager `+0x00`, and performs the initial no-op AI call;
+  manager `+0x00`, and performs the cache receiver's folded empty call;
 - scans `owner_subgame->runtime_row_count`, using `% 24` and `/ 24` to select a
   row within a cache group and a cache-row index;
 - clears five vertex and index counters and writes the row-base value into the

@@ -12,7 +12,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 **41** non-exact scratch-backed functions hold **9054 fuzzy-gap bytes**. The top 5 hold **76.5%** of that gap; the top 10 hold **86.4%**.
 
-Current-baseline experiments cover **9 functions / 377 gap bytes**; **32 / 8677** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **8 functions / 357 gap bytes**; **33 / 8697** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -42,7 +42,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 22 | release_snail_weapons | 31 | semantic-complete | analysis | current-active | 2/16 | variant-errors,stale-dependencies |
 | 23 | set_snail_jetpack | 27 | semantic-complete | analysis | historical-only | 0/9 | repeated-variants,historical-only,stale-dependencies |
 | 24 | create_golb | 20 | semantic-complete | analysis | historical-only | 0/24 | variant-errors,historical-only,stale-dependencies |
-| 25 | initialize_tip | 20 | semantic-complete | analysis | current-active | 1/15 | repeated-variants,stale-dependencies |
+| 25 | initialize_tip | 20 | semantic-complete | analysis | historical-only | 0/15 | repeated-variants,historical-only,stale-dependencies |
 | 26 | border_input_text | 20 | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
 | 27 | firework_shoot | 19 | semantic-complete | analysis | historical-only | 0/11 | repeated-variants,historical-only,stale-dependencies |
 | 28 | initialize_cage2_path_template_pair | 15 | semantic-complete | analysis | historical-only | 0/22 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |

@@ -3,7 +3,6 @@
 #include <string.h>
 #include <stddef.h>
 
-#include "audio_system.h"
 #include "fringe_object.h"
 #include "object_render_types.h"
 #include "subgame_runtime.h"
@@ -46,7 +45,7 @@ void SegmentCache::build_track_render_caches(tColour skirt_color)
     white_color.noop_this_constructor();
     skirt_color_bgra.operator=(skirt_color);
     *(int*)&white_color = -1;
-    ((AudioBackend*)this)->noop_runtime_ai();
+    noop_runtime_ai();
 
     row_index = 0;
     if (owner_subgame->runtime_row_count > 0) {

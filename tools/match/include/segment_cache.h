@@ -44,6 +44,9 @@ typedef char TrackRenderCacheSlot_must_be_0x3c[
 
 class SegmentCache {
 public:
+    // Folded empty member called with this cache at build entry. The original
+    // member name is unknown; this keeps the shared address's compatibility name.
+    void noop_runtime_ai();                            // @ 0x407b50
     void initialize_track_render_cache_manager();       // @ 0x433060
     void build_track_render_caches(tColour skirt_color); // @ 0x433220
     void update_track_render_cache_rows();              // @ 0x433b30
