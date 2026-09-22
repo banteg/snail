@@ -1,3 +1,9 @@
+## 2026-09-22 current source-context control
+
+Canonical, renamed isolated, native-predecessor, and available 43-member
+`Path.o` contexts produce identical extracted bytes. The 725/736-instruction
+partial remains. See the [frozen controls and replay](../../path-context-20260922.md).
+
 # initialize_worm_path_template_pair @ 0x420170
 
 Current recovery: semantic-complete with an open `analysis` residual.

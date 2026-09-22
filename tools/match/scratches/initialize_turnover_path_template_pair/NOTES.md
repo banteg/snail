@@ -1,3 +1,9 @@
+## 2026-09-22 current source-context control
+
+Canonical, renamed isolated, native-predecessor, and available 43-member
+`Path.o` contexts produce identical extracted bytes. The final SIB difference
+remains. See the [frozen controls and replay](../../path-context-20260922.md).
+
 # initialize_turnover_path_template_pair
 
 ## 2026-09-22 interpolation ordering follow-up

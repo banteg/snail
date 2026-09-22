@@ -96,6 +96,11 @@ every member's instructions and positional references, body-byte accounting,
 and the full native status for regressions. A context-dependent compiler result
 is an observation, not proof of the compiler's internal mechanism.
 
+The [current Path context controls](path-context-20260922.md) preserve all
+extracted bytes for LoopOut, Turnover, TurnoverDouble, and Worm in isolated,
+native-predecessor, and available 43-member contexts. These are bounded
+negative results; none of those contexts is registered as a recovered group.
+
 ## Setup
 
 The native image and compiler bundles are untracked. Download the canonical
