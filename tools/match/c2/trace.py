@@ -68,9 +68,9 @@ def metrics(config, object_path):
     )
     return {
         "ratio": result.ratio,
-        "target_instructions": len(result.target_lines),
-        "candidate_instructions": len(result.candidate_lines),
-        "prefix_instructions": result.prefix_instructions,
+        "target_instructions": result.target_instruction_count,
+        "candidate_instructions": result.candidate_instruction_count,
+        "prefix_instructions": result.instruction_prefix_count,
         "references_ok": result.masked_operand_audit.ok_count,
         "reference_problems": result.masked_operand_audit.problem_count,
         "exact": result.exact,

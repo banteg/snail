@@ -372,3 +372,21 @@ SIB only when both registers retain the DS default segment. That architecture-
 safe equivalence proves the already source-shaped `base + index` address here:
 focused matching is exactly 100.00% (475/475, prefix 475), with all 20
 references clean. The scratch source is unchanged.
+
+## 2026-09-22 complete encoded-body match
+
+Direct `runtime_cells[row_index][lane]` ownership combined with a subgame-pointer
+borrow for the pre-append fringe and position reads closes the remaining SIB
+byte. Post-call texture copying and fringe retirement reload `owner_subgame`,
+as native does. Either change alone leaves the old byte. Logical fringe indexing
+and correctly typed floating-point row-base writes preserve the match.
+
+The complete current extent is 1,552 bytes: 476 instructions in 1,532 code bytes,
+followed by five inline jump-table entries. All 20 positional instruction
+references, five table relocations and 36 literal local branches pass an
+independent audit. No bytes are excluded. The final raw candidate changes only
+offset 287 (`38` to `07`) from the previous source. Historical 475-instruction
+notes predate the current range accounting, which includes the alignment NOP.
+
+See [source controls and encoded proof](../../cache-cell-owners-20260922.md),
+including 74 replayed observations and nine corruption rejection controls.
