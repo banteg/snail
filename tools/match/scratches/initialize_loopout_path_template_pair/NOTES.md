@@ -1,3 +1,12 @@
+## 2026-09-22 preserving interpolation-order observation
+
+The local bank and a field-borrowed interpolation helper each leave one literal
+SIB byte, at 745 and 770 respectively. Two preserving compiler observations
+explain the tradeoff: with either captured pair of index trees, no single bank
+cost can produce native's endpoint-first and destination-second bank ordering.
+Seventy-six source controls compile without a full match. The canonical source
+is unchanged. See the [observations, byte audits and replay](../../loopout-address-order-20260922.md).
+
 ## 2026-09-22 current source-context control
 
 Canonical, renamed isolated, native-predecessor, and available 43-member

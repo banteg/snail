@@ -115,3 +115,14 @@ timestamp ignored. Run `uv run tools/match/c2/heightmap.py --out <new-directory>
 to repeat them. The [source and byte audit](../heightmap-coordinates-20260922.md)
 records the subsequent 97.25% partial; the compiler observation earns no exact
 credit and does not establish an original type name.
+
+## LoopOut: the two interpolation indices bound bank-only changes
+
+[`loopout.py`](loopout.py) checks and reproduces two preserving observations.
+The [complete evidence](../loopout-address-order-20260922.md) follows both
+address and value chains, independently audits both 2,615-byte bodies and
+retains 76 non-matching source controls. In each captured tree, native's two
+address orders would require one bank cost above the endpoint cost and below
+the smaller destination cost. Changing only that bank cannot satisfy both.
+This directs further source work toward the indices or separate ownership;
+it does not establish source exhaustion. Canonical LoopOut remains unchanged.
