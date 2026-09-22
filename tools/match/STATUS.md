@@ -10,9 +10,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**41** non-exact scratch-backed functions hold **9054 fuzzy-gap bytes**. The top 5 hold **76.5%** of that gap; the top 10 hold **86.4%**.
+**41** non-exact scratch-backed functions hold **9028 fuzzy-gap bytes**. The top 5 hold **76.5%** of that gap; the top 10 hold **86.3%**.
 
-Current-baseline experiments cover **8 functions / 357 gap bytes**; **33 / 8697** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **9 functions / 851 gap bytes**; **32 / 8176** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -22,7 +22,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 2 | update_subgoldy | 1289 | semantic-complete | analysis | historical-only | 0/16 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 3 | update_subgame | 733 | semantic-complete | analysis | historical-only | 0/18 | metric-tradeoffs,historical-only,stale-dependencies |
 | 4 | populate_runtime_track_cells_from_segments | 701 | semantic-complete | analysis | historical-only | 0/150 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 5 | initialize_worm_path_template_pair | 521 | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 5 | initialize_worm_path_template_pair | 494 | semantic-complete | analysis | current-active | 1/14 | repeated-variants,metric-tradeoffs,variant-errors,stale-dependencies |
 | 6 | build_subgame_level | 296 | semantic-complete | analysis | historical-only | 0/21 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 7 | initialize_p_path_template_pair | 178 | semantic-complete | analysis | historical-only | 0/24 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 8 | set_snail_weapon | 155 | semantic-complete | analysis | historical-only | 0/11 | repeated-variants,historical-only,stale-dependencies |
@@ -722,7 +722,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23072 | 5407/5411 | 84.03% | 53/5411 | 2 unaudited, 1880 ok |  | core |
 | 🚧 | initialize_loading_screen | 0x418b50 | 768 | 253/253 | 83.00% | 5/253 | 54 ok |  | core |
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1856 | 522/521 | 93.38% | 88/521 | 66 ok | msvc6.0 /O2 /G5 /W3 | core |
-| 🚧 | initialize_worm_path_template_pair | 0x420170 | 2768 | 725/736 | 81.18% | 0/736 | 37 ok |  | core |
+| 🚧 | initialize_worm_path_template_pair | 0x420170 | 2768 | 725/736 | 82.14% | 0/736 | 37 ok |  | core |
 | 🚧 | initialize_p_path_template_pair | 0x425a40 | 2496 | 678/679 | 92.85% | 6/679 | 41 ok |  | core |
 | 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 706/707 | 94.98% | 137/707 | 55 ok |  | core |
 | 🚧 | add_object_edge | 0x4305a0 | 784 | 225/227 | 91.59% | 15/227 | 3 unaudited, 34 ok |  | core |

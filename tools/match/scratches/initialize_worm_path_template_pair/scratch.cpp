@@ -75,69 +75,67 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
         ++exit_index;
     } while (exit_index - 20 < 4);
 
-    int middle_index = 0;
-    for (int i = 4; i < 20; ++i) {
-        primary_samples[i].center_x = 0.0f;
-        primary_samples[i].rotation_scalar_98 = 0.0f;
-        primary_samples[i].rotation_scalar_94 = 0.0f;
-        primary_samples[i].special_scalar = 0.0f;
-        primary_samples[i].lateral_scale = 1.0f;
-        primary_samples[i].transform.Identity();
-        primary_samples[i].transform.position.x = primary_samples[i].center_x;
+    for (int middle_index = 0; middle_index < 16; ++middle_index) {
+        int current_sample = middle_index + 4;
+        primary_samples[current_sample].center_x = 0.0f;
+        primary_samples[current_sample].rotation_scalar_98 = 0.0f;
+        primary_samples[current_sample].rotation_scalar_94 = 0.0f;
+        primary_samples[current_sample].special_scalar = 0.0f;
+        primary_samples[current_sample].lateral_scale = 1.0f;
+        primary_samples[current_sample].transform.Identity();
+        primary_samples[current_sample].transform.position.x = primary_samples[current_sample].center_x;
 
-        int absolute_index = middle_index + 4;
-        primary_samples[i].transform.position.y = 0.49000001f;
-        primary_samples[i].transform.position.z =
-            (float)absolute_index * width_or_scale;
+        primary_samples[current_sample].transform.position.y = 0.49000001f;
+        primary_samples[current_sample].transform.position.z =
+            (float)current_sample * width_or_scale;
 
-        secondary_samples[i].transform.Identity();
-        secondary_samples[i].transform.position.x = primary_samples[i].center_x;
-        secondary_samples[i].transform.position.y = 0.49000001f;
-        secondary_samples[i].transform.position.z =
-            (float)absolute_index * width_or_scale;
+        secondary_samples[current_sample].transform.Identity();
+        secondary_samples[current_sample].transform.position.x = primary_samples[current_sample].center_x;
+        secondary_samples[current_sample].transform.position.y = 0.49000001f;
+        secondary_samples[current_sample].transform.position.z =
+            (float)current_sample * width_or_scale;
 
-        if (middle_index != 0) {
-            primary_samples[i - 1].transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
+        if (middle_index > 0) {
+            primary_samples[current_sample - 1].transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
 
             Vector3 primary_forward;
-            primary_forward.x = primary_samples[i].transform.position.x -
-                primary_samples[i - 1].transform.position.x;
-            primary_forward.y = primary_samples[i].transform.position.y -
-                primary_samples[i - 1].transform.position.y;
-            primary_forward.z = primary_samples[i].transform.position.z -
-                primary_samples[i - 1].transform.position.z;
-            primary_samples[i - 1].transform.basis_forward = primary_forward;
-            primary_samples[i - 1].transform.basis_forward.Normalize();
-            primary_samples[i - 1].transform.basis_right.Cross(
-                primary_samples[i - 1].transform.basis_up,
-                primary_samples[i - 1].transform.basis_forward);
-            primary_samples[i - 1].transform.basis_up.Cross(
-                primary_samples[i - 1].transform.basis_forward,
-                primary_samples[i - 1].transform.basis_right);
+            primary_forward.x = primary_samples[current_sample].transform.position.x -
+                primary_samples[current_sample - 1].transform.position.x;
+            primary_forward.y = primary_samples[current_sample].transform.position.y -
+                primary_samples[current_sample - 1].transform.position.y;
+            primary_forward.z = primary_samples[current_sample].transform.position.z -
+                primary_samples[current_sample - 1].transform.position.z;
+            primary_samples[current_sample - 1].transform.basis_forward = primary_forward;
+            primary_samples[current_sample - 1].transform.basis_forward.Normalize();
+            primary_samples[current_sample - 1].transform.basis_right.Cross(
+                primary_samples[current_sample - 1].transform.basis_up,
+                primary_samples[current_sample - 1].transform.basis_forward);
+            primary_samples[current_sample - 1].transform.basis_up.Cross(
+                primary_samples[current_sample - 1].transform.basis_forward,
+                primary_samples[current_sample - 1].transform.basis_right);
 
-            secondary_samples[i - 1].transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
+            secondary_samples[current_sample - 1].transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
 
             Vector3 secondary_forward;
-            secondary_forward.x = secondary_samples[i].transform.position.x -
-                secondary_samples[i - 1].transform.position.x;
-            secondary_forward.y = secondary_samples[i].transform.position.y -
-                secondary_samples[i - 1].transform.position.y;
-            secondary_forward.z = secondary_samples[i].transform.position.z -
-                secondary_samples[i - 1].transform.position.z;
-            secondary_samples[i - 1].transform.basis_forward = secondary_forward;
-            secondary_samples[i - 1].transform.basis_forward.Normalize();
-            secondary_samples[i - 1].transform.basis_right.Cross(
-                secondary_samples[i - 1].transform.basis_up,
-                secondary_samples[i - 1].transform.basis_forward);
-            secondary_samples[i - 1].transform.basis_up.Cross(
-                secondary_samples[i - 1].transform.basis_forward,
-                secondary_samples[i - 1].transform.basis_right);
+            secondary_forward.x = secondary_samples[current_sample].transform.position.x -
+                secondary_samples[current_sample - 1].transform.position.x;
+            secondary_forward.y = secondary_samples[current_sample].transform.position.y -
+                secondary_samples[current_sample - 1].transform.position.y;
+            secondary_forward.z = secondary_samples[current_sample].transform.position.z -
+                secondary_samples[current_sample - 1].transform.position.z;
+            secondary_samples[current_sample - 1].transform.basis_forward = secondary_forward;
+            secondary_samples[current_sample - 1].transform.basis_forward.Normalize();
+            secondary_samples[current_sample - 1].transform.basis_right.Cross(
+                secondary_samples[current_sample - 1].transform.basis_up,
+                secondary_samples[current_sample - 1].transform.basis_forward);
+            secondary_samples[current_sample - 1].transform.basis_up.Cross(
+                secondary_samples[current_sample - 1].transform.basis_forward,
+                secondary_samples[current_sample - 1].transform.basis_right);
         } else {
-            primary_samples[i - 1].transform.RotIdentity();
-            secondary_samples[i - 1].transform.RotIdentity();
+            primary_samples[current_sample - 1].transform.RotIdentity();
+            secondary_samples[current_sample - 1].transform.RotIdentity();
         }
 
-        ++middle_index;
     }
 
     int delta_index = 0;

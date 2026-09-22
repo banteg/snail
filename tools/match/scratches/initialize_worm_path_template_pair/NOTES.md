@@ -1,4 +1,13 @@
-## 2026-09-22 current source-context control
+## 2026-09-22 middle-loop counter recovery
+
+A single logical middle ordinal and its derived absolute sample recover the
+native coordinate schedule and predicate, plus seven literal SIB bytes in the
+later delta loop. Result: **82.13552361%, 725/736 instructions, 37 clean
+references**. The constructor and colour subregions remain exact; the 114-byte
+coordinate region still has three unequal addressing bytes. This remains a
+partial function. See the [controls and independent byte audit](../../worm-middle-counter-20260922.md).
+
+## 2026-09-22 source-context control before middle-counter recovery
 
 Canonical, renamed isolated, native-predecessor, and available 43-member
 `Path.o` contexts produce identical extracted bytes. The 725/736-instruction
@@ -7,7 +16,7 @@ partial remains. See the [frozen controls and replay](../../path-context-2026092
 # initialize_worm_path_template_pair @ 0x420170
 
 Current recovery: semantic-complete with an open `analysis` residual.
-The fresh 2026-09-11 result is **81.17727584%**, **725/736 instructions**,
+The fresh 2026-09-22 result is **82.13552361%**, **725/736 instructions**,
 zero whole-function prefix and **37 clean references**. The native/candidate
 frames remain **0x80/0x68**. Source/control and encoded differences remain;
 the frame delta does not identify a missing number of source locals.
@@ -17,7 +26,8 @@ the column float for angular/U coordinates, and passes the alpha expression
 directly to the colour call. Strict byte proof establishes a **163-byte**
 constructor region after the differing frame instruction and a **188-byte**
 colour/terminal-row/underside region. The native checkerboard texture branch,
-vector staging, receiver setup and middle-predicate encoding remain open.
+vector staging and receiver setup remain open. The middle predicate now has
+the native encoding, with three SIB residuals in its coordinate block.
 
 See [the current source controls and byte proof](../../worm-sample-column-colour-owners-20260911.md).
 The forward record contains 168 distinct full sources; seven independent and
