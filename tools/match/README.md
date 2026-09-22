@@ -111,6 +111,10 @@ has a separate address/liveness proof and remains visibly partial.
 The [pointer-origin follow-up](heightmap-address-20260922.md) records the
 earlier instruction-selection difference and 53 replayed source controls.
 
+The [LoopTheLoopW interpolation control](loopw-interpolation-20260922.md)
+recovers one literal addressing byte through operation-local bank ownership.
+Five body bytes still differ; normalized and encoded match counts are unchanged.
+
 ## Setup
 
 The native image and compiler bundles are untracked. Download the canonical

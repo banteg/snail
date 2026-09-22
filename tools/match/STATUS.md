@@ -58,7 +58,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 38 | switch_track_mirror | 7 | semantic-complete | analysis | historical-only | 0/6 | historical-only,stale-dependencies |
 | 39 | load_galaxy_layout | 7 | semantic-complete | analysis | historical-only | 0/33 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 40 | draw_frontend_widget | 7 | semantic-complete | analysis | historical-only | 0/21 | historical-only,stale-dependencies |
-| 41 | initialize_looptheloopw_path_template_pair | 4 | semantic-complete | analysis | current-active | 1/18 | repeated-variants,metric-tradeoffs,stale-dependencies |
+| 41 | initialize_looptheloopw_path_template_pair | 4 | semantic-complete | analysis | current-active | 1/19 | repeated-variants,metric-tradeoffs,stale-dependencies |
 
 
 ## Proof Grade (621)

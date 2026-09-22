@@ -11,6 +11,15 @@ float Cos(float angle);
 
 typedef AttachmentSample PathAttachmentSample;
 
+static inline void interpolate_path_center(
+    AttachmentSample* const& bank, int sample_index, int loop_segment_count,
+    float sample_f, float curve_count_f)
+{
+    bank[sample_index].center_x =
+        (bank[loop_segment_count - 1].center_x - bank[0].center_x)
+        * sample_f / curve_count_f + bank[0].center_x;
+}
+
 void cRPath::initialize_looptheloopw_path_template_pair(
     float curve_source, int width_cells_, bool side_exit,
     char* texture_a, char* texture_b, char* cap_texture)
@@ -93,10 +102,8 @@ void cRPath::initialize_looptheloopw_path_template_pair(
             sample_f = (float)i;
             float angle = sample_f * 6.2831855f / curve_count_f;
             float roll = Sin(angle * 0.5f) * Sin(angle * 8.0f) * 0.39269909f;
-            primary_bank[sample_index].center_x =
-                (primary_bank[loop_segment_count - 1].center_x
-                    - primary_bank[0].center_x)
-                * sample_f / curve_count_f + primary_bank[0].center_x;
+            interpolate_path_center(primary_samples, sample_index,
+                loop_segment_count, sample_f, curve_count_f);
             primary_bank[sample_index].center_x +=
                 Sin(angle * 0.5f + 4.712389f) * loop_wiggle;
             primary_bank[sample_index].rotation_scalar_98 = 0.0f;

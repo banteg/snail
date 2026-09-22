@@ -1,3 +1,15 @@
+## 2026-09-22 interpolation operation ownership
+
+Borrowing the actual primary-bank field within its interpolation operation
+recovers exactly byte 835 and its complete native load instruction. Every other
+candidate byte, relocation, and reference audit entry is unchanged. Current
+result remains 99.86577181%, 745/745 instructions, prefix 335, and 55 clean
+positional references. Five unequal body bytes remain: output-store SIB 859
+and secondary rotation ordering 1317–1320. This is still partial.
+
+See the [34 source controls, reversal, and independent byte proof](../../loopw-interpolation-20260922.md).
+The six-byte residual descriptions below are historical.
+
 ## 2026-09-21 curve-operation ownership follow-up
 
 Canonical source remains 99.86577181%, 745/745 instructions, prefix 335,
