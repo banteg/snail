@@ -103,3 +103,15 @@ byte unmatched. `turnover.py` verifies the saved expression chains and 58
 rejected source controls; `--out` reproduces both preserving compiler runs.
 Logical indexing can recover the last local byte while regressing other code,
 so Turnover remains a partial encoded match.
+
+## Heightmap: preserving the converted column coordinate
+
+[`heightmap.py`](heightmap.py) follows the column conversion and row multiply
+through entry/return hooks on `C2+0x11afa`. With separate scalar locals, this
+pass removes the column assignment and moves its conversion after the row
+multiply. A local coordinate pair retains the assignment and the native order.
+Both observations preserve the complete ordinary COFF object, with only its
+timestamp ignored. Run `uv run tools/match/c2/heightmap.py --out <new-directory>`
+to repeat them. The [source and byte audit](../heightmap-coordinates-20260922.md)
+records the subsequent 97.25% partial; the compiler observation earns no exact
+credit and does not establish an original type name.

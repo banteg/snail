@@ -101,6 +101,11 @@ extracted bytes for LoopOut, Turnover, TurnoverDouble, and Worm in isolated,
 native-predecessor, and available 43-member contexts. These are bounded
 negative results; none of those contexts is registered as a recovered group.
 
+The [heightmap coordinate recovery](heightmap-coordinates-20260922.md) follows
+an assignment through the preserving compiler observer, then improves the
+sampler from 79.26% to 97.25%. Its remaining pointer-base encoding difference
+has a separate address/liveness proof and remains visibly partial.
+
 ## Setup
 
 The native image and compiler bundles are untracked. Download the canonical

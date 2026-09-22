@@ -7,11 +7,33 @@ averages RGB, optionally cubes the value, and writes scaled vertex heights for
 `cRFace::AI`.
 
 - VC6 symbol: `?ObjectProcLandScapeUpdate@@YAXPAUcRObject@@MMPAUcRTexture@@_N@Z`
-- semantic-complete Windows result: 79.26%, 108 candidate / 109 target instructions
-- exact prefix: 37/109 instructions
+- semantic-complete Windows result: 97.25%, 109 candidate / 109 target instructions
+- exact prefix: 67/109 instructions
 - masked operands: 13/13 audited
-- residual: compiler-shaped row-index and RGB scheduling; no semantic gap known
+- residual: pixel-pointer base encoding; no semantic gap known
 - live caller: `cRFace::AI`
+
+## 2026-09-22 coordinate and average ownership
+
+The [replayable recovery](../../heightmap-coordinates-20260922.md) supersedes
+the earlier row-index scheduling boundary. A local integer coordinate pair
+keeps the converted column value alive across row-address formation, recovering
+the native saved registers, 109-instruction count and row/column order. Starting
+the running average directly from red then restores the cubic-test position.
+The pair is a source reconstruction; its original spelling is not known.
+
+The retained result is **97.25%**, prefix **67/109**, with **13/13** positional
+references and all five local branches exact. Only the seven-instruction
+region `[233,254)` differs: the candidate pixel pointer includes the 18-byte
+TGA header displacement, while native keeps that displacement in the red/blue
+loads. A separate affine-address and register-liveness check proves equivalent
+reads and ordered writes there, but does not award encoded-match credit.
+
+All 72 controls were recompiled. Removing the coordinate pair restores the
+60.36% inside-row form; moving its row base outside restores 79.26%. Reordering
+the pair fields or changing their scope preserves the 96.33% intermediate
+metrics. Header-base, channel-owner and complete-average alternatives do not
+close the encoded residual. These are bounded controls, not source exhaustion.
 
 ## 2026-08-13 row ownership recovery
 

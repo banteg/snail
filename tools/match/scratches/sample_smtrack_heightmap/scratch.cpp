@@ -23,18 +23,21 @@ void __cdecl ObjectProcLandScapeUpdate(
     for (float row = 0.0f; row <= row_count_float; row += 1.0f) {
         float column = 0.0f;
         if (column <= sample_count_float) {
-            int y = (int)(row * y_step);
-            int row_base = (image->height - y - 1) * image->width;
+            struct PixelCoordinates {
+                int x;
+                int y;
+            } coordinates;
+            coordinates.y = (int)(row * y_step);
             do {
-                int x = (int)(column * x_step);
+                coordinates.x = (int)(column * x_step);
+                int row_base = (image->height - coordinates.y - 1) * image->width;
                 int pixel_index =
-                    (row_base + x)
+                    (row_base + coordinates.x)
                     * (image->bits_per_pixel >> 3);
                 unsigned char* pixel = image->pixels + pixel_index;
-                float red = (float)pixel[2];
+                float value = (float)pixel[2];
                 float green = (float)pixel[1];
                 float blue = (float)pixel[0];
-                float value = red;
                 value += green;
                 value += blue;
                 value *= 0.00392156886f;
