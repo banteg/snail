@@ -65,3 +65,16 @@ local and simply calling the final newline reporter preserves the same forward
 zero-score branch, batched `add esp, 0x3c` cleanup, and shared epilogue. The
 natural void source remains exact at 67/67 instructions with all 16 operands
 clean; the sole `complete_subgame` caller discards the report-call residue.
+
+## 2026-09-22 overload resolution in source context
+
+Select the existing two-argument compatibility declaration explicitly before
+casting the newline call to its one-argument view. Without that selection,
+peer varargs declarations make the original function-pointer cast ambiguous.
+The selection changes no extracted bytes or relocation records and preserves
+the **67/67-instruction encoded match with 16 clean references**.
+
+A separate control using `rdebug.h` and direct varargs calls emits 74/67
+instructions at 92.20%, with the same 16 references. That rewrite is not
+retained; the fixed call views remain compatibility reconstruction. See the
+[source-context controls](../../subgame-context-20260922.md).

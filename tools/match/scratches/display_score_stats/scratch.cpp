@@ -3,6 +3,7 @@
 
 int debug_report_stub(char* format, int value); // @ 0x449c00, stripped in release
 typedef int (__cdecl *DebugReportOneArg)(char* format);
+typedef int (__cdecl *DebugReportTwoArgs)(char* format, int value);
 
 void cRSubGoldy::ScoreStatsDisplay()
 {
@@ -14,6 +15,8 @@ void cRSubGoldy::ScoreStatsDisplay()
         debug_report_stub("Parcel Collect:%i%%\n", (score_buckets[SUBGOLDY_SCORE_PARCEL_COLLECT] * 100) / total_score);
         debug_report_stub("Parcel Deliver:%i%%\n", (score_buckets[SUBGOLDY_SCORE_PARCEL_DELIVER] * 100) / total_score);
         debug_report_stub("Bonus         :%i%%\n", (score_buckets[SUBGOLDY_SCORE_BONUS] * 100) / total_score);
-        ((DebugReportOneArg)debug_report_stub)("\n");
+        // Select this scratch's fixed-argument view when peer declarations
+        // also expose the release sink's varargs contract.
+        ((DebugReportOneArg)(DebugReportTwoArgs)debug_report_stub)("\n");
     }
 }

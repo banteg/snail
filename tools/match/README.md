@@ -100,6 +100,9 @@ The [current Path context controls](path-context-20260922.md) preserve all
 extracted bytes for LoopOut, Turnover, TurnoverDouble, and Worm in isolated,
 native-predecessor, and available 43-member contexts. These are bounded
 negative results; none of those contexts is registered as a recovered group.
+The [current SubGame context control](subgame-context-20260922.md) closes
+declaration conflicts that blocked the 190-member concatenation; all eleven
+remaining partials stay non-exact, and no source group is registered.
 
 The [heightmap coordinate recovery](heightmap-coordinates-20260922.md) follows
 an assignment through the preserving compiler observer, then improves the

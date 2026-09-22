@@ -2,10 +2,8 @@
 
 #include "game_root.h"
 #include "player.h"
+#include "rerror.h"
 #include "sound_effect_manager.h"
-
-
-void report_errorf(const char* message, ...);
 
 void cRSubGoldy::ScoreAdd(int score_kind, int bonus_score)
 {

@@ -111,3 +111,12 @@ Recorded msvc6.0 and msvc6.3 probes preserve the current extracted code and
 comparison metrics. No compiler setting or source change is retained. See the
 [profile controls](../rebuild_game_archive_if_needed/profile-controls-20260907.md)
 for component provenance, exact neighbors, and the limits of this comparison.
+
+## 2026-09-22 completed source-context control
+
+The earlier 190-member `SubGame.o` experiment failed on incompatible reporter
+declarations before measuring this function. The [current control](../../subgame-context-20260922.md)
+compiles after reconciling two error declarations and disambiguating score
+display's existing call view. `SwitchMirror` retains its complete standalone
+code identity, 27/30 instructions, prefix 20, and three clean references.
+No recovered source group or exactness claim follows from this negative result.

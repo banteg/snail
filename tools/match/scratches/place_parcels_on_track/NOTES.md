@@ -681,3 +681,11 @@ had invalid generated owner/type spellings; the corrected-owner recipe runs
 those intended candidates successfully. All 46 valid builds preserve their
 results in the ledger; only the exact source is promoted. No compiler flags,
 shared declarations, reference rules, or synthetic dependencies changed.
+
+## 2026-09-22 shared error-reporter declaration
+
+The local `void report_errorf` declaration conflicted with the existing `int`
+compatibility contract when compiling peer `SubGame.o` sources. This caller
+now includes `rerror.h` and continues to discard the report result. Its encoded
+body remains exact: **639/639 instructions and 98 clean references**.
+See the [source-context controls](../../subgame-context-20260922.md).

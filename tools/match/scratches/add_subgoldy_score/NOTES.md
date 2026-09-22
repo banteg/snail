@@ -60,3 +60,14 @@ operands.
   the existing source-authored void mutator. BN and IDA now retain the exact
   `Player*` receiver and void contract; focused output remains 58/58 with all
   six operands clean.
+
+## 2026-09-22 shared error-reporter declaration
+
+Use the existing `rerror.h` compatibility contract instead of a local `void`
+declaration. The local declaration conflicted with the `int` declaration in
+peer game sources when compiling the available `SubGame.o` context. This
+caller discards the result; the change does not recover a new return-type fact.
+The complete encoded match remains **59/59 instructions and six clean
+references**, including the inline switch table.
+
+See the [source-context controls](../../subgame-context-20260922.md).
