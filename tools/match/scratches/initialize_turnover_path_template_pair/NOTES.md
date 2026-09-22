@@ -1,5 +1,14 @@
 # initialize_turnover_path_template_pair
 
+## 2026-09-22 interpolation ordering follow-up
+
+The [preserving compiler investigation](../../turnover-address-order-20260922.md)
+reproduces the held-bank cost change behind the byte-628 improvement and the
+unchanged destination order at byte 653. All 58 follow-up source controls are
+neutral or regressive. Logical indexing fixes the local destination encoding
+but adds instructions and changes other addresses; it is not promoted. The
+retained source still has one literal-byte residual.
+
 ## 2026-09-22 live interpolation-bank ownership
 
 The interpolation's shared live bank reference fixes exactly the endpoint-load

@@ -94,3 +94,12 @@ retained a regressed shared-bank control, then recovered the curved primary
 owner and the departure primary read. It closes the complete native body.
 Compiler observations still earn no acceptance credit; the result has a
 separate positional reference, branch and literal-byte proof.
+
+## Turnover: interpolation read and destination ordering
+
+[Turnover's follow-up](../turnover-address-order-20260922.md) traces the bank
+borrow that fixed one interpolation SIB byte while leaving its destination
+byte unmatched. `turnover.py` verifies the saved expression chains and 58
+rejected source controls; `--out` reproduces both preserving compiler runs.
+Logical indexing can recover the last local byte while regressing other code,
+so Turnover remains a partial encoded match.
