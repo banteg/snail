@@ -101,14 +101,14 @@ void cRBorder::Draw()
                 wobble = wobble * -1.0f;
         }
 
-        float pad = border_edge * 0.5f;
+        float pad = hit_extent.edge * 0.5f;
         if ((widget_flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) != 0) {
             OSDPrintUV(
                 sprite_hot_texture_id,
                 texture_hit_x + wobble - pad,
                 texture_hit_y - pad,
-                texture_hit_width + border_edge,
-                texture_hit_height + border_edge,
+                hit_extent.width + hit_extent.edge,
+                hit_extent.height + hit_extent.edge,
                 0x1000000,
                 &current_text_color,
                 0.0f,
@@ -122,8 +122,8 @@ void cRBorder::Draw()
                 texture_id,
                 texture_hit_x + wobble - pad,
                 texture_hit_y - pad,
-                texture_hit_width + border_edge,
-                texture_hit_height + border_edge,
+                hit_extent.width + hit_extent.edge,
+                hit_extent.height + hit_extent.edge,
                 0x1000000,
                 &current_text_color,
                 0.0f,
@@ -137,14 +137,15 @@ void cRBorder::Draw()
     }
 
     if ((widget_flags & FRONTEND_WIDGET_FLAG_SPRITE_MODE) != 0) {
-        float sprite_edge = border_edge;
-        float pad = border_edge * 0.5f;
+        const FrontendWidgetHitExtent& extent = hit_extent;
+        float sprite_edge = hit_extent.edge;
+        float pad = hit_extent.edge * 0.5f;
         OSDPrintUV(
             texture_id,
             texture_hit_x - pad,
             texture_hit_y - pad,
-            sprite_edge + texture_hit_width,
-            texture_hit_height + border_edge,
+            sprite_edge + extent.width,
+            hit_extent.height + hit_extent.edge,
             0x1000000,
             &current_text_color,
             0.0f,
@@ -156,13 +157,13 @@ void cRBorder::Draw()
 
         if (sprite_shadow_offset > 0.0f) {
             tColour shadow_color;
-            float shadow_pad = border_edge * 0.5f;
+            float shadow_pad = hit_extent.edge * 0.5f;
             OSDPrintUV(
                 texture_id,
                 texture_hit_x + sprite_shadow_offset - shadow_pad,
                 texture_hit_y + sprite_shadow_offset - shadow_pad,
-                border_edge + texture_hit_width,
-                texture_hit_height + border_edge,
+                extent.edge + extent.width,
+                hit_extent.height + hit_extent.edge,
                 0x1000000,
                 shadow_color.Set(0.0f, 0.0f, 0.0f, 0.89999998f),
                 0.0f,

@@ -46,7 +46,7 @@ void cRBorder::Init(
     idle_padding = 10.0f;
     hot_padding = 15.0f;
     stack_gap = 20.0f;
-    border_edge = 0.0f;
+    hit_extent.edge = 0.0f;
     *(int*)(self + 0x38) = 1;
     UnHideInit();
 
@@ -87,8 +87,8 @@ void cRBorder::Init(
 
     layout_width = (float)g_sprite_texture_table[sprite]->loaded_width;
     layout_height = (float)g_sprite_texture_table[sprite]->loaded_height;
-    texture_hit_width = layout_width;
-    texture_hit_height = layout_height;
+    hit_extent.width = layout_width;
+    hit_extent.height = layout_height;
     layout_anchor_x = x;
     texture_id = sprite;
     layout_anchor_y = y;

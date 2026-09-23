@@ -1,6 +1,6 @@
 # cRBorder::Draw @ 0x401130
 
-Current recovery: semantic-complete (`analysis` residual). The Windows body is
+Current recovery: exact. The Windows body is
 a `void __thiscall cRBorder` member, and Android/iOS independently retain it as
 `cRBorder::Draw()` in `Border.o`. Its sole Windows caller supplies the widget in
 `ecx` and discards `eax`.
@@ -10,9 +10,22 @@ sprites, optional shadow, nine-slice frame, and the manager-owned delayed glow.
 Live disassembly bounds the function at the glow tail; there is no missing text
 or special-widget branch.
 
-Focused VC6 result: **85.13%**, 707/712 candidate/target instructions, prefix
-16/712, with all 68 relocation operands audited and clean. The remaining gap is
-local color/blend lifetime and x87 argument scheduling, not missing behavior.
+Current VC6 proof: 712/712 instructions, prefix 712, all 68 positional
+references clean, and relocation-audited body bytes equal. The original
+707/712, 85.13% source and later residual investigations below are historical.
+
+## 2026-09-23 shared sprite hit extent
+
+The initializer writes adjacent width, height, and edge lanes at
++0x250/+0x254/+0x258; the mouse test consumes the dimensions, and Draw
+uses all three. Modeling those lanes as one `FrontendWidgetHitExtent` member
+preserves the cRBorder layout and the initializer/mouse-test exact objects.
+Within Draw's ordinary sprite branch, a local reference to the extent owns
+both width arguments, including the shadow draw. This recovers the remaining
+shadow x87 operand order without a synthetic register or instruction sequence.
+All three affected scratches compile byte-exact against the Windows body:
+Draw 712/712, 68 clean references; MouseTest 117/117, 5 clean references;
+sprite-button Init 157/157, 10 clean references.
 
 The matcher source now uses the authored `Draw` method and exact VC6 symbol
 `?Draw@cRBorder@@QAEXXZ`; `draw_frontend_widget` remains only the stable scratch

@@ -42,6 +42,15 @@ enum FrontendWidgetFlag {
     FRONTEND_WIDGET_FLAG_DISABLED_BEFORE_DEACTIVATION = 0x80000000,
 };
 
+// The sprite hit size and symmetric edge expansion occupy one contiguous
+// extent. Initializer, mouse-test, and draw accesses independently establish
+// its width/height/edge lanes at +0x250/+0x254/+0x258.
+struct FrontendWidgetHitExtent {
+    float width;
+    float height;
+    float edge;
+};
+
 // Semantic cRBorder view over BorderRecord storage. The exact record
 // constructor initializes the inherited BodBase and color_06c; the manager
 // allocator stamps created_time before returning this view. Widget-specific
@@ -165,9 +174,7 @@ public:
     float texture_hit_y; // +0x244
     float layout_width; // +0x248
     float layout_height; // +0x24c
-    float texture_hit_width; // +0x250
-    float texture_hit_height; // +0x254
-    float border_edge; // +0x258, symmetric sprite extent expansion
+    FrontendWidgetHitExtent hit_extent; // +0x250, sprite hit size and edge expansion
     union {
         int layout_mode;
         int text_alignment;

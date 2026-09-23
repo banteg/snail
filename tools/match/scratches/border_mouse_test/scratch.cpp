@@ -13,18 +13,18 @@ unsigned char cRBorder::MouseTest()
     cRMouse* mouse = &g_game->players[0].mouse_cursor;
 
     if (texture_hit_test_enabled) {
-        float texture_right = texture_hit_width;
+        float texture_right = hit_extent.width;
         texture_right += texture_hit_x;
-        float texture_bottom = texture_hit_height;
+        float texture_bottom = hit_extent.height;
         texture_bottom += texture_hit_y;
         if (mouse->saved_x >= texture_hit_x
             && texture_right > mouse->saved_x
             && mouse->saved_y >= texture_hit_y
             && texture_bottom > mouse->saved_y) {
             float u = texture_hit_x;
-            u = (mouse->saved_x - u) / texture_hit_width;
+            u = (mouse->saved_x - u) / hit_extent.width;
             float v = texture_hit_y;
-            v = (mouse->saved_y - v) / texture_hit_height;
+            v = (mouse->saved_y - v) / hit_extent.height;
             TgaImageView* mask =
                 g_sprite_manager.GetTga(texture_hit_test_sprite);
 
