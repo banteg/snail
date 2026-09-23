@@ -17,7 +17,7 @@ void cRSubGame::SwitchMirror()
         track_mirror_enabled = mirror_enabled;
         return;
     }
-    track_mirror_repeat_count = 0;
     mirror_enabled = !mirror_enabled;
     track_mirror_enabled = mirror_enabled;
+    track_mirror_repeat_count = 0;
 }

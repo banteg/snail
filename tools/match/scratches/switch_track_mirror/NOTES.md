@@ -1,6 +1,16 @@
-# Residual diff — 91.23%, 27/30 insns
+# Exact match — 2026-09-23
 
-Our build cross-jump-merges the two identical
+The current `SwitchMirror` source compiles to the native 30/30 instructions,
+with body-byte exactness and three clean positional references. The decisive
+source change places the forced-repeat counter reset **after** publishing the
+inverted mirror flag. VC6 schedules the reset between `cmp al, cl` and `sete
+al`, but this source order keeps the ordinary store/return as a separate hot
+tail. Both writes still occur on the same forced-inversion path, with no call
+or observation between them.
+
+## Earlier residual — 91.23%, 27/30 instructions
+
+The prior build cross-jump-merged the two identical
 `track_mirror_enabled = mirror_enabled; return` tails; the original duplicates
 them (zero-jump hot path). Three-insn layout-only residual; every compare,
 threshold, and store matches.
@@ -120,3 +130,51 @@ compiles after reconciling two error declarations and disambiguating score
 display's existing call view. `SwitchMirror` retains its complete standalone
 code identity, 27/30 instructions, prefix 20, and three clean references.
 No recovered source group or exactness claim follows from this negative result.
+
+## 2026-09-23 preserving C2 and cold-tail controls
+
+The prior source compiled to 27/30 instructions, 91.23% normalized
+agreement, a 20-instruction prefix, and three clean references. The first
+mismatch is at target offset `0x3b`: native uses `jge` to a separate cold tail,
+while the scratch uses `jl` to one shared store and epilogue. The native hot
+path writes `al` and returns before the cold `cmp al, cl; mov [esi+4], ecx;
+sete al; mov [esi+2], al` sequence.
+
+The preserving C2 observer ran on the pre-fix scratch, two deliberately
+different cold-tail sources, and the final exact source. Each run captured 12
+pass boundaries, reproduced the normal whole COFF object apart from its
+timestamp, and independently rechecked the focused matcher. The final trace
+shows the cold operations in invert/store/reset order already at the first
+captured boundary, with the same node counts as the pre-fix trace. These
+observations establish that the controls are real VC6 output, not observer
+artifacts; they do not identify the original source or a specific tail-merging
+pass.
+
+* Replacing the cold tail with `track_mirror_enabled =
+  !track_mirror_enabled` yields the native **two-tail suffix**, but forces an
+  additional read of the member. Allocation then changes from `ecx`/`al` to
+  `edx`/`cl` near the start, with an added saved register: 34/30 instructions,
+  56.25%, prefix 7. The C2 entry snapshot has an additional member-read node
+  at the inversion. This is a layout diagnostic, not an acceptable source
+  replacement; it also relies on the repeat-count reachability invariant to
+  equal inversion of the selected local.
+* Writing the cold result directly through a `volatile bool*` cast gives the
+  native first **24** instructions, including the complete hot store and
+  return. It is still 31/30 instructions and 91.80%: cold emits `xor edx, edx;
+  cmp al, cl; sete dl; mov [esi+4], ecx; mov [esi+2], dl` instead of native's
+  `al` result and reset scheduling. All three references remain clean. The
+  cast is diagnostic and has no recovered-source justification.
+* Assigning the inverted value back to the local before that volatile store
+  immediately restores the prior 27/30 merged-tail output. Variations of
+  destination aliasing, helper inlining, comparison and guard spelling,
+  random-state scalar type, reset-before-store sequencing, and the tested VC6
+  flag combinations did not produce a whole-body exact match. Volatile counter
+  writes preserved neither the native cold scheduling nor exact bytes.
+
+Testing the source-level **cold write order** resolved the residual. Moving
+`track_mirror_repeat_count = 0` below `track_mirror_enabled = mirror_enabled`
+produces 100% normalized agreement, 30/30 instructions, a 30-instruction
+prefix, three clean references, and `body_byte_exact`. The direct cold
+expression `track_mirror_enabled = !mirror_enabled` also produces the exact
+body with that ordering, but the retained local toggle preserves the
+established Windows candidate and changes only one statement's position.
