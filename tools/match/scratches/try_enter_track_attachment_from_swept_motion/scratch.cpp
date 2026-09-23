@@ -1,6 +1,6 @@
 // try_enter_track_attachment_from_swept_motion @ 0x42c770 (thiscall, ret 0x1c)
-// WIP: real vector expressions and owner fields recovered; see NOTES.md for
-// the remaining standard-flags compiler deltas.
+// WIP: the backward search and both miss epilogues are recovered; see NOTES.md
+// for the remaining swept-X x87 operand order.
 #include "track_attachment.h"
 #include "game_root.h"
 
@@ -22,9 +22,7 @@ void cRPath::try_enter_track_attachment_from_swept_motion(
     float v20 = anchor.y;
     float v21 = anchor.z;
     int idx = segment_count - 1;
-    if (idx < 0)
-        return;
-    do {
+    for (; idx >= 0; --idx) {
         if (secondary_samples[idx].transform.basis_up.y > 0.0f) {
             AttachmentSample* sample = &secondary_samples[idx];
             sample_origin = Vector3(
@@ -52,7 +50,7 @@ void cRPath::try_enter_track_attachment_from_swept_motion(
                 }
             }
         }
-    } while (--idx >= 0);
+    }
     return;
 
 seed:

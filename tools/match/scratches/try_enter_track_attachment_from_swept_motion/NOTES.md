@@ -1,4 +1,25 @@
-# Near match — 95.78% score, 199/204 instructions on standard flags
+# Near match — 99.02% score, 204/204 instructions on standard flags
+
+## 2026-09-23 backward-loop exit ownership
+
+An ordinary pretested `for` loop over the sample index gives VC6 the native
+fallthrough miss epilogue before the success block. The earlier post-tested
+loop merged that epilogue with the later empty exit, losing five instructions.
+This improves the focused result from 95.78%, 199/204, prefix 16 to **99.02%,
+204/204, prefix 109**, with all 47 positional references clean. The only
+normalized difference is the order of `fld` and `fadd` for swept X. This is
+still partial and earns no exact-match credit.
+
+Equivalent pretested `while` and unbounded `for` spellings reproduce the same
+object. Swapping vector operands or naming the two temporary vectors does not
+change the X operand order. A diagnostic two-`Vector3` parameter view, which
+has the same seven-dword stack ABI as the current scalar declaration and is
+suggested by the caller and mobile family, recovers X but reverses the Y and Z
+adds. Uniform constructor, assignment, compound-add, and inline-operation
+forms do not close the full region. The authored parameter grouping remains
+unsettled; no mixed per-component addition or header change is retained.
+
+The historical notes below describe the earlier post-tested-loop candidate.
 
 The candidate uses the project-standard `msvc6.5 /O2 /G5 /W3`. Current
 source-shape recoveries:
