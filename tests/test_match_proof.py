@@ -101,6 +101,7 @@ def test_normalized_equivalent_encodings_are_not_encoded_exact():
     )
     assert result.ratio == 1
     assert not result.body_byte_exact
+    assert not result.exact
 
 
 def test_encoded_body_masks_only_audited_external_relocation_fields():

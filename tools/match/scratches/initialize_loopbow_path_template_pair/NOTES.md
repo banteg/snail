@@ -1,5 +1,18 @@
 # Reconstruction notes
 
+## 2026-09-23: interpolation and pivot lifetimes
+
+The live source now reaches **100% normalized agreement, 796/796 instructions,
+796-instruction prefix, and 63/63 positional references**. A live primary-bank
+reference fixes the endpoint interpolation SIB byte; a named last-center value
+and the primary pivot's old Z local recover the native pivot schedule. The
+remaining destination SIB at body offset `809` is candidate `18` versus native
+`03`. `body_byte_exact` is false, so this does not count as an exact match.
+
+The [byte audit and reproduction](../../loopbow-interpolation-20260923.md)
+supersede the 2026-09-21 residual count below. The other interpolation and
+index controls remained neutral or regressed; no source exhaustion is inferred.
+
 ## 2026-09-21: shared entry and mesh counter
 
 Current verified result: **99.12060302% → 99.62311558%**, **796/796

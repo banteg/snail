@@ -3333,6 +3333,29 @@ def test_unaudited_masked_operand_prevents_proof_grade_status() -> None:
     assert render_status_rows([status])[0][7] == "1 unaudited, 2 ok"
 
 
+def test_normalized_match_without_equal_bytes_requires_audit() -> None:
+    config = ScratchConfig(
+        directory=Path("scratch"),
+        function="foo",
+        compiler="msvc6.5",
+        cflags="/O2 /G5 /W3",
+        end_va=None,
+        symbol=None,
+    )
+    status = ScratchStatus(
+        config=config,
+        address=0x401000,
+        target_size=10,
+        ratio=1.0,
+        prefix_instructions=4,
+        target_instructions=4,
+        candidate_instructions=4,
+        masked_ok=2,
+        body_byte_exact=False,
+    )
+    assert status.state == "audit"
+
+
 def test_render_status_rows_skip_image_load_when_manifest_is_fully_scratched() -> None:
     config = ScratchConfig(
         directory=Path("scratch/foo"),
@@ -3638,6 +3661,7 @@ def test_non_portable_scopes_stay_visible_but_do_not_affect_port_totals(
             prefix_instructions=size,
             target_instructions=size,
             candidate_instructions=size,
+            body_byte_exact=True,
             error=None,
         )
 
@@ -3769,6 +3793,7 @@ def test_platform_progress_counts_unique_functions_and_requires_clean_audits(
             address=0x1004 if name == "platform_alias" else functions[names.index(name)].address,
             target_size=4, ratio=ratio, prefix_instructions=0,
             target_instructions=4, candidate_instructions=4,
+            body_byte_exact=ratio == 1.0,
             error="compile failed" if name == "error" else None,
             masked_unresolved=1 if name == "audit" else 0,
         )
@@ -3890,6 +3915,7 @@ def test_render_status_outputs_scratch_and_fuzzy_summary() -> None:
             prefix_instructions=4,
             target_instructions=4,
             candidate_instructions=4,
+            body_byte_exact=True,
             error=None,
         ),
         ScratchStatus(

@@ -59,6 +59,7 @@ def _status(config: ScratchConfig, *, ratio: float = 0.75) -> ScratchStatus:
         target_instructions=8,
         candidate_instructions=8,
         masked_ok=2,
+        body_byte_exact=ratio == 1.0,
     )
 
 

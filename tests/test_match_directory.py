@@ -168,7 +168,7 @@ def test_compiling_commands_use_resolved_directory_and_selected_compiler_root(
 
     def run_match(**kwargs):
         calls.append(kwargs)
-        return MatchResult(1.0, 1, ("ret",), ("ret",))
+        return MatchResult(1.0, 1, ("ret",), ("ret",), body_byte_exact=True)
 
     monkeypatch.setattr(cli, "run_scratch_match", run_match)
     before = _snapshot(tmp_path)

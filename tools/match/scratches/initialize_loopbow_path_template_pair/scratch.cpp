@@ -109,11 +109,13 @@ void cRPath::initialize_loopbow_path_template_pair(
             float angle = fi * 6.2831855f / curve_segment_count_f;
             int sample_index = i + 7;
 
-            primary_samples[sample_index].center_x =
-                (primary_samples[total_segment_count - 1].center_x
-                    - primary_samples[0].center_x)
+            AttachmentSample* const& bank = primary_samples;
+            float last_center = bank[total_segment_count - 1].center_x;
+            bank[sample_index].center_x =
+                (last_center
+                    - bank[0].center_x)
                     * fi / curve_segment_count_f
-                + primary_samples[0].center_x;
+                + bank[0].center_x;
 
             float half_angle = angle * 0.5f;
             primary_samples[sample_index].center_x =
@@ -170,7 +172,9 @@ void cRPath::initialize_loopbow_path_template_pair(
             rotation.RotLocalY(
                 Sin(half_angle) * half_sine * 0.52359879f);
 
-            primary_samples[sample_index].transform.position.z -= 7.0f;
+            float primary_z_pivot = primary_samples[sample_index].transform.position.z;
+            primary_z_pivot -= 7.0f;
+            primary_samples[sample_index].transform.position.z = primary_z_pivot;
             secondary_samples[sample_index].transform.position.z -= 7.0f;
             primary_samples[sample_index].transform.Multiply(rotation);
             secondary_samples[sample_index].transform.Multiply(rotation);

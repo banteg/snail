@@ -409,6 +409,7 @@ class MatchResult:
             self.ratio == 1.0
             and self.masked_operand_audit.problem_count == 0
             and not self.unexplained_target_ranges
+            and self.body_byte_exact
         )
 
     @property
@@ -4002,6 +4003,7 @@ class ScratchStatus:
             and self.masked_mismatches == 0
             and self.masked_unaudited == 0
             and not self.unexplained_target_ranges
+            and self.body_byte_exact
         ):
             return "match"
         if self.ratio == 1.0:
