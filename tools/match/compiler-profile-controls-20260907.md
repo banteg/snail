@@ -85,3 +85,32 @@ its backend hash is
 It was inspected in temporary storage and was neither installed as a compiler
 profile nor used for matching. This check does not resolve the ownership of
 the image's build-9178 contributions.
+
+## 2026-09-25 corpus-wide profile control
+
+All 785 scratches were rerun with only the default profile changed.
+
+| Profile | Exact port-relevant | Proof-grade bytes | Functions differing from msvc6.5 |
+| --- | ---: | ---: | ---: |
+| `msvc6.5 /O2 /G5` (canonical) | 624/662 | 191,673 | — |
+| `msvc6.5 /O2 /GB` | 624/662 | 191,673 | 0 |
+| `msvc6.3 /O2 /G5` | 622/662 | 187,689 | 8 |
+| `msvc6.0 /O2 /G5` | 621/662 | 186,313 | 9 |
+
+`/GB` is byte-identical to `/G5` for every scratch. The msvc6.3 and msvc6.0
+differences are confined to x87-heavy path builders and attachment traversal:
+`calc_object_facequad_normals` and the Dump builder are exact only under
+msvc6.5, and LoopTheLoop, LoopTheLoopW, Turnunder, `traverse_path_follow_golb`
+and `update_track_attachment_follow_state` regress. Only Worm improves
+(82.14% → 84.83%). msvc6.0 additionally loses the exact
+`spawn_track_ring_or_special_effect`.
+
+Controlled compiles confirm that the object `@comp.id` stamp is the optimizer
+build: msvc6.0 → 8168, msvc6.3 → 8447, msvc6.4 → 8799, msvc6.5 → 8966,
+msvc6.5pp → product 48/49 build 9044, msvc6.6 → 9782. The image's 56
+product-11 (C++) records are build 8447, and it has no product-11 build-8966
+record; build 8966 appears only on 23 C objects. That aggregate provenance
+favors an SP3-era C++ optimizer, while the corpus-wide control favors msvc6.5.
+The canonical profile stays unchanged. Rich counts do not map records to
+translation units, and the scored difference touches only a handful of x87
+path builders.
