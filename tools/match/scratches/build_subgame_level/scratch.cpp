@@ -155,9 +155,6 @@ void cRSubGame::StartLevel(int level_index)
                 g_game->subgame.landscape_manager
                     .Import("SpaceRed.txt");
             break;
-        default:
-            landscape_index = level_index;
-            break;
         }
 
         landscape_manager.Init(landscape_index);

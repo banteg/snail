@@ -341,3 +341,29 @@ rejection/while/end-pointer scans with both projection lifetimes. All regress
 (46.59–69.77%); end-pointer termination adds two unaudited references. The
 canonical source and its visible 33 clean plus two unaudited references remain.
 These results bound these operations and guards, not the possible source.
+
+## 2026-09-25 indexed candidate scan and combined placement guard
+
+Four source changes take the result from 81.40% to **99.42%**, 171/171
+instructions, prefix 45, with all 34 references clean (the two unaudited
+bucket references are gone):
+
+- The candidate collection loop indexes `runtime_rows[row_index]` rather than
+  walking a row pointer. VC6 then bases its induction pointer on
+  `parcel_set_id` (`[ecx-0x9c]` flags test, `cmp [ecx], 0`), as native does.
+- The placement loop is `while (placed < parcel_count && candidate_count > 0)`
+  with no enclosing `parcel_count > 0` guard. This matches the Android
+  `PlaceParcelsSurvival` condition. With the guard, `this` moves from `ebp` to
+  `ebx` throughout.
+- The final scan reads `runtime_rows[scan].primary_attachment_cell` at each
+  use; the cached `cell` local added a spill slot (frame 0x4c vs 0x48).
+- The template record is tested through the full expression; the named
+  `template_record` local exists only inside the kind-42 branch.
+
+The only remaining difference is placement: native computes
+`lea ebx, [esi-1]` (`last_index`) after the first `jle`, in the loop preheader.
+Using `candidate_count - 1` directly as the shift bound gives native's
+placement as a compiler induction variable, but swaps `this`/`ebx` again.
+The same swap appears with any `if` guard around the loop. Tested and
+neutral: for-loop spellings of either counter, `break` exits, `last_index`
+declaration scope, and row references in the final scan.

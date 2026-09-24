@@ -25,53 +25,46 @@ void cRSubGame::PlaceParcelsSurvival()
     int candidate_count = 0;
     int row_index = 0;
     if (runtime_row_count > 0) {
-        SubRow* row = runtime_rows;
         do {
-            if ((row->flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0
-                && row->parcel_set_id == 0) {
+            if ((runtime_rows[row_index].flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0
+                && runtime_rows[row_index].parcel_set_id == 0) {
                 g_parcel_group_survival_0[candidate_count] = row_index;
                 ++candidate_count;
             }
             ++row_index;
-            ++row;
         } while (row_index < runtime_row_count);
     }
 
     int placed = 0;
-    if (level_definition.parcel_count > 0) {
-        int last_index = candidate_count - 1;
-        while (placed < level_definition.parcel_count) {
-            if (candidate_count <= 0) {
-                break;
-            }
-            int picked = (int)RAND((float)candidate_count, "P3");
-            int selected_row = g_parcel_group_survival_0[picked];
-            ++placed;
+    int last_index = candidate_count - 1;
+    while (placed < level_definition.parcel_count && candidate_count > 0) {
+        int picked = (int)RAND((float)candidate_count, "P3");
+        int selected_row = g_parcel_group_survival_0[picked];
+        ++placed;
 
-            runtime_rows[selected_row].flags |=
-                SUBROW_FLAG_PARCEL_CANDIDATE
-                | SUBROW_FLAG_PARCEL_SPAWN_REQUESTED;
-            runtime_rows[selected_row].parcel_spawn_position.y += 1.0f;
-            if ((runtime_rows[selected_row].flags & SUBROW_FLAG_MIRRORED) != 0) {
-                runtime_rows[selected_row].parcel_spawn_position.x *= -1.0f;
-            }
-            if ((runtime_rows[selected_row].flags
-                    & SUBROW_FLAG_PARCEL_Z_IS_LOCAL)
-                != 0) {
-                runtime_rows[selected_row].parcel_spawn_position.z =
-                    (float)selected_row
-                    + runtime_rows[selected_row].parcel_spawn_position.z
-                    + 0.5f;
-            }
-
-            for (int move_index = picked; move_index < last_index; ++move_index) {
-                g_parcel_group_survival_0[move_index] =
-                    g_parcel_group_survival_0[move_index + 1];
-            }
-
-            --candidate_count;
-            --last_index;
+        runtime_rows[selected_row].flags |=
+            SUBROW_FLAG_PARCEL_CANDIDATE
+            | SUBROW_FLAG_PARCEL_SPAWN_REQUESTED;
+        runtime_rows[selected_row].parcel_spawn_position.y += 1.0f;
+        if ((runtime_rows[selected_row].flags & SUBROW_FLAG_MIRRORED) != 0) {
+            runtime_rows[selected_row].parcel_spawn_position.x *= -1.0f;
         }
+        if ((runtime_rows[selected_row].flags
+                & SUBROW_FLAG_PARCEL_Z_IS_LOCAL)
+            != 0) {
+            runtime_rows[selected_row].parcel_spawn_position.z =
+                (float)selected_row
+                + runtime_rows[selected_row].parcel_spawn_position.z
+                + 0.5f;
+        }
+
+        for (int move_index = picked; move_index < last_index; ++move_index) {
+            g_parcel_group_survival_0[move_index] =
+                g_parcel_group_survival_0[move_index + 1];
+        }
+
+        --candidate_count;
+        --last_index;
     }
 
     level_definition.parcel_count = placed;
@@ -84,8 +77,8 @@ void cRSubGame::PlaceParcelsSurvival()
                 && (runtime_rows[scan].flags
                         & SUBROW_FLAG_PRIMARY_ATTACHMENT)
                     != 0) {
-                cRSubLoc* cell = runtime_rows[scan].primary_attachment_cell;
-                int source_row = cell->Yi();
+                int source_row =
+                    runtime_rows[scan].primary_attachment_cell->Yi();
                 int node =
                     (int)runtime_rows[scan].parcel_spawn_position.z
                     - source_row;
@@ -93,10 +86,10 @@ void cRSubGame::PlaceParcelsSurvival()
                     node = 0;
                 }
 
-                Path* template_record =
-                    runtime_rows[scan]
-                        .primary_attachment_cell->attachment_template_record;
-                if (template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42) {
+                if (runtime_rows[scan].primary_attachment_cell->attachment_template_record->kind
+                    == PATH_TEMPLATE_KIND_NONLINEAR_42) {
+                    Path* template_record =
+                        runtime_rows[scan].primary_attachment_cell->attachment_template_record;
                     TransformMatrix transform;
                     float out_angle;
                     template_record->compute_kind42_attachment_transform(
@@ -113,7 +106,7 @@ void cRSubGame::PlaceParcelsSurvival()
                         ->GetPos(
                             runtime_rows[scan].parcel_spawn_position,
                             node,
-                            cell->Yi(),
+                            runtime_rows[scan].primary_attachment_cell->Yi(),
                             runtime_rows[scan].parcel_spawn_position);
                 }
             }

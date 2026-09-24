@@ -747,3 +747,14 @@ and all 108 clean references. The five-function batch also includes
 exact formatted-output controls. C++-to-C symbol spelling may change the raw
 COFF digest while leaving normalized instructions and audited references
 unchanged. No compiler or source declaration change is retained.
+
+## 2026-09-25 undefined random landscape default
+
+The random space-landscape switch has no default arm; `landscape_index` is
+unassigned outside RAND results 0–3, as the Android `StartLevel` body shows
+(`unaff_r7`). Removing `default: landscape_index = level_index;` improves the
+result from 86.09% to **91.41%**, 556/555 instructions, and prefix 177 → 275,
+with all 108 references clean. RAND(4) never returns outside 0–3, so behavior
+is unchanged. The next mismatch is the scheduling of the start-banner position
+zero stores around the row-count `fild`, followed by the list-insertion
+register choices.
