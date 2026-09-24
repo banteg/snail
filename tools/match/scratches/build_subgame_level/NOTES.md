@@ -758,3 +758,38 @@ with all 108 references clean. RAND(4) never returns outside 0–3, so behavior
 is unchanged. The next mismatch is the scheduling of the start-banner position
 zero stores around the row-count `fild`, followed by the list-insertion
 register choices.
+
+## 2026-09-25 direct player member and helper-form cleanup
+
+Result: **100.00%** normalized, 555/555 instructions, prefix 555, encoded
+body match, all 108 references clean; structural 100.00%, 0/0 changed (from
+91.41% normalized, 96.01% structural, 22/23 changed).
+
+The player list insertions were the main residual. Native addresses
+`weapon_channels[2]`, `invincible_shell`, and `presentation` from ESI, not
+from the EDI player pointer, and it reloads `invincible_shell.list_flags`
+before `|= 0x80`. Spelling the whole tail on the embedded `player` member
+(`player.presentation...`, `&player`, `player.Init(1)`) and the flag update as
+a direct member `|=` fixes all list-insertion register choices. With that
+change, the old compensations are no longer needed:
+
+- the `int zero`/`int one` locals are removed, and literals are used;
+- the `player_owner`/`embedded_player()` mix is removed, and every use names
+  `player` directly;
+- the hand-expanded barrier ADDafter becomes
+  `barrier.add_bod_after(&barrier_sub_lazer_list_head)`;
+- the `track_bod_list` local becomes `&track_body_list_head`;
+- the completion banner now uses the same idiom as the start banner: a scoped
+  `tVector*` z/y/x zero block, then the flags snapshot, owner, z, masked
+  flags, and alpha. The `*(int*)&... = zero` stores and the staged
+  `completion_z`/`Banner*` locals are removed.
+
+The zero-block form matters. With `player` direct, the scoped pointer block
+on both banners is exact. Direct `.position.z = 0.0f` stores (92.18%) and
+`*(int*)` stores both schedule the row-count `fild` too early. Before the
+player fix, pointer blocks on both banners also lost the native
+`selected_level_record` reload in the garbage/salt copy, which is why the
+earlier source used the int-store workaround. An inline z/y/x
+`tVector::zero_vector3()` definition, matching the out-of-line 0x410710 body,
+gives byte-identical output. It is not retained because it would redefine a
+shared declaration in the scratch.

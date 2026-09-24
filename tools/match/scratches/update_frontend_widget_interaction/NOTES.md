@@ -67,3 +67,40 @@ clamps. Each matches the corresponding in-method form's bytes: 95.83% for
 local clamps and 80.62% for published clamps. No helper, handler, or canonical
 source change is retained. These controls leave the interpolation operands,
 constant lifetimes, and native clamp publication open.
+
+## 2026-09-25 structural metric: published less-button clamp
+
+Scored with `--structural`, which ignores eax/ecx/edx rotation.
+Baseline: 95.83% normalized, 96.30% structural, 23/25 changed. Retained:
+**95.29%** normalized, **96.83%** structural, **20/21** changed, 648/647
+instructions, prefix 127, 96 clean references and one unaudited constant
+(down from two).
+
+The less-button clamp now publishes directly, as in the iOS body:
+`slider_value -= 0.2f; if (slider_value <= 0.1f) slider_value = 0.0f;`. That
+region now matches exactly: `fst [0x17c]`, `fcomp 0.1`, then
+`mov [0x17c], 0`. This is the 95.29% candidate recorded on 2026-09-07. It was
+rejected then on the normalized metric. The structural metric shows that it
+removes real work (48 → 41 changed instructions) without adding a register.
+A staged local that is stored before the test, and
+`if ((slider_value -= 0.2f) <= 0.1f)`, give identical bytes.
+
+The more-button clamp stays local. Any published `slider_value = 1.0f` store
+(`+=`, a staged local then store, compound, or if/else) makes VC6 give
+`1.0f` to EBX for the whole function and a split zero to EBP. That changes
+roughly 20 zero compares and stores (41/47 changed). Removing any single
+zero use, such as a `text_effect_target = 0.0f` or the warmup test, does not
+undo it. The trigger is the published `1.0f` store, not the number of zero
+uses.
+
+The hover colour operand order (`fld t; fmul hot`, eight lanes, 16 changed
+instructions) is still open. The following all keep `fld hot; fmul t`:
+swapped products and sums, a scratch inline blend helper (reference,
+pointer, or `const float&` t, with or without an `inv` local), and
+diagnostic-only forms. The diagnostics were an early reference to the hot
+colour, `&hover_blend_current` escaping, and a `{target, current}` view of
+`hover_blend_*`. One diagnostic did flip it: taking `&hot_fill_color.r`
+loads `t` first against `[reg]`. This suggests VC6 picks the loaded operand
+from its addressing form, but no plausible source form reproduces it. The
+EDI/EBP constant-load order at +127 is also unchanged by the `flags` versus
+`widget_flags` test spellings.

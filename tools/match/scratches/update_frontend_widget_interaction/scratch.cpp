@@ -263,10 +263,9 @@ update_after_input:
         cRBorder* less = slider_less_widget;
         if ((less->widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             less->widget_flags &= ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            float current_slider_value = slider_value - 0.2f;
-            if (current_slider_value <= 0.1f)
-                current_slider_value = 0.0f;
-            slider_value = current_slider_value;
+            slider_value -= 0.2f;
+            if (slider_value <= 0.1f)
+                slider_value = 0.0f;
         }
 
         if (slider_value == 0.0f)

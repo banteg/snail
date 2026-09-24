@@ -36,21 +36,20 @@ void cRSubGame::StartLevel(int level_index)
     else
         UnHideScores();
 
-    int zero = 0;
     switch ((unsigned int)(
         gRMathRand2() * 0.0000305175781f * 4.0f)) {
     case 0:
-        cache_music_file("music/1.ogg", zero, g_blank_text);
+        cache_music_file("music/1.ogg", 0, g_blank_text);
         break;
     case 1:
-        cache_music_file("music/2.ogg", zero, g_blank_text);
+        cache_music_file("music/2.ogg", 0, g_blank_text);
         break;
     case 3:
-        cache_music_file("music/4.ogg", zero, g_blank_text);
+        cache_music_file("music/4.ogg", 0, g_blank_text);
         break;
     case 2:
     case 4:
-        cache_music_file("music/3.ogg", zero, g_blank_text);
+        cache_music_file("music/3.ogg", 0, g_blank_text);
         break;
     }
 
@@ -65,8 +64,8 @@ void cRSubGame::StartLevel(int level_index)
 
     level_definition.load_frontend_level_by_mode_and_index(level_mode, level_index);
 
-    if (selected_level_record_active != zero
-        || selected_level_record_persistent != zero) {
+    if (selected_level_record_active != 0
+        || selected_level_record_persistent != 0) {
         base_rate = selected_level_record->replay_speed_scalar;
         level_mode = selected_level_record->replay_mode_id;
         challenge_difficulty_value =
@@ -99,8 +98,8 @@ void cRSubGame::StartLevel(int level_index)
         }
     }
 
-    if (selected_level_record_active != zero
-        || selected_level_record_persistent != zero) {
+    if (selected_level_record_active != 0
+        || selected_level_record_persistent != 0) {
         garbage_frequency = selected_level_record->garbage_frequency;
         salt_frequency = selected_level_record->salt_frequency;
     } else {
@@ -161,13 +160,12 @@ void cRSubGame::StartLevel(int level_index)
         if (RAND(1.0f, 0) > 0.5f)
             g_game->backdrop.pending_flip = 1;
         else
-            g_game->backdrop.pending_flip = (unsigned char)zero;
+            g_game->backdrop.pending_flip = 0;
     } else {
         landscape_manager.Init(level_definition.landscape_script_index);
     }
 
-    BodNode* track_bod_list = &track_body_list_head;
-    banners.slots[0].add_bod_after(track_bod_list);
+    banners.slots[0].add_bod_after(&track_body_list_head);
 
     {
         tVector* start_position = &banners.slots[0].position;
@@ -176,79 +174,63 @@ void cRSubGame::StartLevel(int level_index)
         start_position->x = 0.0f;
     }
     unsigned int start_flags = banners.slots[0].list_flags;
-    cRSubGoldy* player_owner = embedded_player();
-    banners.slots[0].owner_player = player_owner;
+    banners.slots[0].owner_player = &player;
     banners.slots[0].position.z = (float)first_block_row_count;
     banners.slots[0].list_flags = start_flags & ~BOD_FLAG_RENDER_ENABLED;
     banners.slots[0].color.a = 0.999f;
 
-    banners.slots[1].add_bod_after(track_bod_list);
+    banners.slots[1].add_bod_after(&track_body_list_head);
 
-    *(int*)&banners.slots[1].position.z = zero;
-    *(int*)&banners.slots[1].position.y = zero;
-    *(int*)&banners.slots[1].position.x = zero;
+    {
+        tVector* completion_position = &banners.slots[1].position;
+        completion_position->z = 0.0f;
+        completion_position->y = 0.0f;
+        completion_position->x = 0.0f;
+    }
     unsigned int completion_flags = banners.slots[1].list_flags;
-    float completion_z = (float)completion_row_start;
-    Banner* completion_banner = &banners.slots[1];
-    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;
-    completion_banner->owner_player = player_owner;
-    banners.slots[1].list_flags = completion_flags;
-    banners.slots[1].position.z = completion_z;
+    banners.slots[1].owner_player = &player;
+    banners.slots[1].position.z = (float)completion_row_start;
+    banners.slots[1].list_flags = completion_flags & ~BOD_FLAG_RENDER_ENABLED;
     banners.slots[1].color.a = 0.999f;
 
-    track_state_latch = (unsigned char)zero;
-    replay_update_cursor = zero;
+    track_state_latch = 0;
+    replay_update_cursor = 0;
     times_up.state = TIMES_UP_STATE_INACTIVE;
     subgame_state = 2;
 
-    int one = 1;
-    g_game->render_skip_count = one;
+    g_game->render_skip_count = 1;
     g_game->players[0].mouse_cursor.SetInActive();
-    player.movement_mode_selector = one;
-    player.steering_mode_selector = zero;
-    player_owner->Init(one);
+    player.movement_mode_selector = 1;
+    player.steering_mode_selector = 0;
+    player.Init(1);
 
     g_game->active_bod_list.add_bod(
-        &embedded_player()->presentation.jetpack_channel);
+        &player.presentation.jetpack_channel);
 
     g_game->active_bod_list.add_bod(
-        &embedded_player()->presentation.weapon_channels[0]);
+        &player.presentation.weapon_channels[0]);
 
     g_game->active_bod_list.add_bod(
-        &embedded_player()->presentation.weapon_channels[1]);
+        &player.presentation.weapon_channels[1]);
 
     g_game->active_bod_list.add_bod(
-        &player_owner->presentation.weapon_channels[2]);
-
-    BodNode* node =
-        (BodNode*)&embedded_player()->presentation.invincible_shell;
-    g_game->active_bod_list.add_bod(node);
-    unsigned int visible_flags = node->list_flags;
-    visible_flags |= 0x80;
-    node->list_flags = visible_flags;
+        &player.presentation.weapon_channels[2]);
 
     g_game->active_bod_list.add_bod(
-        (BodNode*)&player_owner->presentation);
+        (BodNode*)&player.presentation.invincible_shell);
+    player.presentation.invincible_shell.list_flags |= 0x80;
 
-    g_game->active_bod_list.add_bod((BodNode*)player_owner);
+    g_game->active_bod_list.add_bod(
+        (BodNode*)&player.presentation);
+
+    g_game->active_bod_list.add_bod((BodNode*)&player);
 
     slug_voice_manager.Init();
 
-    BodNode* barrier_node = &barrier;
-    BodNode* barrier_list = &barrier_sub_lazer_list_head;
-    if ((barrier_node->list_flags & BOD_FLAG_LINKED) != zero) {
-        report_errorf("List ADDafter");
-    } else {
-        barrier_node->list_prev = barrier_list;
-        barrier_node->list_next = barrier_list->list_next;
-        barrier_list->list_next = barrier_node;
-        if (barrier_node->list_next != 0)
-            barrier_node->list_next->list_prev = barrier_node;
-        barrier_node->list_flags |= BOD_FLAG_LINKED;
-    }
-    barrier.owner_player = player_owner;
+    barrier.add_bod_after(&barrier_sub_lazer_list_head);
+    barrier.owner_player = &player;
 
-    if (level_mode == zero) {
+    if (level_mode == 0) {
         sprintf(lives_text_widget->text_buffer,
             "0/%i", level_definition.parcel_count);
         lives_icon_widget->UnHideInit();
