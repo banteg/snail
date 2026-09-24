@@ -201,6 +201,23 @@ def test_byte_exact_body_has_no_encoded_differences():
     assert result.encoded_body_differences == ()
 
 
+def test_structural_diff_ignores_scratch_rotation_and_label_offsets():
+    result = m.MatchResult(
+        ratio=0.0,
+        prefix_instructions=0,
+        target_lines=("mov eax, dword [esi+0x10]", "jne L1d", "push ebx"),
+        candidate_lines=("mov edx, dword [esi+0x10]", "jne L1f", "push ebx"),
+    )
+    structural = m.structural_diff(result)
+    assert structural.ratio == 1
+    assert structural.hunks == ()
+
+    result = replace(result, candidate_lines=("mov edx, dword [esi+0x10]", "push ebx"))
+    structural = m.structural_diff(result)
+    assert structural.changed_target_instructions == 1
+    assert structural.changed_candidate_instructions == 0
+
+
 def test_unexplained_relocation_cannot_be_hidden_by_equal_encodings():
     result = compare(
         bytes.fromhex("c3"), m.ObjectFunction("test", b"\xc3", frozenset({0}))

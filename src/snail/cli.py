@@ -59,6 +59,7 @@ from .match import (
     scratch_experiment_epoch,
     scratch_experiment_epochs,
     sort_triage_rows,
+    structural_diff,
     triage_row_payload,
     triage_summary_payload,
     type_consolidation_findings,
@@ -840,6 +841,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Print both normalized listings side by side instead of only the diff.",
     )
     match_scratch_parser.add_argument(
+        "--structural",
+        action="store_true",
+        help=(
+            "Also diff with local labels and eax/ecx/edx names generalized, "
+            "exposing structural differences behind scratch-register rotation."
+        ),
+    )
+    match_scratch_parser.add_argument(
         "--regions",
         action="store_true",
         help="Print localized mismatch region summaries before the diff/listing.",
@@ -1211,6 +1220,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--full",
         action="store_true",
         help="Print both normalized listings side by side instead of only the diff.",
+    )
+    match_diff_parser.add_argument(
+        "--structural",
+        action="store_true",
+        help=(
+            "Also diff with local labels and eax/ecx/edx names generalized, "
+            "exposing structural differences behind scratch-register rotation."
+        ),
     )
     match_diff_parser.add_argument(
         "--regions",
@@ -2690,6 +2707,19 @@ def main(argv: Sequence[str] | None = None) -> int:
             candidate = result.first_candidate_mismatch or "<end>"
             print(f"first mismatch: target[{result.prefix_instructions}] {target}")
             print(f"                candidate[{result.prefix_instructions}] {candidate}")
+        if args.structural:
+            structural = structural_diff(result)
+            print(
+                f"structural: {structural.ratio:.2%}, changed "
+                f"{structural.changed_target_instructions}/"
+                f"{structural.changed_candidate_instructions} target/candidate insns"
+            )
+            for tag, i1, i2, j1, j2 in structural.hunks:
+                print(f"  {tag} target[{i1}:{i2}] candidate[{j1}:{j2}]")
+                for line in structural.target_lines[i1:i2]:
+                    print(f"    - {line}")
+                for line in structural.candidate_lines[j1:j2]:
+                    print(f"    + {line}")
         if args.regions:
             regions = diff_regions(
                 result,

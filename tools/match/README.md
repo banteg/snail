@@ -472,6 +472,14 @@ Useful analysis helpers:
   plan error no longer fails `experiments --strict`. Do not use this for
   compiler, environment, or unexplained evaluation failures; repair and rerun
   those instead.
+- `snail match scratch|diff --structural` repeats the comparison with local
+  label offsets removed and `eax`/`ecx`/`edx` (and their byte/word forms)
+  generalized. VC6 hands out those caller-saved registers in rotation, so one
+  extra temporary renames every later scratch register and one size change
+  relabels every later branch; large functions such as `update_subgame`
+  (80.51% normalized) differ structurally in only a handful of instructions.
+  The listing prints the remaining structural hunks. It is a triage view and
+  never grants matching credit.
 - When every instruction is normalized-equal but the encoded body differs,
   `snail match scratch` and `snail match diff` list each such instruction as
   `encoded differences`: offset, both masked encodings and both capstone
