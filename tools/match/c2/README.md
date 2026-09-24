@@ -126,3 +126,17 @@ address orders would require one bank cost above the endpoint cost and below
 the smaller destination cost. Changing only that bank cannot satisfy both.
 This directs further source work toward the indices or separate ownership;
 it does not establish source exhaustion. Canonical LoopOut remains unchanged.
+
+## Rotation: the local allocator's eax/ecx/edx cursor
+
+[`rotation.py`](rotation.py) traces every call to C2's local register selector
+and reports the rotation cursor, the path and the chosen register for each
+temporary. It also shows whether the instruction survives and which register
+native uses at the aligned instruction. The summary lists where native's
+implied cursor moves away from ours. The selector rule and which source
+constructs take or skip a slot are in
+[register-rotation.md](register-rotation.md).
+
+```sh
+uv run tools/match/c2/rotation.py update_subgame --source overlay.cpp
+```

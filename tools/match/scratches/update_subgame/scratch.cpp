@@ -82,8 +82,10 @@ void cRSubGame::AI()
         subgame_state = 1;
         if (selector == 1)
             break;
-        if (selector == 0 || selector == 3)
-            goto build_selected_level;
+        if (selector == 0 || selector == 3) {
+            StartLevel(level_mode_arg);
+            return;
+        }
 
         if (selected_level_record_persistent == 1) {
             selected_level_record_active = (unsigned char)1;
@@ -97,11 +99,9 @@ void cRSubGame::AI()
         // Fresh state-zero setup enters the same front-end dispatch as state one.
     case 1: {
         RAND(1.0f, 0);
-        int challenge_speed = g_runtime_config.challenge_speed_percent;
-        int challenge_difficulty =
+        challenge_speed_value = g_runtime_config.challenge_speed_percent;
+        challenge_difficulty_value =
             g_runtime_config.challenge_difficulty_percent;
-        challenge_speed_value = challenge_speed;
-        challenge_difficulty_value = challenge_difficulty;
 
         int result;
         switch (level_mode) {

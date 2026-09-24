@@ -1,5 +1,39 @@
 # `update_subgame` recovery notes
 
+## 2026-09-25 rotation-cursor recovery
+
+The source now reaches **99.90476190%, with 1034/1034 instructions, prefix 12
+and 129 clean references**. Before this change it was 80.51% at 1033/1034.
+The structural diff, which ignores eax/ecx/edx names, has one hunk left: the
+case-3 `pause_fade` load is scheduled above the two constant stores. Four
+statement orders for that block do not fix it (99.62–99.81%).
+
+[`tools/match/c2/rotation.py`](../../c2/rotation.py) traces C2's local
+scratch-register rotation. The rule is in
+[register-rotation.md](../../c2/register-rotation.md). On the previous source,
+every rotation choice matched native up to `Hide()` in state 0. From the
+state-1 config block onward, native ran one slot ahead. Two source shapes
+accounted for that:
+
+- `int challenge_difficulty = …` was loaded before the speed store. The
+  global allocator gave that local eax, outside the rotation, and the speed
+  temporary skipped eax. Storing both config values directly to the members
+  puts both loads in the rotation.
+- State 0's `selector == 0 || selector == 3` path now inlines
+  `StartLevel(level_mode_arg); return;` instead of
+  `goto build_selected_level`. Behaviour is unchanged, because the label only
+  calls `StartLevel(level_mode_arg)` before the function ends. VC6 lays that
+  copy out right after the `Hide()` block. It takes a rotation slot (eax) and
+  is then cross-jumped into the shared tail, so it leaves no instruction. This
+  is native's missing invisible slot.
+
+With both changes, the challenge speed and difficulty get ecx and edx, and
+every later rotation choice agrees with native. The later apparent shifts, at
+lines 199, 202 and 248, were echoes of this first one, and so were the
+structural `lea`/`add` hunks at target instructions 321–360. The case-4
+`goto build_selected_level` stays: it is the fallthrough predecessor that
+owns the shared tail.
+
 ## 2026-09-11 objdiff-guided dispatch controls and tail certificate
 
 The supported viewer concentrates its changed rows before native offset
