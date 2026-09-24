@@ -66,3 +66,15 @@ loader, vertex-buffer factory, and grouped-buffer builder remain byte-identical
 under the corresponding controls. The refresh-buffer partial is also neutral.
 The receiver/archive register split is therefore unchanged by these virtual
 call forms; no shared header or canonical source is modified.
+
+## 2026-09-25 exact: device locals from the texture-loader house style
+
+The function is now **byte-exact**: 253/253 instructions, all 54 references
+clean, byte-identical encoded body (up from 83.00%, prefix 5). Both texture
+loads now follow the exact sibling `load_registered_texture_ref`: each D3DX
+call receives a branch-local `Direct3DDevice8* device = g_d3d_device;`, and
+`byte_count` is scoped to the archive branch. The device locals are what
+matter. Without them VC6 gives the receiver `edi` and the archive base `ebx`;
+with them it matches native (`this` in `ebx`, archive base in `edi`), along
+with the native `eax`/`ecx`/`edx` temporaries and the early `pop edi` in the
+epilogue. Scoping `byte_count` alone is neutral.

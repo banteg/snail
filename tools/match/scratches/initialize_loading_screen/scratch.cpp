@@ -30,15 +30,17 @@ void cRLoadingBar::Init()
     g_runtime_config.last_loading_budget = 1276;
 
     int texture_result;
-    int byte_count;
     if (is_archive_index_loaded() != 0) {
         char* archive_base = get_archive_data_base();
+        int byte_count;
         load_file_bytes_from_archive_or_fs("Sprites/Loading.tga", archive_base, &byte_count);
-        texture_result = D3DXCreateTextureFromFileInMemoryEx(g_d3d_device, archive_base,
+        Direct3DDevice8* device = g_d3d_device;
+        texture_result = D3DXCreateTextureFromFileInMemoryEx(device, archive_base,
             byte_count, 0, 0, 1, 0, 21, 1, 3, 3, 0xff00ff00, 0, 0,
             &g_loading_background_texture);
     } else {
-        texture_result = D3DXCreateTextureFromFileExA(g_d3d_device, "Sprites/Loading.tga",
+        Direct3DDevice8* device = g_d3d_device;
+        texture_result = D3DXCreateTextureFromFileExA(device, "Sprites/Loading.tga",
             0, 0, 1, 0, 21, 1, 3, 3, 0xff00ff00, 0, 0, &g_loading_background_texture);
     }
 
@@ -56,13 +58,16 @@ void cRLoadingBar::Init()
 
     if (is_archive_index_loaded() != 0) {
         char* archive_base = get_archive_data_base();
+        int byte_count;
         load_file_bytes_from_archive_or_fs(
             "Sprites/LoadingBarOn.tga", archive_base, &byte_count);
-        texture_result = D3DXCreateTextureFromFileInMemoryEx(g_d3d_device, archive_base,
+        Direct3DDevice8* device = g_d3d_device;
+        texture_result = D3DXCreateTextureFromFileInMemoryEx(device, archive_base,
             byte_count, 0, 0, 1, 0, 21, 1, 3, 3, 0xff00ff00, 0, 0,
             &g_loading_bar_on_texture);
     } else {
-        texture_result = D3DXCreateTextureFromFileExA(g_d3d_device,
+        Direct3DDevice8* device = g_d3d_device;
+        texture_result = D3DXCreateTextureFromFileExA(device,
             "Sprites/LoadingBarOn.tga", 0, 0, 1, 0, 21, 1, 3, 3, 0xff00ff00, 0, 0,
             &g_loading_bar_on_texture);
     }
