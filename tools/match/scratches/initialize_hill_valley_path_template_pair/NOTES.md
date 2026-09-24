@@ -1,3 +1,38 @@
+## 2026-09-25 terminal index lifetime and borrowed secondary bank
+
+Went from **97.60% to 99.10%** (668/668 instructions, prefix 21 to 91, 41 clean
+references). Still partial.
+
+- Terminal index: in the native code the endpoint index is a separate variable
+  from the header `steps + 1`. It is copied from the header register after
+  `centered` has been read for the last time, so it takes over the dead
+  `centered` home `[esp+0x68]`, which it also shares with `terminal_z`. VC6
+  only keeps that copy (the header value would otherwise stand in for it)
+  when it is spelled `steps + 1`, not `last`. The copy also has to come after
+  the `centered` test, so the index is assigned inside each arm. On its own
+  this recovers the whole endpoint (prefix 122) but still has 669/668
+  instructions (96.04%).
+- Borrowed secondary bank: this is the Dump/Start house style, with a
+  function-entry `PathTemplateSample *const &secondary_bank = secondary_samples;`
+  passed to the loop's secondary helper through a `const &` parameter. It
+  brings the count back to 668. Passing the member straight to the helper
+  has no effect, and so does declaring the binding after the first endpoint.
+- What is left is two commutative operand orders: the terminal primary
+  `Identity` receiver comes out bank-first (native is offset-first), and the
+  curve-loop secondary `Identity` comes out offset-first (native is
+  bank-first).
+- Controls that did not help: a physical sample cursor for the whole loop
+  fixes the secondary receiver but flips the primary one (96.03%). Mixing
+  index and cursor forms adds an induction variable. Primary-bank bindings,
+  reordered or commuted receiver expressions, sample pointers and transform
+  references all come out neutral or worse. The `index = last`,
+  helper-parameter and ternary endpoint spellings do not give the late copy.
+  Operand order reacts to where the binding is declared (alternating
+  results), so no single source position is confirmed.
+- Plausibility: assigning `terminal_index = steps + 1;` in both arms is a
+  compiler-shape clue about the late copy, not established authored source.
+  A single natural spelling that produces the same copy is still open.
+
 ## 2026-09-21 paired-receiver transfer controls
 
 Canonical source remains 97.60479042%, 668/668 instructions, prefix 21,

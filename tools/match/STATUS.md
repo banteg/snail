@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**625/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **194105/299952** bytes (**64.71%**) are proof-grade, and overall fuzzy is **95.38%**.
+**625/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **194105/299952** bytes (**64.71%**) are proof-grade, and overall fuzzy is **95.39%**.
 
 **114/120** platform helpers matched, **120/120** have a scratch, **17633/23008** bytes (**76.64%**) are proof-grade, and overall fuzzy is **96.81%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -10,9 +10,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**37** non-exact scratch-backed functions hold **8407 fuzzy-gap bytes**. The top 5 hold **82.1%** of that gap; the top 10 hold **90.9%**.
+**37** non-exact scratch-backed functions hold **8370 fuzzy-gap bytes**. The top 5 hold **82.5%** of that gap; the top 10 hold **91.3%**.
 
-Current-baseline experiments cover **1 functions / 118 gap bytes**; **36 / 8289** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **1 functions / 118 gap bytes**; **36 / 8252** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -33,8 +33,8 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 13 | initialize_toad_path_template_pair | 110 | semantic-complete | analysis | historical-only | 0/67 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 14 | update_track_attachment_follow_state | 76 | semantic-complete | analysis | historical-only | 0/24 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 15 | add_object_edge | 66 | semantic-complete | analysis,references | historical-only | 0/16 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 16 | initialize_hill_valley_path_template_pair | 59 | semantic-complete | analysis | historical-only | 0/41 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 17 | release_snail_weapons | 31 | semantic-complete | analysis | historical-only | 0/16 | variant-errors,historical-only,stale-dependencies |
+| 16 | release_snail_weapons | 31 | semantic-complete | analysis | historical-only | 0/16 | variant-errors,historical-only,stale-dependencies |
+| 17 | initialize_hill_valley_path_template_pair | 22 | semantic-complete | analysis | historical-only | 0/41 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 18 | create_golb | 20 | semantic-complete | analysis | historical-only | 0/24 | variant-errors,historical-only,stale-dependencies |
 | 19 | initialize_tip | 20 | semantic-complete | analysis | historical-only | 0/15 | repeated-variants,historical-only,stale-dependencies |
 | 20 | border_input_text | 20 | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
@@ -714,7 +714,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2496 | 687/687 | 99.27% | 140/687 | 45 ok |  | core |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 204/204 | 99.02% | 109/204 | 47 ok |  | core |
 | 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2432 | 661/663 | 95.47% | 89/663 | 33 ok |  | core |
-| 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2448 | 668/668 | 97.60% | 21/668 | 41 ok |  | core |
+| 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2448 | 668/668 | 99.10% | 91/668 | 41 ok |  | core |
 | 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1344 | 440/440 | 99.32% | 408/440 | 74 ok |  | boundary |
 | 🚧 | initialize_star_field | 0x434310 | 864 | 247/247 | 98.38% | 126/247 | 26 ok |  | core |
 | 🚧 | explode_slug_hazard | 0x43f680 | 560 | 147/147 | 97.96% | 79/147 | 32 ok |  | core |

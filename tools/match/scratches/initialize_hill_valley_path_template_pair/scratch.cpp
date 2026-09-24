@@ -10,16 +10,16 @@ float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
-static __forceinline void initialize_secondary_hill(Path *path, int index, float phase,
+static __forceinline void initialize_secondary_hill(PathTemplateSample *const &secondary,
+                                                    Path *path, int index, float phase,
                                                     float height, float z)
 {
-    path->secondary_samples[index].transform.Identity();
-    path->secondary_samples[index].transform.position.x =
-        path->primary_samples[index].center_x;
+    secondary[index].transform.Identity();
+    secondary[index].transform.position.x = path->primary_samples[index].center_x;
     float y = (1.0f - Cos(phase)) * 0.5f;
     y *= height;
-    path->secondary_samples[index].transform.position.y = y + 0.49000001f;
-    path->secondary_samples[index].transform.position.z = z;
+    secondary[index].transform.position.y = y + 0.49000001f;
+    secondary[index].transform.position.z = z;
 }
 
 static __forceinline void orient_previous_hill_pair(Path *path, int current_offset)
@@ -273,6 +273,8 @@ void cRPath::initialize_hill_valley_path_template_pair(int width_cells_, float h
                                                        char *texture_a, char *texture_b,
                                                        char *vertical_texture)
 {
+    PathTemplateSample *const &secondary_bank = secondary_samples;
+
     kind = PATH_TEMPLATE_KIND_FAMILY_10;
     is_mirrored_x = 0;
     side_exit_mode = 0;
@@ -303,23 +305,32 @@ void cRPath::initialize_hill_valley_path_template_pair(int width_cells_, float h
     secondary_samples[0].transform.position.y = 0.49000001f;
     secondary_samples[0].transform.position.z = 0.0f;
 
+    int terminal_index;
     if (centered)
-        primary_samples[last].center_x = 0.0f;
+    {
+        terminal_index = steps + 1;
+        primary_samples[terminal_index].center_x = 0.0f;
+    }
     else
-        primary_samples[last].center_x = (float)width_cells * 0.5f - 4.0f;
-    primary_samples[last].rotation_scalar_98 = 0.0f;
-    primary_samples[last].rotation_scalar_94 = 0.0f;
-    primary_samples[last].special_scalar = 0.0f;
-    primary_samples[last].lateral_scale = 1.0f;
-    primary_samples[last].transform.Identity();
-    primary_samples[last].transform.position.x = primary_samples[last].center_x;
-    float last_z = (float)last;
-    primary_samples[last].transform.position.y = 0.0f;
-    primary_samples[last].transform.position.z = last_z;
-    secondary_samples[last].transform.Identity();
-    secondary_samples[last].transform.position.x = primary_samples[last].center_x;
-    secondary_samples[last].transform.position.y = 0.49000001f;
-    secondary_samples[last].transform.position.z = last_z;
+    {
+        terminal_index = steps + 1;
+        primary_samples[terminal_index].center_x = (float)width_cells * 0.5f - 4.0f;
+    }
+    primary_samples[terminal_index].rotation_scalar_98 = 0.0f;
+    primary_samples[terminal_index].rotation_scalar_94 = 0.0f;
+    primary_samples[terminal_index].special_scalar = 0.0f;
+    primary_samples[terminal_index].lateral_scale = 1.0f;
+    primary_samples[terminal_index].transform.Identity();
+    primary_samples[terminal_index].transform.position.x =
+        primary_samples[terminal_index].center_x;
+    float terminal_z = (float)terminal_index;
+    primary_samples[terminal_index].transform.position.y = 0.0f;
+    primary_samples[terminal_index].transform.position.z = terminal_z;
+    secondary_samples[terminal_index].transform.Identity();
+    secondary_samples[terminal_index].transform.position.x =
+        primary_samples[terminal_index].center_x;
+    secondary_samples[terminal_index].transform.position.y = 0.49000001f;
+    secondary_samples[terminal_index].transform.position.z = terminal_z;
 
     for (int i = 0; i < steps; ++i)
     {
@@ -338,7 +349,7 @@ void cRPath::initialize_hill_valley_path_template_pair(int width_cells_, float h
         primary_samples[sample_index].transform.position.y = y;
         float z = (float)sample_index;
         primary_samples[sample_index].transform.position.z = z;
-        initialize_secondary_hill(this, sample_index, phase, height, z);
+        initialize_secondary_hill(secondary_bank, this, sample_index, phase, height, z);
         orient_previous_hill_pair(this, sample_index * sizeof(PathTemplateSample));
     }
 
