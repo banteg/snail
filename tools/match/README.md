@@ -472,6 +472,12 @@ Useful analysis helpers:
   plan error no longer fails `experiments --strict`. Do not use this for
   compiler, environment, or unexplained evaluation failures; repair and rerun
   those instead.
+- When every instruction is normalized-equal but the encoded body differs,
+  `snail match scratch` and `snail match diff` list each such instruction as
+  `encoded differences`: offset, both masked encodings and both capstone
+  renderings. This exposes base/index (SIB) swaps and other encoding-only
+  residuals that the normalized listing hides; `MatchResult` carries the same
+  rows as `encoded_body_differences`. The proof digest is unchanged.
 - `snail match diff` also prints a masked-operand audit. Normalized `ADDR`
   operands still keep linker noise out of the score, but the audit compares
   target resolved references (function names, imports, strings, or raw image

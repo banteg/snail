@@ -2670,6 +2670,18 @@ def main(argv: Sequence[str] | None = None) -> int:
                 f"candidate={sum(b - a for a, b in result.candidate_inline_data_ranges)} bytes"
             )
         print(f"encoded body: {'match' if result.body_byte_exact else 'not matched'}")
+        if result.encoded_body_differences:
+            unequal = sum(len(d["unequal_bytes"]) for d in result.encoded_body_differences)
+            print(
+                f"encoded differences: {unequal} bytes in "
+                f"{len(result.encoded_body_differences)} normalized-equal instructions"
+            )
+            for difference in result.encoded_body_differences:
+                print(
+                    f"  +0x{difference['offset']:x} {difference['text']}\n"
+                    f"    target    {difference['target']}  {difference['target_asm']}\n"
+                    f"    candidate {difference['candidate']}  {difference['candidate_asm']}"
+                )
         if result.unexplained_target_ranges:
             print(f"unexplained target bytes: {sum(b - a for a, b in result.unexplained_target_ranges)}")
         _print_masked_operand_audit(result.masked_operand_audit)

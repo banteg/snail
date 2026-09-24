@@ -180,6 +180,27 @@ def test_encoded_local_relative_relocation_is_resolved():
     assert result.encoded_body_proof["masked_relocation_ranges"] == []
 
 
+def test_encoded_differences_report_swapped_sib_operands():
+    # fstp [edi+eax+0x90] vs [eax+edi+0x90]: normalized-equal, one SIB byte differs.
+    target = bytes.fromhex("d99c0790000000c3")
+    candidate = m.ObjectFunction("test", bytes.fromhex("d99c3890000000c3"), frozenset())
+    result = compare(target, candidate)
+    assert result.ratio == 1
+    assert not result.body_byte_exact
+    (difference,) = result.encoded_body_differences
+    assert difference["offset"] == 0
+    assert difference["unequal_bytes"] == [2]
+    assert difference["target"] == "d99c0790000000"
+    assert difference["candidate"] == "d99c3890000000"
+
+
+def test_byte_exact_body_has_no_encoded_differences():
+    body = bytes.fromhex("d99c0790000000c3")
+    result = compare(body, m.ObjectFunction("test", body, frozenset()))
+    assert result.body_byte_exact
+    assert result.encoded_body_differences == ()
+
+
 def test_unexplained_relocation_cannot_be_hidden_by_equal_encodings():
     result = compare(
         bytes.fromhex("c3"), m.ObjectFunction("test", b"\xc3", frozenset({0}))

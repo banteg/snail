@@ -367,6 +367,7 @@ class MatchResult:
     unexplained_target_ranges: tuple[tuple[int, int], ...] = ()
     candidate_object_sha256: str | None = None
     encoded_body_proof: dict[str, Any] | None = None
+    encoded_body_differences: tuple[dict[str, Any], ...] = ()
 
     @property
     def target_instruction_count(self) -> int:
@@ -2965,12 +2966,15 @@ def encoded_body_evidence(
     target_lines: tuple[DisassemblyLine, ...],
     candidate_lines: tuple[DisassemblyLine, ...],
     audit: MaskedOperandAudit,
+    differences: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any] | None:
     """Equal instruction encodings, masking only positionally audited relocations.
 
     Local relative relocations are resolved to their normalized local label.
     Terminal padding is outside this body metric; public credit additionally
     requires every owned code byte to be in the compared target ranges.
+    When ``differences`` is supplied, each normalized-equal instruction whose
+    masked encodings still differ is appended with its unequal byte offsets.
     """
     import capstone
 
@@ -3068,6 +3072,20 @@ def encoded_body_evidence(
             )
             consumed_relocations.add(b.offset + offset)
             resolved_local.append(b.offset + offset)
+        if differences is not None and left != right:
+            differences.append(
+                {
+                    "offset": b.offset,
+                    "text": a.text,
+                    "target": bytes(left).hex(),
+                    "candidate": bytes(right).hex(),
+                    "target_asm": f"{target_insn.mnemonic} {target_insn.op_str}".strip(),
+                    "candidate_asm": f"{candidate_insn.mnemonic} {candidate_insn.op_str}".strip(),
+                    "unequal_bytes": [
+                        b.offset + i for i, (x, y) in enumerate(zip(left, right)) if x != y
+                    ],
+                }
+            )
         left_body.extend(left)
         right_body.extend(right)
     body_end = candidate_lines[-1].offset + candidate_lines[-1].size
@@ -3121,13 +3139,20 @@ def match_function(
     compared, excluded, unexplained = comparison_ranges(
         target_disassembly, len(target_data)
     )
+    differences: list[dict[str, Any]] = []
     encoded = encoded_body_evidence(
-        target_data, candidate, target_disassembly, candidate_disassembly, audit
+        target_data,
+        candidate,
+        target_disassembly,
+        candidate_disassembly,
+        audit,
+        differences,
     )
     return MatchResult(
         body_byte_exact=encoded is not None
         and encoded["target_sha256"] == encoded["candidate_sha256"],
         encoded_body_proof=encoded,
+        encoded_body_differences=tuple(differences) if encoded is not None else (),
         compared_target_ranges=compared,
         excluded_target_ranges=excluded,
         unexplained_target_ranges=unexplained,
