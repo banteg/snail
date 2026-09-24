@@ -36,7 +36,6 @@ void cRSubGame::PlaceParcelsSurvival()
     }
 
     int placed = 0;
-    int last_index = candidate_count - 1;
     while (placed < level_definition.parcel_count && candidate_count > 0) {
         int picked = (int)RAND((float)candidate_count, "P3");
         int selected_row = g_parcel_group_survival_0[picked];
@@ -58,13 +57,12 @@ void cRSubGame::PlaceParcelsSurvival()
                 + 0.5f;
         }
 
-        for (int move_index = picked; move_index < last_index; ++move_index) {
+        for (int move_index = picked; move_index < candidate_count - 1; ++move_index) {
             g_parcel_group_survival_0[move_index] =
                 g_parcel_group_survival_0[move_index + 1];
         }
 
         --candidate_count;
-        --last_index;
     }
 
     level_definition.parcel_count = placed;
@@ -77,11 +75,9 @@ void cRSubGame::PlaceParcelsSurvival()
                 && (runtime_rows[scan].flags
                         & SUBROW_FLAG_PRIMARY_ATTACHMENT)
                     != 0) {
-                int source_row =
-                    runtime_rows[scan].primary_attachment_cell->Yi();
                 int node =
                     (int)runtime_rows[scan].parcel_spawn_position.z
-                    - source_row;
+                    - runtime_rows[scan].primary_attachment_cell->Yi();
                 if (node < 0) {
                     node = 0;
                 }

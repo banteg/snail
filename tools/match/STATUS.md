@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**622/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **190281/299952** bytes (**63.44%**) are proof-grade, and overall fuzzy is **95.30%**.
+**623/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **190905/299952** bytes (**63.65%**) are proof-grade, and overall fuzzy is **95.30%**.
 
 **114/120** platform helpers matched, **120/120** have a scratch, **17633/23008** bytes (**76.64%**) are proof-grade, and overall fuzzy is **96.81%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -10,9 +10,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**40** non-exact scratch-backed functions hold **8649 fuzzy-gap bytes**. The top 5 hold **79.8%** of that gap; the top 10 hold **88.4%**.
+**39** non-exact scratch-backed functions hold **8645 fuzzy-gap bytes**. The top 5 hold **79.8%** of that gap; the top 10 hold **88.5%**.
 
-Current-baseline experiments cover **1 functions / 118 gap bytes**; **39 / 8531** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **1 functions / 118 gap bytes**; **38 / 8527** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -53,14 +53,13 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 33 | try_enter_track_attachment_from_swept_motion | 8 | semantic-complete | analysis | historical-only | 0/12 | historical-only,stale-dependencies |
 | 34 | load_galaxy_layout | 7 | semantic-complete | analysis | historical-only | 0/33 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 35 | initialize_looptheloopw_path_template_pair | 4 | semantic-complete | analysis | historical-only | 0/19 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
-| 36 | place_challenge_parcels_on_track | 4 | semantic-complete | analysis,references | historical-only | 0/9 | historical-only,stale-dependencies |
-| 37 | initialize_loopbow_path_template_pair | 0 | semantic-complete | analysis | historical-only | 0/21 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 38 | initialize_loopout_path_template_pair | 0 | unspecified | unspecified | historical-only | 0/28 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 39 | initialize_turnoverdouble_path_template_pair | 0 | semantic-complete | analysis | historical-only | 0/58 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 40 | initialize_turnover_path_template_pair | 0 | semantic-complete | analysis | historical-only | 0/58 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 36 | initialize_loopbow_path_template_pair | 0 | semantic-complete | analysis | historical-only | 0/21 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 37 | initialize_loopout_path_template_pair | 0 | unspecified | unspecified | historical-only | 0/28 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 38 | initialize_turnoverdouble_path_template_pair | 0 | semantic-complete | analysis | historical-only | 0/58 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 39 | initialize_turnover_path_template_pair | 0 | semantic-complete | analysis | historical-only | 0/58 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 
 
-## Proof Grade (622)
+## Proof Grade (623)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -504,6 +503,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ✅ | initialize_zero_parcel_bucket_pool_thunk | 0x4438a0 | 16 | 1/1 | 100.00% | 1/1 | 1 ok |  | core |
 | ✅ | initialize_zero_parcel_bucket_pool | 0x4438b0 | 48 | 15/15 | 100.00% | 15/15 | 3 ok |  | core |
 | ✅ | place_parcels_on_track | 0x4438e0 | 2400 | 639/639 | 100.00% | 639/639 | 98 ok |  | core |
+| ✅ | place_challenge_parcels_on_track | 0x444240 | 624 | 171/171 | 100.00% | 171/171 | 34 ok |  | core |
 | ✅ | project_position_onto_track_attachment | 0x4444b0 | 336 | 106/106 | 100.00% | 106/106 | 5 ok |  | core |
 | ✅ | dispatch_cutscene_animation | 0x444600 | 224 | 55/55 | 100.00% | 55/55 | 3 ok |  | core |
 | ✅ | set_weapon_animation | 0x4446e0 | 224 | 55/55 | 100.00% | 55/55 | 3 ok |  | core |
@@ -696,7 +696,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ⚠ | initialize_turnoverdouble_path_template_pair | 0x427640 | 2464 | 680/680 | 100.00% | 680/680 | 46 ok |  | core |
 | ⚠ | initialize_loopbow_path_template_pair | 0x42ba80 | 2944 | 796/796 | 100.00% | 796/796 | 63 ok |  | core |
 
-## Near Match (95-99.99%) (22)
+## Near Match (95-99.99%) (21)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -720,7 +720,6 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | initialize_star_field | 0x434310 | 864 | 247/247 | 98.38% | 126/247 | 26 ok |  | core |
 | 🚧 | explode_slug_hazard | 0x43f680 | 560 | 147/147 | 97.96% | 79/147 | 32 ok |  | core |
 | 🚧 | firework_shoot | 0x441dd0 | 400 | 103/103 | 95.15% | 78/103 | 21 ok |  | core |
-| 🚧 | place_challenge_parcels_on_track | 0x444240 | 624 | 171/171 | 99.42% | 45/171 | 34 ok |  | core |
 | 🚧 | initialize_tip | 0x448a40 | 512 | 154/154 | 96.10% | 23/154 | 27 ok |  | core |
 
 ## High Progress (80-94.99%) (14)

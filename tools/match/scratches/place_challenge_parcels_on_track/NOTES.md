@@ -342,28 +342,26 @@ rejection/while/end-pointer scans with both projection lifetimes. All regress
 canonical source and its visible 33 clean plus two unaudited references remain.
 These results bound these operations and guards, not the possible source.
 
-## 2026-09-25 indexed candidate scan and combined placement guard
+## 2026-09-25 exact: indexed scan, combined loop guard, inline temporaries
 
-Four source changes take the result from 81.40% to **99.42%**, 171/171
-instructions, prefix 45, with all 34 references clean (the two unaudited
-bucket references are gone):
+The function is now **byte-exact**: 171/171 instructions, all 34 references
+clean, and a byte-identical encoded body (up from 81.40%, prefix 0).
 
 - The candidate collection loop indexes `runtime_rows[row_index]` rather than
   walking a row pointer. VC6 then bases its induction pointer on
   `parcel_set_id` (`[ecx-0x9c]` flags test, `cmp [ecx], 0`), as native does.
-- The placement loop is `while (placed < parcel_count && candidate_count > 0)`
-  with no enclosing `parcel_count > 0` guard. This matches the Android
-  `PlaceParcelsSurvival` condition. With the guard, `this` moves from `ebp` to
-  `ebx` throughout.
-- The final scan reads `runtime_rows[scan].primary_attachment_cell` at each
-  use; the cached `cell` local added a spill slot (frame 0x4c vs 0x48).
-- The template record is tested through the full expression; the named
-  `template_record` local exists only inside the kind-42 branch.
+- The placement loop is `while (placed < parcel_count && candidate_count > 0)`,
+  matching the Android `PlaceParcelsSurvival` condition, with no enclosing
+  `parcel_count > 0` guard.
+- The shift loop bound is `candidate_count - 1` directly. Native's
+  `lea ebx, [esi-1]` in the loop preheader is VC6's induction variable for
+  that expression, not an authored `last_index` local; a named local puts the
+  `lea` before the first `jle`.
+- The final scan has no `source_row` or `cell` locals: `node` subtracts
+  `primary_attachment_cell->Yi()` inline, and the cell is re-read at each use.
+  The template record local exists only inside the kind-42 branch.
 
-The only remaining difference is placement: native computes
-`lea ebx, [esi-1]` (`last_index`) after the first `jle`, in the loop preheader.
-Using `candidate_count - 1` directly as the shift bound gives native's
-placement as a compiler induction variable, but swaps `this`/`ebx` again.
-The same swap appears with any `if` guard around the loop. Tested and
-neutral: for-loop spellings of either counter, `break` exits, `last_index`
-declaration scope, and row references in the final scan.
+The register assignment was the delicate part. With the preheader induction
+variable, the extra `source_row` web tipped VC6 into giving `this` `ebx`
+instead of `ebp` across the whole function; inlining it restores native's
+`ebp` receiver. A cached `cell` local also added a 4-byte spill slot.
