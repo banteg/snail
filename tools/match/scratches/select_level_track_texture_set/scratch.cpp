@@ -24,9 +24,6 @@ void cRTrack::Change(int texture_set)
     case 5:
         selected = (int)RAND(4.0f, 0);
         break;
-    default:
-        selected = texture_set;
-        break;
     }
 
     int previous = current_texture_set;

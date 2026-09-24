@@ -14,9 +14,6 @@ void cRSnail::SetJetPack(int state)
     case 1:
         target_state = 4;
         break;
-    default:
-        target_state = state;
-        break;
     }
 
     int selected_state = jetpack_channel.selected_state;

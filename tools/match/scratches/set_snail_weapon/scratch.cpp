@@ -48,10 +48,6 @@ void cRSnail::SetWeapon(int shoot_flags)
         target_channel_2_state = 0;
         target_channel_1_state = 2;
         break;
-    default:
-        target_channel_0_state = shoot_flags;
-        target_channel_1_state = shoot_flags;
-        break;
     }
 
     selected_state = weapon_channels[0].selected_state;

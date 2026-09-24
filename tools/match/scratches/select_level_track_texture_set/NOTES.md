@@ -195,3 +195,13 @@ exact neighboring controls. No compiler override or source change follows
 from this comparison. Component versions, hashes, measured results and the
 separate mislabeled VC7-archive check are recorded in
 [the compiler-control report](../../compiler-profile-controls-20260907.md).
+
+## 2026-09-25 undefined default selection
+
+As in `SetJetPack`, the unlisted texture sets leave `selected` unassigned; there
+is no `default: selected = texture_set;` arm. VC6 homes the unassigned local in
+the dead parameter slot, producing the native `mov edi, [esp+0xc]` default-arm
+load and the switch value in `eax`. The retained source gives **100%**, 44/44
+instructions, a byte-exact encoded body, and all seven references clean,
+including the jump table that was previously a positional mismatch. In the
+shipped binary that load still yields `texture_set`.

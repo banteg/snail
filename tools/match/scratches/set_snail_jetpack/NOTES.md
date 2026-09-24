@@ -54,3 +54,14 @@ exact neighboring controls. No compiler override or source change follows
 from this comparison. Component versions, hashes, measured results and the
 separate mislabeled VC7-archive check are recorded in
 [the compiler-control report](../../compiler-profile-controls-20260907.md).
+
+## 2026-09-25 undefined default target
+
+The native default arm does not copy the parameter: `target_state` is simply
+left unassigned for states other than 0 and 1. The iOS body confirms the shape,
+where the default path reads an uninitialized register. VC6 gives the unassigned
+target the dead `state` parameter's stack home, so the default path's
+`mov ebx, [esp+0xc]` is the uninitialized read, not a parameter reload. Removing
+`default: target_state = state;` gives **100%**, 62/62 instructions, eight clean
+references, and a byte-exact encoded body. In the shipped binary the load still
+yields `state`, so behavior equals the old passthrough mapping.

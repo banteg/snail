@@ -69,3 +69,22 @@ channel's duplicated state/sound exits, with the original, direct, or later
 channel-zero borrow and either a shared change gate or existing sound branch.
 All regress as well. Every variant compiles with all 24 references clean; no
 source change is retained. The native mapping/transition lifetimes remain open.
+
+## 2026-09-25 undefined default targets
+
+The first two channel targets are also unassigned in the default arm (the
+third already was). Removing the two parameter copies moves both native
+`[esp+0x18]` loads into place and improves the retained source from 83.54% to
+**87.47%**, 247/249 instructions, prefix 14, with 24 clean references. The same
+shape matches `SetJetPack` and `cRTrack::Change`.
+
+Recorded lead `uniform-channel2-tail-no-channel-ref-20260925`: channel zero
+without the `Weapon& channel` borrow, and channel two written like the Android
+body (break, publish, set changed flag, shared `if (changed) Play(25)`), lines
+up with native through all three tail-duplicated exits, including the
+`mov [esi+0xf08], ebx` stores. What remains is a register swap: channel one's
+target takes `ebx` and the channel-zero case pointer takes a shrink-wrapped
+`ebp`, where native has the reverse. The differ also stops recognizing the
+byte lookup table in that build (no alignment pad), so it reports 41%. It is
+not retained; declaration order (the first 18 of 720 permutations) and
+bool/int flag types are neutral or worse.
