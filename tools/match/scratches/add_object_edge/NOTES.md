@@ -263,3 +263,22 @@ are compiler-rejected source alternatives, not generated matching objects;
 no code is retained and no return declaration is changed. The compiler and
 shared arithmetic definitions remain fixed. These bounded checks do not
 establish exhaustion of the native early epilogue and count-publication shape.
+
+## 2026-09-25 exit placement lead
+
+Native lays out the not-found block immediately after the search loop and
+falls into the shared epilogue; every early exit jumps back to that epilogue,
+and the shared-edge block follows it with its own duplicated `--count`
+epilogue (`mov eax, [count]` / `dec eax` / store, interleaved with pops). The
+canonical flag form reproduces the not-found-first layout but places the
+shared epilogue at the end and emits `dec dword [count]` (91.59%, three
+unaudited count references).
+
+Writing the found case first (or reaching it via a `goto` from the loop, or
+handling it inside the loop with `return`) reproduces native's shared
+epilogue after the not-found block, the register-based final decrement, and
+all 36 references clean, but VC6 then lays the found block out before the
+not-found block (58.46%, 228/227). The source must produce native's block order
+together with that exit and decrement shape. Neutral: `else if` joins,
+`!found_edge`, an int flag, and post/pre/explicit decrement spellings.
+A `-1` sentinel index regresses to 63.48%.
