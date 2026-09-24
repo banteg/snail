@@ -54,6 +54,8 @@ void cRPath::initialize_looptheloop_path_template_pair(float curve_source,
                                                     int width_cells_, bool side_exit,
                                                     char* texture_a, char* texture_b,
                                                     char* cap_texture) {
+    AttachmentSample* const& primary_bank = primary_samples;
+    AttachmentSample* const& secondary_bank = secondary_samples;
     int curve_count;
     int i;
 
@@ -125,7 +127,6 @@ void cRPath::initialize_looptheloop_path_template_pair(float curve_source,
         ++tail_sample_index;
     }
 
-    AttachmentSample* const& primary_bank = primary_samples;
     i = 0;
     if (curve_count > 0) {
         float secondary_radius = curve_source - 0.49000001f;
@@ -138,7 +139,7 @@ void cRPath::initialize_looptheloop_path_template_pair(float curve_source,
                                           loop_segment_count, curve_count_f,
                                           curve_source, secondary_radius, loop_wiggle);
             orient_sample(primary_bank, sample_index, curve_source);
-            orient_sample(secondary_samples, sample_index, curve_source);
+            orient_sample(secondary_bank, sample_index, curve_source);
 
             ++i;
         } while (i < curve_count);

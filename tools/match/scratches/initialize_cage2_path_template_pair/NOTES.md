@@ -441,3 +441,36 @@ compiler/profile, ABI, or shared-header change is retained.
 Independent byte checks leave **18 literal mismatches**: fourteen SIB operand
 orders and four parity register bytes. Every local branch matches literally;
 all reference instructions are positional. The full body is still partial.
+
+## 2026-09-25 byte-exact: curve-loop bank borrow and shared mesh column
+
+Cage2 is now **byte-exact** (`state=match`): 100% normalized, 648/648
+instructions, prefix 648/648, encoded body match, 46 clean references. The
+previous source was 99.38272% with 18 literal mismatches (fourteen SIB
+base/index swaps plus four parity register bytes). Two house-style transfers
+from solved siblings close them:
+
+- **Live primary bank for the whole curve sample.** Start's curve operation
+  and Wibble's primary initialization borrow the primary bank by reference
+  for the complete sample. Cage2 previously borrowed it only around
+  Identity/position. Declaring `primary_bank` right after the `center_x`
+  store and using it for every later primary access in the loop body
+  (scalars, Identity/position, secondary X/Y copies, orientation branch,
+  both RotLocalZ center reads, RotIdentity) turns all fourteen
+  `[offset+bank]` SIBs into native `[bank+offset]`. The `center_x` store
+  itself must stay on the direct member (native `[edi+ebp]`); borrowing it
+  as well moves the bank load and desyncs at 0x158 (80.49%).
+- **Shared vertex/face column (LoopBow's lesson).** The face column reused
+  the `width_cells_` parameter; VC6 then emitted `mov edx,row; xor edx,col`.
+  Hoisting the vertex loop's `column` to function scope and reusing it as
+  the face column (with a plain `++column` do-while, like Hump) gives native
+  `mov edx,col; xor edx,row`. VC6 still packs that local into the dead
+  parameter home `[esp+0x68]`, as native does. A fresh face-only `column`
+  fixed the xor but moved the stack slots (98.15%); a fresh face row or
+  swapping the xor operands in source was neutral.
+
+Independent controls: bank borrow only is 99.38% with four parity bytes;
+shared column only is 100% normalized with fourteen SIB bytes. Keeping the
+`next_column` temporary with the shared column is also byte-exact; the
+simpler `++column` form is retained. `RECOVERY`/`RESIDUAL` are removed from
+`scratch.conf`.

@@ -491,3 +491,46 @@ conversion temporary homes; a reverse probe recovers the previous code hash.
 Moving face-index initialization is neutral. Adding both checkerboard branches
 regresses and is not retained. See the
 [family report](../../path-frontier-and-linking-20260908.md).
+
+## 2026-09-25 typed departure samples and saved endpoint offset
+
+Native Turnunder emits `mov ecx, edi ... add ecx, <bank>` for both departure
+`Identity()` receivers, the same shape its typed lead and curve samples
+produce. Turnover-style physical addressing gives `mov ecx, <bank>; add ecx,
+edi` instead. Inlining the departure loop as `primary_samples[i]` /
+`secondary_samples[i]`, and removing the `initialize_tail_pair` helper and its
+byte cursor, fixes both receivers and restores the native 687-instruction count
+(98.84%). The loop keeps the logical `i` and `tail_origin` bound.
+
+The native saves the initial departure byte offset at `[esp+0x24]` before
+`tail_origin` is computed, and the curve reads the endpoint center from it. An
+`endpoint_offset = endpoint_index * sizeof(AttachmentSample)` local, declared
+before `i = endpoint_index` and used for the curve's endpoint `center_x` read,
+recovers that order. Result: **95.99% to 99.27%**, **687/687** instructions,
+prefix **105 to 140**, 45/0/0/0 references. The body is not byte-exact.
+
+Three scheduling residues remain:
+- Departure latch: native `add edi,0xa8; inc eax; add ecx,eax; mov [esp+0x6c],eax; cmp`.
+  The candidate places the strength-reduced `edi` update after the bound add
+  and writes `i` back after the compare. Only an explicit byte cursor reproduces
+  this latch, and that cursor flips the receivers back.
+- Curve zero store: native `mov [esp+0x6c],ebx` comes before the
+  `interior_count` guard compare. The candidate puts it after the branch.
+- Up-vector copy: native loads `up.y` before `add esp,4`. The candidate loads it
+  after.
+
+Rejected in this pass:
+- Physical curve cursor, Turnover style. It fixes the guard store but flips every
+  receiver and the `rep movsd` setup to base-first (94.67%).
+- Helper with typed indices. It fixes the receivers, but the curve receiver flips
+  (95.11%).
+- Inline explicit cursor. 95.63%.
+- Explicit cursor with typed `Identity()` calls only. 86%.
+- Merged `i`/`sample_step` departure counters, `i++` and `++i` in the bound, and a
+  fresh `tail_index`. Each is identical or worse.
+- `i - endpoint_index < 2` or a `for` departure loop. These drop the `0x54` frame.
+- Declaring `endpoint_offset` after `i`. This drops the `0x54` frame.
+- Up-vector owners in the new context. The named local and the nested
+  constructor are neutral; an outer `up(0,0,0)` adds x/y zero stores.
+- Curve `do`/`while` and a fresh curve counter. Each is neutral or worse.
+- Reordering helper definitions. Byte-identical.

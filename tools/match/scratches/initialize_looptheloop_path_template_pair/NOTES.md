@@ -345,3 +345,40 @@ The [report](../../looptheloop-live-curve-operations-20260913.md) and
 [receipt](../../looptheloop-live-curve-operations-20260913.json) retain 47
 replayable controls, complete native/candidate bytes, prefix proof and reversible
 code fingerprints. No additional full match is claimed.
+
+## 2026-09-25: function-scope bank references
+
+Result: **99.58391123% to 100% normalized** (721/721 instructions, prefix
+230 to **721**, 49/0/0/0 references). The probe state is `audit`. It is not
+byte-exact yet: raw literal differences go from **26 bytes to 1**.
+
+The change follows the LoopTheLoopW sibling. Both sample-bank references,
+`primary_bank` and `secondary_bank`, are now declared at function entry
+instead of borrowing `primary_bank` just before the curve loop. The
+secondary orientation operation borrows `secondary_bank`. The circular
+position operation keeps binding directly to the member fields. This one
+change fixes the secondary Identity receiver schedule (`mov ecx, edi` /
+`add ecx, [esi+0x5c]`), the three secondary position SIB bytes (993, 1016,
+1045) and the primary basis-right load/store order (1050-1055).
+
+The remaining byte is body offset **792**. The interpolation store
+`fstp [edi+eax+0x90]` has SIB `07` in native code; the candidate has `38`,
+with base and index swapped. None of these alternatives fixes it, and each
+leaves 792 or regresses:
+- a separate interpolation operation, with either bank or physical-offset
+  addressing
+- inline interpolation through either bank
+- a returned interpolated value
+- an `i + 7` argument, or explicit first/last indices
+- a local temporary for the value or for the sample pointer
+- operand reordering
+- by-value or non-const references in the helper
+- permuting the helper parameters
+- moving the declarations or reordering them
+- using the banks in the lead, tail, delta or mesh loops
+
+Storing through one bank spelling while reading through another makes the
+store iv-first. It also moves the `Sin` argument `push ecx` and rotates the
+reload registers, which gives about 94.4%. Inlining the position operation
+and borrowing `secondary_bank` also reaches 100% normalized with the same
+single byte left.
