@@ -203,8 +203,8 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
                                 up_radius;
                         Vector3 base_plus_right =
                             primary_samples[sample_index].transform.position +
-                            Sin(column_as_float / (float)width_cells * WORM_TAU) *
-                                (radius * primary_samples[sample_index].transform.basis_right);
+                            primary_samples[sample_index].transform.basis_right * radius *
+                                Sin(column_as_float / (float)width_cells * WORM_TAU);
                         Vector3 vertex = base_plus_right + up_component;
                         vertices[mesh_column + sample_index * width_cells] = vertex;
 
@@ -268,8 +268,17 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
                                 (unsigned short)((mesh_column + 1) * width_cells + next_column % width_cells);
                         }
 
-                        face->texture_ref =
-                            g_texture_refs.Add(texture_path, 0, 0);
+                        if (side == 0) {
+                            if (((column ^ mesh_column) & 1) == 0)
+                                face->texture_ref = g_texture_refs.Add(texture_path, 0, 0);
+                            else
+                                face->texture_ref = g_texture_refs.Add(texture_path, 0, 0);
+                        } else {
+                            if (((column ^ mesh_column) & 1) == 0)
+                                face->texture_ref = g_texture_refs.Add(texture_path, 0, 0);
+                            else
+                                face->texture_ref = g_texture_refs.Add(texture_path, 0, 0);
+                        }
 
                         float width_f = (float)width_cells;
                         float u0 = column_as_float / width_f;

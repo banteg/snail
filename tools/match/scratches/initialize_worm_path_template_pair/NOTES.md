@@ -1,3 +1,36 @@
+## 2026-09-25 per-side checkerboard texture and member right-scale
+
+Structural diff (`snail match scratch --structural`, scratch-register rotation
+ignored): **88/77 -> 52/43** changed target/candidate instructions
+(88.71% -> 93.51%). Normalized: **82.14% -> 87.08%**, 725 -> 727/736
+instructions, 37 clean references. The frame is still 0x80/0x68.
+
+- The native single `Add` site at `0x420b55..0x420b7e` (pushes of 0/0 mixed
+  with `(column ^ row) & 1`, then a branch to two identical
+  `push texture_path` arms) is VC6 tail-merging four call sites. The source
+  now has a separate `if (side == 0)` texture block after the winding block.
+  Each side holds a sibling-style `((column ^ row) & 1) == 0` checkerboard
+  that calls `Add(texture_path, 0, 0)` in both arms, as Cage2/Hump/Screw do
+  with per-side textures. Only this form keeps the condition inside the side
+  loop. A checkerboard at loop level (any spelling) is hoisted as
+  loop-invariant, giving 132/127. A ternary argument folds away (64/52). The
+  checkerboard inside each winding arm leaves the pushes in those arms (62/62).
+- The right component is now `basis_right * radius * Sin(...)`, using the
+  member `tVector::operator*(float)`, in place of the scalar-left form. This
+  recovers the native `lea eax,[eax+edx+0x30]` placement and the position-sum
+  schedule. On its own it gives 58/43. Using the member form for the up
+  component as well is neutral or worse.
+
+Neutral or worse on the new source: face-address and vertex-index spellings,
+including sibling `(unsigned short)width_cells`; reusing `sample_index` or
+`mesh_column` as face row or column (70-78); logical to physical exit cursor
+(81-85); a named `z` float in the edge loops; UV store order; and vertex-sum
+chains (`+=`, declaring then assigning, a vertex pointer, reassociation). None
+of these moves the frame. What remains: the native position+right result is
+copied twice through two extra Vector3 temporaries (the 0x18 frame delta),
+the face-loop stack homes that shift with it, UV store scheduling, and
+`mov ecx, edi` scheduling in the edge/middle identity calls.
+
 ## 2026-09-22 middle-loop counter recovery
 
 A single logical middle ordinal and its derived absolute sample recover the
