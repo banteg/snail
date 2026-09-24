@@ -218,11 +218,10 @@ steering_stored:
             ->current_high_score_record
             .run_records[record_game->replay_update_cursor]
             .lateral_x = MathType32to16(quantized_x, 16.0f);
-        cRSubGame* record_game_z = game;
         if (!game->replay_update_cursor) {
-            record_game_z
+            game
                 ->current_high_score_record
-                .run_records[record_game_z->replay_update_cursor]
+                .run_records[game->replay_update_cursor]
                 .delta_z = MathType32to16(transform.position.z, 32.0f);
             g_replay_accum_z = MathType16to32(
                 game
@@ -231,9 +230,9 @@ steering_stored:
                     .delta_z,
                 32.0f);
         } else {
-            record_game_z
+            game
                 ->current_high_score_record
-                .run_records[record_game_z->replay_update_cursor]
+                .run_records[game->replay_update_cursor]
                 .delta_z =
                 MathType32to16(transform.position.z - g_replay_accum_z, 32.0f);
             g_replay_accum_z =
@@ -317,15 +316,14 @@ steering_stored:
                     1, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
             }
             int definition = row_record->row_event_id;
-            cRSubGame* voice_game = game;
-            if (voice_game
+            if (game
                     ->level_definition
                     .segment_slots[definition - 1]
                     .message_sample_id
                 != -1)
                 g_voice_manager.Play(
                     VOICE_SET_TUTORIAL, VOICE_PLAY_INTERRUPT,
-                    voice_game
+                    game
                         ->level_definition
                         .segment_slots[definition - 1]
                         .message_sample_id);
@@ -366,8 +364,7 @@ steering_stored:
 
     if (follow_state.active == 1) {
         Vector3* p_velocity = &velocity;
-        float follow_speed = velocity.z;
-        switch (follow_state.Traverse(follow_speed, *p_position, &velocity)) {
+        switch (follow_state.Traverse(velocity.z, *p_position, &velocity)) {
         case 1:
         case 3:
             if (follow_state.active == 1)
@@ -716,8 +713,8 @@ steering_stored:
     float completion_start = (float)completion_game->completion_row_start;
     if (transform.position.z < completion_start || attachment_exit_pending) {
         if (!boost_one_tick && !slug_fall_active) {
-            float speed = velocity.z;
             float window = completion_game->subgame_rate * 0.17f;
+            float speed = velocity.z;
             if (speed >= window) {
                 window = completion_game->subgame_rate * 0.5f;
                 if (speed <= window)
@@ -737,8 +734,8 @@ steering_stored:
             completion_handoff_timer = 0.0f;
             completion_handoff_timer_step = 0.016666668f;
             completion_handoff_voice_gate = 0;
-            float speed = velocity.z;
             float window = handoff_game->subgame_rate * 0.17f;
+            float speed = velocity.z;
             if (speed >= window) {
                 window = handoff_game->subgame_rate * 0.5f;
                 if (speed <= window)
@@ -847,13 +844,12 @@ steering_stored:
     damage_gauge.AI();
     progress_bar.AI();
 
-    Vector3* camera_target = &cached_camera_target_world;
-    *camera_target = *p_position;
+    cached_camera_target_world = *p_position;
     Vector3 camera_offset =
         transform.basis_right * sub_hover.wobble_x
         + transform.basis_up * sub_hover.wobble_y
         + transform.basis_forward * sub_hover.wobble_alpha;
-    *camera_target += camera_offset;
+    cached_camera_target_world += camera_offset;
 
     int hold_ticks = damage_gauge.skin_hold_ticks;
     if (hold_ticks > 0)

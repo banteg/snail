@@ -1,5 +1,47 @@
 # update_subgoldy @ 0x43b120
 
+## 2026-09-25: rotation-guided cleanup
+
+Current source: **99.28298279%** normalized and **99.28%** structural, with
+**2,089/2,087 instructions**, prefix **548** and **315 clean references**.
+Before this change it was 84.77% normalized and 98.57% structural, with
+2,093/2,087 instructions and prefix 12. Most of the change comes from
+[`rotation.py`](../../c2/rotation.py), which shows where the
+eax/ecx/edx rotation stops matching native. Each fix removes a copy that
+native does not have:
+
+- **Replay delta-z record:** removed the `record_game_z` alias. Native loads
+  `game` into a rotation temporary and copies it to esi. The named alias got
+  a global register and never used a rotation slot (84.77% to 85.84%).
+- **Tutorial voice lookup:** removed the `voice_game` alias for the same
+  reason. The rotation now matches native through the follow-path block.
+- **`Traverse` call:** passes `velocity.z` directly. The `follow_speed`
+  local was spilled to the stack (`mov [esp+0x14],T`), and native has no
+  spill (93.02%).
+- **Two completion clamps:** now compute `window` before
+  `float speed = velocity.z`. Native compares `fld [vel]; fcomp st(1)`
+  (99.14%). The remaining difference is that our `speed` is kept in
+  `[esp+0x10]` for the inner compare and the final assignment, while native
+  reloads `velocity.z` at each use. A test-only
+  `static inline float Speed(const Vector3&)` accessor called at each use
+  reproduces native exactly (99.52%). No source evidence for that accessor
+  was found, so it is not adopted. Plain member reads, references, casts,
+  unary plus and ternary forms all turn into `fcom [vel]`.
+- **Camera target:** assigns to `cached_camera_target_world` directly
+  instead of through a local pointer. The `sub_hover.wobble_x` `fld` is now
+  scheduled into the copy as in native (99.28%). One store in that copy is
+  still ordered differently: `[ecx+4]` versus `[edx+8]`.
+
+Still open:
+
+- In the case-2 `p_position->x + p_velocity->x` sum, native loads
+  `[ebx]` first. Operand order and renaming the pointer local do not change
+  this.
+- The ghost-z `records[0]` / `records[cursor]` layout is still inverted.
+  Ternary, inverted-condition, direct-global-store, member-anchor and
+  split-assignment forms all compile to the same object. The allocations the
+  rotation tool reports inside that block follow the layout.
+
 ## 2026-09-11: replay cursor and persistence branch ownership
 
 Current source: **84.76599809%**, **2,093/2,087 instructions**, prefix **12**,
