@@ -1,15 +1,9 @@
 # add_object_edge
 
-Current retained result: **91.59%**, 225/227 instructions, 15-instruction prefix,
-34 clean references and three unaudited count-publication operands. The newer
-consumed-index recovery below supersedes earlier allocation-boundary claims.
-
-Current recovery: semantic-complete (`compiler,references` residual). Exact
-Android/iOS `cRObject::AddEdge` bodies establish the common reverse-edge merge
-algorithm; Windows proves its larger record, normalized direction/length, and
-static coplanar-join filter. No reference is unresolved or mismatched. Three
-known global edge-count operations remain unaudited because the native and
-candidate publish the same decrement through different block layouts.
+Current retained result: **exact**. 227/227 instructions, the encoded body
+matches, and all 36 references are clean. See "2026-09-25 exact recovery:
+pretested search loop" below. Earlier sections record the search and are
+superseded where they disagree.
 
 First source-shaped scratch for the toon edge merge helper.
 
@@ -282,3 +276,77 @@ not-found block (58.46%, 228/227). The source must produce native's block order
 together with that exit and decrement shape. Neutral: `else if` joins,
 `!found_edge`, an int flag, and post/pre/explicit decrement spellings.
 A `-1` sentinel index regresses to 63.48%.
+
+## 2026-09-25 exact recovery: pretested search loop
+
+The search is an ordinary pretested `for` loop over the global count. The
+shared-edge merge sits inside the loop and ends with `return`, the same
+structure as the Android and iOS bodies. The new-edge path follows the loop:
+
+```cpp
+for (int index = 0; index < g_object_edge_build_count; ++index) {
+    Vector3* vertex_b_position = &vertices[vertex_b];
+    Vector3* edge_a_position = &vertices[g_object_edge_build_edges[index].vertex_a];
+    if (/* edge_a == vertex_b */) {
+        ...
+        if (/* edge_b == vertex_a */) { /* merge and compaction */ return; }
+    }
+}
+/* append boundary edge */
+```
+
+The result is exact: 227/227 instructions, prefix 227, encoded body match,
+and 36/0/0/0 references. Strength reduction supplies native's `+8` cursor, and
+loop-invariant motion places `vertices[vertex_b]` after the entry guard. The
+hand-written cursor is unnecessary. Three other spellings of the same `for`
+loop also match exactly: a found-edge flag with the merge placed first after
+the loop, a local `build_count` bound, and `index` declared outside the loop.
+In the flag form, hoisting `vertex_b_position` before the loop regresses to
+56.32%.
+
+Mechanism, observed with preserving traces of the pinned C2 (Snail's
+`tools/match/c2/trace.py` adapter plus Crimson's bonus-pick layout observer).
+Every run reproduced the whole COFF object. The addresses below were read in
+Binary Ninja:
+
+- **Mover gate (C2+0x3663c).** An unconditional jump J qualifies only if the
+  node after it is a label, its target lies ahead, and the node before the
+  target is an unconditional jump or RET. The range from that label up to the
+  target's predecessor then moves after the next unconditional jump or RET
+  following the target, and J is deleted. Native needs the loop exit to read
+  `jl head; jmp not_found` with the found block between that jump and the
+  not-found block. The found block ends in `jmp` to the shared count store and
+  epilogue. The exact source reaches the mover in that shape. It moves the
+  found range (IL nodes 85..169) after the RET. The pass's tail duplication
+  then gives the found path its own epilogue, with the separate
+  `mov eax / dec eax / store` sequence, while the not-found block falls into
+  the shared epilogue.
+- **Why do-while fails.** Traced here for the found-first flag form; the
+  earlier `goto` and in-loop `return` do-while probes end in the same
+  `jge not_found; jmp L64` shape. After the RPO rebuild, the found path (`T`,
+  or the whole found block) comes before the conditional latch, because the
+  DFS explores each jump target first and the first compare's target is the
+  latch.
+  Loop compaction (C2+0x560f -> 0x43b90) moves that non-loop run to just after
+  the latch. It then repairs the latch fall-through through 0x10e7c/0x1dc8f.
+  That fall-through leaves the loop, so 0x10e7c calls 0x44789 -> 0x1105c. That
+  helper inverts the branch so the conditional goes to the exit and the new
+  unconditional jump goes back to the head: `jge not_found; jmp head`. J then
+  jumps backward and the mover rejects it. This matches the 58.46% found-first
+  build. In canonical not-found-first order, the jumps later collapse to
+  `jl head`, but the found block falls into the epilogue. The epilogue label's
+  predecessor is then not a terminator, so the mover still rejects it (91.59%).
+- **Why the pretested loop succeeds.** Its latch is `++index; jmp head`. When
+  compaction moves the found block after that unconditional backedge, no
+  fall-through repair is needed, so no swap happens. Loop inversion (C2+0x12d99,
+  called at 0x55a2) later copies the test to the bottom. It emits `jcc body`
+  followed by a new `jmp exit`, keeping that polarity. That supplies J.
+- A guarded `if (count > 0) while (...)` with a flag also reaches the mover in
+  this shape (78.60%). It keeps a redundant second guard, however, so the
+  unguarded `for` is the recovered form.
+
+Reproduce with `late.py <source> <new-out> [early|loop]` from the diagnostic
+scripts. These were kept outside the repository; they add layout and early
+block hooks to the adapter. The observations earn no match credit. The match
+itself is the ordinary `snail match scratch` result.
+
