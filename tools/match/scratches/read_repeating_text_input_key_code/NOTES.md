@@ -240,4 +240,6 @@ Full answer: `/tmp/claude/c2-from-crimson-88/snail_answer_call-operand-order.md`
 **Source simplification (byte-identical, same code hash).** The separate `repeat_code` byte is gone.
 `result` is compared directly, matching the single key variable in the Android and iOS bodies. `[esp+8]` is
 where the allocator keeps `result` in memory. The operands stay `RstrASC(g_last) == RstrASC(result)`,
-which keeps `cmp dl,al` once the call order is fixed.
+which is the best order without the prelude. Inside the id window, native's form is
+`RstrASC(result) == RstrASC(g_last)`; the global on the left there gives native's call order but a flipped
+compare (99.77%).
