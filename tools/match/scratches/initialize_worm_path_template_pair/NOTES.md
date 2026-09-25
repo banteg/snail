@@ -516,3 +516,23 @@ Ours has only A and D.
 - About 300 variants were tried. This is the only function in the corpus with this pattern.
 
 The retained source is unchanged.
+
+## 2026-09-26: entrance cursor, stepped exit loop, secondary borrow (Codex consult)
+
+**90.64% → 91.88% normalized**, structural 95.56% → 96.52%, 729/736 (was 727), 37 clean references.
+
+**Changes.**
+- **Entrance loop.** A physical byte cursor, bounded by `4 * sizeof(AttachmentSample)`, as in the siblings.
+  The logical counter still supplies z. This recovers both entrance/exit primary `Identity()` receivers,
+  including the missing receiver copy.
+- **Exit loop.** `for (int exit_step = 0; exit_step < 4; ++exit_step)` with `exit_index = exit_step + 20`.
+  VC6 still derives native's absolute index and cursor. The induction update becomes
+  `add edi,0xa8; inc ebx; spill`, which is native's exit-window order: a write-after-write dependency
+  keeps the increment late.
+- **Middle loop.** `AttachmentSample* const& secondary_bank = secondary_samples` recovers the bank-first
+  secondary receiver add.
+
+**Remaining.** Seven instructions short. crimson-88's Q1c analysis explains the missing Vector3 field-copy
+temporaries.
+
+Evidence: `/private/tmp/claude-501/sm/codex/initialize_worm_path_template_pair/RESULTS.md`.
