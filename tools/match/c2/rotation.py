@@ -126,6 +126,10 @@ def observer(profile, stock_source):
     for anchor in anchors:
         if source.count(anchor) != 1:
             raise ValueError(f"Unexpected Crimson observer template near {anchor!r}")
+    # Long operand chains (e.g. initialize_game_assets_and_world) exceed the
+    # stock 16-entry node snapshot; truncate the snapshot instead of aborting.
+    # Only recorded diagnostics change, never the compiled object.
+    source = source.replace("if(op) ExitProcess(98);", "")
     # The recorder uses the generated targets/offsets arrays, so place it
     # before observe() but after the generated profile declarations.
     source = source.replace(
