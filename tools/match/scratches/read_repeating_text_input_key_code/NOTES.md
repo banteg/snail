@@ -259,8 +259,9 @@ includes `rshell_prelude.h` before `rstring.h`.
   - `DirectInput8Create`;
   - `timeGetTime`.
   Sound is BASS, so `dsound.h` is not included.
-- **A labelled stand-in** of 13,762 enumerators. Measured with su_order_trace after the SDK headers,
-  anything from 12,738 to 14,785 lands RstrASC in the wrapping window. The stand-in holds the place of
+- **A labelled stand-in** of 13,763 frontend ids (an enum type plus 13,762 enumerators). crimson-88
+  measured the window: after the SDK headers, RShell's own headers must total 12,737..14,784 ids. That
+  puts RstrASC's id in 0xf757..0xff56; with the stand-in it is 0xfb59. The stand-in holds the place of
   RShell's own headers: strings name `RShell.h`, `GDX.h`, `font.h` and `RSprite.h`.
 
 For reference:
@@ -272,3 +273,9 @@ For reference:
 - every exact one stays exact;
 - `enumerate_matching_archive_or_fs_entries` is unchanged at 92.31%;
 - `initialize_game_data_archive` only clashes with its own hand-written `GetClipCursor` declaration.
+
+Recovering the stand-in: ids come from one per-translation-unit counter in C1XX. They are assigned
+eagerly in source order, and unused declarations and inline bodies count. Uses and calls cost nothing.
+The per-kind costs are in crimson `tools/match/c2/compiler/frontend-ids.md`, and
+`scripts/c2/fe_id_probe.py measure header.h` counts a header. Reconstruct RShell.h, GDX.h, font.h,
+RSprite.h and related headers, count them, and pad any shortfall.

@@ -25,11 +25,13 @@
 #include "../sdk/dx81/dinput.h"
 
 // STAND-IN, not recovered source. After the SDK headers, RShell's own
-// includes still had 12,738..14,785 more declarations before RstrASC.
-// Presumably these are RShell.h plus the engine and game headers it pulls
-// in; strings name RShell.h, GDX.h, font.h and RSprite.h. The enum below
-// holds their place with 13,762 enumerators, near the middle of the window.
-// Replace it with the recovered headers as they are identified.
+// includes still had 12,737..14,784 more frontend ids before RstrASC's
+// first declaration. Presumably these are RShell.h plus the engine and game
+// headers it pulls in; strings name RShell.h, GDX.h, font.h and RSprite.h.
+// The enum below holds their place with 13,763 ids: 1 for the enum type and
+// 1 per enumerator. Replace it with recovered headers as they are
+// identified, counting them with crimson's per-kind id table
+// (scripts/c2/fe_id_probe.py, note frontend-ids.md). Pad any shortfall.
 #define RSHELL_STANDIN_10(p) \
     p##0, p##1, p##2, p##3, p##4, p##5, p##6, p##7, p##8, p##9
 #define RSHELL_STANDIN_100(p)                                          \
