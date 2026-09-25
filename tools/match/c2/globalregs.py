@@ -57,7 +57,7 @@ static void glob_write(void *data, unsigned long size)
 }
 static void glob_range(unsigned long kind, unsigned long *lr, unsigned char *base)
 {
-    unsigned long rec[4 + LR_WORDS + SYM_WORDS + 2 + 2 * MAX_PREFS], q, r, *pref;
+    unsigned long rec[4 + LR_WORDS + SYM_WORDS + 2 + 2 * MAX_PREFS + 3], q, r, *pref, *node;
     glob_bit_test_t bit_test = (glob_bit_test_t)(base + BIT_TEST);
     unsigned long *sym = (unsigned long *)lr[0];
     for (q = 0; q < sizeof(rec) / 4; ++q) rec[q] = 0;
@@ -72,6 +72,16 @@ static void glob_range(unsigned long kind, unsigned long *lr, unsigned char *bas
         rec[7 + LR_WORDS + SYM_WORDS + 2 * q] = pref[2];
     }
     rec[5 + LR_WORDS + SYM_WORDS] = q;
+    /* Constant candidates (class 13) keep a clone of the promoted operand at
+       sym+0x28: its kind byte (7 = integer) and its value word at +0x18.
+       sym+0x30 holds the candidate record whose first word is the candidate
+       index (constants are numbered in promotion order). */
+    if (sym && (sym[1] & 0xff) == 13 && (node = (unsigned long *)sym[10]) != 0) {
+        rec[6 + LR_WORDS + SYM_WORDS + 2 * MAX_PREFS] = *(unsigned char *)(node + 2);
+        rec[7 + LR_WORDS + SYM_WORDS + 2 * MAX_PREFS] = node[6];
+        if (sym[12])
+            rec[8 + LR_WORDS + SYM_WORDS + 2 * MAX_PREFS] = *(unsigned long *)sym[12];
+    }
     glob_write(rec, sizeof(rec));
 }
 /* Symbol references of every kind-1 operand, with the register if one is bound. */
@@ -194,7 +204,7 @@ def run_observer(scratch, out):
     return (out / "observed/global.bin").read_bytes()
 
 
-RANGE_WORDS = 4 + LR_WORDS + SYM_WORDS + 2 + 2 * MAX_PREFS
+RANGE_WORDS = 4 + LR_WORDS + SYM_WORDS + 2 + 2 * MAX_PREFS + 3
 
 
 def s32(value):
@@ -212,7 +222,10 @@ def decode(data):
             sym = w[4 + LR_WORDS : 4 + LR_WORDS + SYM_WORDS]
             allowed = w[4 + LR_WORDS + SYM_WORDS]
             count = w[5 + LR_WORDS + SYM_WORDS]
-            prefs = w[6 + LR_WORDS + SYM_WORDS :]
+            prefs = w[
+                6 + LR_WORDS + SYM_WORDS : 6 + LR_WORDS + SYM_WORDS + 2 * MAX_PREFS
+            ]
+            constant_kind, constant_value, candidate_index = w[-3:]
             rows.append(
                 {
                     "kind": {1: "queued", 2: "choose", 4: "neighbour"}[kind],
@@ -226,6 +239,8 @@ def decode(data):
                     "tie": lr[16],
                     "benefit": s32(lr[15]),
                     "size": lr[9],
+                    "constant": s32(constant_value) if constant_kind == 7 else None,
+                    "candidate_index": candidate_index if constant_kind == 7 else None,
                     "flags": [(lr[1] >> 8) & 0xFF, (lr[1] >> 16) & 0xFF],
                     "allowed": [
                         REGISTERS[r] for r in sorted(REGISTERS) if allowed & (1 << r)
@@ -363,6 +378,12 @@ def describe(symbol, lines_of, first_line, source_lines):
     return lines, text
 
 
+def constant_label(row):
+    """`=0x400 ` for a constant candidate (class 13), empty otherwise."""
+    value = row.get("constant")
+    return "" if value is None else f"={value:#x} "
+
+
 def report(chosen, rest, lines_of, final_regs, natives, first_line, source_lines):
     print(
         f"{'#':>3} {'id':>3} {'cls':>3} {'prio':>5} {'tie':>4} {'allowed':24} {'costs (nonzero)':28}"
@@ -385,9 +406,11 @@ def report(chosen, rest, lines_of, final_regs, natives, first_line, source_lines
             f"{k:3d} {row['id']:3d} {row['symbol_class']:3d} {row['priority']:5d} {row['tie']:4d}"
             f" {','.join(row['allowed']):24} {costs[:28]:28} {row['register'] or '-':4}"
             f" {','.join(final):12} {native_of(row['symbol'], final or [row['register']])[:12]:12}"
-            f"  L{lines[0] if lines else '?'} {text[:50]}"
+            f"  L{lines[0] if lines else '?'} {constant_label(row)}{text[:50]}"
         )
-    unassigned = [row for row in rest if row["symbol_class"] != 13]
+    unassigned = [
+        row for row in rest if row["symbol_class"] != 13 or row["benefit"] > 0
+    ]
     if unassigned:
         print(
             "\nqueued but not coloured by the chooser (spilled, or coloured on another path):"
@@ -397,7 +420,8 @@ def report(chosen, rest, lines_of, final_regs, natives, first_line, source_lines
             final = final_regs.get(row["symbol"], Counter())
             print(
                 f"    id {row['id']:3d} cls {row['symbol_class']} prio {row['priority']:5d} tie {row['tie']:4d}"
-                f" final {','.join(final) or 'memory'}  L{lines[0] if lines else '?'} {text[:50]}"
+                f" benefit {row['benefit']:3d} final {','.join(final) or 'memory'}"
+                f"  L{lines[0] if lines else '?'} {constant_label(row)}{text[:50]}"
             )
 
 

@@ -88,3 +88,45 @@ target takes `ebx` and the channel-zero case pointer takes a shrink-wrapped
 byte lookup table in that build (no alignment pad), so it reports 41%. It is
 not retained; declaration order (the first 18 of 720 permutations) and
 bool/int flag types are neutral or worse.
+
+## 2026-09-25 byte constants 0 and 1 and the ebx penalty
+
+No source change (still 87.47% / 93.29%). This is a traced mechanism with
+bounded leads. Rules: the constant-candidate section of
+[global-allocation.md](../../c2/global-allocation.md).
+
+Traced on the recorded `uniform-channel2-tail-no-channel-ref` lead (all
+three channels alike, no `Weapon&` borrow, shared `if (changed) Play(25)`):
+- `target0` = edi and the `target2` ebx piece already match native.
+- Channel zero's two-call case pointers (`lea r, [esi+0x64c]`, priority 36)
+  pick ebp over ebx because ebx costs +700. That leaves `target1`
+  (priority 8) with only ebx. Native has the reverse.
+- The +700 comes from two constant candidates, 0 (benefit 5) and 1
+  (benefit 2), at 100 × benefit each. VC6 keys constant symbols by value
+  only, so each one gathers every use of that value in the function: target
+  moves, `push 0/1` arguments, `mov cl, 1`, and the
+  `transition_immediate = 0/1` stores. The byte-typed uses restrict the
+  range to byte registers. Live across calls, that leaves only ebx.
+- Almost all of the benefit is `transition_immediate` itself. It is a
+  memory bool, never a register candidate. The likely reason is that the
+  bool argument is pushed with a dword load
+  (`mov eax, dword [esp+0x18]; push eax`). Each of
+  its six `= 0` stores and three `= 1` stores saves 1, and each range pays 1
+  for its load.
+
+Diagnostics (not source candidates):
+- Dropping the `transition_immediate = 0` stores takes both constants to
+  benefit −1. The case pointers then take ebx and `target1` takes ebp,
+  which is native's allocation.
+- An `int` or `unsigned char` flag, or passing `transition_immediate != 0`,
+  also gives native's registers. Those forms make the flag a register
+  candidate, so its stores become register moves that save 0. They also
+  change the flag's code (a register plus `setne`), which native does not
+  have.
+
+Still open: native has the same memory bool (byte stores, dword argument
+load). So some source difference must keep those stores from counting, or
+must add loads for the 0 and 1 ranges. Tried and unchanged: channel-scoped
+bools (`bool transition_immediate = 1;` per channel) and `(bool)` on the
+argument. In the lead the differ still loses the byte lookup table (it
+reports 41%), so compare it with `globalregs.py`.

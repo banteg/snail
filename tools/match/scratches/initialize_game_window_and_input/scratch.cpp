@@ -52,35 +52,29 @@ int initialize_game_window_and_input(char* window_name)
 
     int width;
     int height;
-    int authored_width;
 
     switch (g_runtime_config.display_mode_index) {
     case 0:
-        authored_width = 320;
         width = 320;
         height = 240;
         break;
     case 1:
         goto use_640x480;
     case 2:
-        authored_width = 800;
         width = 800;
         height = 600;
         break;
     case 3:
-        authored_width = 1024;
         width = 1024;
         height = 768;
         break;
     case 4:
-        authored_width = 1600;
         width = 1600;
         height = 1200;
         break;
     default:
         g_runtime_config.display_mode_index = 1;
 use_640x480:
-        authored_width = 640;
         width = 640;
         height = 480;
         break;
@@ -134,7 +128,7 @@ use_640x480:
         ShowCursor(0);
         x = 0;
         y = 0;
-        update_mouse_authored_scale((float)authored_width, (float)height);
+        update_mouse_authored_scale((float)width, (float)height);
     } else {
         ex_style = 0x40100;
         style = 0x10ca0000;

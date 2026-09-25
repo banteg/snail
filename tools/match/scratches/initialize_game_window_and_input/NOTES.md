@@ -185,3 +185,30 @@ These are worse:
 Still open: which source form keeps the entry mask out of the `0x400` web, or
 makes the allocator split the entry piece off, in the constant range builder
 (`0x10730308`/`0x107306c1`/`0x10730a40`) or the splitter `0x10732216`.
+
+## 2026-09-25 byte-exact: no separate authored width
+
+**Byte-exact (100%, 267/267, 57 clean references).** The `authored_width`
+local was never in the original. The fullscreen call is
+`update_mouse_authored_scale((float)width, (float)height)`. The per-case
+`mov [esp+0x14], ebp` stores are width's own memory home, which the `fild`
+needs. They are not a second variable. `RECOVERY`/`RESIDUAL` are removed
+from `scratch.conf`.
+
+Why the old source kept `0x400` in ebp (see the constant-candidate section
+of [global-allocation.md](../../c2/global-allocation.md)):
+- VC6 makes one constant candidate per value. The type does not count, so
+  the render-depth mask and the 1024-pixel width share one `0x400` symbol.
+  A value used only once is turned back into an immediate.
+- With `authored_width = 1024; width = 1024;`, case 3 had two uses: a store
+  to memory (saves 1) and a move into width's register (saves 0). The mask
+  `and esi, 0x400` saves 0 and the load costs 1, so the benefit was 0. The
+  unprofitable-range handler then forced the range into its copy target's
+  register (width, ebp) and set its benefit to 1. That gave one web from the
+  entry to case 3: `mov ebp, 0x400` at the entry and `and esi, ebp`.
+- Without the second variable, `0x400` has only the mask and the width move,
+  so the benefit is −1. The force step needs benefit + load cost > 0, so it
+  fails and the range goes back to immediates. The single-use widths 320,
+  800, 1600 and 640 are not candidates at all.
+
+`globalregs.py` now prints the value of each constant range (`=0x400`).

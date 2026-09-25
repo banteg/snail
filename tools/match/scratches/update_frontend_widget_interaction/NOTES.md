@@ -137,3 +137,33 @@ first-sorted operand of a commutative fadd/fmul.
   - Reference or ease-expanded easing: neutral.
 
 No source change.
+
+## 2026-09-25 constant-load order at +127: pointer-inside block with a goto
+
+**95.29% → 95.44% normalized, prefix 127 → 180, structural 96.99%
+(19/20).** The pointer test now reads like the Android body:
+`if (IsActive() != 0 && MouseTest() != 0) { …inside…; goto update_after_input; }`,
+then the outside code falls into `update_after_input`. The `edi = 0x2000`,
+`ebp = 1.0f` pair before the teardown `je` now matches. What remains is the
+hover-colour x87 operand order and the more-button clamp.
+
+Mechanism (the constant-candidate section of
+[global-allocation.md](../../c2/global-allocation.md)):
+- Both loads are hoisted by `C2+0x2e5b9`. For each join block, it looks at
+  each earlier predecessor in turn. For each one, it loads every constant
+  that is live into the join but not out of that predecessor. The load goes
+  at the exit of their nearest common dominator (the teardown test block),
+  in candidate-index order. The index is promotion order: `1.0f` is 14 and
+  `0x2000` is 31.
+- The predecessor list is the reverse of edge creation. `cfg_build_edges`
+  adds the fall-through edge first and then one edge per `goto`, so the last
+  `goto` in IL order is examined first.
+- In the old form the first predecessor with a missing constant was the
+  teardown or disabled `goto`. Both constants were missing there, so `1.0f`
+  (lower index) came first. With the new `goto` last, the pointer-inside
+  predecessor is examined first. It only lacks `0x2000`. `1.0f` already
+  reaches it through the highlighted `hover_blend_target = 1.0f` store, and
+  `0x2000` is used only by the outside code. `1.0f` follows from the next
+  predecessor.
+- `if/else` with the same bodies is neutral (95.29%). A redundant
+  `goto update_after_input;` right before the label also gives 95.44%.

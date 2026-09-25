@@ -85,67 +85,67 @@ void cRBorder::AI()
                     this, FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED);
     }
 
-    if (g_game->players[0].mouse_cursor.IsActive() == 0
-        || MouseTest() == 0) {
-        widget_flags &= 0xffdfffff;
-        if (((widget_flags & FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE) == 0)
-            && ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0)) {
-            UnHighlight();
+    if (g_game->players[0].mouse_cursor.IsActive() != 0
+        && MouseTest() != 0) {
+        widget_flags |= FRONTEND_WIDGET_FLAG_POINTER_INSIDE;
+        if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0) {
+            hover_blend_target = 1.0f;
+            target_padding = hot_padding;
         }
-        text_effect_target = 0.0f;
-        if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0)
-            widget_flags &= ~FRONTEND_WIDGET_FLAG_HIGHLIGHTED;
+        if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_TEXT_EFFECT_ENABLED) != 0)
+            text_effect_target = 1.0f;
+        if (((widget_flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) == 0)
+            && ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0)) {
+            if ((widget_flags & FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE) == 0)
+                g_sound_effect_manager.Play(9);
+            widget_flags |= FRONTEND_WIDGET_FLAG_HIGHLIGHTED;
+        }
+
+        if ((widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED) != 0) {
+            cRGameInput* input = g_game->players[0].game_input;
+            if (g_game->border_manager.delayed_widget_active == 0
+                && (input->input.pressed_buttons & INPUT_BUTTON_PRIMARY) != 0) {
+                if ((widget_flags & FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION) != 0) {
+                    widget_flags |= FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
+                } else {
+                    g_game->border_manager
+                        .DelayClick(
+                            this, FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED);
+                }
+                if ((widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND) == 0)
+                    g_sound_effect_manager.Play(8);
+                if ((tooltip.mode_flags & 0x20) == 0)
+                    tooltip.ReSet();
+            }
+        }
+
+        {
+            cRGameInput* input = g_game->players[0].game_input;
+            if ((widget_flags & FRONTEND_WIDGET_FLAG_SECONDARY_INPUT_ENABLED) != 0
+                && (((unsigned char*)&input->input.pressed_buttons)[1]
+                        & (INPUT_BUTTON_SECONDARY >> 8))
+                    != 0) {
+                if ((widget_flags & FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION) != 0)
+                    widget_flags |= FRONTEND_WIDGET_FLAG_SECONDARY_ACTION_TRIGGERED;
+                else
+                    g_game->border_manager
+                        .DelayClick(
+                            this, FRONTEND_WIDGET_FLAG_SECONDARY_ACTION_TRIGGERED);
+                g_sound_effect_manager.Play(8);
+                tooltip.ReSet();
+            }
+        }
         goto update_after_input;
     }
 
-    widget_flags |= FRONTEND_WIDGET_FLAG_POINTER_INSIDE;
-    if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0) {
-        hover_blend_target = 1.0f;
-        target_padding = hot_padding;
-    }
-    if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_TEXT_EFFECT_ENABLED) != 0)
-        text_effect_target = 1.0f;
-    if (((widget_flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) == 0)
+    widget_flags &= 0xffdfffff;
+    if (((widget_flags & FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE) == 0)
         && ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0)) {
-        if ((widget_flags & FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE) == 0)
-            g_sound_effect_manager.Play(9);
-        widget_flags |= FRONTEND_WIDGET_FLAG_HIGHLIGHTED;
+        UnHighlight();
     }
-
-    if ((widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED) != 0) {
-        cRGameInput* input = g_game->players[0].game_input;
-        if (g_game->border_manager.delayed_widget_active == 0
-            && (input->input.pressed_buttons & INPUT_BUTTON_PRIMARY) != 0) {
-            if ((widget_flags & FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION) != 0) {
-                widget_flags |= FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            } else {
-                g_game->border_manager
-                    .DelayClick(
-                        this, FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED);
-            }
-            if ((widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND) == 0)
-                g_sound_effect_manager.Play(8);
-            if ((tooltip.mode_flags & 0x20) == 0)
-                tooltip.ReSet();
-        }
-    }
-
-    {
-        cRGameInput* input = g_game->players[0].game_input;
-        if ((widget_flags & FRONTEND_WIDGET_FLAG_SECONDARY_INPUT_ENABLED) != 0
-            && (((unsigned char*)&input->input.pressed_buttons)[1]
-                    & (INPUT_BUTTON_SECONDARY >> 8))
-                != 0) {
-            if ((widget_flags & FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION) != 0)
-                widget_flags |= FRONTEND_WIDGET_FLAG_SECONDARY_ACTION_TRIGGERED;
-            else
-                g_game->border_manager
-                    .DelayClick(
-                        this, FRONTEND_WIDGET_FLAG_SECONDARY_ACTION_TRIGGERED);
-            g_sound_effect_manager.Play(8);
-            tooltip.ReSet();
-        }
-    }
+    text_effect_target = 0.0f;
+    if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0)
+        widget_flags &= ~FRONTEND_WIDGET_FLAG_HIGHLIGHTED;
 
 update_after_input:
     if ((widget_flags & FRONTEND_WIDGET_FLAG_DISABLED) != 0) {
