@@ -170,3 +170,16 @@ and marks base/index swaps. Nodes rewritten by strength reduction carry the
 loop's closing line label, not the statement's. `--json` prints the rows.
 Like the other observers, it needs the sibling Crimson checkout, and it
 preserves the complete COFF object.
+
+## Sibling bound on whole-function id shifts (2026-09-25)
+
+The exact siblings bound how far the original's IL volume could differ. Slalom's
+and Hump's logical delta loops place the induction temporary first against a
+bank-address key of 3 (slots 0x792 and 0x7a2); those orders survive at most four
+(Slalom) or five (Hump) fewer 32-id blocks. So any family-wide reduction in
+original IL is at most about four blocks. LoopBow needs 11–15 blocks, which a
+shared house-style difference cannot explain. A TurnoverDouble rewrite toward
+the siblings' helpers kept 100% normalized but left C0 at 0x4a0; logical deltas
+raised it to 0x4c0 and flipped ten delta-loop SIB bytes (native keeps the byte
+cursor's bank-first order there). See the TurnoverDouble, LoopOut and
+LoopTheLoop NOTES.

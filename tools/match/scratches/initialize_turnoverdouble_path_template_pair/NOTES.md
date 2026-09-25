@@ -1,3 +1,42 @@
+## 2026-09-25 house-style rewrite test of the low-id hypothesis
+
+Rules: [address-order.md](../../c2/address-order.md). The interpolation
+store needs the bank CSE temporary at id ≡ 0–9 mod 1024 (0x400–0x409), or
+`curve_sample_offset` at id ≥ 0x179. Baseline: C0 0x4a0, bank temp 0x4bc
+(n = 28), offset local 0x13.
+
+**Staging locals are load-bearing.** Of the removable-looking spellings,
+only two are code-neutral at 100%, 680/680: logical deltas and moving the
+lead-loop `++sample_index`. The others lose the instruction match:
+- inline `up.x = Sin(...)` instead of the staged `up_x/up_y`: 92.93%, 678;
+- direct `+=` instead of the `secondary_position` pointer: 84.02%, 684;
+- `up` declared inside the loop: 99.85%.
+
+**Sibling helpers do not lower C0.** The `build_strip_mesh` of hump, dump,
+sweep, toad, wibble, invert and twister, and the path-delta helpers of sbend,
+toad, wibble and invert, all compile to 100%, 680/680 with C0 0x4a0 and the
+bank still 0x4bc. Screw's logical mesh gives 82.51% and sbend's gives
+95.96%.
+
+**Logical deltas go the wrong way.** Hump's, dump's, slalom's and twister's
+logical `compute_terminal_deltas` raise C0 to 0x4c0 (bank 0x4dc). They also
+flip ten delta-loop SIB bytes: `[iv + reloaded bank]` puts iv slot 0x75c
+(hash 0xd700) ahead of the bank address temporary 0x4da (key 0x8007).
+Native has the bank first there, which is what the byte cursor gives.
+
+**The offset route is closed.** The offset id cannot exceed 0x179: locals
+are numbered by first use, and the counter is only about 0x100 when the
+curve loop is read.
+
+**How far down C0 could plausibly go.** The exact siblings' logical delta
+loops constrain it:
+- hump: iv 0x7a2 against key 3; still native with at most 5 fewer blocks;
+- slalom and slalombig: iv 0x792 against key 3; at most 4 fewer blocks.
+
+A family-wide IL reduction therefore can't exceed about 4 blocks. Here that
+would also need n to move into 0–9 or 32–41. Result: no source change;
+bank 0x4bc and C0 0x4a0 unchanged.
+
 ## 2026-09-22 current source-context control
 
 Canonical, renamed isolated, native-predecessor, and available 43-member

@@ -1,3 +1,15 @@
+## 2026-09-25 sibling mesh-helper control
+
+Replacing the inline vertex/face loops with a `build_strip_mesh` helper
+changes the instructions: 717/718 instructions, 85.99–86.83% for the
+helpers of hump, dump, sweep, toad, wibble, invert and twister. It lowers C0
+by one block, 0x540 → 0x520:
+- endpoint temporary 0x5bb → 0x59b;
+- induction temporary 0x92a → 0x903–0x908.
+
+The endpoint load order is unchanged; it still needs an endpoint id ≡ 0–10
+mod 1024. No source change.
+
 ## 2026-09-22 preserving interpolation-order observation
 
 The local bank and a field-borrowed interpolation helper each leave one literal

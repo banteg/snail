@@ -1,5 +1,14 @@
 # `initialize_looptheloop_path_template_pair` starter
 
+## 2026-09-25 sibling mesh-helper control
+
+A `build_strip_mesh` helper from hump, dump, sweep, toad, wibble, invert or
+twister in place of the inline mesh gives 720/721 instructions,
+85.22–86.05%. C0 stays at 0x500 and the bank stays at 0x576. The induction
+temporary moves from 0x890 to 0x889–0x88e, which is still past 0x800, so the
+store order is unchanged. The fix needs the induction id below 0x800, i.e.
+5–11 fewer blocks. No source change.
+
 ## 2026-09-21: radius, bank and mesh ownership
 
 Current verified result: **95.21165857% → 99.58391123%**, **720 → 721/721
