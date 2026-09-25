@@ -150,3 +150,7 @@ Grids:
 Block 1's `fadd`/owner-load order also needs the `fadd` to gain two height
 levels. That needs two FROUNDs **on** its chain, whereas the jetpack Y
 FROUND is dangling (no successors). No change retained.
+
+## 2026-09-26: Codex consult (no gain)
+
+A bounded Codex consult (gpt-6-astra, about 40-60 probes) found no defensible improvement. Its evidence and probe ledger are in `/private/tmp/claude-501/sm/codex/release_snail_weapons/RESULTS.md`.

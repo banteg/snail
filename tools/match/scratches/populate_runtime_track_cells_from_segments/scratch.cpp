@@ -86,7 +86,7 @@ void cRSubGame::BuildLevel()
     RandSeed(runtime_build_seed);
     g_game->track.Change(level_definition.track_texture_set);
 
-    int segment_cursor = 0;
+    int segment_cursor;
     mode = level_mode;
     if (mode == 0 || mode == 7 || mode == 4 || mode == 1) {
         first_block_row_count = level_definition.first_segment.row_count;
@@ -130,9 +130,9 @@ void cRSubGame::BuildLevel()
             &level_definition.first_segment;
         SubSegment* last_segment =
             &level_definition.last_segment;
-        first_block_row_count = level_definition.first_segment.row_count;
-        runtime_row_count = first_segment->row_count
-            + last_segment->row_count;
+        first_block_row_count = first_segment->row_count;
+        runtime_row_count = last_segment->row_count
+            + first_segment->row_count;
         SubSegment* repeated_segment =
             &level_definition.segment_slots[0];
         int rows_remaining = 16;
@@ -588,14 +588,7 @@ void cRSubGame::BuildLevel()
                 subobject_slot[2] = 0;
                 subobject_slot[3] = 0;
 
-                char edge_row;
-                if (build_row >= first_block_row_count) {
-                    edge_row = 0;
-                    if (build_row >= completion_row_start)
-                        edge_row = 1;
-                } else {
-                    edge_row = 1;
-                }
+                char edge_row = build_row < first_block_row_count || build_row >= completion_row_start;
 
                 // initialize_sub_loc proves this is the shared cRBod base prefix;
                 // keep the raw cursor so the large VC6 switch retains its shape.
@@ -1033,7 +1026,10 @@ void cRSubGame::BuildLevel()
             ++segment_row;
             ++build_row;
         }
-        if (level_mode != 3 || first_or_last_row == 0) {
+        if (level_mode == 3) {
+            if (first_or_last_row == 0)
+                ++row_event_owner;
+        } else {
             ++row_event_owner;
         }
     } while (build_row < runtime_row_count);

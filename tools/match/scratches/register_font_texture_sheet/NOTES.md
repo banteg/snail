@@ -183,3 +183,7 @@ Seven more slot, font-index, x-loop and reset-order controls built on the
 new loop did not improve it. Neither did diagnostic aliasing of `slot`: the
 inlined `&slot` is optimized away, and an out-of-line helper regresses to
 36/36. See the intro scratch's 2026-09-25 note for how the packer works.
+
+## 2026-09-26: Codex consult (no gain)
+
+A bounded Codex consult (gpt-6-astra, about 40-60 probes) found no defensible improvement. Its evidence and probe ledger are in `/private/tmp/claude-501/sm/codex/register_font_texture_sheet/RESULTS.md`.

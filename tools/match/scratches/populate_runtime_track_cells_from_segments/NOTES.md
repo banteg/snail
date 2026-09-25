@@ -1639,3 +1639,32 @@ store) still perturbs the slot packing (+10). Mode-3 `last + first` with
 `first_segment->row_count` fixes the reload at target[89] (22/23), but it
 drops normalized to 84.33%, so it is not retained. Local names, declaration
 order and scope placement are all byte-neutral.
+
+## 2026-09-26: setup, edge-row and event-owner shapes (Codex consult, reviewed)
+
+**89.22% → 90.28% normalized**, structural 98.28% → about 99.34%, 1246/1246, prefix 76 → 232, 165 clean
+references.
+
+**Changes.**
+- `int segment_cursor;` is left uninitialized. Native has no entry store of 0, and both setup branches
+  assign it. The unhandled-mode path is native's own behavior; this is the house uninitialized-local idiom.
+- Mode 3 reads `first_segment->row_count` through the local pointer, which points at
+  `level_definition.first_segment`. The sum is written `last + first`, matching Binja's
+  `last_segment.row_count + first_segment.row_count`.
+- `edge_row` is one boolean expression: `build_row < first_block_row_count || build_row >= completion_row_start`.
+- The row-event increment is a nested if: in mode 3 only non-edge rows count; otherwise every row counts.
+  A single `||` condition, its De Morgan form and an empty-then form all fall back to 88.74% with prefix
+  101.
+
+**Not adopted.**
+- Codex's `if (mode != 3) ++; else if (!edge) ++;`. It gives the same bytes but duplicates the statement.
+- `best.cpp`: normalized 91.89%, but structural drops to 98.03%.
+- The OR-combined lane mask: neutral.
+
+**Remaining.**
+- Three scheduling pairs.
+- Lane initialization: the load addressing, a full word against a byte mask, OR against XOR, and zero
+  scheduling.
+- Jump-table padding.
+
+Evidence: `/private/tmp/claude-501/sm/codex/populate_runtime_track_cells_from_segments/RESULTS.md`.

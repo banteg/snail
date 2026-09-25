@@ -167,3 +167,7 @@ Mechanism (the constant-candidate section of
   predecessor.
 - `if/else` with the same bodies is neutral (95.29%). A redundant
   `goto update_after_input;` right before the label also gives 95.44%.
+
+## 2026-09-26: Codex consult (no gain)
+
+A bounded Codex consult (gpt-6-astra, about 40-60 probes) found no defensible improvement. Its evidence and probe ledger are in `/private/tmp/claude-501/sm/codex/update_frontend_widget_interaction/RESULTS.md`.
