@@ -369,3 +369,34 @@ Recorded msvc6.3 probes preserve the current extracted code and
 comparison metrics. No compiler setting or source change is retained. See the
 [profile controls](../rebuild_game_archive_if_needed/profile-controls-20260907.md)
 for component provenance, exact neighbors, and the limits of this comparison.
+
+## 2026-09-25 render-queue decision: byte-exact
+
+The gap between normalized (93.83%, 323/325, prefix 176, one unaudited
+`g_render_queue_active` store) and structural (99.07%) was never a
+scratch-register rotation: `rotation.py` reports no cursor shift in either
+build. The normalized loss was label displacement after the two missing
+`mov byte [g_render_queue_active], 1` stores.
+
+The native shape is the render-ready flag published as a boolean after the
+accumulator has been normalized:
+
+```cpp
+if (remaining < 0.0000083333334f)
+    g_frame_time_accumulator = 0.0f;
+g_render_queue_active = g_frame_time_accumulator <= 0.0f;
+```
+
+C2 threads the `acc = 0` path through the following `acc <= 0` test, so that
+path becomes `acc = 0; rqa = 1; jmp`. The other path materializes the
+comparison as `rqa = 1` / `rqa = bl`, which gives the two native stores. Writing
+both stores explicitly (`if { acc = 0; rqa = 1; } else rqa = acc <= 0;`)
+gives the same branch shape. However, the second store is then an IL
+reference to byte constant 1 before global allocation, and it flips the ebx
+race in `globalregs.py`. Byte 1
+wins at -121 against -125 for zero, and the function loses its shared `ebx = 0`
+register (72.67%, prefix 1). An explicit `if (acc <= 0) rqa = 1; else rqa = 0;`
+after the normalization is equally exact.
+
+Result: **100.00%, 325/325, prefix 325, encoded body match, 163/163 references
+clean**. The RECOVERY and RESIDUAL markers are removed.

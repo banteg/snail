@@ -160,3 +160,46 @@ prefix 111, with all 26 references clean. Double literals regress and can add
 constant-reference debt; the reference parameter alone is neutral. No source,
 parameter, or compiler setting changes. The alternate compiler is also neutral;
 see the [profile controls](../rebuild_game_archive_if_needed/profile-controls-20260907.md).
+
+## 2026-09-25 rotation check
+
+Score unchanged: **98.34% normalized, 99.25% structural (3/2), 331/332,
+prefix 111, 26 clean references**. `rotation.py` finds no cursor shift in the
+98 local choices. The gap between normalized and structural is caused only by
+labels: the one missing instruction moves every later branch target by 6
+bytes. The two residuals are x87 allocation and /G5 scheduling, not scratch
+registers.
+
+1. **Half-height spill.** Native stores `height * 0.5` into width's dead
+   parameter home with `fst [esp+0x3c]`. It uses st0 for `center_y`, then
+   reloads it for the radius. Half-width stays on the x87 stack. Our build
+   duplicates half-height with `fld st(0)`, so half-height never gets a memory
+   home.
+
+   Neutral (98.34%) or worse forms tested today:
+   - iOS-style parameter halving (`width *= 0.5f; height *= 0.5f; x0 += width`):
+     95.63%;
+   - either or both halves as parameters: 96.23-96.83%;
+   - `x0 +=` / `y0 +=` centres: 97.13%;
+   - half-height inline or CSE'd: 96.98%;
+   - half-width inline: 97.74%;
+   - a 16-form sweep over definition order, parameter vs local centres,
+     radius operand order and commuted centres: 97.13-98.34%;
+   - `/ 2`, `/ 2.0f`, a `diagonal_sq` local, a function-scope half-height
+     declaration, or no `right`/`bottom` locals: all neutral;
+   - a double `0.5` on either half: 97.29-98.04%, and C2 still does not store
+     to round;
+   - `radius *= 1.414f` as its own statement: 98.04%.
+
+   A diagnostic `volatile` half-height (95.47%, not retained) shows that the
+   vertex-2 schedule does not depend on this spill.
+
+   A disassembly scan of the 734 byte-exact scratch objects finds this
+   `fst [slot]` … `fld [slot]` shape only across a branch (quaternion,
+   twister) or around a store through a pointer (`update_backdrop`). None of
+   them is a straight-line local like this one.
+2. **Vertex-2 U load.** Native keeps `fld u1` below the `vertices[2].z` store
+   and so takes the AGI stall. For vertices 0, 1 and 3 it hoists the U load
+   between the pointer reload and the Z store, and so does our build for all
+   four. By scheduler.md, that means native's vertex-2 Z store or U load was
+   not symbol-disambiguated. No tested spelling reproduces this.

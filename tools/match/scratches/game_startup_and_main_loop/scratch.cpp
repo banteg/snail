@@ -166,11 +166,9 @@ int __stdcall game_startup_and_main_loop(
             else
                 remaining = g_frame_time_accumulator;
 
-            g_render_queue_active = 1;
-            if (!(remaining >= 0.0000083333334f))
+            if (remaining < 0.0000083333334f)
                 g_frame_time_accumulator = 0.0f;
-            else if (!(g_frame_time_accumulator <= 0.0f))
-                g_render_queue_active = 0;
+            g_render_queue_active = g_frame_time_accumulator <= 0.0f;
 
             HWND active_window = GetActiveWindow();
             if (active_window == g_main_window) {

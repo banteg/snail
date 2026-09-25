@@ -140,3 +140,48 @@ form reaches 91.67% with 262/266 instructions and a mismatched reference, so
 no dimension owner or expression change is retained. The unchanged-source
 8447 control is neutral; see the
 [profile controls](../rebuild_game_archive_if_needed/profile-controls-20260907.md).
+
+## 2026-09-25 rotation check and the 0x400 constant web
+
+Score unchanged: **90.81% normalized, 98.90% structural (3/3), 267/267,
+prefix 6, 57 clean references**. `rotation.py` finds no cursor shift, and all
+19 local choices agree with native. The gap between normalized and
+structural scores comes from label displacement after the three-instruction
+entry/case-3 difference. It is not a register rotation.
+
+`globalregs.py` identifies the residual as the global allocator's constant
+candidate for `0x400`. It is range id 1, class 13, size 3, benefit 1,
+priority 2. It is one function-wide web that holds the mask operand and both
+case-3 references (`width` and `authored_width`). It is coloured last, with
+ebp as its only allowed register, so `and esi, ebp` reuses it and case 3's
+`mov ebp, 0x400` disappears. The other width constants form separate
+single-block webs at priority 3.
+
+A diagnostic spelling, `16 + 16 * !!(flags & RUNTIME_RENDER_32_BIT_COLOR)`,
+reaches 89.87%. It lowers to `shr 10; and 1`, so no `0x400` is left in the IL.
+Case 3 then matches native exactly. This confirms that the native mask
+constant is not in the same web as the 1024 width, but that spelling is not
+the native mask sequence.
+
+Neutral (90.81%) or worse forms tested today:
+- `(flags >> 10) & 1`, which C1 folds back to `& 0x400`;
+- no `!= 0`, `== 0` with the arms swapped, and if/else;
+- `unsigned short` casts on the operand or result;
+- a flags snapshot local, a declaration-first order and 640/480 initializers;
+- chained or copied `authored_width`;
+- an inline `int` helper;
+- `default:` falling through to `case 1:` in place of `goto use_640x480`,
+  which is byte-identical and so an equally valid spelling.
+
+These are worse:
+- `== mask`: 89.54%;
+- `16; if (...) 32` or `+= 16`: 88.56%, prefix 0;
+- `short` cast: 90.24%;
+- authored width after the dimensions, or a copy after them: 90.37%, a common
+  store is sunk;
+- depth after the switch: 87.87%;
+- `bool` local, inline `bool` helper, or byte test: 64.79%.
+
+Still open: which source form keeps the entry mask out of the `0x400` web, or
+makes the allocator split the entry piece off, in the constant range builder
+(`0x10730308`/`0x107306c1`/`0x10730a40`) or the splitter `0x10732216`.
