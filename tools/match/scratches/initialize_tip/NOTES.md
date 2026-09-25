@@ -275,3 +275,30 @@ has `and eax,4` … `shr eax,1`. All of these were identical at 96.10%:
 - ternaries on the carrier.
 
 A `char` carrier drops to 72.55%. The retained source is unchanged.
+
+## 2026-09-26: matched (alignment tree shape plus a shared SetBelow tail)
+
+**96.10% → exact**, 154/154 instructions, encoded body identical, 27 clean references.
+
+**Changes.**
+1. **Alignment argument:** `(unsigned int)((char)alignment & 4) >> 1`.
+   - VC6 canonicalizes `(x & 4) >> 1` into `(x >> 1) & 2`.
+   - The `&` done in signed `int` on a narrowed char, then converted to unsigned before the shift, keeps
+     native's `and eax,4` … `shr eax,1`.
+   - Controls: `/ 2`, ternaries, the Android `(flags & 4) ? 0 : 2`, char locals and a signed `int`
+     local all stay canonicalized or change the flag load.
+2. **Shared tail:** `widget_ok->SetBelow(widget_main);` is written once, after the inner if/else, not
+   in each arm.
+3. **Else arm:** the named `button_definition` local is dropped, and the arm reads
+   `definition->anchor_x` directly.
+
+**Mechanism** (crimson-88 Q11, `/tmp/claude/c2-from-crimson-88/snail_tip/answer_tail-merge-rotation.md`).
+- The shared SetBelow block sits after the else arm at allocation time. It takes one rotation slot and
+  gets ecx.
+- Block-mover loop 2 then copies that 14-byte block (≤ 20) to branch 1's jump site with `node_clone`,
+  after allocation. The copy keeps ecx and takes no slot.
+- Reading `definition` directly adds native's rotation pick (`mov edx,[esi+8]`). The named local took
+  its register from the global allocator and consumed no slot.
+
+**Rotation rule correction.** Copies made before allocation take their own slots. Mover loop-2 copies
+are made after allocation, so they share the original's registers and take none.

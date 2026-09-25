@@ -167,3 +167,18 @@ scheduling of case 3's `pause_fade` load, which is not a register issue.
 Still open: how the global pass picks its register (`0x107223d5` and
 `0x1072200a` compute per-block available sets). The /G5 split cursor
 `0x107ac2dc` also affects matching and is not traced here.
+
+## Mover copies take no slot (crimson-88, 2026-09-26)
+
+- **Copies made before allocation** take their own rotation slots: statements written in each arm,
+  and small return tails duplicated into predecessors.
+- **Block-mover loop 2 copies** are made after `jump_optimize` #2, which is after allocation. The mover
+  clones a jump target block of ≤ 20 bytes (/Ot) that has a single exit to the jump site. The clone
+  shares the original's registers and takes no slot.
+
+**Consequence.** When two arms end in a byte-identical short statement with the same registers,
+native wrote it once after the if/else. It takes a single pick, counted after the last arm's picks.
+Named single-use pointer locals take their register from the global allocator and consume no rotation
+slot. Reading the member directly adds one pick.
+
+Example: initialize_tip's shared `widget_ok->SetBelow(widget_main)`.
