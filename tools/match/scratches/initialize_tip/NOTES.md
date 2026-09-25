@@ -259,3 +259,19 @@ remain 84.42%, 154/154 instructions, prefix 19, with 27 clean references.
 The two exact widget initializers therefore control the conversion, but it
 does not close either partial caller. The recipe and receipts retain the
 whole overlays; no shared header or canonical source is changed.
+
+## 2026-09-25: authored alignment ternary
+
+Android spells alignment as `(flags & 4) == 0 ? 2 : 0`. Both forms were tried:
+- inline at the call;
+- as a named local.
+
+Either one lowers to a different sequence: 72.73% or 73.20%, prefix 17 or 19.
+
+Other spellings keep native's `movsx`, but VC6 canonicalizes `(x & 4) >> 1` to `(x >> 1) & 2`, where native
+has `and eax,4` … `shr eax,1`. All of these were identical at 96.10%:
+- `/ 2`;
+- signed or unsigned int carriers;
+- ternaries on the carrier.
+
+A `char` carrier drops to 72.55%. The retained source is unchanged.

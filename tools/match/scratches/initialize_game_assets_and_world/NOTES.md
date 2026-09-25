@@ -1722,3 +1722,42 @@ Every attempt changes the instructions, because the borrowed pointer is
 materialised in a register. The pair-0/1 strip reads are the natural
 candidates for native's pointer form, but they also need a register-neutral
 spelling. Unchanged at 99.56%.
+
+## 2026-09-25: `this` field-record cap and alias-class budget (crimson-88 Q5)
+
+Full answer: `/tmp/claude/c2-from-crimson-88/snail_answer_alias-field-records.md`. Mechanism: crimson
+`tools/match/c2/compiler/alias-field-records.md`. Tool: crimson `scripts/c2/field_records.py`,
+run as `--snail . --line-offset 81`.
+
+**Records.**
+- Keyed by (class, start, size). Type is not part of the key.
+- Made in IL order at alias time, destinations before sources. Scheduled order does not matter.
+- A class holds at most 96 records (`cmp ecx,0x60` at `0x1071b20e`). A new range after the cap gets none,
+  but a range recorded before the cap keeps its record.
+- Inlined helpers: a parameter bound to `this`, or to `&this->member` and used once, counts against `this`.
+  One used twice or more keeps its own class and does not count.
+- Non-inlined calls make no records.
+- A variable index makes no record but costs one class per access.
+
+**Correction to the earlier estimate.** Native needs 4 or 5 fewer ranges before line 1718, not 6:
+- 94 (ours) gives the wrong order.
+- 89 or 90 gives exactly native's pair-2 window.
+- 88 over-hoists.
+
+The ranges must not come from pairs 0 or 1.
+
+**The "allocator sensitivity" is the alias-class budget.** The function reaches 0x417 classes, and
+`alias_class_for_symbol_set` (`0x1075d456`) gives class 1 (conflicts with everything) once the count
+reaches 0x400. `_golb_shot` sits at 0x3fb–0x3fc, three below the limit. Exceeding it gives the familiar
+80.6% / 5,418-instruction state.
+
+**Mechanism proof (on copies, not native's spelling).** Either change gives 99.59%, prefix 4,444,
+structural 11/11, pair 2 exact:
+- `int fringe_pair = 24;` indexing pair 24's four reads;
+- viewport 0 through `int vp = 0;`.
+
+Both need line 1971's `zero_position` written out as three stores (−3 classes). The remaining 11 are the
+weapon-1 channel residue.
+
+**Next.** A keepable change must remove 4–5 `this` ranges before line 1718, outside pairs 0 and 1, and
+keep the net class count within about −2…+3. Not adopted yet.
