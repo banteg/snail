@@ -21,6 +21,32 @@ temporaries, and x87 scheduling; those differences do not establish a compiler
 limitation. Recorded experiments preserve the rejected
 source-shape frontier; obsolete runnable mutation recipes are not retained.
 
+## 2026-09-25 rotation and structural pass
+
+The current result is **97.38%** normalized, up from 97.25%. Structure is
+unchanged at **97.93%** (15/15 instructions differ), and there are 726/726
+instructions with prefix 194. The kind-42 branch now updates
+`vertical_offset = motion->y + vertical_offset` in place. The previous code
+used a separate `vertical` local, which native does not have.
+
+[`rotation.py`](../../c2/rotation.py) finds no eax/ecx/edx rotation shift in
+the canonical source. The remaining differences are scheduling, commutative
+x87 operand order and the choice of callee-saved registers. Controls that
+did not help:
+
+- **Kind-42 output stores.** Native copies `transform.position.y` with an
+  integer move before the `basis_right` scaling, and stores y/z through
+  `[ebp+0x30/0x34]`. Dropping the `y` local (`output->y =
+  transform.position.y`) gives the native integer copy and 98.21%
+  structural. However, it moves the load after the scaling and shifts the
+  rotation (95.45% normalized). Four other orderings do the same or worse.
+  Direct `output_position.` stores change the callee-saved registers
+  (85.40%).
+- **Ordinary base-position sums.** Native adds `source_cell->position` before
+  the sample position. Reversing the source addends, or reading through
+  `sample->`, gives the same object or a worse one. The operands are sorted
+  by cost, as in the SlalomDouble case.
+
 ## 2026-09-05 orientation copy and source-cell ownership
 
 The current baseline before this pass was 76.22%, 712/726 instructions, prefix

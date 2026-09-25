@@ -134,10 +134,9 @@ int cRPathFollowGoldy::Traverse(
             transform.basis_right.x *= lateral_scale;
             transform.basis_right.y *= lateral_scale;
             transform.basis_right.z *= lateral_scale;
-            float vertical = motion->y + vertical_offset;
             output->x = transform.position.x;
             output->y = y;
-            vertical_offset = vertical;
+            vertical_offset = motion->y + vertical_offset;
             output->z = z;
             g_game->subgame.player.transform.basis_right = transform.basis_right;
             g_game->subgame.player.transform.basis_up = transform.basis_up;
