@@ -1,5 +1,46 @@
 # update_subgoldy @ 0x43b120
 
+## 2026-09-25: residual analysis (no source change)
+
+The score is unchanged at 99.28298279% (2,089/2,087 instructions). The
+mechanisms behind the residuals are in [scheduler.md](../../c2/scheduler.md).
+
+**Ghost-z layout.** The block order is a reverse postorder that visits taken
+edges first.
+- *Ours:* the `anchor == 0` branch jumps to `records[0]`, so that arm is laid
+  out after the `records[cursor]` arm. Every one-copy spelling produces the
+  same successor lists.
+- *Native order:* `records[0]` has to follow the anchor test directly. An
+  `if (!anchor) … else if ((cursor = …) == 0) … else …` chain does that
+  (96.99%).
+- *Why it isn't kept:* the two `records[0]` copies are not cross-jumped into
+  one, as native's single copy requires. The local rotation gives them
+  different registers, and the scheduler hoists one copy's `push`.
+- *Also tried:* a nested `if (anchor)` form (95.77%) and a default-then-override
+  form (92.83%).
+
+**Completion clamps.** Native re-reads `velocity.z` into a register before
+each compare. These all fold the member into `fcom [vel]` and score 94.40%:
+- `T&`, `const T&` or `T*` locals (declared after `window`);
+- `(double)` casts;
+- reversed or negated compares.
+
+`float speed` declared after `window` (current) remains the best form. Only a
+per-use inline accessor reproduces native, and none is evidenced, so none is
+adopted.
+
+**Camera copy.** Native loads `[edx+8]` before storing `[ecx+4]`. The expanded
+struct copy marks its source register as written by each load, and both sides
+are plain pointers, so our scheduler keeps them in order.
+- Copying `transform.position` directly changes the addressing (93.78%).
+- Explicit member copies score 93.44%, and so does a three-float
+  constructor.
+- `Vector3(*p_position)` scores 97.37%.
+- Reordering the offset computation scores 98.90% or neutral.
+
+**Case-2 sum.** The operand order is the cost tie-break noted earlier. It is
+not affected by source operand order or names.
+
 ## 2026-09-25: rotation-guided cleanup
 
 Current source: **99.28298279%** normalized and **99.28%** structural, with

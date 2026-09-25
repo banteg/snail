@@ -1611,3 +1611,35 @@ starting at the jetpack cleanup loop cursor (`lea eax` vs `lea edx`, about
 20 across the weapon channels). Statement permutations for pair 2 and the
 cleanup-loop setup order were neutral. Indexed `for` rewrites of the four
 channel loops fall back into the degraded state.
+
+## 2026-09-25 rotation follow-up: jetpack cleanup cursor
+
+Before: 99.15% normalized, 24/24 structural. After: **99.56% normalized,
+99.76% structural, 13/13**, 5,411/5,411 instructions, 1,881 clean
+references. `tests/test_mobile.py` passes.
+
+`tools/match/c2/rotation.py` aborts here with observer exit 98 because a node
+has an operand chain longer than 16. A scratchpad copy that truncates long
+chains instead of exiting traced the whole body with identical metrics. Its
+first shift (+0 → +2) is at the jetpack cleanup loop. Each pointer-cursor
+loop (`animation_slot = &channel.animation_slots[0]`) spends one removed
+`lea` rotation slot in its preheader. Native initializes every cleanup cursor
+with `lea eax` outside the rotation, as the indexed cutscene loop does. The
+jetpack loop is now indexed the same way. It shares the cutscene index, which
+is renamed `animation_index`. This clears the jetpack/weapon-0 residue.
+
+Any single conversion is clean: indexing only the weapon-1 loop fixes weapon 1
+but brings back the jetpack residue (also 13). Indexing any two of the four
+channel loops puts the function back in the degraded state (818/825), whatever
+the index variable, loop form or declaration. A `globalregs.py` trace (same
+truncation patch) shows why: range 16, the list `0x200` constant, goes from
+benefit −1 / priority −282 (left in memory) to benefit +21. Its split pieces
+then take edx/edi and bring back the pre-fix list codegen. Its references
+are unchanged, so the +22 comes from the loop-related benefit deduction in
+`0x10724b25`, which was not traced further.
+
+Remaining 13: the weapon-1 channel store/`mov ecx, ADDR` order, caused by the
+same removed-`lea` slot (9), and the pair-2 entry-strip stores (4). The
+pair-2 stores are a scheduling difference, not a rotation one: the traced
+cursor agrees there. All statement permutations and a `path->object` source
+were neutral or worse.

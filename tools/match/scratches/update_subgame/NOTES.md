@@ -1,5 +1,34 @@
 # `update_subgame` recovery notes
 
+## 2026-09-25 byte-exact: case-3 fade copy through a reference
+
+**100%, encoded body match**, with 1034/1034 instructions and 129 clean
+references. RECOVERY/RESIDUAL are removed from `scratch.conf`.
+
+The last residual was case 3's `pause_fade_step` load: ours was hoisted above
+the two constant stores. VC6's /G5 scheduler moves a load above earlier stores
+only when it can prove they don't alias. When the copy goes through a
+reference, its memory references are treated as possibly aliasing, even after
+optimization resolves them to `[esi+disp]`. So the load stays below the
+`subgame_state` and `subgame_pause_gate` stores, as in native. Case 3 now
+copies through `float& fade = pause_fade;` inside a braced case body.
+
+Snippet controls:
+- **Load stays below the stores (native order):** writing through a reference
+  or pointer, reading `pause_fade_step` through a `const float&`, or a store
+  through a variable array index.
+- **Load hoisted:** direct members, `this->`, a nested struct, a union, a
+  constant array index, `*(&member)`, an inline setter, or a separate `step`
+  local.
+
+In the real function:
+- `const float&` read: exact.
+- `float*` destination: exact.
+- `float&` destination: exact, and kept as the most natural spelling.
+- Reference to the gate: 99.90%, still wrong.
+- A `cRSubGame*` alias: 99.90%, still wrong.
+- A `float step` local: 77.27%.
+
 ## 2026-09-25 rotation-cursor recovery
 
 The source now reaches **99.90476190%, with 1034/1034 instructions, prefix 12

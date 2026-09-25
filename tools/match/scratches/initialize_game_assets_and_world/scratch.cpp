@@ -2097,14 +2097,14 @@ char cRGame::initialize_game_assets_and_world()
         sizeof(subgame.player.presentation.cutscene_animation_slots)
         / sizeof(subgame.player.presentation.cutscene_animation_slots[0]);
     PresentationAnimationSlot* animation_slot;
-    int cutscene_animation_index = 0;
+    int animation_index = 0;
     do {
-        subgame.player.presentation.cutscene_animation_slots[cutscene_animation_index].body.object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
-        subgame.player.presentation.cutscene_animation_slots[cutscene_animation_index].body.object->ApplyToon(0);
-        subgame.player.presentation.cutscene_animation_slots[cutscene_animation_index].body.object->distort.z_wave = 0.0f;
-        subgame.player.presentation.cutscene_animation_slots[cutscene_animation_index].body.object->distort.y_squash = 0.0f;
-        subgame.player.presentation.cutscene_animation_slots[cutscene_animation_index].body.object->distort.xyz_scale = 0.0f;
-        ++cutscene_animation_index;
+        subgame.player.presentation.cutscene_animation_slots[animation_index].body.object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
+        subgame.player.presentation.cutscene_animation_slots[animation_index].body.object->ApplyToon(0);
+        subgame.player.presentation.cutscene_animation_slots[animation_index].body.object->distort.z_wave = 0.0f;
+        subgame.player.presentation.cutscene_animation_slots[animation_index].body.object->distort.y_squash = 0.0f;
+        subgame.player.presentation.cutscene_animation_slots[animation_index].body.object->distort.xyz_scale = 0.0f;
+        ++animation_index;
     } while (--animation_count != 0);
 
     subgame.player.presentation.object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
@@ -2134,15 +2134,14 @@ char cRGame::initialize_game_assets_and_world()
             .body.object);
 
     animation_count = 2;
-    animation_slot =
-        &subgame.player.presentation.jetpack_channel.animation_slots[0];
+    animation_index = 0;
     do {
-        animation_slot->body.object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
-        animation_slot->body.object->ApplyToon(0);
-        animation_slot->body.object->distort.z_wave = 0.0f;
-        animation_slot->body.object->distort.y_squash = 0.0f;
-        animation_slot->body.object->distort.xyz_scale = 0.0f;
-        ++animation_slot;
+        subgame.player.presentation.jetpack_channel.animation_slots[animation_index].body.object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
+        subgame.player.presentation.jetpack_channel.animation_slots[animation_index].body.object->ApplyToon(0);
+        subgame.player.presentation.jetpack_channel.animation_slots[animation_index].body.object->distort.z_wave = 0.0f;
+        subgame.player.presentation.jetpack_channel.animation_slots[animation_index].body.object->distort.y_squash = 0.0f;
+        subgame.player.presentation.jetpack_channel.animation_slots[animation_index].body.object->distort.xyz_scale = 0.0f;
+        ++animation_index;
     } while (--animation_count != 0);
 
     subgame.player.presentation.jetpack_channel.object->flags |=

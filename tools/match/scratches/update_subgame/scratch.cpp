@@ -53,11 +53,13 @@ void cRSubGame::AI()
     CalcRate();
 
     switch (subgame_state) {
-    case 3:
+    case 3: {
         subgame_state = 4;
         subgame_pause_gate = (unsigned char)1;
-        pause_fade = pause_fade_step;
+        float& fade = pause_fade;
+        fade = pause_fade_step;
         sub_pause.Init();
+    }
         // Native fallthrough: initialization immediately receives one update.
     case 4:
         sub_pause.AI();
