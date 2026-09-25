@@ -100,14 +100,11 @@ int FontLoad(
         ++x;
     }
 
-    int line_marker_y = 1;
-    if (image->height > 1) {
-        for (; line_marker_y < image->height; ++line_marker_y) {
-            if (sample_tga_pixel_rgb(image, 0, line_marker_y) == 0xffffff) {
-                g_font_sheets[g_registered_font_count].line_marker_y =
-                    (float)line_marker_y;
-                break;
-            }
+    for (int line_marker_y = 1; line_marker_y < image->height; ++line_marker_y) {
+        if (sample_tga_pixel_rgb(image, 0, line_marker_y) == 0xffffff) {
+            g_font_sheets[g_registered_font_count].line_marker_y =
+                (float)line_marker_y;
+            break;
         }
     }
 

@@ -315,3 +315,44 @@ assigned to the player transform regresses 88.89% to 87.74%, preserving
 prefix. The real constructor expression therefore does not recover this
 caller's frame lifetime; no canonical source or header is changed. The
 standalone probe and recipe preserve the tested complete source.
+
+## 2026-09-25 stack-slot order traced to the final file_bytes reload
+
+No source change. The baseline stays at 93.38% normalized and **32/33**
+structural. About 26 of those changed instructions are swapped stack
+offsets. The rest is the tail register allocation.
+
+VC6's stack packer is C2 `sub_1074b617` (`stack.c`, called from
+`0x10733cde`). It was traced with a preserving observer hook, and the order
+it produces follows from three rules:
+
+- **Variable weights.** Each spilled variable counts one per reference. The
+  list is ordered by size, then by weight (highest first). When weights are
+  equal, whichever variable reached that weight first stays ahead.
+- **Slot sharing.** Variables are packed greedily into the most recently
+  created slot they do not interfere with.
+- **Slot order.** When the frame is larger than 0x80 bytes, slots are sorted
+  by density `weight*1000/size`, highest first, using C2's unstable K&R
+  quicksort (`sub_10761bf0`, middle pivot). Index 0 gets the lowest esp
+  offset.
+
+The traced candidate weights reproduce the candidate layout exactly in a
+simulation: {width, glyphs_remaining, temp} at 0x14, {height, x} at 0x18,
+text_end at 0x38, and the image vector temp at 0x3c. The competing slots tie
+at density 2000 and 500, so the quicksort decides their order.
+
+Native's layout comes out exactly when one input changes: `file_bytes`
+weighs 3 instead of 4, and sorts after `width`. The fourth reference is the
+candidate's extra `mov esi, [esp+0x34]` before the final free. Native keeps
+the buffer in ESI through the velocity loop, and reloads vx/vz from the stack
+inside the loop. The candidate hoists all three velocity lanes and reloads
+the buffer instead. No other single ±1/±2 weight change, pair of changes, or
+equal-weight ordering produces native's layout while `file_bytes` weighs 4.
+
+The stack offsets therefore cannot be fixed on their own. They follow from
+the file-buffer versus velocity-lane choice in the global (region-based)
+allocator. None of the following change that choice: 11 velocity-loop and
+vector forms, 6 initializer orders, 6 copy orders, 4 mobile-shaped guarded
+do/while loops, 8 tail and duration forms, 3 function-scope shared-vector
+forms, and 30+ declaration, scope and naming controls. Declaration order and
+variable names never affect the packing.

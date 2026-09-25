@@ -158,3 +158,28 @@ for the white glyph marker, the 2048-pixel split-sheet boundary, and both
 together. All three forms compile byte-identically to the current candidate:
 88.32%, 274/274 instructions, prefix 55, and all 57 references clean. The
 remaining glyph-index/x/conversion stack-slot allocation remains open.
+
+## 2026-09-25 vertical marker scan as one pretested loop
+
+The vertical marker scan is now a single `for (int line_marker_y = 1;
+line_marker_y < image->height; ...)`, without the old `if (height > 1)`
+guard in front of it. The two forms mean the same thing. Native's entry test
+is the loop's own pretest: it compares memory directly
+(`cmp word [esi+0xe], di`, with `edi = 1`). The guarded form loaded the
+height into a scratch register first. Structural diff:
+**22/22 → 21/20** changed target/candidate instructions (91.97% → 92.50%).
+Normalized drops from 88.32% to 86.65% (274/273 instructions, prefix 55).
+All 57 masked operands stay clean.
+
+Almost all of the remaining structural residue comes from one cause. The
+candidate keeps `slot` in EDX inside the glyph block, so it has to reload
+`g_registered_font_count` where the block rejoins. Native keeps `slot` in
+memory everywhere: the slot is initialized with an immediate, reloaded for
+`++slot`, and reloaded again for `slot_count`. EDX keeps the font index all
+the way to the loop exit, and it is reloaded only after the error call.
+Because the slot was spilled, C2's stack packing (`stack.c`) takes a
+different path, which moves the x/run/slot homes (0x10/0x14/0x18/0x1c).
+Seven more slot, font-index, x-loop and reset-order controls built on the
+new loop did not improve it. Neither did diagnostic aliasing of `slot`: the
+inlined `&slot` is optimized away, and an out-of-line helper regresses to
+36/36. See the intro scratch's 2026-09-25 note for how the packer works.
