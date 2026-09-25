@@ -154,3 +154,26 @@ velocity-Z store. Two routes fail:
 
 No other neutral single-use float intermediate exists in the loop body. The
 velocity components cross RNG calls, and naming them changes the code.
+
+## 2026-09-26: matched (signed-random macro parentheses move the window cut)
+
+**96.12% → exact**, 103/103 instructions, encoded body identical, 21 clean references.
+
+**Changes.**
+- The velocity lanes use a local `SIGNED_RANDOM(scale)` macro:
+  `(((float)gRMathRand2() - 16384.0f) * 0.0000610351562f * (scale))`.
+  Mobile writes each lane as `(rand - 16384) * 6.1035156e-05 * scale`, and Windows folds
+  `c * scale` into one constant.
+- The position copy is the direct `sprite->position = *position;` and comes before `--remaining;`.
+
+**Why it works.**
+- C1XX emits an IL_FROUND after every parenthesized non-leaf float expression (crimson-88), so the
+  macro's outer parentheses add one codeless tuple per lane: 3 in all. The machine code is unchanged,
+  because the product's own order and constant folding are unaffected.
+- The 81-tuple window 3 is then cut after the velocity Z store, so the countdown load, `dec` and store
+  fall into window 4 with the position copy.
+- With the copy first in IL order, the /G5 scheduler interleaves the countdown into the copy exactly as
+  native does.
+
+**Not tried further.** Parenthesizing only `(rand - 16384) * c` blocks the `c * scale` fold and adds 3
+instructions.

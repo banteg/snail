@@ -8,6 +8,10 @@
 
 int gRMathRand2();
 
+// Signed random in [-scale, scale).
+#define SIGNED_RANDOM(scale) \
+    (((float)gRMathRand2() - 16384.0f) * 0.0000610351562f * (scale))
+
 void cRFireWork::Shoot(
     Vector3* position, int owner, int texture_id, int count)
 {
@@ -39,18 +43,13 @@ void cRFireWork::Shoot(
         sprite->size_end = 0.100000001f;
 
         Vector3 velocity(
-            ((float)gRMathRand2() - 16384.0f)
-                * 0.0000610351562f * 0.2f,
-            ((float)gRMathRand2() - 16384.0f)
-                    * 0.0000610351562f * 0.3f
-                + 0.100000001f,
-            ((float)gRMathRand2() - 16384.0f)
-                * 0.0000610351562f * 0.2f);
+            SIGNED_RANDOM(0.2f),
+            SIGNED_RANDOM(0.3f) + 0.100000001f,
+            SIGNED_RANDOM(0.2f));
 
         sprite->depth_offset = 0.0f;
         sprite->velocity = velocity;
+        sprite->position = *position;
         --remaining;
-        Vector3* out_position = &sprite->position;
-        *out_position = *position;
     } while (remaining != 0);
 }
