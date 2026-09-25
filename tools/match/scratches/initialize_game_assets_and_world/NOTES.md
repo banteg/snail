@@ -1562,3 +1562,52 @@ recorded; sources and detailed results live under
 `artifacts/match/gameplay-lifetimes-20260909/initialize_game_assets_and_world/`.
 The separate authored math API migration preserves all existing body bytes,
 metrics and audit results; see `../../authored-math-api-20260909.md`.
+
+## 2026-09-25 structural pass: inline zero, direct owners, list Add
+
+Metric `snail match scratch --structural` (eax/ecx/edx and local labels
+generalized). Before: 84.03% normalized, 85.30% structural, 797/793 changed
+target/candidate instructions, 5,407 candidate instructions, two unaudited
+references. After: **99.15% normalized, 99.56% structural, 24/24 changed**,
+5,411/5,411 instructions, prefix 3,567, 1,881 clean references and no
+unaudited references.
+
+Source changes, all semantics-preserving:
+
+- Every path/banner position reset uses a local inline `zero_position`
+  (z, y, x stores). The out-of-line `zero_vector3` @ `0x410710` has the same
+  z/y/x body and is called only for pair 60 and the barrier, i.e. the same
+  inline tVector method that VC6 stopped inlining late in this body. The
+  extra inline expansions fix the long path block's scheduling. Header
+  follow-up (not done here): give `tVector` an inline zero method and keep
+  `0x410710` as its out-of-line copy.
+- The root-list insertion is the authored `cLinkedList<cRBod>::Add(cRBod&)`
+  shape (`link_root_bod(BodNode&)` with a list pointer), called directly per
+  overlay (`link_root_bod(overlay_N); overlay_N.Init();`). The
+  `initialize_overlay_slot` wrapper is gone. The native node copy and flag
+  pointer now appear in all three overlays and all eight `add_bod_after`
+  expansions, and `0x200` is no longer held in a register.
+- Direct member access with no pointer locals for the third floor-slice load,
+  pillar loads, ramps, corners, trampoline, hole, lazer model, salt model and
+  the Golb rocket object. The hole's texture flag is corrected to
+  `TEXTURE_REF_REGISTERED` (native `or ch, 4`; the old `|= 4` was wrong).
+- Indexed `for` loops for sub-lazers, salt hazards and banners replace the
+  byte-offset and borrowed-cursor forms, so the offset enum constants are gone.
+  The animation-cleanup loops read `slot->body.object->` for each statement.
+  The Golb vapour loop has no `Object*` locals. The game-input loop indexes
+  `game_inputs[i]`. The `active_bods` and dead `game` locals are removed.
+- Pair 1's entry-strip assignments use the same natural order as the other
+  pairs.
+
+Allocator sensitivity: in this body, VC6's register/CSE state depends on how
+many symbols the function has. In the good state, adding three dead `int`
+locals anywhere in the function, or removing the old dead `char* game` local,
+switched to a different allocation state (the constant `0x200` stayed in a
+register, loader lost `esi`) at 834–883 changed instructions. The
+list-Add/reference form made the good state robust to the remaining
+direct-owner edits. The retained source has no dead locals. The residual 24 are a
+pair-2 entry-strip store schedule (4) and a one-register rotation offset
+starting at the jetpack cleanup loop cursor (`lea eax` vs `lea edx`, about
+20 across the weapon channels). Statement permutations for pair 2 and the
+cleanup-loop setup order were neutral. Indexed `for` rewrites of the four
+channel loops fall back into the degraded state.

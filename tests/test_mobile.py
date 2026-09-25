@@ -4021,7 +4021,9 @@ def test_mobile_vapour_pause_and_speedup_recover_authored_owners() -> None:
         scratch_root / "construct_game_runtime/scratch.cpp"
     ).read_text(encoding="utf-8")
 
-    assert "golb_shot->vapour.Init(vapour_object, 0.159999996f);" in assets
+    # The authored vapour owner initializes its own object at the Golb speed;
+    # do not pin the receiver or argument spelling.
+    assert re.search(r"vapour\.Init\([^;]*0\.159999996f\);", assets)
     # The reset floor is now a typed float pointer, independent of the spawn
     # selector's register lifetime. Do not pin this contract to a local name.
     reset_floor = re.search(r"vapour\.ReSet\(([A-Za-z_]\w*)\);", create_golb)
@@ -4223,11 +4225,9 @@ def test_mobile_frontend_jetpack_and_row_owners_stay_authored() -> None:
         scratch_root / "spawn_track_jetpack_pickup/scratch.cpp"
     ).read_text(encoding="utf-8")
 
-    assert (
-        "static __forceinline void initialize_overlay_slot(cROverlay* overlay)"
-        in assets
-    )
-    assert "overlay->Init();" in assets
+    # Each root overlay is linked, then initialized through its authored Init.
+    for overlay in ("overlay_0", "overlay_1", "overlay_2"):
+        assert f"{overlay}.Init();" in assets
     assert "fade.Init();" in assets
     assert "frontend_overlay.Init(" in assets
     assert "fade.AI();" in frame
@@ -11411,7 +11411,7 @@ def test_root_input_types_use_authored_primary_owners() -> None:
     asset_initializer = (
         scratch_root / "initialize_game_assets_and_world/scratch.cpp"
     ).read_text(encoding="utf-8")
-    assert "game_input->input.Init();" in asset_initializer
+    assert re.search(r"\binput\.Init\(\);", asset_initializer)
     assert ".initialize_input(" not in asset_initializer
 
     game_input_ai = (
