@@ -214,3 +214,30 @@ The receipts bound these hypotheses only. No new exact match or unsupported owne
 ## 2026-09-07 folded-character comparison inputs
 
 Twelve inline comparison forms take already-folded characters as values or const references, reverse the comparison, and use equality or negated inequality. All produce the same 98.98% result, 439/440 instructions, prefix 412, and 74 clean references. They restore neither the native delayed byte spill nor its extra `mov dl, al`. The 99.32% canonical source is unchanged.
+
+## 2026-09-26: call order under `==` decoded (crimson-88 Q7)
+
+Full answer: `/tmp/claude/c2-from-crimson-88/snail_answer_call-operand-order.md`, and crimson
+`tools/match/c2/compiler/call-operand-order.md`. Tracer: crimson `scripts/c2/su_order_trace.py`.
+
+**Rule.**
+- `==` (IL 0x17d) is not in the commutative sort, so its operand order is kept. It is in the reorderable
+  set (`0x1070e560`), so `emit_tree_as_tuples` (`0x1070e114`) emits the right subtree first when that
+  subtree's packed key is strictly greater. The compare keeps its direction.
+- Both calls have need 8 and size 5, so the 16-bit hash decides. A call hashes as
+  `(callee + 2 * (arg_hash + 0x15) + 0x3f) mod 0x10000`.
+- `callee` is RstrASC's frontend symbol id. That counter runs over the whole translation unit and is fixed
+  at the declaration.
+- Native calls the key first because the sum wraps. That happens only when RstrASC's id is in
+  0xf757..0xff16, which needs a large prelude of declarations before `rstring.h`.
+  - With padding placed before the include, `RstrASC(key) == RstrASC(g_last)` is 100%, encoded
+    body-exact. The window edges were verified exactly.
+  - VC6's own Win32 + DX5 headers only reach 0xb60d. The original RShell TU presumably pulled in
+    DX8/D3DX8 or class-heavy project headers, which are not in this repo.
+
+**Decision.** No padding is adopted: without the authentic prelude it would be tuning.
+
+**Source simplification (byte-identical, same code hash).** The separate `repeat_code` byte is gone.
+`result` is compared directly, matching the single key variable in the Android and iOS bodies. `[esp+8]` is
+where the allocator keeps `result` in memory. The operands stay `RstrASC(g_last) == RstrASC(result)`,
+which keeps `cmp dl,al` once the call order is fixed.
