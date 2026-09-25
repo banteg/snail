@@ -415,6 +415,37 @@ from native and are explained by a cut or by the tuple count:
 | initialize_hill_valley_path_template_pair | a pseudo tuple (FROUND, unit class 0) cannot issue while an `imul` holds every pipe, so the mesh Z spill waited 10 cycles; storing Z as a member instead of a constructor argument removes that FROUND (99.85 → 100.00% normalized, SIB bytes left) |
 
 
+## Codeless tuples: where FROUNDs come from (crimson-88, 2026-09-26)
+
+Window cuts count codeless tuples, and almost all of them are IL_FROUND (0x162). A survey of 47,756
+traced window tuples found no REGUSE, MOVE or other pseudo tuples. FROUNDs come from three sources:
+
+- **Parentheses.** C1XX emits a FROUND after every parenthesized float or double expression that is not a
+  lone variable or field. It is already in the IL when globopt starts.
+  - Each nesting level counts: `((a + b))` gives 2.
+  - A redundant top-level pair counts: `x = (a + b);` gives 1.
+  - `(s->a)`, `(x)` and integer expressions give 0.
+  - A cast adds nothing of its own: `(float)(a + b)` gives 1, from the parentheses. `float(a + b)` and
+    `static_cast<float>(a + b)` give 0.
+- **Forward propagation** of a single-use float local into another float expression. A named local
+  stored straight to a member gives nothing.
+- **Inlined float parameters** fed by a computed single-use value.
+
+Named locals, pointer and reference copies, int-parameter inlines and struct copies add no tuple.
+
+**Using it.**
+- To add a codeless tuple without changing code, parenthesize a non-leaf float subexpression, for
+  example through a macro body.
+- To remove one, drop a parenthesis pair, or respell so C2 refactors the expression.
+  `optimize_expression_trees` → `factor_common_terms` (`0x1070f0c7`) folds `x * 4 + 4` back into
+  `(x + 1) * 4`, which carries no FROUND.
+- Parenthesizing part of a constant chain, as in `((r - k) * c) * s`, blocks VC6's folding of `c * s`
+  and changes code.
+
+**Matches from this rule.**
+- initialize_star_field: `speed * 4.0f + 4.0f` removes the FROUND between `fadd` and `fmul`.
+- firework_shoot: a `SIGNED_RANDOM(scale)` macro adds 3 FROUNDs and moves the window-3 cut.
+
 ## Block order
 
 Block order is fixed well before register allocation. Evidence is in the
