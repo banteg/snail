@@ -163,3 +163,16 @@ and every block-end demotion.
 - **Open.** Find an IL where the flag has at most as many counted stores
   as loads, or where its stores reach memory only after allocation. Keep the
   retained 87.47% source until then.
+
+## 2026-09-25: Codex source search on the benefit rule (negative)
+
+Codex (gpt-6-astra, high) ran 39 probes aimed at bringing constants 0 and 1 to benefit ≤ 0. The overlays
+are not kept.
+
+- **Closest.** The flag is computed from both state comparisons (`cmp_bitand`). Both constants trace at
+  −1/−1, and the allocation is native's, with the flag in memory. But `setne`/`and` adds 12 instructions:
+  89.87%, 261/249.
+- **Negative:** inline `cRSnail` bool parameters (still 5/2 and +700 on ebx), return helpers, scoped
+  flags, conditional expressions, and show/idle wrappers.
+
+The retained source is unchanged.

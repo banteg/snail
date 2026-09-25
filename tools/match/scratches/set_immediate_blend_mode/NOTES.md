@@ -148,3 +148,25 @@ see the [profile controls](../rebuild_game_archive_if_needed/profile-controls-20
 
 The recipes bound these case-grouping hypotheses; they do not establish source
 exhaustion. No source or compiler setting changes.
+
+## 2026-09-25: cross-jump rules decoded (crimson-88 Q6a)
+
+Full answer: `/tmp/claude/c2-from-crimson-88/snail_answer_aggregate-temporaries.md`, and crimson
+`tools/match/c2/compiler/aggregate-temporaries.md` §6–7.
+
+**Rules.**
+- The vtable-load registers rotate with source order. Case order `0,1,2,4,14,6,9/12,5/8/11/13,3/7/15` gives
+  native's registers in every block.
+- `cross_jump_into_fallthrough` (`0x1073d701`) has no size limit, so cases 2 and 14 join the 3/7/15 tail.
+- `cross_jump_pair` (`0x1071dfc6`, /O2):
+  - An identical whole block always merges, so cases 1 and 4 always merge.
+  - A partial tail merges only if the running byte sum, which stops at the first point ≥ 20, is strictly
+    greater than 20.
+  - Case 6 against 5/8/11/13 hits exactly 20 and is refused.
+
+**Search.** None of the 2880 orders that give native's registers matches; the best is 77.70%, below the
+current 81.97%. Loading the device through another symbol in case 4 reproduces native's whole jump table
+except the case-6 merge (86.98%).
+
+**Conclusion.** Native's IL must differ between cases 1 and 4 in a way the bytes don't show. The retained
+source is unchanged.

@@ -1284,3 +1284,23 @@ Clamp diagnosis confirmed: `speed` has three uses (score 1) and fails nesting
 because `window` is redefined and dies inside its lifetime, so it is spilled to
 `[esp+0x10]`. Native's per-use `fld [0x418]; FROUND; fcomp` needs a per-use
 single-use definition (e.g. an inline accessor); no authored accessor is known.
+
+## 2026-09-25: ghost-z block order decoded (crimson-88 Q6b)
+
+Full answer: `/tmp/claude/c2-from-crimson-88/snail_answer_aggregate-temporaries.md`, and crimson
+`tools/match/c2/compiler/aggregate-temporaries.md` §6–7.
+
+**Why ours differs.** The reader emits `if (!anchor || (cursor = …) == 0) A else B` as T1, T2, A, B.
+- `cfg_build_edges` prepends edges, so T1's successors are [A, T2].
+- The DFS reaches A from T1 first, so RPO is T1, T2, B, A.
+
+**What native needs.** A must come before T2 in the IL and be reached from T2 only by a backward jump: a
+backward `goto` from the else branch into the then branch. With that, every branch and label is native's.
+
+**Result on a copy.**
+- Structural: 99.28 → 99.55%.
+- Raw: 99.28 → 96.06%, with 2090/2087 instructions. The eax/ecx/edx rotation runs one step behind from the
+  `records[0]` temporary, and the clamps keep speed in `[esp+0x10]`.
+
+**Decision.** Not adopted: the goto is not house style, and raw bytes regress. The retained source is
+unchanged.

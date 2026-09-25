@@ -487,3 +487,32 @@ No alternative recovers the native `0x80` frame. Worm remains **73.09%**,
 now contains nine records, eight mutation sweeps, one probe, 90 evaluated
 variants, and 86 unique variants. Future exact work needs source or symbol
 provenance identifying a genuinely different authored vector operation.
+
+## 2026-09-25: extra Vector3 temporaries decoded (crimson-88 Q1c)
+
+Full answer: `/tmp/claude/c2-from-crimson-88/snail_answer_aggregate-temporaries.md`.
+
+**Native's temporaries.**
+- A = pos + t.
+- B = copies of A.y and A.z only, which are then re-read.
+- C = B + up.
+- D = a copy of C, block-copied to `vertices[k]`.
+
+Ours has only A and D.
+
+**Mechanism.**
+- VC6 has no NRVO. With the stock header, `return result;` is one 12-byte block copy. A user copy
+  constructor or `tVector(float*)` gives three field copies instead.
+- CSE phase 1 (`find_available_copy_source`) rewrites later reads back to a copy's source, following
+  chains, and DCE then deletes the copy.
+- A surviving block copy moves all three dwords, including x. Native has no x lane, so its B must be
+  field copies, and field copies survive only when their destination is later read as a whole.
+
+**Leads.**
+- D reproduces with a copy-constructor header or `vertices[k] = Vector3(&vertex.x)`: frame 0x74, but
+  87.80%, below the current 90.64%, because B is still missing.
+- B's copies would survive only if something invalidated them between the x- and y-lane reads. In the
+  traced candidate, A, C, `up_component` and `vertex` are in separate alias classes, so nothing does.
+- About 300 variants were tried. This is the only function in the corpus with this pattern.
+
+The retained source is unchanged.
