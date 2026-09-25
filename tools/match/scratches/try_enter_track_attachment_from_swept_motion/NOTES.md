@@ -1,5 +1,32 @@
 # Near match — 99.02% score, 204/204 instructions on standard flags
 
+## 2026-09-25: vector-value signature retest on the current body
+
+This used a local header shadow with `(Vector3 position, Vector3 sweep, cRSubLoc* cell)` and
+`position + sweep`. The result is 98.04%, 204/204 instructions, prefix 111, 47 clean references. The
+last scalar result (99.02%) is kept.
+
+- **Operand order.** The X lane now loads sweep first, as native does. Y and Z flip: they also load sweep
+  first, but native loads position first there.
+- **Why.** `addrorder.py --nodes 44` shows the scalarized component slots:
+
+  | Component | Slot |
+  | --- | --- |
+  | position.x | 0xb5 |
+  | sweep.x | 0x142 |
+  | position.y | 0x14f |
+  | position.z | 0x153 |
+  | sweep.y | 0x15a |
+  | sweep.z | 0x15c |
+
+  Native needs position.y/z to rank above sweep.y/z, while position.x stays below sweep.x.
+- **Neutral (98.04%):** `sweep + position`, a fused `position + sweep - hit_origin`, a branch-local swept
+  copy, and a `Vector3(position)` copy.
+- **Regressions:** `+=` forms and a reordered hit origin (76–90%).
+
+The slots come from pool reuse, so this is the same id lottery as the other operand-order residues. No
+source or header change.
+
 ## 2026-09-25 x87 operand order of the swept X lane
 
 Rule: [x87-order.md](../../c2/x87-order.md). VC6 loads the first-sorted
