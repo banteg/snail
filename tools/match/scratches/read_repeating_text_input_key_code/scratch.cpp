@@ -1,5 +1,6 @@
 // read_repeating_text_input_key_code @ 0x4327e0 (cdecl)
 
+#include "rshell_prelude.h"
 #include "rstring.h"
 #include "text_input_repeat_state.h"
 
@@ -185,8 +186,8 @@ after_letters:
         return result;
     }
 
-    if (RstrASC(g_text_input_last_repeat_code)
-        == RstrASC(result)) {
+    if (RstrASC(result)
+        == RstrASC(g_text_input_last_repeat_code)) {
         float accumulator = g_text_input_repeat_step + g_text_input_repeat_accumulator;
         g_text_input_repeat_accumulator = accumulator;
         if (accumulator > 1.0f) {

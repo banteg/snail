@@ -4,6 +4,7 @@ artifacts/
 __pycache__/
 site/
 tools/match/compilers/
+tools/match/sdk/
 tools/match/bin/wibo
 tools/match/bin/wibo-*
 tools/match/gpt-pro-tooling/

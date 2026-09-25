@@ -164,6 +164,16 @@ in the repository.
      mkdir -p $v && tar xzf $v.tar.gz -C $v && rm $v.tar.gz
    done
    ```
+3. DirectX 8.1 SDK headers (gitignored, needs `7z`). Only scratches that
+   include `rshell_prelude.h` need them:
+
+   ```sh
+   tools/match/fetch_dx81_sdk.sh
+   ```
+
+   The script downloads Microsoft's `dx81sdk_full.exe` from archive.org and
+   checks it against a pinned SHA-256. It then installs the headers into
+   `tools/match/sdk/dx81`.
 
 Most scratches use `msvc6.5`; that bundle is sufficient for the matching
 challenges unless the selected `scratch.conf` specifies another compiler.

@@ -243,3 +243,32 @@ where the allocator keeps `result` in memory. The operands stay `RstrASC(g_last)
 which is the best order without the prelude. Inside the id window, native's form is
 `RstrASC(result) == RstrASC(g_last)`; the global on the left there gives native's call order but a flipped
 compare (99.77%).
+
+## 2026-09-26: matched with the RShell.o declaration prelude
+
+**99.32% → exact** (`state=match`), 440/440, 74 clean references, encoded body identical.
+
+**Source.** The compare is `RstrASC(result) == RstrASC(g_text_input_last_repeat_code)`, and the scratch
+includes `rshell_prelude.h` before `rstring.h`.
+
+**The prelude** (`tools/match/include/rshell_prelude.h`) has two parts.
+- **Real Microsoft DirectX 8.1 SDK headers**, fetched by `tools/match/fetch_dx81_sdk.sh`: `windows.h`,
+  `mmsystem.h`, `d3d8.h`, `d3dx8.h` and `dinput.h` v8. The binary justifies each one:
+  - `Direct3DCreate8(0xdc)`: 220 is DirectX 8.1's SDK version;
+  - statically linked D3DX8;
+  - `DirectInput8Create`;
+  - `timeGetTime`.
+  Sound is BASS, so `dsound.h` is not included.
+- **A labelled stand-in** of 13,762 enumerators. Measured with su_order_trace after the SDK headers,
+  anything from 12,738 to 14,785 lands RstrASC in the wrapping window. The stand-in holds the place of
+  RShell's own headers: strings name `RShell.h`, `GDX.h`, `font.h` and `RSprite.h`.
+
+For reference:
+- VC6 `windows.h` plus the DDK `d3d8.h` alone left a gap of about 20k.
+- The CRT headers add only 687.
+- Our full reconstructed `game_root.h` overshoots by about 2.4k.
+
+**Consistency.** The prelude was prepended to all 43 other `RShell.o` scratches:
+- every exact one stays exact;
+- `enumerate_matching_archive_or_fs_entries` is unchanged at 92.31%;
+- `initialize_game_data_archive` only clashes with its own hand-written `GetClipCursor` declaration.
