@@ -1,5 +1,43 @@
 # `initialize_halfpipe_path_template_pair` reconstruction notes
 
+## 2026-09-25: normalized match via live primary bank traversal
+
+Halfpipe reaches **100% normalized** (707/707 instructions, prefix 707/707,
+structural 100%, 0/0 changed, 55 clean references). Before: 94.98%,
+706/707, structural 98.23% with 13/12 changed. One encoded byte remains, so
+`scratch.conf` keeps its recovery fields:
+
+```text
++0x2f9 middle center_x store  target [ebx+eax+0x90]  candidate [eax+ebx+0x90]
+```
+
+Retained changes, all semantics-preserving:
+
+- **Vertex branch owners (Turnover Double).** Each vertex branch reads its
+  sample directly through `(char *)primary_samples + sample_offset` (the
+  terminal branch through `[-1]`) with its own `float lateral`, replacing the
+  shared hoisted `TransformMatrix *`. `++row` precedes the sample-offset
+  advance.
+- **Persistent up vector.** `Vector3 up(0, 1, 0)` is declared between the
+  middle counter and its byte offset and assigned to `basis_up`, recovering
+  the native constant-store / `0xa80` order.
+- **Live-bank departure.** The tail uses a physical `tail_offset` cursor
+  bounded at `66 * sizeof`, primary accesses through the live bank reference
+  (renamed `primary_bank`, previously `middle_primary`), and a zero-based Z
+  `(float)(sample_step + 50)` computed after the `position.y` store. This
+  recovers native `offset+bank` Identity receiver order.
+- **Physical delta traversal through the bank.** The delta pass uses a
+  physical `delta_offset` with the primary bank reference, removing five
+  scale-one SIB differences (6 -> 1 encoded bytes, structural unchanged).
+
+Independent reversals (structural changed target/candidate): shared transform
+pointer 10/8; offset-before-row 2/2; inline up temporary 1/1; logical tail
+1/2; tail on the direct member 2/1; Z before `position.y` 2/2; delta on the
+direct member or logical 0/0 but six encoded SIB bytes. Center-store controls
+(offset-first cast, arrow/add-first/`middle_f`-first spellings, Cage2-style
+local borrow after a direct store, direct-member RHS) do not remove the last
+byte; most are neutral, direct-member forms regress to 4/5-17/16.
+
 ## 2026-09-21: guarded mesh traversal and local lateral values
 
 Current partial result: **94.97523001%, 706/707 instructions**, prefix **137**,

@@ -1,5 +1,33 @@
 # initialize_toad_path_template_pair
 
+## 2026-09-25: byte-exact via Turnover Double departure and mesh house style
+
+Toad is now **byte-exact** (`state=match`): 100% normalized, 663/663
+instructions, prefix 663/663, encoded body match, 33 clean references.
+Before: 95.47% normalized, 661/663, structural 98.94% with 8/6 changed
+target/candidate instructions. Three transfers from byte-exact siblings:
+
+- **Departure bound (Turnover Double).** The tail physical offset is derived
+  from the shared `tail_start`, and the relative latch base is the independent
+  `-26 - lead_count` expression (native `mov eax,-26; sub eax,lead_count`),
+  not `-tail_start`. The offset source matters: with the offset still derived
+  from `tail_index`, the independent base lets VC6 merge the latch into one
+  induction counter (38/41 changed).
+- **Parity spelling.** `((column ^ row) & 1) == 0`, as in the solved builders,
+  recovers the native `jne` to the out-of-line texture continuation (two
+  branch opcodes).
+- **Branch-local float lateral.** Each vertex branch owns its `float lateral`
+  (Turnover Double), replacing the hoisted `double`; this recovers the native
+  `[esp+0x18]` stack slot of the width conversion temporary (three
+  instructions). An inline-expression spelling is also byte-exact; the
+  branch-local local is retained.
+
+Independent reversals from the exact source (structural changed target/
+candidate): control base only 3/1 (95.92%), offset source only 21/24,
+parity 2/2, hoisted double lateral 3/3. All 24 scalar declaration orders and
+mesh `row/column/face_index` orders were neutral before the lateral fix.
+`RECOVERY`/`RESIDUAL` are removed from `scratch.conf`.
+
 ## 2026-09-11: guarded lead/delta traversal and vector recovery
 
 Current canonical source is **95.46827795%, 661/663 instructions**, with its

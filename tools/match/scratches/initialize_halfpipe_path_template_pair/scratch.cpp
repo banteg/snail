@@ -20,7 +20,7 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
     segment_count = 66;
     segment_count_f = 66.0f;
     // GetNodes replaces the bank; keep this reference bound to the live field.
-    AttachmentSample* const& middle_primary = primary_samples;
+    AttachmentSample* const& primary_bank = primary_samples;
     GetNodes();
     has_entry_mesh_transition = 0;
 
@@ -72,82 +72,85 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
     } while (lead_sample_offset < 16 * (int)sizeof(AttachmentSample));
 
     sample_step = 0;
+    int tail_offset = 50 * sizeof(AttachmentSample);
     do
     {
-        int sample_index = sample_step + 50;
         float angle_base = 1.0f - (float)sample_step * 0.0625f;
         float angle = angle_base * 3.1415927f + 1.5707964f;
         float depth = ((0.5f - Sin(angle) * 0.5f) * 0.94999999f + 0.050000001f) * 4.0f;
-        primary_samples[sample_index].center_x = 4.0f - (float)width_cells * 0.5f;
-        primary_samples[sample_index].rotation_scalar_98 = 0.0f;
-        primary_samples[sample_index].rotation_scalar_94 = 0.0f;
-        primary_samples[sample_index].special_scalar =
+        ((AttachmentSample *)((char *)primary_bank + tail_offset))->center_x = 4.0f - (float)width_cells * 0.5f;
+        ((AttachmentSample *)((char *)primary_bank + tail_offset))->rotation_scalar_98 = 0.0f;
+        ((AttachmentSample *)((char *)primary_bank + tail_offset))->rotation_scalar_94 = 0.0f;
+        ((AttachmentSample *)((char *)primary_bank + tail_offset))->special_scalar =
             (depth * depth + 16.0f) / (depth + depth);
-        primary_samples[sample_index].lateral_scale = 1.0f;
-        primary_samples[sample_index].transform.Identity();
-        primary_samples[sample_index].transform.position.x =
-            primary_samples[sample_index].center_x;
-        primary_samples[sample_index].transform.position.y = 0.0f;
-        primary_samples[sample_index].transform.position.z = (float)sample_index;
-        primary_samples[sample_index].delta_length = 1.0f;
+        ((AttachmentSample *)((char *)primary_bank + tail_offset))->lateral_scale = 1.0f;
+        ((AttachmentSample *)((char *)primary_bank + tail_offset))->transform.Identity();
+        ((AttachmentSample *)((char *)primary_bank + tail_offset))->transform.position.x =
+            ((AttachmentSample *)((char *)primary_bank + tail_offset))->center_x;
+        ((AttachmentSample *)((char *)primary_bank + tail_offset))->transform.position.y = 0.0f;
+        float z = (float)(sample_step + 50);
+        ((AttachmentSample *)((char *)primary_bank + tail_offset))->transform.position.z = z;
+        ((AttachmentSample *)((char *)primary_bank + tail_offset))->delta_length = 1.0f;
 
-        secondary_samples[sample_index].transform.Identity();
-        secondary_samples[sample_index].transform.position.x =
-            primary_samples[sample_index].center_x;
-        secondary_samples[sample_index].transform.position.y = 0.49000001f;
-        secondary_samples[sample_index].transform.position.z = (float)sample_index;
-        secondary_samples[sample_index].delta_length = 1.0f;
+        ((AttachmentSample *)((char *)secondary_samples + tail_offset))->transform.Identity();
+        ((AttachmentSample *)((char *)secondary_samples + tail_offset))->transform.position.x =
+            ((AttachmentSample *)((char *)primary_bank + tail_offset))->center_x;
+        ((AttachmentSample *)((char *)secondary_samples + tail_offset))->transform.position.y = 0.49000001f;
+        ((AttachmentSample *)((char *)secondary_samples + tail_offset))->transform.position.z = z;
+        ((AttachmentSample *)((char *)secondary_samples + tail_offset))->delta_length = 1.0f;
         ++sample_step;
-    } while (sample_step < 16);
+        tail_offset += sizeof(AttachmentSample);
+    } while (tail_offset < 66 * (int)sizeof(AttachmentSample));
 
     float out_angle;
     int middle = 0;
+    Vector3 up(0.0f, 1.0f, 0.0f);
     int middle_offset = 16 * sizeof(AttachmentSample);
     do
     {
         float middle_f = (float)middle;
         out_angle = middle_f * 0.18479957f;
-        ((AttachmentSample *)((char *)middle_primary + middle_offset))->center_x =
-            (middle_primary[50].center_x - middle_primary[0].center_x) * middle_f *
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))->center_x =
+            (primary_bank[50].center_x - primary_bank[0].center_x) * middle_f *
                 0.029411765f +
-            middle_primary[0].center_x;
-        ((AttachmentSample *)((char *)middle_primary + middle_offset))
+            primary_bank[0].center_x;
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
             ->rotation_scalar_98 = 0.0f;
-        ((AttachmentSample *)((char *)middle_primary + middle_offset))
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
             ->rotation_scalar_94 = 0.0f;
-        ((AttachmentSample *)((char *)middle_primary + middle_offset))
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
             ->special_scalar = 4.0f;
-        ((AttachmentSample *)((char *)middle_primary + middle_offset))->lateral_scale =
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))->lateral_scale =
             1.0f;
-        ((AttachmentSample *)((char *)middle_primary + middle_offset))
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
             ->transform.Identity();
-        ((AttachmentSample *)((char *)middle_primary + middle_offset))
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
             ->transform.position.x = 0.0f;
-        ((AttachmentSample *)((char *)middle_primary + middle_offset))
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
             ->transform.position.z = (float)(middle + 16);
-        ((AttachmentSample *)((char *)middle_primary + middle_offset))
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
             ->transform.position.y = 0.0f;
-        ((AttachmentSample *)((char *)middle_primary + middle_offset))
-            ->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
-        ((AttachmentSample *)((char *)middle_primary + middle_offset))
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
+            ->transform.basis_up = up;
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
             ->transform.basis_forward =
-            ((AttachmentSample *)((char *)middle_primary + middle_offset))
+            ((AttachmentSample *)((char *)primary_bank + middle_offset))
                 ->transform.position -
-            ((AttachmentSample *)((char *)middle_primary + middle_offset))[-1]
+            ((AttachmentSample *)((char *)primary_bank + middle_offset))[-1]
                 .transform.position;
-        ((AttachmentSample *)((char *)middle_primary + middle_offset))
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
             ->transform.basis_forward.Normalize();
-        ((AttachmentSample *)((char *)middle_primary + middle_offset))
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
             ->transform.basis_right.Cross(
-                ((AttachmentSample *)((char *)middle_primary + middle_offset))
+                ((AttachmentSample *)((char *)primary_bank + middle_offset))
                     ->transform.basis_up,
-                ((AttachmentSample *)((char *)middle_primary + middle_offset))
+                ((AttachmentSample *)((char *)primary_bank + middle_offset))
                     ->transform.basis_forward);
 
         ((AttachmentSample *)((char *)secondary_samples + middle_offset))->transform =
-            ((AttachmentSample *)((char *)middle_primary + middle_offset))->transform;
+            ((AttachmentSample *)((char *)primary_bank + middle_offset))->transform;
         Vector3 secondary_offset =
-            ((AttachmentSample *)((char *)middle_primary + middle_offset))
+            ((AttachmentSample *)((char *)primary_bank + middle_offset))
                 ->transform.basis_up *
             0.49000001f;
         Vector3 *secondary_position =
@@ -163,20 +166,22 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
     int sample_index = 0;
     if (segment_count - 1 > 0)
     {
+        int delta_offset = 0;
         do
         {
-            primary_samples[sample_index].delta_dir_to_next =
-                primary_samples[sample_index + 1].transform.position -
-                primary_samples[sample_index].transform.position;
-            primary_samples[sample_index].delta_length =
-                primary_samples[sample_index].delta_dir_to_next.Normalize();
+            ((AttachmentSample *)((char *)primary_bank + delta_offset))->delta_dir_to_next =
+                ((AttachmentSample *)((char *)primary_bank + delta_offset))[1].transform.position -
+                ((AttachmentSample *)((char *)primary_bank + delta_offset))->transform.position;
+            ((AttachmentSample *)((char *)primary_bank + delta_offset))->delta_length =
+                ((AttachmentSample *)((char *)primary_bank + delta_offset))->delta_dir_to_next.Normalize();
 
-            secondary_samples[sample_index].delta_dir_to_next =
-                secondary_samples[sample_index + 1].transform.position -
-                secondary_samples[sample_index].transform.position;
-            secondary_samples[sample_index].delta_length =
-                secondary_samples[sample_index].delta_dir_to_next.Normalize();
+            ((AttachmentSample *)((char *)secondary_samples + delta_offset))->delta_dir_to_next =
+                ((AttachmentSample *)((char *)secondary_samples + delta_offset))[1].transform.position -
+                ((AttachmentSample *)((char *)secondary_samples + delta_offset))->transform.position;
+            ((AttachmentSample *)((char *)secondary_samples + delta_offset))->delta_length =
+                ((AttachmentSample *)((char *)secondary_samples + delta_offset))->delta_dir_to_next.Normalize();
             ++sample_index;
+            delta_offset += sizeof(AttachmentSample);
         } while (sample_index < segment_count - 1);
     }
 
@@ -203,23 +208,22 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
             column = 0;
             for (; column <= width_cells; ++column)
             {
-                TransformMatrix *transform =
-                    (TransformMatrix *)((char *)&primary_samples[0].transform +
-                                        sample_offset);
                 if (row != segment_count)
                 {
-                    double lateral = (float)column - (float)width_cells * 0.5f;
-                    Vector3 lateral_offset = transform->basis_right * lateral;
-                    Vector3 generated_position = transform->position + lateral_offset;
+                    float lateral = (float)column - (float)width_cells * 0.5f;
+                    Vector3 lateral_offset =
+                        ((AttachmentSample *)((char *)primary_samples + sample_offset))->transform.basis_right * lateral;
+                    Vector3 generated_position =
+                        ((AttachmentSample *)((char *)primary_samples + sample_offset))->transform.position + lateral_offset;
                     vertices[column + row * (width_cells + 1)] = generated_position;
                 }
                 else
                 {
-                    TransformMatrix *previous =
-                        (TransformMatrix *)((char *)transform - sizeof(AttachmentSample));
-                    double lateral = (float)column - (float)width_cells * 0.5f;
-                    Vector3 lateral_offset = previous->basis_right * lateral;
-                    Vector3 endpoint = previous->position + Vector3(0.0f, 0.0f, 1.0f);
+                    float lateral = (float)column - (float)width_cells * 0.5f;
+                    Vector3 lateral_offset =
+                        ((AttachmentSample *)((char *)primary_samples + sample_offset))[-1].transform.basis_right * lateral;
+                    Vector3 endpoint =
+                        ((AttachmentSample *)((char *)primary_samples + sample_offset))[-1].transform.position + Vector3(0.0f, 0.0f, 1.0f);
                     Vector3 generated_position = endpoint + lateral_offset;
                     vertices[column + row * (width_cells + 1)] = generated_position;
                 }
@@ -236,8 +240,8 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
                     vertices[column + row * (width_cells + 1)].y = kind42_transform.position.y;
                 }
             }
-            sample_offset += sizeof(AttachmentSample);
             ++row;
+            sample_offset += sizeof(AttachmentSample);
         } while (row <= segment_count);
     }
 

@@ -80,9 +80,9 @@ static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *te
             {
                 do
                 {
-                    double lateral = (float)column - (float)path->width_cells * 0.5f;
                     if (row != path->segment_count)
                     {
+                        float lateral = (float)column - (float)path->width_cells * 0.5f;
                         Vector3 lateral_offset =
                             path->primary_samples[row].transform.basis_right * lateral;
                         Vector3 generated_position =
@@ -94,6 +94,7 @@ static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *te
                     }
                     else
                     {
+                        float lateral = (float)column - (float)path->width_cells * 0.5f;
                         Vector3 lateral_offset =
                             path->primary_samples[row - 1].transform.basis_right *
                             lateral;
@@ -141,7 +142,7 @@ static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *te
                         facequads[face_offset].vertex_3 =
                             column +
                             (row + 1) * ((unsigned short)path->width_cells + 1);
-                        if ((column ^ row) & 1)
+                        if (((column ^ row) & 1) == 0)
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(texture_a, 0, 0);
                         else
@@ -161,7 +162,7 @@ static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *te
                         facequads[face_offset].vertex_3 =
                             (row + 1) * ((unsigned short)path->width_cells + 1) +
                             column + 1;
-                        if ((column ^ row) & 1)
+                        if (((column ^ row) & 1) == 0)
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(texture_b, 0, 0);
                         else
@@ -283,8 +284,8 @@ void cRPath::initialize_toad_path_template_pair(bool turn_left, char *texture_a,
     {
         int tail_start = lead_count + 26;
         int tail_index = tail_start;
-        int tail_sample_offset = tail_index * (int)sizeof(AttachmentSample);
-        int tail_control_base = -tail_start;
+        int tail_sample_offset = tail_start * (int)sizeof(AttachmentSample);
+        int tail_control_base = -26 - lead_count;
         do
         {
             ((AttachmentSample *)((char *)primary_samples + tail_sample_offset))

@@ -1,5 +1,33 @@
 # initialize_p_path_template_pair
 
+## 2026-09-25: endpoint count index, curve bank borrow, logical endpoint
+
+Structural diff improves **18/17 -> 14/13** changed target/candidate
+instructions (97.42% -> 98.01%); normalized **92.85% -> 93.44%**, 678/679,
+41 clean references (prefix 6 -> 2). Still partial.
+
+- **Endpoint index from the sample count.** The terminal pair is initialized
+  at `sample_count - 1`. This recovers the native `ebp` 1.0f lifetime
+  through the endpoint and the `[esp+0x60]` index home (alone: 15/15,
+  96.61%).
+- **Curve primary bank borrow (Cage2 style).** `center_x` stays on the direct
+  member inside the kind switch; the rest of the curve sample borrows
+  `PathTemplateSample *const &primary_bank = primary_samples`. This makes the
+  curve Identity receivers native (`bank+offset` primary, `offset+bank`
+  secondary).
+- **Logical endpoint helper.** With the borrow in place, the endpoint
+  helper's physical offset flips its secondary receiver; `primary[index]` /
+  `secondary[index]` indexing restores it.
+
+Reversals from the retained source: endpoint `last_index` 18/17;
+curve direct member 18/19; physical endpoint helper 16/15. Remaining: VC6
+folds `last_index + 1` into `curve_segments + 2` (native keeps `edi =
+curve_segments + 1`, copies it into the helper index). Passing `last_index`
+coalesces the helper index with it (18/17); `curve_segments + 1`, memory
+`segment_count - 1`, unsigned/const/reference index, z/offset parameters,
+first-sample helper, inline endpoint, a shared `curve_index`, and 20 header
+statement orders were all neutral or worse.
+
 Current recovery: semantic-complete (`analysis` residual). The 2026-09-11
 source recovery improves **64.6018% to 92.8519%**, with **678/679 instructions**,
 a six-instruction prefix, and **41 clean aligned references**. It remains
