@@ -501,3 +501,42 @@ costs recorded by addrorder.py). The only remaining difference is the mesh Z
 spill `fstp [esp+0x48]`, scheduled after `add eax,edi; lea ecx,[eax+eax*2]`
 instead of before them: a scheduler-window/priority residual. Direct component
 assignment (95.58%) and copy plus `+=` (69.73%) do not preserve the result.
+
+## 2026-09-25 (latest): mesh Z spill scheduling fixed
+
+**99.85% → 100.00% normalized**, structural 1/1 → 0/0, 668/668, prefix 435 →
+668, 41 clean references. Nine encoded bytes remain. They are the known SIB
+base/index swaps at +0x28e, 0x2f1, 0x313, 0x317, 0x31b, 0x358, 0x430, 0x4b3
+and 0x4c2, byte-identical to the previous commit. `addrorder.py` still reports
+C0 = `0x4e0` (first temp slot `0x533`, n=83). The function is still partial,
+so RECOVERY/RESIDUAL stay.
+
+**Cause** (`tools/match/c2/schedtrace.py … --all`, window 17: the last mesh
+row). Each `Vector3 generated_position(x + lx, y + ly, z + lz)` argument is
+forward-substituted into the inline constructor and gets an `IL_FROUND`.
+
+- The Z FROUND is ready at c32, but a pseudo tuple has unit class 0. The
+  preceding `imul` (class 4) holds every pipe for 10 cycles, so the FROUND
+  cannot issue until c41. There it loses to `add eax, edi` (priority 0x1e000
+  against 0x8000).
+- `fstp [esp+0x48]` waits behind it and ends up after `add`/`lea`.
+- Native issues the `fstp` (x87 pipe) at c32, during the `imul`. So native's Z
+  lane has no FROUND.
+
+**Fix:** construct X and Y through the constructor and store Z as a direct
+member assignment (a direct store is never forward-substituted):
+
+```cpp
+Vector3 generated_position(
+    …->transform.position.x + lateral_offset.x,
+    …->transform.position.y + lateral_offset.y, 0.0f);
+generated_position.z = …->transform.position.z + lateral_offset.z;
+```
+
+The dead `0.0f` store is eliminated.
+
+| Other spelling | Result |
+| --- | --- |
+| all three components as member stores | 95.58%, 667 insns |
+| `(x, y, pz)` then `z += lz` | 97.09%, 671 insns |
+| copy the position, then `+=` per lane or `+= lateral_offset` | 69–70% |

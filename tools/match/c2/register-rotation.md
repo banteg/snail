@@ -13,7 +13,7 @@ order:
 | --- | --- | --- | --- |
 | `0x107583b2` | `0x1072fb58`, global priority allocator | named locals that stay live across other code, switch subjects, values used in several blocks, `this`, hoisted constants (`edi = 1`) and coalesced call results | no |
 | `0x107583c5` | `0x107336f4`, local allocator | every temporary the global pass left uncoloured, which is usually a load or address used within one expression | **yes** |
-| `0x107583e9` | `0x107337ec`, /G5 memory-operand split (only when `[0x107ac058]` and `[0x107ac0b4]` are set) | registers introduced after allocation, such as `mov al,[mem]; cmp al,1` | no. It has its own cursor `0x107ac2dc`, advanced by `0x1073a0fd` |
+| `0x107583e9` | `0x107337ec`, /G5 memory-operand split (only when `[0x107ac058]` (/Og) and `[0x107ac0b4]` (/Ot) are set) | registers introduced after allocation, such as `mov al,[mem]; cmp al,1` | no. It has its own cursor `0x107ac2dc`, advanced by `0x1073a0fd` |
 
 The rotation is therefore a property of the **local** allocator alone.
 Temporaries coloured by the global pass never touch it.

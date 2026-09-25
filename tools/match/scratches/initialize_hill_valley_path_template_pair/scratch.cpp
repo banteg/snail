@@ -150,13 +150,12 @@ static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *te
                                                     sample_offset))
                                 ->transform.basis_right *
                             lateral;
-                        Vector3 generated_position((((PathTemplateSample *)((char *)path->primary_samples +
-                                                    sample_offset))
-                                ->transform.position).x + lateral_offset.x, (((PathTemplateSample *)((char *)path->primary_samples +
-                                                    sample_offset))
-                                ->transform.position).y + lateral_offset.y, (((PathTemplateSample *)((char *)path->primary_samples +
-                                                    sample_offset))
-                                ->transform.position).z + lateral_offset.z);
+                        Vector3 generated_position(((PathTemplateSample *)((char *)path->primary_samples + sample_offset))
+                                ->transform.position.x + lateral_offset.x,
+                            ((PathTemplateSample *)((char *)path->primary_samples + sample_offset))
+                                ->transform.position.y + lateral_offset.y, 0.0f);
+                        generated_position.z = ((PathTemplateSample *)((char *)path->primary_samples + sample_offset))
+                                ->transform.position.z + lateral_offset.z;
                         Vector3 *vertex =
                             &vertices[column + row * (path->width_cells + 1)];
                         *vertex = generated_position;

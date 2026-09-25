@@ -107,12 +107,11 @@ three channels alike, no `Weapon&` borrow, shared `if (changed) Play(25)`):
   moves, `push 0/1` arguments, `mov cl, 1`, and the
   `transition_immediate = 0/1` stores. The byte-typed uses restrict the
   range to byte registers. Live across calls, that leaves only ebx.
-- Almost all of the benefit is `transition_immediate` itself. It is a
-  memory bool, never a register candidate. The likely reason is that the
-  bool argument is pushed with a dword load
-  (`mov eax, dword [esp+0x18]; push eax`). Each of
+- Almost all of the benefit is `transition_immediate` itself. Each of
   its six `= 0` stores and three `= 1` stores saves 1, and each range pays 1
-  for its load.
+  for its load. The mechanism (decoded by crimson-88, 2026-09-25) is in
+  the 2026-09-25 entry below and in global-allocation.md, "Demoted stores
+  count".
 
 Diagnostics (not source candidates):
 - Dropping the `transition_immediate = 0` stores takes both constants to
@@ -130,3 +129,37 @@ must add loads for the 0 and 1 ranges. Tried and unchanged: channel-scoped
 bools (`bool transition_immediate = 1;` per channel) and `(bool)` on the
 argument. In the lead the differ still loses the byte lookup table (it
 reports 41%), so compare it with `globalregs.py`.
+
+## 2026-09-25: constant-candidate mechanism decoded (crimson-88)
+
+Full write-up: `../crimson/tools/match/c2/compiler/constant-candidates.md`.
+Tracer: `../crimson/scripts/c2/const_trace.py`. It lists every counted store
+and every block-end demotion.
+
+- **Why the stores count.** The bool is passed straight to a bool parameter:
+  - The push legalizer widens it into a 4-byte container, with the flag as
+    byte part +0.
+  - The byte stores mark that container partially written. The byte part
+    becomes its own candidate, never read at its own width.
+  - Each of its dead defs is demoted to a memory store at block end. So each
+    `transition_immediate = 0/1` scores as `mov [mem], const` and saves 1.
+  - SetJetPack (exact) is demoted the same way. It happens to balance at
+    1 − 1 = 0 there.
+- **Byte-exact diagnostic.** In the uniform-channel lead (no `Weapon&
+  channel`, one `selected_state` store and `Play(25)` after each channel's
+  switch), set the queued benefit of constants 0 and 1 to ≤ 0 and change
+  nothing else. The result is 100%, body byte-exact, lookup table included.
+  Changing only one constant, or setting both to 1, has no effect. So that
+  lead is native's structure, and the only gap is these two benefits.
+- **Source search, negative.** About 238 variants:
+  - a 216-variant grid over flag init/scope, `selected_state` reuse,
+    switch vs if/else, a shared vs returning channel-2 tail, and reset
+    placement;
+  - about 22 targeted forms: flag types, `register`/`volatile`, aliases,
+    `Weapon&` positions, and inline-helper factorings.
+
+  `int`, `char` and `unsigned char` reach native's registers only by making
+  the flag a register with `setne`, which native does not have.
+- **Open.** Find an IL where the flag has at most as many counted stores
+  as loads, or where its stores reach memory only after allocation. Keep the
+  retained 87.47% source until then.

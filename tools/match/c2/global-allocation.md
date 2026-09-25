@@ -69,7 +69,9 @@ local rotation.
     constant's own `LOADCONST`. A spill costs 2 (`0x10725b22`).
 - **Priority** (`+0x0c`) is computed per block (`0x10724c3b…`). This is an
   approximate reading of that code; the traced numbers are authoritative. The block's
-  pressure `P` is the number of candidates referenced or live in it.
+  pressure `P` counts only the distinct candidate ranges *referenced* in
+  it: coloured, queued and fresh. A range that is only live through the block
+  does not add to P (crimson regalloc.md).
   - A candidate referenced in the block gains `w × P × (reference cost in
     that block)`.
   - Every range live across the block loses `w × P`.
@@ -146,9 +148,12 @@ create them, all in `build_live_ranges` (`0x10726d75`).
    except in calls and branches. The check refuses:
    - shift and rotate counts;
    - `imul` in all three forms, `shld` and `shrd`;
-   - `enter`, `ret`, `xchg`, `in` and `out`;
-   - `mov r, 0` and `cmp r, 0` (they become `xor` and `test`);
-   - `add` and `sub` on the frame registers.
+   - `enter`, `ret`, `in` and `out`;
+   - `mov r, 0` and `cmp r, 0`, but only when `r` is a physical register
+     (they become `xor` and `test`). `mov candidate, 0` is promoted;
+   - `add` and `sub` with an esp or ebp destination.
+
+   `xchg` is allowed (crimson constant-candidates.md).
 
    Everything else qualifies: `and r, imm`, `push imm`, and stores of an
    immediate to memory.
@@ -190,8 +195,22 @@ symbol is shared by value, a single byte use of 0 or 1 is enough, such as a
 bool store or a byte move. Live across a call, only ebx is left.
 
 **Benefit and outcome.** The benefit uses the savings under Weights: 1 per
-store of the value to memory, 0 per use against a register, and −1 per
-`LOADCONST`. The colouring loop sends every range with benefit ≤ 0 to
+use whose other operand is memory, and −1 per `LOADCONST`. The other operand
+is the destination for pure-destination opcodes (`g_x86_op_flags` bit
+`0x800`, e.g. `mov`) and the first source otherwise. So stores,
+read-modify-writes and compares against memory save 1. Pushes, register
+moves and `cmp X, 0` save 0.
+
+**Demoted stores count.** A bool passed straight to a bool parameter is
+widened by the push legalizer (`0x10723155`) into a 4-byte container symbol,
+with the bool as its byte part +0. Byte stores mark the container partially
+written (`0x1072795a`). The byte part gets its own candidate index
+(`0x10727bd3`) that is never read at its own width.
+`insert_upward_exposed_reloads` then demotes each of its dead register defs
+to a memory store at block end (`0x1072eb81` → `0x107318e5`). So every
+`flag = 0/1` scores as `mov [mem], const` and saves 1 for that constant.
+SetJetPack shows the same demotion, balanced at 1 − 1 = 0 for both values.
+ The colouring loop sends every range with benefit ≤ 0 to
 `handle_unprofitable_live_range` (`0x10732001`):
 - **Forced.** `force_best_preference` (`0x10732152`) applies when
   `load_saving + benefit > 0`, which for a constant means benefit 0. It also

@@ -302,7 +302,10 @@ calls `sched_select_cycle` once per cycle until the exit node is the head.
        Class 0 is integer and class 2 is x87.
      - **Second pick:** `sched_can_pair_uv(first, node)`, giving the V pipe.
      - **Class 4** (`imul`/`mul`): all four units idle. The pairing check is
-       skipped, even for the second pick.
+       skipped, even for the second pick. An `imul` then holds unit 0 for 10
+       cycles. Pseudo tuples such as `IL_FROUND` have unit class 0, so they
+       wait out the whole `imul`, and so does anything that depends on them.
+       x87 work (class 2) keeps issuing.
      - **fmul:** cannot issue while the fmul counter (`C2+0xac2d8`, 2 after an
        fmul, −1 per cycle) is positive.
   2. **Deferral:** `sched_defer_for_bypassed_pred` keeps the node back when it
@@ -409,6 +412,7 @@ from native and are explained by a cut or by the tuple count:
 | release_snail_weapons | needs about 8 fewer tuples in window 1; out of reach |
 | initialize_dip_path_template_pair | the early `mov [esp+0x20], edi` is a stack-home versus spill placement, i.e. register allocation |
 | initialize_tip | the SetBelow load and push order needs an alias edge from the push; not a cut |
+| initialize_hill_valley_path_template_pair | a pseudo tuple (FROUND, unit class 0) cannot issue while an `imul` holds every pipe, so the mesh Z spill waited 10 cycles; storing Z as a member instead of a constructor argument removes that FROUND (99.85 → 100.00% normalized, SIB bytes left) |
 
 
 ## Block order
