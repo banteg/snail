@@ -78,3 +78,46 @@ All eight compile and none improves 95.15%. The float-scaled form falls to
 diff changes earlier random-value lifetimes and still advances the sprite
 position base too early. The factory boundary does not change each scalar
 form's generated code. Canonical source remains unchanged.
+
+## 2026-09-25 scheduler trace of the loop tail
+
+Unchanged at **95.15%**. This entry explains the tail with
+`tools/match/c2/schedtrace.py firework_shoot --line 50` (rules in
+`c2/scheduler.md`).
+
+**The loop body is two scheduling windows.** The 81-tuple window limit cuts
+it at `mov eax, [edx]`, the first position-copy load. Tuples 76–81 are the
+countdown load, dec and store, `lea esi, [esi+0x48]`, the position-parameter
+reload and that first copy load. The flags stay live from `dec` to `jne`, so
+the sprite advance becomes a flag-free `lea`. It has height 1 and no earlier
+dependence, so the list scheduler hoists it into the velocity stores. Native
+instead keeps `add esi, 0x48` next to the copy. That means native's IL has the
+advance **before** the decrement (`out_position` / copy / `--remaining`
+order), as in `n_v0_t1`, which scores 94.17%.
+
+In that order our window 3 still holds the copy's first two lanes. Native's
+tail matches, cycle by cycle, one window made of
+
+```
+mov edx,[position]; add esi; copy x, y, z; countdown; jne
+```
+
+A hand replay of the rule reproduces native's order
+(`P S | A | B G | C H | D I | E | F J`) only if two things hold:
+
+1. The window starts at the advance or the reload.
+2. Each copy load waits one cycle for the preceding copy store (a latency-1
+   load edge).
+
+Our current load edges through `position` have latency 0 (the alias-analysis
+path). Latency 1 arises only when the location is a direct local or stack
+temporary. So native reaches the copy through something the scheduler treats
+as a direct slot, and it has about six more tuples before the velocity-Z store
+(for example `IL_FROUND` conversions). Neither has been identified.
+
+Controls, all unchanged or worse:
+
+| Variant | Result |
+| --- | --- |
+| named velocity components (+`IL_FROUND` tuples) | 73.53%, 101/103 |
+| tail orders `--remaining` before or after the copy, direct `sprite->position` | 94.17–95.15% |

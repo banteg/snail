@@ -253,3 +253,28 @@ value arguments and top-level const qualifications are neutral at **98.38%,
 scalar-reference forms regress to **95.51%, 243/247, prefix 29**. None recovers
 the native travel-store/color-argument window. The recorded current-baseline
 receipts leave the canonical source and header unchanged.
+
+## 2026-09-25 scheduler trace: travel store versus colour pushes
+
+Unchanged at **98.38%**. `tools/match/c2/schedtrace.py initialize_star_field
+--line 65` places the window-6/7 boundary inside the `travel_distance`
+statement.
+
+Window 6 ends with the random call, the draw's stack store, `fild`, `fmul` and
+the `entries` reload. The `fstp` travel store starts window 7, followed by the
+position update and the four `color.Set` pushes.
+
+Native's order (`mov eax, [esi+0x3c]; fild; push ×4; fmul; fstp`) is the list
+schedule of a **single** window that holds the call, `fild`, `fmul` and the
+pushes. The four pushes fill the three-cycle `fild → fmul` latency. In our
+split, `fmul` is already emitted in window 6, and in window 7 the pushes sort
+below everything else: height 51–54 against 236 for the store.
+
+Native's window 6 must therefore end at least five tuples earlier. Native has
+at least five more tuples than ours in window 6 (lines 46–65), none of them
+emitted. Our window 6 has only the three `IL_FROUND` conversions of the
+`Vector3(…)` arguments (lines 51–54).
+
+This agrees with the recorded forms: every vector and scalar ownership spelling
+that keeps the code identical also keeps this cut. No source change is
+retained.

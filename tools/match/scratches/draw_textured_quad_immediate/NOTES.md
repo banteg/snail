@@ -203,3 +203,27 @@ registers.
    between the pointer reload and the Z store, and so does our build for all
    four. By scheduler.md, that means native's vertex-2 Z store or U load was
    not symbol-disambiguated. No tested spelling reproduces this.
+
+## 2026-09-25 scheduler trace: vertex-2 U load and the 81-tuple cut
+
+Unchanged at **98.34%**. `tools/match/c2/schedtrace.py
+draw_textured_quad_immediate --line 138` shows the rotated branch's second
+window (from the `else` label) at exactly 81 tuples. It ends with vertex 2's
+`fld [u1]; mov ecx, [vertices]; fstp [ecx+0x40]`.
+
+Nothing orders the `fld [u1]` load after `mov [eax+0x38], esi` (the vertex-2
+diffuse store): `u1` is an unaliased parameter. The load has priority `0x18000`
+(a load at height 4), the store only `0x0a000`. So the load rises one slot, as
+it does legally for vertex 1, where native agrees. Native keeps it below the
+store, so native's window must end exactly at that store, three tuples
+earlier.
+
+Native has three more tuples than ours between the `else` label and that
+store. One is the known x87 difference: native spills the half-height through
+`fst [esp+0x3c]` and reloads it with `fld [esp+0x3c]` (two tuples), where ours
+uses one `fld st(0)`. The other two are not emitted (for example
+`IL_FROUND`). The two residuals are therefore one source difference, not two.
+
+The recorded dimension, radius and parameter-reuse forms keep our tuple count,
+and a diagnostic `volatile` half-height changes a different part of the code
+(95.47%, not retained). No source change is retained.

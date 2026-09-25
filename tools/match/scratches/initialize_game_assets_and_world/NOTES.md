@@ -1643,3 +1643,53 @@ same removed-`lea` slot (9), and the pair-2 entry-strip stores (4). The
 pair-2 stores are a scheduling difference, not a rotation one: the traced
 cursor agrees there. All statement permutations and a `path->object` source
 were neutral or worse.
+
+## 2026-09-25 scheduler trace: pair-2 strips fall past the field-record cap
+
+Unchanged. `tools/match/c2/schedtrace.py initialize_game_assets_and_world
+--line 1718` (about 40 s) traces window 103, the pair-2 entry strips. The
+three loads cannot rise above the preceding strip stores because of
+load-after-store alias edges.
+
+Why the edges exist:
+
+- **Our graph:** only the first pair-2 load and store (`pair53.primary.object`
+  and `pair2.primary.entry_transition_strip_mesh`) carry field records
+  (`@f417`, `@f418`). The next six accesses carry only the bare `this` class
+  (`@c2d3`), so each store conflicts with every later load.
+- **The cap:** `alias_collect_field_classes` creates at most 0x60 field
+  records per alias class (the `j < 0x60` walk). The trace shows exactly 96
+  records in class `0x2d3`, ids `0x417..0x476`. The last two created are the
+  pair-2 accesses above.
+- **In the source:** the records come from `this` fields touched in layout
+  order:
+  - fog, count and frame fields (lines 87–112);
+  - the viewport table (lines 115–178, 36 records);
+  - the root catalogue objects loaded by `loader->Load` (lines 280–433);
+  - pair 24's fringe objects;
+  - the pair 0 and pair 1 strip blocks, 8 records each.
+
+Native's order needs all six pair-2 accesses to get records, while pair 6's
+strips (the next strip block, alternating in both builds) do not. Between the
+two blocks there is no other new `this` range: the six pair-2 accesses are
+the only ones, and pair 6's first range comes next. So native creates at
+least six fewer distinct `this` field ranges than ours before line 1720. Six
+is the natural target: a seventh would give pair 6's first range a record
+too, which must still leave pair 6's order unchanged.
+
+This explains why the function is fragile to symbol count: any added or
+removed direct member range earlier in the body moves the cap. `c2/scheduler.md`
+documents the record and bit rules. No source change is retained. A
+retained change must also keep pairs 6 and later without records, and it must
+be rechecked with `--structural` and `tests/test_mobile.py`.
+
+Controls that move `this` ranges into a pointer class (all regress from 99.56%,
+5,411/5,411):
+
+| Variant | Result |
+| --- | --- |
+| pair 24's `path->object->blend_mode` | 99.19%, prefix 2,991 |
+| the same, plus its fringe `SetObject`/`ObjectProcNull` via `path` | 99.17% |
+| pairs 0 and 1 transition source as `path->object` | 99.19%, prefix 3,466 |
+| both | 99.15% |
+| `cRViewport* viewport` for viewports 3 and 2, with both above | 80.49%, 5,418 |

@@ -439,3 +439,33 @@ where the old source embedded immediate image addresses. This
 is two newly relocatable source references, not additional exact-function,
 original-placement, or linked-executable credit. The two loop-latch instruction
 swaps remain unchanged.
+
+## 2026-09-25 scheduler trace: loop-tail tie-breaks
+
+Unchanged at **99.14%**. `tools/match/c2/schedtrace.py load_galaxy_layout
+--line 113` shows the tail window (11 tuples). Native's order is a legal
+schedule of our graph. Every difference is a tie broken by IL order:
+
+| Cycle | Tied pair (same height) | Native picks |
+| --- | --- | --- |
+| c0 | `galaxy_index` load vs `star_group_offset` load (h6, loads) | the `galaxy_index` load |
+| c2 | `add edi, 0xa0` (route-name cursor) vs `add edx, 0xa` (h4) | the offset add |
+| c4 | `current_galaxy_point` store vs `star_group_offset` store (h2) | the point store |
+
+Native's IL order must therefore be: `galaxy_index` statement, then
+`current_galaxy_point`, then `star_group_offset`, with the strength-reduced
+`route_names` cursor increment (`add edi, 0xa0`) placed **after** the offset
+add. VC6 inserts that increment directly after `++galaxy_index` (it is L111 in
+the trace), which is why no statement order reproduces native.
+
+Results:
+
+| Variant | Result |
+| --- | --- |
+| all six statement permutations | 96.14–98.28% |
+| the same six as `for`-increment expressions | identical to the statement forms |
+| an explicit `GalaxyRouteNameRecord*` cursor incremented at the end (24 orders) | 86.70–91.42% |
+
+The ideal statement order (`p1`) also changes the offset's scratch register
+(ecx instead of edx), which adds a war edge. The increment placement that
+native implies remains open.

@@ -50,6 +50,328 @@ look for an authored reference or pointer on either side of the copy. For
 example, update_subgame case 3 is byte-exact with
 `float& fade = pause_fade; fade = pause_fade_step;`.
 
+## The list scheduler, step by step
+
+This section decodes `schedule_instructions` (`C2+0x374aa`) far enough to
+predict every choice it makes. [`schedtrace.py`](schedtrace.py) records the
+graph and every pick through the preserving observer, then replays the rule
+below. It agrees with all 7,209 picks in 250 windows of the eight scratches
+traced so far (firework_shoot, explode_slug_hazard, initialize_star_field,
+load_galaxy_layout, create_golb, release_snail_weapons,
+draw_textured_quad_immediate and initialize_game_assets_and_world).
+
+```sh
+uv run tools/match/c2/schedtrace.py firework_shoot --line 51 [--source overlay.cpp]
+```
+
+The pass driver calls it once per function with `fp_mode = 0` (`edx = 0`
+at `C2+0x58522`, call at `C2+0x58526`). The `fp_mode` branches (`sched_fp_*`) are not used on this
+path. `/G5` selects CPU model 2. That model uses issue width 2, four units
+(integer U/V and x87 U/V), the P5 latency table at `C2+0xa0dd8`, the unit
+picker `sched_pick_unit_p5` (`C2+0x3b3e0`) and the priority weights at
+`C2+0xa0db8`.
+
+### 1. Windows
+
+`sched_find_window_end` (`C2+0x37a43`) splits the tuple list after the prolog
+into windows. Each window is scheduled on its own, and nothing moves between
+windows.
+
+- A window ends **at** (and includes) a branch (kind 0x11), a switch (0x13)
+  or a label (0x1a).
+- It ends **before** the epilog marker or the function exit.
+- Otherwise it ends after **81 tuples**. The loop checks `i <= 0x50`, and the
+  count includes pseudo tuples such as `IL_FROUND` (0x162) that emit nothing.
+- A window with fewer than two real instructions (tuple flag 1) is copied
+  through unchanged (`sched_window_worth_scheduling`).
+
+Calls do **not** end a window, but they are barriers (see below). The 81-tuple
+cut matters in practice. It falls in the middle of long loop bodies in
+firework_shoot, explode_slug_hazard, initialize_star_field,
+release_snail_weapons and draw_textured_quad_immediate. A load just past the cut
+cannot rise above a store just before it, even when both are independent. When
+native interleaves across our cut, native's cut lies elsewhere. Native then has
+a different number of tuples, emitted or pseudo, between the window start and
+that point. See "Reading a residual" below.
+
+### 2. Dependence graph
+
+`sched_build_dependency_graph` (`C2+0x396f6`) makes one node per tuple, plus
+an entry node and an exit node. Node fields: `+0x20/+0x22` pred and succ
+counts; `+0x24` count of breakable preds; `+0x28` static priority; `+0x2c`
+dynamic priority; `+0x30` earliest cycle; `+0x34` height; `+0x36` sequence
+(IL order); `+0x38` latency; `+0x39` unit class, plus 0x40 critical and 0x80
+branch-feeder; `+0x3a` flags (1 reads memory, 2 writes memory, 4 scheduled,
+8 barrier).
+
+Edges are stored as `from → to`, with the kind at `+0x10`, the latency (u16)
+at `+0x14`, and the break code at `+0x16 & 0x1f`.
+
+| Kind | Added by | Meaning | Latency |
+| --- | --- | --- | --- |
+| `0x1` raw | `sched_add_source_deps` | source register defined earlier | producer latency + penalties (below) |
+| `0x2` war | `sub_10739f3f` | destination register read earlier | 0 |
+| `0x4` waw | `sched_add_dest_deps` | destination register written earlier | 1 on /G5 (`C2+0xa2de0`); 0 for the flags register |
+| `0x20` load | `sched_memory_deps_on_stores`, or `sched_deps_on_prior_defs` for a direct local | load after a store it may alias | 0 through alias analysis; 1 for a direct local or stack temporary |
+| `0x40` mwar | `sub_1073c09d` | store after a load it may alias | 0 |
+| `0x80` store | `sched_memory_deps_on_stores` | store after a store it may alias | 0 |
+| `0x80000` order | `sched_make_barrier` | barrier ordering | 0 |
+
+An edge that already exists is OR-merged, and its latency becomes the maximum.
+Register edges use `symbols_overlap`, so `al` conflicts with `eax`. The flags
+register is `g_reg_symbols[0x42]`. Memory edges use `operands_may_alias`: a
+direct symbol (NK_SYM) conflicts only with overlapping direct accesses to the
+same symbol, and with pointer accesses (NK_MEM) whose alias class contains it.
+Pointer accesses conflict when their alias classes (`+0x1c`) intersect. A
+store followed by a direct access to the same location stops the backward scan
+(`operands_same_location`). The earlier "Memory dependences" section describes
+this from the source side.
+
+**Raw latency** (`sched_set_edge_latency`) is the producer's table latency
+plus these adjustments:
+
+- **AGI:** +1 when the consumer uses the register as a memory base or index
+  (`sub_1073a363`), so `mov ecx,[x]; lea eax,[ecx+…]` gets latency 2.
+- **esp chains:** latency 0 between push and push, or pop and pop, when
+  neither touches memory (`sub_1073a2de`).
+- **x87:** +1 from fadd/fsub/fmul/fld into fst/fstp (`sub_1073a42e`).
+- **`IL_FROUND` producer:** latency 0 on its outgoing edges.
+
+Useful table latencies:
+
+| Instruction | Latency |
+| --- | --- |
+| mov, alu, push, pop, lea | 1 |
+| fld, fxch, fst, fstp | 1 |
+| fadd, fmul, fsub | 3 |
+| fild | 3 |
+| fdiv | 39 |
+| imul | 10 |
+
+Latency is fixed per opcode; no latency carries over from the previous window.
+
+**Barriers** (`sched_make_barrier`) are calls, labels, markers other than a
+dead-label mark, `IL_MODPOW2`, cli and sti, and any tuple with a volatile
+operand (operand flag `+0x10 & 0x40`). Every earlier node without a successor
+gets an order edge to the barrier. Every later node without a predecessor gets
+an order edge from it. Nothing crosses a call. An argument push can rise to the
+previous call, but not above it.
+
+**x87 code is effectively fixed in order.** Every x87 instruction reads or
+writes `st0`, so the war/waw/raw edges on the stack registers chain them in
+their order after `x87_block_fxch_scheduling`. That pass runs at the start of
+local allocation and assigns `st(i)`, inserts fxch and chooses `fld st(0)`
+versus a memory reload. The list scheduler only slides integer instructions
+into the gaps and pairs fxch.
+
+**Breakable edges** (`sched_break_dep_by_displacement`, `C2+0x3a9fb`):
+
+- **Codes `1..0xf`:** a raw edge from `add/sub/lea/inc/dec/push/pop r` to a
+  memory access based on `r`.
+- **Codes `0x10..0x16`:** a war edge from such an access to the later
+  adjustment of `r`.
+
+Either way the consumer may be issued first. When it is, `schedmd_10751ea0`
+rewrites its displacement. The successor counts the edge in `+0x24`, and it is
+ready once every remaining pred edge is breakable. Afterwards
+`dag_10748ec6` pins such a node below the previous barrier.
+
+### 2a. Alias classes and field records (why a memory edge exists)
+
+Memory edges come from `operands_may_alias`. For two pointer accesses
+(NK_MEM) it calls `alias_classes_intersect` (`C2+0x26f4`) on the alias ids
+in operand word `+0x1c`. `schedtrace.py` prints that id after each memory
+operand: `@f…` marks a field record, and `@c…` marks a bare class.
+
+- Ids below `g_alias_class_count` (`C2+0x9d670`) are **classes**. A class is
+  a set of symbols (an object, a pointer's target set, a global). Two classes
+  conflict when their symbol sets intersect. A bare class conflicts with every
+  field of its object.
+- Ids at or above it are **field records** (`C2+0x9d6bc`, 12 bytes each:
+  class, bit, mask), made by `alias_collect_field_classes` (`C2+0x1afd0`).
+  - **One record per distinct `(offset, size)`** of a class that the function
+    touches through a known base (`memory_operand_field_range`). A struct
+    copy through a pointer gets one wide record, such as `(0x24c, 12)` for a
+    whole vector.
+  - **Same class:** two records conflict when one's bit is in the other's
+    mask. The mask holds the bits of every overlapping record in the class.
+  - **Different classes:** the records fall back to their classes' symbol
+    sets.
+- **Only 31 distinct bits per class.** Records are created in layout order
+  (for each tuple, destinations before sources) and prepended to the class's
+  list. Bits are then numbered from the head, so the most recent record gets
+  bit 0, and every record from the 32nd most recent back gets **bit 31**. All
+  of those conflict with each other and with anything overlapping any of
+  them. In a busy object, the fields touched first in the function are the
+  ones that lose disambiguation.
+- **Only 96 records per class.** Before creating a record, the walk
+  `j < 0x60` checks the class's list. Once a class has 96 distinct ranges,
+  later new ranges get no record, and those accesses keep their bare class,
+  conflicting with every field of the object. The total is also capped
+  (`records < 0x400 − class_count`, unsigned). That cap is inert when the
+  class count already exceeds `0x400`, as in
+  initialize_game_assets_and_world (`0x417` classes).
+
+Consequences seen so far:
+
+- **create_golb:** 39 records on `this`. The skip byte, `kind`, the launch
+  vector's wide record and the older fields shared bit 31. Accesses through a
+  `Vec3* position` borrow formed a second class whose symbol set intersects
+  `this`, so every position-X load conflicted with every velocity store. Naming
+  the member directly and using the compound vector operators removed exactly
+  the native-absent edges and made the function byte-exact.
+- **initialize_game_assets_and_world:** the 96-record cap on the game
+  object's class is reached in the middle of pair 2's entry-strip block (see
+  its NOTES). Every later access is a bare class.
+
+The same classes decide the earlier global optimizer's CSE, so a change that
+removes a scheduling edge can also let VC6 keep a member in a register across
+stores (create_golb's `kind`).
+
+### 2b. `IL_FROUND` tuples
+
+`convert_operand` inserts `IL_FROUND` (0x162) to convert a float value's
+type. It emits nothing, but it is a tuple, so it adds one node to the window
+count and one level of height. In a controlled probe:
+
+| Expression | IL_FROUND inserted? |
+| --- | --- |
+| `(float)i`, `(float)i * c`, `(float)i - c` stored directly | no |
+| a float add or sub result used as an operand of a further op, as in `((float)i - c) * k` | yes |
+| a float expression assigned to a float local that later lives in a register (`f = …`) | yes |
+| arguments of an inline `tVector(float, float, float)` constructor | yes, one per argument |
+| a double narrowed to float | yes |
+
+This makes the 81-tuple cut sensitive to spellings that produce the same
+instructions.
+
+### 3. Priority
+
+`sched_compute_priorities` (`C2+0x3a684`) computes the height bottom-up.
+Height is `1 + max(succ.height + edge.latency)`, and the exit node's height is
+0. The static priority, with the /G5 weights `(-1, 13, -5, -1, -2, 16, 16)`
+and `shift_signed` (a negative weight shifts right), is:
+
+```
+priority = height << 13            (weight 1)
+         + reads_memory << 16      (weight 5: a load is worth 8 levels of height)
+         + (fp_typed && writes_memory) << 16   (weight 6: x87 stores too)
+         + succ_count >> 5         (weight 2: 1 per 32 successors)
+         + critical >> 1 + branch_feeder >> 1  (weights 3 and 0: always 0)
+```
+
+`sched_dynamic_priority` returns at once on /G5 integer mode, because weight 4
+is negative. The dynamic priority therefore stays equal to the static one.
+
+### 4. Ready list and one cycle
+
+`sched_list_schedule` (`C2+0x3af90`) marks the entry node scheduled. It then
+calls `sched_select_cycle` once per cycle until the exit node is the head.
+
+- **Ready list order** (`sched_ready_insert`): priority descending, then
+  sequence ascending (IL order). A node becomes ready when its unsatisfied
+  pred count equals its breakable count. Nodes made ready by a pick are
+  inserted at once, so they can take the V slot of the same cycle.
+- **Picks.** Each cycle the list is walked from the head, at most twice (issue
+  width 2), stopping at the exit node. A node is taken when all of the
+  following hold:
+  1. `sched_pick_unit_p5` finds a unit:
+     - **First pick:** its class's U and V pipes are both idle (busy ≤ 0).
+       Class 0 is integer and class 2 is x87.
+     - **Second pick:** `sched_can_pair_uv(first, node)`, giving the V pipe.
+     - **Class 4** (`imul`/`mul`): all four units idle. The pairing check is
+       skipped, even for the second pick.
+     - **fmul:** cannot issue while the fmul counter (`C2+0xac2d8`, 2 after an
+       fmul, −1 per cycle) is positive.
+  2. **Deferral:** `sched_defer_for_bypassed_pred` keeps the node back when it
+     still has a breakable pred with code ≥ 0x10 that is itself ready by the
+     next cycle.
+  3. **fxch hold:** see the next section.
+  4. **Timing:** `earliest ≤ cycle + max(0, busy[unit])`.
+- **Emission.** A picked node is emitted at once (U, then V), and it raises
+  each successor's earliest cycle to `cycle + edge latency`. If nothing
+  qualifies, the cycle is empty (a stall) and no tuple is emitted.
+- **Pipe occupancy.** After each cycle, the picked units are made busy for the
+  table's busy cycles: 1 for most instructions, fdiv 39 and fild 1. Every unit
+  then counts down by one.
+
+The pairing classes come from the table code at entry `+8`:
+
+| Code | Pipes | Instructions |
+| --- | --- | --- |
+| `0x000` UV | U or V | mov, push, pop, lea, add, sub, and, or, xor, cmp, inc, dec |
+| `0x100` PU | U only | adc, sbb |
+| `0x200` PV | V only | jcc |
+| `0x300` NP | never pairs | test, shifts, neg, not, ret, call, jmp, x87 other than below |
+| `0x102` x87 | pairs only with a following fxch | fadd, fmul, fsub, fsubr, fdiv, fdivr (+p forms), fcom(p), fld, fabs, fchs, ftst, fucom(p) |
+| `0x202` | V only | fxch |
+
+`sched_can_pair_uv` pairs a U instruction with a V instruction:
+
+- **Integer first:** the first must be UV or PU, and the second UV or PV.
+- **x87 first:** if the first tuple is x87-typed (`type & 0xf000 == 0x4000`),
+  the pair must be a `0x102` instruction followed by fxch. A float copied
+  through an integer register (`mov ecx, [float]`) is integer-typed (`0x1000`)
+  and pairs like any other mov.
+
+Every picked tuple's source line is raised to at least the previous emitted
+tuple's line (`sched_emit_tuple`). The `.cod` listing therefore attributes a
+hoisted instruction to a later line.
+
+### 5. fxch handling
+
+x87 stack positions and fxch insertion are decided before this pass (see
+above). The list scheduler then pairs an x87 op with a following fxch, as
+described above. `sched_fxch_hold` (`C2+0x3b500`, speed builds only) handles
+what comes after:
+
+- **When it applies:** the last emitted tuple is fxch, or an `IL_FROUND`
+  directly after one.
+- **What it holds back:** an integer-typed candidate (type class 1–3),
+  whenever some x87-typed ready node could issue by the next cycle while the
+  x87 U pipe's busy count is ≤ 1.
+- **Effect:** after an fxch the x87 pipe is refilled before integer work.
+
+### Reading a residual
+
+When the order of instructions within a window differs from native:
+
+1. Find the window with `schedtrace.py --line N`. Compare its `emitted:` line
+   with the `native:` line (native positions of the same instructions).
+2. If native's order is a legal schedule of **our** graph, the difference
+   is in the priorities:
+   - Compare heights: a longer dependent chain rises.
+   - Loads (+8 levels) rise above stores and ALU work of similar height.
+   - Ties follow IL order, so swapping two independent source statements
+     swaps equal-priority instructions.
+3. If native's order violates one of our edges, the difference is in the
+   graph:
+   - A pointer versus direct access creates or removes a memory edge (see
+     "Memory dependences").
+   - For memory edges, compare the `@f`/`@c` alias ids of the two operands.
+     A bare `@c` class, a different class, or field records that share bit 31
+     all conflict (see section 2a).
+   - A different register choice creates or removes war/waw edges.
+4. If native keeps two instructions in source order that ours reorders, or
+   interleaves instructions that ours keeps apart, check the 81-tuple cut.
+   Count the tuples from the window start. Native's cut must fall at a
+   different tuple. That means native has more or fewer tuples before that
+   point, typically `IL_FROUND` conversions or a different x87 spill. It can
+   also mean a different IL order around the cut.
+
+### Residuals traced on 2026-09-25
+
+| Function | Mechanism | Status |
+| --- | --- | --- |
+| create_golb | Bit-31 field records on `this`, plus a pointer-borrow class that intersects `this` | **byte-exact**: direct `flight_transform.position` and `velocity *= 2.0f` / `*= 0.8f` |
+| initialize_game_assets_and_world | 96-record class cap reached at pair 2's strips | open; native has at least 6 (most likely exactly 6) fewer `this` ranges before pair 2 |
+| firework_shoot | 81-tuple cut before the position copy; flag-live `lea` advance | open; native needs the advance before the decrement, a latency-1 copy load edge and about 6 more tuples |
+| explode_slug_hazard | the owner load falls past the 81-tuple cut | open; needs 4 fewer tuples in the first loop window |
+| initialize_star_field | 81-tuple cut inside `travel_distance` | open; native's cut is at least 5 tuples earlier |
+| draw_textured_quad_immediate | 81-tuple cut after the vertex-2 U load | open; native has 3 more tuples, 1 of them its half-height spill |
+| release_snail_weapons | block 1: owner load height 131 beats the `fadd` at 129; block 3: 81-tuple cut | open |
+| load_galaxy_layout | three height ties decided by IL order; the route-cursor increment follows `++galaxy_index` | open |
+
 ## Block order
 
 Block order is fixed well before register allocation. Evidence is in the

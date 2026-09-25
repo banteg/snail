@@ -103,3 +103,30 @@ scope controls). All four keep 125/125 instructions and 33 clean references,
 but regress from 92.80% to 45.60-76.80%. None is retained. This bounds the
 specific component-staging hypothesis; it does not establish source or compiler
 exhaustion. The canonical scalar source and shared vector contracts are unchanged.
+
+## 2026-09-25 scheduler trace of the two open blocks
+
+Unchanged at **94.40%**. `tools/match/c2/schedtrace.py release_snail_weapons
+--line 14` shows two different mechanisms.
+
+- **First block (jetpack): priority.** After the `RAND` call, the ready list
+  holds `mov eax, [esi+0x100]` (height 131: owner load → AGI 2 →
+  `fld [eax+0x418]`) and the `fadd 0.5` (height 129). Our rule picks the owner
+  load. Native picks the `fadd`, so native's `fadd` is at least as high
+  (a 131 tie goes to the `fadd`, which comes first in IL). In our graph
+  the `IL_FROUND` after that `fadd` (tuple 13) has no successors, so it adds
+  nothing to the `fadd`'s height. If it lay on the x87 chain, the `fadd` would
+  reach 133. The IL shape that native implies is not yet identified.
+- **Third block (`weapon_channels[2]`): the 81-tuple cut.** Window 1 ends
+  inside this block, at the second `fmul` (the Y product). Its launch-vector
+  stores and the `lea ecx, [esi+0x11d4]` fall into window 2, so they cannot
+  interleave with the products. In the same block, the owner load (height 19)
+  also wins over the `fadd` (height 18) for the same reason as the first
+  block. Native interleaves the `lea` and the X store between the multiplies,
+  so native's window 1 reaches further: it has fewer tuples than ours before
+  this block. Window 1 holds eight `IL_FROUND` tuples: one after each random-X
+  subtraction and each owner-Z load, plus the jetpack's X product and Y
+  `fadd`.
+
+The second and fourth blocks already match, because there the owner load's
+larger height is also native's order. No source change is retained.

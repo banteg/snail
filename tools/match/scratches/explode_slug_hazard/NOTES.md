@@ -301,3 +301,28 @@ operand.
 
 Not retained: the assignment-expression spelling is an unusual authored form
 and still not byte-exact. Coordinator decision.
+
+## 2026-09-25 scheduler trace: the owner load is past the 81-tuple window cut
+
+Unchanged at **97.96%**. `tools/match/c2/schedtrace.py explode_slug_hazard
+--line 45` shows the loop body in two windows. The 81-tuple limit cuts window
+1 inside the random-Y product, at the `IL_FROUND` after `spread + 0.3f`.
+Window 2 then begins `fmulp, fmul, fstp, mov ebx, [edi+0x88]`.
+
+Native issues the owner load in the V slot beside `mov [esp+0x1c], eax`, the
+store of the Y draw. That is only possible when the load is in the same window
+as that store. Native's first window therefore has at least 4 fewer tuples
+before `game = owner_game` than ours. Moving the load before the Y call puts it
+before the call barrier (the recorded prefix 69–72 forms).
+
+Window 1 has seven `IL_FROUND` tuples, at lines 16, 27 (×2), 37, 38, 42 and 44.
+Spellings that keep the emitted code:
+
+| Spelling | Tuples removed | Result |
+| --- | --- | --- |
+| `sprite->progress_step = …` directly | 0 | 97.96% |
+| `gravity_step = rate * rate * -0.0099999998f` | 1 | 97.96% |
+| both | 1 | 97.96% |
+
+Fusing the size expression changes the code (146/147, 97.61%). No
+combination found removes four tuples.
