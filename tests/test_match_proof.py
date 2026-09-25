@@ -367,6 +367,19 @@ def test_saved_evidence_rejects_inconsistent_certification(source_evidence, chan
         report.validate_evidence(source_evidence)
 
 
+def test_saved_evidence_accepts_normalized_exact_audit_rows(source_evidence):
+    # Normalized-exact bodies whose encodings differ are "audit" without credit.
+    function = source_evidence["functions"][0]
+    function["encoded_body_proof"]["candidate_sha256"] = "d" * 64
+    function.update(matching_state="audit", body_byte_exact=False, matched=False)
+    source_evidence["progress_delta"] = report.progress_delta(None, source_evidence)
+    report.validate_evidence(source_evidence)
+    function["matched"] = True
+    source_evidence["progress_delta"] = report.progress_delta(None, source_evidence)
+    with pytest.raises(ValueError):
+        report.validate_evidence(source_evidence)
+
+
 def test_progress_delta_distinguishes_measurement_change(source_evidence):
     from copy import deepcopy
 

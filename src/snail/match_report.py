@@ -589,7 +589,6 @@ def validate_evidence(evidence: dict[str, Any]) -> None:
             and not row["unexplained_target_ranges"]
             and all(refs[k] == 0 for k in ("unresolved", "mismatched", "unaudited"))
         )
-        state = "match" if exact else "audit" if ratio == 1 else "wip"
         proof = row["encoded_body_proof"]
         encoded = False
         if proof is not None:
@@ -620,6 +619,9 @@ def validate_evidence(evidence: dict[str, Any]) -> None:
             ) != len(local):
                 raise ValueError("invalid resolved local relocation")
             encoded = proof["target_sha256"] == proof["candidate_sha256"]
+        # Status credits "match" only for byte-exact bodies; normalized-exact
+        # bodies with unequal encodings stay "audit".
+        state = "match" if exact and encoded else "audit" if ratio == 1 else "wip"
         if (
             row["matching_state"] != state
             or type(row["body_byte_exact"]) is not bool
@@ -629,7 +631,7 @@ def validate_evidence(evidence: dict[str, Any]) -> None:
         digest = row["candidate_object_sha256"]
         if not valid_digest(digest):
             raise ValueError("missing candidate object identity")
-        if row["matched"] != (exact and covered == row["size"]):
+        if row["matched"] != (state == "match" and covered == row["size"]):
             raise ValueError("matched credit lacks complete source/reference evidence")
     delta = evidence["progress_delta"]
     changed_spans = delta.get("changed_target_spans", [])
