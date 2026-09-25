@@ -11,15 +11,15 @@ float Cos(float angle);
 typedef AttachmentSample PathTemplateSample;
 
 static __forceinline void initialize_secondary_hill(PathTemplateSample *const &secondary,
-                                                    Path *path, int index, float phase,
+                                                    Path *path, int offset, float phase,
                                                     float height, float z)
 {
-    secondary[index].transform.Identity();
-    secondary[index].transform.position.x = path->primary_samples[index].center_x;
+    ((PathTemplateSample *)((char *)secondary + offset))->transform.Identity();
+    ((PathTemplateSample *)((char *)secondary + offset))->transform.position.x = ((PathTemplateSample *)((char *)path->primary_samples + offset))->center_x;
     float y = (1.0f - Cos(phase)) * 0.5f;
     y *= height;
-    secondary[index].transform.position.y = y + 0.49000001f;
-    secondary[index].transform.position.z = z;
+    ((PathTemplateSample *)((char *)secondary + offset))->transform.position.y = y + 0.49000001f;
+    ((PathTemplateSample *)((char *)secondary + offset))->transform.position.z = z;
 }
 
 static __forceinline void orient_previous_hill_pair(Path *path, int current_offset)
@@ -150,11 +150,13 @@ static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *te
                                                     sample_offset))
                                 ->transform.basis_right *
                             lateral;
-                        Vector3 generated_position =
-                            ((PathTemplateSample *)((char *)path->primary_samples +
+                        Vector3 generated_position((((PathTemplateSample *)((char *)path->primary_samples +
                                                     sample_offset))
-                                ->transform.position +
-                            lateral_offset;
+                                ->transform.position).x + lateral_offset.x, (((PathTemplateSample *)((char *)path->primary_samples +
+                                                    sample_offset))
+                                ->transform.position).y + lateral_offset.y, (((PathTemplateSample *)((char *)path->primary_samples +
+                                                    sample_offset))
+                                ->transform.position).z + lateral_offset.z);
                         Vector3 *vertex =
                             &vertices[column + row * (path->width_cells + 1)];
                         *vertex = generated_position;
@@ -331,25 +333,33 @@ void cRPath::initialize_hill_valley_path_template_pair(int width_cells_, float h
     secondary_samples[terminal_index].transform.position.z = terminal_z;
 
     PathTemplateSample *const &secondary_bank = secondary_samples;
-    for (int i = 0; i < steps; ++i)
+    int i = 0;
+    if (steps > 0)
     {
+      int curve_offset = sizeof(PathTemplateSample);
+      do
+      {
+        PathTemplateSample *const &primary_bank = primary_samples;
         int sample_index = i + 1;
-        primary_samples[sample_index].center_x = primary_samples[0].center_x;
-        primary_samples[sample_index].rotation_scalar_98 = 0.0f;
-        primary_samples[sample_index].rotation_scalar_94 = 0.0f;
-        primary_samples[sample_index].special_scalar = 0.0f;
-        primary_samples[sample_index].lateral_scale = 1.0f;
+        ((PathTemplateSample *)((char *)primary_bank + curve_offset))->center_x = primary_bank[0].center_x;
+        ((PathTemplateSample *)((char *)primary_bank + curve_offset))->rotation_scalar_98 = 0.0f;
+        ((PathTemplateSample *)((char *)primary_bank + curve_offset))->rotation_scalar_94 = 0.0f;
+        ((PathTemplateSample *)((char *)primary_bank + curve_offset))->special_scalar = 0.0f;
+        ((PathTemplateSample *)((char *)primary_bank + curve_offset))->lateral_scale = 1.0f;
         float phase = (float)i * 6.2831855f / (float)steps;
-        primary_samples[sample_index].transform.Identity();
-        primary_samples[sample_index].transform.position.x =
-            primary_samples[sample_index].center_x;
+        ((PathTemplateSample *)((char *)primary_bank + curve_offset))->transform.Identity();
+        ((PathTemplateSample *)((char *)primary_bank + curve_offset))->transform.position.x =
+            ((PathTemplateSample *)((char *)primary_bank + curve_offset))->center_x;
         float y = (1.0f - Cos(phase)) * 0.5f;
         y *= height;
-        primary_samples[sample_index].transform.position.y = y;
+        ((PathTemplateSample *)((char *)primary_bank + curve_offset))->transform.position.y = y;
         float z = (float)sample_index;
-        primary_samples[sample_index].transform.position.z = z;
-        initialize_secondary_hill(secondary_bank, this, sample_index, phase, height, z);
-        orient_previous_hill_pair(this, sample_index * sizeof(PathTemplateSample));
+        ((PathTemplateSample *)((char *)primary_bank + curve_offset))->transform.position.z = z;
+        initialize_secondary_hill(secondary_bank, this, curve_offset, phase, height, z);
+        orient_previous_hill_pair(this, curve_offset);
+        curve_offset += sizeof(PathTemplateSample);
+        ++i;
+      } while (i < steps);
     }
 
     compute_path_deltas(this);

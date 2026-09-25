@@ -486,3 +486,18 @@ canonical source has the evaluated 83.92% candidate hash.
 
 Recipes: `common-mesh-next-family-20260907.json` and
 `common-mesh-recovery-interactions-20260907.json`.
+
+## 2026-09-25 physical curve cursor and receiver recovery (Codex consult)
+
+96.04% → **99.85% normalized**, 668/668, structural 1/1 (was 1/2), 41 clean
+references. The curve loop is a guarded do-while over a physical byte cursor
+(shared by the primary, secondary and orientation operations; the logical index
+still supplies phase and Z), with a loop-local `PathTemplateSample *const&
+primary_bank` borrow in the Cage2 style, and the secondary helper takes the byte
+offset. That recovers both curve `Identity()` receivers but drops C0 to 0x4c0 and
+flips the terminal receivers; writing the ordinary mesh position sum as a
+component constructor restores C0 = 0x4e0 and both terminal receivers (address
+costs recorded by addrorder.py). The only remaining difference is the mesh Z
+spill `fstp [esp+0x48]`, scheduled after `add eax,edi; lea ecx,[eax+eax*2]`
+instead of before them: a scheduler-window/priority residual. Direct component
+assignment (95.58%) and copy plus `+=` (69.73%) do not preserve the result.
