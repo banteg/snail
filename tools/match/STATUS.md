@@ -10,9 +10,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**31** non-exact scratch-backed functions hold **1725 fuzzy-gap bytes**. The top 5 hold **65.8%** of that gap; the top 10 hold **89.5%**.
+**31** non-exact scratch-backed functions hold **1721 fuzzy-gap bytes**. The top 5 hold **65.9%** of that gap; the top 10 hold **89.6%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **31 / 1725** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **0 functions / 0 gap bytes**; **31 / 1721** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -36,10 +36,10 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 16 | update_golb_ai | 13 | semantic-complete | analysis | historical-only | 0/34 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 17 | explode_slug_hazard | 11 | semantic-complete | analysis | historical-only | 0/20 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 18 | traverse_path_follow_golb | 11 | semantic-complete | analysis | historical-only | 0/34 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 19 | initialize_star_field | 10 | semantic-complete | analysis | historical-only | 0/21 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 20 | sample_smtrack_heightmap | 10 | semantic-complete | analysis | historical-only | 0/8 | repeated-variants,historical-only,stale-dependencies |
-| 21 | read_repeating_text_input_key_code | 9 | semantic-complete | analysis | historical-only | 0/15 | variant-errors,historical-only,stale-dependencies |
-| 22 | try_enter_track_attachment_from_swept_motion | 8 | semantic-complete | analysis | historical-only | 0/12 | historical-only,stale-dependencies |
+| 19 | sample_smtrack_heightmap | 10 | semantic-complete | analysis | historical-only | 0/8 | repeated-variants,historical-only,stale-dependencies |
+| 20 | read_repeating_text_input_key_code | 9 | semantic-complete | analysis | historical-only | 0/15 | variant-errors,historical-only,stale-dependencies |
+| 21 | try_enter_track_attachment_from_swept_motion | 8 | semantic-complete | analysis | historical-only | 0/12 | historical-only,stale-dependencies |
+| 22 | initialize_star_field | 7 | semantic-complete | analysis | historical-only | 0/21 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 23 | initialize_looptheloopw_path_template_pair | 4 | semantic-complete | analysis | historical-only | 0/19 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
 | 24 | initialize_dip_path_template_pair | 4 | semantic-complete | analysis | historical-only | 0/59 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 25 | initialize_loopbow_path_template_pair | 0 | semantic-complete | analysis | historical-only | 0/21 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
@@ -716,7 +716,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2496 | 687/687 | 99.42% | 140/687 | 45 ok |  | core |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 204/204 | 99.02% | 109/204 | 47 ok |  | core |
 | 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1344 | 440/440 | 99.32% | 408/440 | 74 ok |  | boundary |
-| 🚧 | initialize_star_field | 0x434310 | 864 | 247/247 | 98.79% | 124/247 | 26 ok |  | core |
+| 🚧 | initialize_star_field | 0x434310 | 864 | 247/247 | 99.19% | 29/247 | 26 ok |  | core |
 | 🚧 | update_subgoldy | 0x43b120 | 8464 | 2089/2087 | 99.28% | 548/2087 | 315 ok |  | core |
 | 🚧 | explode_slug_hazard | 0x43f680 | 560 | 147/147 | 97.96% | 79/147 | 32 ok |  | core |
 | 🚧 | firework_shoot | 0x441dd0 | 400 | 103/103 | 96.12% | 85/103 | 21 ok |  | core |

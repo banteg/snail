@@ -44,9 +44,14 @@ void cRStarManager::Init()
             }
 
             GameRoot* root = g_game;
-            entries[index].position =
-                root->overlay_0.transform.basis_forward * 50.0f +
-                root->overlay_0.transform.position;
+            Vector3 camera_offset(
+                root->overlay_0.transform.basis_forward.x * 50.0f,
+                root->overlay_0.transform.basis_forward.y * 50.0f,
+                root->overlay_0.transform.basis_forward.z * 50.0f);
+            entries[index].position = Vector3(
+                camera_offset.x + root->overlay_0.transform.position.x,
+                camera_offset.y + root->overlay_0.transform.position.y,
+                camera_offset.z + root->overlay_0.transform.position.z);
 
             entries[index].velocity = Vector3(
                 ((float)gRMathRand2() - 16384.0f) * 0.0000610351562f,

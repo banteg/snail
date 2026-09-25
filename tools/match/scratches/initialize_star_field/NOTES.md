@@ -304,3 +304,18 @@ To finish, native's window 7 must start at or before
 | a `double` scale (R4d) | +3; the cut then falls exactly after the stack store | constants become qwords, 97.57% |
 | named Magnitude or travel results; direct-store uses | 0 | |
 | named velocity components | — | code changes, 245/247 |
+
+## 2026-09-26: component-wise camera position (Codex consult, reviewed)
+
+**98.79% → 99.19% normalized**, 247/247, 26 clean references.
+
+**Change.** The camera-relative spawn position is built component-wise: a
+`Vector3 camera_offset(forward.x * 50, forward.y * 50, forward.z * 50)`, then a component constructor adding
+the overlay position. This follows the house style of component-wise construction to drop FROUNDs.
+
+**Not adopted.** Codex's extra single-use `float corner_speed = entries[index].speed;`: it is a pure copy
+local, of the kind rejected before. It gives the same normalized score and only moves the prefix
+(29 → 204).
+
+**Remaining.** Two scheduling swaps in the corner-scale calculation. The `lea` / `mov eax,[eax+0x1c]`
+interleave with the `fadd` / `fmul` differently.
