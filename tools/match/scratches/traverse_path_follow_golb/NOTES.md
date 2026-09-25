@@ -107,3 +107,22 @@ instruction-count gain cannot justify changing the shared operator. Only the
 slug's independently tested local-result follow-up is retained; this canonical
 source remains unchanged. The receipts preserve the full compiled identities
 and reference debt rather than interpreting an unchanged score as exact code.
+
+## 2026-09-25 x87 operand order of `basis_right * local_x`
+
+Rule: [x87-order.md](../../c2/x87-order.md). VC6 loads the first-sorted
+operand.
+
+- The inlined products compare the scale copy (local slot 0x1eb) with the
+  scalarized `transform.basis_right` fields (slots 0x14d, 0x14f, 0x151).
+  Scale sorts first in all three lanes, so every lane is `fld st(0)`/`fmul`.
+- Native loads the field only in Y. That needs field X < scale < field Y:
+  slot 0x14e, which isn't allocatable here, or a temporary with id mod 1024
+  equal to 0xa7.
+- Controls:
+  - inline `(input_position->x - center_x)`: 5/5 structural;
+  - explicit components: 5/5;
+  - a copied `right` vector: 5/5;
+  - `double local_x`: unchanged 3/3.
+
+No source change.

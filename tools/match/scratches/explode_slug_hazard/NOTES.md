@@ -272,3 +272,32 @@ precision, random calls, or owner lifetimes. All four emit the baseline code
 identity: **97.96%, 147/147 instructions, prefix 79**, with 32 clean references.
 VC6 normalizes these operand spellings; they do not recover the native
 duplicate-scale x87 load or the earlier game-owner load. No source is retained.
+
+## 2026-09-25 x87 operand order of the velocity X product
+
+Rule: [x87-order.md](../../c2/x87-order.md). VC6 loads the first-sorted
+operand.
+
+- `(double)random_velocity.c` is a promotion expression, so it sorts above
+  the `speed` leaf. That gives `fld [rv]; fmul st(1)`, which native has for Y.
+- Native's X, `fld st(0); fmul [rv.x]`, needs the rate operand to be the
+  larger expression in X alone.
+- `scaled_velocity.x = random_velocity.x * (speed = game->subgame_rate);`,
+  with `double speed;` declared and not initialized, does exactly this and
+  keeps the value on the stack.
+  - Result: **99.32%**, 147/147, prefix 79, structural 1/1.
+  - The one remaining change is the /G5 placement of
+    `mov ebx, [edi+0x88]` (owner load): native issues it right after the Y
+    random call.
+- Other X spellings:
+  - `* (double)game->subgame_rate` (with `speed` kept for Y/Z) sorts
+    correctly but reloads the rate: 98.64%.
+  - A later `speed`: 96.60%.
+  - All-member forms: 91–93%.
+  - Local helpers with a double formal: 97.96%.
+- Placement of `cRSubGame* game`:
+  - before the X, Y or random-vector statements: 99.32%, prefix 69–72;
+  - a split `int random_y` with game between: 97.61%.
+
+Not retained: the assignment-expression spelling is an unusual authored form
+and still not byte-exact. Coordinator decision.

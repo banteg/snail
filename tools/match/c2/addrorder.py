@@ -11,8 +11,13 @@ class, slot id and cost, and, for temporaries, their position n after the
 first CSE slot C0. Finally it lists the matcher's encoded differences and
 marks base/index swaps.
 
+`--nodes LINE` also lists every commutative add/mul on one source line with
+its operands in sorted order. For x87 arithmetic the first operand is the
+one loaded (`fld`), the second becomes the memory or `st(i)` operand
+(x87-order.md).
+
     uv run tools/match/c2/addrorder.py initialize_loopout_path_template_pair \
-        [--source overlay.cpp] [--line N] [--out DIR]
+        [--source overlay.cpp] [--line N] [--nodes LINE] [--out DIR]
 """
 
 import argparse
@@ -57,7 +62,7 @@ INDUCTION_FLAG = 0x2000000  # symbol +4 flag on strength-reduced induction temps
 # words of its storage descriptor (+0x0).
 # For memory operands (kind 6) copy +0x1c..+0x3c, which include the
 # displacement (+0x24) and address operand (+0x28), and that operand's kind,
-# symbol (+0x14) and temporary (+0x18).
+# symbol (+0x14) and temporary (+0x18), plus that symbol's id and class.
 STOCK_CAPTURE = """                    if (*(unsigned char *)(op+8)==1) {
                         unsigned long temp=*(unsigned long *)(op+0x18), q;
                         if (temp) for(q=0;q<16;++q) record[at+1+k*23+7+q]=*(unsigned long *)(temp+q*4);
@@ -75,6 +80,10 @@ SYMBOL_CAPTURE = """                    if (*(unsigned char *)(op+8)>=2 && *(uns
                             record[at+1+k*23+16]=*(unsigned char *)(child+8);
                             record[at+1+k*23+17]=*(unsigned long *)(child+0x14);
                             record[at+1+k*23+18]=*(unsigned long *)(child+0x18);
+                            if (*(unsigned char *)(child+8)>=2 && *(unsigned char *)(child+8)<=4 && *(unsigned long *)(child+0x14)) {
+                                record[at+1+k*23+19]=*(unsigned long *)(*(unsigned long *)(child+0x14)+0x1c);
+                                record[at+1+k*23+20]=*(unsigned long *)(*(unsigned long *)(child+0x14)+4);
+                            }
                         }
                     }
 """
@@ -113,6 +122,9 @@ def observer(profile, stock_source):
         if source.count(anchor) != 1:
             raise ValueError(f"Unexpected Crimson observer template near {anchor!r}")
     source = source.replace(STOCK_CAPTURE, STOCK_CAPTURE + SYMBOL_CAPTURE)
+    # Truncate operand chains longer than the stock 16-entry snapshot instead
+    # of aborting; only the recorded diagnostics change.
+    source = source.replace("if(op) ExitProcess(98);", "")
     source = source.replace(anchors[4], RECORDER + anchors[4])
     source = source.replace(
         anchors[1],
@@ -270,6 +282,44 @@ def address_sums(event):
     return rows
 
 
+COMMUTATIVE = {ADD: "add", 0x16F: "mul"}
+
+
+def operand_brief(operand):
+    """Kind, cost and identity of any operand, for the per-line node listing."""
+    kind, raw, words = operand["kind"], operand["raw"], operand["temp_words"]
+    cost = f"cost {raw[3]:#x}"
+    if kind in SYMBOL_KINDS:
+        # Costs are only refreshed where C2 sorted the node; 0 means stale.
+        klass = CLASSES.get(words[1] & 0xFF, f"class{words[1] & 0xFF}")
+        return f"{klass} slot {words[7]:#x} {cost}"
+    if kind == 6:
+        if words[9] in SYMBOL_KINDS:
+            klass = CLASSES.get(words[13] & 0xFF, f"class{words[13] & 0xFF}")
+            base = f"{klass} slot {words[12]:#x}"
+        else:
+            base = f"expr temp {words[11] & 0xFFFF:04x}"
+        return f"memory [{base}] {cost}"
+    if kind == 1:
+        return f"expr temp {raw[6] & 0xFFFF:04x}"
+    if kind == 7:
+        return f"const {raw[6]:#x}"
+    return f"kind {kind} {cost}"
+
+
+def line_nodes(event, label):
+    """Commutative nodes on one C2 line label, operands in sorted order."""
+    rows = []
+    for index, node in enumerate(event["nodes"]):
+        if node["line"] != label or node["op"] not in COMMUTATIVE:
+            continue
+        rows.append(
+            f"{index:5d} {COMMUTATIVE[node['op']]}  "
+            + "  >  ".join(operand_brief(o) for o in node["src"])
+        )
+    return rows
+
+
 def body_line(source_text, symbol):
     """C2 line labels count from the line before the function body's opening brace."""
     lines = source_text.splitlines()
@@ -356,6 +406,12 @@ def main():
         "--out", type=Path, help="new output directory (default: a temporary one)"
     )
     parser.add_argument("--line", type=int, help="only report sums on this source line")
+    parser.add_argument(
+        "--nodes",
+        type=int,
+        metavar="LINE",
+        help="also list every commutative add/mul on this source line, operands in sorted order",
+    )
     parser.add_argument("--json", action="store_true", help="print rows as JSON")
     args = parser.parse_args()
     scratch = Path(args.scratch)
@@ -399,6 +455,10 @@ def main():
         return
     print(f"trace: {out}  metrics: {json.dumps(result['metrics'])}")
     report(rows, differences, base, source_text.splitlines(), args.line, c0)
+    if args.nodes is not None:
+        print(f"\ncommutative nodes on line {args.nodes} (first operand is loaded):")
+        for row in line_nodes(event, args.nodes - base):
+            print(row)
 
 
 if __name__ == "__main__":

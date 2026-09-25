@@ -1,5 +1,33 @@
 # update_subgoldy @ 0x43b120
 
+## 2026-09-25 x87 operand order of case 2 `p_position->x + p_velocity->x`
+
+Rule: [x87-order.md](../../c2/x87-order.md). VC6 loads the first-sorted
+operand. A memory operand through a local pointer ranks by the pointer's
+slot id mod 8. Slots follow first IL use, not declaration.
+
+- p_velocity is slot 0x1d (5) and p_position slot 8 (0), so we load
+  `[esi]`. Native loads `[ebx]`.
+- Initializing `Vector3* p_position = &transform.position;` at its
+  declaration (branch assignments kept) makes it slot 7. That fixes case 2
+  at unchanged 99.28%, 14/16.
+- But line 404, `velocity.x + p_position->x`, then flips. Its velocity
+  address is CSE temporary 0xaf1 (key 1), and native loads velocity there.
+- Constraints:
+  - Y/Z need p_velocity > p_position;
+  - X needs p_velocity mod 8 < p_position mod 8;
+  - line 404 needs p_position mod 8 ≤ 1.
+  Together: p_velocity ≡ 0 and p_position ≡ 1 (mod 8).
+- Controls:
+  - declaration moves alone: neutral, since slots follow first use;
+  - a single hoisted initialization without branch assignments: 85.49%,
+    28/29;
+  - dropping the `latch_game` local: case 2 fixed but two other lanes flip,
+    16/18;
+  - member spellings of case 2: 14/17 and 17/20.
+
+rotation.py was not needed; no source change.
+
 ## 2026-09-25: residual analysis (no source change)
 
 The score is unchanged at 99.28298279% (2,089/2,087 instructions). The

@@ -109,3 +109,31 @@ Retired `slider-value-lifetime-mutations.json` (never receipted): its
 less-branch `direct-field` alternative is now the canonical source, so the
 anchor no longer exists. The more-branch direct-field form is recorded above
 as regressing (41/47 structural changes).
+
+## 2026-09-25 x87 operand order: cause of the hover-colour residue
+
+Rule and costs: [x87-order.md](../../c2/x87-order.md). VC6 loads the
+first-sorted operand of a commutative fadd/fmul.
+
+- Ours sorts `hot.c` first. Its address is still the expression
+  `this + disp`, cost `0x0102_0000 | (2*disp + 0x48)`.
+- `t` sorts below it. Its address `this + 0x210` is CSE'd into a temporary
+  (slot 0x473), so the memory operand is a leaf (`0x1c007`).
+  `addrorder.py --nodes 192` shows this for all eight lanes.
+- Native's `fld [t]; fmul [hot]` needs t's address to remain an uncse'd
+  expression. It would then cost `0x0102_0468`, above every lane.
+- Taking `&hot_fill_color.r` flips the r lane only: a symbol base with a
+  small hash puts hot below t there.
+- A four-lane stand-alone snippet of the unchanged blend already CSEs t's
+  address and loads hot first. So the earlier easing and publication uses of
+  `hover_blend_current` are not the cause. Removing either one alone is
+  neutral for the order.
+- Neutral or worse (structural):
+  - `this->`: neutral.
+  - An `inv` local: 35/35.
+  - A `t` local: 42/44.
+  - Per-lane locals: 51/54.
+  - Per-lane by-value blend helpers in any parameter order: 50/69.
+  - Reference or ease-expanded easing: neutral.
+
+No source change.

@@ -1,5 +1,28 @@
 # Near match — 99.02% score, 204/204 instructions on standard flags
 
+## 2026-09-25 x87 operand order of the swept X lane
+
+Rule: [x87-order.md](../../c2/x87-order.md). VC6 loads the first-sorted
+operand; for two parameters that is the higher slot.
+
+- Parameters are numbered right to left: px 8, py 7, pz 6, sx 5, sy 4, sz 3.
+  So with scalar parameters every lane loads p. Native does this for Y/Z but
+  loads sx for X.
+- Before copy propagation, the Vector3 temporaries' components are the
+  operands:
+  - X: slots 0x164/0x163;
+  - Y and Z: 0x186/0x182 and 0x188/0x184, a different slot block.
+  Native's order matches such component symbols surviving to the final sort.
+  That is what the mobile two-`Vector3`-by-value signature would give, and it
+  would need a shared-header change.
+- Six body controls stay at 99.02%, 2/2 structural; propagation turns each
+  back into parameters:
+  - named position or sweep copies at function or branch scope;
+  - both copies;
+  - `Vector3(px + sweep_x, ...)`.
+
+No source change.
+
 ## 2026-09-23 backward-loop exit ownership
 
 An ordinary pretested `for` loop over the sample index gives VC6 the native
