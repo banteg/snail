@@ -380,6 +380,16 @@ def test_saved_evidence_accepts_normalized_exact_audit_rows(source_evidence):
         report.validate_evidence(source_evidence)
 
 
+def test_stale_inputs_lists_changed_added_and_removed_paths(monkeypatch):
+    monkeypatch.setattr(
+        report, "repository_inputs", lambda: {"a.cpp": "1", "b.cpp": "2", "new.h": "3"}
+    )
+    evidence = {"inputs": {"a.cpp": "1", "b.cpp": "old", "gone.cpp": "4"}}
+    assert report.stale_inputs(evidence) == ["b.cpp", "gone.cpp", "new.h"]
+    evidence["inputs"] = {"a.cpp": "1", "b.cpp": "2", "new.h": "3"}
+    assert report.stale_inputs(evidence) == []
+
+
 def test_progress_delta_distinguishes_measurement_change(source_evidence):
     from copy import deepcopy
 

@@ -1299,6 +1299,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     match_report_parser = match_subparsers.add_parser("report", help="Validate source-bound evidence and export full-executable decomp.dev progress.")
     match_report_parser.add_argument("--refresh", action="store_true", help="Re-evaluate sources with the local reference image and compilers.")
+    match_report_parser.add_argument(
+        "--check-inputs",
+        action="store_true",
+        help="Only check that the pinned evidence inputs match the working tree (fast; no compilers).",
+    )
     match_report_parser.add_argument("--out", type=Path, default=match_report.DEFAULT_REPORT)
     match_report_parser.add_argument("-j", "--jobs", type=_positive_int, default=DEFAULT_MATCH_JOBS)
 
@@ -2247,6 +2252,21 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
 
     if args.command == "match" and args.match_command == "report":
+        if args.check_inputs:
+            changed = match_report.stale_inputs()
+            if changed:
+                print(
+                    "stale decomp.dev evidence; run `uv run snail match report --refresh` "
+                    f"and commit {match_report.DEFAULT_EVIDENCE.relative_to(REPO_ROOT)}:",
+                    file=sys.stderr,
+                )
+                for path in changed[:20]:
+                    print(f"  {path}", file=sys.stderr)
+                if len(changed) > 20:
+                    print(f"  ... {len(changed) - 20} more", file=sys.stderr)
+                return 1
+            print("decomp.dev evidence inputs are current")
+            return 0
         try:
             report = match_report.publish(refresh=args.refresh, output=args.out, jobs=args.jobs)
         except (ValueError, KeyError, TypeError, OSError, RuntimeError) as exc:

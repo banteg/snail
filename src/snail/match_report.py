@@ -533,6 +533,14 @@ def refresh_evidence(*, jobs: int = matchlib.DEFAULT_MATCH_JOBS) -> dict[str, An
     return evidence
 
 
+def stale_inputs(evidence: dict[str, Any] | None = None) -> list[str]:
+    """Pinned source inputs whose content differs from the working tree."""
+    if evidence is None:
+        evidence = json.loads(DEFAULT_EVIDENCE.read_text())
+    current, recorded = repository_inputs(), evidence["inputs"]
+    return sorted(p for p in current.keys() | recorded.keys() if current.get(p) != recorded.get(p))
+
+
 def validate_evidence(evidence: dict[str, Any]) -> None:
     if (evidence.get("schema"), evidence.get("version"), evidence.get("scope")) != (
         EVIDENCE_SCHEMA,
@@ -540,12 +548,12 @@ def validate_evidence(evidence: dict[str, Any]) -> None:
         "full-executable-code",
     ):
         raise ValueError("unsupported public report evidence")
-    current, recorded = repository_inputs(), evidence["inputs"]
+    recorded = evidence["inputs"]
     if evidence.get("verification_mode") != VERIFICATION_MODE or evidence.get(
         "identities"
     ) != measurement_identities(recorded, evidence["external_inputs"]):
         raise ValueError("measurement identities differ from pinned evidence")
-    changed = sorted(p for p in current.keys() | recorded.keys() if current.get(p) != recorded.get(p))
+    changed = stale_inputs(evidence)
     if changed:
         raise ValueError("stale matching evidence; run snail match report --refresh: " + ", ".join(changed[:8]))
     fields = ("address", "name", "size", "ranges", "is_function")

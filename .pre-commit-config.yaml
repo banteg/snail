@@ -1,0 +1,16 @@
+# Run with prek (https://github.com/j178/prek) or pre-commit.
+# Install: prek install --hook-type pre-push
+repos:
+  - repo: local
+    hooks:
+      - id: decomp-evidence-inputs
+        name: decomp.dev evidence matches sources
+        # CI publishes decomp.dev progress only when the pinned evidence in
+        # analysis/progress/win32-reflexive.json matches the scratch sources,
+        # headers and matcher code. Refresh with:
+        #   uv run snail match report --refresh
+        entry: uv run snail match report --check-inputs
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
