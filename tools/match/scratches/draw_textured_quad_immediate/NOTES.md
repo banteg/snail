@@ -227,3 +227,32 @@ uses one `fld st(0)`. The other two are not emitted (for example
 The recorded dimension, radius and parameter-reuse forms keep our tuple count,
 and a diagnostic `volatile` half-height changes a different part of the code
 (95.47%, not retained). No source change is retained.
+
+## 2026-09-25 follow-up: the vertex-2 U load is fixed by three unemitted tuples
+
+The prediction holds. Three extra tuples before the vertex-2 diffuse store put
+the window-4 cut after it, and the U load then matches native: **98.64%**,
+331/332, leaving only the half-height spill.
+
+- **Naming the radius terms adds two neutral `IL_FROUND`s** (`Q1`):
+
+  ```cpp
+  float width_squared = half_width * half_width;
+  float height_squared = half_height * half_height;
+  float radius = Sqrt(width_squared + height_squared) * 1.41400003f;
+  ```
+
+  On its own it scores 98.34%, with the same code.
+- **Any third single-definition float step completes the cut**, for example
+  `center_y = half_height; center_y += y0;` or
+  `half_height = height; half_height *= 0.5f;`. Each reaches 98.64%.
+- **Other names:** sine/cosine or Sqrt-result names add tuples but reorder
+  the Sin/Cos argument pushes (97.44–98.04%).
+
+Native has exactly one more instruction than ours: the half-height
+`fst [esp+0x3c]` and its reload, where ours has `fld st(0)`. That spill is
+itself one of native's three extra tuples, so Q1 plus the spill would be
+exactly native. The source form that makes the half-height a memory variable
+is still unknown. None of the `center`/`radius` spellings produce it. The
+reassignment spellings that reach 98.64% are not retained, because they
+supply the third tuple from the wrong place.

@@ -469,3 +469,37 @@ Results:
 The ideal statement order (`p1`) also changes the offset's scratch register
 (ecx instead of edx), which adds a war edge. The increment placement that
 native implies remains open.
+
+## 2026-09-25 induction-variable source: byte-exact
+
+**Result: 100.00%, byte-exact** (`state=match`, encoded body match), 233/233
+instructions, 42 clean references. RECOVERY/RESIDUAL are removed from
+`scratch.conf`. `tests/test_mobile.py` passes.
+
+Native's tail ordering needs the route-name cursor increment (`add edi, 0xa0`)
+after the group-offset add, which a user statement order cannot give. It
+comes out that way when `star_group_offset` and `current_galaxy_point` are
+not user variables but strength-reduced induction variables of
+`galaxy_index`. The loop is now an ordinary indexed loop:
+
+```cpp
+for (int galaxy_index = 0;
+     galaxy_index < (int)(sizeof(g_galaxy_group_points) / sizeof(g_galaxy_group_points[0]));
+     ++galaxy_index) {
+    ...
+    route_names[galaxy_index].map_x_bits = g_galaxy_group_points[galaxy_index].x_bits;
+    route_names[galaxy_index].map_y_bits = g_galaxy_group_points[galaxy_index].y_bits;
+    ...
+    g_galaxy_route_points[galaxy_index * 10 + star_index * 10 / star_count + 1] ...
+}
+```
+
+VC6 derives all three cursors (`edx += 10` for the group offset, `ebp += 8` for
+the group point, `edi += 0xa0` for the route name). It places their updates
+after `++galaxy_index` and rewrites the exit test to the point cursor, so it
+emits native's `cmp ebp, &points[10].y`. The IL order is then the galaxy
+counter, the point cursor, the offset, then the route cursor, which is
+exactly what the tie-breaks traced earlier today require.
+
+Replacing only `star_group_offset` by `galaxy_index * 10`, while keeping the
+pointer-cursor loop, gives 98.28% (prefix 47).

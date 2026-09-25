@@ -24,13 +24,16 @@ void cRFireWork::Shoot(
         sprite->corner_scale = 4.0f;
         sprite->progress = 0.0f;
 
-        float duration = (float)RAND(0.5f, 0) + 0.800000012f;
+        float duration = (float)RAND(0.5f, 0);
+        duration += 0.800000012f;
         sprite->lifetime = 0.0f;
         sprite->lifetime_step = 0.277777791f;
         sprite->progress_step = 1.0f / (duration * 60.0f);
 
-        float red = (float)RAND(0.300000012f, 0) + 0.699999988f;
-        sprite->color.Set(red, red * 0.5f, 0.0f);
+        float red = (float)RAND(0.300000012f, 0);
+        red += 0.699999988f;
+        float green = red * 0.5f;
+        sprite->color.Set(red, green, 0.0f);
 
         sprite->size_start = 0.5f;
         sprite->size_end = 0.100000001f;

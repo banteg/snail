@@ -326,3 +326,20 @@ Spellings that keep the emitted code:
 
 Fusing the size expression changes the code (146/147, 97.61%). No
 combination found removes four tuples.
+
+## 2026-09-25 follow-up: IL_FROUND census
+
+`schedtrace.py --census` shows that the only unemitted tuples in window 1 are
+the seven `IL_FROUND`s. The owner load needs four of them gone, which means
+four fewer forward-substituted float intermediates at lines 16–44.
+
+| Spelling | Frounds removed | Result |
+| --- | --- | --- |
+| merged `gravity_step = rate * rate * -0.0099999998f` | 1 | 97.96% |
+| inline `progress_step`, a renamed `random_size`, named side/up draws | 0 or +1 | 97.96% |
+| `double` spread, size, rate or gravity locals | — | code changes, 59–97% |
+| folding the size or gravity constants | — | changes the code, which proves native keeps each multiply as its own step |
+
+The frounds at lines 27, 42 and 44 sit inside single expressions (temporaries
+around the `double` rate and the add/sub operands of a multiply), so no local
+spelling touches them. No change retained.

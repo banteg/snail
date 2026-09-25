@@ -121,3 +121,36 @@ Controls, all unchanged or worse:
 | --- | --- |
 | named velocity components (+`IL_FROUND` tuples) | 73.53%, 101/103 |
 | tail orders `--remaining` before or after the copy, direct `sprite->position` | 94.17–95.15% |
+
+## 2026-09-25 follow-up: moving the window cut with IL_FROUND
+
+**95.15% → 96.12%** (103/103, prefix 78 → 85). The change names the
+single-use colour and random intermediates:
+
+```cpp
+float duration = (float)RAND(0.5f, 0);
+duration += 0.800000012f;
+...
+float red = (float)RAND(0.300000012f, 0);
+red += 0.699999988f;
+float green = red * 0.5f;
+sprite->color.Set(red, green, 0.0f);
+```
+
+Each adds one `IL_FROUND` (no code), so window 3 now ends at the countdown
+store. The advance and the position reload move into window 4 next to the
+copy, matching native's `mov edx, [position]` placement.
+
+Remaining (structural 4/4): our IL still has the countdown **before** the
+copy, so the advance is a flag-free `lea` and the decrement is not
+interleaved. With the copy-then-decrement order (`fdrt`/`fg` variants, the
+same neutral spellings) the cut must move 3–5 tuples further, to after the
+velocity-Z store. Two routes fail:
+
+- `float green = red; green *= 0.5f` adds two tuples but reorders the colour
+  arguments (97.09%, prefix 46; with the copy-first order the cut lands after
+  the position reload).
+- `duration *= 60.0f` adds two instructions.
+
+No other neutral single-use float intermediate exists in the loop body. The
+velocity components cross RNG calls, and naming them changes the code.

@@ -54,9 +54,9 @@ void cRStarManager::Init()
                 0.0f);
             entries[index].velocity.Normalize();
 
-            float velocity_scale =
-                (float)gRMathRand2() * 0.0000305175781f * 0.6f
-                    + 0.300000012f;
+            float random_scale =
+                (float)gRMathRand2() * 0.0000305175781f * 0.6f;
+            float velocity_scale = random_scale + 0.300000012f;
             entries[index].velocity *= velocity_scale;
             entries[index].velocity.z = 0.0f;
 

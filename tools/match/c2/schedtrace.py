@@ -23,6 +23,12 @@ repeatable) or --all prints the full trace of the selected windows:
     when not yet ready) and why each higher node was passed over;
   - our emitted order next to native's order of the same instructions.
 
+--census prints each window's tuple count (real + IL_FROUND + other pseudo),
+its FROUND lines and the tuple a window is cut after at 81, which is what a
+window-cut target counts. --fields N lists the alias field records of every
+class with at least N records, in first-use order (the 31-bit and 96-record
+caps in scheduler.md).
+
 The decoded trace is kept in <out>/schedule.json.
 """
 
@@ -902,6 +908,75 @@ def report_window(k, window, first_line, verbose):
                 )
 
 
+def tuple_census(windows, first_line):
+    """Per window: tuples, emitted instructions and the pseudo tuples that count toward the 81 cut."""
+    print(
+        "tuple census (window: tuples = real + IL_FROUND + other pseudo; fround lines)"
+    )
+    for k, window in enumerate(windows):
+        nodes = [n for n in window["nodes"] if n["tuple"]]
+        frounds = [n for n in nodes if n["opcode"] == FROUND]
+        pseudo = [n for n in nodes if n["opcode"] >= 0x144 and n["opcode"] != FROUND]
+        span = window_lines(window, first_line)
+        lines = ",".join(str(first_line + n["label"]) for n in frounds)
+        print(
+            f"  window {k}: {len(nodes)} = {len(nodes) - len(frounds) - len(pseudo)}"
+            f" + {len(frounds)} + {len(pseudo)}"
+            f"{' (cut at 81)' if len(nodes) == 81 else ''}"
+            f"  lines {span[0] if span else '-'}-{span[1] if span else '-'}"
+            f"  fround at {lines or '-'}"
+        )
+        if len(nodes) == 81:
+            last = nodes[-1]
+            print(
+                f"    cut after #{last['seq']} L{first_line + last['label']}: {instruction(last)[:60]}"
+            )
+
+
+def field_census(windows, first_line, minimum):
+    """Alias field records per class, in order of first use in the scheduled IL."""
+    classes = {}
+    for k, window in enumerate(windows):
+        for n in window["nodes"]:
+            for side in ("dst", "src"):
+                for o in n[side]:
+                    if o["kind"] != 6 or not o["alias"]:
+                        continue
+                    record = o["alias"] >= o["alias_classes"]
+                    primary = o["alias_primary"] if record else o["alias"]
+                    entry = classes.setdefault(primary, {"records": {}, "bare": 0})
+                    if not record:
+                        entry["bare"] += 1
+                        continue
+                    entry["records"].setdefault(
+                        o["alias"],
+                        (
+                            k,
+                            first_line + n["label"],
+                            o["base"],
+                            o["disp"],
+                            o["type"] & 0xFFF,
+                            o["alias_bit"],
+                        ),
+                    )
+    print(
+        "field-record census (class: records, bare accesses; records in first-use order)"
+    )
+    for primary, entry in sorted(classes.items(), key=lambda x: -len(x[1]["records"])):
+        records = entry["records"]
+        if len(records) < minimum:
+            continue
+        print(
+            f"  class {primary:#x}: {len(records)} records, {entry['bare']} bare accesses"
+        )
+        ordered = sorted(records.items(), key=lambda x: (x[1][0], x[1][1]))
+        for alias, (k, line, base, disp, size, bit) in ordered:
+            print(
+                f"    @f{alias:x} bit {bit:<2} window {k:<3} L{line:<5}"
+                f" [{register_name(base) if base is not None else '?'}{disp:+#x}] size {size}"
+            )
+
+
 def label_base(source_text, definition):
     """C2 line labels count from the line that closes the parameter list."""
     depth, lines = 0, source_text.splitlines()
@@ -931,6 +1006,17 @@ def main():
     )
     parser.add_argument(
         "--json", action="store_true", help="print decoded windows as JSON"
+    )
+    parser.add_argument(
+        "--census",
+        action="store_true",
+        help="print the per-window tuple census (what counts toward the 81 cut)",
+    )
+    parser.add_argument(
+        "--fields",
+        type=int,
+        metavar="N",
+        help="print alias field records of every class with at least N records",
     )
     args = parser.parse_args()
     scratch = Path(args.scratch)
@@ -968,6 +1054,10 @@ def main():
         else:
             chosen = args.all
         report_window(k, window, first_line, chosen)
+    if args.census:
+        tuple_census(windows, first_line)
+    if args.fields is not None:
+        field_census(windows, first_line, args.fields)
     print(
         "rule check:",
         "every pick re-derived" if not problems else f"{len(problems)} disagreements",

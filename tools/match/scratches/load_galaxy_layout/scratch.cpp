@@ -45,11 +45,10 @@ void cRGalaxy::Open()
         get_archive_data_base(),
         (void*)0);
 
-    int galaxy_index = 0;
-    int star_group_offset = 0;
     int star_index = 0;
-    float* current_galaxy_point = &g_galaxy_group_points[0].y;
-    while ((int)current_galaxy_point < (int)((char*)g_galaxy_group_points + sizeof(g_galaxy_group_points) + offsetof(GalaxyPoint, y))) {
+    for (int galaxy_index = 0;
+         galaxy_index < (int)(sizeof(g_galaxy_group_points) / sizeof(g_galaxy_group_points[0]));
+         ++galaxy_index) {
         char marker[64];
         sprintf(marker, "Galaxy%i:", galaxy_index);
 
@@ -78,9 +77,9 @@ void cRGalaxy::Open()
         route_names[galaxy_index].color.b = 1.0f;
         route_names[galaxy_index].color.a = 0.800000012f;
         route_names[galaxy_index].map_x_bits =
-            *(int*)&current_galaxy_point[-1];
+            g_galaxy_group_points[galaxy_index].x_bits;
         route_names[galaxy_index].map_y_bits =
-            *(int*)&current_galaxy_point[0];
+            g_galaxy_group_points[galaxy_index].y_bits;
         star_index = 0;
         route_names[galaxy_index].map_z_bits = star_index;
 
@@ -88,12 +87,12 @@ void cRGalaxy::Open()
             route_slots[record_count].record.route_name_index = galaxy_index;
             route_slots[record_count].record.map_x_bits =
                 g_galaxy_route_points[
-                    star_group_offset
+                    galaxy_index * 10
                     + star_index * 10 / route_names[galaxy_index].star_count
                     + 1].x_bits;
             route_slots[record_count].record.map_y_bits =
                 g_galaxy_route_points[
-                    star_group_offset
+                    galaxy_index * 10
                     + star_index * 10 / route_names[galaxy_index].star_count
                     + 1].y_bits;
             route_slots[record_count].record.map_z_bits = 0;
@@ -108,9 +107,6 @@ void cRGalaxy::Open()
             ++record_count;
         }
 
-        ++galaxy_index;
-        star_group_offset += 10;
-        current_galaxy_point += 2;
     }
 
     route_slots[0].record.route_name_index = 0;

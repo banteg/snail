@@ -278,3 +278,29 @@ emitted. Our window 6 has only the three `IL_FROUND` conversions of the
 This agrees with the recorded forms: every vector and scalar ownership spelling
 that keeps the code identical also keeps this cut. No source change is
 retained.
+
+## 2026-09-25 follow-up: moving the window cut with IL_FROUND
+
+**98.38% → 98.79%** (247/247, prefix 124, structural 3/3). The change names
+the single-use random scale:
+
+```cpp
+float random_scale = (float)gRMathRand2() * 0.0000305175781f * 0.6f;
+float velocity_scale = random_scale + 0.300000012f;
+```
+
+Forward substitution of a single-use float local inserts one `IL_FROUND` and
+emits no code (`c2/scheduler.md` 2b). The window-6 cut therefore moves one
+tuple earlier: `fmul` falls into window 7, which now schedules it after the
+first three colour pushes, as native does.
+
+To finish, native's window 7 must start at or before
+`mov [esp+0x14], eax`, which needs at least four more such tuples in lines
+46–65. Counts found so far (`--census`):
+
+| Variant | Extra tuples | Result |
+| --- | --- | --- |
+| `velocity_scale` as a chain of reassignments (R4, R6, R8) | +2 | 98.79% |
+| a `double` scale (R4d) | +3; the cut then falls exactly after the stack store | constants become qwords, 97.57% |
+| named Magnitude or travel results; direct-store uses | 0 | |
+| named velocity components | — | code changes, 245/247 |

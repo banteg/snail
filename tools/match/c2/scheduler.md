@@ -62,6 +62,8 @@ draw_textured_quad_immediate and initialize_game_assets_and_world).
 
 ```sh
 uv run tools/match/c2/schedtrace.py firework_shoot --line 51 [--source overlay.cpp]
+uv run tools/match/c2/schedtrace.py initialize_star_field --census      # tuples per window, FROUND lines, cut tuple
+uv run tools/match/c2/schedtrace.py initialize_game_assets_and_world --fields 90   # alias field records per class
 ```
 
 The pass driver calls it once per function with `fp_mode = 0` (`edx = 0`
@@ -230,20 +232,40 @@ stores (create_golb's `kind`).
 
 ### 2b. `IL_FROUND` tuples
 
-`convert_operand` inserts `IL_FROUND` (0x162) to convert a float value's
-type. It emits nothing, but it is a tuple, so it adds one node to the window
-count and one level of height. In a controlled probe:
+`IL_FROUND` (0x162) emits nothing, but it is a tuple, so it adds one node to
+the window count and one level of height. Almost all of them come from
+`forward_propagate_definitions` (`C2+0x12643`). When a float or double
+definition with exactly one reaching use is moved into that use, a FROUND is
+always inserted, whatever the widths. The crimson compiler notes
+(`../crimson/tools/match/c2/compiler/x87-scheduling.md` §3) describe the same
+behaviour. C1 itself emits one only for an explicit `(float)(double)` cast.
 
-| Expression | IL_FROUND inserted? |
+| Source | Adds a FROUND? |
 | --- | --- |
-| `(float)i`, `(float)i * c`, `(float)i - c` stored directly | no |
-| a float add or sub result used as an operand of a further op, as in `((float)i - c) * k` | yes |
-| a float expression assigned to a float local that later lives in a register (`f = …`) | yes |
-| arguments of an inline `tVector(float, float, float)` constructor | yes, one per argument |
-| a double narrowed to float | yes |
+| A float local assigned once from arithmetic and read once in arithmetic (`float s = a * b; t = s + c;`) | yes |
+| The two-step form `x = A; x += B;` or `x = A; x *= k;` | yes, one per forwarded step |
+| An inline function or constructor parameter initialised with an expression and used once (for example the `tVector(x, y, z)` arguments) | yes, one per parameter |
+| A temporary that C1 splits out of one expression (add/sub feeding a multiply, a product feeding a divide, around a double operand) | usually |
+| A local read more than once, multiply-defined, or address-taken | no |
+| A value whose only use is a direct store or a call argument | no |
+| `(float)int` inside an expression | no |
 
-This makes the 81-tuple cut sensitive to spellings that produce the same
-instructions.
+**Moving a window cut without changing code.** Naming a single-use float
+intermediate, or un-naming one, shifts every later cut in that block by one
+tuple. `schedtrace.py --census` lists each window's tuple count, its FROUND
+lines and, for a window cut at 81, the last tuple. That shows how many tuples
+a target needs.
+
+Results (2026-09-25):
+
+- draw_textured_quad_immediate: `width_squared`/`height_squared` add +2 and a
+  third step +1, which fixes the vertex-2 U load (98.34 → 98.64%).
+- initialize_star_field: a named `random_scale` adds +1 (98.38 → 98.79%).
+- firework_shoot: named `duration`/`red`/`green` steps add +3 (95.15 → 96.12%).
+
+A FROUND also adds height to its chain, so a name placed next to call
+arguments can reorder that region (the Sin/Cos pushes, the colour `Set`
+arguments). Prefer names whose chain is not competing in the ready list.
 
 ### 3. Priority
 
@@ -344,6 +366,11 @@ When the order of instructions within a window differs from native:
    - Loads (+8 levels) rise above stores and ALU work of similar height.
    - Ties follow IL order, so swapping two independent source statements
      swaps equal-priority instructions.
+   - Strength-reduced cursors are updated in IL right after their basic
+     induction variable's increment. If native orders a pointer or offset
+     update in a way that no statement order explains, try deriving it from
+     the loop index (`index * k`, `array[index]`) instead of keeping a user
+     cursor. This is what made load_galaxy_layout exact.
 3. If native's order violates one of our edges, the difference is in the
    graph:
    - A pointer versus direct access creates or removes a memory edge (see
@@ -364,13 +391,13 @@ When the order of instructions within a window differs from native:
 | Function | Mechanism | Status |
 | --- | --- | --- |
 | create_golb | Bit-31 field records on `this`, plus a pointer-borrow class that intersects `this` | **byte-exact**: direct `flight_transform.position` and `velocity *= 2.0f` / `*= 0.8f` |
-| initialize_game_assets_and_world | 96-record class cap reached at pair 2's strips | open; native has at least 6 (most likely exactly 6) fewer `this` ranges before pair 2 |
-| firework_shoot | 81-tuple cut before the position copy; flag-live `lea` advance | open; native needs the advance before the decrement, a latency-1 copy load edge and about 6 more tuples |
-| explode_slug_hazard | the owner load falls past the 81-tuple cut | open; needs 4 fewer tuples in the first loop window |
-| initialize_star_field | 81-tuple cut inside `travel_distance` | open; native's cut is at least 5 tuples earlier |
-| draw_textured_quad_immediate | 81-tuple cut after the vertex-2 U load | open; native has 3 more tuples, 1 of them its half-height spill |
+| initialize_game_assets_and_world | 96-record class cap reached at pair 2's strips | open; native has at least 6 (most likely exactly 6) fewer `this` ranges before pair 2. Every borrowed-pointer form tried also changes registers |
+| firework_shoot | 81-tuple cut before the position copy; flag-live `lea` advance | 96.12% (3 neutral FROUNDs); still needs the copy before the decrement and 3–5 more tuples |
+| explode_slug_hazard | the owner load falls past the 81-tuple cut | open; needs 4 fewer FROUNDs, only 1 is removable without changing code |
+| initialize_star_field | 81-tuple cut inside `travel_distance` | 98.79% (+1 FROUND); needs about 4 more |
+| draw_textured_quad_immediate | 81-tuple cut after the vertex-2 U load | cut confirmed (3 tuples fix it, 98.64%); the half-height spill that supplies one of them is still unexplained, so not retained |
 | release_snail_weapons | block 1: owner load height 131 beats the `fadd` at 129; block 3: 81-tuple cut | open |
-| load_galaxy_layout | three height ties decided by IL order; the route-cursor increment follows `++galaxy_index` | open |
+| load_galaxy_layout | three height ties decided by IL order; the cursor increments are strength-reduced IV updates | **byte-exact**: an indexed `for` loop with `galaxy_index * 10` and `points[galaxy_index]` |
 
 ## Block order
 

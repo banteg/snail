@@ -1693,3 +1693,32 @@ Controls that move `this` ranges into a pointer class (all regress from 99.56%,
 | pairs 0 and 1 transition source as `path->object` | 99.19%, prefix 3,466 |
 | both | 99.15% |
 | `cRViewport* viewport` for viewports 3 and 2, with both above | 80.49%, 5,418 |
+
+## 2026-09-25 follow-up: `this` field-record census
+
+`schedtrace.py initialize_game_assets_and_world --fields 90` lists the 96
+`this` records in first-use order:
+
+| Lines | Fields | Records |
+| --- | --- | --- |
+| 87–112 | fog, counts, frame, list heads | 16 |
+| 115–178 | viewport fields, player camera masks and the level-mode argument | 29 |
+| 280–411 | catalogue `.object` loads (pillars, ramps, corners, tramp, hole, lazer, salt) | 27 |
+| 427, 433 | banners | 2 |
+| 1389–1395 | pair 24 fringe and objects | 4 |
+| 1654–1692 | pairs 0 and 1 strips | 16 |
+| 1718 | the pair-2 head | 2 |
+
+Only bits 0–30 are distinct: everything up to line 369 shares bit 31.
+Native needs six of these ranges to go through another class.
+
+| Tried | Result |
+| --- | --- |
+| `loader->Load(…, pillar->object, 1)` for 1, 6, 7 or 8 pillars | 98.56% (1 pillar) or about 80% (6+) |
+| pair 24 / pairs 0–1 through `path->object` | 99.15–99.19% |
+| a `cRViewport*` borrow | 80% |
+
+Every attempt changes the instructions, because the borrowed pointer is
+materialised in a register. The pair-0/1 strip reads are the natural
+candidates for native's pointer form, but they also need a register-neutral
+spelling. Unchanged at 99.56%.
