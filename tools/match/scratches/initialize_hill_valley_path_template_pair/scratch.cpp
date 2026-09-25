@@ -273,8 +273,6 @@ void cRPath::initialize_hill_valley_path_template_pair(int width_cells_, float h
                                                        char *texture_a, char *texture_b,
                                                        char *vertical_texture)
 {
-    PathTemplateSample *const &secondary_bank = secondary_samples;
-
     kind = PATH_TEMPLATE_KIND_FAMILY_10;
     is_mirrored_x = 0;
     side_exit_mode = 0;
@@ -332,6 +330,7 @@ void cRPath::initialize_hill_valley_path_template_pair(int width_cells_, float h
     secondary_samples[terminal_index].transform.position.y = 0.49000001f;
     secondary_samples[terminal_index].transform.position.z = terminal_z;
 
+    PathTemplateSample *const &secondary_bank = secondary_samples;
     for (int i = 0; i < steps; ++i)
     {
         int sample_index = i + 1;

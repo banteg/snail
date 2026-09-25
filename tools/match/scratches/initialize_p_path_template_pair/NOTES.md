@@ -1,5 +1,14 @@
 # initialize_p_path_template_pair
 
+## 2026-09-25 (later) controls (no source change)
+
+Still 93.44%, 14/13. The prologue needs a late copy of `edi = curve_segments + 1`
+for the endpoint index. HillValley keeps that copy only when it is assigned
+inside the arms of a branch; P has no branch at its endpoint. On
+HillValley and Turnunder, renaming locals and adding blank lines were
+byte-neutral, so VC6's operand-order tie-break does not come from names or
+line numbers. Binding position does matter.
+
 ## 2026-09-25: endpoint count index, curve bank borrow, logical endpoint
 
 Structural diff improves **18/17 -> 14/13** changed target/candidate

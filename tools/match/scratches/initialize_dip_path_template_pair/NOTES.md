@@ -1,3 +1,18 @@
+## 2026-09-25 controls (no source change)
+
+Still 99.54%, 3/3 structural. Neither residual moved:
+
+- **Phase zero from `ebx` (native) vs `ebp` (candidate).** `phase = i`,
+  declaration order, `phase = i = 0`, and assigning it inside the guard all
+  collapse to the constant (the guard forms give 60/52). Sharing `i` with the
+  endpoint (`i = endpoint_index; ... i = 0`) is also byte-identical.
+- **Early `[esp+0x20]` spill of `endpoint_index`.** Z/offset spelled
+  `curve_count + 1` or `width_cells_ + 1`, a separate `terminal_index` (with
+  or without offset), reassigning `endpoint_index`, a copy variable, and a
+  Hump-style `curved` primary helper for the endpoint are neutral or worse
+  (8/7 to 16/15). The HillValley late-copy recipe depends on its `centered`
+  branch; Dip has no branch at the endpoint.
+
 ## Current canonical source: paired Identity owners (2026-09-21)
 
 **98.77862595% → 99.54198473%, 655/655 instructions**, prefix 22;

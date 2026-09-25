@@ -1,3 +1,25 @@
+## 2026-09-25 (later): secondary bank binding before the curve loop
+
+Structural **4/4 -> 1/2** changed target/candidate instructions (99.40% ->
+99.78%); prefix 91 -> 122; 41 clean references. Normalized drops **99.10% ->
+96.04%** because the remaining receiver adds one instruction (669/668).
+
+- The function-entry `secondary_bank` binding now sits directly before the
+  curve `for` loop. This makes the terminal primary `Identity` receiver
+  offset-first, as in native (`mov ecx,edi ... mov ebp,[bank]; add ecx,ebp`).
+- Moving the binding one statement at a time between `has_entry_mesh_transition`
+  and the loop alternates between 3/4 and 1/2 through the first-sample block.
+  Every position from the terminal block to inside the loop gives 1/2;
+  function entry gives 4/4 and before `GetNodes()` gives 6/6.
+- What is left: the curve-loop secondary `Identity` is still offset-first
+  (`mov ecx,edi; add ecx,edx`); native is bank-first. Controls: Identity in
+  the caller (bank or member), a physical/`path->` receiver in the helper,
+  `const&` vs non-const reference, inline `y`, a hoisted `steps` float, the
+  phase position and an outer `i` are neutral or worse. A physical loop
+  cursor fixes this receiver but flips three others (8/6); a binding
+  position sweep on that form does not recover them (best 6/4). Blank lines
+  and renaming locals (bank, index, count names) are byte-neutral.
+
 ## 2026-09-25 terminal index lifetime and borrowed secondary bank
 
 Went from **97.60% to 99.10%** (668/668 instructions, prefix 21 to 91, 41 clean

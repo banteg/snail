@@ -1,3 +1,28 @@
+## 2026-09-25: Turnover Double departure cursor with a borrowed primary bank
+
+Structural **5/5 -> 4/3** changed target/candidate instructions (99.27% ->
+99.49%); 45 clean references. Normalized drops **99.27% -> 95.99%** (686/687)
+because the one remaining receiver is short one `mov`; prefix 140 -> 123.
+
+- **Departure cursor (Turnover Double).** The tail uses a physical
+  `tail_sample_offset = endpoint_offset` cursor, advanced before `++i`. This
+  recovers the native latch order (`add edi,0xa8` before `inc eax`). Alone,
+  with direct members, it is 6/4: both tail `Identity` receivers flip to
+  bank-first.
+- **Borrowed primary bank.** A function-entry
+  `AttachmentSample *const &primary_bank = primary_samples;` (HillValley/Dump
+  style) used for the tail's primary accesses restores the native
+  offset-first primary receiver. Declaring it right after the tail cursor
+  also works; most positions in between do not.
+- What is left: the tail secondary `Identity` (native offset-first,
+  `mov ecx,edi; ... add ecx,eax`), the curve preheader `sample_step = 0` store
+  (native places it before the guard compare), and one `basis_up` load order.
+  A secondary binding at any position, a logical secondary `Identity`, a
+  reference-parameter departure helper, and renaming or moving the cursor
+  declaration are neutral or worse. A two-counter logical tail, other latch
+  spellings, a Turnover Double style `do` loop with a `Vector3 up`, and
+  swapping the curve counter roles also fail (up to 12/9).
+
 ## Current canonical source: endpoint, face and phase owners (2026-09-11)
 
 ## 2026-09-13 entrance publication order
