@@ -208,7 +208,6 @@ void cRPath::initialize_turnunder_path_template_pair(float turns, int width_cell
                                                      char *texture_b,
                                                      char *vertical_texture)
 {
-    AttachmentSample *const &primary_bank = primary_samples;
     kind = PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY;
     is_mirrored_x = 0;
     side_exit_mode = 0;
@@ -251,47 +250,28 @@ void cRPath::initialize_turnunder_path_template_pair(float turns, int width_cell
     int endpoint_index = interior_count + 6;
     int endpoint_offset = endpoint_index * sizeof(AttachmentSample);
     i = endpoint_index;
-    int tail_sample_offset = endpoint_offset;
     int tail_origin = -6 - interior_count;
     do
     {
-        ((AttachmentSample *)((char *)primary_bank + tail_sample_offset))
-            ->center_x = -(4.0f - (float)width_cells * 0.5f);
-        ((AttachmentSample *)((char *)primary_bank + tail_sample_offset))
-            ->rotation_scalar_98 = 0.0f;
-        ((AttachmentSample *)((char *)primary_bank + tail_sample_offset))
-            ->rotation_scalar_94 = 0.0f;
-        ((AttachmentSample *)((char *)primary_bank + tail_sample_offset))
-            ->special_scalar = 0.0f;
-        ((AttachmentSample *)((char *)primary_bank + tail_sample_offset))
-            ->lateral_scale = 1.0f;
-        ((AttachmentSample *)((char *)primary_bank + tail_sample_offset))
-            ->transform.Identity();
+        primary_samples[i].center_x = -(4.0f - (float)width_cells * 0.5f);
+        primary_samples[i].rotation_scalar_98 = 0.0f;
+        primary_samples[i].rotation_scalar_94 = 0.0f;
+        primary_samples[i].special_scalar = 0.0f;
+        primary_samples[i].lateral_scale = 1.0f;
+        primary_samples[i].transform.Identity();
         float z = (float)i;
-        ((AttachmentSample *)((char *)primary_bank + tail_sample_offset))
-            ->transform.position.x =
-            ((AttachmentSample *)((char *)primary_bank + tail_sample_offset))
-                ->center_x;
-        ((AttachmentSample *)((char *)primary_bank + tail_sample_offset))
-            ->transform.position.y = 0.0f;
-        ((AttachmentSample *)((char *)primary_bank + tail_sample_offset))
-            ->transform.position.z = z;
-        ((AttachmentSample *)((char *)primary_bank + tail_sample_offset))
-            ->delta_length = 1.0f;
+        primary_samples[i].transform.position.x =
+            primary_samples[i].center_x;
+        primary_samples[i].transform.position.y = 0.0f;
+        primary_samples[i].transform.position.z = z;
+        primary_samples[i].delta_length = 1.0f;
 
-        ((AttachmentSample *)((char *)secondary_samples + tail_sample_offset))
-            ->transform.Identity();
-        ((AttachmentSample *)((char *)secondary_samples + tail_sample_offset))
-            ->transform.position.x =
-            ((AttachmentSample *)((char *)primary_bank + tail_sample_offset))
-                ->center_x;
-        ((AttachmentSample *)((char *)secondary_samples + tail_sample_offset))
-            ->transform.position.y = 0.49000001f;
-        ((AttachmentSample *)((char *)secondary_samples + tail_sample_offset))
-            ->transform.position.z = z;
-        ((AttachmentSample *)((char *)secondary_samples + tail_sample_offset))
-            ->delta_length = 1.0f;
-        tail_sample_offset += sizeof(AttachmentSample);
+        secondary_samples[i].transform.Identity();
+        secondary_samples[i].transform.position.x =
+            primary_samples[i].center_x;
+        secondary_samples[i].transform.position.y = 0.49000001f;
+        secondary_samples[i].transform.position.z = z;
+        secondary_samples[i].delta_length = 1.0f;
         ++i;
     } while (i + tail_origin < 2);
 
@@ -322,9 +302,11 @@ void cRPath::initialize_turnunder_path_template_pair(float turns, int width_cell
                 (turns - Cos(angle) * turns) * -0.2f;
 
             float roll_cosine = Cos(Sin(angle) * 1.0471976f);
-            float roll_sine = Sin(Sin(angle) * 1.0471976f);
-            primary_samples[i].transform.basis_up =
-                Vector3(-roll_sine, roll_cosine, 0.0f);
+            Vector3 up;
+            up.x = -Sin(Sin(angle) * 1.0471976f);
+            up.y = roll_cosine;
+            up.z = 0.0f;
+            primary_samples[i].transform.basis_up = up;
             primary_samples[i].transform.basis_forward =
                 primary_samples[i].transform.position -
                 primary_samples[i - 1].transform.position;

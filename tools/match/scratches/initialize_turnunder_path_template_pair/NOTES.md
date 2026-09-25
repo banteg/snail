@@ -559,3 +559,26 @@ Rejected in this pass:
   constructor are neutral; an outer `up(0,0,0)` adds x/y zero stores.
 - Curve `do`/`while` and a fresh curve counter. Each is neutral or worse.
 - Reordering helper definitions. Byte-identical.
+
+## 2026-09-25: indexed tail and component-wise up vector (Codex consult)
+
+**95.99% → 99.42% normalized**, 687/687 (was 686), prefix 123 → 140, 45 clean references.
+
+**Tail loop.** It now indexes `primary_samples[i]` / `secondary_samples[i]` directly. The byte cursor and
+the primary-bank borrow are gone. This recovers the native secondary `Identity()` receiver and the missing
+instruction; it reproduces the earlier 99.27% typed-departure result.
+
+**Roll basis.**
+- `roll_cosine` is kept as a scalar.
+- A local `Vector3 up` is filled member by member: `up.x = -Sin(...)`, then `up.y`, then `up.z`.
+- `basis_up = up` then copies it.
+
+This removes one FROUND from scheduler window 6: 78 real tuples plus 3 FROUNDs, where it had 77 plus 4.
+The 81-tuple cut then falls after the Y reload, which issues before the stack cleanup as it does in native.
+
+**Remaining.**
+- The departure latch schedule: the generated cursor advance is at priority 0x8000, below the logical
+  increment (0xe000) and the bound add (0xa000).
+- The curve-counter zero store falls after the guard; it is already in the next window.
+
+Evidence: `/private/tmp/claude-501/sm/codex/tu/RESULTS.md` (58 probes).

@@ -202,8 +202,8 @@ void cRPath::initialize_dip_path_template_pair(
     curve_count = (int)curve_count_source;
     width_cells_ = curve_count;
     width_or_scale = 1.0f;
-    int endpoint_index = curve_count + 1;
-    segment_count = endpoint_index + 1;
+    int endpoint = curve_count + 1;
+    segment_count = endpoint + 1;
     segment_count_f = (float)segment_count;
     float curve_count_f = (float)curve_count;
     curve_source = curve_count_f * 0.047746483f;
@@ -224,37 +224,38 @@ void cRPath::initialize_dip_path_template_pair(
     secondary_samples[0].transform.position.y = 0.49000001f;
     secondary_samples[0].transform.position.z = 0.0f;
 
-    int endpoint_sample_offset = endpoint_index * (int)sizeof(PathAttachmentSample);
-    ((PathAttachmentSample *)((char *)primary_samples + endpoint_sample_offset))
+    int endpoint_index = endpoint;
+    endpoint *= (int)sizeof(PathAttachmentSample);
+    ((PathAttachmentSample *)((char *)primary_samples + endpoint))
         ->center_x = 0.0f;
-    ((PathAttachmentSample *)((char *)primary_samples + endpoint_sample_offset))
+    ((PathAttachmentSample *)((char *)primary_samples + endpoint))
         ->rotation_scalar_98 = 0.0f;
-    ((PathAttachmentSample *)((char *)primary_samples + endpoint_sample_offset))
+    ((PathAttachmentSample *)((char *)primary_samples + endpoint))
         ->rotation_scalar_94 = 0.0f;
-    ((PathAttachmentSample *)((char *)primary_samples + endpoint_sample_offset))
+    ((PathAttachmentSample *)((char *)primary_samples + endpoint))
         ->special_scalar = 0.0f;
-    ((PathAttachmentSample *)((char *)primary_samples + endpoint_sample_offset))
+    ((PathAttachmentSample *)((char *)primary_samples + endpoint))
         ->lateral_scale = 1.0f;
-    ((PathAttachmentSample *)((char *)primary_samples + endpoint_sample_offset))
+    ((PathAttachmentSample *)((char *)primary_samples + endpoint))
         ->transform.Identity();
-    ((PathAttachmentSample *)((char *)primary_samples + endpoint_sample_offset))
+    ((PathAttachmentSample *)((char *)primary_samples + endpoint))
         ->transform.position.x =
-        ((PathAttachmentSample *)((char *)primary_samples + endpoint_sample_offset))
+        ((PathAttachmentSample *)((char *)primary_samples + endpoint))
             ->center_x;
-    ((PathAttachmentSample *)((char *)primary_samples + endpoint_sample_offset))
+    ((PathAttachmentSample *)((char *)primary_samples + endpoint))
         ->transform.position.y = 0.0f;
     float endpoint_z = (float)endpoint_index;
-    ((PathAttachmentSample *)((char *)primary_samples + endpoint_sample_offset))
+    ((PathAttachmentSample *)((char *)primary_samples + endpoint))
         ->transform.position.z = endpoint_z;
-    ((PathAttachmentSample *)((char *)secondary_samples + endpoint_sample_offset))
+    ((PathAttachmentSample *)((char *)secondary_samples + endpoint))
         ->transform.Identity();
-    ((PathAttachmentSample *)((char *)secondary_samples + endpoint_sample_offset))
+    ((PathAttachmentSample *)((char *)secondary_samples + endpoint))
         ->transform.position.x =
-        ((PathAttachmentSample *)((char *)primary_samples + endpoint_sample_offset))
+        ((PathAttachmentSample *)((char *)primary_samples + endpoint))
             ->center_x;
-    ((PathAttachmentSample *)((char *)secondary_samples + endpoint_sample_offset))
+    ((PathAttachmentSample *)((char *)secondary_samples + endpoint))
         ->transform.position.y = 0.49000001f;
-    ((PathAttachmentSample *)((char *)secondary_samples + endpoint_sample_offset))
+    ((PathAttachmentSample *)((char *)secondary_samples + endpoint))
         ->transform.position.z = endpoint_z;
 
     int i = 0;

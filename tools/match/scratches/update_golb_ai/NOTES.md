@@ -126,3 +126,13 @@ stack offset +0x10. All regress (best 99.21%); constructor-assignment forms also
 add instructions. No helper, arithmetic rewrite, or lifetime change is retained.
 The native compare-memory instruction and deflection Z-product operand order
 remain unresolved.
+
+## 2026-09-25: Codex consult (not adopted)
+
+Codex ran 50 probes. Its best overlay reached 99.64% by spelling each reflected lane as three statements:
+`delta.x = deflect_speed; delta.x *= probe.x; delta.x = -delta.x;`. The compound-update expression then
+sorts ahead of `probe.z` and gives native's Z operand order. It is rejected as byte-shaped statement
+sequencing.
+
+The garbage guard stays `mov; dec`. Constant-benefit variants did not help: bringing constant 1 back to
+benefit 9 still selected a different split.

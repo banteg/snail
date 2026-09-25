@@ -476,3 +476,28 @@ the existing lateral offset. This recovers the native aggregate temporary
 lifetime without changing shared vector definitions or reference rules. The full
 function remains partial; earlier percentages above belong to prior source
 or dependency epochs. Existing reference debt, where present, is unchanged.
+
+## 2026-09-25: endpoint cursor converted in place (Codex consult)
+
+**99.54% → 99.85% normalized**, 655/655, prefix 22 → 100, 37 clean references, structural 1/1.
+
+**Change.** The endpoint index becomes a byte cursor in place:
+
+```cpp
+int endpoint = curve_count + 1;
+...
+int endpoint_index = endpoint;
+endpoint *= sizeof(PathAttachmentSample);
+```
+
+The saved logical index still supplies `(float)endpoint_index`.
+
+**Why it works.** The endpoint register keeps its value until the multiply, so the conversion home store
+`mov [esp+0x20], edi` lands just before the reuse, exactly where native has it. That also fixes the
+adjacent `fild` order.
+
+**Remaining.** The `curve_phase_index = 0` store before the curve loop uses ebp (the function-wide
+constant 0) where native uses ebx.
+- Single-index loop forms give native's store source but move constant 0 into ebx, and mesh allocation
+  regresses.
+- Evidence and tried families: `/private/tmp/claude-501/sm/codex/dip/RESULTS.md` (46 probes).
