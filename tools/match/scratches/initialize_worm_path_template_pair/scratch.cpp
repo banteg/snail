@@ -36,8 +36,8 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
         primary_samples[sample_index].lateral_scale = 1.0f;
         primary_samples[sample_index].transform.Identity();
 
-        primary_samples[sample_index].transform.position.x =
-            primary_samples[sample_index].center_x;
+        AttachmentSample* const& bank = primary_samples;
+        bank[sample_index].transform.position.x = bank[sample_index].center_x;
         primary_samples[sample_index].transform.position.y = 0.49000001f;
         primary_samples[sample_index].transform.position.z =
             (float)sample_index * width_or_scale;
@@ -60,8 +60,8 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
         primary_samples[exit_index].lateral_scale = 1.0f;
         primary_samples[exit_index].transform.Identity();
 
-        primary_samples[exit_index].transform.position.x =
-            primary_samples[exit_index].center_x;
+        AttachmentSample* const& bank = primary_samples;
+        bank[exit_index].transform.position.x = bank[exit_index].center_x;
         primary_samples[exit_index].transform.position.y = 0.49000001f;
         primary_samples[exit_index].transform.position.z =
             (float)exit_index * width_or_scale;
@@ -245,62 +245,61 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
                     float next_column_f = (float)next_column;
                     int side = 0;
                     do {
-                        cRFaceQuad* face =
-                            &facequads[side + 2 * (mesh_column * width_cells + column)];
-                        face->header_word = 0;
+                        int face_offset = side + 2 * (mesh_column * width_cells + column);
+                        facequads[face_offset].header_word = 0;
                         if (side == 0) {
-                            face->vertex_0 =
+                            facequads[face_offset].vertex_0 =
                                 (unsigned short)(mesh_column * width_cells + column);
-                            face->vertex_1 =
+                            facequads[face_offset].vertex_1 =
                                 (unsigned short)(mesh_column * width_cells + next_column % width_cells);
-                            face->vertex_2 =
+                            facequads[face_offset].vertex_2 =
                                 (unsigned short)((mesh_column + 1) * width_cells + next_column % width_cells);
-                            face->vertex_3 =
+                            facequads[face_offset].vertex_3 =
                                 (unsigned short)((mesh_column + 1) * width_cells + column);
                         } else {
-                            face->vertex_0 =
+                            facequads[face_offset].vertex_0 =
                                 (unsigned short)(mesh_column * width_cells + next_column % width_cells);
-                            face->vertex_1 =
+                            facequads[face_offset].vertex_1 =
                                 (unsigned short)(mesh_column * width_cells + column);
-                            face->vertex_2 =
+                            facequads[face_offset].vertex_2 =
                                 (unsigned short)((mesh_column + 1) * width_cells + column);
-                            face->vertex_3 =
+                            facequads[face_offset].vertex_3 =
                                 (unsigned short)((mesh_column + 1) * width_cells + next_column % width_cells);
                         }
 
                         if (side == 0) {
                             if (((column ^ mesh_column) & 1) == 0)
-                                face->texture_ref = g_texture_refs.Add(texture_path, 0, 0);
+                                facequads[face_offset].texture_ref = g_texture_refs.Add(texture_path, 0, 0);
                             else
-                                face->texture_ref = g_texture_refs.Add(texture_path, 0, 0);
+                                facequads[face_offset].texture_ref = g_texture_refs.Add(texture_path, 0, 0);
                         } else {
                             if (((column ^ mesh_column) & 1) == 0)
-                                face->texture_ref = g_texture_refs.Add(texture_path, 0, 0);
+                                facequads[face_offset].texture_ref = g_texture_refs.Add(texture_path, 0, 0);
                             else
-                                face->texture_ref = g_texture_refs.Add(texture_path, 0, 0);
+                                facequads[face_offset].texture_ref = g_texture_refs.Add(texture_path, 0, 0);
                         }
 
                         float width_f = (float)width_cells;
                         float u0 = column_as_float / width_f;
                         float u1 = next_column_f / width_f;
                         if (side == 0) {
-                            face->u0 = u0;
-                            face->v0 = row_v;
-                            face->u1 = u1;
-                            face->v1 = row_v;
-                            face->u2 = u1;
-                            face->v2 = next_row_v;
-                            face->u3 = u0;
-                            face->v3 = next_row_v;
+                            facequads[face_offset].u0 = u0;
+                            facequads[face_offset].v0 = row_v;
+                            facequads[face_offset].u1 = u1;
+                            facequads[face_offset].v1 = row_v;
+                            facequads[face_offset].u2 = u1;
+                            facequads[face_offset].v2 = next_row_v;
+                            facequads[face_offset].u3 = u0;
+                            facequads[face_offset].v3 = next_row_v;
                         } else {
-                            face->u0 = u1;
-                            face->v0 = row_v;
-                            face->u1 = u0;
-                            face->v1 = row_v;
-                            face->u2 = u0;
-                            face->v2 = next_row_v;
-                            face->u3 = u1;
-                            face->v3 = next_row_v;
+                            facequads[face_offset].u0 = u1;
+                            facequads[face_offset].v0 = row_v;
+                            facequads[face_offset].u1 = u0;
+                            facequads[face_offset].v1 = row_v;
+                            facequads[face_offset].u2 = u0;
+                            facequads[face_offset].v2 = next_row_v;
+                            facequads[face_offset].u3 = u1;
+                            facequads[face_offset].v3 = next_row_v;
                         }
 
                         ++side;

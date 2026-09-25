@@ -1,3 +1,48 @@
+## 2026-09-25 (second pass) direct face records and edge-loop bank borrow
+
+Structural: **52/43 -> 37/28** changed target/candidate instructions
+(93.51% -> 95.56%). Normalized: **87.08% -> 90.64%**, 727/736 instructions,
+37 clean references. The frame is still 0x80 in native against 0x68 here.
+
+- The face loop now uses the sibling direct-record form,
+  `int face_offset = side + 2 * (row * width_cells + column);` with
+  `facequads[face_offset].field`, instead of a `cRFaceQuad*` cursor
+  (38/30 on its own). This was rejected on 2026-07-31 at 70.95%, before the
+  per-side checkerboard. With that block in place it recovers the UV store
+  schedule, the facequads-then-offset address sum and the vertex_0 register.
+  A `cRFaceQuad&` is neutral. The other face_offset spellings I tried are
+  neutral.
+- Both edge loops borrow the bank after `Identity()`:
+  `AttachmentSample* const& bank = primary_samples;
+  bank[i].transform.position.x = bank[i].center_x;`. This matches Binary
+  Ninja's `primary_samples_1 = self->primary_samples` at 0x4201f9 and
+  0x4202c2. It flips the middle loop's secondary `Identity` operand order to
+  native (37/28). Borrowing the bank for the whole loop, or only for
+  `Identity`, is neutral or worse.
+
+Re-checked on the new base, all neutral or worse:
+- a checkerboard inside the winding arms (44/44), or sibling header-in-arm
+  (165);
+- the scalar-left right component (42), a member up radius (39), a named `z`
+  in the edge loops (39), and a face row that reuses `sample_index` or is a
+  fresh `row` (50-53);
+- `exit_index < 24` (85) and `middle_index != 0` (103).
+
+For the frame, none of these reproduce native's two extra Vector3 copies
+(position+right is copied to a second temporary, and the sum is built in a
+third before the vertex local). All stay at 0x68 or 0x74 and are neutral or
+worse:
+- by-value or constructor-return `Hadd` helpers, tried as diagnostics only;
+- `+=` forms, `const&` binding of temporaries, self-assignment chains
+  (`v = v + x`), `Vector3(float*)` round-trips, and function-scope vector
+  locals.
+
+The by-value scalar-left operator still gives 0x80, but costs 72/71. Still
+open:
+- that frame, and the face-loop stack homes that shift with it;
+- the entrance/exit primary `Identity` operand order (offset-first in native);
+- the exit loop's `++exit_index` scheduling.
+
 ## 2026-09-25 per-side checkerboard texture and member right-scale
 
 Structural diff (`snail match scratch --structural`, scratch-register rotation
