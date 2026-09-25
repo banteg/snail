@@ -87,7 +87,7 @@ void cRStarManager::Init()
             entries[index].sprite->size_start = 0.800000012f;
             entries[index].sprite->size_end = entries[index].sprite->size_start;
             entries[index].sprite->corner_scale =
-                (entries[index].speed + 1.0f) * 4.0f;
+                entries[index].speed * 4.0f + 4.0f;
             entries[index].sprite->velocity = entries[index].velocity;
             entries[index].sprite->position = entries[index].position;
             entries[index].sprite->facing_refresh_progress = 0.0f;

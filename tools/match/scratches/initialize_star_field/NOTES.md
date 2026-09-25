@@ -319,3 +319,19 @@ local, of the kind rejected before. It gives the same normalized score and only 
 
 **Remaining.** Two scheduling swaps in the corner-scale calculation. The `lea` / `mov eax,[eax+0x1c]`
 interleave with the `fadd` / `fmul` differently.
+
+## 2026-09-26: matched (parenthesized-float FROUND, decoded by crimson-88)
+
+**99.19% → exact**, 247/247 instructions, encoded body identical, 26 clean references.
+
+**Change.** Only the corner scale line: `entries[index].sprite->corner_scale = entries[index].speed * 4.0f + 4.0f;`
+
+**Why it works.**
+- C1XX emits an IL_FROUND after every parenthesized float expression that isn't a lone variable or
+  field. `(speed + 1.0f) * 4.0f` therefore put a FROUND between the `fadd` and the `fmul`.
+- C2's `factor_common_terms` (`0x1070f0c7`) folds `speed * 4 + 4` back into `(speed + 1) * 4`, so the
+  bytes are the same: `fld; fadd [1.0]; fmul [4.0]`. The factored sum has no FROUND.
+- Without it, the `fmul` (priority 0x7c000) is ready at fadd+3 and beats the sprite-pointer load
+  (0x78000). That is native's order: `lea`, `fmul`, then `mov eax,[eax+0x1c]`.
+
+Full answer: `/tmp/claude/c2-from-crimson-88/snail_answer_codeless-tuples.md`.
