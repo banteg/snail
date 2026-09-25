@@ -343,3 +343,19 @@ four fewer forward-substituted float intermediates at lines 16–44.
 The frounds at lines 27, 42 and 44 sit inside single expressions (temporaries
 around the `double` rate and the add/sub operands of a multiply), so no local
 spelling touches them. No change retained.
+
+## 2026-09-25 inlining check for the seven IL_FROUNDs
+
+`--census`/trace positions (window 1):
+
+| Tuple | Line | Between | Fold test | Removable? |
+| --- | --- | --- | --- | --- |
+| #11 | 16 | the size product and `* 0.75f` | fusing lets VC6 fold `c * 0.75` (146 insns), so native kept a boundary here | no |
+| #34, #36 | 27 | `+0.6` → `*60` → `fdivr` | all six `progress_step` spellings keep both, except a divided rate, which changes code | no |
+| #62 | 37 | `rate*rate` and `*= -0.01` | `rate * rate * -0.0099999998f` removes it with identical code | **yes, the only one** |
+| #64 | 38 | `* -0.01` and `* 2.2` | inlining lets VC6 fold the two constants (146 insns), so native had a boundary | no |
+| #72, #81 | 42, 44 | inside the X/Y expressions (sub or add feeding a multiply) | | no |
+
+Only one of the four needed tuples can be removed. The owner load's window
+therefore stays out of reach through FROUNDs, and native more likely differs
+in the IL order of `game = owner_game` itself. Unchanged at 97.96%.

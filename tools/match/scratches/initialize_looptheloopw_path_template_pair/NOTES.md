@@ -347,3 +347,51 @@ grows the instruction deficit (737 to 736 / 745). Curve-bank controls regress
 to 91.3014%. Canonical W source is unchanged. See the
 [LoopOut array-owner report](../../loopout-interpolation-array-owner-20260911.md)
 for the recorded controls and native reload distinction.
+
+## 2026-09-25 secondary rotation push/load: window cut fixed
+
+**99.87% → 100.00% normalized** (745/745, prefix 335 → 745). The
+secondary-rotation `push ebx`/`mov eax, [esi+0x5c]` swap at bytes 1317–1320
+is fixed. One unequal body byte remains: the known output-store SIB byte at
++0x359 (`[edi+eax]` versus our `[eax+edi]`, an address-order issue, not
+scheduling). The function is therefore still partial, and RECOVERY/RESIDUAL
+stay.
+
+`tools/match/c2/schedtrace.py --census` shows windows 8 and 9 both cut at 81
+tuples. Window 9 ends with `push ebx`, `mov ecx, edi`, `mov eax, [esi+0x5c]`,
+and the load (a load, so it gets the +8 bonus) is scheduled before the push.
+Native's cut must fall two tuples earlier, right after `push ebx`. Then:
+
+- `mov eax` starts window 10 before `mov ecx, edi`;
+- the pair stays split, so no later peephole folds it into
+  `add ecx, [esi+0x5c]`.
+
+The cut has to move inside window 9. A window-8 change also moves an earlier
+`fadd`/push pair.
+
+The fix gives each bank's `basis_up.y` a single-use loop-top copy. Each is
+forward-substituted and adds one `IL_FROUND`, which emits no code:
+
+```cpp
+float primary_top = curve_source;
+primary_bank[sample_index].transform.basis_up.y =
+    primary_top - primary_bank[sample_index].transform.position.y;
+...
+float secondary_top = curve_source;
+secondary_bank[sample_index].transform.basis_up.y =
+    secondary_top - secondary_bank[sample_index].transform.position.y;
+```
+
+Controls:
+
+| Variant | Result |
+| --- | --- |
+| One copy only | the cut moves one tuple and the load folds into the `add` (96.71%, 744 insns) |
+| A named height load (`float height = position.y; curve_source - height`) | adds the tuple but reverses the x87 operands (`fld [pos]; fsubr`) |
+| Named Sin/Cos products | change code or add no tuple |
+| Window-8 names (`angle`, `roll`, `wiggle`, `drop`) | reorder the earlier `fadd`/push pair |
+
+Not retained: the `primary_top`/`secondary_top` copies above reach 100% normalized
+but are pure copies of an existing local, the same class rejected for
+traverse_path_follow_golb and explode_slug_hazard; the function would remain one
+SIB byte short either way.

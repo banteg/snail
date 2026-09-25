@@ -130,3 +130,23 @@ Unchanged at **94.40%**. `tools/match/c2/schedtrace.py release_snail_weapons
 
 The second and fourth blocks already match, because there the owner load's
 larger height is also native's order. No source change is retained.
+
+## 2026-09-25 codeless-tuple sweep
+
+`schedtrace.py --census`: window 1 is cut at 81 tuples after the third
+block's Y product, and holds 8 `IL_FROUND`s. Native's third block
+interleaves the `lea ecx` and the X store between the products, so its
+window 1 would have to reach past our tuple ~89. That needs about eight fewer
+tuples before the cut, and window 1 only has eight FROUNDs.
+
+Grids:
+
+| Variant | Tuple effect | Result |
+| --- | --- | --- |
+| 256 combinations of named/inline X, Y, Z per block, with the owner and destination placement kept | 1–2 fewer | best 94.40% (unchanged) |
+| any named form of the jetpack block | 1–2 fewer | loses the native `[esp+0x1c]` X slot (92.80%) |
+| third block alone as single-use `laser_x/laser_y` names or inline | none: the tuple count and code are identical | unchanged |
+
+Block 1's `fadd`/owner-load order also needs the `fadd` to gain two height
+levels. That needs two FROUNDs **on** its chain, whereas the jetpack Y
+FROUND is dangling (no successors). No change retained.

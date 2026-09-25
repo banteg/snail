@@ -126,3 +126,35 @@ operand.
   - `double local_x`: unchanged 3/3.
 
 No source change.
+
+## 2026-09-25 scheduler trace: the launch `fld st(0)` needs one IL_FROUND
+
+Unchanged at **99.29%**; the fix below is not retained. `schedtrace.py
+traverse_path_follow_golb --line 34`, window 6: the dup `fld st(0)` of
+`carry` is ready at c15, three cycles after `carry`'s `fadd`. It issues
+before `lea eax, [eax+eax*2]`, which becomes ready at c16 (AGI latency 2).
+Native has the `lea` first. That is exactly the schedule you get when one
+`IL_FROUND` sits between the `fadd` and the dup: the FROUND takes c15, then at
+c16 the `lea` (height 91) beats the dup (height 88).
+
+The FROUND needs the sum to be a single-use definition. For example:
+
+```cpp
+float travel = delta + launch_template->width_or_scale;
+float carry = travel;
+```
+
+This gives **99.53%**, prefix 96 → 327, with identical code. The remaining
+change is the x87 operand form at 327 (`fld [esp+0x48]; fmul st(1)` versus our
+`fld st(0); fmul [esp+0x48]`). The copy local is not a plausible authored
+form, so it is not retained.
+
+| Variant | Result |
+| --- | --- |
+| `carry = delta; carry += w` | +1 tuple before the `fadd`; no effect |
+| a named width | +1 tuple before the `fadd`; no effect |
+| `basis_forward * carry` (operator) | code changes, 97.88–98.82% |
+| a `double` carry | code changes, 97.88–98.82% |
+
+`update_track_attachment_follow_state` window 16 has the identical shape
+(lines 254–257), and the same single-use sum would fix its first region.
