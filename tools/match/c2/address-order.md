@@ -183,3 +183,30 @@ the siblings' helpers kept 100% normalized but left C0 at 0x4a0; logical deltas
 raised it to 0x4c0 and flipped ten delta-loop SIB bytes (native keeps the byte
 cursor's bank-first order there). See the TurnoverDouble, LoopOut and
 LoopTheLoop NOTES.
+
+## Hash kinds and the translation unit (crimson-88, 2026-09-26)
+
+`0x1070db59` dispatches on the operand kind. The table index is kind − 1, and the handlers are at
+`0x1070e7e0`.
+
+| Kind | Operand | Handler | Hash comes from | Scope |
+| --- | --- | --- | --- | --- |
+| 1–3 | register, symbol, `&symbol` | `0x1070dc01` | the storage-symbol id, or the def tree of a substituted temporary | per function |
+| 4 | code address (callee or label) | `0x1070dc72` | the xor-folded frontend record id at `fe+0x28` | **translation unit** |
+| 5–6 | address expression, memory | `0x1070dbc5` | `fold(disp) + (addrform − 0x145) + hash(base) << 8` | per function |
+| 7 | integer constant | `0x1070db7d` | a fold of the value | — |
+| 9 | float constant | `0x1070dba9` | the value | — |
+| 0xa–0xb | — | — | always 0 | — |
+| tuple | — | `0x1070dc8f` | sum of child hashes | — |
+
+For kinds 5–6 the base recurses into a kind 1–2 operand, so the hash stays per function. It ignores the
+direct symbol at `+0x20` and the index at `+0x2c`.
+
+**What this means for matching.**
+- Only a tree that contains a call or a label depends on the translation unit's declaration prelude. See
+  read_repeating_text_input_key_code: RstrASC's id must fall in 0xf757..0xff16.
+- The path builders' SIB ties and the x87 operand-order residues compare plain symbol and memory leaves.
+  They depend only on per-function ids and displacements.
+- Two memory leaves that differ only in the index register or the direct global symbol hash alike, apart
+  from displacement and base. A tie between them falls back to sort stability, which keeps the original
+  order.
