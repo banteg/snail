@@ -153,3 +153,10 @@ order, the esi/edi/ebx/ebp order and neighbour penalties.
 ```sh
 uv run tools/match/c2/globalregs.py set_snail_weapon --source overlay.cpp
 ```
+
+## Related compiler notes (crimson)
+
+The sibling Crimson project keeps further C2 notes in
+`../crimson/tools/match/c2/compiler/` (x87 allocation and spills, forward
+propagation and FROUND, frame packing, layout, register allocation corrections),
+with tracers in `../crimson/scripts/c2/`.

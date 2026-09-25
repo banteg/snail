@@ -256,3 +256,17 @@ exactly native. The source form that makes the half-height a memory variable
 is still unknown. None of the `center`/`radius` spellings produce it. The
 reassignment spellings that reach 98.64% are not retained, because they
 supply the third tuple from the wrong place.
+
+## 2026-09-25 x87 allocator (from crimson-88)
+
+The x87 allocator (`allocate_x87_live_ranges`, C2+0x645d8) scores named float
+values (+2 per def, +1 for a final `fld v` feeding a compare/store, −1 per dead
+exit, −1 per reload, −2 per spill, ×2^loop depth) and keeps a value on the stack
+only if it nests with already-placed values; reload pieces never stay on the
+stack. Single-use values are forward-propagated (FROUND) instead. Spec:
+`../crimson/tools/match/c2/compiler/x87-spills.md`; tracer
+`../crimson/scripts/c2/x87_alloc_trace.py`.
+Native's second stack value begins at `fld [esp+0x3c]` (width's dead slot), which
+cannot be a reload piece of the half height, so it is a separate candidate whose
+definition is that load. About 40 variants reached 96.83–98.34%; the current
+source is kept.

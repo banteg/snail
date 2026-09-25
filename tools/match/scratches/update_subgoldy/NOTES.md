@@ -1270,3 +1270,17 @@ x87 compare direction into `fcom` rather than `fld`/`fcomp`. None is retained.
 The canonical source is unchanged; these controls do not establish a compiler
 limit. The [boundary-pass receipt](../../inline-table-boundaries-20260911.json)
 preserves the results and the best candidate's full source and assembly diff.
+
+## 2026-09-25 x87 allocator (from crimson-88)
+
+The x87 allocator (`allocate_x87_live_ranges`, C2+0x645d8) scores named float
+values (+2 per def, +1 for a final `fld v` feeding a compare/store, −1 per dead
+exit, −1 per reload, −2 per spill, ×2^loop depth) and keeps a value on the stack
+only if it nests with already-placed values; reload pieces never stay on the
+stack. Single-use values are forward-propagated (FROUND) instead. Spec:
+`../crimson/tools/match/c2/compiler/x87-spills.md`; tracer
+`../crimson/scripts/c2/x87_alloc_trace.py`.
+Clamp diagnosis confirmed: `speed` has three uses (score 1) and fails nesting
+because `window` is redefined and dies inside its lifetime, so it is spilled to
+`[esp+0x10]`. Native's per-use `fld [0x418]; FROUND; fcomp` needs a per-use
+single-use definition (e.g. an inline accessor); no authored accessor is known.
