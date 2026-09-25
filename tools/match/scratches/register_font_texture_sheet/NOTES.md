@@ -187,3 +187,4 @@ inlined `&slot` is optimized away, and an out-of-line helper regresses to
 ## 2026-09-26: Codex consult (no gain)
 
 A bounded Codex consult (gpt-6-astra, about 40-60 probes) found no defensible improvement. Its evidence and probe ledger are in `/private/tmp/claude-501/sm/codex/register_font_texture_sheet/RESULTS.md`.
+Key finding: the global allocator gives the glyph-slot range edx, where native spills it and keeps the font index in edx. The other residuals are stack homes, conversion scheduling, the page-zero store and reload placement.

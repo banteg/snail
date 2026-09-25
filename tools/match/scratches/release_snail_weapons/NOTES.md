@@ -154,3 +154,4 @@ FROUND is dangling (no successors). No change retained.
 ## 2026-09-26: Codex consult (no gain)
 
 A bounded Codex consult (gpt-6-astra, about 40-60 probes) found no defensible improvement. Its evidence and probe ledger are in `/private/tmp/claude-501/sm/codex/release_snail_weapons/RESULTS.md`.
+Key finding: seven differences remain, all scheduling: the fadd priority in the first and third blocks, and the third block's publication across the 81-tuple window boundary. Component ownership fixes the first fadd but regresses the Z transfers and allocation.

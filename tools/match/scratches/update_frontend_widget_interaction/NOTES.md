@@ -171,3 +171,4 @@ Mechanism (the constant-candidate section of
 ## 2026-09-26: Codex consult (no gain)
 
 A bounded Codex consult (gpt-6-astra, about 40-60 probes) found no defensible improvement. Its evidence and probe ledger are in `/private/tmp/claude-501/sm/codex/update_frontend_widget_interaction/RESULTS.md`.
+Key finding: eight x87 multiplies still have their operands reversed, and the more-button clamp has one extra instruction. Publishing the clamp directly changes constant priority (1.0f takes ebx and 0 takes ebp), which causes widespread differences. Removing the two slider-child pointer locals is byte-neutral.
