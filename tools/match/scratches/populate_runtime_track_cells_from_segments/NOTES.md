@@ -1594,3 +1594,48 @@ the prefix to 77 at a substantial whole-function regression. No source change
 is retained. The tracked path-context receipt preserves both complete grids
 and their current baseline identities. These outcomes replace the older score
 expectations for these particular forms, without closing the ownership lane.
+
+## 2026-09-25 structural owner pass
+
+Measured with `snail match scratch --structural` (local labels and
+eax/ecx/edx rotation generalized): **95.65% → 98.28%**, changed
+**61/58 → 23/24** target/candidate instructions; normalized **86.13% →
+89.22%**; operand audit unchanged at 165 ok / 0 mismatch / 0 unaudited.
+
+Four owner changes, each confirmed against the native local shape:
+
+- **Cell position.** Native materializes `lea edi,[cell+0x10]` once, zeroes
+  through it (`[edi+8]`, `[edi+4]`, `[edi]`), and reuses that address for
+  `.x` and as the fringe copy source (`mov esi,edi`). `.y`/`.z` stay
+  `esi+disp`. The zeroing now goes through a `Vector3*` to
+  `runtime_cells[row][lane].position`. Other stores address the member
+  directly, and each fringe gets `object->position = ...position` as a struct
+  copy.
+- **UV block.** `render_arg_1c/20` are written as `runtime_cells[..]` members
+  with no `lane_uv`/`row_uv` locals. This restores the native `this` reload
+  into edx ahead of `build_row < 4`, and eax clobbering, so the `0x1f` tile
+  test reloads from memory.
+- **Attachment span.** An indexed pretested `for` over
+  `runtime_rows[build_row + span_index]` puts the row pointer's `lea`
+  after the `row_span_count > 0` guard, as in native. A walking pointer
+  initialized before the guard hoisted it.
+- **Path template.** `&path_pairs[runtime_rows[row].attachment_template_index]
+  .primary/.secondary` replaces the named `template_index` local.
+
+The first three each flipped the global allocator on their own: `this`
+moved ebx→edi, or `active_segment` moved from edx to esi across the segment
+extension check. The fourth completes the set, and all four together restore
+native global coloring. Lane-word owner forms (`&runtime_cells[..]
+.lane_and_flags` RMW pair) are byte-neutral and were kept for readability.
+
+Remaining 23: stack-slot packing (about 13; native {lane,row-clear counter},
+row_event_owner, cursor, segment_cursor, trampoline, {authored_length,
+edge_row} against our segment_cursor, {counter,edge_row},
+{authored_length,row_event_owner}), plus the lane-word `and al,0xe0` form
+with its early zero (6). The rest are the loop-head/back-edge edi/ebp reload
+order, the `base_subgame_rate` store before the `random_enabled` reload, and
+jump-table padding. Uninitialized `segment_cursor` (native has no eager
+store) still perturbs the slot packing (+10). Mode-3 `last + first` with
+`first_segment->row_count` fixes the reload at target[89] (22/23), but it
+drops normalized to 84.33%, so it is not retained. Local names, declaration
+order and scope placement are all byte-neutral.
