@@ -104,3 +104,8 @@ loads `t` first against `[reg]`. This suggests VC6 picks the loaded operand
 from its addressing form, but no plausible source form reproduces it. The
 EDI/EBP constant-load order at +127 is also unchanged by the `flags` versus
 `widget_flags` test spellings.
+
+Retired `slider-value-lifetime-mutations.json` (never receipted): its
+less-branch `direct-field` alternative is now the canonical source, so the
+anchor no longer exists. The more-branch direct-field form is recorded above
+as regressing (41/47 structural changes).
