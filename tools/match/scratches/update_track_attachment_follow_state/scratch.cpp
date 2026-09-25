@@ -144,12 +144,15 @@ int cRPathFollowGoldy::Traverse(
         } else {
             AttachmentSample* secondary = current_template->secondary_samples;
             AttachmentSample* sample = &secondary[current_index];
+            float anchor_x = source_cell->position.x;
+            float anchor_y = source_cell->position.y;
+            float anchor_z = source_cell->position.z;
             base_position.x = lateral_scale * (sample_progress * secondary[current_index].delta_dir_to_next.x)
-                + secondary[current_index].transform.position.x + source_cell->position.x;
+                + secondary[current_index].transform.position.x + anchor_x;
             base_position.y = lateral_scale * (sample_progress * secondary[current_index].delta_dir_to_next.y)
-                + secondary[current_index].transform.position.y + source_cell->position.y;
+                + secondary[current_index].transform.position.y + anchor_y;
             base_position.z = sample_progress * secondary[current_index].delta_dir_to_next.z
-                + secondary[current_index].transform.position.z + source_cell->position.z;
+                + secondary[current_index].transform.position.z + anchor_z;
             if (current_index == (unsigned int)(sample_count - 1)) {
                 transform.Identity();
             } else {

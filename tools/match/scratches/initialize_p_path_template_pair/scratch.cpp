@@ -204,26 +204,23 @@ static __forceinline void compute_terminal_deltas(Path *path)
     path->secondary_samples[path->segment_count - 1].delta_length = 1.0f;
 }
 
-static __forceinline void initialize_endpoint_pair(int index,
-                                                   PathTemplateSample *&primary,
-                                                   PathTemplateSample *&secondary,
-                                                   float center)
+static __forceinline void initialize_endpoint_pair(Path *path, int index, float center)
 {
-    primary[index].center_x = center;
-    primary[index].rotation_scalar_98 = 0.0f;
-    primary[index].rotation_scalar_94 = 0.0f;
-    primary[index].special_scalar = 0.0f;
-    primary[index].lateral_scale = 1.0f;
-    primary[index].transform.Identity();
-    primary[index].transform.position.x = primary[index].center_x;
+    path->primary_samples[index].center_x = center;
+    path->primary_samples[index].rotation_scalar_98 = 0.0f;
+    path->primary_samples[index].rotation_scalar_94 = 0.0f;
+    path->primary_samples[index].special_scalar = 0.0f;
+    path->primary_samples[index].lateral_scale = 1.0f;
+    path->primary_samples[index].transform.Identity();
+    path->primary_samples[index].transform.position.x = path->primary_samples[index].center_x;
     float z = (float)index;
-    primary[index].transform.position.y = 0.0f;
-    primary[index].transform.position.z = z;
+    path->primary_samples[index].transform.position.y = 0.0f;
+    path->primary_samples[index].transform.position.z = z;
 
-    secondary[index].transform.Identity();
-    secondary[index].transform.position.x = primary[index].center_x;
-    secondary[index].transform.position.y = 0.49000001f;
-    secondary[index].transform.position.z = z;
+    path->secondary_samples[index].transform.Identity();
+    path->secondary_samples[index].transform.position.x = path->primary_samples[index].center_x;
+    path->secondary_samples[index].transform.position.y = 0.49000001f;
+    path->secondary_samples[index].transform.position.z = z;
 }
 
 void cRPath::initialize_p_path_template_pair(int variant, float scale_arg,
@@ -265,7 +262,7 @@ void cRPath::initialize_p_path_template_pair(int variant, float scale_arg,
     secondary_samples[0].transform.position.y = 0.49000001f;
     secondary_samples[0].transform.position.z = 0.0f;
 
-    initialize_endpoint_pair(sample_count - 1, primary_samples, secondary_samples, end_x);
+    initialize_endpoint_pair(this, sample_count - 1, end_x);
 
     int curve_index = 0;
     if (curve_segments > 0)

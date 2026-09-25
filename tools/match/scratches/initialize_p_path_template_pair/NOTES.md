@@ -448,3 +448,21 @@ operator gain recovered in Start, Invert, Wibble, and the paired Twisters.
 64.60% baseline. No source change is retained. The Twister result does not
 transfer uniformly across this family; these receipts describe only the
 examined aggregate and lateral lifetimes.
+
+## 2026-09-26: endpoint helper through `Path *` (Codex consult)
+
+**93.44% → 97.35% normalized**, 679/679 (was 678/679), 41 clean references.
+
+**Change.** `initialize_endpoint_pair(Path *path, int index, float center)` reads
+`path->primary_samples` and `path->secondary_samples` directly. It no longer takes bank references. The
+call is `initialize_endpoint_pair(this, sample_count - 1, end_x)`. That changes the endpoint receiver
+allocation, which restores the downstream offsets.
+
+**Remaining.**
+- prologue/count ownership;
+- the endpoint index calculation;
+- the `Identity()` receiver allocation;
+- scheduling of the final Z store.
+
+A 97.50% alternative regressed the prefix. Evidence:
+`/private/tmp/claude-501/sm/codex/initialize_p_path_template_pair/RESULTS.md` (59 probes).

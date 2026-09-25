@@ -356,3 +356,15 @@ vector forms, 6 initializer orders, 6 copy orders, 4 mobile-shaped guarded
 do/while loops, 8 tail and duration forms, 3 function-scope shared-vector
 forms, and 30+ declaration, scope and naming controls. Declaration order and
 variable names never affect the packing.
+
+## 2026-09-26: Codex consult (no gain)
+
+60 probes; nothing improved on the retained source.
+
+**Compiler profile.** The 93.38% status figure is under this scratch's msvc6.0 profile. Under msvc6.5 the
+same source is 88.89%, 523/521.
+
+**Remaining residual.** The velocity lanes displace the script buffer from esi, which forces a reload and
+shifts stack slots. msvc6.5 also emits an extra parser-argument cleanup.
+
+Evidence: `/private/tmp/claude-501/sm/codex/initialize_intro_screen/RESULTS.md`.

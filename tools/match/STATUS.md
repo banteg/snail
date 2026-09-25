@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**631/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **206377/299952** bytes (**68.80%**) are proof-grade, and overall fuzzy is **97.55%**.
+**631/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **206377/299952** bytes (**68.80%**) are proof-grade, and overall fuzzy is **97.59%**.
 
 **116/120** platform helpers matched, **120/120** have a scratch, **19889/23008** bytes (**86.44%**) are proof-grade, and overall fuzzy is **97.53%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -10,9 +10,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**31** non-exact scratch-backed functions hold **1887 fuzzy-gap bytes**. The top 5 hold **65.2%** of that gap; the top 10 hold **90.4%**.
+**31** non-exact scratch-backed functions hold **1778 fuzzy-gap bytes**. The top 5 hold **66.8%** of that gap; the top 10 hold **89.8%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **31 / 1887** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **0 functions / 0 gap bytes**; **31 / 1778** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -20,14 +20,14 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 |---:|---|---:|---|---|---|---:|---|
 | 1 | populate_runtime_track_cells_from_segments | 545 | semantic-complete | analysis | historical-only | 0/150 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 2 | initialize_worm_path_template_pair | 259 | semantic-complete | analysis | historical-only | 0/14 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 3 | initialize_p_path_template_pair | 164 | semantic-complete | analysis | historical-only | 0/24 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 4 | register_font_texture_sheet | 139 | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
-| 5 | initialize_intro_screen | 123 | semantic-complete | analysis | historical-only | 0/13 | repeated-variants,variant-errors,historical-only,stale-dependencies |
-| 6 | update_frontend_widget_interaction | 122 | semantic-complete | analysis,references | historical-only | 0/16 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 7 | set_snail_weapon | 118 | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
-| 8 | initialize_game_assets_and_world | 102 | semantic-complete | analysis,references | historical-only | 0/21 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 9 | update_track_attachment_follow_state | 72 | semantic-complete | analysis | historical-only | 0/24 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 10 | update_subgoldy | 61 | semantic-complete | analysis | historical-only | 0/16 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 3 | register_font_texture_sheet | 139 | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
+| 4 | initialize_intro_screen | 123 | semantic-complete | analysis | historical-only | 0/13 | repeated-variants,variant-errors,historical-only,stale-dependencies |
+| 5 | update_frontend_widget_interaction | 122 | semantic-complete | analysis,references | historical-only | 0/16 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 6 | set_snail_weapon | 118 | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
+| 7 | initialize_game_assets_and_world | 102 | semantic-complete | analysis,references | historical-only | 0/21 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 8 | initialize_p_path_template_pair | 66 | semantic-complete | analysis | historical-only | 0/24 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 9 | update_subgoldy | 61 | semantic-complete | analysis | historical-only | 0/16 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 10 | update_track_attachment_follow_state | 61 | semantic-complete | analysis | historical-only | 0/24 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 11 | release_snail_weapons | 31 | semantic-complete | analysis | historical-only | 0/16 | variant-errors,historical-only,stale-dependencies |
 | 12 | initialize_tip | 20 | semantic-complete | analysis | historical-only | 0/15 | repeated-variants,historical-only,stale-dependencies |
 | 13 | border_input_text | 20 | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
@@ -699,7 +699,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ⚠ | initialize_loopbow_path_template_pair | 0x42ba80 | 2944 | 796/796 | 100.00% | 796/796 | 63 ok |  | core |
 | ⚠ | initialize_hill_valley_path_template_pair | 0x42d570 | 2448 | 668/668 | 100.00% | 668/668 | 41 ok |  | core |
 
-## Near Match (95-99.99%) (17)
+## Near Match (95-99.99%) (18)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -710,8 +710,9 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | sample_smtrack_heightmap | 0x41a360 | 368 | 109/109 | 97.25% | 67/109 | 13 ok |  | core |
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2736 | 745/745 | 99.87% | 335/745 | 55 ok |  | core |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2400 | 655/655 | 99.85% | 100/655 | 37 ok |  | core |
-| 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2752 | 726/726 | 97.38% | 194/726 | 65 ok |  | core |
+| 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2752 | 726/726 | 97.80% | 194/726 | 65 ok |  | core |
 | 🚧 | traverse_path_follow_golb | 0x4217b0 | 1552 | 425/425 | 99.29% | 96/425 | 7 ok |  | core |
+| 🚧 | initialize_p_path_template_pair | 0x425a40 | 2496 | 679/679 | 97.35% | 2/679 | 41 ok |  | core |
 | 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2496 | 687/687 | 99.42% | 140/687 | 45 ok |  | core |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 204/204 | 99.02% | 109/204 | 47 ok |  | core |
 | 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1344 | 440/440 | 99.32% | 408/440 | 74 ok |  | boundary |
@@ -721,13 +722,12 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | firework_shoot | 0x441dd0 | 400 | 103/103 | 96.12% | 85/103 | 21 ok |  | core |
 | 🚧 | initialize_tip | 0x448a40 | 512 | 154/154 | 96.10% | 23/154 | 27 ok |  | core |
 
-## High Progress (80-94.99%) (7)
+## High Progress (80-94.99%) (6)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1856 | 522/521 | 93.38% | 88/521 | 66 ok | msvc6.0 /O2 /G5 /W3 | core |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2768 | 727/736 | 90.64% | 0/736 | 37 ok |  | core |
-| 🚧 | initialize_p_path_template_pair | 0x425a40 | 2496 | 678/679 | 93.44% | 2/679 | 41 ok |  | core |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5056 | 1247/1246 | 89.22% | 76/1246 | 165 ok |  | core |
 | 🚧 | release_snail_weapons | 0x442e40 | 560 | 125/125 | 94.40% | 15/125 | 33 ok |  | core |
 | 🚧 | set_snail_weapon | 0x445920 | 944 | 247/249 | 87.47% | 14/249 | 24 ok |  | core |

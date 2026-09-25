@@ -155,3 +155,21 @@ instruction-count gain cannot justify changing the shared operator. Only the
 slug's independently tested local-result follow-up is retained; this canonical
 source remains unchanged. The receipts preserve the full compiled identities
 and reference debt rather than interpreting an unchanged score as exact code.
+
+## 2026-09-26: source-cell anchor snapshots (Codex consult)
+
+**97.38% → 97.80% normalized**, structural 15/15 → 12/12, 726/726, prefix 194, 65 clean references.
+
+**Change.** The ordinary branch snapshots `source_cell->position.x/y/z` into `anchor_x/y/z` before
+computing `base_position`. This is the same anchor idiom as the swept-attachment scratch.
+
+**Why it works.** Each single-use snapshot is forwarded through an `IL_FROUND`, which changes the operand
+tree entering x87 lowering. The anchor is then added before the sample position in all three lanes, as in
+native. No instructions are added, and C0 is unchanged (0x420).
+
+**Remaining.**
+- The terminal `lea` / `fld st(0)` schedule.
+- Kind-42 addressing and publication. The Y snapshot is an x87 pair where native has an integer copy.
+- The right-offset Y product order.
+
+Evidence: `/private/tmp/claude-501/sm/codex/update_track_attachment_follow_state/RESULTS.md` (55 probes).
