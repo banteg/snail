@@ -140,3 +140,16 @@ constructs take or skip a slot are in
 ```sh
 uv run tools/match/c2/rotation.py update_subgame --source overlay.cpp
 ```
+
+## Global allocation: callee-saved register choice
+
+[`globalregs.py`](globalregs.py) traces C2's global allocator. For each live
+range it lists the priority and tie key, the allowed registers, the cost table
+the chooser builds, the register chosen and the register native implies. It
+also re-derives every choice from the rule in
+[global-allocation.md](global-allocation.md), which covers weights, queue
+order, the esi/edi/ebx/ebp order and neighbour penalties.
+
+```sh
+uv run tools/match/c2/globalregs.py set_snail_weapon --source overlay.cpp
+```
