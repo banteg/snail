@@ -145,3 +145,53 @@ remain 99.14%, 582/582 instructions, prefix 156, with 48 clean references.
 The two exact widget initializers therefore control the conversion, but it
 does not close either partial caller. The recipe and receipts retain the
 whole overlays; no shared header or canonical source is changed.
+
+## 2026-09-25 alias field records: byte-exact
+
+**Result: 100.00%, byte-exact** (`state=match`, encoded body match), 582/582
+instructions, 48 clean references. RECOVERY/RESIDUAL are removed from
+`scratch.conf`.
+
+`tools/match/c2/schedtrace.py` explains all four ordering regions. Each is a
+memory edge that our graph has and native's does not.
+
+C2 splits each alias class into field records: one per distinct
+`(offset, size)` range, 1 to 3 per member access. Records are numbered from
+the most recently created, and every record from the 32nd back shares bit 31
+(`alias_collect_field_classes`, see `c2/scheduler.md`). The old source has 39
+records in the `this` class. The skip byte, `kind`, the laser launch-vector
+copy and the older fields all shared bit 31, so they conflicted with one
+another. Accesses through the `Vec3* position` local fall in a separate class
+whose symbol set intersects `this`. Every position-X load therefore
+conflicted with every velocity store.
+
+The fix drops the function-wide `Vec3* position` borrow. Every
+launch-position access names `flight_transform.position` directly. The homing
+`Find(*position)` call keeps a local borrow, which is codegen-neutral and is
+the spelling `tests/test_mobile.py` pins. The two component loops become the
+`tVector` compound operators:
+
+```cpp
+if (kind == 1)
+    velocity *= 2.0f;   // VC6 emits fld; fadd st(0), st(0)
+if (kind == 2)
+    velocity *= 0.80000001f;
+```
+
+How the fix arrives:
+
+- **All-direct access alone** (`v2`): clears the four regions (prefix
+  156 → 316). But the stores then no longer kill the `kind` value, so VC6 keeps
+  `kind` in eax across both velocity blocks, where native reloads it (93.64%).
+- **Operator scaling:** the operator bodies store through the inline `this`
+  pointer. That restores native's three `kind` reloads.
+- **`velocity += velocity`** instead reloads each lane (`fadd [mem]`,
+  96.22%). `*= 2.0f` gives native's `fadd st(0), st(0)`.
+
+Other variants tried:
+
+- **Mixed `position`/direct access** (all 128 combinations of 7 statement
+  groups): best 99.48%. Only the spread adjustments are fixed.
+- **Other scaling spellings:** `velocity = velocity * 2.0f` or `+ velocity`
+  gives 589 instructions (93.77–94.28%). Scaling only the kind-1 block gives
+  93.99%.

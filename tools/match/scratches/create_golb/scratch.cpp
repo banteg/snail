@@ -43,11 +43,10 @@ void cRSubGolb::Create(cRSubGoldy* player_, int spawn_selector, int shot_slot_in
     source_matrix.Identity();
 
     cRSubGoldy* spawn_player = owner_player;
-    Vec3* position = &flight_transform.position;
     state = 1;
-    *position = spawn_player->transform.position;
+    flight_transform.position = spawn_player->transform.position;
     Vec3 half_forward = spawn_player->transform.basis_forward * 0.5f;
-    *position += half_forward;
+    flight_transform.position += half_forward;
 
     cRSubGoldy* player = owner_player;
     DWORD shoot_flags = player->shoot_flags;
@@ -56,13 +55,13 @@ void cRSubGolb::Create(cRSubGoldy* player_, int spawn_selector, int shot_slot_in
             if (spawn_selector == 2) {
                 Vec3* source = &player->presentation.snail_hotspots_world[
                     SNAIL_HOTSPOT_BLASTER_LEFT_FIRE];
-                *position = *source;
-                position->x += 0.5f;
+                flight_transform.position = *source;
+                flight_transform.position.x += 0.5f;
             } else if (spawn_selector == 1) {
                 Vec3* source = &player->presentation.snail_hotspots_world[
                     SNAIL_HOTSPOT_BLASTER_RIGHT_FIRE];
-                *position = *source;
-                position->x -= 0.5f;
+                flight_transform.position = *source;
+                flight_transform.position.x -= 0.5f;
             }
             velocity = Vec3(0.0f, 0.0f, player->velocity.z + 1.0f);
             goto after_default_launch_family;
@@ -78,9 +77,9 @@ void cRSubGolb::Create(cRSubGoldy* player_, int spawn_selector, int shot_slot_in
                 if ((shoot_flags & 0x52) != 0) {
                     velocity = Vec3(0.0f, 0.0f, player->velocity.z + 1.0f);
                     if (spawn_selector == 2)
-                        position->x += 0.5f;
+                        flight_transform.position.x += 0.5f;
                     else
-                        position->x -= 0.5f;
+                        flight_transform.position.x -= 0.5f;
                 }
                 goto after_default_launch_family;
             }
@@ -88,7 +87,7 @@ void cRSubGolb::Create(cRSubGoldy* player_, int spawn_selector, int shot_slot_in
             {
                 Vec3* source = &player->presentation.snail_hotspots_world[
                     SNAIL_HOTSPOT_ROCKET_BASE];
-                *position = *source;
+                flight_transform.position = *source;
                 velocity = Vec3(0.0f, 0.0f, player->velocity.z + 0.60000002f);
             }
             goto after_default_launch_family;
@@ -98,7 +97,7 @@ void cRSubGolb::Create(cRSubGoldy* player_, int spawn_selector, int shot_slot_in
             if (spawn_selector == 2) {
                 Vec3* source = &player->presentation.snail_hotspots_world[
                     SNAIL_HOTSPOT_LASER_LEFT];
-                *position = *source;
+                flight_transform.position = *source;
                 if (player->transform.basis_forward.z > 0.0f)
                     vapour_z_floor =
                         &player->presentation.snail_hotspots_world[
@@ -108,7 +107,7 @@ void cRSubGolb::Create(cRSubGoldy* player_, int spawn_selector, int shot_slot_in
             } else {
                 Vec3* source = &player->presentation.snail_hotspots_world[
                     SNAIL_HOTSPOT_LASER_RIGHT];
-                *position = *source;
+                flight_transform.position = *source;
                 if (player->transform.basis_forward.z > 0.0f)
                     vapour_z_floor =
                         &player->presentation.snail_hotspots_world[
@@ -125,25 +124,25 @@ after_default_launch_family:
         ;
     } else {
         if (spawn_selector == 3) {
-            *position = player->presentation.snail_hotspots_world[
+            flight_transform.position = player->presentation.snail_hotspots_world[
                 SNAIL_HOTSPOT_BLASTER_LEFT_FIRE];
         } else if (spawn_selector == 2) {
-            *position = player->presentation.snail_hotspots_world[
+            flight_transform.position = player->presentation.snail_hotspots_world[
                 SNAIL_HOTSPOT_BLASTER_RIGHT_FIRE];
         } else if (spawn_selector == 1) {
-            *position = player->presentation.snail_hotspots_world[
+            flight_transform.position = player->presentation.snail_hotspots_world[
                 SNAIL_HOTSPOT_BLASTER_TOP_FIRE];
         }
 
         if ((player->shoot_flags & 4) != 0) {
             if (spawn_selector == 3) {
                 Vec3 launch_velocity(0.1f, 0.0f, player->velocity.z + 1.0f);
-                float spawn_x = position->x + 0.5f;
+                float spawn_x = flight_transform.position.x + 0.5f;
                 velocity = launch_velocity;
-                position->x = spawn_x;
+                flight_transform.position.x = spawn_x;
             } else if (spawn_selector == 2) {
                 velocity = Vec3(-0.1f, 0.0f, player->velocity.z + 1.0f);
-                position->x -= 0.5f;
+                flight_transform.position.x -= 0.5f;
             } else {
                 velocity = Vec3(0.0f, 0.0f, player->velocity.z + 1.0f);
             }
@@ -153,14 +152,10 @@ after_default_launch_family:
     }
 
     if (kind == 1) {
-        velocity.x += velocity.x;
-        velocity.y += velocity.y;
-        velocity.z += velocity.z;
+        velocity *= 2.0f;
     }
     if (kind == 2) {
-        velocity.x *= 0.80000001f;
-        velocity.y *= 0.80000001f;
-        velocity.z *= 0.80000001f;
+        velocity *= 0.80000001f;
     }
 
     direction = velocity;
@@ -177,6 +172,7 @@ after_default_launch_family:
             g_game->active_bod_list.add_bod(&tertiary_body);
 
             this->shot_slot_index = shot_slot_index;
+            Vec3* position = &flight_transform.position;
             ContactTargetEntry* found =
                 game->enemy_manager.Find(*position);
             if (found) {
@@ -235,7 +231,7 @@ after_default_launch_family:
             render_sprite->size_start = 0.49000001f;
             render_sprite->size_end = 0.49000001f;
             Vec3* sprite_position = (Vec3*)&render_sprite->position;
-            *sprite_position = *position;
+            *sprite_position = flight_transform.position;
             render_sprite->facing_angle =
                 ((float)gRMathRand2() - 16384.0f)
                 * 0.0000610351562f * 3.1415927f;
