@@ -210,3 +210,23 @@ direct symbol at `+0x20` and the index at `+0x2c`.
 - Two memory leaves that differ only in the index register or the direct global symbol hash alike, apart
   from displacement and base. A tie between them falls back to sort stability, which keeps the original
   order.
+
+## Loads as address operands (crimson-88, 2026-09-26)
+
+`compute_tree_cost_and_sort` (`0x1070d90c`) merge-sorts the operands with `compare_operand_cost_desc`
+(`0x1070f6ae`). The sort is stable and unsigned-descending, and the first operand becomes the SIB base.
+
+- **CSE-available address.** A load `[s + d]` whose address is a CSE temp or local is a leaf. With
+  d = 0 its hash is `(fold(d) + 7 + (H(s) << 8)) & 0xffff`: `((T & 3) << 14) + 7` for a class-3 temp,
+  `((L & 7) << 13) + 7` for a local.
+- **Otherwise** (an unCSE'd address, or any other expression) the load always sorts first, so it
+  becomes the base.
+- **When `p + off` is CSE-available.** Only if it was computed on every path since the last assignment
+  to `p`.
+  - Any assignment kills it, even of an equal value (traverse's redundant `current_template = …`).
+  - So does a first computation in only one arm.
+  - Stores and calls don't.
+- **Correction to "What source changes do" above.** A reloaded member sorts first as an expression only
+  while its address is not a CSE temp.
+- `addrorder.py` currently skips these kind-6 loads. See crimson `sib-operand-order.md` for a patch
+  proposal.
