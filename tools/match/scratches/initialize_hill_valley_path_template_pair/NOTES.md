@@ -567,3 +567,32 @@ A phantom `21:3,22:1` build is byte-exact.
 - About 36 header spellings in total (mine and crimson's) give 0, +1 or +2, or change code.
 
 Still open: an authored −1 or +3 before the primary temp.
+
+## 2026-09-26: matched (header slot shaping plus a grouping FROUND)
+
+**100% normalized with 9 SIB swaps → exact**, 668/668, encoded body identical, 41 clean references.
+
+**Changes.**
+```cpp
+int last = steps + 1;
+segment_count = last;
+++segment_count;
+segment_count_f = (float)(last + 1);
+segment_count_f = (float)segment_count;
+...
+    primary_samples[0].center_x = ((float)width_cells * 0.5f) - 4.0f;
+```
+
+**Mechanism** (crimson-88 `cse-slot-count.md`).
+- The split increment and the second `segment_count_f` store add 3 CSE slots before the primary bank
+  temp `this+0x58`: n 21 → 24, so `T & 3 = 0` and its leaf hash drops to 7.
+  - The offset locals then become the SIB base at all 9 sites, as in native.
+- The grouping parentheses add one FROUND. That moves the secondary `this+0x5c` temp to n49 (≢ 0 mod 4),
+  so its sites keep native's bank-first order.
+- Machine code is otherwise identical: only ids move.
+
+**Caveat, accepted as authored enough.** The first `segment_count_f` store is dead: it is overwritten
+by the member-based conversion. Leaner forms regress to 95.6–95.9%:
+- the split increment without the dead store;
+- the dead store without the split increment;
+- the split increment with only one `segment_count_f` store.

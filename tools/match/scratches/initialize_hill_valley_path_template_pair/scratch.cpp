@@ -281,8 +281,10 @@ void cRPath::initialize_hill_valley_path_template_pair(int width_cells_, float h
     int steps = (int)length;
     width_or_scale = 1.0f;
     int last = steps + 1;
-    segment_count = last + 1;
+    segment_count = last;
+    ++segment_count;
     segment_count_f = (float)(last + 1);
+    segment_count_f = (float)segment_count;
     GetNodes();
 
     has_entry_mesh_transition = 0;
@@ -290,7 +292,7 @@ void cRPath::initialize_hill_valley_path_template_pair(int width_cells_, float h
     if (centered)
         primary_samples[0].center_x = 0.0f;
     else
-        primary_samples[0].center_x = (float)width_cells * 0.5f - 4.0f;
+        primary_samples[0].center_x = ((float)width_cells * 0.5f) - 4.0f;
     primary_samples[0].rotation_scalar_98 = 0.0f;
     primary_samples[0].rotation_scalar_94 = 0.0f;
     primary_samples[0].special_scalar = 0.0f;

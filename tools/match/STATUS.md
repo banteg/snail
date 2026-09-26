@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**635/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **209497/299952** bytes (**69.84%**) are proof-grade, and overall fuzzy is **97.64%**.
+**636/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **211945/299952** bytes (**70.66%**) are proof-grade, and overall fuzzy is **97.64%**.
 
 **116/120** platform helpers matched, **120/120** have a scratch, **19889/23008** bytes (**86.44%**) are proof-grade, and overall fuzzy is **97.53%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -10,9 +10,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**27** non-exact scratch-backed functions hold **1628 fuzzy-gap bytes**. The top 5 hold **67.6%** of that gap; the top 10 hold **92.5%**.
+**26** non-exact scratch-backed functions hold **1628 fuzzy-gap bytes**. The top 5 hold **67.6%** of that gap; the top 10 hold **92.5%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **27 / 1628** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **0 functions / 0 gap bytes**; **26 / 1628** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -44,10 +44,9 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 24 | initialize_halfpipe_path_template_pair | 0 | semantic-complete | analysis | historical-only | 0/28 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 25 | initialize_turnoverdouble_path_template_pair | 0 | semantic-complete | analysis | historical-only | 0/58 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 26 | initialize_turnover_path_template_pair | 0 | semantic-complete | analysis | historical-only | 0/58 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 27 | initialize_hill_valley_path_template_pair | 0 | semantic-complete | analysis | historical-only | 0/41 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 
 
-## Proof Grade (635)
+## Proof Grade (636)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -280,6 +279,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ✅ | calc_path_length_z | 0x42c600 | 368 | 113/113 | 100.00% | 113/113 | 9 ok |  | core |
 | ✅ | is_point_inside_track_attachment | 0x42ca90 | 352 | 111/111 | 100.00% | 111/111 | 6 ok |  | core |
 | ✅ | initialize_toad_path_template_pair | 0x42cbf0 | 2432 | 663/663 | 100.00% | 663/663 | 33 ok |  | core |
+| ✅ | initialize_hill_valley_path_template_pair | 0x42d570 | 2448 | 668/668 | 100.00% | 668/668 | 41 ok |  | core |
 | ✅ | initialize_sbend_path_template_pair | 0x42df00 | 2080 | 579/579 | 100.00% | 579/579 | 39 ok |  | core |
 | ✅ | initialize_cage2_path_template_pair | 0x42e720 | 2432 | 648/648 | 100.00% | 648/648 | 46 ok |  | core |
 | ✅ | load_config_file | 0x42f470 | 32 | 9/9 | 100.00% | 9/9 | 1 ok |  | core |
@@ -687,7 +687,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ✅ | attach_render_camera_source | 0x44e900 | 32 | 6/6 | 100.00% | 6/6 | - |  | boundary |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 
-## Audit Needed (7)
+## Audit Needed (6)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -697,7 +697,6 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ⚠ | initialize_turnoverdouble_path_template_pair | 0x427640 | 2464 | 680/680 | 100.00% | 680/680 | 46 ok |  | core |
 | ⚠ | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 707/707 | 100.00% | 707/707 | 55 ok |  | core |
 | ⚠ | initialize_loopbow_path_template_pair | 0x42ba80 | 2944 | 796/796 | 100.00% | 796/796 | 63 ok |  | core |
-| ⚠ | initialize_hill_valley_path_template_pair | 0x42d570 | 2448 | 668/668 | 100.00% | 668/668 | 41 ok |  | core |
 
 ## Near Match (95-99.99%) (14)
 
