@@ -249,3 +249,55 @@ direct symbol at `+0x20` and the index at `+0x2c`.
   - Hill/Valley: primary bank temp n ≡ 0 mod 4 needed;
   - the other six: a bank CSE symbol ranked by id << 6, needing id mod 1024 in a window (past 0x800),
     which is hundreds of ids and impractical.
+
+## Pushing the bank temp past 0x800 (crimson-88, 2026-09-26)
+
+Crimson note `cse-id-push.md`; tool `scripts/c2/cse_id_window.py` (phantom range sweeps; `--chunks` shows
+what opened each C0 chunk).
+
+**Byte-exact windows** (phantom builds):
+
+| Builder | Bank slot | Exact shifts | Bank ends at |
+| --- | --- | --- | --- |
+| TurnoverDouble | 28 | 836–841, 843–845 (842 is a hole) | 0x800–0x809 |
+| HalfPipe | 92 | 772–783 | 0x800–0x80b |
+
+Two side rules apply to both:
+- The secondary bank address (TurnoverDouble slot 50, HalfPipe slot 62) must not be ≡ 0 mod 4.
+- In TurnoverDouble, the width_cells address (slot 6) must stay ≡ 2 or 3.
+
+**Why no natural edit reaches it.**
+- C0 is 32 × the number of symbol chunks opened before value numbering, so it moves only in whole
+  blocks.
+- Neither window contains a multiple of 32, so moving C0 alone never works.
+
+Identical-code costs measured:
+
+| Change | Cost |
+| --- | --- |
+| a shared inlined per-segment helper | 0 |
+| hand-inlined delta and mesh code | 0 |
+| Hill/Valley's mesh helper or component constructor | +1 block |
+| `(unsigned int)` byte casts in place of `(char*)` | +7 blocks |
+| header respellings | 0 or +1 slot |
+
+The best combination still leaves the bank at 413 or 476 mod 1024.
+
+**Pushing every temp at once** (phantom at slot 0) avoids the second-site flips:
+
+| Builder | Exact shifts |
+| --- | --- |
+| Turnover | 724, 728 |
+| LoopBow | about 518–692 |
+| LoopTheLoop | 652–753 |
+| LoopOut | 581, 584, 585, 588, 589 |
+
+All four still need at least 9 blocks down or 17 up.
+
+**Corrections to the residue table above.**
+- LoopTheLoop needs 9–11 fewer blocks, not 5–11. At −5 to −8, five delta-loop SIB bytes flip.
+- The TurnoverDouble and HalfPipe rows need the secondary-address rule.
+
+**Untested leads.**
+- A late pool-B id for the offset local: ≥ 0x179 in TurnoverDouble, ≥ 0x1f9 in HalfPipe.
+- Whether the originals used a different operand kind at the bank site, as Hill/Valley does.
