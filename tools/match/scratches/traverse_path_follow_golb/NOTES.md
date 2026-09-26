@@ -158,3 +158,16 @@ form, so it is not retained.
 
 `update_track_attachment_follow_state` window 16 has the identical shape
 (lines 254–257), and the same single-use sum would fix its first region.
+
+## 2026-09-26: parenthesized carry supplies the FROUND
+
+**99.29% → 99.53%**, prefix 96 → 327, 425/425 instructions.
+
+**Change.** `float carry = (delta + launch_template->width_or_scale);`
+
+**Why it works.** C1XX emits an IL_FROUND after a parenthesized non-leaf float expression (crimson-88; see
+scheduler.md, "Codeless tuples"). That is exactly the one codeless tuple the window needed. Earlier it
+could only be reached with a rejected copy local (`float travel = …; float carry = travel;`).
+
+**Remaining.** The Y-lane x87 operand order of `transform.basis_right * local_x`. Native loads the field
+first; ours loads the scale. This is the slot-id tie described in x87-order.md.

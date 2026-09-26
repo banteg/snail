@@ -35,7 +35,7 @@ int cRPathFollowGolb::Traverse(float path_factor, Vec3& position, Vec3* velocity
                 float old_x = position.x;
                 Path* launch_template = template_record;
                 int count = launch_template->segment_count;
-                float carry = delta + launch_template->width_or_scale;
+                float carry = (delta + launch_template->width_or_scale);
                 AttachmentSample* terminal =
                     &launch_template->secondary_samples[count];
                 Vec3* anchor = &source_cell->position;

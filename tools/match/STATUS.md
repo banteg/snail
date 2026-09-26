@@ -10,9 +10,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**27** non-exact scratch-backed functions hold **1635 fuzzy-gap bytes**. The top 5 hold **67.3%** of that gap; the top 10 hold **92.3%**.
+**27** non-exact scratch-backed functions hold **1631 fuzzy-gap bytes**. The top 5 hold **67.5%** of that gap; the top 10 hold **92.5%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **27 / 1635** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **0 functions / 0 gap bytes**; **27 / 1631** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -33,9 +33,9 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 13 | initialize_turnunder_path_template_pair | 15 | semantic-complete | analysis | historical-only | 0/38 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 14 | update_golb_ai | 13 | semantic-complete | analysis | historical-only | 0/34 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 15 | explode_slug_hazard | 11 | semantic-complete | analysis | historical-only | 0/20 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 16 | traverse_path_follow_golb | 11 | semantic-complete | analysis | historical-only | 0/34 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 17 | sample_smtrack_heightmap | 10 | semantic-complete | analysis | historical-only | 0/8 | repeated-variants,historical-only,stale-dependencies |
-| 18 | try_enter_track_attachment_from_swept_motion | 8 | semantic-complete | analysis | historical-only | 0/12 | historical-only,stale-dependencies |
+| 16 | sample_smtrack_heightmap | 10 | semantic-complete | analysis | historical-only | 0/8 | repeated-variants,historical-only,stale-dependencies |
+| 17 | try_enter_track_attachment_from_swept_motion | 8 | semantic-complete | analysis | historical-only | 0/12 | historical-only,stale-dependencies |
+| 18 | traverse_path_follow_golb | 7 | semantic-complete | analysis | historical-only | 0/34 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 19 | initialize_looptheloopw_path_template_pair | 4 | semantic-complete | analysis | historical-only | 0/19 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
 | 20 | initialize_dip_path_template_pair | 4 | semantic-complete | analysis | historical-only | 0/59 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 21 | initialize_loopbow_path_template_pair | 0 | semantic-complete | analysis | historical-only | 0/21 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
@@ -711,7 +711,7 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2736 | 745/745 | 99.87% | 335/745 | 55 ok |  | core |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2400 | 655/655 | 99.85% | 100/655 | 37 ok |  | core |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2752 | 726/726 | 97.80% | 194/726 | 65 ok |  | core |
-| 🚧 | traverse_path_follow_golb | 0x4217b0 | 1552 | 425/425 | 99.29% | 96/425 | 7 ok |  | core |
+| 🚧 | traverse_path_follow_golb | 0x4217b0 | 1552 | 425/425 | 99.53% | 327/425 | 7 ok |  | core |
 | 🚧 | initialize_p_path_template_pair | 0x425a40 | 2496 | 679/679 | 97.35% | 2/679 | 41 ok |  | core |
 | 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2496 | 687/687 | 99.42% | 140/687 | 45 ok |  | core |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 204/204 | 99.02% | 109/204 | 47 ok |  | core |
