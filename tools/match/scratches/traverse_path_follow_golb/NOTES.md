@@ -171,3 +171,19 @@ could only be reached with a rejected copy local (`float travel = …; float car
 
 **Remaining.** The Y-lane x87 operand order of `transform.basis_right * local_x`. Native loads the field
 first; ours loads the scale. This is the slot-id tie described in x87-order.md.
+
+## 2026-09-26: scale-operand rank decoded (crimson-88 Q12), not adopted
+
+The Y-lane order depends on symbol record creation order. The scale operand is `local_x` itself; the
+inliner substitutes it, so there is no inline copy.
+
+**crimson's 100%-normalized overlay** (`scale-operand-rank.md`):
+- `transform.basis_right *= lateral_scale;` in both branches;
+- component-wise products with `(local_x = input_position->x - center_x)` inside the X lane.
+
+**Not adopted:**
+- it needs an assignment inside an expression;
+- it is still not byte-exact: `state=audit`, with `fdiv [eax+esi+0x8c]` SIB base/index swaps at +0x254,
+  +0x28a, +0x2c0 (already present in the base) and +0x46c.
+
+The retained 99.53% source also carries those three SIB swaps.
