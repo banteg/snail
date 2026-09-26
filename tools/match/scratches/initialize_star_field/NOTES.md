@@ -334,4 +334,41 @@ interleave with the `fadd` / `fmul` differently.
 - Without it, the `fmul` (priority 0x7c000) is ready at fadd+3 and beats the sprite-pointer load
   (0x78000). That is native's order: `lea`, `fmul`, then `mov eax,[eax+0x1c]`.
 
-Full answer: `/tmp/claude/c2-from-crimson-88/snail_answer_codeless-tuples.md`.
+Rule and probe table: `../crimson/tools/match/c2/compiler/codeless-tuples.md` and `c2/scheduler.md`
+("Codeless tuples"). The `round` tuple is already in the IL at `globopt_run` entry, before forward
+propagation: `+ #325 <= [speed] 1.0f; round #326 <= #325; * #327 <= #326 4.0f`
+(`uv run tools/match/c2/crimson_tool.py il_stage_trace <scratch> --out <new-dir> --lines 73-73`;
+C2 line = source line − 17). `factor_out_common_operand` was hooked at its return and returned 1 for
+this shape only.
+
+**Trace of the base, window 12** (C2 line 73 = source line 90;
+`uv run tools/match/c2/crimson_tool.py sched_trace <scratch> --out <new-dir> --lines 71-79`).
+`fld [eax+0x20]` at c2, `fadd` at c3, `lea eax` at c4. At c6 the paren FROUND (h55, pri 450560) and the sprite load
+`mov eax,[eax+0x1c]` (h52, pri 491520) are both ready. The load wins. The fmul (pri 507904) waits for the
+FROUND and issues at c8. With no FROUND the fmul is ready at c6 and beats the load.
+
+**Window-cut probes do not help.** A FROUND added upstream moves `mov ecx,[eax+0x60]` into window 12,
+but the load still beats the FROUND. Tested: redundant parentheses around the line-70 travel product
+(`travel_distance = ((float)gRMathRand2() * … * 35.0f);`, the same window shift as a `(float)` cast),
+`(float)` on the travel product, on `random_scale + 0.3f`, on the camera and position lanes, on
+`Magnitude()`, and on `size_start`/`size_end`. All give 99.19%. A delayed `lea` or a lower-priority
+sprite load was not needed.
+
+| Spelling of line 90 | FROUND in window 12 | Result |
+|---|---|---|
+| `(entries[index].speed + 1.0f) * 4.0f` (base) | 1 | 99.19%, prefix 29 |
+| `entries[index].speed * 4.0f + 4.0f` | 0 | **100%, byte-exact, 247/247, 26/26 masks** |
+| `4.0f * entries[index].speed + 4.0f` | 0 | 100%, byte-exact |
+| `entries[index].speed * 4.0f + 1.0f * 4.0f` | 0 | 100%, byte-exact |
+| `float(entries[index].speed + 1.0f) * 4.0f` | 0 | 100%, byte-exact |
+| `static_cast<float>(entries[index].speed + 1.0f) * 4.0f` | 0 | 100%, byte-exact |
+
+The earlier variants all kept a parenthesized sum, which is why they kept the FROUND.
+
+The function's other FROUNDs fit the rule and match native:
+- `((float)gRMathRand2() - 16384.0f) * c` gives the fsub→FROUND→fmul at lines 41, 57 and 58;
+- seven come from forward propagation of Vector3 constructor parameters (lines 48-58);
+- one comes from `random_scale`.
+
+So native's author parenthesized the random lanes but not the corner scale. The likely original is
+`speed * 4 + 4`.

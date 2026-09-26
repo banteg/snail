@@ -12,8 +12,10 @@ re-derives each register choice.
 
 The pass driver calls `0x1072fb58` at `0x107583b2`. It works as follows:
 
-1. **Build live ranges.** `0x10730308`, `0x107306c1` and `0x10730a40` build
-   live ranges. Each is a 0x44-byte object, hashed by id into
+1. **Build live ranges.** `0x10726d75` builds webs and one live range per
+   web. (`0x10730308` coalesces copies, `0x107306c1` forward-substitutes
+   single-def ranges and `0x10730a40` initialises per-block register sets.)
+   Each range is a 0x44-byte object, hashed by id into
    `0x1079d88c[id & 0x3ff]` and chained through `+0x2c`. Its main fields
    are:
    - `+0x00`: the symbol.
@@ -31,8 +33,10 @@ The pass driver calls `0x1072fb58` at `0x107583b2`. It works as follows:
 4. **Colour.** The main loop pops candidates in queue order:
    - Benefit ≤ 0, and not worth splitting: `0x10732001` leaves the range in
      memory.
-   - Empty allowed set: `0x10762f4a` spills it.
-   - Otherwise: `0x10732216` splits the range where needed.
+   - Empty allowed set: `0x10762f4a` places split markers, and the next
+     iteration splits the range with `0x107204d6`.
+   - Otherwise: `0x10732216` builds the interference neighbour set and
+     inserts pressure split markers.
      **`0x10732f7c` picks the register**, called at `0x1072fe5f`.
      `0x10733230` requeues any remainder through `0x10731d21` at
      `0x1072fed5` and `0x107215bb`.
@@ -53,10 +57,10 @@ local rotation.
 ## Weights
 
 - **Block weight** is `w = 1 << loop_depth`, from the depth byte at
-  `block+0x6e`, while `[0x107ac0b4]` is set (/O2). Otherwise it is 1.
+  `block+0x6e`, while `[0x107ac0b4]` is set (/Ot, set by /O2). Otherwise it is 1.
 - **Benefit** (`+0x3c`) is the sum of `w × saving` for each reference, minus
   `w × cost` for each load or store needed at the boundary of a split range.
-  These values come from `score_live_ranges` (`0x10724b25`) with /O2's
+  These values come from `score_live_ranges` (`0x10724b25`) with the /Ot
   favour-speed flag set:
   - If the reference could use the memory or immediate operand directly, it
     saves `memory_operand_saving` (`0x10725751`). That is 2 for a variable.
@@ -71,7 +75,7 @@ local rotation.
   approximate reading of that code; the traced numbers are authoritative. The block's
   pressure `P` counts only the distinct candidate ranges *referenced* in
   it: coloured, queued and fresh. A range that is only live through the block
-  does not add to P (crimson regalloc.md).
+  does not add to P (`../crimson/tools/match/c2/compiler/regalloc.md`).
   - A candidate referenced in the block gains `w × P × (reference cost in
     that block)`.
   - Every range live across the block loses `w × P`.
@@ -113,7 +117,8 @@ remove registers from it:
 - Being live across a call removes eax, ecx and edx.
 - Byte-sized ranges lose esi, edi and ebp.
 - `0x10731cc5` drops ebp when `[0x107ac198]` is clear, and applies the
-  `[0x107ac190]`/`[0x107ac194]` masks for flagged ranges.
+  `[0x107ac190]` byte-register set {eax, ecx, edx, ebx} or the
+  `[0x107ac194]` non-byte set {ebp, esi, edi}.
 - Each coloured neighbour removes its own register.
 
 Preferences come from moves and uses. For example, a pointer used seven times
@@ -153,7 +158,7 @@ create them, all in `build_live_ranges` (`0x10726d75`).
      (they become `xor` and `test`). `mov candidate, 0` is promoted;
    - `add` and `sub` with an esp or ebp destination.
 
-   `xchg` is allowed (crimson constant-candidates.md).
+   `xchg` is allowed (`../crimson/tools/match/c2/compiler/constant-candidates.md`).
 
    Everything else qualifies: `and r, imm`, `push imm`, and stores of an
    immediate to memory.
@@ -292,7 +297,9 @@ and have benefits 5 and 3. So they take ebp, and `target1` ends up in ebx.
 The constants are the values 0 and 1 (see "Constant candidates"). Their
 benefit is the memory stores `transition_immediate = 0/1`, which save 1
 each, less one load. Removing those stores as a diagnostic brings both
-benefits to −1, and the allocation becomes native's.
+benefits to −1, and the allocation becomes native's. On the uniform-channel
+lead, setting both queued benefits to ≤ 0 inside the observer, and nothing
+else, gives a byte-exact body.
 
 To reproduce native, either `target1` must be queued ahead of those
 temporaries (priority > 36) or that ebx penalty must disappear. A register

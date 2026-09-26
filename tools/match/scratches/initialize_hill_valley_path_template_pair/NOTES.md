@@ -543,22 +543,128 @@ The dead `0.0f` store is eliminated.
 
 ## 2026-09-26: the 9 SIB swaps decoded (crimson-88 Q13); no authored fix yet
 
-All 9 swaps are loads through the primary bank-address CSE temp `this+0x58`, currently slot 0x4f5
-(n=21), against the offset locals 0xf / 0x1c9. Leaf key: `((T & 3) << 14) + 7`.
+Mechanism: crimson's `../crimson/tools/match/c2/compiler/sib-operand-order.md` (load leaves) and
+`../crimson/tools/match/c2/compiler/cse-slot-count.md` (slot costs). Measurements: [cse-ids.md](../../c2/cse-ids.md).
 
-**What native needs** (verified by phantom-slot builds):
-- primary n ≡ 0 mod 4;
-- the secondary `this+0x5c` temp n ≢ 0 mod 4 (now 45);
-- the width_cells address temp n6 ≡ 2 or 3.
+**The swap sites.** The canonical build was 100% normalized with 9 encoded SIB swaps (C0 = 0x4e0).
+`addrorder.py` lists none of them. `sib_operand_trace.py` shows that each sorted swap site is a load leaf
+through a bank-address CSE temporary, against the byte-offset local 0xf or cursor local 0x1c9:
 
-A phantom `21:3,22:1` build is byte-exact.
+```text
+ln82  load+0x90   base [temp 0x4f5] 0x14007   index local 0xf 0x101e0     (+0x28e)
+ln83  store-0xa8  base [temp 0x4f5] 0x14007   index local 0xf 0x101e0     (+0x2f1)
+ln83  store-0xa8  base [temp 0x50d] 0x14007   index local 0xf 0x101e0
+ln89  store+0x8c  base [temp 0x4f5] 0x14007   index local 0x1c9 0x13920   (+0x4c2)
+```
 
-**Slot costs before the primary temp** (crimson `cse-slot-count.md`):
-- a first `this->f = v` costs 2 (the address tuple plus the store operand's location number);
-- the length convert, `steps + 1`, `last + 1`, the float convert and the `centered` compare cost 1 each.
+Swap offsets are matched to sums by access and displacement [inferred]. The other swaps
+(+0x313/+0x317/+0x31b/+0x358/+0x4b3) look like `lea`s and accesses of the same sums, including sums whose
+result is passed to an inline member rather than dereferenced, which the tool does not list [inferred].
+All 9 are loads through the primary bank-address temp `this+0x58` (0x4f5, n=21); `+0x430` is not a 0x50d
+site, because `21:3` alone fixes it. Leaf key: `((T & 3) << 14) + 7`.
 
-**Byte-exact but not authored.** crimson's version adds redundant statements (`segment_count = last;
-++segment_count;` and a second `segment_count_f` store). Not adopted.
+Consistent sites in the same function, where native agrees with the rule and ours already matched:
+- `local 0xf` (0x1e0) before `[local 0x10]` (hash 7, because 0x10 & 7 = 0), at labels 69–81;
+- `[local 0xd]` (0xa007) before `local 0xf`;
+- temp 0x516 (0x4580) before `[temp 0x4f5]`.
+
+The `compute_path_deltas` loop has four sums built after the last expression pass (stale keys); the ln89
+`store-0x28`/`-0x1c` sums are among them.
+
+**Slot trace.** Pool E runs from 0x4e0 to 0x7b2 (723 slots) with no gaps and no reuse. 900 of the 3003
+class-3 allocations after `globopt_run` entry got recycled pool-E ids, 480 of them before the address
+pass. The assignment sweep starts at n = 415. The three temporaries that matter:
+
+| n | id | Temporary | First created |
+| --- | --- | --- | --- |
+| 6 | 0x4e6 | `this+0x54` (width_cells address) | header store `width_cells = width_cells_` |
+| 21 | 0x4f5 | `this+0x58` (primary bank address) | then-arm of `if (centered)` |
+| 45 | 0x50d | `this+0x5c` (secondary bank address) | `secondary_samples[0].transform.Identity()` |
+
+The 21 slots before 0x4f5 (`cse_slot_trace.py`):
+
+```text
+n0-7   kind, is_mirrored_x, side_exit_mode, width_cells: add(this,off) + 0x14c each      (8)
+n8     cvt(length)                                                                        (1)
+n9-10  width_or_scale: add + 0x14c                                                        (2)
+n11    add(steps, 1)        n12 add(last, 1)                                              (2)
+n13-14 segment_count: add + 0x14c                                                         (2)
+n15    cvt(last+1)          n16-17 segment_count_f: add + 0x14c                           (3)
+n18-19 has_entry_mesh_transition: add + 0x14c                                             (2)
+n20    compare 0x17e(centered, 0)                                                         (1)
+n21    add(this, 0x58)  <- primary
+```
+
+A first load through a member pointer, such as `primary_samples[0].x`, costs five: add, 0x14c, 0x15d
+load, `add(ptr, off)`, 0x14c.
+
+**What native needs** (phantom interventions on the canonical compile; `K:M` burns M pool-E ids before
+fresh slot K):
+
+| Phantom | primary n | secondary n | Result |
+| --- | --- | --- | --- |
+| none | 21 (≡1) | 45 (≡1) | 100%, 9 swaps |
+| `21:3,22:1` / `21:3,45:1` / `21:7,22:1` | 24 or 28 (≡0) | 49 (≡1) | **byte exact** |
+| `21:3` | 24 (≡0) | 48 (≡0) | 100%, 8 *new* swaps at +0x39b/+0x3ff/+0x43f/+0x4cc/+0x4d3/+0x4d7/+0x50e/+0x51e |
+| `21:3,46:1` … `21:3,300:1` | ≡0 | ≡0 | the same 8 new swaps (later temporaries shifted by 3 do not matter) |
+| `21:2,22:2` | ≡3 | ≡3 | 95.88% |
+| `7:3,22:1`, `11:3,22:1`, `14:3,22:1` | ≡0 | ≡1 | **byte exact** (n7–n20 are free) |
+| `6:3,22:1`, `0:3,22:1` | ≡0 | ≡1 | 99.70% (the width_cells temporary n6 moved to ≡1) |
+| `0:1,7:2,22:1` | ≡0 | ≡1, n6 ≡3 | **byte exact** |
+| `0:2,7:1,22:1` | ≡0 | ≡1, n6 ≡0 | 99.70% |
+
+At C0 ≡ 0 mod 32:
+
+```text
+n(this+0x58) ≡ 0 (mod 4)        primary bank address: load leaf hash 7, so offset first at all 9 swap sites
+n(this+0x5c) ≢ 0 (mod 4)        secondary sites are native bank-first: leaf hash 0x4007/0x8007/0xc007 > local 0xf's 0x1e0
+n(this+0x54) ≡ 2 or 3 (mod 4)   width_cells address load leaf (0x8007 or 0xc007)
+```
+
+The alternative is an offset local with id ≥ 0x201. Native does **not** want T & 3 = 0
+for 0x50d: moving both temporaries by −1/+3 fixes nine sites and breaks eight.
+
+**Code-neutral ways to move the count.** Each row's function bytes were compared with a phantom build of
+the canonical source making the same shift (byte-identical: the change affects ids only).
+
+| Source change | Δ slots | Where |
+| --- | --- | --- |
+| `segment_count = last; ++segment_count;` | +2 | n13 (reload 0x15d + `add(load,1)`; CSE forwards the store and drops the reload) |
+| `segment_count = last; ++segment_count; segment_count_f = (float)segment_count;` | +1 | n13 (`last + 1` is gone, reload and `cvt(load)` are added) |
+| parenthesized float store in the else arm: `((float)width_cells * 0.5f - 4.0f)` or `((float)width_cells * 0.5f) - 4.0f` | +1 | n30 (FROUND 0x162); byte-identical to phantom `30:1` |
+
+No change in count (C1 canonicalizes these):
+- `centered != 0`, `(int)centered`, `!!centered`, `!(centered == 0)`;
+- `primary_samples->center_x` and `= 0` in the then arm;
+- `(int)(length)`;
+- `int last = steps; ++last;` and `last += 1`;
+- `(float)(1 + last)`, `(float)(int)(last + 1)`, and an implicit float conversion;
+- `width_or_scale = 1`, `has_entry_mesh_transition = false`;
+- swapping the segment_count/segment_count_f stores.
+
+Count changes that also change code:
+
+| Source change | Δ slots | Result |
+| --- | --- | --- |
+| `segment_count_f = (float)segment_count` alone | 0 | `last` becomes single-use and is folded to `steps + 2`: 93.94% |
+| `centered & 1` | +1 | 95.43% |
+| `centered == true` | 0 | 99.70%, `cmp al, 1` |
+| FROUND on `segment_count_f` (line 285) | +1 | 667 instructions (95.58%) |
+| swapped arms | +4 | branch layout changes |
+| `switch (centered)` | — | the arms are tail-merged |
+| a `primary` binding before the `if`, used at least twice | primary n20 ≡ 0 | C0 drops to 0x4c0 when the binding stays a local (verified). Even with C0 restored by phantom `0:32`, or when C0 does not move, it is 96.03%: the terminal `Identity` receiver comes out bank-first. The cause may be the shift in later local ids [inferred] |
+| a new index local before the branch | — | 85–96% |
+
+The line-293 FROUND (the else-arm store, 99.70%) does not change code; its 99.70% is the id shift alone.
+
+Rule for a source edit:
+- the slots it adds before n21, from n7 on, must total ≡ 3 (mod 4);
+- n6 may move by 0 or +1;
+- the total at the secondary must stay ≢ 0.
+
+That needs +3 in the header and ≥ +1 after the primary. The two segment_count forms give only +1 or +2,
+so no single natural header spelling reaches +3. A double `segment_count_f` store does (the matched
+source below).
 
 **My probes.**
 - Touching `primary_samples` before `if (centered)` gives exactly native's slots: primary n20, secondary
@@ -566,7 +672,16 @@ A phantom `21:3,22:1` build is byte-exact.
 - A `first_bank` reference borrow shifts C0 by a block (95.7%).
 - About 36 header spellings in total (mine and crimson's) give 0, +1 or +2, or change code.
 
-Still open: an authored −1 or +3 before the primary temp.
+Open at the time: an authored −1 or +3 before the primary temp; and why a primary binding before the
+branch lowers C0 by 32 (pool A's peak there is exactly 0x4c0, so one fewer C1 temporary would drop a
+chunk [inferred]).
+
+Reproduce:
+
+```sh
+uv run tools/match/c2/cse_slot_trace.py initialize_hill_valley_path_template_pair --out <new-dir> --upto 0x4f6
+uv run tools/match/c2/cse_slot_trace.py initialize_hill_valley_path_template_pair --out <new-dir> --phantom 21:3,22:1
+```
 
 ## 2026-09-26: matched (header slot shaping plus a grouping FROUND)
 
@@ -583,13 +698,15 @@ segment_count_f = (float)segment_count;
     primary_samples[0].center_x = ((float)width_cells * 0.5f) - 4.0f;
 ```
 
-**Mechanism** (crimson-88 `cse-slot-count.md`).
+**Mechanism** (crimson-88; crimson's `../crimson/tools/match/c2/compiler/cse-slot-count.md`).
 - The split increment and the second `segment_count_f` store add 3 CSE slots before the primary bank
   temp `this+0x58`: n 21 → 24, so `T & 3 = 0` and its leaf hash drops to 7.
   - The offset locals then become the SIB base at all 9 sites, as in native.
 - The grouping parentheses add one FROUND. That moves the secondary `this+0x5c` temp to n49 (≢ 0 mod 4),
   so its sites keep native's bank-first order.
-- Machine code is otherwise identical: only ids move.
+- Machine code is otherwise identical: only ids move. Primary n24 (0x4f8), secondary n49 (0x511), n6
+  unchanged. The header is +3: reload +1, `add(load, 1)` +1, `cvt(load)` +1. The
+  `((float)width_cells * 0.5f - 4.0f)` form is also byte exact.
 
 **Caveat, accepted as authored enough.** The first `segment_count_f` store is dead: it is overwritten
 by the member-based conversion. Leaner forms regress to 95.6–95.9%:

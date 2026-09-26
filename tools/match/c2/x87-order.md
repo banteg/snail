@@ -84,17 +84,23 @@ and sz is slot 3. Compiler-generated temporaries and CSE ids follow
   - `basis_right * local_x` inlines to three products of `local_x` itself
     (slot 0x1eb) with the fields 0x14d, 0x14f and 0x151. The inliner
     substitutes the named local for the formal, so there is no inline copy
-    (crimson-88, `scale-operand-rank.md`).
+    (crimson-88; mechanism in crimson's
+    `../crimson/tools/match/c2/compiler/scale-operand-rank.md`, measurements
+    in the traverse NOTES).
   - Two symbol leaves sort by record creation order. The reader creates the
     basis_right field records in the kind-42 branch's explicit
     `.x/.y/.z *= lateral_scale`, before `local_x` exists. Each nonzero-offset
     field read also creates a lockstep address record (0x14e, 0x150).
   - crimson-88 reached 100% normalized with `transform.basis_right *= lateral_scale;`
     in both branches plus `right_offset.x = basis_right.x * (local_x = …)`.
-    That is still not byte-exact: four `fdiv [..+0x8c]` SIB swaps remain, and it
-    needs an assignment inside an expression, so it is not adopted.
+    Keeping the terminal fadd needs six fewer read-time pool-B records, which
+    drops C0 from 0x300 to 0x2e0, so even without the redundant template
+    reload four `fdiv [..+0x8c]` SIB swaps remain. Two dead-stored padding ints
+    instead keep C0 at 0x300 and make it byte exact. It needs an assignment
+    inside an expression and the padding, so it is not adopted.
   - Native loads the field only for Y, which needs field X < scale < field Y.
-    Here that means scale slot 0x14e, or a temporary whose id mod 1024 is
+    The only ids in that gap are 0x14e, the reader's `^transform+4 z60`
+    lockstep part (no local can take it), or a temporary whose id mod 1024 is
     0xa7. Neither arises from the tested spellings.
 - **update_subgoldy case 2.**
   - `p_position->x + p_velocity->x` compares two pointer-based memory

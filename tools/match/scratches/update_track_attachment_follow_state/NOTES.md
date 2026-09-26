@@ -186,3 +186,19 @@ as traverse_path_follow_golb, using scheduler.md's "Codeless tuples" rule.
 **Remaining.**
 - kind-42 addressing and publication;
 - the right-offset Y product order (the same slot-id tie as traverse).
+
+## 2026-09-26: right-offset Y product rank (crimson-88 Q12)
+
+Same shape and rule as traverse_path_follow_golb (its NOTES, and crimson's
+`../crimson/tools/match/c2/compiler/scale-operand-rank.md`). The kind-42 branch reads `basis_right.x/.y/.z`
+explicitly (0x117/0x119/0x11b) before `local_x` (0x1bb). The Y product at target 510 is scale-first.
+
+- With both scalings as `*=` and traverse's component product (`(local_x = …)` inside the X lane), region
+  496–511 matches and the terminal fadd (203) does not flip [verified].
+- In this function the kind-42 `*=` changes the kind-42 schedule: the integer stores of `output->x/y`
+  move. The kind-42 region was already mismatched at 362, and it grows from 30 to 52 diff lines, so the
+  total drops from 97.93% to 96.42%. That region needs its own fix before this one pays off.
+- With the ordinary branch alone as `*=`, Y stays wrong, as the rule predicts: the kind-42 branch still
+  reads y first.
+
+Not adopted. Open: the kind-42 store schedule under `*=`.

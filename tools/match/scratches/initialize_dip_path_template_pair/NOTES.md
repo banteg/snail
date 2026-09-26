@@ -501,3 +501,198 @@ constant 0) where native uses ebx.
 - Single-index loop forms give native's store source but move constant 0 into ebx, and mesh allocation
   regresses.
 - Evidence and tried families: `/private/tmp/claude-501/sm/codex/dip/RESULTS.md` (46 probes).
+
+## 2026-09-26: guard placement and invisible ranges (crimson-88 Q8, Q9)
+
+Mechanism: crimson's `../crimson/tools/match/c2/compiler/guard-placement.md` (where loop inits land, and
+what the extra block costs) and `../crimson/tools/match/c2/compiler/invisible-ranges.md` (what P counts).
+Everything below was compiled and traced on copies. No source change is retained: the live form stays at
+99.85% (655/655), with the single ebp/ebx store.
+
+The three loop forms:
+- `tied_single` (the live form): the cursor is a user variable initialised in the for-init;
+- `tied_guarded`: `int i = 0; if (i < width_cells_) { int sample_offset = sizeof; do {…; ++i;} while (i < width_cells_); }`;
+- `iv_lead`: a strength-reduced cursor.
+
+### Where the cursor init lands
+
+- `tied_single`: flow graph after 0x107053de. Block 1 ends `i = 0; sample_offset = 168; cmp i, width; jcc`,
+  and block 2 is the empty preheader, flag 0x8000000. So `mov edi, 0xa8` comes before `jle`.
+- `tied_guarded`: at `build_live_ranges`, block 2 holds `sample_offset = 168` and block 3 is the empty
+  preheader.
+- `iv_lead`: at `build_live_ranges`, block 2 (flags 1) holds `#1877 = 168` and block 3 (flags 0x8000000)
+  is empty.
+
+Native has `mov edi, 0xa8` after `jle`, so native's cursor init is in its own block (SR-derived or
+explicitly guarded).
+
+### What the extra block costs
+
+The range that decides the colouring is constant 0's second-level split piece (rescore after colouring
+#30). The competitor is the `vertices` piece (build_strip_mesh), allowed {ebp}:
+
+| source | block 1 | init block | loop and rest | piece priority | competitor (`vertices` piece, allowed {ebp}) |
+|---|---|---|---|---|---|
+| `tied_single` (init before the guard) | +182 = 14·13 | n/a | −34 | **148** | 144 |
+| `iv_lead` (SR cursor) | +169 = 13·13 | −2 (P = 2: D and constant 168) | −34 | **133** | 144 |
+| `tied_guarded` (explicit guard) | +169 | −2 | −34 | **133** | 144 |
+
+The piece's allowed set is {ebp} in all three.
+
+- **148 > 144.** Zero is coloured first and gets ebp. `vertices` then loses ebp and is split. The loop
+  index gets ebx. This is native's allocation.
+- **133 < 144.** `vertices` takes ebp first, which leaves the zero piece with an empty allowed set.
+  0x107204d6 splits it at the markers. The new piece covers blocks 1..22 and has allowed {ebx}; after
+  rescoring its priority is 187. It gets ebx, and the index then gets ebp. The earlier "187 vs 148"
+  compared this post-split piece with the tied piece. **187 is a consequence of losing ebp, not the
+  cause.** The decision is 133 against 144.
+
+So every after-guard shape costs exactly 15 on zero's piece: 13 because the entry block references one
+range fewer (P 14 → 13, times S = 13), and 2 because the piece lives through the new block (P = 2). That
+is why every "after the guard" shape tried flips the colouring (`iv_lead` 85.80%, `tied_guarded` 86.18%,
+60 probes).
+
+Threshold check (intervention, not a source form: add N once to every constant-0 range that starts in
+block 1, at every scoring return) on `tied_guarded`:
+
+| N | piece | result |
+|---|---|---|
+| 11 | 144, which ties `vertices`. On equal priority the higher tie key goes first, and a constant's tie key is 0. | unchanged object (86.18%) |
+| 12 | 145 | **100% normalized**, 655/655, native allocation, with `mov edi,0xa8` after `jle` |
+| 13, applied to `iv_lead` | 146 | native allocation and init placement; one receiver left (`mov edx,[esi+0x58]; mov ecx,edi; add ecx,edx`) |
+
+**Rule.** With the init after the guard, native's function must reference one more candidate range in the
+entry block (P 13→14, worth +13 here) with the same instructions, or have any other difference worth at
+least +12 on that piece. The +12 intervention shows that nothing else is missing.
+
+Source search, all neutral (86.18% unchanged): guard spelled `width_cells_ > 0`, `curve_count > 0` or
+`i < width_cells_`; latch on `curve_count`; `while (++i < …)`; `sample_offset` declared outside the `if`
+or at the top of the function. Worse: `endpoint_z` computed early (84.42%), a separate `endpoint_offset`
+variable instead of `endpoint *= sizeof` (85.87%), and the tied cursor declared early, live through the
+endpoint code, which steals edi from `endpoint` (91.3%).
+
+### What P counts in Dip
+
+P computed from the IL at `score_live_ranges` entry equals the one implied by the priority deltas in every
+block checked (block 1: 13, block 2: 2, block 4: 9, block 5: 6, block 7: 5, block 18: 8, block 19: 11,
+block 23: 5). `block+0x48` is not P: in block 5 it has 11 members while P is 6. They agree in block 1,
+where nothing is live-through.
+
+- Block 23 (the mesh preheader) has P = 5 at score0 (constants 1 and 2, the `&g_texture_refs` address,
+  and the reloads of `texture_a` and `texture_b`). All five are pruned, and at every rescoring block 23
+  has P = 0. The zero piece is scored in the second rescoring, so ranges pruned after score0 do not help
+  it.
+- Block 1 at colouring entry has 18 candidate ranges. The coalescer removes `#1812 = endpoint` (17).
+  Forward substitution removes the four `lea this+disp` temporaries #1190, #1198, #1208 (=
+  `&this->primary_samples`), #1228 (13). The x87 fold changes nothing in the integer class (13). The
+  pressure pass folds `#1807 = #1808` and `endpoint = #1802` into their ranges (13). At score0 P = 13.
+- The latch `i = #1294` (#1294 = `i + 1`, defined mid-body) is a copy the coalescer refuses. Both ranges
+  count in block 7; the chooser gives them one register, so there is no `mov`: ours `inc ebp;
+  mov [esp+0x20], ebp`, native `inc ebx; mov [esp+0x20], ebx`.
+- `width_cells_` is read once inside one block and becomes local temp #1477 (not counted).
+
+Invisible ranges already in the function:
+
+| Class | Example |
+|---|---|
+| a: LOADCONST of a constant with ≥ 2 eligible uses that ends uncoloured | block 1: `0.49f` (two stores) and `168` (load placed at the end of block 1, uses in blocks 2, 4, 7, 11, 21) |
+| b: reload with one use in another block | block 23: `texture_a`, `texture_b` (`mov eax,[esp+0x78]; push eax`) |
+| c: refused copy into a multi-definition range | block 7: `i = #1294` |
+| d: candidate demoted late | block 4: `#1066`, the integer view of `angle` pushed for `Cos`, alive in every rescoring |
+
+Constant loads: 0, 1.0f and 0.49f are placed right before their first use in block 1; 168 at the end of
+block 1; 1, 2 and `&g_texture_refs` at the end of the mesh preheader, block 23.
+
+### Block 1 at the deciding rescoring (run 2)
+
+`tied_guarded`: P = 13: `this`, 1.0f, **0.49f**, `curve_count` #9, `endpoint` webs 1 and 2, `i` #14, zero
+piece, **168 piece**, and the temporaries #1197 (`endpoint + 1`), #1210 (`primary_samples` CSE), #1238
+(`primary + endpoint`) and #1807/#1808 (`endpoint * 7`). `tied_single` has the same set plus
+`sample_offset` #15 (P = 14). The earlier list of 12 left out 168. Two of the 13 are already invisible
+(class a: 0.49f and 168).
+
+### Why block 1 cannot supply a fourteenth range with native's instructions
+
+Native's block 1 is identical to ours instruction for instruction (the +12 intervention is 655/655
+normalized), so the new range must be invisible and must still be alive at run 2.
+
+- **Class a** needs a new constant value with two eligible uses whose load lands in block 1. Native's
+  function has none spare. Block 1's eligible immediates are 0x14 (a single use, turned back before
+  scoring), byte and dword 0, 1.0f, 0.49f and 168, which are all already counted. `+1` is `inc` and
+  `-1` is `dec` before promotion (0x21/0x1e at `build_live_ranges` entry). Every other immediate in the
+  function is an address displacement (`lea`), a shift count (refused), a store that is still an
+  unpromoted immediate at scoring (the `Vector3(1,0,0)` temporaries in the loop), or a mesh-only
+  constant whose load sits in block 23.
+- **Class b** is pruned after score0, so it cannot move the run-2 zero piece. Native also has no later
+  memory read that could be such a use.
+- **Class c** needs a multi-definition range in block 1 fed by a copy from a separate single-def range
+  that dies there. Block 1 has only `i` (initialised from constant 0, and constant sources are never
+  recorded) and the two-operand results of `endpoint *= 168`. Their sources are lowering temps (#1808,
+  #1802) that the pressure pass folds. Turning one into a candidate needs a second use, and that use is
+  visible.
+- **Class d**: the only memory-only local in block 1, `endpoint_index`, is demoted inside
+  `build_live_ranges`, because its register value is dead at block end (its only use, `fild`, reads
+  memory). A `(float)i` reuse of `i` behaves the same (`s4`). Keeping it alive needs a register use or a
+  later `fild`, and both are visible.
+
+Compiled on copies of the guarded form. Every row keeps P(block 1) = 13 in score0 and run 2 unless noted:
+
+| Variant | Change | Result |
+|---|---|---|
+| e1 | `endpoint = endpoint_index * sizeof` | 86.18%, identical (copy propagated) |
+| e2 | `endpoint_index` from `curve_count + 1`, new `endpoint = endpoint_index * sizeof` | 85.87% |
+| z1, z2 | `endpoint_z` from `(float)(curve_count + 1)` / before the multiply | 85.50%, 84.05% |
+| z3 | `(float)(endpoint / sizeof)` (control, a visible divide) | **P 14, zero 146, ebp**, but 90.05% (+7 instructions) |
+| x_idx | endpoint stores in index form `primary_samples[endpoint]` | 85.50% |
+| p1..p8 | pointer local, `identity_at(bank, offset)`, `identity_sample(ptr)` helpers for the endpoint and sample-0 `Identity` calls | 86.18%, identical (propagated) |
+| r1..r4 | Dump-style `PathAttachmentSample* const& bank = …` bindings | 85.78–86.18% |
+| s1..s4 | `sample_index` / reuse of `i` for the endpoint z (Hump departure style) | 86.18%, 83.96% (s4) |
+| w1..w5 | `width_cells_` and `curve_count` roles swapped or mixed | 83.72–86.18% |
+| k3, k6, k7 | cursor also initialised before the `if`, SR cursor inside the `if`, `while (++i < …)` | 85.80–86.18% |
+| i2, i3, i4 | `++i` moved (zero 135 in i2: a loop-block effect) | 85.71%, 69.49% |
+| h1, m_dump, m_hump | Hump's `compute_terminal_deltas`; Dump's and Hump's `build_strip_mesh` | 86.18%, unchanged priorities |
+| live_i | live scratch with `int curve_phase_index = i;` | 99.85%, same as `= 0` (constant propagated) |
+
+### Where +12 can still come from
+
+The zero piece's run-2 budget is block 1 +169 (P 13 × S 13), block 4 +72 (P 9 × w 2 × S 4), and
+live-through charges of −108 over blocks 2, 5, 6, 7, 11, 17, 18, 20, 21, 25 and 40 (block 18 alone is
+−32 = P 8 × w 4). The `vertices` piece gets +64 in block 18 (S 2) and +88 in block 19 (P 11 × w 4 × S 2),
+and pays small charges elsewhere. From these numbers [inferred, not source-tested]:
+
+| Change | Zero piece | `vertices` piece | Enough? |
+|---|---|---|---|
+| One more range in block 1 | +13 (P 13 × S 13) | 0 | yes |
+| One more range still alive at run 2 in the loop head (block 4) | +8 (w 2, S 4) | 0 | no; two are needed |
+| One range fewer in vertex-loop block 18 | +4 | −8 | yes: zero 137, `vertices` 136, and zero goes first |
+| One range fewer in vertex-loop block 19 | 0 | −8 | no; needs +4 elsewhere |
+
+- One more zero **store** in block 1 is +13 via S, not P. This is the live scratch's
+  `curve_phase_index = 0`, 148. It is visible as `mov [esp+0x14], ebp`, where native has ebx. Writing
+  `= i` changes nothing, because constant propagation turns it back into `0`.
+- `i2` already changes the zero piece by +2 through loop-block P, so loop-head and mesh reference sets are
+  where to look. The instructions must still be native's.
+
+### Also hidden in `tied_single`: 14 SIB swaps
+
+Behind its normalized mismatch, 14 curve-loop instructions have swapped SIB base and index. `tied_single`
+at +0x1af is `89 ac 07 90` = `[edi+eax+0x90]`; native is `89 ac 38 90` = `[eax+edi+0x90]`. The intervened
+`tied_guarded` object is 100% normalized but `body_byte_exact=false` for exactly these bytes. This is the
+address-order hash ([address-order.md](../../c2/address-order.md)). The source that supplies the +12 may
+also shift the temporary ids that decide it. Every variant above keeps our register-plus-register order.
+
+### Next
+
+1. Take `tied_guarded` as the loop form.
+2. Rerun the header/endpoint mutation families on top of it; they were judged with the tied loop, where the
+   cursor itself supplied the fourteenth range. The block-1 route is closed for the constructs above, so
+   favour loop-head (block 4) and mesh (blocks 18/19) reference sets with identical instructions.
+3. Judge each candidate by the run-2 zero piece against the `vertices` piece (zero ≥ 145 against 144),
+   not by P(block 1):
+
+```sh
+uv run tools/match/c2/crimson_tool.py priority_trace <copy> --out <new-dir> --constant 0 --symbol 549
+uv run tools/match/c2/crimson_tool.py block_refs_trace <copy> --out <new-dir> --block 4 --block 18 --block 19 --rescore
+# intervention (not a source form): +N to constant 0's ranges that start in block 1
+uv run tools/match/c2/crimson_tool.py priority_trace <copy> --out <new-dir> --bump-constant 0 --bonus 12
+```

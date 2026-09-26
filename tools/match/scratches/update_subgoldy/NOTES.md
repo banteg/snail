@@ -1279,28 +1279,78 @@ exit, −1 per reload, −2 per spill, ×2^loop depth) and keeps a value on the 
 only if it nests with already-placed values; reload pieces never stay on the
 stack. Single-use values are forward-propagated (FROUND) instead. Spec:
 `../crimson/tools/match/c2/compiler/x87-spills.md`; tracer
-`../crimson/scripts/c2/x87_alloc_trace.py`.
-Clamp diagnosis confirmed: `speed` has three uses (score 1) and fails nesting
-because `window` is redefined and dies inside its lifetime, so it is spilled to
-`[esp+0x10]`. Native's per-use `fld [0x418]; FROUND; fcomp` needs a per-use
-single-use definition (e.g. an inline accessor); no authored accessor is known.
+`uv run tools/match/c2/crimson_tool.py x87_alloc_trace <scratch> --out <new-dir> [--lines A-B]`
+(about 7 s here).
+
+Clamp diagnosis confirmed. The source is `float window = rate*0.17f; float speed = velocity.z;
+if (speed >= window) { window = rate*0.5f; if (speed <= window) window = speed; } velocity.z = window;`.
+- `speed` has three reaching uses, so it is not forward-propagated and scores 1 (2 − 1: one def, dies
+  on one edge). `window` (3 defs, dies on one edge) scores 5 (6 − 1) and is placed first.
+- `speed` fails `below-dies-inside` and `below-ends-inside`, because `window` is redefined and dies on
+  an edge inside `speed`'s range.
+- Its def piece, whose last use is `fld speed` into the first `fcomp`, scores 2 − 2 + 1 = 1 and stays
+  on the stack. The reload pieces at the inner compare and at `window = speed` score 0 and go to memory.
+  That is our `fld [ebp+0x418]; fst [esp+0x10]; fcomp st(1)` … `fld [esp+0x10]`.
+
+Native has no `speed` variable. Each read is a single-use value: forward-propagated, FROUND, loaded at
+its use, as in `fld [ebp+0x418]; fcomp st(1)`. A plain member read is a memory operand in the compare
+and gives `fcom [ebp+0x418]` instead.
+- Traced on a copy: a `static inline float Speed(const Vector3&)` accessor at each use gives
+  `fld [0x418]; FROUND; fcomp window` at both compares and `fld [0x418]; fstp window` for the
+  assignment. With only the first clamp converted the copy scores 99.40% (baseline 99.28%).
+- An inline `ClampWindow(velocity.z, rate)` helper does not reproduce it (91.83%).
+- So some inline float-returning read is required; no non-inline spelling gives one load per use. No
+  authored accessor is known.
 
 ## 2026-09-25: ghost-z block order decoded (crimson-88 Q6b)
 
-Full answer: `/tmp/claude/c2-from-crimson-88/snail_answer_aggregate-temporaries.md`, and crimson
-`tools/match/c2/compiler/aggregate-temporaries.md` §6–7.
+Mechanism: `../crimson/tools/match/c2/compiler/aggregate-temporaries.md` §7.
 
-**Why ours differs.** The reader emits `if (!anchor || (cursor = …) == 0) A else B` as T1, T2, A, B.
-- `cfg_build_edges` prepends edges, so T1's successors are [A, T2].
-- The DFS reaches A from T1 first, so RPO is T1, T2, B, A.
+**Why ours differs.** The reader emits `if (!anchor || (cursor = …) == 0) A else B` as T1
+`jcc(anchor==0) → LA`, T2 `cursor = …; jcc(cursor!=0) → LB`, A, `jmp J`, B, J (crimson
+`branch_trace.py` phase `read`).
+- `cfg_build_edges` prepends edges, so T1's successors are [A, T2] and T2's are [B, A].
+- The DFS reaches A from T1 first, so RPO is T1, T2, B, A, J; T2's branch is inverted to `je A` and
+  falls into B. Every one-copy spelling that keeps A before T2 in source gives the same lists.
 
-**What native needs.** A must come before T2 in the IL and be reached from T2 only by a backward jump: a
-backward `goto` from the else branch into the then branch. With that, every branch and label is native's.
+**What native needs.** Native (`je A; …; jne B; A; jmp J; B`) needs A before T2 in the IL, reached from
+T2 only by a backward jump: a backward `goto` from the else branch into the then branch.
+
+```cpp
+float ghost_z;
+if (!anchor) {
+first_record:
+    ghost_z = MathType16to32(
+        (unsigned short)TIME_TRIAL_RECORD_AT(record_block)->run_records[0].delta_z, 32.0f);
+} else {
+    cursor = TIME_TRIAL_RECORD_AT(record_block)->replay_start_cursor - anchor + cursor;
+    if (cursor == 0)
+        goto first_record;
+    ghost_z = MathType16to32(
+                  (unsigned short)TIME_TRIAL_RECORD_AT(record_block)->run_records[cursor].delta_z,
+                  32.0f)
+            + g_subgoldy_ghost_z;
+}
+```
+
+Reader IL: T1 → `LA_else`, A (`first_record`), `jmp J`, T2 (`jcc(cursor!=0) → B; jmp first_record`), B.
+After `optimize_flow_graph_initial` the order is T1, T2, A, B, J, and every branch and label in the
+block equals native's (`je L1c2c`, `jne L1c43`, `jmp L1c62`). The block mover does not touch it.
+Spelling the condition as an embedded assignment, `else if`, `anchor == 0` or `!cursor` compiles to the
+same object. A forward `goto` or a bare label is neutral.
 
 **Result on a copy.**
-- Structural: 99.28 → 99.55%.
-- Raw: 99.28 → 96.06%, with 2090/2087 instructions. The eax/ecx/edx rotation runs one step behind from the
-  `records[0]` temporary, and the clamps keep speed in `[esp+0x10]`.
+- Structural: 99.28 → 99.55% (changed 14/16 → 8/11).
+- Raw: 99.28 → 96.06%, 2,089 → 2,090 instructions (native 2,087). Both causes are outside the branch
+  structure:
+  - `rotation.py`: native cursor minus ours goes +0 → +1 at the `records[0]` temporary and back to +0 at
+    line 1031;
+  - the two completion clamps before it now keep `speed` in `[esp+0x10]` (`fst`) instead of re-reading
+    `velocity.z`.
+- Why a backward goto changes those was not traced.
 
-**Decision.** Not adopted: the goto is not house style, and raw bytes regress. The retained source is
-unchanged.
+Crimson's `branch_trace.py` raised `TypeError` in `lineage()` on this function (a `repair.jmp.ret` event
+with no new jump); its trace data is still written and readable.
+
+**Decision.** Not adopted: the goto is not house style, and raw bytes regress. Keep it as a lead unless
+the rotation can be fixed. The retained source is unchanged.

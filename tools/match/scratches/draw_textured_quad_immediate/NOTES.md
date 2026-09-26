@@ -265,8 +265,36 @@ exit, −1 per reload, −2 per spill, ×2^loop depth) and keeps a value on the 
 only if it nests with already-placed values; reload pieces never stay on the
 stack. Single-use values are forward-propagated (FROUND) instead. Spec:
 `../crimson/tools/match/c2/compiler/x87-spills.md`; tracer
-`../crimson/scripts/c2/x87_alloc_trace.py`.
-Native's second stack value begins at `fld [esp+0x3c]` (width's dead slot), which
-cannot be a reload piece of the half height, so it is a separate candidate whose
-definition is that load. About 40 variants reached 96.83–98.34%; the current
-source is kept.
+`uv run tools/match/c2/crimson_tool.py x87_alloc_trace <scratch> --out <new-dir> [--lines A-B]`
+(about 3 s here). Look for the variable under "x87_range_fits_stack verdicts" to see which rule failed.
+
+**Ours.** `half_width`, `half_height` and `cos_radius` score 2 each (one def; plain uses count 0). The
+two halves both end at the radius argument store, so they nest and both stay on the stack. That gives
+`fld st(0); fadd [y0]` for `half_height`, with no spill.
+
+**Native.** `fmul [0.5]; fst [esp+0x3c]; fadd [y0]; fstp [cy]; fld [esp+0x3c]; fld st(0); fmul st(1);
+fld st(2); fmul st(3); faddp; fstp [esp]; fstp st(0); fstp st(0)`. So:
+- the half-height value defined at `fmul` is a memory variable in `width`'s dead home;
+- **another** stack range starts at `fld [esp+0x3c]` and is popped by the second `fstp st(0)`.
+
+That second range cannot be a reload piece of `half_height`, because a float reload piece scores at
+most 0. It must be a separate candidate whose **definition** is the load from `[esp+0x3c]` (a copy, or
+a CSE temporary of a memory-resident value), placed before the variable defined at `fmul`. No
+reordering of scalar locals can produce this, which explains the neutral and negative probes above.
+
+Variants compiled on a copy (98.34% baseline), about 40 in all:
+
+| Variant | Result |
+|---|---|
+| Reordered declarations, radius spelled via temps, `+=` accumulation, inline `hypot`/`Square` helpers (by value or `const&`), struct/array half extents, `double` copies, parameter reuse (`width = …`, `height *= …`, `float& = width`) | 96.83–98.34%; the half-height stays on the stack or everything changes order |
+| **S4:** `center_y = y0 + height * 0.5f` while keeping `half_height = height * 0.5f` for the radius | 97.58%. The CSE temp of `height*0.5` (placed first, ends at `center_y`) crosses `half_height` (`below-dies-inside`, `below-ends-inside`). `half_height` becomes memory in `width`'s home, and native's first half appears exactly: `fst [esp+0x3c]; fadd [esp+0x20]; fstp [esp+0x20]; fld [esp+0x3c]`. The radius then reads `fmul [esp+0x3c]` instead of `fld st(0); fmul st(1)`, and one `fstp st(0)` is missing |
+| `keep_address(&half_height)` (escape) | `half_height` is memory everywhere, and the radius is `fld [m]; fmul [m]`. Symbol reads are not CSE'd |
+
+So native needs a value computed at `height*0.5`, used by `center_y` directly from the stack and stored
+to a memory variable `m`, and `m` read again after `center_y` into a distinct stack candidate. What to
+look for: a form in which the radius reads `half_height` through something that yields a distinct
+value (a CSE-able load, such as a field through a pointer or reference that is not propagated away, or
+an uncoalesced copy), and which also makes the `height*0.5` value used by `center_y` lose the nesting
+test. Scalar copies are coalesced or propagated, and inline by-value parameters are replaced by their
+argument symbol, so neither works. The residual is a missing second candidate, not x87 scheduling. The
+current source is kept.

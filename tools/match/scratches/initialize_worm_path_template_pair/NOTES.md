@@ -490,30 +490,62 @@ provenance identifying a genuinely different authored vector operation.
 
 ## 2026-09-25: extra Vector3 temporaries decoded (crimson-88 Q1c)
 
-Full answer: `/tmp/claude/c2-from-crimson-88/snail_answer_aggregate-temporaries.md`.
+Mechanism: `../crimson/tools/match/c2/compiler/aggregate-temporaries.md` §1–5. Traced with
+`uv run tools/match/c2/crimson_tool.py il_stage_trace <scratch> --out <new-dir> --lines A-B`
+(`--preset globopt` dumps the IL after each globopt sub-pass; `--match-root <dir>` compiles against
+another `tools/match` root, for example one with an edited `include/vector3.h`). All variants were
+compiled on copies.
 
-**Native's temporaries.**
-- A = pos + t.
-- B = copies of A.y and A.z only, which are then re-read.
-- C = B + up.
-- D = a copy of C, block-copied to `vertices[k]`.
+**Native's temporaries.** Native `0x4207e8..0x420958`, candidate frame 0x68 against native 0x80. Four
+12-byte objects, named here by role (stack offsets in the native frame):
 
-Ours has only A and D.
+| Object | Offsets | What native does |
+|---|---|---|
+| A = `pos + t` (`result` of the first `operator+`) | 0x70..0x78 | x kept in st(0); y and z stored |
+| B | 0x7c..0x84 | `B.y = A.y`, `B.z = A.z` by integer moves; **no B.x**; y and z re-read by the next add |
+| C = `B + up` | 0x88..0x90 | x kept in st(0); y and z stored |
+| D | 0x34..0x3c | `D.x` from st(0), `D.y/D.z` by integer moves, then the block copy to `vertices[k]` |
+
+Ours has only A and D (D is the second `result`). Each inline expansion gets its own `result` symbol
+(`#1123`, `#1132` in the trace).
 
 **Mechanism.**
 - VC6 has no NRVO. With the stock header, `return result;` is one 12-byte block copy. A user copy
   constructor or `tVector(float*)` gives three field copies instead.
 - CSE phase 1 (`find_available_copy_source`) rewrites later reads back to a copy's source, following
-  chains, and DCE then deletes the copy.
+  chains, and DCE then deletes the copy. With the stock header both copies are deleted.
 - A surviving block copy moves all three dwords, including x. Native has no x lane, so its B must be
   field copies, and field copies survive only when their destination is later read as a whole.
 
-**Leads.**
-- D reproduces with a copy-constructor header or `vertices[k] = Vector3(&vertex.x)`: frame 0x74, but
-  87.80%, below the current 90.64%, because B is still missing.
-- B's copies would survive only if something invalidated them between the x- and y-lane reads. In the
-  traced candidate, A, C, `up_component` and `vertex` are in separate alias classes, so nothing does.
-- About 300 variants were tried. This is the only function in the corpus with this pattern.
+**D is reproduced.** `C → D` is a field copy whose destination is block-copied. The copy-constructor
+header (87.80%, frame 0x74) and the stock header with `vertices[k] = Vector3(&vertex.x)` (87.80%, frame
+0x74, the same normalized listing) both reproduce native's copy exactly: `fstp [0x34]; mov eax,[0x8c];
+mov ecx,[0x90]; mov [0x38],eax; mov [0x3c],ecx`. Both score below the current 90.64%, because B is
+still missing.
+
+**B is not reproduced.** B's only uses are field reads, and every field copy with field-only uses was
+rewritten away. None of the roughly 300 compiled variants produced B: named versus unnamed
+intermediates, `v = v + x`, `+=`, `const&` binding, declare-then-assign, function-scope declarations,
+a pointer to the output, by-value `lhs`/`rhs`/both, member `operator+`, constructor-return
+`operator+`, `result = lhs; result += rhs`, a user destructor, and `tVector(float*)` round trips
+through named pointers (all at frame 0x68 or 0x74), crossed with both headers and both D forms.
+Headers that add a user-declared `operator=` change unrelated code (695 instructions) and were
+dropped.
+
+Native therefore needs a field copy `B = A` whose availability dies after the x-lane read and before
+the y-lane read, or field reads that CSE cannot rewrite. The first candidate write between those two
+reads is `C.x`. Such a kill needs C to overlap A or B, or a memory write in A's or B's alias class.
+In the traced copy-constructor candidate A, C, `up_component` and `vertex` have distinct classes
+(92, 93, 63 and 67), so no kill happens. Next step: trace the alias classes (`@a` in the tool) of a
+candidate that forces a shared class, for example two operator results of the same inline expansion
+bound through one reference.
+
+A scan of the 785 functions listed in STATUS.md found this signature (`mov r,[esp+a];
+mov [esp+b],r; …; fld/fadd [esp+b]`) only in Worm, so no exact sibling shows the source form.
+
+The best frame-correct control, a by-value `operator+` with `tVector(float*)` operands, reaches 0x80
+and 91.38%. It does so by copying `position` into the parameter, which native does not do, so it
+matches the frame by coincidence and is not evidence.
 
 The retained source is unchanged.
 

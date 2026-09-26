@@ -65,3 +65,12 @@ target the dead `state` parameter's stack home, so the default path's
 `default: target_state = state;` gives **100%**, 62/62 instructions, eight clean
 references, and a byte-exact encoded body. In the shipped binary the load still
 yields `state`, so behavior equals the old passthrough mapping.
+
+## 2026-09-25 constant candidates 0 and 1 (control for set_snail_weapon)
+
+The exact source has the same `bool immediate` passed to a bool parameter as
+set_snail_weapon, with one `= 1` store and one `= 0` store. `const_trace`
+logs both stores as demoted to memory, so each constant is 1 − 1 = 0, as the
+rule predicts. Nothing competes for ebx here, so the function still matches.
+Details: [set_snail_weapon NOTES](../set_snail_weapon/NOTES.md) and
+`../crimson/tools/match/c2/compiler/constant-candidates.md`.

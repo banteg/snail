@@ -199,9 +199,10 @@ operand: `@f…` marks a field record, and `@c…` marks a bare class.
     mask. The mask holds the bits of every overlapping record in the class.
   - **Different classes:** the records fall back to their classes' symbol
     sets.
-- **Only 31 distinct bits per class.** Records are created in layout order
-  (for each tuple, destinations before sources) and prepended to the class's
-  list. Bits are then numbered from the head, so the most recent record gets
+- **Only 31 distinct bits per class.** Records are created in IL order at alias
+  time (pass 2; for each tuple, destinations before sources) and prepended to the class's
+  list. A class with no ranged destination access has its records thrown
+  away (`0x1071b30c`). Bits are then numbered from the head, so the most recent record gets
   bit 0, and every record from the 32nd most recent back gets **bit 31**. All
   of those conflict with each other and with anything overlapping any of
   them. In a busy object, the fields touched first in the function are the
@@ -238,7 +239,8 @@ the window count and one level of height. Almost all of them come from
 definition with exactly one reaching use is moved into that use, a FROUND is
 always inserted, whatever the widths. The crimson compiler notes
 (`../crimson/tools/match/c2/compiler/x87-scheduling.md` §3) describe the same
-behaviour. C1 itself emits one only for an explicit `(float)(double)` cast.
+behaviour. C1 itself also emits one for every parenthesized non-leaf float
+expression; a cast adds none of its own (see "Codeless tuples" below).
 
 | Source | Adds a FROUND? |
 | --- | --- |
@@ -394,7 +396,7 @@ When the order of instructions within a window differs from native:
 | Function | Mechanism | Status |
 | --- | --- | --- |
 | create_golb | Bit-31 field records on `this`, plus a pointer-borrow class that intersects `this` | **byte-exact**: direct `flight_transform.position` and `velocity *= 2.0f` / `*= 0.8f` |
-| initialize_game_assets_and_world | 96-record class cap reached at pair 2's strips | open; native has at least 6 (most likely exactly 6) fewer `this` ranges before pair 2. Every borrowed-pointer form tried also changes registers |
+| initialize_game_assets_and_world | 96-record class cap reached at pair 2's strips | open; native has 4 or 5 fewer `this` ranges before pair 2 (6 over-hoists the line-1724 load). Every borrowed-pointer form tried also changes registers |
 | firework_shoot | 81-tuple cut before the position copy; flag-live `lea` advance | 96.12% (3 neutral FROUNDs); still needs the copy before the decrement and 3–5 more tuples |
 | explode_slug_hazard | the owner load falls past the 81-tuple cut | open; needs 4 fewer FROUNDs, only 1 is removable without changing code |
 | initialize_star_field | 81-tuple cut inside `travel_distance` | 98.79% (+1 FROUND); needs about 4 more |
@@ -417,6 +419,7 @@ from native and are explained by a cut or by the tuple count:
 
 ## Codeless tuples: where FROUNDs come from (crimson-88, 2026-09-26)
 
+Mechanism and the full probe table: `../crimson/tools/match/c2/compiler/codeless-tuples.md`.
 Window cuts count codeless tuples, and almost all of them are IL_FROUND (0x162). A survey of 47,756
 traced window tuples found no REGUSE, MOVE or other pseudo tuples. FROUNDs come from three sources:
 
@@ -434,8 +437,12 @@ traced window tuples found no REGUSE, MOVE or other pseudo tuples. FROUNDs come 
 Named locals, pointer and reference copies, int-parameter inlines and struct copies add no tuple.
 
 **Using it.**
+- To see them, `uv run tools/match/c2/crimson_tool.py il_stage_trace <scratch> --out <new-dir> --lines A-B`
+  shows the `round` tuples at `globopt_run` entry, and `crimson_tool.py sched_trace` shows FROUND nodes
+  and their cycles in the scheduled windows.
 - To add a codeless tuple without changing code, parenthesize a non-leaf float subexpression, for
-  example through a macro body.
+  example through a macro body. A new FROUND still takes an issue cycle, so it can reorder its own
+  window.
 - To remove one, drop a parenthesis pair, or respell so C2 refactors the expression.
   `optimize_expression_trees` → `factor_common_terms` (`0x1070f0c7`) folds `x * 4 + 4` back into
   `(x + 1) * 4`, which carries no FROUND.
@@ -443,7 +450,8 @@ Named locals, pointer and reference copies, int-parameter inlines and struct cop
   and changes code.
 
 **Matches from this rule.**
-- initialize_star_field: `speed * 4.0f + 4.0f` removes the FROUND between `fadd` and `fmul`.
+- initialize_star_field: `speed * 4.0f + 4.0f` removes the FROUND between `fadd` and `fmul` (see its
+  NOTES for the trace and the spellings tried).
 - firework_shoot: a `SIGNED_RANDOM(scale)` macro adds 3 FROUNDs and moves the window-3 cut.
 
 ## Block order

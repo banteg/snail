@@ -178,3 +178,18 @@ borrowed x-offset. No shared layout, signature, compiler flag, or mask changed.
 An indexed cell borrow reaches 98.51%; a pointer traversal with direct phase
 publication reaches 74.24%. The exact result required the whole traversal and
 field-lifetime shape, not another isolated temporary spelling.
+
+## 2026-09-25 x87 allocator trace of the phase spill (crimson-88)
+
+The exact source's `fst`/`fstp` pair is explained by the x87 allocator
+(`../crimson/tools/match/c2/compiler/x87-spills.md`; tracer
+`uv run tools/match/c2/crimson_tool.py x87_alloc_trace <scratch> --out <new-dir>`).
+`phase = phase_step + phase; if (phase > 2π) phase -= 2π;` sits inside the doubly nested loop, so every
+term is ×4. There are two candidates:
+
+- the store temporary `t539`, score 12 = (2 + 1) × 4, placed first;
+- the CSE temporary `t240` of the sum, score 4 = (2 − 1) × 4. It is born while `t539` is live and
+  outlives it, so it fails `below-dies-inside` and is split. Its pieces score 0 and −8.
+
+The sum therefore lives at `[esp+0x10]`: `fadd; fst [esp+0x10]; fstp [esi]; fld [esp+0x10]; fcomp`.
+This matches native byte for byte.

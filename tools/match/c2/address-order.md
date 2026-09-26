@@ -17,7 +17,9 @@ index. Swapping them changes only the SIB byte, as in the path builders'
 Leaf cost (`0x1070da9a`) is `hash | 0x10000`; for constants (kinds 7–9) it is
 `hash`, so a symbol precedes a displacement. Expressions pack a node count
 and depth above bit 16. Two register symbols therefore always tie on the
-upper half and are ordered by the 16-bit hash alone.
+upper half and are ordered by the 16-bit hash alone. A load whose base symbol
+has a def is not a leaf: it carries the address tree's need and size, not
+`0x10000 | hash` (see "Loads as address operands" below).
 
 ## The hash (`0x1070db59`)
 
@@ -72,10 +74,12 @@ For the path builders, this gives:
   0xc0, and the lead, tail and delta loops for 0x40–0x60 each. C0 is
   0x4a0–0x580 in this family, and it moves in steps of 32.
 - **CSE temporaries** come from pool E, which has no free list. They are
-  numbered C0 + n, in the order the CSE pass creates them. This includes
-  candidates it later discards. The bank load that an interpolation uses
-  several times, and a loop-invariant endpoint offset `k * 0xa8`, are such
-  temporaries.
+  numbered C0 + n, in the order the CSE pass creates them. Some slots never
+  appear as IL operands, but nothing is discarded: they are the 0x14c
+  memory-location numbers, kept in the operand's storage field, and the
+  assignment numbers of a later sweep ([cse-ids.md](cse-ids.md)). The bank load
+  that an interpolation uses several times, and a loop-invariant endpoint
+  offset `k * 0xa8`, are such temporaries.
 - **Induction temporaries** (`+4` flag 0x2000000) come from the same pool,
   in the later strength-reduction pass. The curve-loop ones get ids
   0x890–0x94b. That is past the 0x800 wrap, so they hash low.
@@ -86,9 +90,10 @@ For the path builders, this gives:
 - Declaration order changes local ids by one per symbol. It matters only
   against another local, or against a temporary whose id mod 1024 is small.
 - How a statement reads the bank decides the operand:
-  - A reloaded member is an expression operand. It is ordered by expression
-    cost, not by id. `[offset + reloaded bank]` stores come out offset-first,
-    as native's do.
+  - A reloaded member is an expression operand, ordered by expression cost,
+    not by id, only while its address is not a CSE temporary. Then it sorts
+    first (bank = base). When `p + off` is CSE-available, the load is a leaf,
+    ranked by `((H(T) & 0xff) << 8) + 7` (see "Loads as address operands").
   - A binding dereferenced several times in one statement becomes a single
     CSE temporary.
   - A loop-body pointer local is a low-id local.
@@ -116,10 +121,10 @@ For the path builders, this gives:
 | --- | --- | --- | --- |
 | LoopOut load | bank > endpoint | local 0x15 (0x2a0); temp 0x5bb (0x6ec0), C0 0x540, n 123 | endpoint temp id ≡ 0–10 mod 1024 |
 | Turnover store | offset > bank | local 0x15 (0x2a0); temp 0x531 (0x4c40), C0 0x4c0, n 113 | bank ≡ 2–10, endpoint (n 111) still below it; or offset id ≥ 0x263 |
-| TurnoverDouble store | offset > bank | local 0x13 (0x260); temp 0x4bc (0x2f00), C0 0x4a0, n 28 | bank ≡ 0–9; or offset id ≥ 0x179 |
-| HalfPipe store | offset > bank | local 0x17 (0x2e0); temp 0x4fc (0x3f00), C0 0x4a0, n 92 | bank ≡ 0–11; or offset id ≥ 0x1f9 |
+| TurnoverDouble store | offset > bank | local 0x13 (0x260); temp 0x4bc (0x2f00), C0 0x4a0, n 28 | bank ≡ 0–9, with n(this+0x5c) ≢ 0 mod 4; or offset id ≥ 0x179 |
+| HalfPipe store | offset > bank | local 0x17 (0x2e0); temp 0x4fc (0x3f00), C0 0x4a0, n 92 | bank ≡ 0–11, with n(this+0x5c) ≢ 0 mod 4; or offset id ≥ 0x1f9 |
 | LoopBow store | iv > bank | iv 0x94b (0x52c0); temp 0x5fd (0x7f40), C0 0x580 | iv < 0x800 with bank ≥ 0x400: 11–15 fewer blocks |
-| LoopTheLoop store | iv > bank | iv 0x890 (0x2400); temp 0x576 (0x5d80), C0 0x500 | iv < 0x800: 5–11 fewer blocks |
+| LoopTheLoop store | iv > bank | iv 0x890 (0x2400); temp 0x576 (0x5d80), C0 0x500 | iv < 0x800: 9–11 fewer blocks (at 5–8, five delta-loop SIB bytes flip) |
 | LoopTheLoopW store | iv > bank | iv 0x89d (0x2740); temp 0x55a (0x5680), C0 0x4e0 | iv < 0x800: 5–10 fewer blocks |
 
 Every row needs a temporary to land just past a multiple of 1024, or before
@@ -215,6 +220,7 @@ direct symbol at `+0x20` and the index at `+0x2c`.
 
 `compute_tree_cost_and_sort` (`0x1070d90c`) merge-sorts the operands with `compare_operand_cost_desc`
 (`0x1070f6ae`). The sort is stable and unsigned-descending, and the first operand becomes the SIB base.
+The mechanism is in crimson's `../crimson/tools/match/c2/compiler/sib-operand-order.md`.
 
 - **CSE-available address.** A load `[s + d]` whose address is a CSE temp or local is a leaf. With
   d = 0 its hash is `(fold(d) + 7 + (H(s) << 8)) & 0xffff`: `((T & 3) << 14) + 7` for a class-3 temp,
@@ -226,79 +232,38 @@ direct symbol at `+0x20` and the index at `+0x2c`.
   - Any assignment kills it, even of an equal value (traverse's redundant `current_template = …`).
   - So does a first computation in only one arm.
   - Stores and calls don't.
-- **Correction to "What source changes do" above.** A reloaded member sorts first as an expression only
-  while its address is not a CSE temp.
-- `addrorder.py` currently skips these kind-6 loads. See crimson `sib-operand-order.md` for a patch
-  proposal.
 
-## CSE slot costs (crimson-88, 2026-09-26)
+`addrorder.py` models only sums of two plain symbols and skips these kind-6 loads.
+[`sib_operand_trace.py`](sib_operand_trace.py) lists every address sum with all operand kinds. To extend
+`addrorder.py` the same way, `address_sums` would:
+- drop the trailing register uses of memory operands: one per nonzero base (+0x28) or index (+0x2c);
+- accept kinds 1 and 6 as ranked operands;
+- classify loads as `load/leaf` or `load/expr` from the base's kind and def, and re-derive the leaf hash;
+- mark sums whose ranked keys are 0 or out of order as stale. Tuples built after the last expression
+  pass, by strength reduction or address folding, keep key 0 (Hill/Valley's `compute_path_deltas` loop
+  has four such sums).
 
-- Every CSE id comes from `cse_insert` (`0x10707e22`) → `0x10707ebc` → `symbol_alloc(0xf)`. Pool E has no
-  free list, so ids are C0 + n, in order, with no gaps.
-- `assign_expression_owners` (`0x10711209`) numbers each tuple in this order: source memory operands,
-  destination memory operands, then the expression or compare. Assignments are numbered in a later
-  sweep, so copies never move these ids.
-- Costs:
-  - a first `this->f = v` costs 2: the address tuple `this + off`, plus the store operand's location
-    number;
-  - a convert, an add or a compare costs 1;
-  - a first access through a member pointer costs 5.
-- Correction: the partner slot is not a discarded candidate. It lives in the memory operand and feeds
-  kill sets and load CSE.
+## CSE ids (crimson-88, 2026-09-26)
+
+Measurements, windows and tools: [cse-ids.md](cse-ids.md).
+
+- Every CSE id comes from pool E (`cse_insert` `0x10707e22` → `0x10707ebc` → `symbol_alloc(0xf)`), which
+  has no free list, so ids are C0 + n, in order, with no gaps. Assignments are numbered in a later sweep,
+  so copies never move these ids.
+- Slot costs: a first `this->f = v` costs 2 (the address tuple `this + off`, plus the store operand's
+  location number); a convert, an add or a compare costs 1; a first access through a member pointer
+  costs 5.
 - The path-builder SIB residues split into two mechanisms:
-  - Hill/Valley: primary bank temp n ≡ 0 mod 4 needed;
-  - the other six: a bank CSE symbol ranked by id << 6, needing id mod 1024 in a window (past 0x800),
-    which is hundreds of ids and impractical.
-
-## Pushing the bank temp past 0x800 (crimson-88, 2026-09-26)
-
-Crimson note `cse-id-push.md`; tool `scripts/c2/cse_id_window.py` (phantom range sweeps; `--chunks` shows
-what opened each C0 chunk).
-
-**Byte-exact windows** (phantom builds):
-
-| Builder | Bank slot | Exact shifts | Bank ends at |
-| --- | --- | --- | --- |
-| TurnoverDouble | 28 | 836–841, 843–845 (842 is a hole) | 0x800–0x809 |
-| HalfPipe | 92 | 772–783 | 0x800–0x80b |
-
-Two side rules apply to both:
-- The secondary bank address (TurnoverDouble slot 50, HalfPipe slot 62) must not be ≡ 0 mod 4.
-- In TurnoverDouble, the width_cells address (slot 6) must stay ≡ 2 or 3.
-
-**Why no natural edit reaches it.**
+  - Hill/Valley: a load leaf through the primary bank-address temp, which needs n ≡ 0 mod 4 (fixed);
+  - the other six: a bank CSE symbol ranked by id << 6, which needs `id mod 1024` in a window just past
+    0x800. That is hundreds of ids.
 - C0 is 32 × the number of symbol chunks opened before value numbering, so it moves only in whole
-  blocks.
-- Neither window contains a multiple of 32, so moving C0 alone never works.
+  blocks, and neither TurnoverDouble's nor HalfPipe's window contains a multiple of 32. The best
+  code-identical combination still leaves the bank at 413 or 476 mod 1024.
+- Pushing every temp at once (phantom at slot 0) has byte-exact windows for Turnover, LoopBow,
+  LoopTheLoop and LoopOut too, but all four still need at least 9 blocks down or 17 up.
 
-Identical-code costs measured:
-
-| Change | Cost |
-| --- | --- |
-| a shared inlined per-segment helper | 0 |
-| hand-inlined delta and mesh code | 0 |
-| Hill/Valley's mesh helper or component constructor | +1 block |
-| `(unsigned int)` byte casts in place of `(char*)` | +7 blocks |
-| header respellings | 0 or +1 slot |
-
-The best combination still leaves the bank at 413 or 476 mod 1024.
-
-**Pushing every temp at once** (phantom at slot 0) avoids the second-site flips:
-
-| Builder | Exact shifts |
-| --- | --- |
-| Turnover | 724, 728 |
-| LoopBow | about 518–692 |
-| LoopTheLoop | 652–753 |
-| LoopOut | 581, 584, 585, 588, 589 |
-
-All four still need at least 9 blocks down or 17 up.
-
-**Corrections to the residue table above.**
-- LoopTheLoop needs 9–11 fewer blocks, not 5–11. At −5 to −8, five delta-loop SIB bytes flip.
-- The TurnoverDouble and HalfPipe rows need the secondary-address rule.
-
-**Leads, tested 2026-09-26: both negative.**
+**TurnoverDouble and HalfPipe leads, tested 2026-09-26: both negative.**
 
 The swapped site in both builders is the curve loop's `center_x` store. Its right-hand side also reads
 `primary_samples[0].center_x`, so only here the bank is a `sym` value temp (TurnoverDouble 0x4bc, key

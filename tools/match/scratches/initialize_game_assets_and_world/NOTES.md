@@ -1710,7 +1710,8 @@ Controls that move `this` ranges into a pointer class (all regress from 99.56%,
 | 1718 | the pair-2 head | 2 |
 
 Only bits 0–30 are distinct: everything up to line 369 shares bit 31.
-Native needs six of these ranges to go through another class.
+Native needs six of these ranges to go through another class. (Corrected in
+the next section: four or five; six over-hoists the line-1724 load.)
 
 | Tried | Result |
 | --- | --- |
@@ -1725,39 +1726,132 @@ spelling. Unchanged at 99.56%.
 
 ## 2026-09-25: `this` field-record cap and alias-class budget (crimson-88 Q5)
 
-Full answer: `/tmp/claude/c2-from-crimson-88/snail_answer_alias-field-records.md`. Mechanism: crimson
-`tools/match/c2/compiler/alias-field-records.md`. Tool: crimson `scripts/c2/field_records.py`,
-run as `--snail . --line-offset 81`.
+Measured at 0b2ce0ed9 (the scratch and its includes are unchanged at
+06a979fac), physical scratch.cpp lines. The base is 99.56%, 5,411/5,411,
+prefix 3,567, structural 13/13. Generic rules:
+`../crimson/tools/match/c2/compiler/alias-field-records.md`. Census tool
+(it reproduces `schedtrace --fields` exactly):
+
+```sh
+uv run tools/match/c2/crimson_tool.py field_records <scratch-dir> --out <new-dir> --line-offset 81
+```
 
 **Records.**
-- Keyed by (class, start, size). Type is not part of the key.
-- Made in IL order at alias time, destinations before sources. Scheduled order does not matter.
+- Keyed by (class, start, size). Type is not part of the key: a float and an
+  int at one offset share a record, a byte view and a dword view get two.
+- Made in IL order at alias time (pass 2), destinations before sources.
+  Scheduled order does not matter.
 - A class holds at most 96 records (`cmp ecx,0x60` at `0x1071b20e`). A new range after the cap gets none,
   but a range recorded before the cap keeps its record.
-- Inlined helpers: a parameter bound to `this`, or to `&this->member` and used once, counts against `this`.
-  One used twice or more keeps its own class and does not count.
-- Non-inlined calls make no records.
-- A variable index makes no record but costs one class per access.
+- The per-function field total (`0x400 − class_count`) is inert here,
+  because there are 0x417 classes.
+- Inlined helpers: a parameter bound to `this`/`*this` (`init_fog(*this)`),
+  or to `&this->member` and used once (`set_strip`), counts against `this`.
+  One used twice or more (`zero_position`, `link_root_bod`,
+  `set_base_strip`) keeps its own class and does not count.
+- Non-inlined calls (`slots[i].SetObject(…)`, `viewports[1].SetCamera(…)`)
+  make no records.
+- A variable index (even `int k = 24; path_pairs[k]…`) makes no record but
+  costs one class per access.
 
-**Correction to the earlier estimate.** Native needs 4 or 5 fewer ranges before line 1718, not 6:
-- 94 (ours) gives the wrong order.
-- 89 or 90 gives exactly native's pair-2 window.
-- 88 over-hoists.
+**Census.** Class 0x2d3 is `_this`, with 301 ranged accesses: 96 new, 18
+reuse and 187 capped. Records 1–94 come before line 1718. Line 1718 (pair
+53 primary → pair 2 primary transition) gets records 95 and 96. Lines 1720,
+1722 and 1724 (6 accesses) and all later strip blocks are capped.
 
-The ranges must not come from pairs 0 or 1.
+**Correction to the earlier estimate.** Native emits
 
-**The "allocator sensitivity" is the alias-class budget.** The function reaches 0x417 classes, and
-`alias_class_for_symbol_set` (`0x1075d456`) gives class 1 (conflicts with everything) once the count
-reaches 0x400. `_golb_shot` sits at 0x3fb–0x3fc, three below the limit. Exceeding it gives the familiar
-80.6% / 5,418-instruction state.
+```
+ld 53p.obj; ld 2p.obj; ld 53s.obj; st 2p.trans; st 2p.base; st 2s.trans; ld 2s.obj; mov ecx; st 2s.base
+```
 
-**Mechanism proof (on copies, not native's spelling).** Either change gives 99.59%, prefix 4,444,
-structural 11/11, pair 2 exact:
-- `int fringe_pair = 24;` indexing pair 24's four reads;
-- viewport 0 through `int vp = 0;`.
+The loads from lines 1720 and 1722 rise above the stores from lines 1718
+and 1720, so the accesses on lines 1718–1722 need records. The line-1724
+load (`2s.obj`) stays below the line-1722 store without any register
+reason, so it must have none. With the cap that means 4 or 5 fewer `this`
+ranges before line 1718, not 6. Verified on copies, with the pair-2 window
+matching native exactly in the middle rows:
 
-Both need line 1971's `zero_position` written out as three stores (−3 classes). The remaining 11 are the
-weapon-1 channel residue.
+| Records before 1718 | Control | Pair-2 window |
+|---|---|---|
+| 94 | base | ours: `ld st ld st ld st …` |
+| 90 | `set_base_strip` on pair 0 (b4); `vp` index on viewport 0 x/y/w/h (g3); `fringe_pair` index on pair 24 (g1) | native order |
+| 89 | `vp` index on viewport 0 camera+x/y/w/h (g5) | native order |
+| 88 | `link_entry_strips` on pair 0 (strips0); `vp` index on 6 viewport-0 fields (g6) | over-hoisted: `ld 2s.obj` rises above `st 2s.trans` |
 
-**Next.** A keepable change must remove 4–5 `this` ranges before line 1718, outside pairs 0 and 1, and
-keep the net class count within about −2…+3. Not adopted yet.
+The ranges must not come from pairs 0 or 1: native hoists their loads too,
+and an unranged pair 0 (`i-0-p-b`) breaks pair 0's own order.
+
+**The "allocator sensitivity" is the alias-class budget.** The function
+reaches 0x417 classes, and `alias_class_for_symbol_set` (`0x1075d456`) gives
+class 1 (conflicts with everything) once the count reaches 0x400. The late
+roots get:
+
+| Root | Classes |
+|---|---|
+| `_animation_slot` | 0x3f8–0x3fa |
+| `_golb_shot` | 0x3fb–0x3fc |
+| `_texture_ref` | 0x3fd–0x3ff, then class 1 (19 lookups) |
+| `_fringe_bod`, `_border`, one temp | class 1 |
+
+That is a margin of 3 classes before line ~2347. Causal test: spell k of
+pair 26's already-capped strip accesses through `int late_pair = 26`, which
+costs 1 + k classes and changes no records. k = 0..2 stays at 99.56%. At
+k = 3, `_golb_shot`'s second class becomes class 1 and the result is
+**80.67%, 5,418 instructions**: the familiar degraded state with `0x200`
+kept in a register at `link_root_bod`. Too few classes also degrades it: at
+−12, `_fringe_bod` and `_border` get real classes (80.64%, 5,418). Shifts
+from −2 to +3 were clean. Expanding a third `zero_position` (line 1959, −9
+in total) costs 0.04% in every variant tried; its own stores and its class
+shift were not separated. Dead `int` locals that C1 drops change nothing.
+
+| Source change | Classes |
+|---|---|
+| a new local that reaches C2 | +1 |
+| each variable-index access | +1 |
+| each inlined multi-use reference helper call (`zero_position`); 2 calls shift late classes by +6 | about +3 |
+| each expanded `zero_position` | −3 |
+
+**Mechanism proof (on copies, not native's spelling).** Each control adds 1
+local plus 4–5 variable-index accesses (about +5 to +6 classes) and gives
+back 3 per expanded `zero_position`:
+
+| Variant | Result |
+|---|---|
+| `int fringe_pair = 24;` and `path_pairs[fringe_pair]` for pair 24's four reads (lines 1389–1395), plus line 1971's `zero_position(path_pairs[61].secondary.fringe_mesh_bod.position)` expanded into its three z/y/x stores | **99.59%**, 5,411/5,411, prefix 4,444, structural **11/11**, 1,881 clean references, 0 unaudited |
+| `int vp = 0;` with `viewports[vp]` for viewport 0 camera, x, y, w, h (lines 117–121), plus line 1971 expanded | 99.59%, the same residual |
+| `int vp = 0;` for x, y, w, h, plus lines 1968 and 1971 expanded | 99.59%, the same residual |
+| any of these without the expansion | 80.6–80.7%, 5,418 (budget overflow) |
+| the expansion alone | 99.56%, unchanged |
+
+In the passing rows the pair-2 block is exact; the remaining 11 are the
+weapon-1 channel residue. Helper-based removals change the code, because a
+surviving parameter gets a register (`strips0` and `vk:1,4` turn `[ebp+K]`
+into `[edi+…]`/`[ecx+…]`) or local store order changes:
+
+| Variant | Result | What changes |
+|---|---|---|
+| `set_base_strip` ×2, with budget compensation | 80.9%, 5,402 | `loader` loses esi to `landscape` |
+| `set_viewport_rect(viewports[0], …)` | 99.54% | viewport stores move locally |
+| `set_viewport_keys` on viewports 1 and 4 | 98.2% | the param is CSE'd into ecx |
+
+`zero_position` is code-neutral because the allocator leaves its parameter
+in memory.
+
+**Next.** A keepable change must remove 4–5 `this` ranges before line 1718,
+outside pairs 0 and 1, and keep the net class count before the Golb shot
+within about −2…+3 of today's. If native had fewer surviving inline
+parameters elsewhere, there is room for its extra classes: native calls the
+out-of-line `zero_vector3` for pair 60, so how many inline zero expansions
+native has is worth checking. Recheck with `--structural` and
+`tests/test_mobile.py` before retaining anything. Not adopted yet.
+
+Open:
+- Why class 1 for `_golb_shot` (or real classes for `_fringe_bod`/`_border`)
+  moves the `0x200` constant into a register has not been traced. The
+  candidate path is CSE kill sets, then the loop-benefit deduction in
+  `score_live_ranges` (`0x10724b25`).
+- The lower edge of the class window is only sampled: −2 is clean, −9 costs
+  0.04% (confounded with the expanded stores), −12 degrades.
+- Native's actual spelling of the 4–5 missing ranges, and a code-neutral way
+  to get them without a budget compensation.

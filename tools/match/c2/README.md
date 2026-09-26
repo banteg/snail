@@ -154,9 +154,33 @@ order, the esi/edi/ebx/ebp order and neighbour penalties.
 uv run tools/match/c2/globalregs.py set_snail_weapon --source overlay.cpp
 ```
 
-## Related compiler notes (crimson)
+## CSE ids and SIB order
 
-The sibling Crimson project keeps further C2 notes in
+[`cse_slot_trace.py`](cse_slot_trace.py) lists every CSE slot in creation
+order, with what created it; `--phantom K:M` recompiles with M extra ids burned
+before slot K. [`cse_id_window.py`](cse_id_window.py) sweeps such shifts for the
+byte-exact windows, and `--chunks` shows what opened each 32-id block of C0.
+[`sib_operand_trace.py`](sib_operand_trace.py) ranks every operand of every
+address sum, including loads and expressions that `addrorder.py` skips. The
+path-builder results are in [cse-ids.md](cse-ids.md).
+
+```sh
+uv run tools/match/c2/cse_slot_trace.py <scratch> --out <new-dir> [--source overlay.cpp]
+uv run tools/match/c2/cse_id_window.py <scratch> --out <new-dir> --chunks
+uv run tools/match/c2/sib_operand_trace.py <scratch> --out <new-dir> [--lines A-B]
+```
+
+## Crimson's tracers and compiler notes
+
+The sibling Crimson project keeps the generic C2 notes in
 `../crimson/tools/match/c2/compiler/` (x87 allocation and spills, forward
-propagation and FROUND, frame packing, layout, register allocation corrections),
-with tracers in `../crimson/scripts/c2/`.
+propagation and FROUND, frame packing, layout, register allocation), with
+tracers in `../crimson/scripts/c2/`. [`crimson_tool.py`](crimson_tool.py) runs
+one of those tracers on a Snail scratch: it supplies this adapter as
+`crimson.match_c2`, so the tracer compiles and measures with Snail.
+`--match-root` compiles against another `tools/match` root.
+
+```sh
+uv run tools/match/c2/crimson_tool.py il_stage_trace <scratch> --out <new-dir> --lines 189-191
+uv run tools/match/c2/crimson_tool.py priority_trace <scratch> --out <new-dir> --constant 0
+```

@@ -292,13 +292,66 @@ A `char` carrier drops to 72.55%. The retained source is unchanged.
 3. **Else arm:** the named `button_definition` local is dropped, and the arm reads
    `definition->anchor_x` directly.
 
-**Mechanism** (crimson-88 Q11, `/tmp/claude/c2-from-crimson-88/snail_tip/answer_tail-merge-rotation.md`).
+**Mechanism** (crimson-88 Q11; rule in `../crimson/tools/match/c2/compiler/tail-merge-rotation.md`).
 - The shared SetBelow block sits after the else arm at allocation time. It takes one rotation slot and
   gets ecx.
 - Block-mover loop 2 then copies that 14-byte block (≤ 20) to branch 1's jump site with `node_clone`,
-  after allocation. The copy keeps ecx and takes no slot.
-- Reading `definition` directly adds native's rotation pick (`mov edx,[esi+8]`). The named local took
-  its register from the global allocator and consumed no slot.
+  after allocation. The copy keeps ecx and takes no slot. JOIN's label then dies, and the else arm's
+  `widget_disable = 0` store is scheduled inside the `SetBelow` setup, as in native. No cross-jump is
+  involved: jumpopt reports `cross_jump_into_fallthrough: no` for that jmp.
+- Reading `definition` directly adds native's rotation pick (`mov edx,[esi+8]`, then
+  `mov eax,[edx+4]`). The named local took its register from the global allocator and consumed no slot.
+
+**Registers.** The pre-fix overlay (d.cpp, 97.40%) had `widget_ok->SetBelow(widget_main);` at the end of
+each arm and `cRTipData* button_definition = definition;` in the else arm:
+
+| where | native | d.cpp |
+|---|---|---|
+| arm 1, `widget_disable->SetBelow` | ecx (rotation) | ecx |
+| arm 1, `widget_ok->SetBelow` | **ecx** (clone of the join copy) | edx (own pick) |
+| else, `definition` load | **edx** (rotation temp) | eax (global allocator, `button_definition`, no slot) |
+| else, `->anchor_x` | eax (rotation, edx busy) | eax |
+| else, `widget_ok->SetBelow` | ecx | ecx |
+| the rest, `previous_outer_owner`... | edx, eax, (ecx deleted), edx | same |
+
+d.cpp got the rest right because its two errors cancel: the pick count from `widget_disable->SetBelow`
+to the rest is 3 in both. d.cpp spends one pick on arm 1's own `SetBelow` and one fewer in the else arm.
+
+**Variants** (predictions written before each compile, on copies):
+
+| variant | prediction | observed |
+|---|---|---|
+| base = d.cpp | – | 97.40%, `rotation.py` offset `+0 → +2 → +0` at row #11 (arm 1's `SetBelow`) only |
+| g1 (join `SetBelow`, `button_definition` kept) | – | 88.96%: the else arm has one pick, so the join gets eax, and everything after it is off by +1 |
+| **v1** (join `SetBelow`, inline `definition->anchor_x`) | exact | **100.00%**, 154/154, encoded body match, refs 27/0/0. `rotation.py`: "every pinned allocation agrees with native"; the else arm picks edx and eax, and the join `SetBelow` is row #13 ecx, the statement's only pick |
+| v2 (per-arm `SetBelow`, inline `definition`) | not exact | 88.96% |
+| c1 (v1 + a second `SetBelow` in the join, 26-byte block) | no duplication | arm 1 keeps its `jmp` to the join, and there is one copy |
+
+`uv run tools/match/c2/crimson_tool.py il_stage_trace <scratch> --out <new-dir> --preset jumpopt` on v1:
+- At block_mover entry, arm 1 ends `...call; jmp JOIN`. The else arm falls into
+  `JOIN: mov ecx(#296),[esi+0xc]; push; mov ecx(#222),[esi+0x10]; call; jmp OUT`.
+- At emit, arm 1 has a new copy of the four tuples, with new tuple addresses (6c160a4c ...) but the same
+  temps #296 and #222 and the same registers, followed by `jmp OUT`. JOIN is gone, and the else arm's
+  store is scheduled between the load and the push.
+
+The retained source has the v1 shape. The change from d.cpp:
+
+```diff
+             widget_disable->SetBelow(widget_main);
+-            widget_ok->SetBelow(widget_main);
+         } else {
+-            cRTipData* button_definition = definition;
+             widget_ok->Init(
+                 ...
+-                button_definition->anchor_x);
++                definition->anchor_x);
+             widget_disable = 0;
+-            widget_ok->SetBelow(widget_main);
+         }
++        widget_ok->SetBelow(widget_main);
+     } else {
+```
 
 **Rotation rule correction.** Copies made before allocation take their own slots. Mover loop-2 copies
-are made after allocation, so they share the original's registers and take none.
+are made after allocation, so they share the original's registers and take none. A one-row offset blip
+(`+0 → +k → +0`) in `rotation.py` at the first arm's copy is the signature of this shape.

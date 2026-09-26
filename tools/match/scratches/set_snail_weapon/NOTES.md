@@ -132,37 +132,100 @@ reports 41%), so compare it with `globalregs.py`.
 
 ## 2026-09-25: constant-candidate mechanism decoded (crimson-88)
 
-Full write-up: `../crimson/tools/match/c2/compiler/constant-candidates.md`.
-Tracer: `../crimson/scripts/c2/const_trace.py`. It lists every counted store
-and every block-end demotion.
+Generic rules: `../crimson/tools/match/c2/compiler/constant-candidates.md`.
+Tracer (lists every counted store and every block-end demotion; `--il` dumps
+the IL at the pass boundaries):
+
+```sh
+uv run tools/match/c2/crimson_tool.py const_trace <scratch> --out <new-dir> [--il]
+```
 
 - **Why the stores count.** The bool is passed straight to a bool parameter:
   - The push legalizer widens it into a 4-byte container, with the flag as
-    byte part +0.
+    byte part +0. The push becomes
+    `push [1:2004 #9 'transition_immediate' z4]`, and the stores stay
+    `mov [1:2001 #8^9+0 z1], imm`.
   - The byte stores mark that container partially written. The byte part
-    becomes its own candidate, never read at its own width.
-  - Each of its dead defs is demoted to a memory store at block end. So each
-    `transition_immediate = 0/1` scores as `mov [mem], const` and saves 1.
-  - SetJetPack (exact) is demoted the same way. It happens to balance at
-    1 − 1 = 0 there.
-- **Byte-exact diagnostic.** In the uniform-channel lead (no `Weapon&
-  channel`, one `selected_state` store and `Play(25)` after each channel's
-  switch), set the queued benefit of constants 0 and 1 to ≤ 0 and change
-  nothing else. The result is 100%, body byte-exact, lookup table included.
-  Changing only one constant, or setting both to 1, has no effect. So that
-  lead is native's structure, and the only gap is these two benefits.
+    `#8` becomes its own candidate, never read at its own width: the pushes
+    read `#9`.
+  - Each of its dead defs is demoted to a memory store at block end. All
+    nine `#8` stores and all six `#9` reloads in front of the pushes are
+    demoted this way. So each `transition_immediate = 0/1` scores as
+    `mov [mem], const` and saves 1.
+  - Every tuple was promoted and none refused: every `push imm`, every
+    `mov target, 0/1` into a candidate, every `mov flag, 0/1`, the switch's
+    `sub eax, 0` and `cmp any_channel_changed, 0`.
+- **Traced benefits** (first scoring pass, `uniform-channel2-tail-no-channel-ref`
+  lead):
+
+  | Value | Uses that save 1 | Loads | Queued benefit |
+  |---|---|---|---|
+  | 0 | 6 × `transition_immediate = 0` (`mov [2:#8], 0`) | 1, at the entry (`any_channel_changed = 0`) | 5 |
+  | 1 | 3 × `transition_immediate = 1` | 1, at the mapping switch head | 2 |
+  | 2, 3, 4, 8, −1 | none | 1 | −1 |
+
+  Every other use of 0 and 1 saved 0: about 25 pushes, the target moves,
+  `mov cl,1`, `sub eax,0` and the final `cmp any_channel_changed,0`. Both
+  ranges were allowed only ebx (byte-only and live across calls), so every
+  range that interferes with them is charged `100 × (5 + 2) = 700` on ebx.
+- **Checks of the rule.**
+  - The lead: predicted 5 and 2, observed 5 and 2.
+  - SetJetPack (byte-exact) has the same `bool immediate` pattern with one
+    `= 1` store and one `= 0` store. Predicted 1 − 1 = 0 for both values;
+    observed 0 and 0, with both stores logged as demoted. Nothing competes
+    for ebx there, so it matches.
+  - A `char` flag (negative control): predicted −1 and −1, observed −1 and
+    −1. The flag is in `al`, with `setne` at each push.
+- **Where the lead differs.** The priority-36 channel-0 case pointers
+  (lr 18/19) are coloured after `this`, target0 and the channel-1/2
+  pointers, and before target1 (priority 8), with allowed {ebx, ebp} and
+  costs ebx +700, ebp 0.
+- **Diagnostic interventions** (not source candidates). Each patches
+  allocator state inside the observer; the harness then reports
+  "Observation changed the whole COFF object", and the observed object is
+  scored with the snail matcher. The intervention scripts are not kept;
+  `const_trace` reproduces what they patch.
+
+  | Intervention | Result |
+  |---|---|
+  | none (lead) | 41.00% (the matcher also loses the byte lookup table) |
+  | benefit of constants 0 and 1 set to −1 at the initial queue | **100%, body byte-exact**, lookup table included |
+  | the same with 0 | **100%, byte-exact** |
+  | the same with 1 | lead (unchanged) |
+  | only constant 1 set to −1, or only constant 0 | lead (unchanged). Both must be ≤ 0, as the chooser rule predicts. |
+  | clear the container's partial-write mark (`#9+5 &= 0x7f` before `0x10727bd3`) | constants go to −1 and −1, but the flag gets eax (34%) |
+  | clear the mark and force the three flag webs to benefit −100 | **100%, byte-exact** |
+  | set the flag part's class to 3 before promotion (so its writes do not mark the root) | same as clearing the mark: −1 and −1, flag in eax |
+
+  So the lead is native's structure except for the positive benefit of
+  constants 0 and 1. No other hidden allocator input differs. Native needs
+  benefit(0) ≤ 0 and benefit(1) ≤ 0 when the case pointers are chosen, for
+  example a flag that is a candidate whose writes are not marked partial
+  and whose webs are unprofitable, so it stays in memory.
 - **Source search, negative.** About 238 variants:
-  - a 216-variant grid over flag init/scope, `selected_state` reuse,
-    switch vs if/else, a shared vs returning channel-2 tail, and reset
-    placement;
-  - about 22 targeted forms: flag types, `register`/`volatile`, aliases,
-    `Weapon&` positions, and inline-helper factorings.
+  - a 216-variant grid (`constant-candidates/gen.py`, not kept):
+    `any_channel_changed` initialised at the top, at the declaration or
+    after the switch; function-level or channel-scoped flag; reused, direct
+    or scoped `selected_state`; switch or if/else for the reverse and target
+    dispatch; shared or returning channel-2 tail; the reset before or
+    inside the `if`;
+  - about 22 targeted forms: the flag as `int`, `char` or `unsigned char`;
+    `true`/`false`; `register`; `volatile`; a pointer or reference alias;
+    the zero store before the reverse call; `Weapon&` borrows at six
+    positions; three inline-helper factorings. The helper reached through
+    `this` reproduces the lead exactly (40.54%): its inlined `bool` is
+    class 4 like any local and is demoted the same way (traced 5 and 2).
 
   `int`, `char` and `unsigned char` reach native's registers only by making
   the flag a register with `setne`, which native does not have.
-- **Open.** Find an IL where the flag has at most as many counted stores
-  as loads, or where its stores reach memory only after allocation. Keep the
-  retained 87.47% source until then.
+- **Open.** Which source gives constants 0 and 1 a non-positive benefit and
+  still keeps the flag's code? Either the flag's stores are not memory at
+  scoring, or it has no more counted stores than loads. If its stores are
+  register moves, the flag webs (benefit 10 in the mark-cleared and class-3
+  runs) must still end up in memory. A class-3 writer alone is not enough:
+  the class-3 intervention puts the flag in eax, and inline-expanded locals
+  are class 4 anyway. Untested: forms where a counted store is created
+  only after allocation. Keep the retained 87.47% source until then.
 
 ## 2026-09-25: Codex source search on the benefit rule (negative)
 

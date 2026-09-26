@@ -151,22 +151,43 @@ exhaustion. No source or compiler setting changes.
 
 ## 2026-09-25: cross-jump rules decoded (crimson-88 Q6a)
 
-Full answer: `/tmp/claude/c2-from-crimson-88/snail_answer_aggregate-temporaries.md`, and crimson
-`tools/match/c2/compiler/aggregate-temporaries.md` §6–7.
+Mechanism: `../crimson/tools/match/c2/compiler/aggregate-temporaries.md` §6. Traced with
+`uv run tools/match/c2/crimson_tool.py il_stage_trace <scratch> --out <new-dir> --preset jumpopt`,
+which reports every cross-jump attempt. All variants were compiled on copies.
 
-**Rules.**
-- The vtable-load registers rotate with source order. Case order `0,1,2,4,14,6,9/12,5/8/11/13,3/7/15` gives
-  native's registers in every block.
-- `cross_jump_into_fallthrough` (`0x1073d701`) has no size limit, so cases 2 and 14 join the 3/7/15 tail.
+**Rules, verified on this function.**
+- **Registers decide identity.** `tuples_equal` (`0x1073d365`) compares opcode, size and operands. The
+  vtable loads get ecx/edx from the local rotation, which follows IL order. Every case block has an odd
+  number of rotating loads, so blocks alternate ecx-first/edx-first in source order. Case order
+  `0,1,2,4,14,6,9/12,5/8/11/13,3/7/15` gives native's registers in every block.
+- `cross_jump_into_fallthrough` (`0x1073d701`) has no size limit. That is how cases 2 and 14 join the
+  3/7/15 tail at `push 0x13`, in native and in ours. Short merges (case 0, 9/12) are later undone:
+  block mover loop 2 copies the ≤20-byte tail back.
+- `cross_jump_label_refs` (`0x1073d211`) tries each reference of `L_exit`, newest jump first, as an
+  anchor against every later one with `cross_jump_pair`.
 - `cross_jump_pair` (`0x1071dfc6`, /O2):
   - An identical whole block always merges, so cases 1 and 4 always merge.
   - A partial tail merges only if the running byte sum, which stops at the first point ≥ 20, is strictly
     greater than 20.
-  - Case 6 against 5/8/11/13 hits exactly 20 and is refused.
+  - Case 6 against 5/8/11/13 hits exactly 20 and is refused: `push 0x13` 2, `push eax` 1,
+    `call [r+0xc8]` 6, `mov eax,[dev]` 5, `mov edx,[eax]` 2, `push 2` 2, `push 0x14` 2 → 20.
+  - Control: changing the last value in both blocks to `0x102` (a 5-byte push) makes the sum 21, and
+    case 6 then merges at exactly native's point (`mov eax,[dev]; push 2; mov ecx,[eax]; jmp L144`).
 
-**Search.** None of the 2880 orders that give native's registers matches; the best is 77.70%, below the
-current 81.97%. Loading the device through another symbol in case 4 reproduces native's whole jump table
-except the case-6 merge (86.98%).
+**Search.** Native merges cases 2 and 14 into 3/7/15 and case 6 into 5/8/11/13, and keeps cases 1 and 4
+as two full blocks. Uniform `switch`/`return` source cannot do that:
+- All 2,880 orders that give native's registers (5! × 4! orders with ecx-first blocks at even
+  positions) were compiled. None matches; the best is native's own order at 77.70% (127 instructions),
+  below the current 81.97%, because 1 and 4 merge and 6 does not.
+- `break` instead of `return`, returning the call result, an explicit `default`/`case 10`, and
+  case-selector arithmetic for the values (`blend_mode + 4`, folded by the switch branch facts) are
+  byte-identical.
+- Loading the device through a different symbol in case 4 (same address) keeps 1 and 4 apart and
+  reproduces native's whole jump table except the case-6 merge (86.98%, 146 instructions). The extra
+  symbol is not evidenced and was only a control.
 
-**Conclusion.** Native's IL must differ between cases 1 and 4 in a way the bytes don't show. The retained
-source is unchanged.
+**Conclusion.** In native, cases 1 and 4 differ in IL at jump-optimizer time, and the case-6 tail is
+longer than 20 bytes then, or its anchor had a counter. Neither difference shows in the final bytes.
+Candidates: a tuple that `late_register_value_cse` (`0x10736b27`) or the mover later deletes (a
+redundant device load would add 5 bytes and change the rotation), or a different device expression per
+case. The retained source is unchanged.

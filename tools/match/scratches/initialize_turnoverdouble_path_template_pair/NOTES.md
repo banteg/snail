@@ -478,3 +478,11 @@ All 24 curve-cursor initialization/advance combinations are also identical.
 The checked ledger now contains 54 records and 280 unique variants with no
 malformed entries. The last three sweeps do not improve the retained result,
 closing the current evidence-backed TurnoverDouble neighborhood.
+
+## 2026-09-26: the `+0x2b1` SIB swap needs the bank temp past 0x800 (crimson-88)
+
+The one remaining swap (`temp 0x4bc`, n28, against local 0x13) is a CSE symbol leaf ranked by
+`id mod 1024`. Phantom builds are byte exact only with the bank at 0x800–0x809 (plus the secondary-address
+and width_cells mod-4 rules). No code-identical construct measured moves it there: they reach
+`id mod 1024` 188 to about 413, against a needed 0–9. Windows, construct costs and the negative leads are
+in [cse-ids.md](../../c2/cse-ids.md) and [address-order.md](../../c2/address-order.md).

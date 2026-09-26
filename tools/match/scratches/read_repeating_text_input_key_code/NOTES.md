@@ -217,29 +217,93 @@ Twelve inline comparison forms take already-folded characters as values or const
 
 ## 2026-09-26: call order under `==` decoded (crimson-88 Q7)
 
-Full answer: `/tmp/claude/c2-from-crimson-88/snail_answer_call-operand-order.md`, and crimson
-`tools/match/c2/compiler/call-operand-order.md`. Tracer: crimson `scripts/c2/su_order_trace.py`.
+Generic rules: `../crimson/tools/match/c2/compiler/call-operand-order.md`.
+Tracer (prints every Sethi-Ullman decision with decoded keys and each
+operand's defining tuple):
+
+```sh
+uv run tools/match/c2/crimson_tool.py su_order_trace <scratch> --out <new-dir> --calls
+```
+
+Native tail:
+
+```
+mov eax, dword [esp+8]   ; key (stack home)
+push eax
+call RstrASC
+mov cl, byte [g_last]
+mov dl, al               ; first result, expression temp
+push ecx
+mov byte [esp+0xf], dl   ; spilled around the second call
+call RstrASC
+mov dl, byte [esp+0xf]
+add esp, 8
+cmp dl, al               ; cmp key_fold, last_fold
+```
 
 **Rule.**
+- The reader emits the calls in source order (the left operand's `0x15a`
+  argument copy and call first). `optimize_expression_trees` substitutes
+  both call temps into the compare: `0x17d ty1001(call, call)`, with the int
+  promotions narrowed away.
 - `==` (IL 0x17d) is not in the commutative sort, so its operand order is kept. It is in the reorderable
   set (`0x1070e560`), so `emit_tree_as_tuples` (`0x1070e114`) emits the right subtree first when that
-  subtree's packed key is strictly greater. The compare keeps its direction.
+  subtree's packed key is strictly greater. The compare keeps its direction. This runs before globopt
+  and again after it; the second run is final.
 - Both calls have need 8 and size 5, so the 16-bit hash decides. A call hashes as
-  `(callee + 2 * (arg_hash + 0x15) + 0x3f) mod 0x10000`.
+  `(callee + 2 * (arg_hash + 0x15) + 0x3f) mod 0x10000`. `arg_hash` is
+  `id<<5`: `repeat_code` was #2 (0x40), the global #33 (0x420).
 - `callee` is RstrASC's frontend symbol id. That counter runs over the whole translation unit and is fixed
-  at the declaration.
-- Native calls the key first because the sum wraps. That happens only when RstrASC's id is in
-  0xf757..0xff16, which needs a large prelude of declarations before `rstring.h`.
-  - With padding placed before the include, `RstrASC(key) == RstrASC(g_last)` is 100%, encoded
-    body-exact. The window edges were verified exactly.
-  - VC6's own Win32 + DX5 headers only reach 0xb60d. The original RShell TU presumably pulled in
-    DX8/D3DX8 or class-heavy project headers, which are not in this repo.
+  at the declaration. Without a prelude it is 0x10a with the project
+  headers only, 0xa3cf with `<windows.h>` in front, and 0xb60d with
+  windows, mmsystem, ddraw, dinput, dsound, stdio, stdlib, string and math
+  in front.
+- Native calls the key first because the sum wraps. That happens only when
+  RstrASC's id is in 0xf757..0xff16 (two variables, L = 0xe9, R = 0x8a9,
+  1984 ids wide) or 0xf757..0xff56 (one variable, L = 0xa9, 2048 ids wide),
+  which needs a large prelude of declarations before `rstring.h`.
+
+Traced keys (`RstrASC(key)` on the left):
+
+| Build | fe id `c` | key(key call) | key(global call) | Order |
+|---|---|---|---|---|
+| retained two-byte source (`repeat_code` #2, global #33) | 0x10a | 0x080501f3 | 0x080509b3 | global first (99.09%, or 99.32% with the global on the left) |
+| one `result` variable (#1) | 0x10a | 0x080501b3 | 0x080509b3 | global first |
+| two-byte source, 64044-enumerator enum before `#include "rstring.h"` | 0xfb37 | 0x0805fc20 | 0x080503e0 | **key first, 100.00%** |
+| one variable, 64044-enumerator enum before `#include "rstring.h"` | 0xfb37 | 0x0805fbe0 | 0x080503e0 | **key first, 100.00%** |
+
+The 100.00% rows are 440/440, prefix 440/440, encoded body match, 74/74
+masked operands, with native's `mov dl, al` temp, delayed `[esp+0xf]` spill
+and `cmp dl, al`.
+
+Window checks with the two-variable source: c = 0xf756 gives 99.09%, 0xf757
+gives 100.00%, 0xff16 gives 100.00% and 0xff17 gives 99.09%. With one
+variable the upper edge 0xff56 holds: 0xff56 gives 100.00% and 0xff57 gives
+99.09%. Padding placed after the includes gives 99.09%. With the global on
+the left inside the window, the calls run in native order but the compare
+becomes `cmp al, dl` (99.77%), so native had the key on the left, as the
+Android and iOS ports do.
+
+Rejected shapes, all with the calls in the wrong order (compiled on
+copies): casts and no-op arithmetic on either argument or result (`(char)`,
+`(int)`, `(unsigned char)`, `(short)`, `+0`, `|0`, `^0`, `&0xff`, `*&x`,
+`(&x)[0]`, comma), `!(a != b)`, `(char)(a - b) == 0`, xor forms, callee
+spelled `(*f)`/`(&f)`, parameter or global signedness changes, one-byte
+array or struct wrappers, pointer and reference borrows, and global
+definitions in the TU. These fold before costing or add the same node to
+both sides (99.09/99.32%). Wider returns and int parameters change the
+frame. Inline helpers give their parameters stack homes and change the
+frame (96–97%), and subtraction changes the frame. `volatile` on the key
+runs the key call first with the dl spill, but moves the local and
+byte-loads it (72%). A named fold local runs the key call first, but stores
+AL to its home instead of the `mov dl, al` temp (98.98%).
 
 **Decision.** No padding is adopted: without the authentic prelude it would be tuning.
 
 **Source simplification (byte-identical, same code hash).** The separate `repeat_code` byte is gone.
 `result` is compared directly, matching the single key variable in the Android and iOS bodies. `[esp+8]` is
-where the allocator keeps `result` in memory. The operands stay `RstrASC(g_last) == RstrASC(result)`,
+where the allocator keeps `result` in memory (the `mov [esp+8], bl` after
+every assignment). The operands stay `RstrASC(g_last) == RstrASC(result)`,
 which is the best order without the prelude. Inside the id window, native's form is
 `RstrASC(result) == RstrASC(g_last)`; the global on the left there gives native's call order but a flipped
 compare (99.77%).
@@ -274,8 +338,56 @@ For reference:
 - `enumerate_matching_archive_or_fs_entries` is unchanged at 92.31%;
 - `initialize_game_data_archive` only clashes with its own hand-written `GetClipCursor` declaration.
 
+**Measured ids** (crimson-88; a probe `int F(int);` after each prefix):
+
+| Prefix | `F` id after it | Consumed |
+|---|---|---|
+| nothing | 0x109 | 0 |
+| `<windows.h>` (`<mmsystem.h>` adds 0: already included) | 0xa3ce | 41669 (headers, files and main file) |
+| + `d3d8.h` (DirectX 8.1) | 0xabc0 | 2034 |
+| + `d3dx8.h` | 0xbd32 | 4466 |
+| + `dinput.h` (`DIRECTINPUT_VERSION` 0x0800) | 0xc594 | 2146 |
+| The same four as a header file (`rshell_prelude.h` without its stand-in) | 0xc595 | +1 (the prelude file) |
+| + the stand-in enum (1 + 13762 enumerators) | 0xfb58 | 13763 |
+
+`RstrASC` is the first declaration in `rstring.h`: file 1 + parameter 1, so
+its id is 0xfb59. The stream id matches the traced call hashes exactly:
+the key call hashes 0xfc02 = 0xfb59 + 0xa9 and the global call 0x0402 =
+(0xfb59 + 0x8a9) mod 0x10000.
+
+Window edges, checked with the matcher and traced keys on copies with the
+prelude written directly into `scratch.cpp` (one file record fewer):
+
+| Stand-in enumerators (inline prelude) | `RstrASC` id | Keys (key call, global call) | Result |
+|---|---|---|---|
+| 12735 | 0xf755 | 0xf7fe, 0xfffe | 99.09% |
+| 12736 | 0xf756 | 0xf7ff, 0xffff | 99.09% |
+| 14783 | 0xff55 | 0xfffe, 0x07fe | 100.00% |
+| 14784 | 0xff56 | 0xffff, 0x07ff | 100.00% |
+
+So with `rshell_prelude.h` as a header, RShell's own declarations between
+`dinput.h` and the first declaration of `RstrASC` must consume **12,737 to
+14,784 ids**, including 1 per header file. If the original `RShell.h`
+included `rstring.h` before the engine headers, only what precedes that
+include counts. The next window (ids 0x1f756..0x1ff57, fold
+`(id & 0xffff) ^ 1`) needs about 65,000 more ids and is not plausible.
+
 Recovering the stand-in: ids come from one per-translation-unit counter in C1XX. They are assigned
 eagerly in source order, and unused declarations and inline bodies count. Uses and calls cost nothing.
-The per-kind costs are in crimson `tools/match/c2/compiler/frontend-ids.md`, and
-`scripts/c2/fe_id_probe.py measure header.h` counts a header. Reconstruct RShell.h, GDX.h, font.h,
-RSprite.h and related headers, count them, and pad any shortfall.
+The per-kind costs are in `../crimson/tools/match/c2/compiler/frontend-ids.md`.
+Measure rather than estimate whenever the headers compile, with crimson's
+probe from a crimson checkout:
+
+```sh
+uv run python scripts/c2/fe_id_probe.py --cflags "/O2 /G5 /W3 /IZ:<snail>/tools/match/include" ids <snail scratch>/scratch.cpp | grep RstrASC
+```
+
+and check that the id is in 0xf757..0xff56; `measure <header>` gives the
+ids a header consumes. For headers not yet reconstructed, count with the
+table: a C-style struct is 8 + members + typedef names; a C++ class with k
+methods of p_i parameters is about 8 + members + Σ(1 + p_i) + overloads + 4
+for a non-trivial destructor + 3 for the first virtual + 2 per inline body;
+add 1 per header file; macros are free. Reconstruct RShell.h, GDX.h, font.h,
+RSprite.h and related headers, count them, and pad any shortfall with
+enumerators (exactly 1 each), keeping the stand-in near the middle of the
+window.

@@ -606,3 +606,11 @@ stays retained to preserve the existing explicit mesh-value provenance.
 68.96% baseline. No source change is retained. The Twister result does not
 transfer uniformly across this family; these receipts describe only the
 examined aggregate and lateral lifetimes.
+
+## 2026-09-26: the `+0x2f9` SIB swap needs the bank temp past 0x800 (crimson-88)
+
+The one remaining swap (`temp 0x4fc`, n92, the `primary_bank` load in the tail loop, against local 0x17)
+is a CSE symbol leaf ranked by `id mod 1024`. Phantom builds are byte exact only with the bank at
+0x800–0x80b, with n62 (the secondary address) ≢ 0 mod 4. No code-identical construct measured moves it
+there: they reach `id mod 1024` 252 to about 477, against a needed 0–11. Windows, construct costs and the
+negative leads are in [cse-ids.md](../../c2/cse-ids.md) and [address-order.md](../../c2/address-order.md).

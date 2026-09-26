@@ -174,30 +174,137 @@ first; ours loads the scale. This is the slot-id tie described in x87-order.md.
 
 ## 2026-09-26: scale-operand rank decoded (crimson-88 Q12), not adopted
 
-The Y-lane order depends on symbol record creation order. The scale operand is `local_x` itself; the
-inliner substitutes it, so there is no inline copy.
+The Y-lane order depends on symbol record creation order (crimson's
+`../crimson/tools/match/c2/compiler/scale-operand-rank.md`). The scale operand is `local_x` itself; the
+inliner substitutes it, so there is no inline copy. 0x14e is the reader's `^transform+4 z60` part, created
+in lockstep with the y field; it is not a free slot.
 
-**crimson's 100%-normalized overlay** (`scale-operand-rank.md`):
-- `transform.basis_right *= lateral_scale;` in both branches;
-- component-wise products with `(local_x = input_position->x - center_x)` inside the X lane.
+**Where the records come from** (`crimson_tool.py part_origin_trace`; origin = first IL dump containing
+the record):
+
+| Record | Created by | Evidence |
+| --- | --- | --- |
+| `transform.basis_right.x/.y/.z` read explicitly in the kind-42 branch | reader: 0x14d, then 0x14e `^+4 z60`, 0x14f, 0x150 `^+8 z56`, 0x151 | base build |
+| `local_x` (named) | reader, 0x1eb | base build |
+| `this->x` of `transform.basis_right *= s` when nothing reads `.x` explicitly | inline expansion #23: 0x245 | variant e4 |
+| `^transform+4 z60`, `^+8 z56` for `this->y`, `this->z` | `canon.ret`: 0x2a4, 0x2a5 | variant e4 |
+| `^transform+4 z4`, `^+8 z4` (the y/z fields) | `cse1`: 0x2a6, 0x2a7 | variant e4 |
+| the `scale` copy of `basis_right * (a - b)` | inline expansion #26: **0x1fd**, a reused id below 0x245 | variant e4 |
+
+The `&transform` that C1 passes to out-of-line calls is `^transform+0 z4` (0x142 in the base build). It is
+never reused as the float field: an explicit `.x` read creates 0x14d.
+
+```sh
+uv run tools/match/c2/crimson_tool.py part_origin_trace traverse_path_follow_golb --out <new-dir> --lines 160-170
+```
+
+**Base keys** (`crimson_tool.py sched_trace`, C2 line 166): scale `local_x` 0x1eb (0x13d60) against fields
+0x14d/0x14f/0x151 (0x129a0/0x129e0/0x12a20). All fields are older than `local_x`, so every lane loads the
+scale. Native (target index 327 onward: X `fld st(0); fmul [esp+0x44]`, Y `fld [esp+0x48]; fmul st(1)`,
+Z `fmul [esp+0x4c]`) needs x < scale < y. The only ids in that gap are 0x14e, or a temporary with id mod
+1024 = 0xa7.
+
+What moves the ids (all measured on copies):
+
+| Change | Y lane | X lane | Why |
+| --- | --- | --- | --- |
+| anything in the ordinary branch only: pointer or reference `right`, component products, a parenthesized or cast scale, block copies | scale first | ok | the kind-42 branch has already created x,y,z at 0x14d–0x151 |
+| kind-42 **and** ordinary scaling as `transform.basis_right *= lateral_scale` | **field first** | **flips** | there are no explicit reads before `local_x`; the publish reads x,y,z after it (0x1ea/0x1ec/0x1ee > 0x1e6) |
+| the same, plus the scale as the expression `(input_position->x - center_x)` | scale first with the explicit publish; field first with a block publish | ok with the explicit publish; flips with a block publish | the copy is created at inline time (0x241), above the publish's reader fields. With a block publish it reuses 0x1fd, below the inline `this->x` (0x245) |
+| a 54-variant grid: kind-42 × ordinary ∈ {explicit, `*=`, `= v * s`}, publish ∈ {explicit, `*p = v`, member assign}, scale ∈ {named, inline} | only the `*=`/`*=` rows change Y | always flips with them | as above |
+| both `*=`, plus a codeless `transform.basis_right.x;` before `local_x` | field first | ok | creates x before `local_x`: 0x1e5 < 0x1e7 < 0x1ec. **100.00%**, not authored |
+| both `*=`, plus a component product with the assignment in X (below) | field first | ok | X's scale is an expression; y is read after `local_x` (0x1ec > 0x1e8) |
+
+**crimson's 100%-normalized overlay:**
+
+```cpp
+transform.basis_right *= lateral_scale;          // both branches
+...
+float local_x;
+Vec3 right_offset;
+right_offset.x = transform.basis_right.x * (local_x = input_position->x - center_x);
+right_offset.y = transform.basis_right.y * local_x;
+right_offset.z = transform.basis_right.z * local_x;
+```
+
+The operands can be in either order (`(local_x = …) * transform.basis_right.x` compiles the same). This
+gives the native product exactly. It also adds read-time records, because the parts of `right_offset` and
+`transform` are now read in the ordinary branch. That moves two later ids that native also constrains:
+
+- **The terminal `*anchor + terminal[-1].transform.position` fadd (target 105).** It needs its inline
+  reference copy at id ≡ 0 mod 8, so that it ties with `anchor` (0x10) and source order wins. With the new
+  product alone the copy lands at 0x226, which flips the fadd (99.53%). Removing six read-time pool-B
+  records puts it at 0x240 and gives **100.00%**. Measured knobs:
+  `shot->flight_transform.basis_forward = transform.basis_forward;` or the same for `basis_up` (−5 each),
+  and dropping the `Vec3* motion` or `Vec3* output` alias (−1 each). Exactly one of the two publishes plus
+  exactly one alias works; the `basis_right` publish form does not matter (8 of the 32 combinations per
+  operand order).
+- **C0, the first CSE slot.** The −6 route empties the reader's last pool-B chunk, so C0 drops from 0x300
+  to 0x2e0. The alpha `fdiv [eax+edx+0x8c]` at +0x46c then swaps its SIB base and index (normalized
+  listing equal). Adding two records instead keeps C0 at 0x300, and the copy lands at 0x228. With two
+  dead-stored ints as a proof (`P_pad2`), the result is 100.00% with only the three SIB swaps the base
+  already has (+0x254/+0x28a/+0x2c0). No authored +2 was found.
 
 **Not adopted:**
 - it needs an assignment inside an expression;
-- it is still not byte-exact: `state=audit`, with `fdiv [eax+esi+0x8c]` SIB base/index swaps at +0x254,
-  +0x28a, +0x2c0 (already present in the base) and +0x46c.
+- it is still not byte-exact on its own: `state=audit`, with `fdiv [eax+esi+0x8c]` SIB base/index swaps
+  at +0x254, +0x28a, +0x2c0 (already present in the base) and +0x46c. The first three are fixed by the
+  template-reload deletion below; `P_pad2` without the reload is byte exact.
 
-The retained 99.53% source also carries those three SIB swaps.
+Open: an authored way to add exactly two read-time pool-B records, which would keep C0 at 0x300.
 
 ## 2026-09-26: redundant template reload removed (fixes 3 SIB bytes)
 
 The second `current_template = template_record;` after the loop is deleted. The normalized listing is
 unchanged (99.53%), but the three `fdiv [..+0x8c]` SIB bytes (+0x254, +0x28a, +0x2c0) become native's.
 
-**Mechanism** (crimson-88, `sib-operand-order.md`).
-- The reassignment killed the CSE of `current_template + 0x5c`, so each load became an unCSE'd address
-  expression. Expressions always sort first, so the bank was the base.
-- Without it, the bank address is CSE temp 0x303. The load is then a leaf with hash 0xc007, which is below
-  the offset temp's 0xc240, so the offset is the base, as in native.
+**Mechanism** (crimson-88; rule in crimson's `../crimson/tools/match/c2/compiler/sib-operand-order.md`).
+The sites are the three `progress / current_template->secondary_samples[sample_index].delta_length`
+interpolations (source lines 77/88/99, C2 labels 70/81/92); the alpha at +0x46c (line 165) has the same
+shape. The address pass showed this sum in each else-arm (base build, C0 = 0x300):
+
+```text
+ADD  [expr(local 5 current_template + 0x5c)]  key 0x01020180 (need 1, size 2, hash 0x180 = 0xa0 + 0x5c<<1 + 0x28)
+     temp 0x309  key 0x0001c240   (pool E CSE temporary n=9: sample_index*0xa8; 0x308 n=8 is the sample_index load)
+ADD  t + 0x8c  -> fdiv [t]
+```
+
+- Source line 69, `current_template = template_record;`, redefined local 5 after lines 13 and 64 computed
+  `current_template + 0x5c`. After it, the first computation of that address is in the first else-arm,
+  which does not dominate the second or third, so CSE never makes it available. Each load was an unCSE'd
+  address expression, which always sorts first, so the bank was the base (`esi`).
+- `current_template` is already the same pointer, and the listing does not change: native and ours both
+  use edx without a reload. Without line 69, `current_template + 0x5c` from line 13 is CSE temp 0x303
+  (n=3) everywhere. Each site becomes
+
+  ```text
+  ADD  temp 0x309  key 0x0001c240
+       [temp 0x303] key 0x0001c007   (leaf: ((0x303 & 3) << 14) + 7)
+  ```
+
+  The leaf hash 0xc007 is below the offset temp's 0xc240, so the offset is the base: native's
+  `[eax+esi+0x8c]`.
+- Pre-globopt the sum is `(sample_index * 0xa8) + [ct+0x5c] + 0x8c` with the product first. After CSE the
+  product is temp 0x309 (need 0), so the load comes first (`crimson_tool.py sort_trace` shows both events).
+- 0x303 is n=3 whether line 69 is present or not.
+
+| Build | Normalized | Encoded | State |
+| --- | --- | --- | --- |
+| canonical | 99.53%, prefix 327 | not compared | wip (Y-lane operand order) |
+| canonical − line 69 | 99.53%, prefix 327, identical diff | the three bytes flip to native `d8 b4 30 8c`; the object differs from canonical only in those 3 bytes (plus timestamp and COMDAT checksum) | wip |
+| `P_pad2` (Y-lane fix + two padding ints) | 100% | 3 SIB swaps | audit |
+| `P_pad2` − line 69 | 100%, 425/425 | **byte exact** | **match** |
+| `K_both` (C0 = 0x2e0) − line 69 | 100% | 4 swaps: +0x254/+0x28a/+0x2c0/+0x46c | audit |
+
+The `K_both` row was predicted before it was compiled. At C0 = 0x2e0 the offset is 0x2e9, hash 0xba40, and
+the bank address is 0x2e3, whose leaf hash 0xc007 is larger. So all four loads sort first.
+
+The margin: with n(offset) = 9 and n(address) = 3, offset-first needs `(C0 + 9) mod 1024 ≥ 0x301`, which
+means C0 mod 1024 ≥ 0x300 for a C0 that is a multiple of 32. Two other ways to satisfy it:
+- move the address temporary to n ≢ 3 (mod 4), which makes its leaf hash 7, 0x4007 or 0x8007;
+- keep C0 at 0x300, as `P_pad2`'s +2 does.
+
+Reproduce: `uv run tools/match/c2/sib_operand_trace.py traverse_path_follow_golb --out <new-dir>`.
 
 **Remaining:** only the Y-lane operand rank.
 - In the y2 variant (component lanes, each using `(input_position->x - center_x)`), the scale is CSE

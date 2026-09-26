@@ -582,3 +582,45 @@ The 81-tuple cut then falls after the Y reload, which issues before the stack cl
 - The curve-counter zero store falls after the guard; it is already in the next window.
 
 Evidence: `/private/tmp/claude-501/sm/codex/tu/RESULTS.md` (58 probes).
+
+## 2026-09-26: curve zero store after the guard decoded (crimson-88 Q8)
+
+Mechanism: crimson's `../crimson/tools/match/c2/compiler/guard-placement.md`. A user init stays before the
+guard only while its variable survives the IV pass. Not adopted: the fix costs the receivers.
+
+Native `mov [esp+0x6c], ebx` (`sample_step = 0`) is before `cmp eax,ebx; jle`. Ours is after the branch,
+wherever the source puts it. Trace of the canonical source [verified]:
+
+- The curve loop `for (i = 6; sample_step < interior_count; ++sample_step) { …; ++i; }` has two step-1
+  basic IVs. Merge #1 keeps `i`, which has many more uses (every `primary_samples[i]`), and rewrites every
+  `sample_step` use as `#2021 = i + (−6)`.
+- SR turns `i − 6` into derived IV `#2031`, with init 0 at the end of the preheader, after the guard. That
+  is the counter that is `fild`ed and stored to `[esp+0x6c]`.
+- The user's `sample_step = 0` in the guard block becomes dead. It is still present at the last IV step
+  and gone at `purge_unreferenced_temps` entry.
+
+So native's curve loop has a single basic IV (`sample_step`), and the index is derived from it.
+
+**T1** (predicted before compiling, copy `tu_t1`): drop `++i` and derive the index at the top of the body:
+
+```cpp
+for (; sample_step < interior_count; ++sample_step)
+{
+    i = sample_step + 6;          // no ++i at the bottom
+    ...
+}
+```
+
+`mov [esp+0x6c], ebx` moves before `cmp eax,ebx; jle`, as in native. `i = 6 + sample_step` and a
+body-local `int i = sample_step + 6` behave the same.
+
+The whole function drops 99.42% → 95.11% (684/687). The ebx cursor is now derived from `sample_step`, and
+the Identity receivers (`mov ecx,ebx; …; add ecx,edx`) and the `rep movsd` setup flip to base-first. This
+is the same trade-off as the "physical curve cursor" (94.67%): the receiver order is the address-order
+hash of the cursor temporary.
+
+Open: a form that keeps one basic IV and restores the old cursor id and the native receiver order.
+
+```sh
+uv run tools/match/c2/crimson_tool.py il_stage_trace initialize_turnunder_path_template_pair --out <new-dir>
+```
