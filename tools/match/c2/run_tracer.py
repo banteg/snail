@@ -1,11 +1,11 @@
-"""Run one of Crimson's C2 tracers (`../crimson/scripts/c2/<tool>.py`) on a Snail scratch.
+"""Run one of Crimson's C2 tracers (`../crimson/scripts/c2/<tracer>.py`) on a Snail scratch.
 
 The tracers observe through `crimson.match_c2`. This runner supplies that module from
 [trace.py](trace.py), so they keep Crimson's preserving observer but compile and measure with Snail.
-Arguments after the tool name go to the tool.
+Arguments after the tracer name go to the tracer.
 
-    uv run tools/match/c2/crimson_tool.py il_stage_trace <scratch> --out <new-dir> --lines 189-191
-    uv run tools/match/c2/crimson_tool.py priority_trace <scratch> --out <new-dir> --constant 0 \
+    uv run tools/match/c2/run_tracer.py il_stage_trace <scratch> --out <new-dir> --lines 189-191
+    uv run tools/match/c2/run_tracer.py priority_trace <scratch> --out <new-dir> --constant 0 \
         --match-root <alternate tools/match root>
 """
 
@@ -26,7 +26,7 @@ def main():
         add_help=False,
     )
     parser.add_argument(
-        "tool", help="tracer name in ../crimson/scripts/c2, without .py"
+        "tracer", help="tracer name in ../crimson/scripts/c2, without .py"
     )
     parser.add_argument(
         "--match-root", type=Path, help="compile against another tools/match root"
@@ -41,12 +41,12 @@ def main():
     crimson.match_c2 = adapter.c2
     sys.modules["crimson"] = crimson
     sys.modules["crimson.match_c2"] = adapter.c2
-    tool = adapter.CRIMSON / "scripts/c2" / f"{args.tool}.py"
-    if not tool.exists():
-        parser.error(f"no such Crimson tracer: {tool}")
-    sys.path.insert(0, str(tool.parent))
-    sys.argv = [str(tool), *rest]
-    runpy.run_path(str(tool), run_name="__main__")
+    tracer = adapter.CRIMSON / "scripts/c2" / f"{args.tracer}.py"
+    if not tracer.exists():
+        parser.error(f"no such Crimson tracer: {tracer}")
+    sys.path.insert(0, str(tracer.parent))
+    sys.argv = [str(tracer), *rest]
+    runpy.run_path(str(tracer), run_name="__main__")
 
 
 if __name__ == "__main__":

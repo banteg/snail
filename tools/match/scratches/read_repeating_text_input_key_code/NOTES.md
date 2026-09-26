@@ -222,7 +222,7 @@ Tracer (prints every Sethi-Ullman decision with decoded keys and each
 operand's defining tuple):
 
 ```sh
-uv run tools/match/c2/crimson_tool.py su_order_trace <scratch> --out <new-dir> --calls
+uv run tools/match/c2/run_tracer.py su_order_trace <scratch> --out <new-dir> --calls
 ```
 
 Native tail:

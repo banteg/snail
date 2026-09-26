@@ -691,8 +691,8 @@ also shift the temporary ids that decide it. Every variant above keeps our regis
    not by P(block 1):
 
 ```sh
-uv run tools/match/c2/crimson_tool.py priority_trace <copy> --out <new-dir> --constant 0 --symbol 549
-uv run tools/match/c2/crimson_tool.py block_refs_trace <copy> --out <new-dir> --block 4 --block 18 --block 19 --rescore
+uv run tools/match/c2/run_tracer.py priority_trace <copy> --out <new-dir> --constant 0 --symbol 549
+uv run tools/match/c2/run_tracer.py block_refs_trace <copy> --out <new-dir> --block 4 --block 18 --block 19 --rescore
 # intervention (not a source form): +N to constant 0's ranges that start in block 1
-uv run tools/match/c2/crimson_tool.py priority_trace <copy> --out <new-dir> --bump-constant 0 --bonus 12
+uv run tools/match/c2/run_tracer.py priority_trace <copy> --out <new-dir> --bump-constant 0 --bonus 12
 ```

@@ -491,7 +491,7 @@ provenance identifying a genuinely different authored vector operation.
 ## 2026-09-25: extra Vector3 temporaries decoded (crimson-88 Q1c)
 
 Mechanism: `../crimson/tools/match/c2/compiler/aggregate-temporaries.md` §1–5. Traced with
-`uv run tools/match/c2/crimson_tool.py il_stage_trace <scratch> --out <new-dir> --lines A-B`
+`uv run tools/match/c2/run_tracer.py il_stage_trace <scratch> --out <new-dir> --lines A-B`
 (`--preset globopt` dumps the IL after each globopt sub-pass; `--match-root <dir>` compiles against
 another `tools/match` root, for example one with an edited `include/vector3.h`). All variants were
 compiled on copies.

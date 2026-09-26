@@ -1279,7 +1279,7 @@ exit, −1 per reload, −2 per spill, ×2^loop depth) and keeps a value on the 
 only if it nests with already-placed values; reload pieces never stay on the
 stack. Single-use values are forward-propagated (FROUND) instead. Spec:
 `../crimson/tools/match/c2/compiler/x87-spills.md`; tracer
-`uv run tools/match/c2/crimson_tool.py x87_alloc_trace <scratch> --out <new-dir> [--lines A-B]`
+`uv run tools/match/c2/run_tracer.py x87_alloc_trace <scratch> --out <new-dir> [--lines A-B]`
 (about 7 s here).
 
 Clamp diagnosis confirmed. The source is `float window = rate*0.17f; float speed = velocity.z;

@@ -1733,7 +1733,7 @@ prefix 3,567, structural 13/13. Generic rules:
 (it reproduces `schedtrace --fields` exactly):
 
 ```sh
-uv run tools/match/c2/crimson_tool.py field_records <scratch-dir> --out <new-dir> --line-offset 81
+uv run tools/match/c2/run_tracer.py field_records <scratch-dir> --out <new-dir> --line-offset 81
 ```
 
 **Records.**

@@ -179,7 +179,7 @@ The Y-lane order depends on symbol record creation order (crimson's
 inliner substitutes it, so there is no inline copy. 0x14e is the reader's `^transform+4 z60` part, created
 in lockstep with the y field; it is not a free slot.
 
-**Where the records come from** (`crimson_tool.py part_origin_trace`; origin = first IL dump containing
+**Where the records come from** (`run_tracer.py part_origin_trace`; origin = first IL dump containing
 the record):
 
 | Record | Created by | Evidence |
@@ -195,10 +195,10 @@ The `&transform` that C1 passes to out-of-line calls is `^transform+0 z4` (0x142
 never reused as the float field: an explicit `.x` read creates 0x14d.
 
 ```sh
-uv run tools/match/c2/crimson_tool.py part_origin_trace traverse_path_follow_golb --out <new-dir> --lines 160-170
+uv run tools/match/c2/run_tracer.py part_origin_trace traverse_path_follow_golb --out <new-dir> --lines 160-170
 ```
 
-**Base keys** (`crimson_tool.py sched_trace`, C2 line 166): scale `local_x` 0x1eb (0x13d60) against fields
+**Base keys** (`run_tracer.py sched_trace`, C2 line 166): scale `local_x` 0x1eb (0x13d60) against fields
 0x14d/0x14f/0x151 (0x129a0/0x129e0/0x12a20). All fields are older than `local_x`, so every lane loads the
 scale. Native (target index 327 onward: X `fld st(0); fmul [esp+0x44]`, Y `fld [esp+0x48]; fmul st(1)`,
 Z `fmul [esp+0x4c]`) needs x < scale < y. The only ids in that gap are 0x14e, or a temporary with id mod
@@ -285,7 +285,7 @@ ADD  t + 0x8c  -> fdiv [t]
   The leaf hash 0xc007 is below the offset temp's 0xc240, so the offset is the base: native's
   `[eax+esi+0x8c]`.
 - Pre-globopt the sum is `(sample_index * 0xa8) + [ct+0x5c] + 0x8c` with the product first. After CSE the
-  product is temp 0x309 (need 0), so the load comes first (`crimson_tool.py sort_trace` shows both events).
+  product is temp 0x309 (need 0), so the load comes first (`run_tracer.py sort_trace` shows both events).
 - 0x303 is n=3 whether line 69 is present or not.
 
 | Build | Normalized | Encoded | State |

@@ -265,7 +265,7 @@ exit, −1 per reload, −2 per spill, ×2^loop depth) and keeps a value on the 
 only if it nests with already-placed values; reload pieces never stay on the
 stack. Single-use values are forward-propagated (FROUND) instead. Spec:
 `../crimson/tools/match/c2/compiler/x87-spills.md`; tracer
-`uv run tools/match/c2/crimson_tool.py x87_alloc_trace <scratch> --out <new-dir> [--lines A-B]`
+`uv run tools/match/c2/run_tracer.py x87_alloc_trace <scratch> --out <new-dir> [--lines A-B]`
 (about 3 s here). Look for the variable under "x87_range_fits_stack verdicts" to see which rule failed.
 
 **Ours.** `half_width`, `half_height` and `cos_radius` score 2 each (one def; plain uses count 0). The

@@ -327,7 +327,7 @@ to the rest is 3 in both. d.cpp spends one pick on arm 1's own `SetBelow` and on
 | v2 (per-arm `SetBelow`, inline `definition`) | not exact | 88.96% |
 | c1 (v1 + a second `SetBelow` in the join, 26-byte block) | no duplication | arm 1 keeps its `jmp` to the join, and there is one copy |
 
-`uv run tools/match/c2/crimson_tool.py il_stage_trace <scratch> --out <new-dir> --preset jumpopt` on v1:
+`uv run tools/match/c2/run_tracer.py il_stage_trace <scratch> --out <new-dir> --preset jumpopt` on v1:
 - At block_mover entry, arm 1 ends `...call; jmp JOIN`. The else arm falls into
   `JOIN: mov ecx(#296),[esi+0xc]; push; mov ecx(#222),[esi+0x10]; call; jmp OUT`.
 - At emit, arm 1 has a new copy of the four tuples, with new tuple addresses (6c160a4c ...) but the same

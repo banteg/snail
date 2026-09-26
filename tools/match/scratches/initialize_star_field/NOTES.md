@@ -337,12 +337,12 @@ interleave with the `fadd` / `fmul` differently.
 Rule and probe table: `../crimson/tools/match/c2/compiler/codeless-tuples.md` and `c2/scheduler.md`
 ("Codeless tuples"). The `round` tuple is already in the IL at `globopt_run` entry, before forward
 propagation: `+ #325 <= [speed] 1.0f; round #326 <= #325; * #327 <= #326 4.0f`
-(`uv run tools/match/c2/crimson_tool.py il_stage_trace <scratch> --out <new-dir> --lines 73-73`;
+(`uv run tools/match/c2/run_tracer.py il_stage_trace <scratch> --out <new-dir> --lines 73-73`;
 C2 line = source line − 17). `factor_out_common_operand` was hooked at its return and returned 1 for
 this shape only.
 
 **Trace of the base, window 12** (C2 line 73 = source line 90;
-`uv run tools/match/c2/crimson_tool.py sched_trace <scratch> --out <new-dir> --lines 71-79`).
+`uv run tools/match/c2/run_tracer.py sched_trace <scratch> --out <new-dir> --lines 71-79`).
 `fld [eax+0x20]` at c2, `fadd` at c3, `lea eax` at c4. At c6 the paren FROUND (h55, pri 450560) and the sprite load
 `mov eax,[eax+0x1c]` (h52, pri 491520) are both ready. The load wins. The fmul (pri 507904) waits for the
 FROUND and issues at c8. With no FROUND the fmul is ready at c6 and beats the load.

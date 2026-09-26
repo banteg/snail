@@ -622,5 +622,5 @@ hash of the cursor temporary.
 Open: a form that keeps one basic IV and restores the old cursor id and the native receiver order.
 
 ```sh
-uv run tools/match/c2/crimson_tool.py il_stage_trace initialize_turnunder_path_template_pair --out <new-dir>
+uv run tools/match/c2/run_tracer.py il_stage_trace initialize_turnunder_path_template_pair --out <new-dir>
 ```

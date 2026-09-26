@@ -137,7 +137,7 @@ Tracer (lists every counted store and every block-end demotion; `--il` dumps
 the IL at the pass boundaries):
 
 ```sh
-uv run tools/match/c2/crimson_tool.py const_trace <scratch> --out <new-dir> [--il]
+uv run tools/match/c2/run_tracer.py const_trace <scratch> --out <new-dir> [--il]
 ```
 
 - **Why the stores count.** The bool is passed straight to a bool parameter:

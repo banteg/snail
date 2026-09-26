@@ -152,7 +152,7 @@ exhaustion. No source or compiler setting changes.
 ## 2026-09-25: cross-jump rules decoded (crimson-88 Q6a)
 
 Mechanism: `../crimson/tools/match/c2/compiler/aggregate-temporaries.md` §6. Traced with
-`uv run tools/match/c2/crimson_tool.py il_stage_trace <scratch> --out <new-dir> --preset jumpopt`,
+`uv run tools/match/c2/run_tracer.py il_stage_trace <scratch> --out <new-dir> --preset jumpopt`,
 which reports every cross-jump attempt. All variants were compiled on copies.
 
 **Rules, verified on this function.**

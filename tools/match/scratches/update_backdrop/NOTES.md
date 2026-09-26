@@ -183,7 +183,7 @@ field-lifetime shape, not another isolated temporary spelling.
 
 The exact source's `fst`/`fstp` pair is explained by the x87 allocator
 (`../crimson/tools/match/c2/compiler/x87-spills.md`; tracer
-`uv run tools/match/c2/crimson_tool.py x87_alloc_trace <scratch> --out <new-dir>`).
+`uv run tools/match/c2/run_tracer.py x87_alloc_trace <scratch> --out <new-dir>`).
 `phase = phase_step + phase; if (phase > 2π) phase -= 2π;` sits inside the doubly nested loop, so every
 term is ×4. There are two candidates:
 

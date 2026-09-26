@@ -437,8 +437,8 @@ traced window tuples found no REGUSE, MOVE or other pseudo tuples. FROUNDs come 
 Named locals, pointer and reference copies, int-parameter inlines and struct copies add no tuple.
 
 **Using it.**
-- To see them, `uv run tools/match/c2/crimson_tool.py il_stage_trace <scratch> --out <new-dir> --lines A-B`
-  shows the `round` tuples at `globopt_run` entry, and `crimson_tool.py sched_trace` shows FROUND nodes
+- To see them, `uv run tools/match/c2/run_tracer.py il_stage_trace <scratch> --out <new-dir> --lines A-B`
+  shows the `round` tuples at `globopt_run` entry, and `run_tracer.py sched_trace` shows FROUND nodes
   and their cycles in the scheduled windows.
 - To add a codeless tuple without changing code, parenthesize a non-leaf float subexpression, for
   example through a macro body. A new FROUND still takes an issue cycle, so it can reorder its own

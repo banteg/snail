@@ -175,12 +175,12 @@ uv run tools/match/c2/sib_operand_trace.py <scratch> --out <new-dir> [--lines A-
 The sibling Crimson project keeps the generic C2 notes in
 `../crimson/tools/match/c2/compiler/` (x87 allocation and spills, forward
 propagation and FROUND, frame packing, layout, register allocation), with
-tracers in `../crimson/scripts/c2/`. [`crimson_tool.py`](crimson_tool.py) runs
+tracers in `../crimson/scripts/c2/`. [`run_tracer.py`](run_tracer.py) runs
 one of those tracers on a Snail scratch: it supplies this adapter as
 `crimson.match_c2`, so the tracer compiles and measures with Snail.
 `--match-root` compiles against another `tools/match` root.
 
 ```sh
-uv run tools/match/c2/crimson_tool.py il_stage_trace <scratch> --out <new-dir> --lines 189-191
-uv run tools/match/c2/crimson_tool.py priority_trace <scratch> --out <new-dir> --constant 0
+uv run tools/match/c2/run_tracer.py il_stage_trace <scratch> --out <new-dir> --lines 189-191
+uv run tools/match/c2/run_tracer.py priority_trace <scratch> --out <new-dir> --constant 0
 ```
