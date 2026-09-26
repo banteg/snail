@@ -173,3 +173,16 @@ native. No instructions are added, and C0 is unchanged (0x420).
 - The right-offset Y product order.
 
 Evidence: `/private/tmp/claude-501/sm/codex/update_track_attachment_follow_state/RESULTS.md` (55 probes).
+
+## 2026-09-26: parenthesized supertramp carry
+
+**97.80% → 97.93%**, prefix 194 → 362, 726/726.
+
+**Change.** `float carry = (delta + supertramp_template->width_or_scale);`
+
+**Why it works.** The parentheses add the IL_FROUND that window 16 needed. It is the same shape and fix
+as traverse_path_follow_golb, using scheduler.md's "Codeless tuples" rule.
+
+**Remaining.**
+- kind-42 addressing and publication;
+- the right-offset Y product order (the same slot-id tie as traverse).

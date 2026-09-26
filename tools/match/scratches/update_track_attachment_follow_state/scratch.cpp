@@ -266,7 +266,7 @@ terminal_path:
             Path* supertramp_template = this->template_record;
             float old_x = out_position.x;
             unsigned int count = supertramp_template->segment_count;
-            float carry = delta + supertramp_template->width_or_scale;
+            float carry = (delta + supertramp_template->width_or_scale);
             AttachmentSample* samples = supertramp_template->secondary_samples;
             AttachmentSample* terminal = &samples[count];
             Vec3* anchor = &source_cell->position;
