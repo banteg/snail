@@ -66,7 +66,6 @@ int cRPathFollowGolb::Traverse(float path_factor, Vec3& position, Vec3* velocity
 
     progress = delta + progress;
 
-    current_template = template_record;
     int sample_count = current_template->segment_count;
 
     float center_x;

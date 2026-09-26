@@ -187,3 +187,20 @@ inliner substitutes it, so there is no inline copy.
   +0x28a, +0x2c0 (already present in the base) and +0x46c.
 
 The retained 99.53% source also carries those three SIB swaps.
+
+## 2026-09-26: redundant template reload removed (fixes 3 SIB bytes)
+
+The second `current_template = template_record;` after the loop is deleted. The normalized listing is
+unchanged (99.53%), but the three `fdiv [..+0x8c]` SIB bytes (+0x254, +0x28a, +0x2c0) become native's.
+
+**Mechanism** (crimson-88, `sib-operand-order.md`).
+- The reassignment killed the CSE of `current_template + 0x5c`, so each load became an unCSE'd address
+  expression. Expressions always sort first, so the bank was the base.
+- Without it, the bank address is CSE temp 0x303. The load is then a leaf with hash 0xc007, which is below
+  the offset temp's 0xc240, so the offset is the base, as in native.
+
+**Remaining:** only the Y-lane operand rank.
+- In the y2 variant (component lanes, each using `(input_position->x - center_x)`), the scale is CSE
+  temp 0x4ab and the fields are 0x1e8/0x1ec. Native's order would need the temp at slot mod 1024 = 0xf5,
+  or the field records to straddle 2·0xab = 0x156.
+- Without an assignment inside an expression, this is id-tuning only. Not pursued.
