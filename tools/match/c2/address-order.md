@@ -298,6 +298,19 @@ All four still need at least 9 blocks down or 17 up.
 - LoopTheLoop needs 9–11 fewer blocks, not 5–11. At −5 to −8, five delta-loop SIB bytes flip.
 - The TurnoverDouble and HalfPipe rows need the secondary-address rule.
 
-**Untested leads.**
-- A late pool-B id for the offset local: ≥ 0x179 in TurnoverDouble, ≥ 0x1f9 in HalfPipe.
-- Whether the originals used a different operand kind at the bank site, as Hill/Valley does.
+**Leads, tested 2026-09-26: both negative.**
+
+The swapped site in both builders is the curve loop's `center_x` store. Its right-hand side also reads
+`primary_samples[0].center_x`, so only here the bank is a `sym` value temp (TurnoverDouble 0x4bc, key
+0x2f00). Every other site uses the loaded bank (0x4ba, 0x8007), which must stay first.
+
+- **A late pool-B id for the cursor.** In TurnoverDouble the cursor's window is 0x179–0x3ff, above the
+  sym bank and below the load/leaf. Dead `int` locals added before the cursor do overflow the first id
+  block, but the new block opens at the counter's current value. That moves the cursor only to 0x107
+  (hash 0x20e0), still first-referenced before the loop. An id ≥ 0x179 would need the overflow after
+  ~0x179 counter ids, which is past the loop entry. HalfPipe needs ≥ 0x1f9, which is further still.
+- **A different operand kind at the site.**
+  - `primary_samples[sample_index + 6].center_x` creates a second induction variable: 685/680.
+  - A named `slalom_x` and a commuted product are code-identical but keep the swap.
+  - A separate bank borrow for the right-hand side would make the left-hand bank the load/leaf, which is
+    bank-first, the wrong direction.
