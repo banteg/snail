@@ -230,3 +230,22 @@ direct symbol at `+0x20` and the index at `+0x2c`.
   while its address is not a CSE temp.
 - `addrorder.py` currently skips these kind-6 loads. See crimson `sib-operand-order.md` for a patch
   proposal.
+
+## CSE slot costs (crimson-88, 2026-09-26)
+
+- Every CSE id comes from `cse_insert` (`0x10707e22`) → `0x10707ebc` → `symbol_alloc(0xf)`. Pool E has no
+  free list, so ids are C0 + n, in order, with no gaps.
+- `assign_expression_owners` (`0x10711209`) numbers each tuple in this order: source memory operands,
+  destination memory operands, then the expression or compare. Assignments are numbered in a later
+  sweep, so copies never move these ids.
+- Costs:
+  - a first `this->f = v` costs 2: the address tuple `this + off`, plus the store operand's location
+    number;
+  - a convert, an add or a compare costs 1;
+  - a first access through a member pointer costs 5.
+- Correction: the partner slot is not a discarded candidate. It lives in the memory operand and feeds
+  kill sets and load CSE.
+- The path-builder SIB residues split into two mechanisms:
+  - Hill/Valley: primary bank temp n ≡ 0 mod 4 needed;
+  - the other six: a bank CSE symbol ranked by id << 6, needing id mod 1024 in a window (past 0x800),
+    which is hundreds of ids and impractical.

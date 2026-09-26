@@ -540,3 +540,30 @@ The dead `0.0f` store is eliminated.
 | all three components as member stores | 95.58%, 667 insns |
 | `(x, y, pz)` then `z += lz` | 97.09%, 671 insns |
 | copy the position, then `+=` per lane or `+= lateral_offset` | 69–70% |
+
+## 2026-09-26: the 9 SIB swaps decoded (crimson-88 Q13); no authored fix yet
+
+All 9 swaps are loads through the primary bank-address CSE temp `this+0x58`, currently slot 0x4f5
+(n=21), against the offset locals 0xf / 0x1c9. Leaf key: `((T & 3) << 14) + 7`.
+
+**What native needs** (verified by phantom-slot builds):
+- primary n ≡ 0 mod 4;
+- the secondary `this+0x5c` temp n ≢ 0 mod 4 (now 45);
+- the width_cells address temp n6 ≡ 2 or 3.
+
+A phantom `21:3,22:1` build is byte-exact.
+
+**Slot costs before the primary temp** (crimson `cse-slot-count.md`):
+- a first `this->f = v` costs 2 (the address tuple plus the store operand's location number);
+- the length convert, `steps + 1`, `last + 1`, the float convert and the `centered` compare cost 1 each.
+
+**Byte-exact but not authored.** crimson's version adds redundant statements (`segment_count = last;
+++segment_count;` and a second `segment_count_f` store). Not adopted.
+
+**My probes.**
+- Touching `primary_samples` before `if (centered)` gives exactly native's slots: primary n20, secondary
+  n45. But moving a field store there reorders the code (98.5–98.8%).
+- A `first_bank` reference borrow shifts C0 by a block (95.7%).
+- About 36 header spellings in total (mine and crimson's) give 0, +1 or +2, or change code.
+
+Still open: an authored −1 or +3 before the primary temp.
