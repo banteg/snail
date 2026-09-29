@@ -6044,7 +6044,7 @@
       "name": "construct_game_runtime_eh_handler",
       "kind": "function_alias",
       "size": "0xa",
-      "description": "Compiler-generated construct_game_runtime C++ frame-handler thunk. Candidate verification compares the bounded normalized mov-EH-metadata and jump-to-__CxxFrameHandler body rather than unstable compiler-local label spelling."
+      "description": "Compiler-generated construct_game_runtime C++ frame-handler thunk. Candidate verification requires equal bounded encodings and complete operand-reference audits, including the EH metadata and __CxxFrameHandler destination; compiler-local label spelling alone is not proof."
     },
     {
       "address": "0x4972b0",

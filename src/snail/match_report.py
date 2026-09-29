@@ -25,10 +25,10 @@ from .symbols import REPO_ROOT, load_function_symbol_manifest
 VERSION = "win32-reflexive"
 EVIDENCE_SCHEMA = 2
 SCORING_POLICY = {
-    "version": 5,
-    "references": "positional-for-normalized-exact; diagnostic-alignment-for-partials",
+    "version": 6,
+    "references": "positional-for-normalized-exact; bounded-encoded-helper-audits; diagnostic-alignment-for-partials",
     "coverage": "decoded-code-and-verified-inline-tables; unknown-bytes-reject-exact",
-    "encoding": "same-offsets-and-encodings; audited-external-relocations; resolved-local-branches-and-table-entries; literal-lookup-bytes",
+    "encoding": "same-offsets-and-encodings; typed-audited-external-relocations; resolved-rel32-local-branches-and-dir32-table-entries; literal-lookup-bytes",
     "padding": "untargeted-terminal-nop-int3; no-owned-code-credit",
 }
 VERIFICATION_MODE = "Source-bound local compilation evidence; CI checks freshness and report consistency."
@@ -62,7 +62,7 @@ def _input_path(path: str) -> bool:
         return p.name.endswith("code-inventory.json")
     if path.startswith("analysis/ownership/"):
         return p.name in {"library-attribution.json", "reference-build.json"}
-    if path == "tools/match/cl.sh":
+    if path in {"tools/match/cl.sh", "tools/match/translation_units.json"}:
         return True
     return path.startswith("tools/match/") and (
         p.name in {"scratch.cpp", "scratch.conf"} or p.suffix in {".h", ".hpp", ".inc"}

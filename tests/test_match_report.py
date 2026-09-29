@@ -1,3 +1,4 @@
+import json
 from copy import deepcopy
 from itertools import pairwise
 from pathlib import Path
@@ -165,3 +166,29 @@ def test_ownership_filters_partition_all_code_without_adding_match_credit(monkey
     assert result["measures"]["matched_code"] == "100"
     assert result["units"][1]["functions"][0]["metadata"]["demangled_name"] == "png_known"
     assert result["units"][1]["metadata"]["progress_categories"] == ["libs", "libs.libpng-1.2.5"]
+
+
+def test_translation_unit_order_invalidates_report_inputs(tmp_path):
+    import subprocess
+
+    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
+    root = tmp_path / "tools/match"
+    root.mkdir(parents=True)
+    for name in ("a", "b"):
+        source = root / "scratches" / name
+        source.mkdir(parents=True)
+        (source / "scratch.cpp").write_text(f"int {name}() {{ return 0; }}\n")
+        (source / "scratch.conf").write_text(f"FUNCTION={name}\n")
+    units = root / "translation_units.json"
+    first = {
+        "schema": 1,
+        "units": [{"name": "unit", "source_object": "Unit.o", "members": ["a", "b"]}],
+    }
+    units.write_text(json.dumps(first))
+    before = report.repository_inputs(tmp_path)
+    first["units"][0]["members"].reverse()
+    units.write_text(json.dumps(first))
+    after = report.repository_inputs(tmp_path)
+    assert before != after, (
+        "Changed compiler source composition/order is invisible to report input pins"
+    )

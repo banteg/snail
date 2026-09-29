@@ -758,6 +758,19 @@ and undecodable suffix bytes are retained; only untargeted terminal `nop`/`int3`
 instructions can be excluded as padding after decoding. Unknown bytes reject
 exact certification.
 
+Relocation masking verifies the operand's relocation kind: relative branches
+require REL32, while absolute address operands require DIR32. Content identities
+for strings and floats come from the symbol plus its signed addend. Local helper
+aliases require bounded encoded-byte equality and complete audits of the helper's
+own references. Missing evidence or unresolved recursive aliases reject exact
+certification; normalized helper instructions alone do not establish equivalence.
+
+Status cache entries retain the input key captured before compilation and
+matching. An input edit during evaluation rejects publication, and the saved
+key is never replaced by the changed inputs' identity. Public report pins include
+`translation_units.json`, so source grouping and member-order edits require a
+fresh measurement.
+
 JSON diagnostics expose `body_byte_exact`, canonical encoded-body hashes and
 relocation masks, compared/excluded/unexplained target ranges (function-relative),
 and the candidate COFF object's SHA-256 when compiled. Public report evidence

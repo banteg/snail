@@ -38,6 +38,7 @@ from .symbols import (
 
 IMAGE_FILE_MACHINE_I386 = 0x14C
 IMAGE_REL_I386_DIR32 = 0x06
+IMAGE_REL_I386_REL32 = 0x14
 IMAGE_SYM_CLASS_EXTERNAL = 2
 IMAGE_SYM_CLASS_STATIC = 3
 IMAGE_SCN_CNT_CODE = 0x00000020
@@ -90,6 +91,9 @@ class CoffObject:
     symbols: tuple[CoffSymbol, ...]
 
 
+MAX_ALIAS_DEPTH = 4
+
+
 @dataclass(frozen=True, slots=True)
 class ObjectRelocationReference:
     offset: int
@@ -103,6 +107,7 @@ class ObjectRelocationReference:
     symbol_data: bytes | None = None
     symbol_relocation_offsets: frozenset[int] = frozenset()
     relocation_type: int | None = None
+    symbol_relocation_references: tuple[ObjectRelocationReference, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -311,6 +316,7 @@ class MaskedReference:
     audited_bytes: bytes | None = None
     local_data_bytes: bytes | None = None
     normalized_code: tuple[str, ...] | None = None
+    code_evidence: dict[str, Any] | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -968,21 +974,16 @@ def _resolve_object_relocation(
 
     if symbol.section_number > 0:
         section = obj.sections[symbol.section_number - 1]
-        candidates = [symbol.value]
-        if addend is not None:
-            candidates.extend([symbol.value + addend, addend])
-        seen_offsets: set[int] = set()
-        for offset in candidates:
-            if offset in seen_offsets:
-                continue
-            seen_offsets.add(offset)
-            text = _read_printable_c_string(section.data, offset)
-            if text is not None:
-                return f"str:{_quote_reference_string(text)}", f"str:{text}", True
-            if section.name.startswith(".rdata") and (
-                constant := _format_f32_constant(section.data, offset)
-            ) is not None:
-                return constant[0], constant[1], True
+        # COFF addends are relative to the symbol, including negative offsets.
+        # Never borrow the base's content identity for an interior reference.
+        offset = symbol.value + (_signed_u32(addend) if addend is not None else 0)
+        text = _read_printable_c_string(section.data, offset)
+        if text is not None:
+            return f"str:{_quote_reference_string(text)}", f"str:{text}", True
+        if section.name.startswith(".rdata") and (
+            constant := _format_f32_constant(section.data, offset)
+        ) is not None:
+            return constant[0], constant[1], True
         text, key = _format_symbol_reference(symbol.name, addend or 0)
         return text, key, bool(_canonical_symbol_name(symbol.name))
 
@@ -1045,105 +1046,121 @@ def extract_object_function(
     )
     end = siblings[0] if siblings else len(section.data)
     symbols_by_raw_index = {symbol.raw_index: symbol for symbol in obj.symbols}
-    relocation_references: list[ObjectRelocationReference] = []
-    for relocation in section.relocations:
-        if not (target.value <= relocation.virtual_address < end):
-            continue
-        offset = relocation.virtual_address - target.value
-        symbol = symbols_by_raw_index.get(relocation.symbol_index)
-        if symbol is None:
-            relocation_references.append(
+
+    def references_for_span(
+        section_number: int, start: int, end: int, depth: int = 0,
+    ) -> tuple[ObjectRelocationReference, ...]:
+        section = obj.sections[section_number - 1]
+        references: list[ObjectRelocationReference] = []
+        for relocation in section.relocations:
+            if not (start <= relocation.virtual_address < end):
+                continue
+            offset = relocation.virtual_address - start
+            symbol = symbols_by_raw_index.get(relocation.symbol_index)
+            if symbol is None:
+                references.append(
+                    ObjectRelocationReference(
+                        offset=offset,
+                        symbol_name=f"<symbol#{relocation.symbol_index}>",
+                        text=f"sym:<symbol#{relocation.symbol_index}>",
+                        key=None,
+                        explained=False,
+                        addend=None,
+                        symbol_offset=None,
+                    )
+                )
+                continue
+            addend = _read_u32(section.data, relocation.virtual_address)
+            # VC6 emits __except_list as an external absolute pseudo-symbol for
+            # the FS:[0] SEH chain head. Its DIR32 relocation resolves to zero at
+            # link time, so preserve the encoded zero instead of masking it as an
+            # image address. Nonzero addends and all other relocations stay
+            # explicit and subject to the normal reference audit.
+            if (
+                relocation.relocation_type == IMAGE_REL_I386_DIR32
+                and _canonical_symbol_name(symbol.name) == "except_list"
+                and addend == 0
+            ):
+                continue
+            text, key, explained = _resolve_object_relocation(
+                obj,
+                symbol,
+                addend,
+                reference_manifest=reference_manifest,
+            )
+            symbol_section = (
+                obj.sections[symbol.section_number - 1]
+                if symbol.section_number > 0
+                else None
+            )
+            symbol_end = (
+                min(
+                    (
+                        sibling.value
+                        for sibling in obj.symbols
+                        if sibling.section_number == symbol.section_number
+                        and sibling.value > symbol.value
+                    ),
+                    default=len(symbol_section.data),
+                )
+                if symbol_section is not None
+                else None
+            )
+            canonical_symbol_name = _canonical_symbol_name(symbol.name)
+            retain_local_symbol = (
+                depth < MAX_ALIAS_DEPTH
+                and canonical_symbol_name.startswith(("$L", "$E"))
+                and symbol_end is not None
+            )
+            references.append(
                 ObjectRelocationReference(
                     offset=offset,
-                    symbol_name=f"<symbol#{relocation.symbol_index}>",
-                    text=f"sym:<symbol#{relocation.symbol_index}>",
-                    key=None,
-                    explained=False,
-                    addend=None,
-                    symbol_offset=None,
+                    symbol_name=symbol.name,
+                    text=text,
+                    key=key,
+                    explained=explained,
+                    addend=addend,
+                    relocation_type=relocation.relocation_type,
+                    symbol_offset=(
+                        symbol.value - start
+                        if symbol.section_number == section_number
+                        else None
+                    ),
+                    symbol_size=(
+                        symbol_end - symbol.value
+                        if symbol_end is not None
+                        else None
+                    ),
+                    symbol_data=(
+                        symbol_section.data[symbol.value : symbol_end]
+                        if retain_local_symbol and symbol_section is not None
+                        else None
+                    ),
+                    symbol_relocation_references=(
+                        references_for_span(
+                            symbol.section_number, symbol.value, symbol_end, depth + 1,
+                        )
+                        if retain_local_symbol and symbol_end is not None
+                        else ()
+                    ),
+                    symbol_relocation_offsets=(
+                        frozenset(
+                            sibling_relocation.virtual_address - symbol.value
+                            for sibling_relocation in symbol_section.relocations
+                            if symbol.value
+                            <= sibling_relocation.virtual_address
+                            < symbol_end
+                        )
+                        if retain_local_symbol
+                        and symbol_section is not None
+                        and symbol_end is not None
+                        else frozenset()
+                    ),
                 )
             )
-            continue
-        addend = _read_u32(section.data, relocation.virtual_address)
-        # VC6 emits __except_list as an external absolute pseudo-symbol for
-        # the FS:[0] SEH chain head. Its DIR32 relocation resolves to zero at
-        # link time, so preserve the encoded zero instead of masking it as an
-        # image address. Nonzero addends and all other relocations stay
-        # explicit and subject to the normal reference audit.
-        if (
-            relocation.relocation_type == IMAGE_REL_I386_DIR32
-            and _canonical_symbol_name(symbol.name) == "except_list"
-            and addend == 0
-        ):
-            continue
-        text, key, explained = _resolve_object_relocation(
-            obj,
-            symbol,
-            addend,
-            reference_manifest=reference_manifest,
-        )
-        symbol_section = (
-            obj.sections[symbol.section_number - 1]
-            if symbol.section_number > 0
-            else None
-        )
-        symbol_end = (
-            min(
-                (
-                    sibling.value
-                    for sibling in obj.symbols
-                    if sibling.section_number == symbol.section_number
-                    and sibling.value > symbol.value
-                ),
-                default=len(symbol_section.data),
-            )
-            if symbol_section is not None
-            else None
-        )
-        canonical_symbol_name = _canonical_symbol_name(symbol.name)
-        retain_local_symbol = (
-            canonical_symbol_name.startswith(("$L", "$E"))
-            and symbol_end is not None
-        )
-        relocation_references.append(
-            ObjectRelocationReference(
-                offset=offset,
-                symbol_name=symbol.name,
-                text=text,
-                key=key,
-                explained=explained,
-                addend=addend,
-                relocation_type=relocation.relocation_type,
-                symbol_offset=(
-                    symbol.value - target.value
-                    if symbol.section_number == target.section_number
-                    else None
-                ),
-                symbol_size=(
-                    symbol_end - symbol.value
-                    if symbol_end is not None
-                    else None
-                ),
-                symbol_data=(
-                    symbol_section.data[symbol.value : symbol_end]
-                    if retain_local_symbol and symbol_section is not None
-                    else None
-                ),
-                symbol_relocation_offsets=(
-                    frozenset(
-                        sibling_relocation.virtual_address - symbol.value
-                        for sibling_relocation in symbol_section.relocations
-                        if symbol.value
-                        <= sibling_relocation.virtual_address
-                        < symbol_end
-                    )
-                    if retain_local_symbol
-                    and symbol_section is not None
-                    and symbol_end is not None
-                    else frozenset()
-                ),
-            )
-        )
+        return tuple(references)
+
+    relocation_references = references_for_span(target.section_number, target.value, end)
     return ObjectFunction(
         name=target.name,
         data=section.data[target.value : end],
@@ -1230,6 +1247,7 @@ def _resolve_image_reference(
     reference_manifest: ReferenceSymbolManifest | None = None,
     prefer_rdata_float: bool = False,
     function_base: int = 0,
+    alias_depth: int = 0,
 ) -> MaskedReference:
     text: str
     key: str | None
@@ -1240,6 +1258,7 @@ def _resolve_image_reference(
         jump_table_entries = None
         audited_bytes = None
         normalized_code = None
+        code_evidence = None
         if (
             reference_symbol.kind == "jump_table"
             and reference_symbol.size is not None
@@ -1272,14 +1291,20 @@ def _resolve_image_reference(
                 reference_symbol.size,
             )
             if alias_bytes is not None:
-                normalized_code = normalize_function(
+                code_evidence = _alias_code_evidence(
                     alias_bytes,
                     address_range=(
                         image.image_base,
                         image.image_base + image.size_of_image,
                     ),
                     base_address=value,
+                    image=image,
+                    manifest=manifest,
+                    reference_manifest=reference_manifest,
+                    alias_depth=alias_depth,
                 )
+                if code_evidence is not None:
+                    normalized_code = tuple(line["text"] for line in code_evidence["lines"])
         return MaskedReference(
             0,
             "",
@@ -1296,6 +1321,7 @@ def _resolve_image_reference(
             jump_table_entries=jump_table_entries,
             audited_bytes=audited_bytes,
             normalized_code=normalized_code,
+            code_evidence=code_evidence,
         )
     if manifest is not None:
         by_address = {symbol.address: symbol for symbol in manifest.functions}
@@ -1814,6 +1840,7 @@ def disassemble_normalized_function(
     image: LoadedImage | None = None,
     manifest: FunctionSymbolManifest | None = None,
     reference_manifest: ReferenceSymbolManifest | None = None,
+    _alias_depth: int = 0,
 ) -> tuple[DisassemblyLine, ...]:
     """Disassemble to normalized instruction lines with offsets and addresses.
 
@@ -1858,6 +1885,7 @@ def disassemble_normalized_function(
         audited_bytes = None
         local_data_bytes = None
         normalized_code = None
+        code_evidence = None
         reference_symbol = None
         local_reference_symbol = None
         if reference is not None:
@@ -1876,7 +1904,7 @@ def disassemble_normalized_function(
             else ""
         )
         if reference is not None and local_symbol_name.startswith(("$L", "$E")):
-            symbol_addend = reference.addend or 0
+            symbol_addend = _signed_u32(reference.addend) if reference.addend is not None else 0
             local_offset = (
                 reference.symbol_offset + symbol_addend
                 if reference.symbol_offset is not None
@@ -1935,10 +1963,20 @@ def disassemble_normalized_function(
                         for offset in relocation_by_offset
                         if local_offset <= offset < local_end
                     )
-                    normalized_code = normalize_function(
+                    local_references = tuple(
+                        replace(r, offset=r.offset - local_offset,
+                                symbol_offset=r.symbol_offset - local_offset
+                                if r.symbol_offset is not None else None)
+                        for r in relocation_references
+                        if local_offset <= r.offset < local_end
+                    )
+                    code_evidence = _alias_code_evidence(
                         local_data_bytes,
                         relocation_offsets=local_relocation_offsets,
+                        relocation_references=local_references,
                         address_range=address_range,
+                        image=image, manifest=manifest, reference_manifest=reference_manifest,
+                        alias_depth=_alias_depth,
                     )
             elif reference.symbol_data is not None and 0 <= symbol_addend < len(
                 reference.symbol_data
@@ -1949,11 +1987,23 @@ def disassemble_normalized_function(
                     for offset in reference.symbol_relocation_offsets
                     if offset >= symbol_addend
                 )
-                normalized_code = normalize_function(
+                local_references = tuple(
+                    replace(r, offset=r.offset - symbol_addend,
+                            symbol_offset=r.symbol_offset - symbol_addend
+                            if r.symbol_offset is not None else None)
+                    for r in reference.symbol_relocation_references
+                    if r.offset >= symbol_addend
+                )
+                code_evidence = _alias_code_evidence(
                     local_data_bytes,
                     relocation_offsets=local_relocation_offsets,
+                    relocation_references=local_references,
                     address_range=address_range,
+                    image=image, manifest=manifest, reference_manifest=reference_manifest,
+                    alias_depth=_alias_depth,
                 )
+            if code_evidence is not None:
+                normalized_code = tuple(line["text"] for line in code_evidence["lines"])
         if reference is not None and (
             reference_symbol is not None
             and reference_symbol.kind in CONTENT_AUDITED_REFERENCE_KINDS
@@ -1987,6 +2037,7 @@ def disassemble_normalized_function(
             audited_bytes=audited_bytes,
             local_data_bytes=local_data_bytes,
             normalized_code=normalized_code,
+            code_evidence=code_evidence,
         )
 
     def image_reference(
@@ -2003,6 +2054,7 @@ def disassemble_normalized_function(
             reference_manifest=reference_manifest,
             prefer_rdata_float=prefer_rdata_float,
             function_base=base_address,
+            alias_depth=_alias_depth,
         )
         return MaskedReference(
             operand_index=operand_index,
@@ -2018,6 +2070,7 @@ def disassemble_normalized_function(
             audited_bytes=resolved.audited_bytes,
             local_data_bytes=resolved.local_data_bytes,
             normalized_code=resolved.normalized_code,
+            code_evidence=resolved.code_evidence,
         )
 
     instructions = list(md.disasm(data, base_address))
@@ -2197,6 +2250,77 @@ def normalize_function(
     return tuple(line.text for line in lines)
 
 
+def _alias_code_evidence(
+    data: bytes,
+    *,
+    alias_depth: int,
+    relocation_offsets: frozenset[int] = frozenset(),
+    relocation_references: tuple[ObjectRelocationReference, ...] = (),
+    **kwargs,
+) -> dict[str, Any] | None:
+    """Retain bounded helper bytes and complete operand audits, including aliases.
+
+    Recursive/cyclic helpers without evidence within the bound stay unresolved.
+    The JSON form also survives the detailed match cache without losing proof.
+    """
+    if alias_depth >= MAX_ALIAS_DEPTH:
+        return None
+    lines = disassemble_normalized_function(
+        data,
+        relocation_offsets=relocation_offsets,
+        relocation_references=relocation_references,
+        _alias_depth=alias_depth + 1,
+        **kwargs,
+    )
+    return {
+        "data": data.hex(),
+        "relocation_offsets": sorted(relocation_offsets),
+        # Encoded verification needs the field's relocation semantics; nested
+        # symbol bodies are already captured in each line's reference evidence.
+        "relocations": [
+            {
+                key: getattr(r, key)
+                for key in (
+                    "offset",
+                    "symbol_name",
+                    "text",
+                    "key",
+                    "explained",
+                    "addend",
+                    "symbol_offset",
+                    "relocation_type",
+                )
+            }
+            for r in relocation_references
+        ],
+        "lines": [
+            {
+                "offset": line.offset,
+                "address": line.address,
+                "text": line.text,
+                "size": line.size,
+                "masked_references": [
+                    _masked_reference_cache_payload(r) for r in line.masked_references
+                ],
+            }
+            for line in lines
+        ],
+    }
+
+
+def _alias_evidence_lines(evidence: dict[str, Any]) -> tuple[DisassemblyLine, ...]:
+    return tuple(
+        DisassemblyLine(
+            line["offset"],
+            line["address"],
+            line["text"],
+            line["size"],
+            tuple(_masked_reference_from_cache(r) for r in line["masked_references"]),
+        )
+        for line in evidence["lines"]
+    )
+
+
 def _reference_key_options(reference: MaskedReference) -> frozenset[str]:
     keys = [key for key in (reference.key, *reference.alternate_keys) if key is not None]
     return frozenset(keys)
@@ -2335,13 +2459,41 @@ def _reference_status(
             and len(candidate.local_data_bytes) >= byte_count
         )
 
-    def function_alias_code_matches(
+    def function_alias_status(
         target: MaskedReference, candidate: MaskedReference
-    ) -> bool:
+    ) -> str:
+        left, right = target.code_evidence, candidate.code_evidence
+        if left is None or right is None:
+            return "unresolved"
+        target_lines, candidate_lines = (
+            _alias_evidence_lines(left),
+            _alias_evidence_lines(right),
+        )
+        if tuple(line.text for line in target_lines) != tuple(
+            line.text for line in candidate_lines
+        ):
+            return "mismatch"
+        audit = audit_masked_operands(target_lines, candidate_lines)
+        if audit.unresolved_count or audit.unaudited_count:
+            return "unresolved"
+        if audit.mismatch_count:
+            return "mismatch"
+        proof = encoded_body_evidence(
+            bytes.fromhex(left["data"]),
+            ObjectFunction(
+                candidate.text,
+                bytes.fromhex(right["data"]),
+                frozenset(right["relocation_offsets"]),
+                tuple(ObjectRelocationReference(**r) for r in right["relocations"]),
+            ),
+            target_lines,
+            candidate_lines,
+            audit,
+        )
+        if proof is None:
+            return "unresolved"
         return (
-            is_local_function_alias(target, candidate)
-            and target.normalized_code is not None
-            and target.normalized_code == candidate.normalized_code
+            "ok" if proof["target_sha256"] == proof["candidate_sha256"] else "mismatch"
         )
 
     def references_match(target: MaskedReference, candidate: MaskedReference) -> bool:
@@ -2350,7 +2502,7 @@ def _reference_status(
         if is_content_audited_reference(target, candidate):
             return audited_bytes_match(target, candidate)
         if is_local_function_alias(target, candidate):
-            return function_alias_code_matches(target, candidate)
+            return function_alias_status(target, candidate) == "ok"
         target_keys = _reference_key_options(target)
         candidate_keys = _reference_key_options(candidate)
         return bool(target_keys & candidate_keys)
@@ -2389,11 +2541,7 @@ def _reference_status(
     )
     has_unverified_function_alias = any(
         is_local_function_alias(target, candidate)
-        and not function_alias_code_matches(target, candidate)
-        and (
-            target.normalized_code is None
-            or candidate.normalized_code is None
-        )
+        and function_alias_status(target, candidate) == "unresolved"
         for target, candidate in zip(target_references, candidate_references)
     )
     if (
@@ -3048,8 +3196,15 @@ def encoded_body_evidence(
             field = "imm" if reference.kind == "imm" else "disp"
             offset = getattr(candidate_insn, field + "_offset")
             size = getattr(candidate_insn, field + "_size")
+            relocation = relocations.get(b.offset + offset)
+            relative = field == "imm" and (
+                capstone.CS_GRP_JUMP in candidate_insn.groups
+                or capstone.CS_GRP_CALL in candidate_insn.groups
+            )
             if (
-                not size
+                size != 4
+                or relocation is None
+                or relocation.relocation_type != (IMAGE_REL_I386_REL32 if relative else IMAGE_REL_I386_DIR32)
                 or offset != getattr(target_insn, field + "_offset")
                 or size != getattr(target_insn, field + "_size")
                 or b.offset + offset not in candidate.relocation_offsets
@@ -3063,7 +3218,11 @@ def encoded_body_evidence(
             local_targets
             and b.offset + candidate_insn.imm_offset in candidate.relocation_offsets
         ):
-            if len(local_targets) != 1 or not candidate_insn.imm_size:
+            relocation = relocations.get(b.offset + candidate_insn.imm_offset)
+            if (
+                len(local_targets) != 1 or candidate_insn.imm_size != 4
+                or relocation is None or relocation.relocation_type != IMAGE_REL_I386_REL32
+            ):
                 return None
             offset, size = candidate_insn.imm_offset, candidate_insn.imm_size
             displacement = local_targets[0] - b.offset - b.size
@@ -6034,7 +6193,7 @@ def compile_idiom_case(
 
 
 # bump when the cache schema changes; matcher source mtime handles scoring edits
-CACHE_VERSION = 12
+CACHE_VERSION = 13
 
 
 def _masked_reference_cache_payload(reference: MaskedReference) -> dict:
@@ -6070,6 +6229,7 @@ def _masked_reference_cache_payload(reference: MaskedReference) -> dict:
             if reference.normalized_code is not None
             else None
         ),
+        "code_evidence": reference.code_evidence,
     }
 
 
@@ -6106,6 +6266,7 @@ def _masked_reference_from_cache(payload: dict) -> MaskedReference:
             if payload["normalized_code"] is not None
             else None
         ),
+        code_evidence=payload["code_evidence"],
     )
 
 
@@ -6177,6 +6338,14 @@ def _function_manifest_cache_digest(manifest: FunctionSymbolManifest) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def _scratch_context_key(image_path: Path) -> dict:
+    return {
+        "image_mtime": _mtime_ns(image_path),
+        "matcher_mtime": _mtime_ns(Path(__file__)),
+        "reference_manifest_mtime": _mtime_ns(DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH),
+    }
+
+
 def _scratch_cache_key(
     config: ScratchConfig,
     image_path: Path,
@@ -6195,10 +6364,8 @@ def _scratch_cache_key(
             "end_va": config.end_va,
             "symbol": config.symbol,
         },
-        "image_mtime": _mtime_ns(image_path),
-        "matcher_mtime": _mtime_ns(Path(__file__)),
+        **_scratch_context_key(image_path),
         "function_manifest": manifest_digest,
-        "reference_manifest_mtime": _mtime_ns(DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH),
     }
 
 
@@ -6265,21 +6432,21 @@ def _store_cached_status(
     manifest_digest: str,
     audit: MaskedOperandAudit | None = None,
     include_resolver: _ScratchIncludeResolver | None = None,
+    cache_key: dict | None = None,
 ) -> None:
     import json
 
     cache_path = config.directory / "build/match-cache.json"
     cache_path.parent.mkdir(exist_ok=True)
-    cache_path.write_text(
+    current_key = _scratch_cache_key(
+        config, image_path, match_root, manifest_digest=manifest_digest,
+    )
+    if cache_key is not None and current_key != cache_key:
+        raise RuntimeError(f"scratch inputs changed during matching: {config.function}")
+    _write_text_atomic(cache_path,
         json.dumps(
             {
-                "key": _scratch_cache_key(
-                    config,
-                    image_path,
-                    match_root,
-                    manifest_digest=manifest_digest,
-                    include_resolver=include_resolver,
-                ),
+                "key": current_key if cache_key is None else cache_key,
                 "status": status,
                 "masked_operand_audit": _masked_audit_cache_payload(
                     audit or MaskedOperandAudit()
@@ -6359,6 +6526,7 @@ class _ScratchMatchTask:
     config: ScratchConfig
     address: int
     object_path: Path | None = None
+    cache_key: dict | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -6428,9 +6596,17 @@ def _collect_uncached_match_outcomes(
     manifest_digest: str,
     jobs: int,
     include_resolver: _ScratchIncludeResolver,
+    context_key: dict | None = None,
 ) -> list[_ScratchMatchOutcome]:
     """Compile in threads, then perform CPU-heavy matching in worker processes."""
-    tasks = [_ScratchMatchTask(config, address) for config, address in uncached]
+    tasks = [
+        _ScratchMatchTask(config, address, cache_key={
+            **_scratch_cache_key(config, image_path, match_root, manifest_digest=manifest_digest),
+            **(context_key or {}),
+        })
+        for config, address in uncached
+    ]
+    task_keys = {task.config.directory: task.cache_key for task in tasks}
 
     def compile_task(task: _ScratchMatchTask) -> _ScratchMatchTask | _ScratchMatchOutcome:
         try:
@@ -6482,17 +6658,16 @@ def _collect_uncached_match_outcomes(
         matched = []
 
     for outcome in matched:
-        outcomes_by_directory[outcome.config.directory] = outcome
         if outcome.fields is not None and outcome.audit is not None:
-            _store_cached_status(
-                outcome.config,
-                image_path,
-                outcome.fields,
-                match_root,
-                manifest_digest=manifest_digest,
-                audit=outcome.audit,
-                include_resolver=include_resolver,
-            )
+            try:
+                _store_cached_status(
+                    outcome.config, image_path, outcome.fields, match_root,
+                    manifest_digest=manifest_digest, audit=outcome.audit,
+                    cache_key=task_keys[outcome.config.directory],
+                )
+            except (OSError, RuntimeError) as error:
+                outcome = replace(outcome, fields=None, audit=None, error=_summarize_error(error))
+        outcomes_by_directory[outcome.config.directory] = outcome
     return [outcomes_by_directory[task.config.directory] for task in tasks]
 
 
@@ -6514,6 +6689,7 @@ def collect_scratch_statuses(
     if jobs < 1:
         raise ValueError("jobs must be positive")
 
+    context_key = _scratch_context_key(image_path)
     reference_manifest = load_default_reference_symbol_manifest()
     manifest_digest = _function_manifest_cache_digest(manifest)
     include_resolver = _ScratchIncludeResolver(match_root)
@@ -6556,6 +6732,7 @@ def collect_scratch_statuses(
         manifest_digest=manifest_digest,
         jobs=jobs,
         include_resolver=include_resolver,
+        context_key=context_key,
     )
     for outcome in matched:
         if outcome.fields is None:
@@ -7314,6 +7491,7 @@ def collect_masked_operand_issues(
             uncached.append((config, address))
 
     if uncached:
+        context_key = _scratch_context_key(image_path)
         image = load_image(image_path, manifest.image_base)
         reference_manifest = load_default_reference_symbol_manifest()
         matched = _collect_uncached_match_outcomes(
@@ -7326,6 +7504,7 @@ def collect_masked_operand_issues(
             manifest_digest=manifest_digest,
             jobs=jobs,
             include_resolver=include_resolver,
+            context_key=context_key,
         )
         for outcome in matched:
             if outcome.fields is None or outcome.audit is None:

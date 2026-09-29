@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**636/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **211945/299952** bytes (**70.66%**) are proof-grade, and overall fuzzy is **97.64%**.
+**635/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **210761/299952** bytes (**70.26%**) are proof-grade, and overall fuzzy is **97.64%**.
 
 **116/120** platform helpers matched, **120/120** have a scratch, **19889/23008** bytes (**86.44%**) are proof-grade, and overall fuzzy is **97.53%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -10,9 +10,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**26** non-exact scratch-backed functions hold **1628 fuzzy-gap bytes**. The top 5 hold **67.6%** of that gap; the top 10 hold **92.5%**.
+**27** non-exact scratch-backed functions hold **1628 fuzzy-gap bytes**. The top 5 hold **67.6%** of that gap; the top 10 hold **92.5%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **26 / 1628** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **0 functions / 0 gap bytes**; **27 / 1628** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -44,9 +44,10 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | 24 | initialize_halfpipe_path_template_pair | 0 | semantic-complete | analysis | historical-only | 0/28 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 25 | initialize_turnoverdouble_path_template_pair | 0 | semantic-complete | analysis | historical-only | 0/58 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 26 | initialize_turnover_path_template_pair | 0 | semantic-complete | analysis | historical-only | 0/58 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 27 | construct_game_runtime | 0 | unspecified | unspecified | historical-only | 0/1 | variant-errors,historical-only |
 
 
-## Proof Grade (636)
+## Proof Grade (635)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -113,7 +114,6 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ✅ | read_left_mouse_button_state | 0x407810 | 32 | 4/4 | 100.00% | 4/4 | 2 ok |  | boundary |
 | ✅ | read_right_mouse_button_state | 0x407830 | 32 | 4/4 | 100.00% | 4/4 | 2 ok |  | boundary |
 | ✅ | noop_runtime_ai | 0x407b50 | 16 | 1/1 | 100.00% | 1/1 | - |  | core |
-| ✅ | construct_game_runtime | 0x407b60 | 1184 | 268/268 | 100.00% | 268/268 | 120 ok | msvc6.5 /O2 /G5 /W3 /GX | core |
 | ✅ | initialize_game_player | 0x408000 | 64 | 17/17 | 100.00% | 17/17 | 6 ok |  | core |
 | ✅ | initialize_noop_renderable_bod | 0x408040 | 32 | 7/7 | 100.00% | 7/7 | 2 ok |  | core |
 | ✅ | initialize_runtime_pools_and_path_template_bank | 0x408060 | 944 | 227/227 | 100.00% | 227/227 | 72 ok |  | core |
@@ -687,10 +687,11 @@ Evidence labels are baseline-epoch aware. `historical-only` means no recorded ex
 | ✅ | attach_render_camera_source | 0x44e900 | 32 | 6/6 | 100.00% | 6/6 | - |  | boundary |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 
-## Audit Needed (6)
+## Audit Needed (7)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
+| ⚠ | construct_game_runtime | 0x407b60 | 1184 | 268/268 | 100.00% | 268/268 | 1 unresolved, 119 ok | msvc6.5 /O2 /G5 /W3 /GX | core |
 | ⚠ | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2640 | 721/721 | 100.00% | 721/721 | 49 ok |  | core |
 | ⚠ | initialize_loopout_path_template_pair | 0x41c5f0 | 2624 | 718/718 | 100.00% | 718/718 | 52 ok |  | core |
 | ⚠ | initialize_turnover_path_template_pair | 0x426cb0 | 2448 | 671/671 | 100.00% | 671/671 | 41 ok |  | core |

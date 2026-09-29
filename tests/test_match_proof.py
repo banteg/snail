@@ -169,7 +169,8 @@ def test_encoded_local_relative_relocation_is_resolved():
         frozenset({1}),
         (
             m.ObjectRelocationReference(
-                1, "$Lret", "sym:$Lret", "name:$Lret", True, 0, symbol_offset=6
+                1, "$Lret", "sym:$Lret", "name:$Lret", True, 0, symbol_offset=6,
+                relocation_type=0x14,
             ),
         ),
     )

@@ -679,6 +679,7 @@ def relocated_candidate(symbol_name: str, key: str) -> ObjectFunction:
                 text=f"sym:{key.removeprefix('name:')}",
                 key=key,
                 explained=True,
+                relocation_type=0x14,
             ),
         ),
     )
@@ -1493,6 +1494,17 @@ def test_masked_operand_audit_accepts_cross_section_local_function_alias_by_code
                 symbol_size=0xA,
                 symbol_data=bytes.fromhex("b800000000e900000000"),
                 symbol_relocation_offsets=frozenset({1, 6}),
+                relocation_type=0x06,
+                symbol_relocation_references=(
+                    ObjectRelocationReference(
+                        1, "_foo_eh_metadata", "sym:_foo_eh_metadata",
+                        "ref:foo_eh_metadata", True, 0, relocation_type=0x06,
+                    ),
+                    ObjectRelocationReference(
+                        6, "___CxxFrameHandler", "sym:___CxxFrameHandler",
+                        "ref:cxx_handler", True, 0, relocation_type=0x14,
+                    ),
+                ),
             ),
         ),
     )
@@ -1512,12 +1524,15 @@ def test_masked_operand_audit_accepts_cross_section_local_function_alias_by_code
                     kind="function_alias",
                     size=0xA,
                 ),
+                ReferenceSymbol(0x402100, "foo_eh_metadata", "data", size=4),
+                ReferenceSymbol(0x401000, "cxx_handler", "function"),
             ),
         ),
     )
 
     assert result.ratio == 1.0
     assert result.masked_operand_audit.ok_count == 1
+    assert result.exact
     entry = result.masked_operand_audit.entries[0]
     assert entry.target_references[0].normalized_code == (
         "mov eax, ADDR",

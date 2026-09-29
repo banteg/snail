@@ -445,3 +445,52 @@ def test_evaluation_scores_and_fingerprints_the_same_captured_object(
     assert status.code_sha256 != match_module.object_function_fingerprint(
         match_module.ObjectFunction("foo", b"object B", frozenset())
     )
+
+
+@pytest.mark.parametrize("changed_input", ["source", "header", "image"])
+def test_status_cache_rejects_edits_after_measurement(
+    stale_scratch, monkeypatch, tmp_path, changed_input,
+):
+    from test_match import build_object
+
+    from snail.symbols import FunctionSymbol, FunctionSymbolManifest
+
+    config, root = stale_scratch
+    target = bytes.fromhex("b801000000c3")
+    image_path = tmp_path / "image.bin"
+    image_path.write_bytes(target)
+    image = match_module.LoadedImage(bytes(0x1000) + target, 0x400000, 0x2000)
+    manifest = FunctionSymbolManifest(
+        "test", str(image_path), str(image_path), 0x400000, "0" * 64, None,
+        (FunctionSymbol(0x401000, "foo"), FunctionSymbol(0x401006, "next")),
+    )
+    digest = match_module._function_manifest_cache_digest(manifest)
+
+    def fake_compiler(args, *, cwd, **kwargs):
+        (Path(cwd) / "scratch.obj").write_bytes(build_object(target, [("_foo", 0)], []))
+        return subprocess.CompletedProcess(args, 0, "", "")
+
+    original = match_module._match_precompiled_task_with_context
+
+    def edit_after_measurement(task, context):
+        outcome = original(task, context)
+        assert outcome.fields["body_byte_exact"]
+        changed = {
+            "source": config.directory / "scratch.cpp",
+            "header": root / "include/shared.h",
+            "image": image_path,
+        }[changed_input]
+        _change_bytes(changed, changed.read_bytes() + b"changed")
+        return outcome
+
+    monkeypatch.setattr(subprocess, "run", fake_compiler)
+    monkeypatch.setattr(match_module, "_match_precompiled_task_with_context", edit_after_measurement)
+    outcomes = match_module._collect_uncached_match_outcomes(
+        [(config, 0x401000)], image=image, image_path=image_path, manifest=manifest,
+        reference_manifest=match_module.ReferenceSymbolManifest("test"),
+        match_root=root, manifest_digest=digest, jobs=1,
+        include_resolver=match_module._ScratchIncludeResolver(root),
+    )
+    assert outcomes[0].fields is None
+    assert "inputs changed during matching" in outcomes[0].error
+    assert match_module._load_cached_status(config, image_path, root, manifest_digest=digest) is None
