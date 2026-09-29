@@ -1,5 +1,9 @@
 # Public metrics and objdiff comparison
 
+This audit records the pre-switch SequenceMatcher baseline. Public fuzzy moved
+to actual pinned objdiff scores in scoring policy 7; see the
+[current reporting policy](../../analysis/progress/README.md#2026-09-30-objdiff-fuzzy-baseline).
+
 The live decomp.dev report and Game & Engine history were checked against
 `1990dece8` on 2026-09-30. Every integer measure agrees with the local report;
 percentages agree within float32 rounding. The [receipt](metric-comparison-20260930.json)

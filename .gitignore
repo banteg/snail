@@ -7,6 +7,7 @@ tools/match/compilers/
 tools/match/sdk/
 tools/match/bin/wibo
 tools/match/bin/wibo-*
+tools/match/bin/objdiff-cli
 tools/match/gpt-pro-tooling/
 tools/match/idioms/build/
 tools/match/.cache/

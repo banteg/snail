@@ -30,17 +30,17 @@ jobs:
       - name: Fetch and verify native matching target
         run: uv run --no-sync tools/match/fetch_target.py
 
+      - name: Fetch and verify pinned objdiff
+        run: uv run --no-sync tools/match/fetch_objdiff.py
+
+      - name: Test matching and public metric accounting
+        run: uv run --no-sync pytest -q
+
       - name: Verify source-bound evidence and export progress
         run: uv run --no-sync snail match report
 
       - name: Validate with objdiff's report parser
-        run: |
-          curl --fail --location --retry 3 --retry-all-errors \
-            --output "$RUNNER_TEMP/objdiff-cli" \
-            https://github.com/encounter/objdiff/releases/download/v3.8.1/objdiff-cli-linux-x86_64
-          echo "c8290281e82114bcc1a06ff73061110d3902a177822e750337de2537188e358f  $RUNNER_TEMP/objdiff-cli" | sha256sum --check
-          chmod +x "$RUNNER_TEMP/objdiff-cli"
-          "$RUNNER_TEMP/objdiff-cli" report changes artifacts/decomp/report.json artifacts/decomp/report.json
+        run: tools/match/bin/objdiff-cli report changes artifacts/decomp/report.json artifacts/decomp/report.json
 
       - name: Upload progress report
         uses: actions/upload-artifact@v4

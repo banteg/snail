@@ -285,6 +285,11 @@ def source_evidence(monkeypatch, tmp_path):
         scratch_target_bytes=1,
         covered_code_bytes=1,
         normalized_ratio=1.0,
+        objdiff={"ratio": 1.0, "objects": {side: {
+            "input_sha256": "a" * 64, "display_object_sha256": "b" * 64,
+            "bytes": 1, "code_view_bytes": 1, "trailing_data_and_padding_bytes": 0,
+            "reference_fields": 0, "unexplained_fields": 0, "round_trip": True,
+        } for side in ("target", "candidate")}},
         matching_state="match",
         reference_audit_mode="positional",
         references={"ok": 0, "mismatched": 0, "unresolved": 0, "unaudited": 0},
@@ -328,6 +333,7 @@ def source_evidence(monkeypatch, tmp_path):
     inputs = {"test/scratch.cpp": "pinned"}
     monkeypatch.setattr(report, "repository_inputs", lambda: inputs)
     external = {
+        "objdiff": {"version": report.match_fuzzy.VERSION, "sha256": next(iter(report.match_fuzzy.BINARIES.values())), "config": report.match_fuzzy.CONFIG},
         "image": {"path": "target.exe", "sha256": "b" * 64},
         "compilers": {},
         "runner": {"sha256": "c" * 64},

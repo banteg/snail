@@ -14,7 +14,7 @@ def row(address=1, size=100, **changes):
         "address": address, "name": f"function_{address}", "size": size,
         "ranges": [[address, address + size]], "is_function": True,
         "candidate": "source", "source": f"src/{address}/scratch.cpp",
-        "ratio": 1.0, "matched": True, "linked": False, **changes,
+        "ratio": 1.0, "normalized_ratio": 1.0, "matched": True, "linked": False, **changes,
     }
 
 
@@ -64,7 +64,7 @@ def test_every_chart_measure_reconciles_units_and_categories(monkeypatch):
         assert measures["matched_code_percent"] == pytest.approx(100 * matched / total if total else 0)
         assert measures["fuzzy_match_percent"] == pytest.approx(weighted / total if total else 0)
         functions = sum(len(unit["functions"]) for unit in units)
-        exact = sum(function["fuzzy_match_percent"] == 100 for unit in units for function in unit["functions"])
+        exact = sum(unit["measures"]["matched_functions"] for unit in units)
         assert measures["total_functions"] == functions
         assert measures["matched_functions"] == exact
         assert measures["matched_functions_percent"] == pytest.approx(100 * exact / functions if functions else 0)
@@ -75,17 +75,17 @@ def test_every_chart_measure_reconciles_units_and_categories(monkeypatch):
     assert {c["id"] for c in result["categories"]} == {"game", "libs", "libs.d3dx8", "libs.msvc6-crt", "libs.libpng-1.2.5", "libs.zlib-1.2.1", "other"}
 
 
-def test_coverage_discount_and_exact_cap_are_applied_before_weighting(monkeypatch):
+def test_coverage_discount_and_fuzzy_are_independent_of_exact_credit(monkeypatch):
     monkeypatch.setattr(report, "_load_attribution", lambda: {})
     result = report.build_report([
         row(size=100, ratio=0.25, matched=False),
         row(200, 300, ratio=1.0, matched=False),
     ])
-    # The evidence ratio already discounts untested owned bytes. Audit-state
-    # 100% instructions remain partial in both function tiles and totals.
+    # Evidence discounts untested owned bytes. A fuzzy 100% remains uncredited
+    # unless the separate encoded-body/reference proof passes.
     assert result["units"][0]["functions"][0]["fuzzy_match_percent"] == 25
-    assert result["units"][1]["functions"][0]["fuzzy_match_percent"] == 99.99
-    assert result["measures"]["fuzzy_match_percent"] == pytest.approx((100 * 25 + 300 * 99.99) / 400)
+    assert result["units"][1]["functions"][0]["fuzzy_match_percent"] == 100
+    assert result["measures"]["fuzzy_match_percent"] == pytest.approx((100 * 25 + 300 * 100) / 400)
     assert result["measures"]["matched_code"] == "0"
 
 
@@ -118,15 +118,15 @@ def test_game_category_keeps_platform_and_unrecovered_game_but_excludes_unknown_
     assert result["measures"]["matched_code"] == "400"
 
 
-def test_reference_pending_perfect_ratio_stays_visibly_partial():
+def test_reference_pending_perfect_fuzzy_has_no_matched_credit():
     result = report.build_report([row(matched=False)])
     assert result["measures"]["matched_code"] == "0"
-    assert result["units"][0]["functions"][0]["fuzzy_match_percent"] == 99.99
+    assert result["units"][0]["functions"][0]["fuzzy_match_percent"] == 100
 
 
 @pytest.mark.parametrize("changes", [
     {"ratio": float("nan")}, {"ratio": 1.1}, {"size": -1},
-    {"ratio": 0.5}, {"linked": True},
+    {"normalized_ratio": 0.5}, {"linked": True},
 ])
 def test_invalid_or_unsupported_progress_fails(changes):
     with pytest.raises(ValueError):
@@ -243,3 +243,10 @@ def test_translation_unit_order_invalidates_report_inputs(tmp_path):
     assert before != after, (
         "Changed compiler source composition/order is invisible to report input pins"
     )
+
+
+def test_proof_grade_credit_does_not_override_objdiff_fuzzy():
+    result = report.build_report([row(ratio=0.995)])
+    assert result["measures"]["fuzzy_match_percent"] == 99.5
+    assert result["measures"]["matched_code"] == "100"
+    assert result["measures"]["matched_functions"] == 1

@@ -182,3 +182,17 @@ def test_interior_data_does_not_hide_later_instructions():
     )
     with pytest.raises(ValueError, match="precedes more code"):
         exporter.display_code_end(b"\xc3\0\0\0\0\xc3", lines, ((1, 5),))
+
+
+def test_alignment_between_verified_trailing_tables_is_not_code():
+    data = bytes.fromhex("c3000000009000000000")
+    lines = (
+        m.DisassemblyLine(0, 0, "ret", 1),
+        m.DisassemblyLine(1, 1, "dd L0", 4),
+        m.DisassemblyLine(5, 5, "nop", 1),
+        m.DisassemblyLine(6, 6, "dd L0", 4),
+    )
+    assert exporter.display_code_end(data, lines, ((1, 5), (6, 10))) == 1
+    targeted = (m.DisassemblyLine(0, 0, "jmp L5", 1),) + lines[1:]
+    with pytest.raises(ValueError, match="precedes more code"):
+        exporter.display_code_end(data, targeted, ((1, 5), (6, 10)))

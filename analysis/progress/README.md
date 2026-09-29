@@ -3,8 +3,9 @@
 [Snail Mail on decomp.dev](https://decomp.dev/banteg/snail) reports the complete
 Windows gameplay executable as `win32-reflexive`. This integration follows
 [Crimson’s evidence-backed custom reporting](https://github.com/banteg/crimson/blob/master/analysis/decomp/README.md).
-The comparison is performed by `snail match`, not objdiff; objdiff v3.8.1 validates
-the v2 report format. Library attribution is recorded in [the ownership report](../ownership/README.md); library matching remains separate work.
+Public fuzzy uses SHA-256-pinned objdiff v3.8.1 on bounded source/native
+snapshots. `snail match` independently certifies matched code; objdiff also
+validates the v2 report format. Library attribution is recorded in [the ownership report](../ownership/README.md); library matching remains separate work.
 The [metric audit and measured objdiff comparison](../../tools/match/metric-comparison-20260930.md)
 reconciles all five chart series, category denominators, and scoring formulas.
 The proof-summary artifact records the exported measures and their definitions.
@@ -112,7 +113,7 @@ separately in its [report UI](https://github.com/encounter/decomp.dev/blob/e9c08
 
 Objdiff's [instruction comparison](https://github.com/encounter/objdiff/blob/fba10a617154f19b3fc25c8817dc81f81d8489b5/objdiff-core/src/diff/code.rs)
 uses weighted penalties for insertions, replacements, register differences, and
-immediates. It is not our SequenceMatcher ratio. The report generator defaults
+immediates. The local matcher retains its separate SequenceMatcher diagnostic. The report generator defaults
 to relaxed function relocations, so its 100% also does not establish raw
 whole-executable byte identity or validate the meanings of every referenced
 symbol. Our reference audit remains useful additional proof.
@@ -132,11 +133,14 @@ symbol. Our reference audit remains useful additional proof.
   identity, encoded-body proof, and a clean positional reference audit. Its decoded, compared ranges
   must cover all code assigned to the public function, with no unexplained bytes. Library identification, prebuilt objects,
   copied assembly, and generated thunks receive no decompiled credit.
-- **Fuzzy:** `snail match` similarity, weighted by owned original code bytes across
-  the full denominator. Code outside the tested scratch extent earns zero.
-  A 100% instruction score lacking exact/reference/extent proof is capped at
-  99.99% in the display, preventing misleading green exact-match tiles. These
-  custom scores are not numerically equivalent to objdiff's weighted penalties.
+- **Fuzzy:** objdiff v3.8.1 instruction similarity on bounded COFF snapshots,
+  weighted by owned original code bytes across the full denominator. Independent
+  matcher reference keys become named relocations with `functionRelocDiffs=name_address`.
+  Untested owned bytes earn zero. No 99.99% cap or exact-score override: fuzzy
+  100% is independent of matched-code certification. Snapshots retain every input
+  byte but separate verified trailing data/padding from code; they do not claim
+  original object or translation-unit recovery. Local normalized/structural
+  scores remain diagnostics and are not used in this public series.
 - **Linked:** zero. Scratch compilation and semantic-complete metadata do not
   establish an integrated source reconstruction or original translation units.
 - **Data:** explicit zero placeholders for unmeasured data, not claimed complete.
@@ -156,6 +160,7 @@ these do not receive whole-function matched credit.
 On a machine with the pinned original gameplay executable and compiler bundles:
 
 ```sh
+uv run tools/match/fetch_objdiff.py
 uv run snail match report --refresh -j 8
 ```
 
@@ -165,7 +170,10 @@ compiles every scratch, rejects failures, and stores
 manifest/reporter hashes, every compiler-bundle file hash, Wibo identity, original
 image identity, owned and compared ranges, exclusions with reasons, undecodable
 bytes, positional reference audit results, whole candidate-object hashes, encoded
-body hashes and relocation masks, and measured scores. Build
+body hashes and relocation masks, and measured scores. Objdiff evidence additionally records the pinned CLI identity,
+settings, input and display-object hashes, bounded code sizes, and per-function
+percentages. A failed export or comparison aborts refresh; there is no alternate
+scorer fallback. `SNAIL_OBJDIFF_CLI` can select an existing pinned binary. Build
 inputs must remain unchanged throughout the evaluation. Refresh deliberately
 invalidates the build/status cache and compiles all candidates for a fresh
 public attestation. Ordinary cache reuse now fingerprints compiler backends too.
@@ -176,14 +184,16 @@ To validate saved evidence and write `artifacts/decomp/report.json`:
 uv run snail match report
 ```
 
-CI performs this portable validation on pushes to `master` and PRs. It rejects
+CI performs saved-evidence validation on pushes to `master` and PRs, runs
+the full test suite including real pinned objdiff scoring controls, and verifies
+the downloaded native target hash. It rejects
 added, changed, or deleted scoring/build inputs, verifies the full public
 partition and source/reference/extent credit, runs the SHA-256-pinned objdiff
 parser, and uploads `report.json` as `win32-reflexive_report` plus
 `proof-summary.json` as the separate `win32-reflexive_proof` artifact. No game bytes
-or compiler binaries are uploaded. Unlike Crimson's current workflow, CI does
-not download the reference images: the hashed, byte-verified analyzer snapshots
-are the portable inventory evidence. Present local images/compiler bundles are
+or compiler binaries are uploaded. CI downloads the public native target for
+identity checks; the hashed, byte-verified analyzer snapshots remain the portable
+inventory evidence, and proprietary compiler bundles are not required. Present local images/compiler bundles are
 checked against the stored identities. This is saved-result verification, not a
 claim that CI recompiled proprietary inputs.
 
@@ -304,3 +314,22 @@ bytes (27.55%). Encoded-body equality covers 700 owners and 149,475 bytes
 no regression. Target, native inventory, ownership, and toolchain identities
 are unchanged, and the new table ranges overlap no native owned-code bytes.
 See the [boundary proof report](../../tools/match/inline-table-boundaries-20260911.md).
+
+
+## 2026-09-30 objdiff fuzzy baseline
+
+Scoring policy 7 replaces public normalized instruction similarity with actual
+objdiff 3.8.1 percentages for every source candidate. This is a measurement
+baseline transition; a fuzzy increase is not newly recovered source. The native
+code denominator, encoded-body exact criteria, linked and data accounting remain
+unchanged. Unlike objdiff's default report generator, this custom report checks
+named snapshot relocations and keeps independently certified matched bytes
+separate from fuzzy. The earlier [comparison receipt](../../tools/match/metric-comparison-20260930.json)
+is frozen at the pre-switch baseline.
+
+The clean transition measured all 785 source candidates. Game & Engine fuzzy
+changes from 99.353002% to **99.718983%**; All changes from 51.559552% to
+**51.746547%**. Matched code remains **223,590 bytes / 751 owners**, with zero
+newly matched or regressed bytes. `STATUS.md`, scratch/probe output and triage
+continue to show the local normalized score over curated extents; their fuzzy
+headlines are diagnostics and do not substitute for the public objdiff series.

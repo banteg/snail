@@ -1,7 +1,8 @@
 """Full-executable decomp.dev reports from source-bound matching evidence.
 
 Like Crimson, CI validates saved compiler results instead of distributing the
-original executable or compiler bundles. Scores are from snail match, not objdiff.
+original executable or compiler bundles. Fuzzy uses pinned objdiff snapshots;
+exact credit uses native source/reference/encoded-body proof.
 """
 
 from __future__ import annotations
@@ -20,12 +21,14 @@ from typing import Any
 
 from . import code_inventory
 from . import match as matchlib
+from . import match_fuzzy
 from .symbols import REPO_ROOT, load_function_symbol_manifest
 
 VERSION = "win32-reflexive"
 EVIDENCE_SCHEMA = 2
 SCORING_POLICY = {
-    "version": 6,
+    "version": 7,
+    "fuzzy": match_fuzzy.POLICY,
     "references": "positional-for-normalized-exact; bounded-encoded-helper-audits; diagnostic-alignment-for-partials",
     "coverage": "decoded-code-and-verified-inline-tables; unknown-bytes-reject-exact",
     "encoding": "same-offsets-and-encodings; typed-audited-external-relocations; resolved-rel32-local-branches-and-dir32-table-entries; literal-lookup-bytes",
@@ -33,7 +36,7 @@ SCORING_POLICY = {
 }
 VERIFICATION_MODE = "Source-bound local compilation evidence; CI checks freshness and report consistency."
 METRIC_DEFINITIONS = {
-    "fuzzy_match_percent": "Byte-weighted normalized instruction SequenceMatcher ratio; untested owned code scores zero; non-exact tiles are capped at 99.99%. Not objdiff's weighted instruction-penalty score.",
+    "fuzzy_match_percent": "Byte-weighted objdiff 3.8.1 instruction score on bounded snapshots with named relocations, discounted by compared owned-code coverage; missing source scores zero. Fuzzy 100% grants no exact credit.",
     "matched_code_percent": "Whole disjoint owned code extents with source-built encoded-body, positional-reference and coverage proof, divided by total owned code bytes.",
     "matched_data_percent": "Not measured. Data bytes and percentages are zero placeholders, not proof that the executable contains no data.",
     "complete_code_percent": "Linked code: zero until an integrated source reconstruction earns whole-unit linked credit.",
@@ -72,7 +75,7 @@ def _input_path(path: str) -> bool:
     if path in {"tools/match/cl.sh", "tools/match/translation_units.json"}:
         return True
     return path.startswith("tools/match/") and (
-        p.name in {"scratch.cpp", "scratch.conf"} or p.suffix in {".h", ".hpp", ".inc"}
+        p.name in {"scratch.cpp", "scratch.conf", "fetch_objdiff.py"} or p.suffix in {".h", ".hpp", ".inc"}
     )
 
 
@@ -257,7 +260,7 @@ def measurement_identities(
         "toolchains": _identity(
             {
                 k: external[k]
-                for k in ("compilers", "runner", "runtime")
+                for k in ("compilers", "runner", "runtime", "objdiff")
                 if k in external
             }
         ),
@@ -441,6 +444,7 @@ def refresh_evidence(*, jobs: int = matchlib.DEFAULT_MATCH_JOBS) -> dict[str, An
     image_path = REPO_ROOT / manifest.primary_target
     configs = [matchlib.load_scratch_config(p.parent) for p in sorted(matchlib.DEFAULT_MATCH_ROOT.glob("scratches/*/scratch.conf"))]
     external = _external_inputs(configs)
+    native_external = external.copy()
     # Recompute native accounting from the actual original image on refresh.
     native = code_inventory.build_inventory(
         image_path, REPO_ROOT / "analysis/symbols/gameplay-functions.json",
@@ -450,12 +454,12 @@ def refresh_evidence(*, jobs: int = matchlib.DEFAULT_MATCH_JOBS) -> dict[str, An
     if code_inventory.snapshot_text(native) != (PROGRESS / "executable-code-inventory.json").read_text():
         raise ValueError("native inventory is stale; run tools/report_code_inventory.py")
     rows = inventory()
-    # The legacy scratch cache keys compiler CL.EXE but not every backend DLL.
     # Public attestations require a fresh compile with the entire pinned bundle.
     for config in configs:
         (config.directory / "build/scratch-build.json").unlink(missing_ok=True)
         (config.directory / "build/match-cache.json").unlink(missing_ok=True)
     statuses = matchlib.collect_scratch_statuses(manifest, image_path, jobs=jobs)
+    fuzzy_scores, external["objdiff"] = match_fuzzy.collect_scores(statuses, jobs=jobs)
     by_address = {}
     for status in statuses:
         if status.error or status.ratio is None:
@@ -490,7 +494,8 @@ def refresh_evidence(*, jobs: int = matchlib.DEFAULT_MATCH_JOBS) -> dict[str, An
                 "source": (status.config.directory / "scratch.cpp")
                 .relative_to(REPO_ROOT)
                 .as_posix(),
-                "ratio": status.ratio * covered / row["size"],
+                "ratio": fuzzy_scores[status.address]["ratio"] * covered / row["size"],
+                "objdiff": fuzzy_scores[status.address],
                 "matched": status.state == "match" and complete_extent,
                 "scratch_target_bytes": status.target_size,
                 "covered_code_bytes": covered,
@@ -527,7 +532,7 @@ def refresh_evidence(*, jobs: int = matchlib.DEFAULT_MATCH_JOBS) -> dict[str, An
                 },
             }
         )
-    if repository_inputs() != before or _external_inputs(configs) != external:
+    if repository_inputs() != before or _external_inputs(configs) != native_external:
         raise ValueError("report inputs changed during evaluation; refresh again")
     evidence = {
         "schema": EVIDENCE_SCHEMA,
@@ -591,10 +596,13 @@ def validate_evidence(evidence: dict[str, Any]) -> None:
         validate_comparison_ranges(row)
         validate_inline_table_evidence(row)
         covered = intersection_size(row["compared_target_ranges"], row["ranges"])
+        match_fuzzy.validate_score(row["objdiff"], evidence["external_inputs"]["objdiff"])
+        if row["objdiff"]["objects"]["target"]["bytes"] != row["scratch_target_bytes"]:
+            raise ValueError("objdiff target span differs from native comparison")
         ratio = row["normalized_ratio"]
         if not math.isfinite(ratio) or not 0 <= ratio <= 1:
             raise ValueError("invalid normalized score")
-        if covered != row["covered_code_bytes"] or row["ratio"] != ratio * covered / row["size"]:
+        if covered != row["covered_code_bytes"] or row["ratio"] != row["objdiff"]["ratio"] * covered / row["size"]:
             raise ValueError("score or source extent differs from recorded coverage")
         refs = row["references"]
         if set(refs) != {"ok", "unresolved", "mismatched", "unaudited"} or any(
@@ -781,16 +789,16 @@ def build_report(functions: list[dict[str, Any]]) -> dict[str, Any]:
         size, ratio = row["size"], row["ratio"]
         if type(size) is not int or size < 0 or not math.isfinite(ratio) or not 0 <= ratio <= 1:
             raise ValueError(f"invalid matching measures: {key}")
-        if row["matched"] and ratio != 1:
+        if row["matched"] and row["normalized_ratio"] != 1:
             raise ValueError(f"matched function has a partial score: {key}")
         if row["linked"]:
             raise ValueError("linked credit requires an actual source reconstruction build")
         eligible = row["candidate"] == "source" and row["is_function"]
         is_matched = eligible and row["matched"]
         is_complete = eligible and row["linked"]
-        # objdiff's treemap paints 100% green. An unresolved-reference 100%
-        # instruction score must remain visibly partial, like our `audit` state.
-        percent = (100.0 if is_matched else min(ratio * 100, 99.99)) if eligible else 0.0
+        # Fuzzy and proof-grade counts are independent: even a fuzzy 100%
+        # cannot grant matched bytes, and exact credit does not override scoring.
+        percent = ratio * 100 if eligible else 0.0
         measures = _measures(
             size,
             size if is_matched else 0,

@@ -183,12 +183,47 @@ def display_code_end(data, lines, inline_ranges):
     end = max((line.offset + line.size for line in lines), default=0)
     if inline_ranges:
         end = min(start for start, _ in inline_ranges)
+        # Verified trailing tables can contain alignment between two tables.
+        # Permit only decoded alignment with no local branch/table destination;
+        # real code after the first table still rejects a single code view.
+        destinations = {
+            int(label, 16)
+            for line in lines
+            for label in re.findall(r"\bL([0-9a-f]+)\b", line.text)
+        }
+        decoder = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
+        decoder.detail = True
+
+        def table_alignment(line):
+            if (
+                not any(stop <= line.offset for _, stop in inline_ranges)
+                or not any(
+                    line.offset + line.size <= start for start, _ in inline_ranges
+                )
+                or any(
+                    line.offset <= destination < line.offset + line.size
+                    for destination in destinations
+                )
+            ):
+                return False
+            instructions = list(
+                decoder.disasm(
+                    data[line.offset : line.offset + line.size], line.address
+                )
+            )
+            return (
+                len(instructions) == 1
+                and instructions[0].size == line.size
+                and m._is_inline_table_alignment(instructions[0])
+            )
+
         if any(
             line.offset >= end
             and not any(
                 start <= line.offset and line.offset + line.size <= stop
                 for start, stop in inline_ranges
             )
+            and not table_alignment(line)
             for line in lines
         ):
             raise ValueError(
