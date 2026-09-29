@@ -624,3 +624,14 @@ Open: a form that keeps one basic IV and restores the old cursor id and the nati
 ```sh
 uv run tools/match/c2/run_tracer.py il_stage_trace initialize_turnunder_path_template_pair --out <new-dir>
 ```
+
+
+## 2026-09-30 current-source ownership controls
+
+The [five-function campaign](../../five-game-functions-20260930.md) recompiled
+11 complete source variants against the current canonical body.
+No tested variant improves its 99.42% normalized score;
+no source change or exact-match credit is retained. The recipes and hash-bound
+results are in `source-ownership-20260930-mutations.json`; receipts are appended
+to `experiments.jsonl`. These controls bound the tested ownership forms and
+their interactions; they do not establish source exhaustion or a compiler limit.

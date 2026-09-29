@@ -314,3 +314,14 @@ Neither form recovers the separate native miss epilogue or the commuted X
 addition. The helper is a diagnostic source hypothesis, not an established
 authored API, and is not added to canonical code. These receipts complement
 the earlier accepted-handoff helper controls by testing the scan boundary.
+
+
+## 2026-09-30 current-source ownership controls
+
+The [five-function campaign](../../five-game-functions-20260930.md) recompiled
+15 complete source variants against the current canonical body.
+No tested variant improves its 99.02% normalized score;
+no source change or exact-match credit is retained. The recipes and hash-bound
+results are in `source-ownership-20260930-mutations.json`; receipts are appended
+to `experiments.jsonl`. These controls bound the tested ownership forms and
+their interactions; they do not establish source exhaustion or a compiler limit.

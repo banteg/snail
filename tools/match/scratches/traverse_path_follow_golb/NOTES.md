@@ -311,3 +311,15 @@ Reproduce: `uv run tools/match/c2/sib_operand_trace.py traverse_path_follow_golb
   temp 0x4ab and the fields are 0x1e8/0x1ec. Native's order would need the temp at slot mod 1024 = 0xf5,
   or the field records to straddle 2·0xab = 0x156.
 - Without an assignment inside an expression, this is id-tuning only. Not pursued.
+
+
+## 2026-09-30 current-source ownership controls
+
+The [five-function campaign](../../five-game-functions-20260930.md) recompiled
+42 complete source variants against the current canonical body.
+No tested variant improves its 99.53% normalized score;
+no source change or exact-match credit is retained. The recipes and hash-bound
+results are in `source-ownership-20260930-mutations.json` and
+`operation-boundaries-20260930-mutations.json`; receipts are appended
+to `experiments.jsonl`. These controls bound the tested ownership forms and
+their interactions; they do not establish source exhaustion or a compiler limit.

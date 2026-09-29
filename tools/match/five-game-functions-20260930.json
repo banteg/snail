@@ -1,0 +1,381 @@
+{
+  "date": "2026-09-30",
+  "source_baseline_commit": "788a8b9fadd1966536992cbe1c8d6ab3aa4b648f",
+  "scope": "five remaining gameplay partials; native normalized and encoded-body checks, independent of public objdiff fuzzy",
+  "variants": 118,
+  "new_exact_matches": 0,
+  "source_changes": 0,
+  "functions": [
+    {
+      "function": "sample_smtrack_heightmap",
+      "source_sha256": "48904c4ed0b9030679db5eb8bf6e187df827c72cfd9196fa215866f3875ceb0e",
+      "baseline": {
+        "address": 4301664,
+        "body_byte_exact": false,
+        "candidate_inline_data_ranges": [],
+        "candidate_inline_lookup_ranges": [],
+        "candidate_instructions": 109,
+        "candidate_object_sha256": "be6aa1f80a7d233d944e01cacedbd3981545846c5d2d880c55200138cf12f966",
+        "cflags": "/O2 /G5 /W3",
+        "code_sha256": "1c9caae3e22a33ca2e48ebd8b48e2b0bd8141c7bd6283d3e86404d29571d4d96",
+        "compared_target_ranges": [
+          [
+            0,
+            364
+          ]
+        ],
+        "compiler": "msvc6.5",
+        "encoded_body_proof": null,
+        "error": null,
+        "excluded_target_ranges": [
+          [
+            364,
+            368,
+            "terminal-padding"
+          ]
+        ],
+        "first_mismatch": {
+          "candidate_offset": 233,
+          "target_offset": 233
+        },
+        "function": "sample_smtrack_heightmap",
+        "fuzzy_gap_bytes": 10.128440366972484,
+        "fuzzy_weighted_bytes": 357.8715596330275,
+        "match_ratio": 0.9724770642201835,
+        "prefix_instructions": 67,
+        "proof_blockers": [
+          "instructions"
+        ],
+        "recovery": "semantic-complete",
+        "references": {
+          "mismatch": 0,
+          "ok": 13,
+          "unaudited": 0,
+          "unresolved": 0
+        },
+        "residuals": [
+          "analysis"
+        ],
+        "scratch": "/Users/banteg/dev/banteg/snail-mail/tools/match/scratches/sample_smtrack_heightmap",
+        "state": "wip",
+        "structural_changed_candidate": 3,
+        "structural_changed_target": 3,
+        "structural_ratio": 0.9724770642201835,
+        "target_bytes": 368,
+        "target_inline_data_ranges": [],
+        "target_inline_lookup_ranges": [],
+        "target_instructions": 109,
+        "unexplained_target_ranges": []
+      },
+      "variants": 23,
+      "improved": false,
+      "new_exact_matches": 0,
+      "specs": [
+        {
+          "path": "tools/match/scratches/sample_smtrack_heightmap/source-ownership-20260930-mutations.json",
+          "sha256": "eeafccac1870d524db2008699d26d975ac4760028cb2c1e3e7f663b6c681530a"
+        },
+        {
+          "path": "tools/match/scratches/sample_smtrack_heightmap/operation-boundaries-20260930-mutations.json",
+          "sha256": "b7eed2bff646bbaa86407ef5205f473078cdfe7619e7f34e351ea4e2c2496ac4"
+        }
+      ],
+      "best_probe_percent": 97.24770642201835,
+      "errors": 0
+    },
+    {
+      "function": "traverse_path_follow_golb",
+      "source_sha256": "a379118725508b996afcad9e30356fdd2354cea6291217c6e4ccbc4222fadb66",
+      "baseline": {
+        "address": 4331440,
+        "body_byte_exact": false,
+        "candidate_inline_data_ranges": [],
+        "candidate_inline_lookup_ranges": [],
+        "candidate_instructions": 425,
+        "candidate_object_sha256": "364847399f28c0f867be37572c291168d32ca537833723c0a9e3e4869b17782e",
+        "cflags": "/O2 /G5 /W3",
+        "code_sha256": "423d648715296ed3a3f684551612b94611144aa4f3afa15046711a5d5af7eefc",
+        "compared_target_ranges": [
+          [
+            0,
+            1551
+          ]
+        ],
+        "compiler": "msvc6.5",
+        "encoded_body_proof": null,
+        "error": null,
+        "excluded_target_ranges": [
+          [
+            1551,
+            1552,
+            "terminal-padding"
+          ]
+        ],
+        "first_mismatch": {
+          "candidate_offset": 1240,
+          "target_offset": 1240
+        },
+        "function": "traverse_path_follow_golb",
+        "fuzzy_gap_bytes": 7.303529411764885,
+        "fuzzy_weighted_bytes": 1544.6964705882351,
+        "match_ratio": 0.9952941176470588,
+        "prefix_instructions": 327,
+        "proof_blockers": [
+          "instructions"
+        ],
+        "recovery": "semantic-complete",
+        "references": {
+          "mismatch": 0,
+          "ok": 7,
+          "unaudited": 0,
+          "unresolved": 0
+        },
+        "residuals": [
+          "analysis"
+        ],
+        "scratch": "/Users/banteg/dev/banteg/snail-mail/tools/match/scratches/traverse_path_follow_golb",
+        "state": "wip",
+        "structural_changed_candidate": 2,
+        "structural_changed_target": 2,
+        "structural_ratio": 0.9952941176470588,
+        "target_bytes": 1552,
+        "target_inline_data_ranges": [],
+        "target_inline_lookup_ranges": [],
+        "target_instructions": 425,
+        "unexplained_target_ranges": []
+      },
+      "variants": 42,
+      "improved": false,
+      "new_exact_matches": 0,
+      "specs": [
+        {
+          "path": "tools/match/scratches/traverse_path_follow_golb/source-ownership-20260930-mutations.json",
+          "sha256": "1c73cbd68c405c43f3b54ffedc21b0b5ce2f56800169539a663c7fab7343a7d1"
+        },
+        {
+          "path": "tools/match/scratches/traverse_path_follow_golb/operation-boundaries-20260930-mutations.json",
+          "sha256": "cf54891ce20d821350cf7a14e8447f778e74cb4227b16f23d9e8ff6f010a3e50"
+        }
+      ],
+      "best_probe_percent": 99.52941176470588,
+      "errors": 0
+    },
+    {
+      "function": "explode_slug_hazard",
+      "source_sha256": "fef4817388599156eecfc7cf672045c8b46375acf513753fb268f2968ed5b9aa",
+      "baseline": {
+        "address": 4454016,
+        "body_byte_exact": false,
+        "candidate_inline_data_ranges": [],
+        "candidate_inline_lookup_ranges": [],
+        "candidate_instructions": 147,
+        "candidate_object_sha256": "4e30a1cdcc4f0816e7c9c2c800f2f29174767d95f9f09d59979ad6a534db85ac",
+        "cflags": "/O2 /G5 /W3",
+        "code_sha256": "380f2a4da62f872cfaa763b5da4364d6cc95a4cdd242bf8ba0684e74337b3f25",
+        "compared_target_ranges": [
+          [
+            0,
+            556
+          ]
+        ],
+        "compiler": "msvc6.5",
+        "encoded_body_proof": null,
+        "error": null,
+        "excluded_target_ranges": [
+          [
+            556,
+            560,
+            "terminal-padding"
+          ]
+        ],
+        "first_mismatch": {
+          "candidate_offset": 323,
+          "target_offset": 323
+        },
+        "function": "explode_slug_hazard",
+        "fuzzy_gap_bytes": 11.428571428571445,
+        "fuzzy_weighted_bytes": 548.5714285714286,
+        "match_ratio": 0.9795918367346939,
+        "prefix_instructions": 79,
+        "proof_blockers": [
+          "instructions"
+        ],
+        "recovery": "semantic-complete",
+        "references": {
+          "mismatch": 0,
+          "ok": 32,
+          "unaudited": 0,
+          "unresolved": 0
+        },
+        "residuals": [
+          "analysis"
+        ],
+        "scratch": "/Users/banteg/dev/banteg/snail-mail/tools/match/scratches/explode_slug_hazard",
+        "state": "wip",
+        "structural_changed_candidate": 3,
+        "structural_changed_target": 3,
+        "structural_ratio": 0.9795918367346939,
+        "target_bytes": 560,
+        "target_inline_data_ranges": [],
+        "target_inline_lookup_ranges": [],
+        "target_instructions": 147,
+        "unexplained_target_ranges": []
+      },
+      "variants": 27,
+      "improved": false,
+      "new_exact_matches": 0,
+      "specs": [
+        {
+          "path": "tools/match/scratches/explode_slug_hazard/source-ownership-20260930-mutations.json",
+          "sha256": "440c11eaf9dc1247c6c7b892bb66379bc1bb6944d9bc6bbaab6d6f3a2dbd10d3"
+        },
+        {
+          "path": "tools/match/scratches/explode_slug_hazard/operation-boundaries-20260930-mutations.json",
+          "sha256": "cd66f08a32f49467b44c9715cf72ecb45b4fb99b4d354aee902e69a8d4de20ec"
+        }
+      ],
+      "best_probe_percent": 97.95918367346938,
+      "errors": 0
+    },
+    {
+      "function": "try_enter_track_attachment_from_swept_motion",
+      "source_sha256": "ba1bc4ac2f9592161dfeda491d35fe0db5479f67ae708453787592b10835a91f",
+      "baseline": {
+        "address": 4376432,
+        "body_byte_exact": false,
+        "candidate_inline_data_ranges": [],
+        "candidate_inline_lookup_ranges": [],
+        "candidate_instructions": 204,
+        "candidate_object_sha256": "0cf9e1b41c4815e3b15f59e205c23856bb5df7c8bc4b5853802543ea4e9cae02",
+        "cflags": "/O2 /G5 /W3",
+        "code_sha256": "f9e6d44efc05ed659a02df16ba9a3e596355b5ec1985f096992a96818d5df5d7",
+        "compared_target_ranges": [
+          [
+            0,
+            800
+          ]
+        ],
+        "compiler": "msvc6.5",
+        "encoded_body_proof": null,
+        "error": null,
+        "excluded_target_ranges": [],
+        "first_mismatch": {
+          "candidate_offset": 383,
+          "target_offset": 383
+        },
+        "function": "try_enter_track_attachment_from_swept_motion",
+        "fuzzy_gap_bytes": 7.843137254901876,
+        "fuzzy_weighted_bytes": 792.1568627450981,
+        "match_ratio": 0.9901960784313726,
+        "prefix_instructions": 109,
+        "proof_blockers": [
+          "instructions"
+        ],
+        "recovery": "semantic-complete",
+        "references": {
+          "mismatch": 0,
+          "ok": 47,
+          "unaudited": 0,
+          "unresolved": 0
+        },
+        "residuals": [
+          "analysis"
+        ],
+        "scratch": "/Users/banteg/dev/banteg/snail-mail/tools/match/scratches/try_enter_track_attachment_from_swept_motion",
+        "state": "wip",
+        "structural_changed_candidate": 2,
+        "structural_changed_target": 2,
+        "structural_ratio": 0.9901960784313726,
+        "target_bytes": 800,
+        "target_inline_data_ranges": [],
+        "target_inline_lookup_ranges": [],
+        "target_instructions": 204,
+        "unexplained_target_ranges": []
+      },
+      "variants": 15,
+      "improved": false,
+      "new_exact_matches": 0,
+      "specs": [
+        {
+          "path": "tools/match/scratches/try_enter_track_attachment_from_swept_motion/source-ownership-20260930-mutations.json",
+          "sha256": "97e53fd0541f0454573147ab6d16ce49784460ee44612ec68cbbed8fa5607dda"
+        }
+      ],
+      "best_probe_percent": 99.01960784313727,
+      "errors": 0
+    },
+    {
+      "function": "initialize_turnunder_path_template_pair",
+      "source_sha256": "6c3f2ea746aa531a11cba09f71e8784eebfedf31a975fcde7d59609e98e24b82",
+      "baseline": {
+        "address": 4358112,
+        "body_byte_exact": false,
+        "candidate_inline_data_ranges": [],
+        "candidate_inline_lookup_ranges": [],
+        "candidate_instructions": 687,
+        "candidate_object_sha256": "1aa060e85752d98127d05ed78191a5713e9e6fec4c0a780875b056b003897417",
+        "cflags": "/O2 /G5 /W3",
+        "code_sha256": "3453d8f0a7f35f65b0076ff64156a8ba932a8e925a2c22c61813feb20865d91c",
+        "compared_target_ranges": [
+          [
+            0,
+            2487
+          ]
+        ],
+        "compiler": "msvc6.5",
+        "encoded_body_proof": null,
+        "error": null,
+        "excluded_target_ranges": [
+          [
+            2487,
+            2496,
+            "terminal-padding"
+          ]
+        ],
+        "first_mismatch": {
+          "candidate_offset": 553,
+          "target_offset": 553
+        },
+        "function": "initialize_turnunder_path_template_pair",
+        "fuzzy_gap_bytes": 14.532751091703176,
+        "fuzzy_weighted_bytes": 2481.467248908297,
+        "match_ratio": 0.9941775836972343,
+        "prefix_instructions": 140,
+        "proof_blockers": [
+          "instructions"
+        ],
+        "recovery": "semantic-complete",
+        "references": {
+          "mismatch": 0,
+          "ok": 45,
+          "unaudited": 0,
+          "unresolved": 0
+        },
+        "residuals": [
+          "analysis"
+        ],
+        "scratch": "/Users/banteg/dev/banteg/snail-mail/tools/match/scratches/initialize_turnunder_path_template_pair",
+        "state": "wip",
+        "structural_changed_candidate": 4,
+        "structural_changed_target": 4,
+        "structural_ratio": 0.9941775836972343,
+        "target_bytes": 2496,
+        "target_inline_data_ranges": [],
+        "target_inline_lookup_ranges": [],
+        "target_instructions": 687,
+        "unexplained_target_ranges": []
+      },
+      "variants": 11,
+      "improved": false,
+      "new_exact_matches": 0,
+      "specs": [
+        {
+          "path": "tools/match/scratches/initialize_turnunder_path_template_pair/source-ownership-20260930-mutations.json",
+          "sha256": "926f178b1bfd327888bd9fd161475cea3bf593f19d79106b80a13041e10e040e"
+        }
+      ],
+      "best_probe_percent": 95.11305616338439,
+      "errors": 0
+    }
+  ]
+}

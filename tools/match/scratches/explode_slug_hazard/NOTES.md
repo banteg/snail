@@ -359,3 +359,15 @@ spelling touches them. No change retained.
 Only one of the four needed tuples can be removed. The owner load's window
 therefore stays out of reach through FROUNDs, and native more likely differs
 in the IL order of `game = owner_game` itself. Unchanged at 97.96%.
+
+
+## 2026-09-30 current-source ownership controls
+
+The [five-function campaign](../../five-game-functions-20260930.md) recompiled
+27 complete source variants against the current canonical body.
+No tested variant improves its 97.96% normalized score;
+no source change or exact-match credit is retained. The recipes and hash-bound
+results are in `source-ownership-20260930-mutations.json` and
+`operation-boundaries-20260930-mutations.json`; receipts are appended
+to `experiments.jsonl`. These controls bound the tested ownership forms and
+their interactions; they do not establish source exhaustion or a compiler limit.
