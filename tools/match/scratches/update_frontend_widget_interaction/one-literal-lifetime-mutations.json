@@ -13,21 +13,21 @@
     },
     {
       "name": "pointer-hover-target-one",
-      "find": "    if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0) {\n        hover_blend_target = 1.0f;",
+      "find": "        if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0) {\n            hover_blend_target = 1.0f;",
       "replacements": [
         {
           "name": "unsuffixed-one",
-          "text": "    if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0) {\n        hover_blend_target = 1.0;"
+          "text": "        if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0) {\n            hover_blend_target = 1.0;"
         }
       ]
     },
     {
       "name": "pointer-text-target-one",
-      "find": "    if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_TEXT_EFFECT_ENABLED) != 0)\n        text_effect_target = 1.0f;",
+      "find": "        if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_TEXT_EFFECT_ENABLED) != 0)\n            text_effect_target = 1.0f;",
       "replacements": [
         {
           "name": "unsuffixed-one",
-          "text": "    if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_TEXT_EFFECT_ENABLED) != 0)\n        text_effect_target = 1.0;"
+          "text": "        if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_TEXT_EFFECT_ENABLED) != 0)\n            text_effect_target = 1.0;"
         }
       ]
     },

@@ -4225,6 +4225,9 @@ class ScratchStatus:
     candidate_inline_data_ranges: tuple[tuple[int, int], ...] = ()
     target_inline_lookup_ranges: tuple[tuple[int, int], ...] = ()
     candidate_inline_lookup_ranges: tuple[tuple[int, int], ...] = ()
+    structural_ratio: float | None = None
+    structural_changed_target: int | None = None
+    structural_changed_candidate: int | None = None
 
     @property
     def state(self) -> str:
@@ -4250,6 +4253,21 @@ class ScratchStatus:
     @property
     def fuzzy_gap_bytes(self) -> float:
         return max(0.0, self.target_size - self.fuzzy_weighted_bytes)
+
+    @property
+    def proof_blockers(self) -> tuple[str, ...]:
+        if self.ratio is None:
+            return ("error",)
+        blockers = []
+        if self.ratio != 1.0:
+            blockers.append("instructions")
+        if self.masked_unresolved or self.masked_mismatches or self.masked_unaudited:
+            blockers.append("references")
+        if self.unexplained_target_ranges:
+            blockers.append("coverage")
+        if self.ratio == 1.0 and not self.body_byte_exact and not blockers:
+            blockers.append("encoding")
+        return tuple(blockers)
 
 
 def scratch_recovery(status: ScratchStatus) -> str:
@@ -4312,6 +4330,10 @@ class TriageRow:
     @property
     def fuzzy_gap_bytes(self) -> float:
         return max(0.0, self.target_size - self.fuzzy_weighted_bytes)
+
+    @property
+    def proof_gap_bytes(self) -> int:
+        return max(0, self.target_size - self.exact_bytes)
 
     @property
     def recovery(self) -> str:
@@ -4618,8 +4640,23 @@ def validate_scratch_source(source: Path) -> None:
             raise ValueError(f"{source}: {token!r} is not allowed in scratches (no fakematching)")
 
 
-def _mtime_ns(path: Path) -> int | None:
-    return path.stat().st_mtime_ns if path.exists() else None
+@cache
+def _cached_file_sha256(path: Path, identity: tuple[int, ...]) -> str:
+    # ctime changes on ordinary edits even when a copy preserves mtime. Reuse
+    # hashes of shared compiler/image inputs across a status sweep.
+    del identity
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _file_sha256(path: Path) -> str | None:
+    try:
+        stat = path.stat()
+    except FileNotFoundError:
+        return None
+    return _cached_file_sha256(
+        path.resolve(),
+        (stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns),
+    )
 
 
 class _ScratchIncludeResolver:
@@ -4628,7 +4665,7 @@ class _ScratchIncludeResolver:
     def __init__(self, match_root: Path) -> None:
         self.match_root = match_root
         self.include_dir = match_root / "include"
-        self._direct_dependencies: dict[tuple[Path, bool, str], tuple[Path, ...]] = {}
+        self._direct_dependencies: dict[tuple[Path, bool, str, str | None], tuple[Path, ...]] = {}
         self._lock = Lock()
 
     def direct_dependencies(
@@ -4638,7 +4675,7 @@ class _ScratchIncludeResolver:
         source: bool,
         compiler: str = DEFAULT_SCRATCH_COMPILER,
     ) -> tuple[Path, ...]:
-        cache_key = (including_path, source, compiler)
+        cache_key = (including_path, source, compiler, _file_sha256(including_path))
         if cache_key in self._direct_dependencies:
             return self._direct_dependencies[cache_key]
 
@@ -4784,7 +4821,7 @@ def _scratch_build_key(
         "runner_command": os.environ.get("WIBO") or "auto",
         "argv": list(_scratch_compile_argv(config, match_root)),
         "dependencies": [
-            [str(path.relative_to(match_root) if path.is_relative_to(match_root) else path), _mtime_ns(path)]
+            [str(path.relative_to(match_root) if path.is_relative_to(match_root) else path), _file_sha256(path)]
             for path in _scratch_build_dependencies(
                 config, match_root, include_resolver=include_resolver
             )
@@ -4830,16 +4867,6 @@ def _experiment_epoch_path_label(path: Path, match_root: Path) -> str:
     if resolved.is_relative_to(REPO_ROOT):
         return f"repo/{resolved.relative_to(REPO_ROOT).as_posix()}"
     return f"external/{resolved.name}"
-
-
-@cache
-def _experiment_epoch_file_sha256(
-    path: str,
-    mtime_ns: int,
-    size: int,
-) -> str:
-    del mtime_ns, size
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
 def scratch_experiment_epoch(
@@ -4891,18 +4918,15 @@ def scratch_experiment_epoch(
         digest.update(b"\0path\0")
         digest.update(_experiment_epoch_path_label(path, match_root).encode())
         try:
-            stat = path.stat()
+            content_hash = _file_sha256(path)
         except OSError:
             digest.update(b"\0missing")
         else:
-            digest.update(b"\0sha256\0")
-            digest.update(
-                _experiment_epoch_file_sha256(
-                    str(path),
-                    stat.st_mtime_ns,
-                    stat.st_size,
-                ).encode()
-            )
+            if content_hash is None:
+                digest.update(b"\0missing")
+            else:
+                digest.update(b"\0sha256\0")
+                digest.update(content_hash.encode())
     return digest.hexdigest()
 
 
@@ -4946,14 +4970,6 @@ def _scratch_object_is_current(
     if not obj_path.exists():
         return False
 
-    obj_mtime = obj_path.stat().st_mtime_ns
-    for dependency in _scratch_build_dependencies(
-        config, match_root, include_resolver=include_resolver
-    ):
-        dependency_mtime = _mtime_ns(dependency)
-        if dependency_mtime is None or dependency_mtime > obj_mtime:
-            return False
-
     build_key_path = obj_path.parent / "scratch-build.json"
     if not build_key_path.exists():
         return False
@@ -4962,8 +4978,12 @@ def _scratch_object_is_current(
         cached = json.loads(build_key_path.read_text())
     except (json.JSONDecodeError, OSError):
         return False
-    return cached.get("key") == _scratch_build_key(
+    current = _scratch_build_key(
         config, match_root, include_resolver=include_resolver
+    )
+    return (
+        all(digest is not None for _, digest in current["dependencies"])
+        and cached.get("key") == current
     )
 
 
@@ -5571,6 +5591,7 @@ def evaluate_scratch(
             excluded_target_ranges=result.excluded_target_ranges,
             unexplained_target_ranges=result.unexplained_target_ranges,
             candidate_object_sha256=result.candidate_object_sha256,
+            **_scratch_structural_fields(result),
             error=None,
             code_sha256=object_function_fingerprint(
                 extract_object_function(
@@ -5698,6 +5719,10 @@ def scratch_status_payload(status: ScratchStatus) -> dict:
         "target_bytes": status.target_size,
         "fuzzy_weighted_bytes": status.fuzzy_weighted_bytes,
         "fuzzy_gap_bytes": status.fuzzy_gap_bytes,
+        "proof_blockers": list(status.proof_blockers),
+        "structural_ratio": status.structural_ratio,
+        "structural_changed_target": status.structural_changed_target,
+        "structural_changed_candidate": status.structural_changed_candidate,
         "target_instructions": status.target_instructions,
         "candidate_instructions": status.candidate_instructions,
         "target_inline_data_ranges": [list(r) for r in status.target_inline_data_ranges],
@@ -6192,8 +6217,8 @@ def compile_idiom_case(
     )
 
 
-# bump when the cache schema changes; matcher source mtime handles scoring edits
-CACHE_VERSION = 13
+# Bump when the cache schema changes; content hashes handle scoring edits.
+CACHE_VERSION = 14
 
 
 def _masked_reference_cache_payload(reference: MaskedReference) -> dict:
@@ -6340,9 +6365,9 @@ def _function_manifest_cache_digest(manifest: FunctionSymbolManifest) -> str:
 
 def _scratch_context_key(image_path: Path) -> dict:
     return {
-        "image_mtime": _mtime_ns(image_path),
-        "matcher_mtime": _mtime_ns(Path(__file__)),
-        "reference_manifest_mtime": _mtime_ns(DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH),
+        "image_sha256": _file_sha256(image_path),
+        "matcher_sha256": _file_sha256(Path(__file__)),
+        "reference_manifest_sha256": _file_sha256(DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH),
     }
 
 
@@ -6486,8 +6511,24 @@ def _match_precompiled_scratch_config(
     )
 
 
+def _scratch_structural_fields(result: MatchResult) -> dict:
+    if result.ratio == 1.0:
+        return {
+            "structural_ratio": 1.0,
+            "structural_changed_target": 0,
+            "structural_changed_candidate": 0,
+        }
+    structural = structural_diff(result)
+    return {
+        "structural_ratio": structural.ratio,
+        "structural_changed_target": structural.changed_target_instructions,
+        "structural_changed_candidate": structural.changed_candidate_instructions,
+    }
+
+
 def _scratch_status_fields(target_size: int, result: MatchResult) -> dict:
     return {
+        **_scratch_structural_fields(result),
         "target_size": target_size,
         "encoded_body_proof": result.encoded_body_proof,
         "body_byte_exact": result.body_byte_exact,
@@ -6681,7 +6722,8 @@ def collect_scratch_statuses(
     """Match every scratch, reusing cached results for unchanged ones.
 
     The cache keys on parsed scratch config, source, transitive shared headers,
-    compiler inputs, image, function/reference manifests, and matcher mtimes.
+    compiler inputs, image, function/reference manifests, and matcher content.
+    Shared input hashes are reused while file identity and change times agree.
     An unchanged scratch therefore costs a dependency-stat pass instead of a
     compile, disassembly, and diff while target-map or normalizer changes still
     invalidate old scores.
@@ -6762,7 +6804,7 @@ def collect_scratch_statuses(
 
 
 TRIAGE_STATES = frozenset(("match", "audit", "wip", "error", "missing"))
-TRIAGE_SORTS = frozenset(("address", "fuzzy-gap", "size", "fuzzy", "unexplored"))
+TRIAGE_SORTS = frozenset(("address", "proof-gap", "structural-gap", "fuzzy-gap", "size", "fuzzy", "unexplored"))
 
 
 def _triage_status_rank(status: ScratchStatus) -> tuple[int, float, int, int, int]:
@@ -6976,6 +7018,11 @@ def sort_triage_rows(
     def key(row: TriageRow) -> tuple:
         if sort_by == "address":
             return (row.address, row.function)
+        if sort_by == "proof-gap":
+            return (row.proof_gap_bytes, row.fuzzy_gap_bytes, -row.address)
+        if sort_by == "structural-gap":
+            ratio = row.best_status.structural_ratio if row.best_status else None
+            return (row.target_size * (1 - (ratio or 0)), row.proof_gap_bytes)
         if sort_by == "fuzzy-gap":
             return (
                 row.fuzzy_gap_bytes,
@@ -7035,6 +7082,7 @@ def triage_row_payload(row: TriageRow) -> dict:
         "address": row.address,
         "target_bytes": row.target_size,
         "exact_bytes": row.exact_bytes,
+        "proof_gap_bytes": row.proof_gap_bytes,
         "fuzzy_weighted_bytes": row.fuzzy_weighted_bytes,
         "fuzzy_gap_bytes": row.fuzzy_gap_bytes,
         "candidate_bytes": row.candidate_bytes,
@@ -7130,8 +7178,8 @@ def collect_residual_frontier_rows(
     return sorted(
         rows,
         key=lambda row: (
-            -row.status.fuzzy_gap_bytes,
             -row.status.target_size,
+            -row.status.fuzzy_gap_bytes,
             row.status.address,
             row.status.config.function,
         ),
@@ -7179,6 +7227,14 @@ def residual_frontier_summary_payload(
 
     return {
         "functions": len(ordered),
+        "withheld_target_bytes": sum(row.status.target_size for row in ordered),
+        "proof_blockers": {
+            blocker: {
+                "functions": sum(blocker in row.status.proof_blockers for row in ordered),
+                "target_bytes": sum(row.status.target_size for row in ordered if blocker in row.status.proof_blockers),
+            }
+            for blocker in sorted({blocker for row in ordered for blocker in row.status.proof_blockers})
+        },
         "fuzzy_gap_bytes": total_gap,
         "top_5_gap_share": top_share(5),
         "top_10_gap_share": top_share(10),
@@ -7196,8 +7252,8 @@ def render_residual_frontier_markdown(
     ordered = sorted(
         rows,
         key=lambda row: (
-            -row.status.fuzzy_gap_bytes,
             -row.status.target_size,
+            -row.status.fuzzy_gap_bytes,
             row.status.address,
         ),
     )
@@ -7236,7 +7292,8 @@ def render_residual_frontier_markdown(
         "",
         (
             f"**{summary['functions']}** non-exact scratch-backed functions hold "
-            f"**{summary['fuzzy_gap_bytes']:.0f} fuzzy-gap bytes**. The top 5 "
+            f"**{summary['withheld_target_bytes']} target bytes** without proof-grade credit "
+            f"and **{summary['fuzzy_gap_bytes']:.0f} fuzzy-gap bytes**. The top 5 by fuzzy gap "
             f"hold **{summary['top_5_gap_share']:.1%}** of that gap; the top 10 "
             f"hold **{summary['top_10_gap_share']:.1%}**."
         ),
@@ -7258,11 +7315,20 @@ def render_residual_frontier_markdown(
             "labels remain manual source assessments, not stopping rules."
         ),
         "",
+        "Ranked by withheld target extent. Structural similarity masks caller-saved "
+        "register names and local labels; it is diagnostic and grants no proof credit. "
+        "Proof blockers come from the current matcher, independently of manual residual labels.",
+        "",
+        "Proof blockers (overlapping extents): " + "; ".join(
+            f"{blocker}: {metrics['functions']} functions / {metrics['target_bytes']} bytes"
+            for blocker, metrics in summary["proof_blockers"].items()
+        ) + ".",
+        "",
         (
-            "| rank | function | fuzzy gap | recovery | residual | evidence | "
+            "| rank | function | withheld bytes | fuzzy gap | structural | changed insns t/c | blockers | recovery | residual | evidence | "
             "current/all | flags |"
         ),
-        "|---:|---|---:|---|---|---|---:|---|",
+        "|---:|---|---:|---:|---:|---:|---|---|---|---|---:|---|",
     ]
     for rank, row in enumerate(ordered, start=1):
         status = row.status
@@ -7273,7 +7339,11 @@ def render_residual_frontier_markdown(
                 (
                     str(rank),
                     status.config.function,
+                    str(status.target_size),
                     f"{status.fuzzy_gap_bytes:.0f}",
+                    f"{status.structural_ratio:.2%}" if status.structural_ratio is not None else "-",
+                    f"{status.structural_changed_target}/{status.structural_changed_candidate}" if status.structural_changed_target is not None else "-",
+                    ",".join(status.proof_blockers) or "-",
                     scratch_recovery(status),
                     ",".join(status.config.residuals) or "unspecified",
                     row.evidence_state,
@@ -7311,6 +7381,9 @@ TRIAGE_HEADER = (
     "exact",
     "fuzzy",
     "gap",
+    "structural",
+    "changed t/c",
+    "blockers",
     "match",
     "prefix",
     "refs",
@@ -7340,6 +7413,9 @@ def render_triage_rows(
                 f"{row.exact_bytes}/{row.target_size}",
                 f"{row.fuzzy_weighted_bytes:.0f}/{row.target_size}",
                 f"{row.fuzzy_gap_bytes:.0f}",
+                f"{best.structural_ratio:.2%}" if best is not None and best.structural_ratio is not None else "-",
+                f"{best.structural_changed_target}/{best.structural_changed_candidate}" if best is not None and best.structural_changed_target is not None else "-",
+                ",".join(best.proof_blockers) if best is not None else "missing",
                 (
                     f"{best.ratio:.2%}"
                     if best is not None and best.ratio is not None

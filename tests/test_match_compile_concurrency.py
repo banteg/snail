@@ -52,6 +52,54 @@ def stale_scratch(tmp_path: Path) -> tuple[match_module.ScratchConfig, Path]:
     return config, root
 
 
+@pytest.mark.parametrize("dependency", ["scratches/foo/scratch.cpp", "include/shared.h", "compilers/msvc6.5/Bin/C2.DLL"])
+def test_preserved_mtime_edits_recompile(
+    stale_scratch: tuple[match_module.ScratchConfig, Path],
+    monkeypatch: pytest.MonkeyPatch,
+    dependency: str,
+) -> None:
+    config, root = stale_scratch
+    obj = config.directory / "build/scratch.obj"
+    match_module._store_scratch_build_key(obj, config, root)
+    resolver = match_module._ScratchIncludeResolver(root)
+    assert match_module._scratch_object_is_current(obj, config, root, include_resolver=resolver)
+    changed = root / dependency
+    previous = changed.stat()
+    changed.write_bytes(changed.read_bytes().replace(b"1", b"2") + b"// edit\n")
+    os.utime(changed, ns=(previous.st_atime_ns, previous.st_mtime_ns))
+    assert not match_module._scratch_object_is_current(obj, config, root, include_resolver=resolver)
+    calls = []
+
+    def compile_changed(args, *, cwd, **kwargs):
+        calls.append(args)
+        (Path(cwd) / "scratch.obj").write_bytes(b"fresh object")
+        return subprocess.CompletedProcess(args, 0, "", "")
+
+    monkeypatch.setattr(subprocess, "run", compile_changed)
+    assert match_module.compile_scratch(config, root) == obj
+    assert len(calls) == 1
+    assert obj.read_bytes() == b"fresh object"
+    assert match_module._scratch_object_is_current(obj, config, root)
+
+
+def test_match_context_detects_preserved_mtime_edits(tmp_path, monkeypatch) -> None:
+    image = tmp_path / "image.exe"
+    matcher = tmp_path / "match.py"
+    references = tmp_path / "references.json"
+    for path in (image, matcher, references):
+        path.write_bytes(b"original")
+    monkeypatch.setattr(match_module, "__file__", str(matcher))
+    monkeypatch.setattr(match_module, "DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH", references)
+    previous_key = match_module._scratch_context_key(image)
+    for path in (image, matcher, references):
+        stat = path.stat()
+        path.write_bytes(b"modified")
+        os.utime(path, ns=(stat.st_atime_ns, stat.st_mtime_ns))
+        current_key = match_module._scratch_context_key(image)
+        assert current_key != previous_key
+        previous_key = current_key
+
+
 def test_concurrent_compile_rechecks_cache_and_publishes_complete_files(
     stale_scratch: tuple[match_module.ScratchConfig, Path],
     monkeypatch: pytest.MonkeyPatch,

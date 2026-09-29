@@ -788,8 +788,8 @@ def build_parser() -> argparse.ArgumentParser:
     match_triage_parser.add_argument(
         "--sort",
         choices=tuple(sorted(TRIAGE_SORTS)),
-        default="fuzzy-gap",
-        help="Row ordering (default: fuzzy-gap).",
+        default="proof-gap",
+        help="Row ordering (default: proof-gap).",
     )
     match_triage_parser.add_argument(
         "--limit",

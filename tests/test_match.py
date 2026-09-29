@@ -4381,6 +4381,8 @@ def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
     import time
 
     stamp = time.time() + 10
+    source = scratch_dir / "scratch.cpp"
+    source.write_bytes(source.read_bytes() + b"// changed\n")
     os.utime(scratch_dir / "scratch.cpp", (stamp, stamp))
     assert load_status() is None
 
@@ -4405,6 +4407,7 @@ def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
     assert load_status() == fields
 
     stamp += 10
+    header.write_bytes(header.read_bytes() + b"// changed\n")
     os.utime(header, (stamp, stamp))
     assert load_status() is None
 
@@ -5016,9 +5019,14 @@ def test_scratch_object_current_tracks_build_inputs(tmp_path: Path) -> None:
     os.utime(unrelated_header, (base + 20, base + 20))
     assert _scratch_object_is_current(obj_path, config, match_root)
 
+    # Touching identical content is harmless; changing content invalidates it.
     os.utime(header, (base + 20, base + 20))
+    assert _scratch_object_is_current(obj_path, config, match_root)
+    original_header = header.read_bytes()
+    header.write_bytes(original_header + b"// changed\n")
     assert not _scratch_object_is_current(obj_path, config, match_root)
 
+    header.write_bytes(original_header)
     os.utime(header, (base, base))
     os.utime(scratch_dir / "scratch.conf", (base + 20, base + 20))
     assert _scratch_object_is_current(obj_path, config, match_root)

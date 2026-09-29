@@ -297,7 +297,12 @@ Useful analysis helpers:
 - `uv run snail match triage --state wip --sort unexplored` joins every
   port-relevant manifest function by native address to its best scratch,
   recorded probe/mutation history, and verified Android/iOS mapping. Use
-  `--sort fuzzy-gap` for the largest remaining fuzzy-byte gaps; combine
+  the default `--sort proof-gap` for the largest extents withheld from exact
+  credit, including normalized-equal functions with encoding/reference debt.
+  `--sort fuzzy-gap` retains the instruction-similarity queue; `--sort structural-gap`
+  ranks diagnostic gaps after masking caller-saved registers and local labels.
+  Structural ratios, changed target/candidate instruction counts, and measured
+  proof blockers are shown alongside manual recovery/residual assessments. Combine
   `--recovery`, `--residual`, `--mobile`, `--min-bytes`, and `--limit` to
   select a work queue. `--json` exposes the same rows and aggregate exact,
   fuzzy, candidate, recovery, and mobile coverage for automation.
@@ -675,7 +680,7 @@ can change the default segment; non-unit scales stay distinct as well.
 ## Resuming a partial
 
 Start with `status --check`, `experiments --check --strict --check-specs`, and
-`triage --state wip --sort fuzzy-gap`. The function-count headline is not byte
+`triage --state wip,audit --sort proof-gap`. The function-count headline is not byte
 coverage; aggregate related builders before spending another session on tiny
 near matches. Use `inspect --source-lines` and the actual instruction diff to
 identify a particular owner, branch, or expression to recover.
@@ -696,6 +701,17 @@ proves or disproves an authored source shape.
 In particular, a changed branch destination offset can move the first mismatch
 earlier even when the first changed computation is much later in the function.
 Do not change the exact-match standard to make these partials disappear.
+
+The residual frontier ranks withheld target extents and also shows fuzzy gaps,
+structural similarity, and current proof blockers. A structural score of 100%
+does not certify register dependencies, branch targets, references, or encodings.
+Blocker byte totals overlap when one function fails multiple checks.
+
+Build and match cache keys use file content hashes for source, transitive
+headers, toolchain inputs, native image, reference manifest, and matcher code.
+Unchanged content remains reusable after a timestamp-only touch. Hashes are
+memoized per process using file identity, size, mtime and ctime so shared inputs
+are read once per revision and ordinary timestamp-preserving copies invalidate.
 
 When a globally degrading variant makes a native region exact, preserve its
 source as a diagnostic seed outside `scratch.cpp`. Check whether the remaining

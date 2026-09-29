@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -16,6 +17,12 @@ from snail.match import (
     collect_triage_rows,
     load_scratch_config,
     scratch_status_payload,
+    sort_triage_rows,
+    ResidualFrontierRow,
+    render_residual_frontier_markdown,
+    _scratch_status_fields,
+    match_function,
+    ObjectFunction,
 )
 from snail.symbols import FunctionSymbol, FunctionSymbolManifest
 
@@ -61,6 +68,72 @@ def _status(config: ScratchConfig, *, ratio: float = 0.75) -> ScratchStatus:
         masked_ok=2,
         body_byte_exact=ratio == 1.0,
     )
+
+
+def test_structural_similarity_does_not_hide_proof_debt(tmp_path: Path) -> None:
+    # A register rotation disappears from structural text but still differs.
+    result = match_function(
+        bytes.fromhex("8bc1c3"),
+        ObjectFunction("foo", bytes.fromhex("8bc2c3"), frozenset()),
+        image=LoadedImage(b"\0" * 0x100, 0x1000, 0x100),
+        target_va=0x1000,
+    )
+    status = ScratchStatus(
+        config=_config(tmp_path), address=0x1000, **_scratch_status_fields(3, result)
+    )
+    assert status.structural_ratio == 1.0
+    assert status.structural_changed_target == 0
+    assert status.state == "wip"
+    assert status.proof_blockers == ("instructions",)
+
+
+def test_proof_gap_prioritizes_large_zero_fuzzy_gap_extent(tmp_path: Path) -> None:
+    encoding = replace(
+        _status(_config(tmp_path), ratio=1.0),
+        body_byte_exact=False,
+        structural_ratio=1.0,
+        structural_changed_target=0,
+        structural_changed_candidate=0,
+    )
+    references = replace(encoding, masked_unresolved=1)
+    assert encoding.proof_blockers == ("encoding",)
+    assert references.proof_blockers == ("references",)
+    assert replace(encoding, unexplained_target_ranges=((0, 1),)).proof_blockers == (
+        "coverage",
+    )
+    large = TriageRow(
+        "large",
+        0x1000,
+        1000,
+        "audit",
+        0,
+        1000,
+        1000,
+        1,
+        replace(encoding, config=_config(tmp_path, function="large"), target_size=1000),
+    )
+    small = TriageRow(
+        "small",
+        0x2000,
+        16,
+        "wip",
+        0,
+        12,
+        16,
+        1,
+        _status(_config(tmp_path, function="small")),
+    )
+    assert sort_triage_rows([small, large], sort_by="proof-gap") == [large, small]
+    assert sort_triage_rows([small, large], sort_by="fuzzy-gap") == [small, large]
+    assert sort_triage_rows([small, large], sort_by="structural-gap") == [small, large]
+    markdown = "\n".join(
+        render_residual_frontier_markdown(
+            [ResidualFrontierRow(row.best_status) for row in (small, large)]
+        )
+    )
+    assert "**1016 target bytes**" in markdown
+    assert "encoding: 1 functions / 1000 bytes" in markdown
+    assert markdown.index("| large |") < markdown.index("| small |")
 
 
 def test_scratch_config_is_strict_and_parses_recovery_metadata(tmp_path: Path) -> None:

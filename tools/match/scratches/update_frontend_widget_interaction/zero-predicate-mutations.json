@@ -23,11 +23,11 @@
     },
     {
       "name": "pointer-hit-predicate",
-      "find": "    if (g_game->players[0].mouse_cursor.IsActive() == 0\n        || MouseTest() == 0) {",
+      "find": "    if (g_game->players[0].mouse_cursor.IsActive() != 0\n        && MouseTest() != 0) {",
       "replacements": [
         {
-          "name": "logical-not",
-          "text": "    if (!g_game->players[0].mouse_cursor.IsActive()\n        || !MouseTest()) {"
+          "name": "implicit-bool",
+          "text": "    if (g_game->players[0].mouse_cursor.IsActive()\n        && MouseTest()) {"
         }
       ]
     },
