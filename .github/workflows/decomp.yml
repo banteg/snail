@@ -33,8 +33,8 @@ jobs:
       - name: Fetch and verify pinned objdiff
         run: uv run --no-sync tools/match/fetch_objdiff.py
 
-      - name: Test matching and public metric accounting
-        run: uv run --no-sync pytest -q
+      - name: Test portable matching and public metric accounting
+        run: uv run --no-sync pytest -q -m "not local_artifacts"
 
       - name: Verify source-bound evidence and export progress
         run: uv run --no-sync snail match report

@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from snail.recon import sha256_bytes
 from snail.reflexive import decrypt_reflexive_wrapper_config, unwrap_reflexive_executable
 
@@ -8,6 +10,7 @@ ARTIFACTS_DIR = Path(__file__).resolve().parents[1] / "artifacts/bin"
 UNWRAPPED_SHA256 = "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5"
 
 
+@pytest.mark.local_artifacts
 def test_decrypt_reflexive_wrapper_config_extracts_expected_fields() -> None:
     config_text = decrypt_reflexive_wrapper_config(
         ARTIFACTS_DIR / "SnailMail.RWG",
@@ -19,6 +22,7 @@ def test_decrypt_reflexive_wrapper_config_extracts_expected_fields() -> None:
     assert "Game Needs Short Fixed Encryption=1" not in config_text
 
 
+@pytest.mark.local_artifacts
 def test_unwrap_reflexive_executable_matches_known_unwrapped_image() -> None:
     decrypted = unwrap_reflexive_executable(
         ARTIFACTS_DIR / "SnailMail.RWG",

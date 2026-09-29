@@ -4,6 +4,8 @@ import re
 from collections import Counter
 from itertools import pairwise
 from pathlib import Path
+
+import pytest
 from types import SimpleNamespace
 
 from snail.cli import main
@@ -8319,6 +8321,7 @@ def test_ios_globals_recover_windows_static_initializer_source_units() -> None:
         assert global_objects[global_name] == {source_object}
 
 
+@pytest.mark.local_artifacts
 def test_cross_port_runtime_config_initializer_preserves_platform_split() -> None:
     repo_root = Path(__file__).parents[1]
     android_decompile = (
@@ -8372,6 +8375,7 @@ def test_ios_track_colour_globals_recover_windows_initializer_units() -> None:
     assert all(global_objects[name] == {"SubGame.o"} for name in mobile_globals)
 
 
+@pytest.mark.local_artifacts
 def test_android_global_constructor_recovers_font_initializer_unit() -> None:
     repo_root = Path(__file__).parents[1]
     complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

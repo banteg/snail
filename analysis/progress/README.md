@@ -185,7 +185,7 @@ uv run snail match report
 ```
 
 CI performs saved-evidence validation on pushes to `master` and PRs, runs
-the full test suite including real pinned objdiff scoring controls, and verifies
+the portable test suite including real pinned objdiff scoring controls, and verifies
 the downloaded native target hash. It rejects
 added, changed, or deleted scoring/build inputs, verifies the full public
 partition and source/reference/extent credit, runs the SHA-256-pinned objdiff
@@ -333,3 +333,9 @@ changes from 99.353002% to **99.718983%**; All changes from 51.559552% to
 newly matched or regressed bytes. `STATUS.md`, scratch/probe output and triage
 continue to show the local normalized score over curated extents; their fuzzy
 headlines are diagnostics and do not substitute for the public objdiff series.
+
+
+Tests marked `local_artifacts` require untracked archives, extracted assets,
+mobile decompile exports or captured runtime traces. CI runs
+`uv run pytest -q -m "not local_artifacts"`; a provisioned local checkout runs
+`uv run pytest -q` to include these integration checks.

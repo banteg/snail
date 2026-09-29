@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from snail.formats import (
     LevelDefinition,
     ObjectDefinition,
@@ -13,6 +15,7 @@ from snail.formats import (
 EXTRACTED_ROOT = Path(__file__).resolve().parents[1] / "artifacts/extracted/SnailMail.dat"
 
 
+@pytest.mark.local_artifacts
 def test_parse_font3d_object_definition() -> None:
     parsed = parse_text_asset(EXTRACTED_ROOT / "OBJECTS/FONT3D/_OBJECT.TXT")
 
@@ -25,6 +28,7 @@ def test_parse_font3d_object_definition() -> None:
     assert parsed.faces[0].texture == "Letter"
 
 
+@pytest.mark.local_artifacts
 def test_parse_start_segment_definition() -> None:
     parsed = parse_text_asset(EXTRACTED_ROOT / "SEGMENTS/START.TXT")
 
@@ -39,6 +43,7 @@ def test_parse_start_segment_definition() -> None:
     assert parsed.rows[4].annotation.value == "Start"
 
 
+@pytest.mark.local_artifacts
 def test_parse_big_jump_segment_annotation() -> None:
     parsed = parse_text_asset(EXTRACTED_ROOT / "SEGMENTS/BIG JUMP.TXT")
 
@@ -49,6 +54,7 @@ def test_parse_big_jump_segment_annotation() -> None:
     assert ring_row.annotation.value == "Explode"
 
 
+@pytest.mark.local_artifacts
 def test_parse_arcade_level_definition() -> None:
     parsed = parse_text_asset(EXTRACTED_ROOT / "LEVELS/ARCADE000.TXT")
 
@@ -70,6 +76,7 @@ def test_parse_arcade_level_definition() -> None:
     assert parsed.last_segments == ("Finish.txt",)
 
 
+@pytest.mark.local_artifacts
 def test_parse_tutorial_level_segment_metadata() -> None:
     parsed = parse_text_asset(EXTRACTED_ROOT / "LEVELS/TUTORIAL.TXT")
 
@@ -83,6 +90,7 @@ def test_parse_tutorial_level_segment_metadata() -> None:
     assert "Turbo the Snail" in (parsed.segments[0].message or "")
 
 
+@pytest.mark.local_artifacts
 def test_parse_level_segment_angle_metadata() -> None:
     parsed = parse_text_asset(EXTRACTED_ROOT / "LEVELS/ARCADE038.TXT")
 
@@ -93,6 +101,7 @@ def test_parse_level_segment_angle_metadata() -> None:
     assert "jetpack" in parsed.galaxy_text.lower()
 
 
+@pytest.mark.local_artifacts
 def test_parse_challenge_level_random_track_alias() -> None:
     parsed = parse_text_asset(EXTRACTED_ROOT / "LEVELS/CHALLENGE000.TXT")
 

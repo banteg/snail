@@ -29,3 +29,4 @@ build-backend = "uv_build"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = ["local_artifacts: integration tests requiring untracked game archives, mobile exports, or runtime traces"]

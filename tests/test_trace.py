@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from snail.trace import build_trace_capture_plan, load_runtime_trace, summarize_runtime_trace_file
 
 
@@ -609,6 +611,7 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
     assert events[19].sampled_floor_height == 0.0
 
 
+@pytest.mark.local_artifacts
 def test_summarize_runtime_trace_uses_index_name_for_legacy_corrupted_path() -> None:
     trace_path = Path("artifacts/frida/snailmail-trace-20260308-152743-11168.ndjson")
     events = load_runtime_trace(trace_path)
@@ -621,6 +624,7 @@ def test_summarize_runtime_trace_uses_index_name_for_legacy_corrupted_path() -> 
     assert summary.level_modes == {}
 
 
+@pytest.mark.local_artifacts
 def test_build_trace_capture_plan_uses_real_corpus() -> None:
     plan = build_trace_capture_plan(EXTRACTED_ROOT, limit=64)
 
