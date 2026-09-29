@@ -38,6 +38,57 @@ def test_full_scope_weighting_and_no_prebuilt_or_unassigned_credit():
     assert result["categories"][0]["measures"]["total_code"] == "0"
 
 
+def test_every_chart_measure_reconciles_units_and_categories(monkeypatch):
+    monkeypatch.setattr(report, "load_function_symbol_manifest", lambda _: SimpleNamespace(functions=[
+        SimpleNamespace(address=1, port_scope="core"),
+        SimpleNamespace(address=200, port_scope="replaceable-platform"),
+        SimpleNamespace(address=600, port_scope="core"),
+    ]))
+    monkeypatch.setattr(report, "_load_attribution", lambda: {})
+    result = report.build_report([
+        row(size=100),
+        row(200, 300, ratio=0.5, matched=False),
+        row(600, 500, ratio=0, matched=False, candidate=None, source=None),
+        row(1200, 100, ratio=0, matched=False, candidate=None, source=None, is_function=False),
+    ])
+    groups = [(result["measures"], result["units"])] + [
+        (category["measures"], [unit for unit in result["units"] if category["id"] in unit["metadata"]["progress_categories"]])
+        for category in result["categories"]
+    ]
+    for measures, units in groups:
+        total = sum(int(unit["measures"]["total_code"]) for unit in units)
+        matched = sum(int(unit["measures"]["matched_code"]) for unit in units)
+        weighted = sum(int(unit["measures"]["total_code"]) * unit["measures"]["fuzzy_match_percent"] for unit in units)
+        assert int(measures["total_code"]) == total
+        assert int(measures["matched_code"]) == matched
+        assert measures["matched_code_percent"] == pytest.approx(100 * matched / total if total else 0)
+        assert measures["fuzzy_match_percent"] == pytest.approx(weighted / total if total else 0)
+        functions = sum(len(unit["functions"]) for unit in units)
+        exact = sum(function["fuzzy_match_percent"] == 100 for unit in units for function in unit["functions"])
+        assert measures["total_functions"] == functions
+        assert measures["matched_functions"] == exact
+        assert measures["matched_functions_percent"] == pytest.approx(100 * exact / functions if functions else 0)
+        assert measures["total_units"] == len(units)
+        assert measures["complete_units"] == 0
+        assert measures["complete_code"] == measures["total_data"] == measures["matched_data"] == measures["complete_data"] == "0"
+        assert measures["complete_code_percent"] == measures["matched_data_percent"] == measures["complete_data_percent"] == 0
+    assert {c["id"] for c in result["categories"]} == {"game", "libs", "libs.d3dx8", "libs.msvc6-crt", "libs.libpng-1.2.5", "libs.zlib-1.2.1", "other"}
+
+
+def test_coverage_discount_and_exact_cap_are_applied_before_weighting(monkeypatch):
+    monkeypatch.setattr(report, "_load_attribution", lambda: {})
+    result = report.build_report([
+        row(size=100, ratio=0.25, matched=False),
+        row(200, 300, ratio=1.0, matched=False),
+    ])
+    # The evidence ratio already discounts untested owned bytes. Audit-state
+    # 100% instructions remain partial in both function tiles and totals.
+    assert result["units"][0]["functions"][0]["fuzzy_match_percent"] == 25
+    assert result["units"][1]["functions"][0]["fuzzy_match_percent"] == 99.99
+    assert result["measures"]["fuzzy_match_percent"] == pytest.approx((100 * 25 + 300 * 99.99) / 400)
+    assert result["measures"]["matched_code"] == "0"
+
+
 def test_game_category_keeps_platform_and_unrecovered_game_but_excludes_unknown_and_libraries(monkeypatch):
     monkeypatch.setattr(report, "load_function_symbol_manifest", lambda _: SimpleNamespace(functions=[
         SimpleNamespace(address=1, port_scope="core"),

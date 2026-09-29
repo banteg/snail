@@ -32,6 +32,13 @@ SCORING_POLICY = {
     "padding": "untargeted-terminal-nop-int3; no-owned-code-credit",
 }
 VERIFICATION_MODE = "Source-bound local compilation evidence; CI checks freshness and report consistency."
+METRIC_DEFINITIONS = {
+    "fuzzy_match_percent": "Byte-weighted normalized instruction SequenceMatcher ratio; untested owned code scores zero; non-exact tiles are capped at 99.99%. Not objdiff's weighted instruction-penalty score.",
+    "matched_code_percent": "Whole disjoint owned code extents with source-built encoded-body, positional-reference and coverage proof, divided by total owned code bytes.",
+    "matched_data_percent": "Not measured. Data bytes and percentages are zero placeholders, not proof that the executable contains no data.",
+    "complete_code_percent": "Linked code: zero until an integrated source reconstruction earns whole-unit linked credit.",
+    "complete_data_percent": "Linked data: not measured; no data reconstruction credit.",
+}
 PROGRESS = REPO_ROOT / "analysis/progress"
 DEFAULT_EVIDENCE = PROGRESS / f"{VERSION}.json"
 DEFAULT_REPORT = REPO_ROOT / "artifacts/decomp/report.json"
@@ -318,6 +325,7 @@ def proof_summary(evidence: dict[str, Any]) -> dict[str, Any]:
     encoded = sum(
         r["size"] for r in rows if r["matched"] and r.get("body_byte_exact", False)
     )
+    report = build_report(rows)
     return {
         "schema": 1,
         "verification_mode": evidence["verification_mode"],
@@ -336,6 +344,11 @@ def proof_summary(evidence: dict[str, Any]) -> dict[str, Any]:
         "linked_bytes": 0,
         "final_image_identity": "not measured",
         "data_progress": "not measured",
+        "metric_definitions": METRIC_DEFINITIONS,
+        "reported_metrics": {
+            "all": report["measures"],
+            "categories": {c["id"]: c["measures"] for c in report["categories"]},
+        },
         "largest_remaining_functions": [
             {"id": native_id(r["address"]), "name": r["name"], "bytes": r["size"]}
             for r in sorted(
@@ -883,6 +896,11 @@ def _measures(
         "complete_code": str(complete),
         "matched_code_percent": 100 * matched / total if total else 0.0,
         "complete_code_percent": 100 * complete / total if total else 0.0,
+        "total_data": "0",
+        "matched_data": "0",
+        "matched_data_percent": 0.0,
+        "complete_data": "0",
+        "complete_data_percent": 0.0,
         "fuzzy_match_percent": fuzzy,
         "total_functions": functions,
         "matched_functions": matched_functions,

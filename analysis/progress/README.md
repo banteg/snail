@@ -5,6 +5,9 @@ Windows gameplay executable as `win32-reflexive`. This integration follows
 [Crimson’s evidence-backed custom reporting](https://github.com/banteg/crimson/blob/master/analysis/decomp/README.md).
 The comparison is performed by `snail match`, not objdiff; objdiff v3.8.1 validates
 the v2 report format. Library attribution is recorded in [the ownership report](../ownership/README.md); library matching remains separate work.
+The [metric audit and measured objdiff comparison](../../tools/match/metric-comparison-20260930.md)
+reconciles all five chart series, category denominators, and scoring formulas.
+The proof-summary artifact records the exported measures and their definitions.
 
 ## Game & Engine view
 
@@ -126,7 +129,7 @@ symbol. Our reference audit remains useful additional proof.
   owners are omitted. Every byte is counted once. Five unassigned code runs are
   explicit zero-progress units, without invented function-count credit.
 - **Matched:** an actual source-built scratch with 100% normalized instruction
-  identity and a clean positional reference audit. Its decoded, compared ranges
+  identity, encoded-body proof, and a clean positional reference audit. Its decoded, compared ranges
   must cover all code assigned to the public function, with no unexplained bytes. Library identification, prebuilt objects,
   copied assembly, and generated thunks receive no decompiled credit.
 - **Fuzzy:** `snail match` similarity, weighted by owned original code bytes across
@@ -136,7 +139,8 @@ symbol. Our reference audit remains useful additional proof.
   custom scores are not numerically equivalent to objdiff's weighted penalties.
 - **Linked:** zero. Scratch compilation and semantic-complete metadata do not
   establish an integrated source reconstruction or original translation units.
-- **Data:** omitted, not claimed complete. Recovered types and original data bytes
+- **Data:** explicit zero placeholders for unmeasured data, not claimed complete.
+  Recovered types and original data bytes
   alone do not establish matching source-built data/BSS layout.
 
 The initial public inventory has 2,261 nonempty function owners plus five
@@ -162,9 +166,9 @@ manifest/reporter hashes, every compiler-bundle file hash, Wibo identity, origin
 image identity, owned and compared ranges, exclusions with reasons, undecodable
 bytes, positional reference audit results, whole candidate-object hashes, encoded
 body hashes and relocation masks, and measured scores. Build
-inputs must remain unchanged throughout the evaluation. Refresh invalidates the
-legacy scratch build/status cache because that cache does not fingerprint every
-compiler backend DLL.
+inputs must remain unchanged throughout the evaluation. Refresh deliberately
+invalidates the build/status cache and compiles all candidates for a fresh
+public attestation. Ordinary cache reuse now fingerprints compiler backends too.
 
 To validate saved evidence and write `artifacts/decomp/report.json`:
 

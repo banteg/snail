@@ -1,0 +1,451 @@
+{
+  "schema": 1,
+  "recorded_date": "2026-09-30",
+  "matcher_revision": "1990dece8a3b3caacccc4f84bf2c5ae1279b3891",
+  "matcher_sha256": "e8444adafea3ea8f53819aaa8f1d4bb2f89c2d3b3df3966b3bf3f1529fb71a01",
+  "objdiff": {
+    "version": "3.8.1",
+    "binary_sha256": "98f8275c27900c4fe2248fce3af37617658be49648fa7dbb5b376371f046dfdb",
+    "source_revision": "fba10a617154f19b3fc25c8817dc81f81d8489b5",
+    "invocation": "objdiff-cli diff -1 target.obj -2 candidate.obj -o result.json",
+    "configuration": "CLI defaults"
+  },
+  "scope": "Diagnostic lifted COFF code views, not original translation units. References use independent matcher keys. Trailing data/padding has a separate symbol. No exact, data or linked credit from objdiff scores.",
+  "controls": [
+    {
+      "name": "identical",
+      "target_hex": "b801000000c3",
+      "candidate_hex": "b801000000c3",
+      "snail_percent": 100.0,
+      "body_byte_exact": true,
+      "objdiff": {
+        "percent": 100.0
+      }
+    },
+    {
+      "name": "one-immediate",
+      "target_hex": "b801000000c3",
+      "candidate_hex": "b802000000c3",
+      "snail_percent": 50.0,
+      "body_byte_exact": false,
+      "objdiff": {
+        "percent": 99.5
+      }
+    },
+    {
+      "name": "one-register",
+      "target_hex": "8bc1c3",
+      "candidate_hex": "8bc2c3",
+      "snail_percent": 50.0,
+      "body_byte_exact": false,
+      "objdiff": {
+        "percent": 97.5
+      }
+    },
+    {
+      "name": "one-opcode",
+      "target_hex": "83c001c3",
+      "candidate_hex": "83e801c3",
+      "snail_percent": 50.0,
+      "body_byte_exact": false,
+      "objdiff": {
+        "percent": 70.0
+      }
+    },
+    {
+      "name": "one-insertion",
+      "target_hex": "b801000000c3",
+      "candidate_hex": "b80100000090c3",
+      "snail_percent": 80.0,
+      "body_byte_exact": false,
+      "objdiff": {
+        "percent": 50.0
+      }
+    },
+    {
+      "name": "sib-encoding",
+      "target_hex": "8b0411c3",
+      "candidate_hex": "8b040ac3",
+      "snail_percent": 100.0,
+      "body_byte_exact": false,
+      "objdiff": {
+        "percent": 95.0
+      }
+    }
+  ],
+  "functions": [
+    {
+      "function": "initialize_main_loop_timing_state",
+      "snail_percent": 100.0,
+      "native_exact": true,
+      "body_byte_exact": true,
+      "objdiff": {
+        "percent": 100.0
+      },
+      "target_image_sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5",
+      "candidate_object_sha256": "3c548ebeffd56e67fa93164a904e586ffe0c7cae840ea915fd327661778465de",
+      "snapshot_exporter_sha256": "046c33e864bed3ffd9afe19f22c7ee57bcec71632456f14c8fae43d384e63164",
+      "decoder_version": "5.0.7",
+      "objects": {
+        "target": {
+          "input_sha256": "d3418e01f978e27381bf7b4d16d63c7936b5c973e09b8ca608277c42b3d5655a",
+          "display_object_sha256": "156af305d6a33ee9fb897042d31139f87ed577a4ddeda24ed8397d1d28c3b3c1",
+          "bytes": 32,
+          "code_view_bytes": 31,
+          "trailing_data_and_padding_bytes": 1,
+          "reference_fields": 3,
+          "round_trip": true,
+          "unexplained_fields": 0
+        },
+        "candidate": {
+          "input_sha256": "a44d4f69b60697b990f40a16fed44fcf99d25df6e1c4535b66ea9dc8e5bf185b",
+          "display_object_sha256": "156af305d6a33ee9fb897042d31139f87ed577a4ddeda24ed8397d1d28c3b3c1",
+          "bytes": 32,
+          "code_view_bytes": 31,
+          "trailing_data_and_padding_bytes": 1,
+          "reference_fields": 3,
+          "round_trip": true,
+          "unexplained_fields": 0
+        }
+      }
+    },
+    {
+      "function": "populate_runtime_track_cells_from_segments",
+      "snail_percent": 90.27777777777779,
+      "native_exact": false,
+      "body_byte_exact": false,
+      "objdiff": {
+        "percent": 99.226326
+      },
+      "target_image_sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5",
+      "candidate_object_sha256": "131a9f1f6b9a3a36ed62d28081a3d78124f80237cb8b3cacb2395e699b0d58a6",
+      "snapshot_exporter_sha256": "046c33e864bed3ffd9afe19f22c7ee57bcec71632456f14c8fae43d384e63164",
+      "decoder_version": "5.0.7",
+      "objects": {
+        "target": {
+          "input_sha256": "f034e1f38655fba0965923ca964a8ce1ea542d7121168398be6607f934e3051b",
+          "display_object_sha256": "01c35d9fb311cfa601ffac08b3f6631d240d0f5cc5334dc1a0b3fa1907fc4dab",
+          "bytes": 5056,
+          "code_view_bytes": 4836,
+          "trailing_data_and_padding_bytes": 220,
+          "reference_fields": 165,
+          "round_trip": true,
+          "unexplained_fields": 0
+        },
+        "candidate": {
+          "input_sha256": "813ed9c81dbbee79a306dddd7726c19d2b4a405ae0d933d69d61637042be6bac",
+          "display_object_sha256": "613090ce5b03b7f15f9a5339f4ab5f48e00eff913adb8f4d2718060920d26f0f",
+          "bytes": 5056,
+          "code_view_bytes": 4836,
+          "trailing_data_and_padding_bytes": 220,
+          "reference_fields": 165,
+          "round_trip": true,
+          "unexplained_fields": 0
+        }
+      }
+    },
+    {
+      "function": "initialize_game_assets_and_world",
+      "snail_percent": 99.55645906486787,
+      "native_exact": false,
+      "body_byte_exact": false,
+      "objdiff": {
+        "percent": 99.773796
+      },
+      "target_image_sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5",
+      "candidate_object_sha256": "5537c0cbeb279e7300981dd94260ef837d3c0e46265298c225cc295d65760d90",
+      "snapshot_exporter_sha256": "046c33e864bed3ffd9afe19f22c7ee57bcec71632456f14c8fae43d384e63164",
+      "decoder_version": "5.0.7",
+      "objects": {
+        "target": {
+          "input_sha256": "7e0160d8a9d1be02447b9f0adf6f8d60067ea09ce3c4061fef1d4a140200304b",
+          "display_object_sha256": "768dac8353c94e2ee06b1e9679d2d4dc6c125ca5d88f6f2e25f453047b0a67c3",
+          "bytes": 23072,
+          "code_view_bytes": 23070,
+          "trailing_data_and_padding_bytes": 2,
+          "reference_fields": 1881,
+          "round_trip": true,
+          "unexplained_fields": 0
+        },
+        "candidate": {
+          "input_sha256": "418fae6ec8e569494666769144b8b1ae110c1d7e1fcbefaf3569497e7c9e6837",
+          "display_object_sha256": "646d7ce50fd727f869f97bed33f2993934bad519189d6c40e64480213ae19adb",
+          "bytes": 23072,
+          "code_view_bytes": 23070,
+          "trailing_data_and_padding_bytes": 2,
+          "reference_fields": 1881,
+          "round_trip": true,
+          "unexplained_fields": 0
+        }
+      }
+    },
+    {
+      "function": "update_subgoldy",
+      "snail_percent": 99.28298279158699,
+      "native_exact": false,
+      "body_byte_exact": false,
+      "objdiff": {
+        "percent": 99.45808
+      },
+      "target_image_sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5",
+      "candidate_object_sha256": "985f037a36c626c657aea72738d815c56be3857996c8c4798c79bd53d4392e64",
+      "snapshot_exporter_sha256": "046c33e864bed3ffd9afe19f22c7ee57bcec71632456f14c8fae43d384e63164",
+      "decoder_version": "5.0.7",
+      "objects": {
+        "target": {
+          "input_sha256": "bf7aaa2b1849ce0b744bdd88cae47383558d48553b2faefb5be93e60e763553f",
+          "display_object_sha256": "928251e087329bf7d3040b39e5eaf663d37bb5fbdee2e1a0d39673e1b5eb7eda",
+          "bytes": 8464,
+          "code_view_bytes": 8440,
+          "trailing_data_and_padding_bytes": 24,
+          "reference_fields": 315,
+          "round_trip": true,
+          "unexplained_fields": 0
+        },
+        "candidate": {
+          "input_sha256": "08aca1fb3c09450f325f6cb34ae74ab6b753cfd0358287ec8a276780905e7f18",
+          "display_object_sha256": "776997118825c3be1214a157e20a7d787373c98ee23fa76a564f228b59c867f3",
+          "bytes": 8464,
+          "code_view_bytes": 8440,
+          "trailing_data_and_padding_bytes": 24,
+          "reference_fields": 315,
+          "round_trip": true,
+          "unexplained_fields": 0
+        }
+      }
+    },
+    {
+      "function": "initialize_worm_path_template_pair",
+      "snail_percent": 91.87713310580205,
+      "native_exact": false,
+      "body_byte_exact": false,
+      "objdiff": {
+        "percent": 97.79484
+      },
+      "target_image_sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5",
+      "candidate_object_sha256": "e0fc8acfe01523401583208acec15a00233f963dfccc28a93ffba758904a577b",
+      "snapshot_exporter_sha256": "046c33e864bed3ffd9afe19f22c7ee57bcec71632456f14c8fae43d384e63164",
+      "decoder_version": "5.0.7",
+      "objects": {
+        "target": {
+          "input_sha256": "4c37809e47e94f120511d7e26d6b44d597220f19671e7be63cafde3ed79513a7",
+          "display_object_sha256": "27b9f007cb88378cc53042fa7a3c876fae55f066ec2c7c3f0c79f4627be1ff29",
+          "bytes": 2768,
+          "code_view_bytes": 2759,
+          "trailing_data_and_padding_bytes": 9,
+          "reference_fields": 37,
+          "round_trip": true,
+          "unexplained_fields": 0
+        },
+        "candidate": {
+          "input_sha256": "088d9a167f343b7375ee21650fb425c710f482d185a4da2a645e72ab0309187b",
+          "display_object_sha256": "49691228173a86c06ae64dec4f57f1b64015d63fce4258a4a38ab4a6bc2b66c2",
+          "bytes": 2704,
+          "code_view_bytes": 2699,
+          "trailing_data_and_padding_bytes": 5,
+          "reference_fields": 37,
+          "round_trip": true,
+          "unexplained_fields": 0
+        }
+      }
+    },
+    {
+      "function": "initialize_loopbow_path_template_pair",
+      "snail_percent": 100.0,
+      "native_exact": false,
+      "body_byte_exact": false,
+      "objdiff": {
+        "percent": 99.987434
+      },
+      "target_image_sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5",
+      "candidate_object_sha256": "850efee10e8afba04d74bf5ad07440d41f33a47b2d4933b493bd835d54fbea1b",
+      "snapshot_exporter_sha256": "046c33e864bed3ffd9afe19f22c7ee57bcec71632456f14c8fae43d384e63164",
+      "decoder_version": "5.0.7",
+      "objects": {
+        "target": {
+          "input_sha256": "6a1526eda1fab9830407ed63736cb1de59a598645e68b8eb4b8f66ad54df3397",
+          "display_object_sha256": "caccfbcb080231889bb4b7d9230191aade7b93aa39283b9a3588736088cd2650",
+          "bytes": 2944,
+          "code_view_bytes": 2939,
+          "trailing_data_and_padding_bytes": 5,
+          "reference_fields": 63,
+          "round_trip": true,
+          "unexplained_fields": 0
+        },
+        "candidate": {
+          "input_sha256": "7bf5876bda6586b329fb6fc0acadc78723468f63041204b31925bb3685bbc2ad",
+          "display_object_sha256": "a1e417f3f1a0eabeb7281857e9550f8f8b4762cd6b58a29065522baaf2a06a2c",
+          "bytes": 2944,
+          "code_view_bytes": 2939,
+          "trailing_data_and_padding_bytes": 5,
+          "reference_fields": 63,
+          "round_trip": true,
+          "unexplained_fields": 0
+        }
+      }
+    },
+    {
+      "function": "construct_game_runtime",
+      "snail_percent": 100.0,
+      "native_exact": false,
+      "body_byte_exact": false,
+      "objdiff": {
+        "percent": 99.981346
+      },
+      "target_image_sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5",
+      "candidate_object_sha256": "5ed5ece36b05bc3ba3d204e5bb988812caaa80be5773554e5088763a595a0e09",
+      "snapshot_exporter_sha256": "046c33e864bed3ffd9afe19f22c7ee57bcec71632456f14c8fae43d384e63164",
+      "decoder_version": "5.0.7",
+      "objects": {
+        "target": {
+          "input_sha256": "148401db4539765673eed5508268588ff2a3236564b5f90e429e0c9ff28eeeee",
+          "display_object_sha256": "73dcc7f527a67aa2f11aefead6243e85ff580b8e0aa2bed85722abd67584791f",
+          "bytes": 1184,
+          "code_view_bytes": 1169,
+          "trailing_data_and_padding_bytes": 15,
+          "reference_fields": 120,
+          "round_trip": true,
+          "unexplained_fields": 0
+        },
+        "candidate": {
+          "input_sha256": "f7837fc7e065327a64c0699158196df7b2debfafd97045d607dc7a3e2d7da6ca",
+          "display_object_sha256": "73e775a32ff89703d8a933aac2911269a023009b748e3bf490584d9cea342995",
+          "bytes": 1184,
+          "code_view_bytes": 1169,
+          "trailing_data_and_padding_bytes": 15,
+          "reference_fields": 120,
+          "round_trip": true,
+          "unexplained_fields": 0
+        }
+      }
+    }
+  ],
+  "public_report": {
+    "revision": "1990dece8a3b3caacccc4f84bf2c5ae1279b3891",
+    "live_game_history_measures": {
+      "fuzzy_match_percent": 99.353004,
+      "total_code": 309585,
+      "matched_code": 223590,
+      "matched_code_percent": 72.22249,
+      "total_data": 0,
+      "matched_data": 0,
+      "matched_data_percent": 0.0,
+      "total_functions": 787,
+      "matched_functions": 751,
+      "matched_functions_percent": 95.42567,
+      "complete_code": 0,
+      "complete_code_percent": 0.0,
+      "complete_data": 0,
+      "complete_data_percent": 0.0,
+      "total_units": 787,
+      "complete_units": 0
+    },
+    "all": {
+      "total_code": "596823",
+      "matched_code": "223590",
+      "complete_code": "0",
+      "matched_code_percent": 37.46336853640024,
+      "complete_code_percent": 0.0,
+      "fuzzy_match_percent": 51.559551899628985,
+      "total_functions": 2261,
+      "matched_functions": 751,
+      "matched_functions_percent": 33.21539141972578,
+      "total_units": 2266,
+      "complete_units": 0
+    },
+    "categories": {
+      "game": {
+        "total_code": "309585",
+        "matched_code": "223590",
+        "complete_code": "0",
+        "matched_code_percent": 72.22249139977713,
+        "complete_code_percent": 0.0,
+        "fuzzy_match_percent": 99.35300184523742,
+        "total_functions": 787,
+        "matched_functions": 751,
+        "matched_functions_percent": 95.42566709021601,
+        "total_units": 787,
+        "complete_units": 0
+      },
+      "libs": {
+        "total_code": "248394",
+        "matched_code": "0",
+        "complete_code": "0",
+        "matched_code_percent": 0.0,
+        "complete_code_percent": 0.0,
+        "fuzzy_match_percent": 0.05526448760614852,
+        "total_functions": 1028,
+        "matched_functions": 0,
+        "matched_functions_percent": 0.0,
+        "total_units": 1028,
+        "complete_units": 0
+      },
+      "libs.d3dx8": {
+        "total_code": "170078",
+        "matched_code": "0",
+        "complete_code": "0",
+        "matched_code_percent": 0.0,
+        "complete_code_percent": 0.0,
+        "fuzzy_match_percent": 0.08071218578794233,
+        "total_functions": 685,
+        "matched_functions": 0,
+        "matched_functions_percent": 0.0,
+        "total_units": 685,
+        "complete_units": 0
+      },
+      "libs.msvc6-crt": {
+        "total_code": "22829",
+        "matched_code": "0",
+        "complete_code": "0",
+        "matched_code_percent": 0.0,
+        "complete_code_percent": 0.0,
+        "fuzzy_match_percent": 0.0,
+        "total_functions": 181,
+        "matched_functions": 0,
+        "matched_functions_percent": 0.0,
+        "total_units": 181,
+        "complete_units": 0
+      },
+      "libs.libpng-1.2.5": {
+        "total_code": "39360",
+        "matched_code": "0",
+        "complete_code": "0",
+        "matched_code_percent": 0.0,
+        "complete_code_percent": 0.0,
+        "fuzzy_match_percent": 0.0,
+        "total_functions": 125,
+        "matched_functions": 0,
+        "matched_functions_percent": 0.0,
+        "total_units": 125,
+        "complete_units": 0
+      },
+      "libs.zlib-1.2.1": {
+        "total_code": "16127",
+        "matched_code": "0",
+        "complete_code": "0",
+        "matched_code_percent": 0.0,
+        "complete_code_percent": 0.0,
+        "fuzzy_match_percent": 0.0,
+        "total_functions": 37,
+        "matched_functions": 0,
+        "matched_functions_percent": 0.0,
+        "total_units": 37,
+        "complete_units": 0
+      },
+      "other": {
+        "total_code": "38844",
+        "matched_code": "0",
+        "complete_code": "0",
+        "matched_code_percent": 0.0,
+        "complete_code_percent": 0.0,
+        "fuzzy_match_percent": 0.0,
+        "total_functions": 446,
+        "matched_functions": 0,
+        "matched_functions_percent": 0.0,
+        "total_units": 451,
+        "complete_units": 0
+      }
+    },
+    "comparison": "Live report agrees within float32 rounding; omitted protobuf zero fields treated as zero."
+  }
+}
