@@ -585,11 +585,27 @@ def evaluate_mutation_sweep(
         compiler=compiler or config.compiler,
         cflags=cflags or config.cflags,
     )
-    baseline = matchlib.evaluate_scratch(
-        profile,
-        match_root,
-        image_path=image_path,
-        manifest=manifest,
+    # A profile override must never rebuild the canonical object in place;
+    # concurrent status sweeps would score it as the default profile.
+    baseline = (
+        matchlib.evaluate_scratch(
+            profile,
+            match_root,
+            image_path=image_path,
+            manifest=manifest,
+        )
+        if profile == config
+        else replace(
+            matchlib.evaluate_source_overlay(
+                profile,
+                source_text,
+                match_root=match_root,
+                image_path=image_path,
+                manifest=manifest,
+            ),
+            # The isolated build is gone; identify the persistent inputs.
+            config=profile,
+        )
     )
 
     def evaluate(variant: MutationVariant) -> MutationEvaluation:

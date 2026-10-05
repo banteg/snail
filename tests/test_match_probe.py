@@ -240,22 +240,20 @@ def export_compiler(monkeypatch: pytest.MonkeyPatch):
         tuple(line.text for line in candidate), target, candidate,
     )
 
-    def compile_source(config: ScratchConfig, _match_root: Path) -> Path:
+    def compile_source(config: ScratchConfig, _match_root: Path) -> bytes:
         builds.append(config)
-        obj = config.directory / "scratch.obj"
         source = (config.directory / "scratch.cpp").read_text()
-        obj.write_bytes(b"\x48\xc3" if source == "baseline source\n" else function.data)
-        return obj
+        return b"\x48\xc3" if source == "baseline source\n" else function.data
 
-    monkeypatch.setattr(matchlib, "compile_scratch", compile_source)
+    monkeypatch.setattr(matchlib, "compile_scratch_data", compile_source)
     monkeypatch.setattr(matchlib, "parse_coff_object", lambda data: data)
     monkeypatch.setattr(
         matchlib, "extract_object_function",
         lambda data, *a, **kw: matchlib.ObjectFunction("foo", data, frozenset()),
     )
     monkeypatch.setattr(
-        matchlib, "run_match", lambda obj_path, **_kwargs: (
-            _baseline_match() if obj_path.read_bytes() == b"\x48\xc3" else diagnostic
+        matchlib, "run_match", lambda object_data, **_kwargs: (
+            _baseline_match() if object_data == b"\x48\xc3" else diagnostic
         ),
     )
     return digest, builds, diagnostic
@@ -280,7 +278,7 @@ def test_probe_exports_baseline_from_original_evaluation_without_recompiling_it(
     run_match = matchlib.run_match
 
     def capture_match(**kwargs):
-        match_calls.append(kwargs["obj_path"].read_bytes())
+        match_calls.append(kwargs["object_data"])
         return run_match(**kwargs)
 
     monkeypatch.setattr(matchlib, "run_match", capture_match)
@@ -511,7 +509,7 @@ def test_probe_cli_exports_compile_error_from_stdin_without_recording(
     def unexpected(*_args, **_kwargs):
         pytest.fail("failed candidate must not be recompiled for export")
 
-    monkeypatch.setattr(matchlib, "compile_scratch", unexpected)
+    monkeypatch.setattr(matchlib, "compile_scratch_data", unexpected)
     destination = tmp_path / "export"
     assert main([
         "match", "probe", str(tmp_path), "--stdin", "--export-dir", str(destination),
@@ -554,3 +552,26 @@ def test_probe_export_keeps_candidate_assembly_when_baseline_failed(
     }
     assert report["evaluation"]["baseline"]["error"] == "baseline failed"
     assert report["diagnostic"] is not None
+
+
+def test_probe_refuses_to_record_when_inputs_change_during_measurement(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    (tmp_path / "scratch.conf").write_text("FUNCTION=foo\n")
+    config = _config(tmp_path)
+    source = "candidate source\n"
+    result = ProbeResult(
+        baseline=_status(config, 1.0, prefix=10),
+        probe=_status(config, 0.5, prefix=1),
+        source_sha256=hashlib.sha256(source.encode()).hexdigest(),
+    )
+    hashes = iter(["before", "after"])
+    monkeypatch.setattr("snail.cli.evaluate_source_probe", lambda *a, **kw: result)
+    monkeypatch.setattr("snail.cli.scratch_dependency_sha256", lambda *a, **kw: next(hashes))
+    monkeypatch.setattr("snail.cli.scratch_experiment_epoch", lambda *a, **kw: "epoch")
+    monkeypatch.setattr("sys.stdin", io.StringIO(source))
+    assert main(["match", "probe", str(tmp_path), "--stdin", "--record"]) == 2
+    assert "inputs changed during the measurement" in capsys.readouterr().err
+    assert not (tmp_path / "experiments.jsonl").exists()

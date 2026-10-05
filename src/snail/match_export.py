@@ -158,9 +158,9 @@ def _export_diagnostic(
                 }
             config = replace(config, directory=shadow)
             (shadow / "scratch.cpp").write_text(compilation_source, encoding="utf-8")
-            obj = matchlib.compile_scratch(config, match_root)
+            object_data = matchlib.compile_scratch_data(config, match_root)
             function = matchlib.extract_object_function(
-                matchlib.parse_coff_object(obj.read_bytes()),
+                matchlib.parse_coff_object(object_data),
                 config.symbol or config.function,
                 reference_manifest=matchlib.load_default_reference_symbol_manifest(),
             )
@@ -173,7 +173,8 @@ def _export_diagnostic(
                     "export recompilation does not reproduce evaluated code identity"
                 )
             result = matchlib.run_match(
-                obj_path=obj,
+                obj_path=shadow / "build" / "scratch.obj",
+                object_data=object_data,
                 function_name=config.function,
                 image_path=image_path,
                 manifest=manifest,

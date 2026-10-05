@@ -468,7 +468,7 @@ def test_evaluation_scores_and_fingerprints_the_same_captured_object(
         assert reference_manifest is references
         return match_module.ObjectFunction(name, data, frozenset())
 
-    monkeypatch.setattr(match_module, "compile_scratch", lambda *_args: obj)
+    monkeypatch.setattr(match_module, "compile_scratch_data", lambda *_args: obj.read_bytes())
     monkeypatch.setattr(
         match_module,
         "load_image",
@@ -542,3 +542,45 @@ def test_status_cache_rejects_edits_after_measurement(
     assert outcomes[0].fields is None
     assert "inputs changed during matching" in outcomes[0].error
     assert match_module._load_cached_status(config, image_path, root, manifest_digest=digest) is None
+
+
+def test_interrupt_after_object_publication_leaves_no_stale_key(
+    stale_scratch: tuple[match_module.ScratchConfig, Path],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config, root = stale_scratch
+    obj = config.directory / "build/scratch.obj"
+    # The previous object is current for the default profile.
+    _change_bytes(config.directory / "scratch.cpp", b'#include "shared.h"\nint foo() { return VALUE; }\n')
+    match_module._store_scratch_build_key(obj, config, root)
+    profile = match_module.ScratchConfig(
+        config.directory, "foo", "msvc6.5", "/O1 /W3", None, None
+    )
+
+    def fake_run(args, *, cwd: Path, **_kwargs) -> subprocess.CompletedProcess:
+        (Path(cwd) / "scratch.obj").write_bytes(b"other profile object")
+        return subprocess.CompletedProcess(args, 0, "", "")
+
+    def interrupted(*_args, **_kwargs):
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    monkeypatch.setattr(match_module, "_store_scratch_build_key", interrupted)
+    with pytest.raises(KeyboardInterrupt):
+        match_module.compile_scratch(profile, root)
+    assert obj.read_bytes() == b"other profile object"
+    assert not match_module._scratch_object_is_current(obj, config, root)
+
+
+def test_compile_scratch_data_reads_the_object_it_published(
+    stale_scratch: tuple[match_module.ScratchConfig, Path],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config, root = stale_scratch
+
+    def fake_run(args, *, cwd: Path, **_kwargs) -> subprocess.CompletedProcess:
+        (Path(cwd) / "scratch.obj").write_bytes(b"fresh object")
+        return subprocess.CompletedProcess(args, 0, "", "")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    assert match_module.compile_scratch_data(config, root) == b"fresh object"

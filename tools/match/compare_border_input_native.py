@@ -20,12 +20,23 @@ from compare_loaders_native import verify_source_link
 from compare_quaternion_native import checked_run
 from compare_sbend_native import digest, make_oracle, verify_oracle_link
 from link_path_math import support_inputs
+
 from snail.match import (
-    DEFAULT_MATCH_ROOT, compile_scratch, extract_object_function,
-    load_scratch_config, object_function_fingerprint, parse_coff_object,
-    run_match, scratch_dependency_sha256,
+    DEFAULT_MATCH_ROOT,
+    cl_environment,
+    compile_scratch,
+    extract_object_function,
+    load_scratch_config,
+    object_function_fingerprint,
+    parse_coff_object,
+    run_match,
+    scratch_dependency_sha256,
 )
-from snail.symbols import DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH, REPO_ROOT, load_function_symbol_manifest
+from snail.symbols import (
+    DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+    REPO_ROOT,
+    load_function_symbol_manifest,
+)
 
 FUNCTION = "border_input_text"
 FIXTURE = struct.Struct("<10I64s")
@@ -172,7 +183,7 @@ def compare(runtime: Path, out: Path) -> dict:
     fixture_object = out / "border_input_smoke.obj"
     checked_run([str(DEFAULT_MATCH_ROOT / "cl.sh"), "/c", "/O2", "/G5", "/W3",
                  f"/FoZ:{fixture_object}", f"Z:{fixture_source}"], out / "fixture.compile.log",
-                env={**os.environ, "MSVC_VER": "msvc6.5"})
+                env=cl_environment("msvc6.5"))
     native_object = out / "border_input_text.native.obj"
     oracle = make_oracle(native_object, function_name=FUNCTION, source_object=source_object)
     for path in (source_object, fixture_object, native_object):

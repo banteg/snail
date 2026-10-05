@@ -179,7 +179,7 @@ def test_export_nonimproving_candidate_and_refuse_changed_code(tmp_path, monkeyp
     source.write_text("int foo() { return 1; }")
     obj = tmp_path / "test.obj"
     obj.write_bytes(b"object")
-    monkeypatch.setattr(matchlib, "compile_scratch", lambda *a: obj)
+    monkeypatch.setattr(matchlib, "compile_scratch_data", lambda *a: obj.read_bytes())
     monkeypatch.setattr(matchlib, "parse_coff_object", lambda *a: None)
     monkeypatch.setattr(matchlib, "extract_object_function", lambda *a, **kw: None)
     monkeypatch.setattr(matchlib, "object_function_fingerprint", lambda *a: "candidate")

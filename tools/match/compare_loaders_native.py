@@ -25,6 +25,7 @@ from snail.archive import decode_bytes, parse_archive_index
 from snail.match import (
     DEFAULT_MATCH_ROOT,
     CoffRelocation,
+    cl_environment,
     compile_scratch,
     extract_object_function,
     load_scratch_config,
@@ -394,7 +395,7 @@ def compare(runtime, archive, out, include_synthetic=False):
                 f"Z:{source}",
             ],
             out / f"{name}.compile.log",
-            env={**os.environ, "MSVC_VER": "msvc6.5"},
+            env=cl_environment("msvc6.5"),
         )
         objects.append(obj)
     identities.update({str(p): digest(p.read_bytes()) for p in objects})

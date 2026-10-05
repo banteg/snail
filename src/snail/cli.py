@@ -6,6 +6,7 @@ import json
 import sys
 from collections import defaultdict
 from collections.abc import Sequence
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -32,6 +33,7 @@ from .match import (
     RESIDUAL_VALUES,
     TRIAGE_SORTS,
     TRIAGE_STATES,
+    ScratchConfig,
     collect_masked_operand_issues,
     collect_scratch_statuses,
     collect_triage_rows,
@@ -336,6 +338,59 @@ def _print_mobile_backed_pending(rows, *, limit: int) -> None:
             f"{bodies:6}  {confidence:10}  {source_object:18}  "
             f"{function}"
         )
+
+
+@dataclass(frozen=True, slots=True)
+class _ExperimentReceipt:
+    """Input hashes taken before a measurement and checked after it."""
+
+    profile: ScratchConfig | None
+    match_root: Path
+    image_path: Path
+    manifest_path: Path
+    dependency_sha256: str | None
+    baseline_epoch: str | None
+
+    def _hashes(self) -> tuple[str | None, str | None]:
+        if self.profile is None:
+            return None, None
+        return (
+            scratch_dependency_sha256(self.profile, self.match_root),
+            scratch_experiment_epoch(
+                self.profile,
+                self.match_root,
+                image_path=self.image_path,
+                manifest_path=self.manifest_path,
+            ),
+        )
+
+    def verified(self) -> tuple[str | None, str | None]:
+        if self._hashes() != (self.dependency_sha256, self.baseline_epoch):
+            raise RuntimeError(
+                "scratch inputs changed during the measurement; rerun it"
+            )
+        return self.dependency_sha256, self.baseline_epoch
+
+
+def _experiment_receipt(
+    config: ScratchConfig, args: argparse.Namespace, image_path: Path, *, enabled: bool,
+) -> _ExperimentReceipt:
+    profile = (
+        replace(
+            config,
+            compiler=args.compiler or config.compiler,
+            cflags=args.cflags or config.cflags,
+        )
+        if enabled
+        else None
+    )
+    receipt = _ExperimentReceipt(
+        profile, args.match_root, image_path, args.manifest, None, None,
+    )
+    dependency_sha256, baseline_epoch = receipt._hashes()
+    return replace(
+        receipt, dependency_sha256=dependency_sha256, baseline_epoch=baseline_epoch,
+    )
 
 
 def _add_scratch_directory_arguments(parser: argparse.ArgumentParser) -> None:
@@ -1884,6 +1939,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             manifest = load_function_symbol_manifest(args.manifest)
             image_path = args.image or REPO_ROOT / manifest.primary_target
+            receipt = _experiment_receipt(
+                config, args, image_path, enabled=args.record or args.export_dir,
+            )
             result = evaluate_source_probe(
                 config,
                 source_text,
@@ -1894,21 +1952,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 cflags=args.cflags,
                 label=args.label,
             )
-            dependency_sha256 = (
-                scratch_dependency_sha256(result.baseline.config, args.match_root)
-                if args.record or args.export_dir
-                else None
-            )
-            baseline_epoch = (
-                scratch_experiment_epoch(
-                    result.baseline.config,
-                    args.match_root,
-                    image_path=image_path,
-                    manifest_path=args.manifest,
-                )
-                if args.record or args.export_dir
-                else None
-            )
+            dependency_sha256, baseline_epoch = receipt.verified()
             if args.export_dir is not None:
                 match_export.export_probe(
                     result,
@@ -1982,6 +2026,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                     "--write-best cannot overwrite the tracked scratch source"
                 )
             source_text = source_path.read_text(encoding="utf-8")
+            receipt = _experiment_receipt(
+                config, args, image_path, enabled=args.record or args.export_dir,
+            )
             sweep = match_mutation.evaluate_mutation_sweep(
                 config,
                 mutation_spec,
@@ -1998,24 +2045,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 stop_on_improvement=args.stop_on_improvement,
                 time_budget=args.time_budget,
             )
-            dependency_sha256 = (
-                scratch_dependency_sha256(
-                    sweep.baseline.config,
-                    args.match_root,
-                )
-                if args.record or args.export_dir
-                else None
-            )
-            baseline_epoch = (
-                scratch_experiment_epoch(
-                    sweep.baseline.config,
-                    args.match_root,
-                    image_path=image_path,
-                    manifest_path=args.manifest,
-                )
-                if args.record or args.export_dir
-                else None
-            )
+            dependency_sha256, baseline_epoch = receipt.verified()
             if args.export_dir is not None:
                 match_export.export_candidate(
                     sweep, args.export_candidate, args.export_dir,

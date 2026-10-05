@@ -58,6 +58,7 @@ DEFAULT_MATCH_JOBS = min(8, max(1, os.cpu_count() or 1))
 SOURCE_INCLUDE_RE = re.compile(
     r'^\s*#\s*include\s*(?:"([^"\r\n]+)"|<([^>\r\n]+)>)', re.MULTILINE
 )
+COMPUTED_INCLUDE_RE = re.compile(r'^\s*#\s*include\s+[^"<\s]', re.MULTILINE)
 
 
 @dataclass(frozen=True, slots=True)
@@ -4619,15 +4620,23 @@ def load_scratch_config(directory: Path) -> ScratchConfig:
     config_path = directory / "scratch.conf"
     values: dict[str, str] = {}
     seen: set[str] = set()
-    for token in shlex.split(
-        config_path.read_text(encoding="utf-8"),
-        comments=True,
-    ):
+    # A comment starts only at a token boundary: '#' may appear inside a value.
+    # Tokens are read lazily so quotes inside a comment are never parsed.
+    tokens: list[str] = []
+    for line in config_path.read_text(encoding="utf-8").splitlines():
+        lexer = shlex.shlex(line, posix=True)
+        lexer.whitespace_split = True
+        lexer.commenters = ""
+        while (token := lexer.get_token()) is not None and not token.startswith("#"):
+            tokens.append(token)
+    for token in tokens:
         key, separator, value = token.partition("=")
         if not separator or not key:
             raise ValueError(
                 f"{config_path} has invalid assignment {token!r}"
             )
+        if not value:
+            raise ValueError(f"{config_path} assigns an empty {key}")
         if key == "MATCH_ARGS":
             raise ValueError(
                 f"{config_path} MATCH_ARGS is not supported; "
@@ -4641,8 +4650,7 @@ def load_scratch_config(directory: Path) -> ScratchConfig:
         if key in seen:
             raise ValueError(f"{config_path} assigns {key} more than once")
         seen.add(key)
-        if value:
-            values[key] = value
+        values[key] = value
     if "FUNCTION" not in values:
         raise ValueError(f"{config_path} must set FUNCTION")
 
@@ -4787,14 +4795,68 @@ def _file_sha256(path: Path) -> str | None:
     )
 
 
+def _cflags_include_options(cflags: str) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    """Return CL ``/I`` directories and ``/FI`` forced includes, in order."""
+    import shlex
+
+    directories: list[str] = []
+    forced: list[str] = []
+    tokens = shlex.split(cflags)
+    index = 0
+    while index < len(tokens):
+        token = tokens[index]
+        index += 1
+        if token[:1] not in "/-":
+            continue
+        for option, values in (("FI", forced), ("I", directories)):
+            if token[1:].upper().startswith(option):
+                value = token[1 + len(option):]
+                if not value and index < len(tokens):
+                    value = tokens[index]
+                    index += 1
+                values.append(value)
+                break
+    return tuple(directories), tuple(forced)
+
+
 class _ScratchIncludeResolver:
-    """Resolve literal include edges once per compiler during a sweep."""
+    """Resolve literal include edges once per compiler during a sweep.
+
+    Lookups are case-insensitive like the Windows compiler under Wibo, so the
+    upper-case VC6 bundle headers are found on case-sensitive filesystems.
+    """
 
     def __init__(self, match_root: Path) -> None:
         self.match_root = match_root
         self.include_dir = match_root / "include"
-        self._direct_dependencies: dict[tuple[Path, bool, str, str | None], tuple[Path, ...]] = {}
+        self._direct_dependencies: dict[
+            tuple[Path, bool, str, tuple[Path, ...], str | None], tuple[Path, ...]
+        ] = {}
+        self._directory_entries: dict[Path, dict[str, str]] = {}
         self._lock = Lock()
+
+    def find(self, directory: Path, name: Path) -> Path | None:
+        """Find ``name`` under ``directory``, matching each component's case."""
+        current = directory
+        if name.is_absolute():
+            current, name = Path(name.anchor), name.relative_to(name.anchor)
+        for part in name.parts:
+            candidate = current / part
+            if part in {".", ".."} or candidate.exists():
+                current = candidate
+                continue
+            if current not in self._directory_entries:
+                try:
+                    self._directory_entries[current] = {
+                        entry.name.lower(): entry.name for entry in os.scandir(current)
+                    }
+                except OSError:
+                    self._directory_entries[current] = {}
+            actual = self._directory_entries[current].get(part.lower())
+            if actual is None:
+                return None
+            current = current / actual
+        return current if current.is_file() else None
 
     def direct_dependencies(
         self,
@@ -4802,8 +4864,11 @@ class _ScratchIncludeResolver:
         *,
         source: bool,
         compiler: str = DEFAULT_SCRATCH_COMPILER,
+        include_dirs: tuple[Path, ...] = (),
     ) -> tuple[Path, ...]:
-        cache_key = (including_path, source, compiler, _file_sha256(including_path))
+        cache_key = (
+            including_path, source, compiler, include_dirs, _file_sha256(including_path),
+        )
         if cache_key in self._direct_dependencies:
             return self._direct_dependencies[cache_key]
 
@@ -4819,21 +4884,36 @@ class _ScratchIncludeResolver:
             except OSError:
                 self._direct_dependencies[cache_key] = ()
                 return ()
+            if COMPUTED_INCLUDE_RE.search(text):
+                raise ValueError(
+                    f"{including_path}: a computed #include cannot be tracked "
+                    "as a build input; spell the header literally"
+                )
 
             dependencies: list[Path] = []
             seen: set[Path] = set()
             for match in SOURCE_INCLUDE_RE.finditer(text):
                 quoted_name, angled_name = match.groups()
                 include_name = Path((quoted_name or angled_name).replace("\\", "/"))
-                # Keep the INCLUDE order used by cl.sh. Only quoted includes
-                # search beside an included header before those directories.
-                candidates = [
-                    self.match_root / "compilers" / compiler / "Include" / include_name,
-                    self.include_dir / include_name,
+                # CL searches /I directories, then the INCLUDE order used by
+                # cl.sh. Only quoted includes search beside an included header
+                # first; the scratch source itself is compiled from a private
+                # copy with no neighbours.
+                directories = [
+                    *include_dirs,
+                    self.match_root / "compilers" / compiler / "Include",
+                    self.include_dir,
                 ]
                 if quoted_name is not None and not source:
-                    candidates.insert(0, including_path.parent / include_name)
-                dependency = next((path for path in candidates if path.is_file()), None)
+                    directories.insert(0, including_path.parent)
+                dependency = next(
+                    (
+                        found
+                        for directory in directories
+                        if (found := self.find(directory, include_name)) is not None
+                    ),
+                    None,
+                )
                 if dependency is None:
                     continue
                 dependency = dependency.resolve()
@@ -4866,14 +4946,46 @@ def _scratch_include_headers(
         member / "scratch.cpp"
         for member in (unit.members if unit else (config.directory,))
     }
+    # CL resolves relative /I and /FI paths from its working directory, a
+    # private directory inside build/.
+    compile_dir = config.directory / "build" / ".compile"
+    raw_dirs, forced_names = _cflags_include_options(config.cflags)
+    include_dirs = tuple(
+        Path(os.path.normpath(compile_dir / name.replace("\\", "/"))) for name in raw_dirs
+    )
     pending = list(sources)
     visited = set(sources)
     headers: set[Path] = set()
+    for name in forced_names:
+        name_path = Path(name.replace("\\", "/"))
+        forced = next(
+            (
+                found
+                for directory in (
+                    compile_dir, *include_dirs,
+                    match_root / "compilers" / config.compiler / "Include",
+                    match_root / "include",
+                )
+                if (found := resolver.find(Path(os.path.normpath(directory)), name_path))
+                is not None
+            ),
+            None,
+        )
+        if forced is None:
+            raise ValueError(f"{config.directory}: forced include {name!r} not found")
+        forced = forced.resolve()
+        if forced not in visited:
+            visited.add(forced)
+            headers.add(forced)
+            pending.append(forced)
 
     while pending:
         including_path = pending.pop()
         for dependency in resolver.direct_dependencies(
-            including_path, source=including_path in sources, compiler=config.compiler
+            including_path,
+            source=including_path in sources,
+            compiler=config.compiler,
+            include_dirs=include_dirs,
         ):
             if dependency in visited:
                 continue
@@ -4906,6 +5018,19 @@ def _scratch_wibo_path(match_root: Path) -> Path | None:
         bundled = match_root / "bin" / "wibo"
         selected = str(bundled) if os.access(bundled, os.X_OK) else shutil.which("wibo")
     return Path(selected).resolve() if selected else None
+
+
+def cl_environment(compiler: str) -> dict[str, str]:
+    """Environment for cl.sh, which runs from a private build directory.
+
+    A relative ``WIBO`` path names a file relative to the caller, so it is
+    made absolute before the compiler's working directory changes.
+    """
+    environment = {**os.environ, "MSVC_VER": compiler}
+    runner = environment.get("WIBO", "")
+    if "/" in runner:
+        environment["WIBO"] = os.path.abspath(runner)
+    return environment
 
 
 def _scratch_build_dependencies(
@@ -5212,6 +5337,32 @@ def compile_scratch(
     include_resolver: _ScratchIncludeResolver | None = None,
 ) -> Path:
     """Compile and atomically publish one scratch without exposing partial files."""
+    return _compile_scratch(config, match_root, include_resolver=include_resolver)[0]
+
+
+def compile_scratch_data(
+    config: ScratchConfig,
+    match_root: Path = DEFAULT_MATCH_ROOT,
+    *,
+    include_resolver: _ScratchIncludeResolver | None = None,
+) -> bytes:
+    """Compile one scratch and read its object while still holding its lock.
+
+    A caller that scores the object later must not reread the published path:
+    another builder may have replaced it in between.
+    """
+    return _compile_scratch(
+        config, match_root, include_resolver=include_resolver, read=True,
+    )[1]
+
+
+def _compile_scratch(
+    config: ScratchConfig,
+    match_root: Path,
+    *,
+    include_resolver: _ScratchIncludeResolver | None,
+    read: bool = False,
+) -> tuple[Path, bytes]:
     import subprocess
     import tempfile
 
@@ -5230,7 +5381,7 @@ def compile_scratch(
         if _scratch_object_is_current(
             obj_path, config, match_root, include_resolver=include_resolver,
         ):
-            return obj_path
+            return obj_path, obj_path.read_bytes() if read else b""
 
         # Use a fresh include graph on misses: the sweep's resolver may predate
         # a concurrent source/header edit. Store this initial key, never a key
@@ -5249,7 +5400,7 @@ def compile_scratch(
             completed = subprocess.run(
                 list(_scratch_compile_argv(config, match_root)),
                 cwd=private,
-                env={**os.environ, "MSVC_VER": config.compiler},
+                env=cl_environment(config.compiler),
                 check=False,
                 capture_output=True,
                 text=True,
@@ -5273,11 +5424,14 @@ def compile_scratch(
             for output in private.iterdir():
                 if output.is_file() and output != private_object:
                     os.replace(output, build_dir / output.name)
+            # Retire the old key first: an interrupt between publishing the
+            # object and its key must leave no key, never a stale one.
+            (build_dir / "scratch-build.json").unlink(missing_ok=True)
             os.replace(private_object, obj_path)
         _store_scratch_build_key(
             obj_path, config, match_root, build_key=build_key,
         )
-    return obj_path
+        return obj_path, obj_path.read_bytes() if read else b""
 
 
 def _write_text_atomic(path: Path, text: str) -> None:
@@ -5480,7 +5634,7 @@ def generate_compiler_listing(
                 temp_source.name,
             ],
             cwd=temp,
-            env={**os.environ, "MSVC_VER": config.compiler},
+            env=cl_environment(config.compiler),
             capture_output=True,
             text=True,
             check=False,
@@ -5674,8 +5828,8 @@ def evaluate_scratch(
         address = start
         image = load_image(image_path, manifest.image_base)
         target_size = len(image.function_bytes(start, end))
-        obj_path = compile_scratch(config, match_root)
-        object_data = obj_path.read_bytes()
+        object_data = compile_scratch_data(config, match_root)
+        obj_path = config.directory / "build" / "scratch.obj"
         reference_manifest = load_default_reference_symbol_manifest()
         result = run_match(
             obj_path=obj_path,
@@ -6321,7 +6475,7 @@ def compile_idiom_case(
     completed = subprocess.run(
         [str(match_root / "cl.sh"), "/c", *shlex.split(cflags), "scratch.cpp"],
         cwd=build_dir,
-        env={**os.environ, "MSVC_VER": compiler},
+        env=cl_environment(compiler),
         capture_output=True,
         text=True,
     )
@@ -6495,6 +6649,7 @@ def _scratch_context_key(image_path: Path) -> dict:
     return {
         "image_sha256": _file_sha256(image_path),
         "matcher_sha256": _file_sha256(Path(__file__)),
+        "decoder_version": capstone.__version__,
         "reference_manifest_sha256": _file_sha256(DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH),
     }
 
@@ -6612,14 +6767,13 @@ def _store_cached_status(
 def _match_precompiled_scratch_config(
     config: ScratchConfig,
     *,
-    obj_path: Path,
+    object_data: bytes,
     image: LoadedImage,
     manifest: FunctionSymbolManifest,
     reference_manifest: ReferenceSymbolManifest,
 ) -> tuple[int, MatchResult]:
     start, end = resolve_function_extent(manifest, config.function, config.end_va)
     target_data = image.function_bytes(start, end)
-    object_data = obj_path.read_bytes()
     obj = parse_coff_object(object_data)
     candidate = extract_object_function(
         obj,
@@ -6694,7 +6848,7 @@ def _scratch_status_fields(target_size: int, result: MatchResult) -> dict:
 class _ScratchMatchTask:
     config: ScratchConfig
     address: int
-    object_path: Path | None = None
+    object_data: bytes | None = None
     cache_key: dict | None = None
 
 
@@ -6729,7 +6883,7 @@ def _match_precompiled_task_with_context(
     try:
         target_size, result = _match_precompiled_scratch_config(
             task.config,
-            obj_path=task.object_path or task.config.directory / "build/scratch.obj",
+            object_data=task.object_data,
             image=context.image,
             manifest=context.manifest,
             reference_manifest=context.reference_manifest,
@@ -6779,7 +6933,7 @@ def _collect_uncached_match_outcomes(
 
     def compile_task(task: _ScratchMatchTask) -> _ScratchMatchTask | _ScratchMatchOutcome:
         try:
-            object_path = compile_scratch(
+            object_data = compile_scratch_data(
                 task.config,
                 match_root,
                 include_resolver=include_resolver,
@@ -6790,7 +6944,7 @@ def _collect_uncached_match_outcomes(
                 address=task.address,
                 error=_summarize_error(error),
             )
-        return replace(task, object_path=object_path)
+        return replace(task, object_data=object_data)
 
     if jobs == 1 or len(tasks) == 1:
         compiled = list(map(compile_task, tasks))

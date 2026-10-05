@@ -216,11 +216,13 @@ def test_batch_matching_reads_the_compilers_actual_object(grouped_scratches, mon
     stale.write_bytes(b"stale isolated object")
     seen = []
 
-    def inspect_match(config, *, obj_path, **kwargs):
-        seen.append((config.function, obj_path.read_bytes()))
+    def inspect_match(config, *, object_data, **kwargs):
+        seen.append((config.function, object_data))
         raise ValueError("inspection only")
 
-    monkeypatch.setattr(match, "compile_scratch", lambda *args, **kwargs: shared)
+    monkeypatch.setattr(
+        match, "compile_scratch_data", lambda *args, **kwargs: shared.read_bytes(),
+    )
     monkeypatch.setattr(match, "_match_precompiled_scratch_config", inspect_match)
     outcomes = match._collect_uncached_match_outcomes(
         [(second, 0x1000)], image=None, image_path=root / "image.exe",

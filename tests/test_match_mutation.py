@@ -637,3 +637,39 @@ def test_mutate_cli_writes_only_an_improving_winner(
     assert recorded["spec_sha256"] == sweep.spec.sha256
     assert recorded["winner"]["label"] == variant.label
     assert len(recorded["results"]) == 2
+
+
+def test_profile_override_baseline_never_rebuilds_the_canonical_object(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    scratch = tmp_path / "scratch"
+    scratch.mkdir()
+    config = _config(scratch)
+    spec = MutationSpec(
+        sites=(
+            MutationSite(
+                name="sum",
+                find="x + y",
+                replacements=(MutationReplacement(name="commuted", text="y + x"),),
+            ),
+        ),
+        sha256="spec",
+    )
+    overlays: list[tuple[ScratchConfig, str]] = []
+
+    def unexpected(*_args, **_kwargs):
+        pytest.fail("a profile override must not build in the scratch directory")
+
+    def fake_overlay(profile, source_text, *, match_root, **_kwargs):
+        overlays.append((profile, source_text))
+        return _status(replace(profile, directory=Path("/tmp/shadow")), 0.5)
+
+    monkeypatch.setattr("snail.match_mutation.matchlib.evaluate_scratch", unexpected)
+    monkeypatch.setattr(
+        "snail.match_mutation.matchlib.evaluate_source_overlay", fake_overlay,
+    )
+    evaluate_mutation_sweep(
+        config, spec, source_text="int value = x + y;\n", jobs=1, cflags="/O1 /W3",
+    )
+    assert overlays[0] == (replace(config, cflags="/O1 /W3"), "int value = x + y;\n")

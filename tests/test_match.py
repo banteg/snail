@@ -4677,9 +4677,9 @@ def test_collect_scratch_statuses_runs_uncached_work_in_parallel(
     peak_active = 0
     lock = threading.Lock()
 
-    def compile_scratch(
+    def compile_scratch_data(
         config: ScratchConfig, _match_root: Path, **_kwargs
-    ) -> Path:
+    ) -> bytes:
         nonlocal active, peak_active
         with lock:
             active += 1
@@ -4687,7 +4687,7 @@ def test_collect_scratch_statuses_runs_uncached_work_in_parallel(
         time.sleep(0.05)
         with lock:
             active -= 1
-        return tmp_path / f"{config.function}.obj"
+        return config.function.encode()
 
     monkeypatch.setattr(
         match_module,
@@ -4696,7 +4696,7 @@ def test_collect_scratch_statuses_runs_uncached_work_in_parallel(
             mapped=b"\0" * 0x30, image_base=0x1000, size_of_image=0x30
         ),
     )
-    monkeypatch.setattr(match_module, "compile_scratch", compile_scratch)
+    monkeypatch.setattr(match_module, "compile_scratch_data", compile_scratch_data)
     monkeypatch.setattr(match_module, "parse_coff_object", lambda _data: object())
     monkeypatch.setattr(
         Path,
@@ -4929,8 +4929,8 @@ def test_masked_operand_audit_runs_cache_misses_in_parallel(
     )
     monkeypatch.setattr(
         match_module,
-        "compile_scratch",
-        lambda *_args, **_kwargs: tmp_path / "scratch.obj",
+        "compile_scratch_data",
+        lambda *_args, **_kwargs: b"obj",
     )
     monkeypatch.setattr(match_module, "_match_precompiled_task", match_scratch)
     monkeypatch.setattr(match_module, "ProcessPoolExecutor", ThreadedProcessPool)
@@ -5346,3 +5346,58 @@ def test_cluster_totals_use_the_scratch_end_extent(
     totals = manifest_cluster_totals(manifest, tmp_path / "test.exe", [status])
     assert totals.byte_total == 4 + 4
     assert totals.matched_bytes == 4
+
+
+def test_scratch_headers_resolve_case_insensitively_and_follow_cflags(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import os
+
+    from snail.match import ScratchConfig, _scratch_include_headers
+
+    match_root = tmp_path / "match"
+    compiler_include = match_root / "compilers/msvc6.5/Include"
+    extra = tmp_path / "extra"
+    scratch_dir = match_root / "scratches/foo"
+    for directory in (compiler_include, extra, scratch_dir, match_root / "include"):
+        directory.mkdir(parents=True)
+    stdio = compiler_include / "STDIO.H"
+    stdio.write_text("struct FILE;\n")
+    probe = extra / "probe.h"
+    probe.write_text("int probe;\n")
+    forced = extra / "forced.h"
+    forced.write_text("int forced;\n")
+    (scratch_dir / "scratch.cpp").write_text('#include <stdio.h>\n#include "probe.h"\n')
+
+    # Emulate a case-sensitive filesystem whatever the host uses.
+    original_exists, original_is_file = Path.exists, Path.is_file
+
+    def exact_case(path: Path) -> bool:
+        parent = path.parent
+        return original_exists(parent) and path.name in os.listdir(parent)
+
+    monkeypatch.setattr(Path, "exists", lambda p: original_exists(p) and exact_case(p))
+    monkeypatch.setattr(Path, "is_file", lambda p: original_is_file(p) and exact_case(p))
+
+    config = ScratchConfig(
+        directory=scratch_dir, function="foo", compiler="msvc6.5",
+        cflags=f"/O2 /G5 /W3 /I{extra} /FI {forced}", end_va=None, symbol=None,
+    )
+    assert set(_scratch_include_headers(config, match_root)) == {stdio, probe, forced}
+
+    (scratch_dir / "scratch.cpp").write_text("#define HEADER <stdio.h>\n#include HEADER\n")
+    with pytest.raises(ValueError, match="computed #include"):
+        _scratch_include_headers(config, match_root)
+
+
+def test_load_scratch_config_keeps_hash_in_values_and_rejects_empty(tmp_path: Path) -> None:
+    from snail.match import load_scratch_config
+
+    scratch_dir = tmp_path / "scratch"
+    scratch_dir.mkdir()
+    conf = scratch_dir / "scratch.conf"
+    conf.write_text("# it's a note\nFUNCTION=foo SYMBOL=?a#b@@QAEXXZ # isn't parsed\n")
+    assert load_scratch_config(scratch_dir).symbol == "?a#b@@QAEXXZ"
+    conf.write_text("FUNCTION=foo\nCFLAGS=\n")
+    with pytest.raises(ValueError, match="empty CFLAGS"):
+        load_scratch_config(scratch_dir)

@@ -20,6 +20,7 @@ from snail.match import (
     DEFAULT_MATCH_ROOT,
     DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH,
     CoffRelocation,
+    cl_environment,
     compile_scratch,
     extract_object_function,
     load_scratch_config,
@@ -116,7 +117,7 @@ def compare(runtime, out):
         [str(DEFAULT_MATCH_ROOT / "cl.sh"), "/c", "/O2", "/G5", "/W3",
          f"/FoZ:{fixture_obj}", f"Z:{fixture}"],
         out / "fixture.compile.log",
-        env={**os.environ, "MSVC_VER": "msvc6.5"},
+        env=cl_environment("msvc6.5"),
     )
     objects.append(fixture_obj)
     output_inputs[str(fixture_obj)] = digest(fixture_obj.read_bytes())

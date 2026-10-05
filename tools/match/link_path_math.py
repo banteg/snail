@@ -18,6 +18,7 @@ from snail.match import (
     DEFAULT_REFERENCE_SYMBOL_MANIFEST_PATH,
     CoffRelocation,
     _ScratchIncludeResolver,
+    cl_environment,
     compile_scratch,
     extract_object_function,
     load_default_reference_symbol_manifest,
@@ -374,7 +375,7 @@ def main() -> None:
             check=False,
             capture_output=True,
             text=True,
-            env={**os.environ, "MSVC_VER": "msvc6.5"},
+            env=cl_environment("msvc6.5"),
         )
         (out / f"{name}.compile.log").write_text(compiled.stdout + compiled.stderr)
         if compiled.returncode:
