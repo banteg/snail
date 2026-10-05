@@ -42,9 +42,9 @@ def snapshot_inputs(tmp_path, monkeypatch):
 
     def compile_once(*args):
         calls.append(args)
-        return compiled
+        return compiled.read_bytes()
 
-    monkeypatch.setattr(m, "compile_scratch", compile_once)
+    monkeypatch.setattr(m, "compile_scratch_data", compile_once)
     return directory, image_path, compiled, calls
 
 
@@ -196,3 +196,43 @@ def test_alignment_between_verified_trailing_tables_is_not_code():
     targeted = (m.DisassemblyLine(0, 0, "jmp L5", 1),) + lines[1:]
     with pytest.raises(ValueError, match="precedes more code"):
         exporter.display_code_end(data, targeted, ((1, 5), (6, 10)))
+
+
+def test_matcher_equal_references_share_one_display_name():
+    from types import SimpleNamespace
+
+    def line(*refs):
+        return m.DisassemblyLine(0, 0, "call ADDR", 5, tuple(refs))
+
+    target = m.MaskedReference(
+        0, "imm", "image", 0x401000, "fn", "ref:native", True,
+        alternate_keys=("name:Owner_Method",),
+    )
+    candidate = m.MaskedReference(0, "imm", "reloc", None, "sym", "name:Owner_Method", True)
+    table_target = m.MaskedReference(0, "disp", "image", 0x401100, "jt", "ref:table", True)
+    table_candidate = m.MaskedReference(0, "disp", "reloc", None, "sym:$L1", "name:$L1", True)
+    entry = m.MaskedOperandAuditEntry(
+        1, 1, 0, 0, 0, 0, "jmp", (table_target,), (table_candidate,), "ok",
+    )
+    result = SimpleNamespace(
+        target_disassembly=(line(target), line(table_target)),
+        candidate_disassembly=(line(candidate), line(table_candidate)),
+        masked_operand_audit=m.MaskedOperandAudit((entry,)),
+    )
+    target_lines, candidate_lines = exporter.shared_display_lines(result)
+    for index in range(2):
+        assert (
+            target_lines[index].masked_references[0].key
+            == candidate_lines[index].masked_references[0].key
+        )
+
+
+def test_candidate_local_branches_are_linked():
+    reference = m.ObjectRelocationReference(
+        offset=1, symbol_name="_example", text="", key=None, explained=True,
+        addend=0, symbol_offset=0, relocation_type=m.IMAGE_REL_I386_REL32,
+    )
+    function = m.ObjectFunction(
+        "_example", bytes.fromhex("e800000000c3"), frozenset({1}), (reference,),
+    )
+    assert exporter.link_local_branches(function) == bytes.fromhex("e8fbffffffc3")

@@ -28,7 +28,7 @@ POLICY = {
     "version": VERSION,
     "binaries": BINARIES,
     "config": CONFIG,
-    "objects": "bounded-code-snapshots; independent matcher reference keys; trailing data/padding separated",
+    "objects": "bounded-code-snapshots; shared names for matcher-equal references; linked local branches; trailing data/padding separated",
     "aggregation": "target-owned-code-byte-weighted; compared-coverage-discount; missing-source-zero; no-exact-cap",
 }
 

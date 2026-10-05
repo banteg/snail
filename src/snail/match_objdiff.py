@@ -99,12 +99,79 @@ def coff(code, refs, symbol=DISPLAY_SYMBOL, *, code_end=None):
     return blob
 
 
+def shared_display_lines(result):
+    """Give references the matcher treats as the same one relocation name.
+
+    Keys joined by alternate spellings (manifest aliases) or by an ``ok``
+    positional audit (local jump tables, content-audited data, helper
+    aliases) share a display symbol, so byte-identical bodies score 100%.
+    Mismatched references keep their own names.
+    """
+    parent: dict[str, str] = {}
+
+    def find(key):
+        root = parent.setdefault(key, key)
+        if root != key:
+            parent[key] = find(root)
+        return parent[key]
+
+    def union(left, right):
+        left, right = find(left), find(right)
+        if left != right:
+            low, high = sorted((left, right))
+            parent[high] = low
+
+    for line in (*result.target_disassembly, *result.candidate_disassembly):
+        for ref in line.masked_references:
+            keys = sorted(m._reference_key_options(ref))
+            for key in keys[1:]:
+                union(keys[0], key)
+    for entry in result.masked_operand_audit.entries:
+        if entry.status == "ok":
+            for target, candidate in zip(
+                entry.target_references, entry.candidate_references
+            ):
+                if target.key and candidate.key:
+                    union(target.key, candidate.key)
+
+    def shared(lines):
+        return tuple(
+            replace(
+                line,
+                masked_references=tuple(
+                    replace(ref, key=find(ref.key)) if ref.key else ref
+                    for ref in line.masked_references
+                ),
+            )
+            for line in lines
+        )
+
+    return shared(result.target_disassembly), shared(result.candidate_disassembly)
+
+
+def link_local_branches(function):
+    """Apply same-section REL32 relocations, as the linker would.
+
+    The matcher resolves these to local labels without a masked reference, so
+    an unlinked candidate would otherwise show ``call 0`` against the native
+    displacement.
+    """
+    data = bytearray(function.data)
+    for ref in function.relocation_references:
+        if ref.relocation_type != m.IMAGE_REL_I386_REL32 or ref.symbol_offset is None:
+            continue
+        destination = ref.symbol_offset + (ref.addend or 0)
+        if 0 <= destination < len(data):
+            struct.pack_into("<i", data, ref.offset, destination - (ref.offset + 4))
+    return bytes(data)
+
+
 def lift(data, lines, base, *, code_end=None):
-    """Represent the matcher's independent reference keys as COFF relocations.
+    """Represent the matcher's reference keys as COFF relocations.
 
     Round-trip checks preserve every input byte. This does not certify the keys,
     reconstruct referenced data, or validate a native linker relocation table.
-    Unsupported fields fail closed. Alternate-key equivalences are not merged.
+    Unsupported fields fail closed.
     """
     md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
     md.detail = True
@@ -260,7 +327,7 @@ def export_snapshot(
     epoch = m.scratch_experiment_epoch(
         config, match_root, image_path=image_path, manifest_path=manifest_path
     )
-    object_data = m.compile_scratch(config, match_root).read_bytes()
+    object_data = m.compile_scratch_data(config, match_root)
     reference_manifest = m.load_default_reference_symbol_manifest()
     candidate = m.extract_object_function(
         m.parse_coff_object(object_data),
@@ -296,21 +363,22 @@ def export_snapshot(
         "experiment_epoch": epoch,
         "exporter_sha256": sha(Path(__file__).read_bytes()),
         "decoder_version": capstone.__version__,
-        "reference_model": "independent matcher keys; alternate keys are not merged",
+        "reference_model": "matcher keys; alias classes and ok audit pairs share names",
         "objects": {},
     }
+    target_lines, candidate_lines = shared_display_lines(result)
     for side, data, lines, base, inline_ranges in (
         (
             "target",
             target,
-            result.target_disassembly,
+            target_lines,
             start,
             result.target_inline_data_ranges,
         ),
         (
             "candidate",
-            candidate.data,
-            result.candidate_disassembly,
+            link_local_branches(candidate),
+            candidate_lines,
             0,
             result.candidate_inline_data_ranges,
         ),

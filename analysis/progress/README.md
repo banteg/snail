@@ -135,8 +135,11 @@ symbol. Our reference audit remains useful additional proof.
   must cover all code assigned to the public function, with no unexplained bytes. Library identification, prebuilt objects,
   copied assembly, and generated thunks receive no decompiled credit.
 - **Fuzzy:** objdiff v3.8.1 instruction similarity on bounded COFF snapshots,
-  weighted by owned original code bytes across the full denominator. Independent
-  matcher reference keys become named relocations with `functionRelocDiffs=name_address`.
+  weighted by owned original code bytes across the full denominator. Matcher
+  reference keys become named relocations with `functionRelocDiffs=name_address`;
+  keys the matcher treats as equal (alias classes and `ok` positional audits)
+  share one name, and candidate same-section branches are linked, so a
+  byte-identical body scores 100%.
   Untested owned bytes earn zero. No 99.99% cap or exact-score override: fuzzy
   100% is independent of matched-code certification. Snapshots retain every input
   byte but separate verified trailing data/padding from code; they do not claim
