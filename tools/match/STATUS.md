@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**635/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **207897/294505** bytes (**70.59%**) are proof-grade, and overall fuzzy is **99.32%**.
+**636/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **209449/294505** bytes (**71.12%**) are proof-grade, and overall fuzzy is **99.32%**.
 
 **116/120** platform helpers matched, **120/120** have a scratch, **19889/22833** bytes (**87.11%**) are proof-grade, and overall fuzzy is **97.11%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -12,15 +12,15 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**27** non-exact scratch-backed functions hold **86608 target bytes** without proof-grade credit and **2006 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **56.9%** of that gap; the top 10 hold **85.5%**.
+**26** non-exact scratch-backed functions hold **85056 target bytes** without proof-grade credit and **1992 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **57.3%** of that gap; the top 10 hold **86.1%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **27 / 2006** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **0 functions / 0 gap bytes**; **26 / 1992** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
 Ranked by withheld target extent. Structural similarity masks caller-saved register names and local labels; it is diagnostic and grants no proof credit. Proof blockers come from the current matcher, independently of manual residual labels.
 
-Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instructions: 21 functions / 72352 bytes; references: 2 functions / 3872 bytes.
+Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instructions: 20 functions / 70800 bytes; references: 2 functions / 3872 bytes.
 
 | rank | function | withheld bytes | fuzzy gap | structural | changed insns t/c | blockers | recovery | residual | evidence | current/all | flags |
 |---:|---|---:|---:|---:|---:|---|---|---|---|---:|---|
@@ -44,16 +44,15 @@ Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instr
 | 18 | initialize_dip_path_template_pair | 2400 | 4 | 99.85% | 1/1 | instructions | semantic-complete | analysis | historical-only | 0/59 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 19 | initialize_intro_screen | 1856 | 123 | 93.77% | 32/33 | instructions | semantic-complete | analysis | historical-only | 0/13 | repeated-variants,variant-errors,historical-only,stale-dependencies |
 | 20 | border_input_text | 1584 | 20 | 99.44% | 4/1 | instructions | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
-| 21 | traverse_path_follow_golb | 1552 | 15 | 99.06% | 4/4 | instructions | semantic-complete | analysis | historical-only | 0/36 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 22 | calc_object_facequad_normals | 1408 | 23 | 99.08% | 5/3 | instructions | unspecified | unspecified | historical-only | 0/16 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 23 | construct_game_runtime | 1184 | 0 | 100.00% | 0/0 | references | unspecified | unspecified | historical-only | 0/1 | variant-errors,historical-only |
-| 24 | register_font_texture_sheet | 1040 | 139 | 92.50% | 21/20 | instructions | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
-| 25 | set_snail_weapon | 944 | 212 | 93.29% | 31/29 | instructions | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
-| 26 | try_enter_track_attachment_from_swept_motion | 800 | 8 | 99.02% | 2/2 | instructions | semantic-complete | analysis | historical-only | 0/13 | historical-only,stale-dependencies |
-| 27 | sample_smtrack_heightmap | 368 | 10 | 97.25% | 3/3 | instructions | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
+| 21 | calc_object_facequad_normals | 1408 | 23 | 99.08% | 5/3 | instructions | unspecified | unspecified | historical-only | 0/16 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 22 | construct_game_runtime | 1184 | 0 | 100.00% | 0/0 | references | unspecified | unspecified | historical-only | 0/1 | variant-errors,historical-only |
+| 23 | register_font_texture_sheet | 1040 | 139 | 92.50% | 21/20 | instructions | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
+| 24 | set_snail_weapon | 944 | 212 | 93.29% | 31/29 | instructions | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
+| 25 | try_enter_track_attachment_from_swept_motion | 800 | 8 | 99.02% | 2/2 | instructions | semantic-complete | analysis | historical-only | 0/13 | historical-only,stale-dependencies |
+| 26 | sample_smtrack_heightmap | 368 | 10 | 97.25% | 3/3 | instructions | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
 
 
-## Proof Grade (635)
+## Proof Grade (636)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -265,6 +264,7 @@ Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instr
 | ✅ | initialize_slalom_path_template_pair | 0x41f760 | 2576 | 696/696 | 100.00% | 696/696 | 40 ok |  | core |
 | ✅ | begin_track_attachment_follow_state | 0x420c40 | 112 | 27/27 | 100.00% | 27/27 | 4 ok |  | core |
 | ✅ | initialize_path_follow_golb | 0x421770 | 64 | 16/16 | 100.00% | 16/16 | 1 ok |  | core |
+| ✅ | traverse_path_follow_golb | 0x4217b0 | 1552 | 425/425 | 100.00% | 425/425 | 7 ok |  | core |
 | ✅ | mirror_path | 0x421dc0 | 1072 | 314/314 | 100.00% | 314/314 | 15 ok |  | core |
 | ✅ | initialize_slalombig_path_template_pair | 0x4221f0 | 2576 | 696/696 | 100.00% | 696/696 | 40 ok |  | core |
 | ✅ | initialize_sweep_path_template_pair | 0x422c00 | 2432 | 652/652 | 100.00% | 652/652 | 37 ok |  | core |
@@ -704,7 +704,7 @@ Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instr
 | ⚠ | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 707/707 | 100.00% | 707/707 | 55 ok |  | core |
 | ⚠ | initialize_loopbow_path_template_pair | 0x42ba80 | 2944 | 796/796 | 100.00% | 796/796 | 63 ok |  | core |
 
-## Near Match (95-99.99%) (15)
+## Near Match (95-99.99%) (14)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -718,7 +718,6 @@ Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instr
 | 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2576 | 690/690 | 99.71% | 59/690 | 43 ok |  | core |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2400 | 655/655 | 99.85% | 100/655 | 37 ok |  | core |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2752 | 726/726 | 97.66% | 205/726 | 65 ok |  | core |
-| 🚧 | traverse_path_follow_golb | 0x4217b0 | 1552 | 425/425 | 99.06% | 107/425 | 7 ok |  | core |
 | 🚧 | initialize_p_path_template_pair | 0x425a40 | 2496 | 679/679 | 97.35% | 2/679 | 41 ok |  | core |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 204/204 | 99.02% | 109/204 | 47 ok |  | core |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1408 | 435/437 | 98.39% | 382/437 | 22 ok |  | core |
