@@ -1051,7 +1051,11 @@ def _is_function_symbol(symbol: CoffSymbol) -> bool:
 
 
 def _symbol_matches(symbol_name: str, wanted: str) -> bool:
-    return wanted in symbol_name
+    """Whether a COFF symbol is ``wanted`` by exact, C, or C++ member name."""
+    if symbol_name == wanted or _canonical_symbol_name(symbol_name) == wanted:
+        return True
+    # An undecorated method name selects any owner; ambiguity is reported.
+    return symbol_name.startswith("?") and symbol_name[1:].partition("@")[0] == wanted
 
 
 def extract_object_function(

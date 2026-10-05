@@ -444,3 +444,18 @@ def test_recorded_decorated_spelling_rejects_other_overloads():
     assert cpp_member_call("?Set@Owner@@QAEXH@Z", aliases).exact
     result = cpp_member_call("?Set@Owner@@QAEXM@Z", aliases)
     assert not result.exact, summarize(result)
+
+
+def test_function_selection_never_matches_by_substring():
+    def obj(*names):
+        return m.CoffObject(
+            (m.CoffSection(".text", b"\xc3" * len(names), 0x20, ()),),
+            tuple(m.CoffSymbol(i, name, i, 1, 0x20, 2) for i, name in enumerate(names)),
+        )
+
+    with pytest.raises(ValueError, match="no matching function"):
+        m.extract_object_function(obj("_foo2"), "foo")
+    assert m.extract_object_function(obj("_foo2", "_foo"), "foo").name == "_foo"
+    member = "?foo@Owner@@QAEXXZ"
+    assert m.extract_object_function(obj("_foobar", member), "foo").name == member
+    assert m.extract_object_function(obj(member), "Owner_foo").name == member
