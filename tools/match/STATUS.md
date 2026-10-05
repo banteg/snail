@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**632/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **206361/294505** bytes (**70.07%**) are proof-grade, and overall fuzzy is **99.30%**.
+**634/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **207481/294505** bytes (**70.45%**) are proof-grade, and overall fuzzy is **99.32%**.
 
 **116/120** platform helpers matched, **120/120** have a scratch, **19889/22833** bytes (**87.11%**) are proof-grade, and overall fuzzy is **97.11%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -12,15 +12,15 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**30** non-exact scratch-backed functions hold **88144 target bytes** without proof-grade credit and **2053 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **55.6%** of that gap; the top 10 hold **83.6%**.
+**28** non-exact scratch-backed functions hold **87024 target bytes** without proof-grade credit and **2010 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **56.8%** of that gap; the top 10 hold **85.4%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **30 / 2053** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **0 functions / 0 gap bytes**; **28 / 2010** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
 Ranked by withheld target extent. Structural similarity masks caller-saved register names and local labels; it is diagnostic and grants no proof credit. Proof blockers come from the current matcher, independently of manual residual labels.
 
-Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instructions: 24 functions / 73888 bytes; references: 2 functions / 3872 bytes.
+Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instructions: 22 functions / 72768 bytes; references: 2 functions / 3872 bytes.
 
 | rank | function | withheld bytes | fuzzy gap | structural | changed insns t/c | blockers | recovery | residual | evidence | current/all | flags |
 |---:|---|---:|---:|---:|---:|---|---|---|---|---:|---|
@@ -50,13 +50,11 @@ Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instr
 | 24 | register_font_texture_sheet | 1040 | 139 | 92.50% | 21/20 | instructions | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
 | 25 | set_snail_weapon | 944 | 212 | 93.29% | 31/29 | instructions | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
 | 26 | try_enter_track_attachment_from_swept_motion | 800 | 8 | 99.02% | 2/2 | instructions | semantic-complete | analysis | historical-only | 0/13 | historical-only,stale-dependencies |
-| 27 | release_snail_weapons | 560 | 31 | 94.40% | 7/7 | instructions | semantic-complete | analysis | historical-only | 0/16 | variant-errors,historical-only,stale-dependencies |
-| 28 | explode_slug_hazard | 560 | 11 | 97.96% | 3/3 | instructions | semantic-complete | analysis | historical-only | 0/22 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 29 | calc_object_bounding_box | 416 | 3 | 99.16% | 1/1 | instructions | semantic-complete | compiler | historical-only | 0/3 | variant-errors,historical-only |
-| 30 | sample_smtrack_heightmap | 368 | 10 | 97.25% | 3/3 | instructions | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
+| 27 | calc_object_bounding_box | 416 | 3 | 99.16% | 1/1 | instructions | semantic-complete | compiler | historical-only | 0/3 | variant-errors,historical-only |
+| 28 | sample_smtrack_heightmap | 368 | 10 | 97.25% | 3/3 | instructions | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
 
 
-## Proof Grade (632)
+## Proof Grade (634)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -454,6 +452,7 @@ Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instr
 | ✅ | initialize_slug_voice_manager | 0x43f5c0 | 32 | 4/4 | 100.00% | 4/4 | - |  | core |
 | ✅ | update_slug_voice_manager | 0x43f5e0 | 64 | 15/15 | 100.00% | 15/15 | 2 ok |  | core |
 | ✅ | hit_slug_hazard | 0x43f620 | 96 | 25/25 | 100.00% | 25/25 | 5 ok |  | core |
+| ✅ | explode_slug_hazard | 0x43f680 | 560 | 147/147 | 100.00% | 147/147 | 32 ok |  | core |
 | ✅ | kill_slug_hazard | 0x43f8b0 | 128 | 35/35 | 100.00% | 35/35 | 7 ok |  | core |
 | ✅ | update_slug_hazard_ai | 0x43f930 | 1776 | 465/465 | 100.00% | 465/465 | 71 ok |  | core |
 | ✅ | deserialize_compact_high_score_record | 0x440020 | 336 | 114/114 | 100.00% | 114/114 | 1 ok |  | core |
@@ -496,6 +495,7 @@ Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instr
 | ✅ | add_vapour_point | 0x442560 | 144 | 47/47 | 100.00% | 47/47 | - |  | core |
 | ✅ | update_vapour | 0x4425f0 | 736 | 227/227 | 100.00% | 227/227 | - |  | core |
 | ✅ | update_snail_presentation | 0x4428d0 | 1392 | 339/339 | 100.00% | 339/339 | 44 ok |  | core |
+| ✅ | release_snail_weapons | 0x442e40 | 560 | 125/125 | 100.00% | 125/125 | 33 ok |  | core |
 | ✅ | update_row_model | 0x443070 | 192 | 60/60 | 100.00% | 60/60 | 6 ok |  | core |
 | ✅ | update_track_parcels | 0x443130 | 48 | 16/16 | 100.00% | 16/16 | - |  | core |
 | ✅ | initialize_track_parcel_slots | 0x443160 | 48 | 13/13 | 100.00% | 13/13 | 1 ok |  | core |
@@ -704,7 +704,7 @@ Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instr
 | ⚠ | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 707/707 | 100.00% | 707/707 | 55 ok |  | core |
 | ⚠ | initialize_loopbow_path_template_pair | 0x42ba80 | 2944 | 796/796 | 100.00% | 796/796 | 63 ok |  | core |
 
-## Near Match (95-99.99%) (17)
+## Near Match (95-99.99%) (16)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -724,9 +724,8 @@ Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instr
 | 🚧 | calc_object_bounding_box | 0x42fb10 | 416 | 119/119 | 99.16% | 28/119 | 1 ok |  | core |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1408 | 435/437 | 98.39% | 382/437 | 22 ok |  | core |
 | 🚧 | update_subgoldy | 0x43b120 | 8464 | 2089/2087 | 99.28% | 548/2087 | 315 ok |  | core |
-| 🚧 | explode_slug_hazard | 0x43f680 | 560 | 147/147 | 97.96% | 79/147 | 32 ok |  | core |
 
-## High Progress (80-94.99%) (6)
+## High Progress (80-94.99%) (5)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -734,7 +733,6 @@ Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instr
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2768 | 730/736 | 91.54% | 0/736 | 37 ok |  | core |
 | 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2496 | 684/687 | 94.97% | 140/687 | 45 ok |  | core |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5056 | 1246/1246 | 91.50% | 232/1246 | 165 ok |  | core |
-| 🚧 | release_snail_weapons | 0x442e40 | 560 | 125/125 | 94.40% | 15/125 | 33 ok |  | core |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1040 | 273/274 | 86.65% | 55/274 | 57 ok |  | boundary |
 
 ## Mid Progress (50-79.99%) (1)
