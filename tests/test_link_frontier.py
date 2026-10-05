@@ -204,20 +204,17 @@ def test_duplicate_definitions_keep_comdat_and_common_requirements_visible(provi
     assert len(result["providers"]) == 2
 
 
-def test_fabricated_cpp_owner_can_only_produce_a_possible_mapping():
+def test_fabricated_cpp_owner_cannot_borrow_a_native_identity():
     address = 0x44CD40
     exact_name = "?Cross@tVector@@QAEXABU1@0@Z"
     references = native_index(ReferenceSymbol(address, "cross_vectors", "function", (exact_name,)))
     fabricated = "?cross_vectors@CompletelyDifferentOwner@@QAEXHH@Z"
     exact = references.lookup(exact_name)
-    fallback = references.lookup(fabricated)
     assert exact["basis"] == "exact_manifest_spelling"
-    assert fallback["address"] == address
-    assert fallback["basis"] == "matcher_canonical_fallback_candidate"
+    assert references.lookup(fabricated) is None
     owners = {address: [{"caller": "cross_vectors", "symbol": exact_name, "externally_visible": True}]}
     result = classify(unit("caller"), symbol(fabricated, section=0), owners=owners, native=references)
-    assert result["category"] == "possible_function_link_name_mismatch"
-    assert "providers" not in result
+    assert result["category"] == "unmapped_external"
     exact_result = classify(unit("caller"), symbol(exact_name, section=0), owners=owners, native=references)
     assert exact_result["category"] == "function_link_name_mismatch"
 

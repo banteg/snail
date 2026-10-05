@@ -336,3 +336,111 @@ def test_cyclic_address_alias_stays_unresolved():
     )
     assert not result.exact
     assert result.masked_operand_audit.unresolved_count == 1
+
+
+def rdata_double_reference(candidate_value, target_value=0.25):
+    code = bytes.fromhex("dd0500000000c3")  # fld qword [ADDR]; ret
+    obj = m.CoffObject(
+        (
+            m.CoffSection(".text", code, 0x20, (m.CoffRelocation(2, 1, 0x06),)),
+            m.CoffSection(".rdata", struct.pack("<d", candidate_value), 0x40, ()),
+        ),
+        (
+            m.CoffSymbol(0, "_foo", 0, 1, 0x20, 2),
+            m.CoffSymbol(1, "__real@8@x", 0, 2, 0, 3),
+        ),
+    )
+    mapped = bytearray(0x3000)
+    mapped[0x2000:0x2008] = struct.pack("<d", target_value)
+    image = m.LoadedImage(
+        bytes(mapped),
+        0x400000,
+        len(mapped),
+        sections=(m.ImageSection(".rdata", 0x402000, 0x403000, 0x40),),
+    )
+    return m.match_function(
+        bytes.fromhex("dd0500204000c3"),
+        m.extract_object_function(obj, "foo"),
+        image=image,
+        target_va=0x401000,
+    )
+
+
+def test_wide_constant_identity_covers_every_read_byte():
+    # 0.25 and 0.5 share a zero low dword; only the high dword differs.
+    assert rdata_double_reference(0.25).exact
+    result = rdata_double_reference(0.5)
+    assert not result.exact, summarize(result)
+
+
+def string_literal_reference(literal):
+    obj = m.CoffObject(
+        (
+            m.CoffSection(".text", bytes.fromhex("b800000000c3"), 0x20,
+                          (m.CoffRelocation(1, 1, 0x06),)),
+            m.CoffSection(".data", literal, 0x40, ()),
+        ),
+        (
+            m.CoffSymbol(0, "_foo", 0, 1, 0x20, 2),
+            m.CoffSymbol(1, "$SG1", 0, 2, 0, 3),
+        ),
+    )
+    mapped = bytearray(0x3000)
+    mapped[0x2000:0x2008] = b"hello\0\0\0"
+    image = m.LoadedImage(
+        bytes(mapped),
+        0x400000,
+        len(mapped),
+        sections=(m.ImageSection(".rdata", 0x402000, 0x403000, 0x40),),
+    )
+    return m.match_function(
+        bytes.fromhex("b800204000c3"),
+        m.extract_object_function(obj, "foo"),
+        image=image,
+        target_va=0x401000,
+    )
+
+
+def test_string_literal_identity_includes_data_after_the_first_nul():
+    assert string_literal_reference(b"hello\0\0\0").exact
+    result = string_literal_reference(b"hello\0evil\0")
+    assert not result.exact, summarize(result)
+
+
+def cpp_member_call(candidate_name, aliases):
+    obj = m.CoffObject(
+        (
+            m.CoffSection(".text", bytes.fromhex("e800000000c3"), 0x20,
+                          (m.CoffRelocation(1, 1, 0x14),)),
+        ),
+        (
+            m.CoffSymbol(0, "_foo", 0, 1, 0x20, 2),
+            m.CoffSymbol(1, candidate_name, 0, 0, 0x20, 2),
+        ),
+    )
+    references = m.ReferenceSymbolManifest(
+        "test", (m.ReferenceSymbol(0x401010, "set_owner", "function", aliases),)
+    )
+    return m.match_function(
+        bytes.fromhex("e80b000000c3"),
+        m.extract_object_function(obj, "foo", reference_manifest=references),
+        image=m.LoadedImage(bytes(0x3000), 0x400000, 0x3000),
+        target_va=0x401000,
+        reference_manifest=references,
+    )
+
+
+def test_cpp_member_identity_keeps_its_owner():
+    assert m._canonical_symbol_name("?Set@Owner@@QAEXXZ") == "Owner_Set"
+    assert m._canonical_symbol_name("__foo") == "_foo"
+    aliases = ("Set", "Owner_Set")
+    assert cpp_member_call("?Set@Owner@@QAEXXZ", aliases).exact
+    result = cpp_member_call("?Set@Other@@QAEXXZ", aliases)
+    assert not result.exact, summarize(result)
+
+
+def test_recorded_decorated_spelling_rejects_other_overloads():
+    aliases = ("?Set@Owner@@QAEXH@Z",)
+    assert cpp_member_call("?Set@Owner@@QAEXH@Z", aliases).exact
+    result = cpp_member_call("?Set@Owner@@QAEXM@Z", aliases)
+    assert not result.exact, summarize(result)

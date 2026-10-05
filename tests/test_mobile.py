@@ -9695,7 +9695,8 @@ def test_options_uses_authored_lifecycle_surface() -> None:
     assert apply_entry["confidence"] == "medium"
     assert apply_entry["android_symbol"] == "cROptions::Apply(bool)"
     assert apply_entry["ios_symbol"] == "cROptions::Apply(bool)"
-    assert "aliases" not in functions["apply_audio_config_volumes"]
+    # Only the owner of the harness name is pinned; no authored name is claimed.
+    assert functions["apply_audio_config_volumes"]["aliases"] == ["cROptions_apply_audio_config_volumes"]
 
     assert "void Init();" in header
     assert "void UnInit();" in header
@@ -9861,7 +9862,8 @@ def test_high_score_storage_uses_authored_method_surface() -> None:
     loader = entries["load_high_scores_from_file"]
     assert loader["status"] == "unverified"
     assert loader["source_object"] == "HighScore.o"
-    assert "aliases" not in functions["load_high_scores_from_file"]
+    # Only the owner of the harness name is pinned; no authored name is claimed.
+    assert functions["load_high_scores_from_file"]["aliases"] == ["cRSubHighScore_load_high_scores_from_file"]
     loader_header = (
         repo_root / "tools/match/include/sub_high_score.h"
     ).read_text(encoding="utf-8")

@@ -108,6 +108,9 @@ class ObjectRelocationReference:
     symbol_relocation_offsets: frozenset[int] = frozenset()
     relocation_type: int | None = None
     symbol_relocation_references: tuple[ObjectRelocationReference, ...] = ()
+    # Bytes at the referenced .rdata address. The instruction that consumes
+    # the reference decides how many of them form the constant's identity.
+    constant_data: bytes | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -712,13 +715,26 @@ def _quote_reference_string(value: str) -> str:
 
 
 def _canonical_symbol_name(name: str) -> str:
+    """Reduce a COFF symbol to its manifest spelling without merging owners.
+
+    A decorated C++ name keeps its enclosing scopes as ``Outer_Class_Method``
+    so methods of different classes never share an identity. C decoration
+    adds exactly one leading underscore (cdecl/stdcall) or ``@`` (fastcall)
+    and a stdcall ``@N`` suffix; only those are removed, so ``__foo`` and
+    ``_foo`` stay distinct.
+    """
     name = name.removeprefix("__imp_")
-    name = name.removeprefix("__imp__")
     if name.startswith("?"):
-        match = re.match(r"^\?([^@]+)@", name)
-        if match:
-            return match.group(1)
-    name = name.lstrip("_")
+        fragments: list[str] = []
+        for fragment in name[1:].split("@"):
+            if not fragment:
+                break
+            fragments.append(fragment)
+        if fragments:
+            return "_".join(reversed(fragments))
+        return name
+    if name.startswith(("_", "@")):
+        name = name[1:]
     return re.sub(r"@\d+$", "", name)
 
 
@@ -753,8 +769,13 @@ def _reference_symbol_by_name(
     # signature, so reducing e.g. ?Init@cRSubGoldy to the generic key "Init"
     # would incorrectly capture ?Init@cRSubGame relocations.
     for symbol in reference_manifest.symbols:
-        for name in (symbol.name, *symbol.aliases):
-            if name.startswith(("$L", "?")):
+        names = (symbol.name, *symbol.aliases)
+        # A symbol with a recorded decorated spelling is only reachable through
+        # that spelling, so a different overload cannot borrow its identity.
+        if any(name.startswith("?") for name in names):
+            continue
+        for name in names:
+            if name.startswith("$L"):
                 continue
             by_name.setdefault(_canonical_symbol_name(name), symbol)
     for symbol in reference_manifest.symbols:
@@ -889,14 +910,28 @@ def _function_symbols_by_name(
     }
 
 
-def _format_f32_constant(data: bytes, offset: int, value: int | None = None) -> tuple[str, str] | None:
-    if not (0 <= offset <= len(data) - 4):
+RDATA_CONSTANT_MAX_SIZE = 16
+
+
+def _format_rdata_constant(
+    data: bytes,
+    offset: int,
+    value: int | None = None,
+    *,
+    size: int = 4,
+) -> tuple[str, str] | None:
+    """Identify an .rdata constant by every byte the consuming access reads."""
+    if not (0 <= offset <= len(data) - size):
         return None
-    raw = data[offset : offset + 4]
-    bits = struct.unpack("<I", raw)[0]
-    number = struct.unpack("<f", raw)[0]
+    raw = data[offset : offset + size]
     suffix = f"@0x{value:x}" if value is not None else ""
-    return f"const:f32:{number:.9g}{suffix}", f"const:f32:{bits:08x}"
+    if size == 4:
+        number = struct.unpack("<f", raw)[0]
+        return f"const:f32:{number:.9g}{suffix}", f"const:f32:{raw[::-1].hex()}"
+    if size == 8:
+        number = struct.unpack("<d", raw)[0]
+        return f"const:f64:{number:.17g}{suffix}", f"const:f64:{raw[::-1].hex()}"
+    return f"const:b{size}:{raw.hex()}{suffix}", f"const:b{size}:{raw.hex()}"
 
 
 def _u32_points_into_range(
@@ -979,9 +1014,24 @@ def _resolve_object_relocation(
         offset = symbol.value + (_signed_u32(addend) if addend is not None else 0)
         text = _read_printable_c_string(section.data, offset)
         if text is not None:
+            # The image side only sees the string up to its first NUL. A literal
+            # that carries more data after it is a different object, so its
+            # identity keeps every byte up to the next symbol.
+            symbol_end = min(
+                (
+                    sibling.value
+                    for sibling in obj.symbols
+                    if sibling.section_number == symbol.section_number
+                    and sibling.value > offset
+                ),
+                default=len(section.data),
+            )
+            tail = section.data[offset + len(text) : symbol_end].rstrip(b"\x00")
+            if tail:
+                text += tail.decode("latin1")
             return f"str:{_quote_reference_string(text)}", f"str:{text}", True
         if section.name.startswith(".rdata") and (
-            constant := _format_f32_constant(section.data, offset)
+            constant := _format_rdata_constant(section.data, offset)
         ) is not None:
             return constant[0], constant[1], True
         text, key = _format_symbol_reference(symbol.name, addend or 0)
@@ -1078,7 +1128,7 @@ def extract_object_function(
             # explicit and subject to the normal reference audit.
             if (
                 relocation.relocation_type == IMAGE_REL_I386_DIR32
-                and _canonical_symbol_name(symbol.name) == "except_list"
+                and _canonical_symbol_name(symbol.name) == "_except_list"
                 and addend == 0
             ):
                 continue
@@ -1104,6 +1154,20 @@ def extract_object_function(
                     default=len(symbol_section.data),
                 )
                 if symbol_section is not None
+                else None
+            )
+            constant_offset = symbol.value + (
+                _signed_u32(addend) if addend is not None else 0
+            )
+            constant_data = (
+                symbol_section.data[
+                    constant_offset : constant_offset + RDATA_CONSTANT_MAX_SIZE
+                ]
+                if symbol_section is not None
+                and symbol_section.name.startswith(".rdata")
+                and not _is_function_symbol(symbol)
+                and _reference_symbol_for_symbol_name(reference_manifest, symbol.name) is None
+                and 0 <= constant_offset < len(symbol_section.data)
                 else None
             )
             canonical_symbol_name = _canonical_symbol_name(symbol.name)
@@ -1156,6 +1220,7 @@ def extract_object_function(
                         and symbol_end is not None
                         else frozenset()
                     ),
+                    constant_data=constant_data,
                 )
             )
         return tuple(references)
@@ -1245,7 +1310,8 @@ def _resolve_image_reference(
     image: LoadedImage | None = None,
     manifest: FunctionSymbolManifest | None = None,
     reference_manifest: ReferenceSymbolManifest | None = None,
-    prefer_rdata_float: bool = False,
+    prefer_rdata_constant: bool = False,
+    constant_size: int = 4,
     function_base: int = 0,
     alias_depth: int = 0,
 ) -> MaskedReference:
@@ -1379,11 +1445,15 @@ def _resolve_image_reference(
             and _u32_points_into_range(image.mapped, offset, address_range)
         )
         if (
-            prefer_rdata_float
+            prefer_rdata_constant
             and section is not None
             and section.name == ".rdata"
             and not looks_like_rdata_pointer
-            and (constant := _format_f32_constant(image.mapped, offset, value)) is not None
+            and (
+                constant := _format_rdata_constant(
+                    image.mapped, offset, value, size=constant_size,
+                )
+            ) is not None
         ):
             text, key = constant
             return MaskedReference(0, "", "image", value, text, key, True)
@@ -1402,7 +1472,11 @@ def _resolve_image_reference(
             section is not None
             and section.name == ".rdata"
             and not looks_like_rdata_pointer
-            and (constant := _format_f32_constant(image.mapped, offset, value)) is not None
+            and (
+                constant := _format_rdata_constant(
+                    image.mapped, offset, value, size=constant_size,
+                )
+            ) is not None
         ):
             text, key = constant
             return MaskedReference(0, "", "image", value, text, key, True)
@@ -1419,7 +1493,7 @@ def _resolve_image_reference(
 
 
 _OPERAND_SIZE_NAMES = {1: "byte", 2: "word", 4: "dword", 8: "qword", 10: "tword"}
-_X87_F32_MEMORY_MNEMONICS = frozenset(
+_X87_FLOAT_MEMORY_MNEMONICS = frozenset(
     (
         "fadd",
         "fcom",
@@ -1466,8 +1540,16 @@ def _format_memory_operand(insn, operand, masked_disp: bool) -> str:
     return f"{size} {segment}[{'+'.join(parts)}]"
 
 
-def _prefers_rdata_f32(insn, operand) -> bool:
-    return operand.size == 4 and insn.mnemonic in _X87_F32_MEMORY_MNEMONICS
+def _prefers_rdata_constant(insn) -> bool:
+    """Whether a memory operand reads floating-point data, never a C string."""
+    return insn.mnemonic in _X87_FLOAT_MEMORY_MNEMONICS
+
+
+def _rdata_constant_size(insn, operand) -> int:
+    """Width of the datum a memory operand reads; addresses taken keep a dword."""
+    if insn.mnemonic == "lea" or operand.size <= 4:
+        return 4
+    return min(operand.size, RDATA_CONSTANT_MAX_SIZE)
 
 
 def _is_inline_table_alignment(insn: capstone.CsInsn) -> bool:
@@ -1879,6 +1961,8 @@ def disassemble_normalized_function(
         *,
         operand_index: int,
         kind: str,
+        prefer_rdata_constant: bool = False,
+        constant_size: int = 4,
     ) -> MaskedReference:
         jump_table_entries = None
         alternate_jump_table_entries: tuple[tuple[int, ...], ...] = ()
@@ -2024,14 +2108,26 @@ def disassemble_normalized_function(
                 key=None,
                 explained=False,
             )
+        text, key, explained = reference.text, reference.key, reference.explained
+        if (
+            reference.constant_data is not None
+            and (prefer_rdata_constant or (key or "").startswith("const:"))
+            and (
+                constant := _format_rdata_constant(
+                    reference.constant_data, 0, size=constant_size,
+                )
+            ) is not None
+        ):
+            text, key = constant
+            explained = True
         return MaskedReference(
             operand_index=operand_index,
             kind=kind,
             source="reloc",
             value=None,
-            text=reference.text,
-            key=reference.key,
-            explained=reference.explained,
+            text=text,
+            key=key,
+            explained=explained,
             jump_table_entries=jump_table_entries,
             alternate_jump_table_entries=alternate_jump_table_entries,
             audited_bytes=audited_bytes,
@@ -2045,14 +2141,16 @@ def disassemble_normalized_function(
         *,
         operand_index: int,
         kind: str,
-        prefer_rdata_float: bool = False,
+        prefer_rdata_constant: bool = False,
+        constant_size: int = 4,
     ) -> MaskedReference:
         resolved = _resolve_image_reference(
             value,
             image=image,
             manifest=manifest,
             reference_manifest=reference_manifest,
-            prefer_rdata_float=prefer_rdata_float,
+            prefer_rdata_constant=prefer_rdata_constant,
+            constant_size=constant_size,
             function_base=base_address,
             alias_depth=_alias_depth,
         )
@@ -2172,6 +2270,8 @@ def disassemble_normalized_function(
                             disp_relocation,
                             operand_index=operand_index,
                             kind="disp",
+                            prefer_rdata_constant=_prefers_rdata_constant(insn),
+                            constant_size=_rdata_constant_size(insn, operand),
                         )
                     )
                 elif is_masked_value(operand.mem.disp):
@@ -2180,7 +2280,8 @@ def disassemble_normalized_function(
                             operand.mem.disp,
                             operand_index=operand_index,
                             kind="disp",
-                            prefer_rdata_float=_prefers_rdata_f32(insn, operand),
+                            prefer_rdata_constant=_prefers_rdata_constant(insn),
+                            constant_size=_rdata_constant_size(insn, operand),
                         )
                     )
             else:

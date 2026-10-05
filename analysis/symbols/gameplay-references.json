@@ -358,7 +358,8 @@
       "name": "initialize_intro_logo_renderable",
       "kind": "function",
       "aliases": [
-        "??0cRLogoLetter@@QAE@XZ"
+        "??0cRLogoLetter@@QAE@XZ",
+        "RuntimeSlot_initialize_intro_logo_renderable"
       ],
       "description": "Exact authored cRLogoLetter constructor wrapper."
     },
@@ -368,7 +369,11 @@
       "kind": "function",
       "aliases": [
         "sub_408600",
-        "initialize_runtime_slot"
+        "initialize_runtime_slot",
+        "ParcelCandidate_noop_runtime_slot_constructor",
+        "RuntimeSlot_noop_runtime_slot_constructor",
+        "cRCameraman_noop_runtime_slot_constructor",
+        "cRPathFollowGoldy_noop_runtime_slot_constructor"
       ],
       "description": "No-op thiscall constructor callback (`mov eax, ecx; ret`) shared by POD-like runtime slot arrays, parcel buckets, and opaque Snail presentation-channel subobjects. The body proves trivial construction only; it does not establish an iostream owner."
     },
@@ -377,7 +382,8 @@
       "name": "initialize_fringe_object",
       "kind": "function",
       "aliases": [
-        "??0cRFringe@@QAE@XZ"
+        "??0cRFringe@@QAE@XZ",
+        "RuntimeSlot_initialize_fringe_object"
       ],
       "description": "Exact authored cRFringe constructor wrapper."
     },
@@ -387,7 +393,8 @@
       "kind": "function",
       "aliases": [
         "sub_408880",
-        "initialize_solution_record"
+        "initialize_solution_record",
+        "RuntimeSlot_initialize_galaxy_route_name_record"
       ],
       "description": "Constructs one GalaxyRouteNameRecord by running the no-op tColour constructor on its color field at +0x84 and returning the record."
     },
@@ -533,7 +540,7 @@
       "name": "select_level_track_texture_set",
       "kind": "function",
       "aliases": [
-        "Change"
+        "cRTrack_Change"
       ],
       "description": "Stable Windows harness identity for the authored cRTrack::Change(int) member preserved by iOS and Android."
     },
@@ -1097,7 +1104,8 @@
       "kind": "function",
       "aliases": [
         "??0cRBodPos@@QAE@XZ",
-        "?initialize_renderable_bod@RuntimeSlot@@QAEPAU1@XZ"
+        "?initialize_renderable_bod@RuntimeSlot@@QAEPAU1@XZ",
+        "RuntimeSlot_initialize_renderable_bod"
       ],
       "description": "Exact Windows cRBodPos constructor. The RuntimeSlot alias is limited to three pointer-to-constructor operands in the presentation aggregate because C++ cannot take a constructor address."
     },
@@ -1367,7 +1375,8 @@
       "kind": "function",
       "aliases": [
         "??0tMatrix@@QAE@MMMMMMMMMMMMMMMM@Z",
-        "??0TransformMatrix@@QAE@MMMMMMMMMMMMMMMM@Z"
+        "??0TransformMatrix@@QAE@MMMMMMMMMMMMMMMM@Z",
+        "tMatrix_initialize_matrix_from_values"
       ],
       "description": "Stable Windows harness identity for the recovered sixteen-float tMatrix constructor; TransformMatrix remains a compatibility typedef."
     },
@@ -1646,7 +1655,8 @@
       "name": "initialize_track_health_pickup_runtime",
       "kind": "function",
       "aliases": [
-        "??0cRSubHealth@@QAE@XZ"
+        "??0cRSubHealth@@QAE@XZ",
+        "RuntimeSlot_initialize_track_health_pickup_runtime"
       ],
       "description": "Exact authored cRSubHealth constructor."
     },
@@ -1664,7 +1674,8 @@
       "name": "initialize_track_ring_or_special_effect_runtime",
       "kind": "function",
       "aliases": [
-        "??0cRSubRing@@QAE@XZ"
+        "??0cRSubRing@@QAE@XZ",
+        "RuntimeSlot_initialize_track_ring_or_special_effect_runtime"
       ],
       "description": "Exact authored cRSubRing constructor."
     },
@@ -1709,7 +1720,8 @@
       "name": "initialize_sub_lazer_runtime",
       "kind": "function",
       "aliases": [
-        "??0cRSubLazer@@QAE@XZ"
+        "??0cRSubLazer@@QAE@XZ",
+        "RuntimeSlot_initialize_sub_lazer_runtime"
       ],
       "description": "Exact authored cRSubLazer constructor."
     },
@@ -1763,7 +1775,8 @@
       "name": "initialize_salt_hazard_runtime",
       "kind": "function",
       "aliases": [
-        "??0cRSalt@@QAE@XZ"
+        "??0cRSalt@@QAE@XZ",
+        "RuntimeSlot_initialize_salt_hazard_runtime"
       ],
       "description": "Exact authored cRSalt constructor."
     },
@@ -1799,7 +1812,8 @@
       "name": "initialize_slug_hazard_runtime",
       "kind": "function",
       "aliases": [
-        "??0cRSlug@@QAE@XZ"
+        "??0cRSlug@@QAE@XZ",
+        "RuntimeSlot_initialize_slug_hazard_runtime"
       ],
       "description": "Exact authored cRSlug constructor."
     },
@@ -1880,7 +1894,8 @@
       "name": "initialize_click_start_controller_runtime",
       "kind": "function",
       "aliases": [
-        "??0cRClickStart@@QAE@XZ"
+        "??0cRClickStart@@QAE@XZ",
+        "RuntimeSlot_initialize_click_start_controller_runtime"
       ],
       "description": "Exact authored cRClickStart constructor."
     },
@@ -1907,7 +1922,8 @@
       "name": "initialize_track_speedup_runtime",
       "kind": "function",
       "aliases": [
-        "??0cRSubSpeedUp@@QAE@XZ"
+        "??0cRSubSpeedUp@@QAE@XZ",
+        "RuntimeSlot_initialize_track_speedup_runtime"
       ],
       "description": "Exact authored cRSubSpeedUp constructor."
     },
@@ -1998,7 +2014,8 @@
       "kind": "function",
       "aliases": [
         "?Init@cRBorderStack@@QAEXXZ",
-        "?Init@cRFade@@QAEXXZ"
+        "?Init@cRFade@@QAEXXZ",
+        "cRBorderStack_initialize_border_stack"
       ],
       "description": "Exact two-store body folded across the distinct cRBorderStack::Init() and cRFade::Init() authored owners."
     },
@@ -2007,7 +2024,8 @@
       "name": "initialize_track_jetpack_pickup_runtime",
       "kind": "function",
       "aliases": [
-        "??0cRJetPack@@QAE@XZ"
+        "??0cRJetPack@@QAE@XZ",
+        "RuntimeSlot_initialize_track_jetpack_pickup_runtime"
       ],
       "description": "Exact authored cRJetPack constructor."
     },
@@ -2016,7 +2034,8 @@
       "name": "initialize_track_row_runtime",
       "kind": "function",
       "aliases": [
-        "??0cRSubRow@@QAE@XZ"
+        "??0cRSubRow@@QAE@XZ",
+        "RuntimeSlot_initialize_track_row_runtime"
       ],
       "description": "Exact authored cRSubRow aggregate constructor."
     },
@@ -2106,7 +2125,8 @@
       "name": "initialize_garbage_hazard",
       "kind": "function",
       "aliases": [
-        "??0cRSubGarbage@@QAE@XZ"
+        "??0cRSubGarbage@@QAE@XZ",
+        "RuntimeSlot_initialize_garbage_hazard"
       ],
       "description": "Exact authored cRSubGarbage constructor."
     },
@@ -2142,7 +2162,8 @@
       "name": "initialize_track_parcel_runtime",
       "kind": "function",
       "aliases": [
-        "??0cRParcel@@QAE@XZ"
+        "??0cRParcel@@QAE@XZ",
+        "RuntimeSlot_initialize_track_parcel_runtime"
       ],
       "description": "Exact authored cRParcel constructor."
     },
@@ -2304,7 +2325,8 @@
       "name": "reset_display_mode_probe_count",
       "kind": "function",
       "aliases": [
-        "sub_407920"
+        "sub_407920",
+        "DisplayModeState_reset_display_mode_probe_count"
       ],
       "description": "Tiny thiscall helper that clears the display-mode probe count after restoring the main window from minimization."
     },
@@ -2358,7 +2380,8 @@
       "name": "initialize_direct3d_renderer_defaults",
       "kind": "function",
       "aliases": [
-        "sub_411630"
+        "sub_411630",
+        "Direct3DRenderer_initialize_direct3d_renderer_defaults"
       ],
       "description": "Initializes the Direct3D renderer wrapper defaults, window-rect bookkeeping, presentation dimensions, and inactive device/interface slots before device creation."
     },
@@ -2367,7 +2390,8 @@
       "name": "release_direct3d_renderer_resources",
       "kind": "function",
       "aliases": [
-        "j_sub_411960"
+        "j_sub_411960",
+        "Direct3DRenderer_release_direct3d_renderer_resources"
       ],
       "description": "Direct3DRenderer member teardown entry point tail-called by the global resource-release wrapper; it forwards the live renderer receiver to the device/interface release body."
     },
@@ -2376,7 +2400,8 @@
       "name": "release_direct3d_device_interfaces",
       "kind": "function",
       "aliases": [
-        "sub_411960"
+        "sub_411960",
+        "Direct3DRenderer_release_direct3d_device_interfaces"
       ],
       "description": "Direct3DRenderer member body that releases and clears its Direct3DDevice8 and Direct3D8 interface pointers at +0xbb94 and +0xbb90."
     },
@@ -2385,7 +2410,8 @@
       "name": "reset_direct3d_render_state",
       "kind": "function",
       "aliases": [
-        "sub_4118b0"
+        "sub_4118b0",
+        "Direct3DRenderer_reset_direct3d_render_state"
       ],
       "description": "Reapplies the renderer's baseline Direct3D render states after device creation or reset."
     },
@@ -2434,7 +2460,8 @@
       "kind": "function",
       "aliases": [
         "sub_4114b0",
-        "create_vertex_buffer"
+        "create_vertex_buffer",
+        "VertexBufferFactory_create_vertex_buffer"
       ],
       "description": "Renderer resource factory method used by build_object_texture_group_buffers to allocate the grouped object D3D vertex-buffer wrapper."
     },
@@ -2444,7 +2471,8 @@
       "kind": "function",
       "aliases": [
         "sub_4115d0",
-        "create_index_buffer"
+        "create_index_buffer",
+        "IndexBufferFactory_create_index_buffer"
       ],
       "description": "Renderer resource factory method used by build_object_texture_group_buffers to allocate object D3D index-buffer wrappers."
     },
@@ -2462,7 +2490,8 @@
       "name": "direct3d_renderer_set_fullscreen_mode",
       "kind": "function",
       "aliases": [
-        "sub_414270"
+        "sub_414270",
+        "Direct3DRenderer_direct3d_renderer_set_fullscreen_mode"
       ],
       "description": "Renderer-wrapper method called by set_fullscreen_mode with a byte-valued flag to switch windowed/fullscreen bookkeeping, reset the Direct3D device, restore window placement, and recenter the cursor."
     },
@@ -2471,7 +2500,8 @@
       "name": "restore_texture_ref_stage_states",
       "kind": "function",
       "aliases": [
-        "sub_4143c0"
+        "sub_4143c0",
+        "Direct3DRenderer_restore_texture_ref_stage_states"
       ],
       "description": "Walks the shared TextureRefList after a device reset, rebinding each D3D texture handle and restoring the texture-stage address modes derived from TextureRef flags."
     },
@@ -2480,7 +2510,8 @@
       "name": "query_direct3d_device_caps",
       "kind": "function",
       "aliases": [
-        "sub_414600"
+        "sub_414600",
+        "Direct3DRenderer_query_direct3d_device_caps"
       ],
       "description": "Queries the Direct3D device caps into the renderer wrapper and logs the maximum texture width and height."
     },
@@ -2765,7 +2796,8 @@
       "kind": "function_alias",
       "aliases": [
         "initialize_tracked_allocation_stack",
-        "?Init@cREnemyManager@@QAEXXZ"
+        "?Init@cREnemyManager@@QAEXXZ",
+        "TrackedAllocationStack_initialize_tracked_allocation_stack"
       ],
       "description": "Audited identical-code-folding alias: the native cREnemyManager count reset and the unrelated tracked-allocation stack depth reset share this one-store body."
     },
@@ -3775,7 +3807,8 @@
       "name": "sample_track_floor_height_at_position",
       "kind": "function",
       "aliases": [
-        "?GetY@cRSubGame@@QAENPAUtVector@@@Z"
+        "?GetY@cRSubGame@@QAENPAUtVector@@@Z",
+        "SubgoldyFloorSamplerCallView_sample_track_floor_height_at_position"
       ],
       "description": "Exact Windows cRSubGame::GetY(tVector*) entry with its native double-return ABI."
     },
@@ -4935,7 +4968,8 @@
       "aliases": [
         "??DtVector@@QBE?AU0@ABUtMatrix@@@Z",
         "??DtVector@@QBE?AU0@ABUTransformMatrix@@@Z",
-        "??DVector3@@QBE?AU0@ABUTransformMatrix@@@Z"
+        "??DVector3@@QBE?AU0@ABUTransformMatrix@@@Z",
+        "tVector_multiply_vector_by_matrix_copy"
       ],
       "description": "Exact value-returning tVector affine tMatrix operator with a hidden VC6 output pointer."
     },
@@ -5191,7 +5225,10 @@
         "??0AxisAngle@@QAE@XZ",
         "??0Quaternion@@QAE@XZ",
         "??0tColour@@QAE@XZ",
-        "sub_44db50"
+        "sub_44db50",
+        "StartupTrivialObject_noop_this_constructor",
+        "tColourSmall_noop_this_constructor",
+        "tColour_noop_this_constructor"
       ],
       "description": "Three-byte generic identity thunk (`eax = ecx; ret`) shared by folded trivial default constructors; its cross-tool ABI is `void* __thiscall(void* self)` rather than any one aliased owner type."
     },
@@ -5228,7 +5265,8 @@
       "name": "store_color4f",
       "kind": "function",
       "aliases": [
-        "?Set@tColour@@QAEXMMMM@Z"
+        "?Set@tColour@@QAEXMMMM@Z",
+        "tColour_store_color4f"
       ],
       "description": "Exact Windows void tColour::Set(float, float, float, float), identified by the delayed-widget glow caller shared with both mobile ports."
     },
@@ -5735,7 +5773,8 @@
       "aliases": [
         "setjmp",
         "setjmp3",
-        "sub_48bf60"
+        "sub_48bf60",
+        "_setjmp3"
       ],
       "description": "Statically linked VC6 setjmp3 helper used by libpng error recovery; the compiler intrinsic supplies the hidden null frame argument."
     },
