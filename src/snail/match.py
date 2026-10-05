@@ -6476,7 +6476,6 @@ def compile_idiom_case(
     compiler: str = DEFAULT_SCRATCH_COMPILER,
     cflags: str = DEFAULT_SCRATCH_CFLAGS,
 ) -> IdiomResult:
-    import os
     import shlex
     import subprocess
 

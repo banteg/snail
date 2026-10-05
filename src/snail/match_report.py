@@ -603,7 +603,7 @@ def _committed_evidence() -> dict[str, Any] | None:
     """The evidence at HEAD, so repeated local refreshes keep one baseline."""
     result = subprocess.run(
         ["git", "show", f"HEAD:{DEFAULT_EVIDENCE.relative_to(REPO_ROOT).as_posix()}"],
-        cwd=REPO_ROOT, capture_output=True,
+        cwd=REPO_ROOT, capture_output=True, check=False,
     )
     return json.loads(result.stdout) if result.returncode == 0 else None
 
