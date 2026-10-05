@@ -614,3 +614,9 @@ is a CSE symbol leaf ranked by `id mod 1024`. Phantom builds are byte exact only
 0x800–0x80b, with n62 (the secondary address) ≢ 0 mod 4. No code-identical construct measured moves it
 there: they reach `id mod 1024` 252 to about 477, against a needed 0–11. Windows, construct costs and the
 negative leads are in [cse-ids.md](../../c2/cse-ids.md) and [address-order.md](../../c2/address-order.md).
+
+## 2026-10-05 msvc6.3 address ids
+
+The one-byte SIB residual is traced under msvc6.3 in the
+[address-id controls](../../path-sib-address-ids-20261005.md), with the slot
+ids, costs and code-changing controls that remain open.

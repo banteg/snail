@@ -363,3 +363,9 @@ sweeps, four probes, and 77 unique variants.
 68.15% baseline. No source change is retained. The Twister result does not
 transfer uniformly across this family; these receipts describe only the
 examined aggregate and lateral lifetimes.
+
+## 2026-10-05 msvc6.3 address ids
+
+The one-byte SIB residual is traced under msvc6.3 in the
+[address-id controls](../../path-sib-address-ids-20261005.md), with the slot
+ids, costs and code-changing controls that remain open.

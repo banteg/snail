@@ -457,3 +457,9 @@ focused matching from **69.45%** to **65.77%**, grows the candidate from exact
 671/671 parity to 673 instructions, and contracts the prefix from 54 to 36.
 All 41 references remain clean. The complete-source probe is recorded and
 reverted.
+
+## 2026-10-05 msvc6.3 address ids
+
+The one-byte SIB residual is traced under msvc6.3 in the
+[address-id controls](../../path-sib-address-ids-20261005.md), with the slot
+ids, costs and code-changing controls that remain open.

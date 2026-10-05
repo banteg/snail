@@ -486,3 +486,9 @@ The one remaining swap (`temp 0x4bc`, n28, against local 0x13) is a CSE symbol l
 and width_cells mod-4 rules). No code-identical construct measured moves it there: they reach
 `id mod 1024` 188 to about 413, against a needed 0–9. Windows, construct costs and the negative leads are
 in [cse-ids.md](../../c2/cse-ids.md) and [address-order.md](../../c2/address-order.md).
+
+## 2026-10-05 msvc6.3 address ids
+
+The one-byte SIB residual is traced under msvc6.3 in the
+[address-id controls](../../path-sib-address-ids-20261005.md), with the slot
+ids, costs and code-changing controls that remain open.

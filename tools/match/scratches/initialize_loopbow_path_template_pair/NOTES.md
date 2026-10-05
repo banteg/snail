@@ -447,3 +447,9 @@ Independent byte checks retain **28 unequal bytes** after aligning each
 relocation to its actual native/candidate instruction. The residuals are two
 interpolation SIB encodings, pivot preparation scheduling, and parity register
 roles. All 28 local branches match literally. This remains a partial body.
+
+## 2026-10-05 msvc6.3 address ids
+
+The one-byte SIB residual is traced under msvc6.3 in the
+[address-id controls](../../path-sib-address-ids-20261005.md), with the slot
+ids, costs and code-changing controls that remain open.
