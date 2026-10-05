@@ -20,6 +20,12 @@ have a source candidate. The initial category contained 782 function owners. The
 verified no-op startup initializers, bringing it to 787 owners.
 It uses their existing disjoint native code ranges and the same matching rules.
 
+The [Port core subcategory](https://decomp.dev/banteg/snail?category=game.port-core)
+keeps only `core` and `boundary` functions: the code a port carries over.
+`replaceable-platform` functions (window, display, Direct3D, BASS, input and
+file glue) stay in Game & Engine but will be replaced by modern port code, so
+they receive no further matching effort.
+
 This is identified game/engine ownership, not a claim that every remaining byte
 is library code. **Libraries** and its D3DX8, MSVC runtime, libpng and zlib filters
 show confirmed identities; **Unclassified code** retains the rest. All categories

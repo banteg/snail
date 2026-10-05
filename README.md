@@ -1,6 +1,7 @@
 # Snail Mail
 
 [![Game & Engine progress](https://decomp.dev/banteg/snail.svg?mode=shield&category=game&label=Game%20%26%20Engine)](https://decomp.dev/banteg/snail?category=game)
+[![Port core progress](https://decomp.dev/banteg/snail.svg?mode=shield&category=game.port-core&label=Port%20core)](https://decomp.dev/banteg/snail?category=game.port-core)
 [![Full-executable progress](https://decomp.dev/banteg/snail.svg?mode=shield&label=Full%20executable)](https://decomp.dev/banteg/snail)
 
 [Public reporting policy](analysis/progress/README.md) ·

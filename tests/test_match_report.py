@@ -72,7 +72,7 @@ def test_every_chart_measure_reconciles_units_and_categories(monkeypatch):
         assert measures["complete_units"] == 0
         assert measures["complete_code"] == measures["total_data"] == measures["matched_data"] == measures["complete_data"] == "0"
         assert measures["complete_code_percent"] == measures["matched_data_percent"] == measures["complete_data_percent"] == 0
-    assert {c["id"] for c in result["categories"]} == {"game", "libs", "libs.d3dx8", "libs.msvc6-crt", "libs.libpng-1.2.5", "libs.zlib-1.2.1", "other"}
+    assert {c["id"] for c in result["categories"]} == {"game", "game.port-core", "libs", "libs.d3dx8", "libs.msvc6-crt", "libs.libpng-1.2.5", "libs.zlib-1.2.1", "other"}
 
 
 def test_coverage_discount_and_fuzzy_are_independent_of_exact_credit(monkeypatch):
@@ -112,8 +112,13 @@ def test_game_category_keeps_platform_and_unrecovered_game_but_excludes_unknown_
     assert m["matched_functions"] == 1
     assert m["complete_code"] == "0"
     assert [u["metadata"]["progress_categories"] for u in result["units"]] == [
-        ["game"], ["game"], ["game"], ["other"], ["other"], ["other"],
+        ["game", "game.port-core"], ["game", "game.port-core"], ["game"],
+        ["other"], ["other"], ["other"],
     ]
+    port = next(c for c in result["categories"] if c["id"] == "game.port-core")
+    assert port["name"] == "Port core"
+    assert port["measures"]["total_code"] == "400"
+    assert port["measures"]["matched_code"] == "100"
     assert result["measures"]["total_code"] == "1250"
     assert result["measures"]["matched_code"] == "400"
 

@@ -22,7 +22,7 @@ from typing import Any
 from . import code_inventory
 from . import match as matchlib
 from . import match_fuzzy
-from .symbols import REPO_ROOT, load_function_symbol_manifest
+from .symbols import PORT_RELEVANT_FUNCTION_SCOPES, REPO_ROOT, load_function_symbol_manifest
 
 VERSION = "win32-reflexive"
 EVIDENCE_SCHEMA = 2
@@ -47,7 +47,7 @@ DEFAULT_EVIDENCE = PROGRESS / f"{VERSION}.json"
 DEFAULT_REPORT = REPO_ROOT / "artifacts/decomp/report.json"
 ATTRIBUTION = REPO_ROOT / "analysis/ownership/library-attribution.json"
 CATEGORY_LABELS = {
-    "game": "Game & Engine", "libs": "Libraries",
+    "game": "Game & Engine", "game.port-core": "Port core", "libs": "Libraries",
     "libs.d3dx8": "D3DX8", "libs.msvc6-crt": "MSVC runtime",
     "libs.libpng-1.2.5": "libpng 1.2.5", "libs.zlib-1.2.1": "zlib 1.2.1",
     "other": "Unclassified code",
@@ -830,6 +830,10 @@ def build_report(functions: list[dict[str, Any]]) -> dict[str, Any]:
     """Full-executable totals with an optional identified Game & Engine view."""
     manifest = load_function_symbol_manifest(REPO_ROOT / "analysis/symbols/gameplay-functions.json")
     game_addresses = {f.address for f in manifest.functions if f.port_scope != "third-party"}
+    # Core and boundary code carries into a port; platform glue is replaced.
+    port_addresses = {
+        f.address for f in manifest.functions if f.port_scope in PORT_RELEVANT_FUNCTION_SCOPES
+    }
     attribution = _load_attribution()
     game_addresses.update(a for a, r in attribution.items() if r["component"] == "game-init")
     display_names = {r["address"]: attribution.get(r["address"], {}).get("name", r["name"]) for r in functions}
@@ -871,7 +875,7 @@ def build_report(functions: list[dict[str, Any]]) -> dict[str, Any]:
         owner = attribution.get(key)
         categories = ["other"]
         if row["is_function"] and key in game_addresses:
-            categories = ["game"]
+            categories = ["game", "game.port-core"] if key in port_addresses else ["game"]
         elif row["is_function"] and owner and owner["component"] != "game-init":
             categories = ["libs", "libs." + owner["component"]]
         metadata: dict[str, Any] = {
