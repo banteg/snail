@@ -5,10 +5,8 @@
 
 void cRObject::calc_object_bounding_box()
 {
-    Vector3* max = &bounds_max;
-    *max = Vector3(-10000000000.0f, -10000000000.0f, -10000000000.0f);
-    Vector3* min = &bounds_min;
-    *min = Vector3(10000000000.0f, 10000000000.0f, 10000000000.0f);
+    bounds_max = Vector3(-10000000000.0f, -10000000000.0f, -10000000000.0f);
+    bounds_min = Vector3(10000000000.0f, 10000000000.0f, 10000000000.0f);
     int offset;
     bounding_radius = offset = 0;
     int result = 0;
@@ -17,23 +15,19 @@ void cRObject::calc_object_bounding_box()
             Vector3* vertex = (Vector3*)((char*)vertices + offset);
 
             float max_x;
-            if ((double)vertex->x < (double)max->x) {
+            if ((double)vertex->x < (double)bounds_max.x) {
                 max_x = bounds_max.x;
-                max = &bounds_max;
             } else {
                 max_x = vertex->x;
             }
-            max->x = max_x;
-
+            bounds_max.x = max_x;
             float min_x;
-            if ((double)min->x < (double)vertex->x) {
+            if ((double)bounds_min.x < (double)vertex->x) {
                 min_x = bounds_min.x;
-                min = &bounds_min;
             } else {
                 min_x = vertex->x;
             }
-            min->x = min_x;
-
+            bounds_min.x = min_x;
             float max_y;
             if ((double)vertex->y < (double)bounds_max.y) {
                 max_y = bounds_max.y;
@@ -41,7 +35,6 @@ void cRObject::calc_object_bounding_box()
                 max_y = vertex->y;
             }
             bounds_max.y = max_y;
-
             float min_y;
             if ((double)bounds_min.y < (double)vertex->y) {
                 min_y = bounds_min.y;
@@ -49,7 +42,6 @@ void cRObject::calc_object_bounding_box()
                 min_y = vertex->y;
             }
             bounds_min.y = min_y;
-
             float max_z;
             if ((double)vertex->z < (double)bounds_max.z) {
                 max_z = bounds_max.z;
@@ -57,7 +49,6 @@ void cRObject::calc_object_bounding_box()
                 max_z = vertex->z;
             }
             bounds_max.z = max_z;
-
             float min_z;
             if ((double)bounds_min.z < (double)vertex->z) {
                 min_z = bounds_min.z;

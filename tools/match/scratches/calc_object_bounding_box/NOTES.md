@@ -195,3 +195,22 @@ exact under the baseline. A flag that only this function tolerates is a better
 score, not compiler provenance, so the scratch returns to the baseline profile
 at **99.16%** (`119/119`, prefix 28) with the `bounding_radius = 0` store
 order as its recorded compiler residual.
+
+## 2026-10-06 byte-exact under msvc6.3
+
+The residual was an alias edge, not a compiler mode. `schedtrace.py --line 13`
+shows the `bounding_radius = 0` store (`@f37`) with `store` edges from all six
+`*max = Vector3(...)` / `*min = Vector3(...)` stores: they go through a
+pointer borrow, a bare class (`@c3`) whose symbol set contains `this`, so the
+radius store cannot issue until the last bounds store retires and sinks below
+the count test. Native has no such edge.
+
+Direct members fix it: `bounds_max = Vector3(...)`, `bounds_min =
+Vector3(...)`, and plain `if`/`else` min/max per component on `bounds_max.x`
+and so on. The per-branch `lea ebx, [esi+0xa4]` the earlier source modelled as
+a pointer rebind is C2 reusing the init's operator= `this` address for the
+offset-0 `.x` field, so the `max`/`min` pointer locals were decompiler shape.
+**100%**, `119/119`, prefix 119, body byte exact, under the RObject.o baseline
+profile. The `(char*)vertices + offset` induction stays: `&vertices[i]` in a
+`for` or `do` loop regresses to 85.36%, as do conditional-expression forms
+(68-72%).

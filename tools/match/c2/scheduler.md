@@ -223,6 +223,10 @@ Consequences seen so far:
   `this`, so every position-X load conflicted with every velocity store. Naming
   the member directly and using the compound vector operators removed exactly
   the native-absent edges and made the function byte-exact.
+- **calc_object_bounding_box:** `*min = Vector3(...)` through a `Vector3*`
+  borrow made the bounds stores bare-class, ordering the unrelated
+  `bounding_radius` store after them. Direct `bounds_min = Vector3(...)`
+  removes the edge and the function is byte-exact (2026-10-06).
 - **initialize_game_assets_and_world:** the 96-record cap on the game
   object's class is reached in the middle of pair 2's entry-strip block (see
   its NOTES). Every later access is a bare class.
