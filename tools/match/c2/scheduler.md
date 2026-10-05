@@ -401,7 +401,7 @@ When the order of instructions within a window differs from native:
 | explode_slug_hazard | the owner load falls past the 81-tuple cut | **byte-exact under msvc6.3** (2026-10-05): five precedence parentheses add FROUNDs so the cut falls before the load's `fild`, plus the rate defined inside the X product |
 | initialize_star_field | 81-tuple cut inside `travel_distance` | 98.79% (+1 FROUND); needs about 4 more |
 | draw_textured_quad_immediate | 81-tuple cut after the vertex-2 U load | cut confirmed (3 tuples fix it, 98.64%); the half-height spill that supplies one of them is still unexplained, so not retained |
-| release_snail_weapons | block 1: owner load height 131 beats the `fadd` at 129; block 3: 81-tuple cut | open |
+| release_snail_weapons | block 1: owner load height 131 beats the `fadd` at 129; block 3: 81-tuple cut | **byte-exact under msvc6.3** (2026-10-05): `SIGNED_UNIT_RANDOM()` / `RANDOM_FROM_HALF()` macros; their parentheses add the FROUNDs that fix both |
 | load_galaxy_layout | three height ties decided by IL order; the cursor increments are strength-reduced IV updates | **byte-exact**: an indexed `for` loop with `galaxy_index * 10` and `points[galaxy_index]` |
 
 Census sweep of the other port partials (2026-09-25). The windows that differ

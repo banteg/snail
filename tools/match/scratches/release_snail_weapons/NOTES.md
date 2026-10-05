@@ -155,3 +155,17 @@ FROUND is dangling (no successors). No change retained.
 
 A bounded Codex consult (gpt-6-astra, about 40-60 probes) found no defensible improvement. Its evidence and probe ledger are in `/private/tmp/claude-501/sm/codex/release_snail_weapons/RESULTS.md`.
 Key finding: seven differences remain, all scheduling: the fadd priority in the first and third blocks, and the third block's publication across the 81-tuple window boundary. Component ownership fixes the first fadd but regresses the Z transfers and allocation.
+
+## 2026-10-05 byte-exact under msvc6.3
+
+The two random terms are now macros, `SIGNED_UNIT_RANDOM()` and
+`RANDOM_FROM_HALF()`, in the style of `firework_shoot`'s `SIGNED_RANDOM`.
+Their body parentheses add one codeless FROUND per use
+([scheduler.md](../../c2/scheduler.md), "Codeless tuples"). With all eight
+uses, window 1's cut moves so window 2 schedules as native. The FROUND after
+each `RAND(...) + 0.5f` also raises that `fadd`'s height above the
+`owner_player` load, so it issues first, as native. Parenthesizing only some
+uses reaches 98.4-99.2%. Found with the msvc6.3 scheduler trace
+(`schedtrace.py --census`) and a parenthesis search.
+
+Result: 100.00%, 125/125, 33 clean references, `body_byte_exact`.
