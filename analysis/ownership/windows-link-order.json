@@ -1,0 +1,1632 @@
+{
+  "schema": 1,
+  "target_sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5",
+  "method": "Mobile source-object labels kept only where they fit the Windows link order (alphabetical within the game and engine-library sequences, longest consistent run chain); every other function is placed by the anchors around it. See windows-link-order.md.",
+  "objects": [
+    {
+      "object": null,
+      "between": [
+        "^",
+        "Border.o"
+      ],
+      "start": "0x401000",
+      "last_function": "0x401000",
+      "function_count": 1,
+      "mobile_verified": 0,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_array_with_constructor"
+      ]
+    },
+    {
+      "object": "Border.o",
+      "between": null,
+      "start": "0x401030",
+      "last_function": "0x404730",
+      "function_count": 34,
+      "mobile_verified": 34,
+      "mobile_drift": [],
+      "functions": [
+        "border_add_text_number",
+        "hide_border_init",
+        "unhide_border_init",
+        "draw_frontend_widget",
+        "initialize_frontend_sprite_button",
+        "initialize_frontend_widget",
+        "layout_frontend_widget",
+        "set_frontend_widget_shortcut_key",
+        "stack_widget_below",
+        "unhighlight_border",
+        "highlight_border",
+        "update_frontend_widget_interaction",
+        "allocate_border",
+        "activate_all_borders",
+        "kill_border",
+        "kill_all_borders",
+        "hide_all_borders",
+        "unhide_all_borders",
+        "border_input_text_init",
+        "update_input_ok",
+        "initialize_input_ok",
+        "border_input_text",
+        "reset_tooltip",
+        "update_tooltip",
+        "queue_frontend_widget_flag_after_delay",
+        "update_border_manager",
+        "update_twinkle_manager",
+        "draw_twinkle",
+        "update_twinkle",
+        "initialize_border_stack",
+        "apply_all_border_visibility_mode",
+        "border_sprite_extend",
+        "border_mouse_test",
+        "set_border_justify_centre"
+      ]
+    },
+    {
+      "object": "Cheat.o",
+      "between": null,
+      "start": "0x404740",
+      "last_function": "0x4047d0",
+      "function_count": 3,
+      "mobile_verified": 3,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_cheat",
+        "update_cheat",
+        "match_cheat_text"
+      ]
+    },
+    {
+      "object": "Completion.o",
+      "between": null,
+      "start": "0x404830",
+      "last_function": "0x405040",
+      "function_count": 4,
+      "mobile_verified": 4,
+      "mobile_drift": [],
+      "functions": [
+        "flush_row_event_display",
+        "initialize_completion_screen",
+        "update_row_event_display",
+        "register_parcel_delivery"
+      ]
+    },
+    {
+      "object": null,
+      "between": [
+        "Completion.o",
+        "DatBuild.o"
+      ],
+      "start": "0x4050c0",
+      "last_function": "0x4051d0",
+      "function_count": 5,
+      "mobile_verified": 0,
+      "mobile_drift": [],
+      "functions": [
+        "classify_archive_entry_extension",
+        "file_exists",
+        "get_stream_length_preserve_position",
+        "load_file_bytes_allocating",
+        "load_file_bytes_into_optional_buffer"
+      ]
+    },
+    {
+      "object": "DatBuild.o",
+      "between": null,
+      "start": "0x405270",
+      "last_function": "0x405270",
+      "function_count": 1,
+      "mobile_verified": 1,
+      "mobile_drift": [],
+      "functions": [
+        "scramble_archive_bytes_in_place"
+      ]
+    },
+    {
+      "object": null,
+      "between": [
+        "DatBuild.o",
+        "DirectX.o"
+      ],
+      "start": "0x4052a0",
+      "last_function": "0x405370",
+      "function_count": 4,
+      "mobile_verified": 0,
+      "mobile_drift": [],
+      "functions": [
+        "save_file_bytes_with_optional_archive_scramble",
+        "delete_file_path",
+        "toggle_archive_high_bit_in_place",
+        "rebuild_game_archive_if_needed"
+      ]
+    },
+    {
+      "object": "DirectX.o",
+      "between": null,
+      "start": "0x405640",
+      "last_function": "0x405d60",
+      "function_count": 4,
+      "mobile_verified": 4,
+      "mobile_drift": [],
+      "functions": [
+        "load_x_mesh",
+        "initialize_directx_loader",
+        "load_or_reuse_cached_x_mesh",
+        "load_x_animation_clip"
+      ]
+    },
+    {
+      "object": "Exit.o",
+      "between": null,
+      "start": "0x406060",
+      "last_function": "0x4067e0",
+      "function_count": 3,
+      "mobile_verified": 3,
+      "mobile_drift": [],
+      "functions": [
+        "destroy_completion_screen",
+        "initialize_exit_prompt",
+        "update_completion_screen"
+      ]
+    },
+    {
+      "object": null,
+      "between": [
+        "Exit.o",
+        "Galaxy.o"
+      ],
+      "start": "0x406bc0",
+      "last_function": "0x4088c0",
+      "function_count": 58,
+      "mobile_verified": 0,
+      "mobile_drift": [
+        {
+          "name": "initialize_default_runtime_config_thunk",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_default_runtime_config",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_global_trivial_object_thunk",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_global_trivial_object",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_main_loop_timing_state",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "noop_runtime_ai",
+          "mobile_object": "SubGame.o"
+        },
+        {
+          "name": "construct_game_runtime",
+          "mobile_object": "Game.o"
+        },
+        {
+          "name": "initialize_game_player",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_noop_renderable_bod",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_runtime_pools_and_path_template_bank",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_border_record",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_cached_x_mesh_slot",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_intro_logo_renderable",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_track_speedup_runtime",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_track_jetpack_pickup_runtime",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_track_health_pickup_runtime",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_slug_hazard_runtime",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_garbage_hazard",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_track_ring_or_special_effect_runtime",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_track_row_runtime",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_path_template_record_pair",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_active_bod",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_sub_lazer_runtime",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_salt_hazard_runtime",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_fringe_object",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_click_start_controller_runtime",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_golb_shot",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_player_presentation_controller",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_active_landscape_entry",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_landscape_script_record",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_track_parcel_runtime",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_galaxy_route_name_record",
+          "mobile_object": "Mac.o"
+        },
+        {
+          "name": "initialize_sub_loc",
+          "mobile_object": "Mac.o"
+        }
+      ],
+      "functions": [
+        "initialize_global_noop_renderable_bods_thunk",
+        "initialize_global_noop_renderable_bods",
+        "initialize_default_runtime_config_thunk",
+        "initialize_default_runtime_config",
+        "initialize_global_trivial_object_thunk",
+        "initialize_global_trivial_object",
+        "log_startup_timestamp",
+        "initialize_main_loop_display_state",
+        "initialize_main_loop_timing_state",
+        "game_startup_and_main_loop",
+        "handle_game_window_activate",
+        "show_and_focus_game_window",
+        "handle_game_window_deactivate",
+        "minimize_game_window",
+        "game_window_proc",
+        "consume_mouse_wheel_delta",
+        "read_left_mouse_button_state",
+        "read_right_mouse_button_state",
+        "snapshot_current_display_mode",
+        "restore_desktop_display_mode",
+        "probe_display_mode_count",
+        "read_current_display_resolution",
+        "clear_display_mode_state",
+        "reset_display_mode_probe_count",
+        "read_next_display_mode_view_sample",
+        "bass_audio_window_proc",
+        "initialize_audio_subsystem",
+        "shutdown_bass_audio_window",
+        "noop_runtime_ai",
+        "construct_game_runtime",
+        "initialize_game_player",
+        "initialize_noop_renderable_bod",
+        "initialize_runtime_pools_and_path_template_bank",
+        "initialize_border_record",
+        "initialize_cached_x_mesh_slot",
+        "initialize_intro_logo_renderable",
+        "initialize_track_speedup_runtime",
+        "initialize_track_jetpack_pickup_runtime",
+        "initialize_track_health_pickup_runtime",
+        "initialize_slug_hazard_runtime",
+        "initialize_garbage_hazard",
+        "initialize_track_ring_or_special_effect_runtime",
+        "initialize_track_row_runtime",
+        "initialize_path_template_record_pair",
+        "initialize_active_bod",
+        "noop_runtime_slot_constructor",
+        "initialize_sub_lazer_runtime",
+        "initialize_salt_hazard_runtime",
+        "initialize_fringe_object",
+        "initialize_click_start_controller_runtime",
+        "initialize_golb_shot",
+        "initialize_player_presentation_controller",
+        "initialize_active_landscape_entry",
+        "initialize_landscape_script_record",
+        "initialize_track_parcel_runtime",
+        "initialize_galaxy_route_name_record",
+        "abort_startup_with_3d_error",
+        "initialize_sub_loc"
+      ],
+      "candidate": "G0.o",
+      "note": "binary names G0.cpp as where ObjectList/TextureList are initialized; G0 sorts between Exit and Galaxy"
+    },
+    {
+      "object": "Galaxy.o",
+      "between": null,
+      "start": "0x4088e0",
+      "last_function": "0x40a0c0",
+      "function_count": 9,
+      "mobile_verified": 9,
+      "mobile_drift": [],
+      "functions": [
+        "load_galaxy_layout",
+        "destroy_galaxy",
+        "initialize_galaxy",
+        "update_galaxy",
+        "draw_galaxy_line",
+        "update_galaxy_route_record",
+        "close_galaxy_route",
+        "open_galaxy_route",
+        "galaxy_border_bound"
+      ]
+    },
+    {
+      "object": "Game.o",
+      "between": null,
+      "start": "0x40a1b0",
+      "last_function": "0x411420",
+      "function_count": 31,
+      "mobile_verified": 25,
+      "mobile_drift": [],
+      "functions": [
+        "update_overlay",
+        "initialize_overlay",
+        "noop_runtime_callback",
+        "run_frame_update",
+        "render_game_frame",
+        "initialize_input",
+        "update_input",
+        "update_game_input",
+        "initialize_frontend_overlay_color_lerp",
+        "draw_frontend_overlay_color_lerp",
+        "begin_frontend_fade_out",
+        "begin_frontend_fade_in",
+        "update_frontend_transition_overlay",
+        "initialize_game_assets_and_world",
+        "zero_vector3",
+        "initialize_game_last",
+        "select_level_track_texture_set",
+        "update_frontend_state_machine",
+        "initialize_global_color4f_bank_32_thunk",
+        "initialize_global_color4f_bank_32",
+        "set_backdrop_zoom",
+        "set_backdrop_distort",
+        "change_backdrop",
+        "change_backdrop_real",
+        "initialize_backdrop",
+        "set_backdrop_texture_target",
+        "draw_split_backdrop",
+        "render_backdrop",
+        "update_backdrop",
+        "add_bod_to_front",
+        "append_bod_to_end"
+      ]
+    },
+    {
+      "object": null,
+      "between": [
+        "Game.o",
+        "GL.o"
+      ],
+      "start": "0x4114b0",
+      "last_function": "0x411e10",
+      "function_count": 14,
+      "mobile_verified": 0,
+      "mobile_drift": [],
+      "functions": [
+        "create_vertex_buffer",
+        "create_index_buffer",
+        "initialize_direct3d_renderer_defaults",
+        "release_direct3d_renderer_resources",
+        "direct3d_renderer_set_cull_mode",
+        "initialize_d3d8_device",
+        "reset_direct3d_render_state",
+        "release_direct3d_device_interfaces",
+        "initialize_game_window_and_input_wrapper",
+        "initialize_game_window_and_input",
+        "release_global_direct3d_renderer_resources",
+        "uninitialize_input_devices",
+        "end_overlay_render_state",
+        "begin_overlay_render_state"
+      ],
+      "candidate": "GDX.o",
+      "note": "create_index_buffer reports DX_INDEXBUFFER_MAX from GDX.h; GDX sorts between Game and GL"
+    },
+    {
+      "object": "GL.o",
+      "between": null,
+      "start": "0x411fa0",
+      "last_function": "0x414500",
+      "function_count": 25,
+      "mobile_verified": 14,
+      "mobile_drift": [
+        {
+          "name": "get_or_append_object_texture_group_vertex",
+          "mobile_object": "RObject.o"
+        },
+        {
+          "name": "build_object_texture_group_buffers",
+          "mobile_object": "RObject.o"
+        }
+      ],
+      "functions": [
+        "render_camera",
+        "refresh_object_vertex_buffer",
+        "render_object_toon",
+        "render_object",
+        "update_display_mode_view_state",
+        "initialize_direct3d_renderer",
+        "set_cull_mode",
+        "load_registered_texture_refs",
+        "load_registered_texture_ref",
+        "set_blend_mode",
+        "set_immediate_blend_mode",
+        "draw_textured_quad_immediate",
+        "render_game_frame_scene",
+        "present_backbuffer",
+        "begin_sprite_depth_render_state",
+        "end_sprite_depth_render_state",
+        "configure_sprite_render_state",
+        "draw_sprite_quad",
+        "get_or_append_object_texture_group_vertex",
+        "build_object_texture_group_buffers",
+        "set_object_color",
+        "set_fullscreen_mode",
+        "direct3d_renderer_set_fullscreen_mode",
+        "restore_texture_ref_stage_states",
+        "bind_texture_ref"
+      ]
+    },
+    {
+      "object": null,
+      "between": [
+        "GL.o",
+        "Golb.o"
+      ],
+      "start": "0x4145c0",
+      "last_function": "0x414650",
+      "function_count": 3,
+      "mobile_verified": 0,
+      "mobile_drift": [],
+      "functions": [
+        "replace_object_group_texture_refs",
+        "query_direct3d_device_caps",
+        "reset_render_counters"
+      ]
+    },
+    {
+      "object": "Golb.o",
+      "between": null,
+      "start": "0x414670",
+      "last_function": "0x415ef0",
+      "function_count": 9,
+      "mobile_verified": 9,
+      "mobile_drift": [],
+      "functions": [
+        "kill_golb",
+        "update_golb_ai",
+        "create_golb",
+        "spawn_golb_trail_sprite",
+        "spawn_golb_smoke",
+        "spawn_golb_impact_sprite",
+        "initialize_enemy_manager",
+        "search_path_for_golb",
+        "append_subgame_contact_target"
+      ]
+    },
+    {
+      "object": "GUI.o",
+      "between": null,
+      "start": "0x415f50",
+      "last_function": "0x416370",
+      "function_count": 3,
+      "mobile_verified": 3,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_challenge_setup_screen",
+        "destroy_challenge_setup_screen",
+        "update_challenge_setup_screen"
+      ]
+    },
+    {
+      "object": "Help.o",
+      "between": null,
+      "start": "0x416800",
+      "last_function": "0x4168d0",
+      "function_count": 3,
+      "mobile_verified": 3,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_help_screen",
+        "destroy_help_screen",
+        "update_help_screen"
+      ]
+    },
+    {
+      "object": "HighScore.o",
+      "between": null,
+      "start": "0x416910",
+      "last_function": "0x417b50",
+      "function_count": 12,
+      "mobile_verified": 11,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_high_score_screen",
+        "destroy_high_score_screen",
+        "update_high_score_screen",
+        "initialize_high_score_tables",
+        "load_high_scores_from_file",
+        "add_arcade_high_score",
+        "add_survival_high_score",
+        "add_time_trial_high_score",
+        "save_high_scores_and_config",
+        "initialize_high_score_entry",
+        "mini_delete_high_score_entry",
+        "exit_high_score_screen"
+      ]
+    },
+    {
+      "object": "Intro.o",
+      "between": null,
+      "start": "0x417bc0",
+      "last_function": "0x417eb0",
+      "function_count": 2,
+      "mobile_verified": 2,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_new_game_menu",
+        "update_new_game_menu"
+      ]
+    },
+    {
+      "object": "Landscape.o",
+      "between": null,
+      "start": "0x4182e0",
+      "last_function": "0x418ac0",
+      "function_count": 5,
+      "mobile_verified": 4,
+      "mobile_drift": [],
+      "functions": [
+        "reset_landscape_manager",
+        "load_landscape_script_by_name",
+        "activate_landscape_entry",
+        "clear_active_landscape_entries",
+        "update_active_landscape_entry"
+      ]
+    },
+    {
+      "object": "LoadingBar.o",
+      "between": null,
+      "start": "0x418b50",
+      "last_function": "0x418e80",
+      "function_count": 3,
+      "mobile_verified": 3,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_loading_screen",
+        "destroy_loading_screen",
+        "update_loading_screen"
+      ]
+    },
+    {
+      "object": "Logo.o",
+      "between": null,
+      "start": "0x419110",
+      "last_function": "0x419a90",
+      "function_count": 5,
+      "mobile_verified": 5,
+      "mobile_drift": [],
+      "functions": [
+        "open_logo",
+        "initialize_intro_screen",
+        "destroy_intro_screen",
+        "update_intro_screen",
+        "update_intro_logo_renderable"
+      ]
+    },
+    {
+      "object": "MainMenu.o",
+      "between": null,
+      "start": "0x419b30",
+      "last_function": "0x419e00",
+      "function_count": 3,
+      "mobile_verified": 3,
+      "mobile_drift": [],
+      "functions": [
+        "destroy_main_menu",
+        "initialize_main_menu",
+        "update_main_menu"
+      ]
+    },
+    {
+      "object": "ObjectProc.o",
+      "between": null,
+      "start": "0x419f50",
+      "last_function": "0x41aa50",
+      "function_count": 12,
+      "mobile_verified": 12,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_duplicate_vertices",
+        "clean_duplicate_vertices",
+        "sort_object_faces_by_texture_group",
+        "disable_object_rendering",
+        "initialize_textured_backdrop_quad",
+        "raise_backdrop_quad_edge_pair",
+        "initialize_backdrop_slice_quad",
+        "initialize_backdrop_corner_quad",
+        "sample_smtrack_heightmap",
+        "initialize_backdrop_tile_quad",
+        "initialize_object_distort",
+        "apply_distort_to_object"
+      ]
+    },
+    {
+      "object": "Options.o",
+      "between": null,
+      "start": "0x41ace0",
+      "last_function": "0x41b070",
+      "function_count": 4,
+      "mobile_verified": 4,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_options_menu",
+        "destroy_options_menu",
+        "update_options_menu",
+        "apply_audio_config_volumes"
+      ]
+    },
+    {
+      "object": "Path.o",
+      "between": null,
+      "start": "0x41b0a0",
+      "last_function": "0x42e720",
+      "function_count": 43,
+      "mobile_verified": 43,
+      "mobile_drift": [],
+      "functions": [
+        "get_path_nodes",
+        "initialize_looptheloop_path_template_pair",
+        "initialize_looptheloopw_path_template_pair",
+        "initialize_loopout_path_template_pair",
+        "initialize_hump_path_template_pair",
+        "initialize_dump_path_template_pair",
+        "initialize_dip_path_template_pair",
+        "initialize_screw_path_template_pair",
+        "initialize_slalom_path_template_pair",
+        "initialize_worm_path_template_pair",
+        "begin_track_attachment_follow_state",
+        "update_track_attachment_follow_state",
+        "initialize_path_follow_golb",
+        "traverse_path_follow_golb",
+        "mirror_path",
+        "initialize_slalombig_path_template_pair",
+        "initialize_sweep_path_template_pair",
+        "initialize_snake_path_template_pair",
+        "initialize_supertramp_path_template_pair",
+        "build_track_fringe_mesh",
+        "build_track_fringe_supertramp_mesh",
+        "initialize_slalomdouble_path_template_pair",
+        "initialize_p_path_template_pair",
+        "initialize_start_path_template_pair",
+        "initialize_turnover_path_template_pair",
+        "initialize_turnoverdouble_path_template_pair",
+        "initialize_turnunder_path_template_pair",
+        "initialize_wibble_path_template_pair",
+        "initialize_invert_path_template_pair",
+        "find_segment_path_index_by_name",
+        "initialize_halfpipe_path_template_pair",
+        "initialize_twister_path_template_pair",
+        "initialize_twister2_path_template_pair",
+        "compute_kind42_attachment_transform",
+        "get_path_position_at_node",
+        "initialize_loopbow_path_template_pair",
+        "calc_path_length_z",
+        "try_enter_track_attachment_from_swept_motion",
+        "is_point_inside_track_attachment",
+        "initialize_toad_path_template_pair",
+        "initialize_hill_valley_path_template_pair",
+        "initialize_sbend_path_template_pair",
+        "initialize_cage2_path_template_pair"
+      ]
+    },
+    {
+      "object": null,
+      "between": [
+        "Path.o",
+        "Register.o"
+      ],
+      "start": "0x42f0a0",
+      "last_function": "0x42f0a0",
+      "function_count": 1,
+      "mobile_verified": 0,
+      "mobile_drift": [],
+      "functions": [
+        "load_png_image"
+      ]
+    },
+    {
+      "object": "Register.o",
+      "between": null,
+      "start": "0x42f470",
+      "last_function": "0x42f5b0",
+      "function_count": 4,
+      "mobile_verified": 4,
+      "mobile_drift": [],
+      "functions": [
+        "load_config_file",
+        "load_file_bytes_from_path",
+        "save_config_file",
+        "validate_config_tail_stub"
+      ]
+    },
+    {
+      "object": "RObject.o",
+      "between": null,
+      "start": "0x42f5c0",
+      "last_function": "0x430d90",
+      "function_count": 31,
+      "mobile_verified": 27,
+      "mobile_drift": [],
+      "functions": [
+        "is_bod_after_sprites",
+        "set_bod_object",
+        "initialize_bod_base",
+        "initialize_renderable_bod",
+        "apply_bod_position",
+        "initialize_object_constructor_thunk",
+        "initialize_object",
+        "request_object_vertices",
+        "copy_object_vertices",
+        "request_object_vertices_copy",
+        "request_object_facequad_normals",
+        "request_object_vertex_colours",
+        "initialize_global_temp_colour_thunk",
+        "initialize_global_temp_colour",
+        "request_object_facequads",
+        "request_object_texture_groups",
+        "initialize_object_list",
+        "build_all_objects",
+        "apply_object_toon",
+        "add_object_to_list",
+        "calc_object_bounding_box",
+        "calc_object_facequad_normals",
+        "calc_object_facequad_normals_simple",
+        "calc_object_texture_groups",
+        "advance_frame_sequence",
+        "request_object_edges",
+        "add_object_edge",
+        "calc_object_edges",
+        "rotate_object_facequad_uv_pairs",
+        "request_object_animation",
+        "replace_object_list_texture_refs"
+      ]
+    },
+    {
+      "object": null,
+      "between": [
+        "RObject.o",
+        "RShell.o"
+      ],
+      "start": "0x430e20",
+      "last_function": "0x430e30",
+      "function_count": 2,
+      "mobile_verified": 0,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_tracked_allocation_depth_thunk",
+        "initialize_tracked_allocation_depth"
+      ]
+    },
+    {
+      "object": "RShell.o",
+      "between": null,
+      "start": "0x430e40",
+      "last_function": "0x433040",
+      "function_count": 52,
+      "mobile_verified": 44,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_game_data_archive",
+        "uninitialize_game_data_archive",
+        "set_current_directory_with_drive_fallback",
+        "archive_or_file_exists",
+        "load_file_bytes_fixed_size_from_archive_or_fs",
+        "find_archive_entry",
+        "load_file_bytes_from_archive_or_fs",
+        "load_file_bytes",
+        "delete_file_path_with_directory_walk",
+        "write_file_bytes",
+        "enumerate_matching_archive_or_fs_entries",
+        "xor_archive_bytes_in_place",
+        "load_archive_index",
+        "is_archive_index_loaded",
+        "get_archive_data_base",
+        "get_archive_data_end",
+        "get_tracked_allocation_size",
+        "push_tracked_allocation",
+        "pop_tracked_allocation",
+        "allocate_tracked_memory",
+        "free_tracked_memory",
+        "free_tracked_allocations_to_mark",
+        "set_tracked_allocation_mark",
+        "report_errorf",
+        "report_warningf",
+        "report_messagef",
+        "copy_c_string",
+        "strings_equal_case_insensitive",
+        "skip_to_next_line",
+        "append_c_string",
+        "parse_next_space_delimited_token",
+        "parse_next_int32",
+        "parse_next_float32",
+        "set_input_controller_slot0_button_axes",
+        "update_input_controller_slot_button_axes",
+        "copy_active_input_controller_state",
+        "update_input_controller_pointer_region",
+        "set_input_controller_pointer_authored_xy",
+        "read_pressed_text_input_key_code",
+        "read_repeating_text_input_key_code",
+        "register_font_texture_sheet_wrapper",
+        "reset_registered_sound_sample_count",
+        "cache_music_file",
+        "play_registered_warning_sample",
+        "stop_registered_warning_sample",
+        "play_sound_effect_backend",
+        "play_voice_backend",
+        "register_sound_sample",
+        "find_registered_sound_sample_id_by_name",
+        "xor_decode_buffer_with_index",
+        "get_authored_view_width",
+        "get_authored_view_height"
+      ]
+    },
+    {
+      "object": null,
+      "between": [
+        "RShell.o",
+        "SegmentCache.o"
+      ],
+      "start": "0x433050",
+      "last_function": "0x433050",
+      "function_count": 1,
+      "mobile_verified": 0,
+      "mobile_drift": [],
+      "functions": [
+        "launch_alpha72_url"
+      ]
+    },
+    {
+      "object": "SegmentCache.o",
+      "between": null,
+      "start": "0x433060",
+      "last_function": "0x433f20",
+      "function_count": 7,
+      "mobile_verified": 0,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_track_render_cache_manager",
+        "build_track_render_caches",
+        "add_track_cache_vertex",
+        "append_track_cache_object",
+        "update_track_render_cache_rows",
+        "update_active_bod",
+        "remove_track_render_cache_bods"
+      ]
+    },
+    {
+      "object": null,
+      "between": [
+        "SegmentCache.o",
+        "Splash.o"
+      ],
+      "start": "0x433fc0",
+      "last_function": "0x433fc0",
+      "function_count": 1,
+      "mobile_verified": 0,
+      "mobile_drift": [
+        {
+          "name": "bind_subgame_owner",
+          "mobile_object": "GUI.o"
+        }
+      ],
+      "functions": [
+        "bind_subgame_owner"
+      ]
+    },
+    {
+      "object": "Splash.o",
+      "between": null,
+      "start": "0x433fd0",
+      "last_function": "0x4340f0",
+      "function_count": 3,
+      "mobile_verified": 3,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_thanks_for_playing_screen",
+        "uninit_thanks_screen",
+        "update_thanks_for_playing_screen"
+      ]
+    },
+    {
+      "object": "Star.o",
+      "between": null,
+      "start": "0x434270",
+      "last_function": "0x434800",
+      "function_count": 7,
+      "mobile_verified": 7,
+      "mobile_drift": [],
+      "functions": [
+        "destroy_star_field",
+        "open_star_field",
+        "initialize_star_field",
+        "hide_star_field",
+        "unhide_star_field",
+        "update_star_field",
+        "update_star_positions"
+      ]
+    },
+    {
+      "object": "SubGame.o",
+      "between": null,
+      "start": "0x434980",
+      "last_function": "0x447290",
+      "function_count": 191,
+      "mobile_verified": 165,
+      "mobile_drift": [
+        {
+          "name": "deserialize_compact_high_score_record",
+          "mobile_object": "HighScore.o"
+        },
+        {
+          "name": "serialize_compact_high_score_record",
+          "mobile_object": "HighScore.o"
+        }
+      ],
+      "functions": [
+        "initialize_track_colour_bank_a_thunk",
+        "initialize_track_colour_bank_a",
+        "initialize_track_colour_banks_b_c_thunk",
+        "initialize_track_colour_banks_b_c",
+        "initialize_track_colour_bank_d_thunk",
+        "initialize_track_colour_bank_d",
+        "initialize_track_colour_bank_e_thunk",
+        "initialize_track_colour_bank_e",
+        "initialize_track_colour_bank_f_thunk",
+        "initialize_track_colour_bank_f",
+        "initialize_track_colour_bank_g_thunk",
+        "initialize_track_colour_bank_g",
+        "initialize_track_colour_bank_h_thunk",
+        "initialize_track_colour_bank_h",
+        "initialize_track_colour_bank_i_thunk",
+        "initialize_track_colour_bank_i",
+        "initialize_track_colour_bank_j_thunk",
+        "initialize_track_colour_bank_j",
+        "initialize_track_colour_bank_k_thunk",
+        "initialize_track_colour_bank_k",
+        "is_neighbor_cell_solid",
+        "build_track_fringe_objects",
+        "merge_track_tile_runs",
+        "mark_track_warning_zones",
+        "promote_track_tiles_to_fringe_variants",
+        "harmonize_center_lane_floor_slide_variants",
+        "select_track_tile_edge_variants",
+        "build_track_colours",
+        "set_subgame_features",
+        "switch_track_mirror",
+        "populate_runtime_track_cells_from_segments",
+        "normalize_segment_glyph_for_track_flags",
+        "initialize_subgame",
+        "reset_subgame",
+        "update_progress_bar",
+        "rebuild_track_runtime_from_segments",
+        "calc_slider_to_rate",
+        "build_subgame_level",
+        "complete_subgame",
+        "destroy_subgame",
+        "update_subgame",
+        "is_sub_loc_floor",
+        "is_sub_loc_ramp",
+        "is_sub_loc_empty",
+        "is_sub_loc_slide",
+        "refresh_fringe_object_draw_list",
+        "remove_sub_loc",
+        "update_sub_loc",
+        "health_collect_particles",
+        "set_subgoldy_shoot_flags",
+        "shoot_subgoldy",
+        "end_jetpack_hover",
+        "update_jetpack_gauge",
+        "uninit_jet_particles",
+        "initialize_jet_particles",
+        "update_jet_particles",
+        "initialize_jetpack_gauge",
+        "arm_jetpack_gauge",
+        "initialize_subgoldy",
+        "show_subgoldy_lives",
+        "begin_post_follow_carryover",
+        "play_subgoldy_shoot_sfx",
+        "update_subgoldy",
+        "initialize_subgoldy_ghost",
+        "set_subgoldy_ghost_z",
+        "get_track_grid_cell_at_world_position",
+        "get_track_runtime_cell_at_world_z",
+        "sample_track_floor_height_at_position",
+        "spawn_garbage_smoke_particle",
+        "spawn_track_health_pickup",
+        "spawn_track_speedup",
+        "spawn_track_jetpack_pickup",
+        "spawn_track_garbage_hazard",
+        "spawn_slug_hazard",
+        "spawn_track_ring_or_special_effect",
+        "initialize_ring_or_special_effect_particles",
+        "emit_ring_star_shower",
+        "update_ring_or_special_effect_particle",
+        "update_ring_or_special_effect_parent",
+        "update_track_health_pickup",
+        "update_track_speedup",
+        "update_track_jetpack_pickup",
+        "destroy_garbage_hazard",
+        "update_garbage_hazard",
+        "update_slug_voice_ai",
+        "play_slug_voice",
+        "initialize_slug_voice_manager",
+        "update_slug_voice_manager",
+        "hit_slug_hazard",
+        "explode_slug_hazard",
+        "kill_slug_hazard",
+        "update_slug_hazard_ai",
+        "deserialize_compact_high_score_record",
+        "serialize_compact_high_score_record",
+        "add_subgoldy_score",
+        "clear_subgoldy_score_buckets",
+        "display_score_stats",
+        "set_subgame_rate",
+        "calc_subgame_rate",
+        "uninit_pause_menu",
+        "initialize_pause_menu",
+        "update_pause_menu",
+        "advance_blink_random",
+        "initialize_blink_random",
+        "remove_subgame_bods",
+        "update_barrier_ai",
+        "initialize_damage_gauge",
+        "update_damage_gauge",
+        "apply_damage_gauge_delta",
+        "initialize_salt_hazard_pool",
+        "spawn_salt_hazard",
+        "initialize_sub_lazer_pool",
+        "spawn_sub_lazer_projectile",
+        "deactivate_sub_lazer_projectile",
+        "update_sub_lazer_projectile",
+        "shoot_sub_lazer_pool",
+        "zero_timer_counters",
+        "advance_timer_counters",
+        "update_salt_hazard",
+        "update_banner",
+        "firework_shoot",
+        "update_smtracks",
+        "initialize_subgoldy_resurrect",
+        "update_subgoldy_resurrect",
+        "get_track_skirt_color",
+        "initialize_click_start",
+        "update_click_start",
+        "initialize_vapour",
+        "reset_vapour",
+        "add_vapour_point",
+        "update_vapour",
+        "update_snail_presentation",
+        "release_snail_weapons",
+        "update_row_model",
+        "update_track_parcels",
+        "initialize_track_parcel_slots",
+        "allocate_track_parcel_slot",
+        "update_track_parcel",
+        "load_frontend_level_by_mode_and_index",
+        "spawn_track_parcel",
+        "initialize_parcel_set_bucket_pool_thunk",
+        "initialize_parcel_set_bucket_pool",
+        "initialize_zero_parcel_bucket_pool_thunk",
+        "initialize_zero_parcel_bucket_pool",
+        "place_parcels_on_track",
+        "place_challenge_parcels_on_track",
+        "project_position_onto_track_attachment",
+        "dispatch_cutscene_animation",
+        "set_weapon_animation",
+        "initialize_anim_manager",
+        "update_anim_manager",
+        "initialize_squidge",
+        "start_squidge_y",
+        "start_squidge_z",
+        "update_squidge",
+        "initialize_invincible_shell",
+        "start_invincible_shell",
+        "update_invincible_shell",
+        "handle_subgoldy_collisions",
+        "kill_subgoldy",
+        "set_snail_jetpack",
+        "set_snail_weapon",
+        "build_snail_world_hotspots",
+        "extract_snail_local_hotspots",
+        "update_times_up",
+        "uninit_times_up",
+        "show_times_up_message",
+        "hide_gameplay_scores",
+        "unhide_gameplay_scores",
+        "initialize_snail_skin",
+        "update_snail_skin_transition",
+        "change_snail_skin",
+        "update_subgame_camera",
+        "initialize_cutscene_ai",
+        "initialize_cameraman",
+        "update_cameraman",
+        "update_cutscene",
+        "initialize_subgoldy_death",
+        "initialize_warning",
+        "uninit_warning",
+        "start_warning",
+        "stop_warning",
+        "stop_warning_sample",
+        "update_warning",
+        "get_track_cell_row_index",
+        "initialize_fringe_manager",
+        "allocate_fringe_object",
+        "uninit_nuke",
+        "initialize_nuke",
+        "update_nuke",
+        "recycle_bod_to_free_list"
+      ]
+    },
+    {
+      "object": "Subtrack.o",
+      "between": null,
+      "start": "0x447300",
+      "last_function": "0x448900",
+      "function_count": 5,
+      "mobile_verified": 5,
+      "mobile_drift": [],
+      "functions": [
+        "copy_segment_definition_to_level_slot",
+        "load_level_definition_file",
+        "load_builtin_segment_definitions",
+        "load_segment_definitions",
+        "load_level_definitions"
+      ]
+    },
+    {
+      "object": "TimeTrial.o",
+      "between": null,
+      "start": "0x448960",
+      "last_function": "0x448960",
+      "function_count": 1,
+      "mobile_verified": 1,
+      "mobile_drift": [],
+      "functions": [
+        "format_time_trial_string"
+      ]
+    },
+    {
+      "object": "Tips.o",
+      "between": null,
+      "start": "0x4489e0",
+      "last_function": "0x448d80",
+      "function_count": 7,
+      "mobile_verified": 7,
+      "mobile_drift": [],
+      "functions": [
+        "kill_tip_widgets",
+        "initialize_tip",
+        "update_tip",
+        "initialize_tip_manager",
+        "uninit_tips",
+        "enqueue_tip_message",
+        "update_tip_manager"
+      ]
+    },
+    {
+      "object": "Tutorial.o",
+      "between": null,
+      "start": "0x448da0",
+      "last_function": "0x448de0",
+      "function_count": 3,
+      "mobile_verified": 3,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_tutorial",
+        "uninit_tutorial",
+        "update_tutorial"
+      ]
+    },
+    {
+      "object": "Voice.o",
+      "between": null,
+      "start": "0x448df0",
+      "last_function": "0x449410",
+      "function_count": 9,
+      "mobile_verified": 9,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_voice_set",
+        "shuffle_voice_set",
+        "reset_voice_manager",
+        "initialize_voice_manager",
+        "update_voice_manager",
+        "play_voice_manager",
+        "update_voice_set",
+        "play_voice_set",
+        "is_voice_playing"
+      ]
+    },
+    {
+      "object": null,
+      "between": [
+        "Voice.o",
+        "BassPlay.o"
+      ],
+      "start": "0x449460",
+      "last_function": "0x449960",
+      "function_count": 8,
+      "mobile_verified": 0,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_bass_audio_backend",
+        "uninitialize_bass_audio_backend",
+        "ensure_music_stream_from_path",
+        "prepare_music_stream_reload_if_path_changed",
+        "play_music_stream_from_bytes",
+        "stop_music_stream",
+        "load_registered_sound_sample_from_path",
+        "load_registered_sound_sample_from_bytes"
+      ]
+    },
+    {
+      "object": "BassPlay.o",
+      "between": null,
+      "start": "0x4499a0",
+      "last_function": "0x449a60",
+      "function_count": 5,
+      "mobile_verified": 5,
+      "mobile_drift": [],
+      "functions": [
+        "play_registered_sound_sample_scaled",
+        "stop_sound_sample_handle",
+        "stop_registered_sound_sample",
+        "is_registered_sound_sample_playing",
+        "play_registered_sound_sample_default"
+      ]
+    },
+    {
+      "object": null,
+      "between": [
+        "BassPlay.o",
+        "Font.o"
+      ],
+      "start": "0x449a80",
+      "last_function": "0x449c00",
+      "function_count": 9,
+      "mobile_verified": 0,
+      "mobile_drift": [],
+      "functions": [
+        "play_registered_sound_sample_backend",
+        "play_registered_sound_sample_scaled_panned",
+        "set_global_sample_volume_config",
+        "set_global_stream_volume_config",
+        "stop_audio_backend",
+        "resume_audio_backend_if_paused",
+        "pause_audio_backend_if_running",
+        "set_audio_normalization_scales",
+        "debug_report_stub"
+      ]
+    },
+    {
+      "object": "Font.o",
+      "between": null,
+      "start": "0x449c10",
+      "last_function": "0x44ae10",
+      "function_count": 18,
+      "mobile_verified": 14,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_global_font3d_bods_thunk",
+        "initialize_global_font3d_bods",
+        "initialize_global_font_queue_colors_thunk",
+        "initialize_global_font_queue_colors",
+        "initialize_font_wave_state",
+        "update_font_wave_state",
+        "font_slot_index_for_char",
+        "measure_font_text_width",
+        "register_font_texture_sheet",
+        "draw_font_text_instance",
+        "draw_queued_font_quad_instance",
+        "draw_font_text_queue",
+        "queue_font_text_instance",
+        "queue_axis_aligned_textured_quad",
+        "queue_axis_aligned_textured_quad_uv",
+        "queue_textured_quad_corners",
+        "layout_and_queue_wrapped_font_text",
+        "initialize_font3d_objects"
+      ]
+    },
+    {
+      "object": null,
+      "between": [
+        "Font.o",
+        "Keyboard.o"
+      ],
+      "start": "0x44afc0",
+      "last_function": "0x44b770",
+      "function_count": 6,
+      "mobile_verified": 0,
+      "mobile_drift": [],
+      "functions": [
+        "query_directx_runtime_version",
+        "enumerate_input_controllers",
+        "append_enumerated_input_controller_callback",
+        "configure_input_controller_axis_range_callback",
+        "update_joystick_input",
+        "release_input_controllers"
+      ]
+    },
+    {
+      "object": "Keyboard.o",
+      "between": null,
+      "start": "0x44b7d0",
+      "last_function": "0x44bb60",
+      "function_count": 5,
+      "mobile_verified": 5,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_keyboard_input",
+        "update_keyboard_input",
+        "is_key_pressed_edge",
+        "is_key_down",
+        "release_keyboard_input"
+      ]
+    },
+    {
+      "object": "Mouse.o",
+      "between": null,
+      "start": "0x44bbb0",
+      "last_function": "0x44c400",
+      "function_count": 12,
+      "mobile_verified": 10,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_mouse_authored_scale_from_clip_rect",
+        "update_mouse_authored_scale",
+        "resolve_uncaptured_cursor_sensitivity_scale",
+        "update_mouse",
+        "set_hide_system_cursor_flag",
+        "click_mouse_screen",
+        "convert_mouse_screen_xy",
+        "release_mouse_input",
+        "initialize_mouse_input",
+        "is_mouse_captured",
+        "capture_mouse_cursor",
+        "release_mouse_cursor"
+      ]
+    },
+    {
+      "object": "ObjectText.o",
+      "between": null,
+      "start": "0x44c420",
+      "last_function": "0x44c420",
+      "function_count": 1,
+      "mobile_verified": 1,
+      "mobile_drift": [],
+      "functions": [
+        "load_object_definition"
+      ]
+    },
+    {
+      "object": "RMaths.o",
+      "between": null,
+      "start": "0x44c870",
+      "last_function": "0x44dc90",
+      "function_count": 57,
+      "mobile_verified": 52,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_global_identity_matrix_thunk",
+        "initialize_global_identity_matrix",
+        "convert_math_type32_to_16",
+        "convert_math_type16_to_32",
+        "initialize_math_random_table",
+        "next_math_random_value",
+        "j_rand",
+        "initialize_trigonometry_tables",
+        "set_math_random_seed",
+        "cosine",
+        "sine",
+        "arccosine",
+        "atan2_positive",
+        "square_root",
+        "multiply_vector_by_matrix_copy",
+        "dot_vectors",
+        "dot_vector",
+        "multiply_vector_by_matrix",
+        "rotate_vector_by_matrix",
+        "normalize_vector",
+        "vector_magnitude",
+        "normalize_vector_from_source",
+        "cross_vectors",
+        "destroy_cross_vectors_static_result",
+        "initialize_uniform_scale_matrix",
+        "rotate_matrix_world_x",
+        "rotate_matrix_world_y",
+        "rotate_matrix_world_z",
+        "initialize_matrix_from_values",
+        "multiply_matrices",
+        "multiply_matrix_assign",
+        "multiply_matrix",
+        "premultiply_matrix_in_place",
+        "set_matrix_identity",
+        "set_matrix_rotation_identity",
+        "invert_matrix_in_place",
+        "invert_matrix_from_source",
+        "orthogonalize_matrix",
+        "set_matrix_z_direction",
+        "look_at_point",
+        "initialize_quaternion_from_axis",
+        "initialize_axis_from_quaternion",
+        "initialize_quaternion_from_matrix",
+        "initialize_matrix_from_quaternion",
+        "interpolate_matrix_rotation",
+        "linear_interpolate_matrix",
+        "noop_this_constructor",
+        "set_color_rgba",
+        "set_color_alpha",
+        "set_color_grayscale",
+        "store_color4f",
+        "set_color_rgb",
+        "pack_color_rgba_u8",
+        "set_color_white",
+        "set_color_black",
+        "random_signed_float_below",
+        "random_float_below"
+      ]
+    },
+    {
+      "object": "RSound.o",
+      "between": null,
+      "start": "0x44dcb0",
+      "last_function": "0x44de30",
+      "function_count": 6,
+      "mobile_verified": 6,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_sound_bank",
+        "play_sound_effect_at_position",
+        "play_sound_effect",
+        "play_sound_effect_scaled",
+        "play_warning_sample_backend",
+        "stop_warning_sample_handle"
+      ]
+    },
+    {
+      "object": "RSprite.o",
+      "between": null,
+      "start": "0x44de40",
+      "last_function": "0x44e580",
+      "function_count": 16,
+      "mobile_verified": 12,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_global_sprite_pool_colors_thunk",
+        "initialize_global_sprite_pool_colors",
+        "initialize_global_sprite_sentinel_color_thunk",
+        "initialize_global_sprite_sentinel_color",
+        "initialize_sprite",
+        "update_sprite",
+        "register_sprite_texture",
+        "initialize_sprite_manager",
+        "kill_sprite",
+        "allocate_sprite",
+        "kill_game_sprites",
+        "build_sprite_tail",
+        "set_sprite_manager_paused",
+        "set_sprite_texture_ref",
+        "get_sprite_texture",
+        "get_sprite_tga"
+      ]
+    },
+    {
+      "object": "RString.o",
+      "between": null,
+      "start": "0x44e5a0",
+      "last_function": "0x44e710",
+      "function_count": 6,
+      "mobile_verified": 6,
+      "mobile_drift": [],
+      "functions": [
+        "ascii_upper_if_lowercase",
+        "rstrcpy_checked_ascii",
+        "find_case_insensitive_substring",
+        "advance_to_next_crlf_line",
+        "strings_equal_case_insensitive_path",
+        "parse_next_signed_int"
+      ]
+    },
+    {
+      "object": "RTexture.o",
+      "between": null,
+      "start": "0x44e780",
+      "last_function": "0x44e810",
+      "function_count": 3,
+      "mobile_verified": 3,
+      "mobile_drift": [],
+      "functions": [
+        "sample_tga_pixel_rgb",
+        "initialize_texture_list",
+        "get_or_create_texture_ref"
+      ]
+    },
+    {
+      "object": "Viewport.o",
+      "between": null,
+      "start": "0x44e900",
+      "last_function": "0x44e920",
+      "function_count": 2,
+      "mobile_verified": 2,
+      "mobile_drift": [],
+      "functions": [
+        "attach_render_camera_source",
+        "initialize_render_camera_slot"
+      ]
+    },
+    {
+      "object": null,
+      "between": [
+        "Viewport.o",
+        "$"
+      ],
+      "start": "0x44fd90",
+      "last_function": "0x451ad9",
+      "function_count": 3,
+      "mobile_verified": 0,
+      "mobile_drift": [],
+      "functions": [
+        "initialize_translation_matrix",
+        "build_perspective_projection_matrix",
+        "build_camera_view_matrix"
+      ]
+    }
+  ]
+}
