@@ -330,3 +330,29 @@ The original build cannot have used the SP5 frontend this match was made
 with (see the [compiler identification](../../compiler-identification-20261005.md)). Under the corrected baseline, msvc6.3, the unchanged
 source scores 99.06% (99.53% before); the source shape was fitted to the newer frontend and
 needs rework under msvc6.3.
+
+## 2026-10-06 byte-exact under msvc6.3
+
+Three changes on the current source give **100%**, `425/425`, prefix 425,
+body byte exact, 7 clean references:
+
+- `Vec3* anchor = &source_cell->position;` moves down to its use in the
+  terminal position. Its first IL reference, and with it the slot id that
+  ranks `*anchor` in the X fadd, moves after `forward`; native then loads
+  `anchor.x` first (99.06 → 99.53%, prefix 107 → 327).
+- `transform.basis_right *= lateral_scale` in both branches, as the
+  2026-09-26 grid found: no explicit `.y` read comes before `local_x`, so
+  the Y lane loads the field first as native.
+- `local_x` is assigned inside the X lane of the right-offset product,
+  `right_offset.x = transform.basis_right.x * (local_x = input_position->x -
+  center_x)`, so `.x` is read before `local_x` exists and X keeps the scale
+  first. Under msvc6.5 this form also needed the six-record knob; under
+  msvc6.3 the anchor placement alone puts the terminal fadd right.
+
+The in-expression assignment was set aside on 2026-09-26 as unusual. It is
+retained now on the same terms as explode_slug_hazard's `(speed =
+game->subgame_rate)`: ordinary C, and no tested plainer spelling works.
+Repeating the scale expression per lane (98.82%), naming `local_x` after the
+X lane (99.53%), and the named `basis_right * local_x` product (99.53%) all
+miss. Writing every basis publish as a member copy is 100% normalized but
+swaps one SIB byte, so the pointer publishes stay.

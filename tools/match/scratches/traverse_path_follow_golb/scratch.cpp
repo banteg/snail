@@ -38,12 +38,12 @@ int cRPathFollowGolb::Traverse(float path_factor, Vec3& position, Vec3* velocity
                 float carry = (delta + launch_template->width_or_scale);
                 AttachmentSample* terminal =
                     &launch_template->secondary_samples[count];
-                Vec3* anchor = &source_cell->position;
 
                 Vec3 forward;
                 forward.x = terminal[-1].transform.basis_forward.x * carry;
                 forward.y = terminal[-1].transform.basis_forward.y * carry;
                 forward.z = terminal[-1].transform.basis_forward.z * carry;
+                Vec3* anchor = &source_cell->position;
                 Vec3 terminal_position = (*anchor + terminal[-1].transform.position) + forward;
                 position = terminal_position;
                 position.x = old_x;
@@ -124,9 +124,7 @@ int cRPathFollowGolb::Traverse(float path_factor, Vec3& position, Vec3* velocity
             active_sample->delta_dir_to_next.z * progress
             + source_cell->position.z
             + active_sample->transform.position.z;
-        transform.basis_right.x *= lateral_scale;
-        transform.basis_right.y *= lateral_scale;
-        transform.basis_right.z *= lateral_scale;
+        transform.basis_right *= lateral_scale;
         vertical_offset = motion->y + vertical_offset;
         output_position.x = transform.position.x;
         output_position.y = transform.position.y;
@@ -165,14 +163,15 @@ int cRPathFollowGolb::Traverse(float path_factor, Vec3& position, Vec3* velocity
             transform.LinearInterpolate(from, to, alpha);
         }
 
-        transform.basis_right.x *= lateral_scale;
-        transform.basis_right.y *= lateral_scale;
-        transform.basis_right.z *= lateral_scale;
+        transform.basis_right *= lateral_scale;
         vertical_offset = motion->y + vertical_offset;
 
         Vec3* output = &output_position;
-        float local_x = input_position->x - center_x;
-        Vec3 right_offset = transform.basis_right * local_x;
+        Vec3 right_offset;
+        float local_x;
+        right_offset.x = transform.basis_right.x * (local_x = input_position->x - center_x);
+        right_offset.y = transform.basis_right.y * local_x;
+        right_offset.z = transform.basis_right.z * local_x;
 
         Vec3 result = right_offset + base;
         *output = result;

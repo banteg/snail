@@ -417,8 +417,8 @@ from native and are explained by a cut or by the tuple count:
 | Function | Finding |
 | --- | --- |
 | initialize_looptheloopw_path_template_pair | window 9's cut needs to move 2 tuples earlier; two single-use `float top = curve_source` copies do it (99.87 → 100.00% normalized, one known SIB byte left) |
-| traverse_path_follow_golb, update_track_attachment_follow_state | one FROUND between `carry`'s `fadd` and its `fld st(0)` dup reproduces native (traverse 99.29 → 99.53% with a single-use sum), but only through an implausible copy local, so it is not retained |
-| release_snail_weapons | needs about 8 fewer tuples in window 1; out of reach |
+| traverse_path_follow_golb, update_track_attachment_follow_state | one FROUND between `carry`'s `fadd` and its `fld st(0)` dup reproduces native; traverse got it from `float carry = (delta + ...)` and is **byte-exact under msvc6.3** (2026-10-06, see its NOTES) |
+| release_snail_weapons | needed about 8 fewer tuples in window 1; byte-exact under msvc6.3 through the random macros (row above) |
 | initialize_dip_path_template_pair | the early `mov [esp+0x20], edi` is a stack-home versus spill placement, i.e. register allocation |
 | initialize_tip | the SetBelow load and push order needs an alias edge from the push; not a cut |
 | initialize_hill_valley_path_template_pair | a pseudo tuple (FROUND, unit class 0) cannot issue while an `imul` holds every pipe, so the mesh Z spill waited 10 cycles; storing Z as a member instead of a constructor argument removes that FROUND (99.85 → 100.00% normalized, SIB bytes left) |
