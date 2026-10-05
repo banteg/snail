@@ -3,8 +3,6 @@
 [![Game & Engine progress](https://decomp.dev/banteg/snail.svg?mode=shield&category=game&label=Game%20%26%20Engine)](https://decomp.dev/banteg/snail?category=game)
 [![Full-executable progress](https://decomp.dev/banteg/snail.svg?mode=shield&label=Full%20executable)](https://decomp.dev/banteg/snail)
 
-[Game & Engine progress](https://decomp.dev/banteg/snail?category=game) ·
-[Full-executable progress](https://decomp.dev/banteg/snail) ·
 [Public reporting policy](analysis/progress/README.md) ·
 [Library and ownership findings](analysis/ownership/README.md)
 
