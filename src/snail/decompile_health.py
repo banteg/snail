@@ -168,3 +168,32 @@ def evaluate_decompile_health_checks(
         "passed": failing == 0,
         "checks": check_results,
     }
+
+
+DECOMPILE_LANES = ("binja", "ida")
+
+
+def export_artifact_name(address: int, name: str) -> str:
+    return f"{address:08x}-{name}.c"
+
+
+def decompile_export_coverage(
+    *,
+    root: Path,
+    functions: tuple[tuple[int, str], ...],
+) -> dict[str, list[str]]:
+    """Manifest functions with no tracked export, per decompiler lane.
+
+    A lane index only records what one run exported, so its mismatch count
+    stays zero when functions were never exported; check the files instead.
+    """
+    missing: dict[str, list[str]] = {}
+    for lane in DECOMPILE_LANES:
+        directory = root / lane / "functions"
+        present = {path.name for path in directory.iterdir()} if directory.is_dir() else set()
+        missing[lane] = [
+            name
+            for address, name in functions
+            if export_artifact_name(address, name) not in present
+        ]
+    return missing

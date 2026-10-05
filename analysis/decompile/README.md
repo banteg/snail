@@ -11,15 +11,18 @@ Purpose:
 
 Layout:
 
-- `binja/functions/`: Binary Ninja decompile exports for every named manifest function
+- `binja/functions/`: Binary Ninja decompile exports for named manifest functions
 - `binja/index.json`: Binary Ninja export index
-- `ida/functions/`: IDA pseudocode exports for every named manifest function
+- `ida/functions/`: IDA pseudocode exports for named manifest functions
 - `ida/index.json`: IDA export index
 - `android/functions/`: Ghidra exports keyed by Android Itanium symbols
 - `android/index.json`: Android symbol/decompile metadata and status
 - `ios/functions/`: Ghidra exports keyed by iPhone Itanium symbols
 - `ios/index.json`: iPhone symbol/decompile metadata and status
-- `index.json`: top-level refresh summary, including combined mismatch counts
+- `index.json`: top-level refresh summary, including combined mismatch counts and
+  tree-wide coverage (`*_exported`, `*_missing_count`, `*_missing`); manifest
+  functions without an export fail `--strict` in both the exporter and
+  `tools/check_decompile_health.py`
 
 The Windows Binary Ninja and IDA lanes are curated by
 `gameplay-functions.json`. The mobile lanes intentionally cover every Itanium

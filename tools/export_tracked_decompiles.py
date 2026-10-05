@@ -13,6 +13,7 @@ SRC_ROOT = REPO_ROOT / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
+from snail.decompile_health import decompile_export_coverage  # noqa: E402
 from snail.symbols import DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH, load_function_symbol_manifest  # noqa: E402
 
 
@@ -320,14 +321,21 @@ def main() -> int:
     ida_mismatches = _truncate_list(ida_result.get("mismatches"))
     failing_checks = _truncate_list(_failing_health_checks(health_result))
 
+    # Coverage describes the tracked tree, not just this run's selection.
+    missing = decompile_export_coverage(
+        root=root,
+        functions=tuple((f.address, f.name) for f in manifest.functions),
+    )
     summary = {
         "manifest": _display_path(manifest_path),
         "root": _display_path(root),
-        "function_count": len(selected_functions),
+        "function_count": len(manifest.functions),
         "bn_index": _display_path(bn_index),
         "ida_index": _display_path(ida_index),
-        "bn_exported": len(bn_result.get("exports", [])),
-        "ida_exported": len(ida_result.get("exported", [])),
+        "bn_exported": len(manifest.functions) - len(missing["binja"]),
+        "ida_exported": len(manifest.functions) - len(missing["ida"]),
+        "bn_missing_count": len(missing["binja"]),
+        "ida_missing_count": len(missing["ida"]),
         "bn_mismatch_count": bn_result.get("mismatch_count", 0),
         "ida_mismatch_count": ida_result.get("mismatch_count", 0),
         "total_mismatch_count": bn_result.get("mismatch_count", 0) + ida_result.get("mismatch_count", 0),
@@ -346,6 +354,10 @@ def main() -> int:
             {"name": function.name, "address": function.address_hex}
             for function in selected_functions
         ]
+    if missing["binja"]:
+        summary["bn_missing"] = _truncate_list(missing["binja"])
+    if missing["ida"]:
+        summary["ida_missing"] = _truncate_list(missing["ida"])
     if bn_mismatches:
         summary["bn_mismatches"] = bn_mismatches
     if ida_mismatches:
@@ -360,7 +372,10 @@ def main() -> int:
     (root / "index.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(summary, indent=2))
     if args.strict and (
-        summary["has_mismatches"] or summary.get("health_passed") is False and not args.skip_health_check
+        summary["has_mismatches"]
+        or missing["binja"]
+        or missing["ida"]
+        or summary.get("health_passed") is False and not args.skip_health_check
     ):
         return 1
     return 0

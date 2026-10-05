@@ -146,3 +146,17 @@ def test_load_decompile_health_checks_rejects_invalid_regex(tmp_path: Path) -> N
         assert "required_regexes[0] is not a valid regex" in str(error)
     else:
         raise AssertionError("invalid regex was accepted")
+
+
+def test_export_coverage_lists_manifest_functions_without_artifacts(tmp_path: Path) -> None:
+    from snail.decompile_health import decompile_export_coverage
+
+    for lane in ("binja", "ida"):
+        (tmp_path / lane / "functions").mkdir(parents=True)
+    (tmp_path / "binja/functions/00401000-foo.c").write_text("")
+    (tmp_path / "ida/functions/00401000-foo.c").write_text("")
+    (tmp_path / "ida/functions/00401010-bar.c").write_text("")
+    missing = decompile_export_coverage(
+        root=tmp_path, functions=((0x401000, "foo"), (0x401010, "bar")),
+    )
+    assert missing == {"binja": ["bar"], "ida": []}
