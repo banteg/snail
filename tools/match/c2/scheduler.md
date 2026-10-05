@@ -63,6 +63,9 @@ draw_textured_quad_immediate and initialize_game_assets_and_world).
 ```sh
 uv run tools/match/c2/schedtrace.py firework_shoot --line 51 [--source overlay.cpp]
 uv run tools/match/c2/schedtrace.py initialize_star_field --census      # tuples per window, FROUND lines, cut tuple
+# every window that differs from native lists the edges native's order violates:
+# a memory edge through a bare @c class is a borrow native did not have
+uv run tools/match/c2/schedtrace.py calc_object_bounding_box --source old.cpp
 uv run tools/match/c2/schedtrace.py initialize_game_assets_and_world --fields 90   # alias field records per class
 ```
 

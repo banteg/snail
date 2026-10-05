@@ -209,3 +209,15 @@ The original build cannot have used the SP5 frontend this match was made
 with (see the [compiler identification](../../compiler-identification-20261005.md)). Under the corrected baseline, msvc6.3, the unchanged
 source scores 97.66% (97.93% before); the source shape was fitted to the newer frontend and
 needs rework under msvc6.3.
+
+## 2026-10-06 violated scheduler edges (msvc6.3)
+
+`schedtrace.py` now lists the dependence edges native's order violates. In
+window 31 (lines 133-144) our `output->x` store has load edges to the
+`motion->y` and `vertical_offset` loads that native hoists above it, and native
+writes Y and Z straight to `output_position` (`[ebp+0x30]`, `fstp [ebp+0x34]`)
+while only X goes through `esi`. Spelling Y/Z as direct member stores fixes
+neither: all eight pointer/member combinations of the three stores score
+85.81-97.66% (the current all-pointer form is best), because the change moves
+the frame layout. The `output` borrow is shared with the later
+`*output = result` path, so a fix likely needs that whole region reshaped.

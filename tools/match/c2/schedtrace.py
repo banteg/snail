@@ -23,6 +23,12 @@ repeatable) or --all prints the full trace of the selected windows:
     when not yet ready) and why each higher node was passed over;
   - our emitted order next to native's order of the same instructions.
 
+Every window that differs from native also lists the edges native's order
+violates: a successor native emits before its predecessor. Such an edge exists
+in our IL but not native's, so it names the source cause directly: a memory
+edge through a bare class is a pointer borrow native did not have (as in
+calc_object_bounding_box), a register edge a different allocation.
+
 --census prints each window's tuple count (real + IL_FROUND + other pseudo),
 its FROUND lines and the tuple a window is cut after at 81, which is what a
 window-cut target counts. --fields N lists the alias field records of every
@@ -72,9 +78,16 @@ def use_backend(compiler):
     profile = rot.use_backend(compiler)
     sched = profile["scheduler"]
     FUNCTION_ENTRY_HOOK, FINAL_HOOK = rot.FUNCTION_ENTRY_HOOK, rot.FINAL_HOOK
-    GRAPH_HOOK, CYCLE_HOOK, PICK_HOOK = sched["graph_hook"], sched["cycle_hook"], sched["pick_hook"]
+    GRAPH_HOOK, CYCLE_HOOK, PICK_HOOK = (
+        sched["graph_hook"],
+        sched["cycle_hook"],
+        sched["pick_hook"],
+    )
     READY_HEAD, UNITS = sched["ready_head"], sched["units"]
-    CUR_FUNC_SYM, REGISTER_SYMBOLS = sched["current_function_symbol"], rot.REGISTER_DESCRIPTORS
+    CUR_FUNC_SYM, REGISTER_SYMBOLS = (
+        sched["current_function_symbol"],
+        rot.REGISTER_DESCRIPTORS,
+    )
     FMUL_BLOCK, ALIAS_CLASS_COUNT = sched["fmul_block"], sched["alias_class_count"]
     ALIAS_RECORDS = sched["alias_records"]
     return profile
@@ -838,6 +851,27 @@ def reordered(window):
     return real != sorted(real)
 
 
+MEMORY_EDGES = 0x20 | 0x40 | 0x80
+
+
+def violated_edges(window):
+    """Our dependence edges whose successor native emits before the predecessor."""
+    nodes = {n["id"]: n for n in window["nodes"]}
+    found = []
+    for n in window["nodes"]:
+        if n.get("native_index") is None:
+            continue
+        for edge in n["edges"]:
+            successor = nodes[edge["to"]]
+            if (
+                successor.get("native_index") is not None
+                and successor["native_index"] < n["native_index"]
+            ):
+                found.append((n, successor, edge))
+    # Memory edges first: they are the ones a source spelling can remove.
+    return sorted(found, key=lambda item: not item[2]["kind"] & MEMORY_EDGES)
+
+
 def report_window(k, window, first_line, verbose):
     nodes = {n["id"]: n for n in window["nodes"]}
     span = window_lines(window, first_line)
@@ -860,6 +894,11 @@ def report_window(k, window, first_line, verbose):
         + (", differs from native" if differs else "")
     )
     print(head)
+    if differs:
+        for before, after, edge in violated_edges(window):
+            print(
+                f"  violates #{before['seq']} {instruction(before)[:40]} -> #{after['seq']} {instruction(after)[:40]} ({edge_text(edge)})"
+            )
     if not verbose:
         return
     print(
