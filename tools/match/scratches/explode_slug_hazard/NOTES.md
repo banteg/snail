@@ -371,3 +371,22 @@ results are in `source-ownership-20260930-mutations.json` and
 `operation-boundaries-20260930-mutations.json`; receipts are appended
 to `experiments.jsonl`. These controls bound the tested ownership forms and
 their interactions; they do not establish source exhaustion or a compiler limit.
+
+## 2026-10-05 byte-exact under msvc6.3
+
+Two changes, each traced with the msvc6.3 observer:
+
+- **X lane operand order.** `scaled_velocity.x = random_velocity.x * (speed =
+  game->subgame_rate);` makes the rate the larger operand of the X product,
+  so it is loaded (`fld st(0); fmul [rv.x]`) as native
+  ([x87-order.md](../../c2/x87-order.md)).
+- **The `owner_game` load.** The /G5 scheduler cuts window 1 at 81 tuples
+  ([scheduler.md](../../c2/scheduler.md)), and that cut left the load in
+  window 2. Five precedence parentheses add codeless FROUNDs, which move the
+  cut back to just after the Y `rand()` result store. The load then opens
+  window 2 and is scheduled ahead of the `fild`, as native. The parentheses
+  group `(product) + constant` in spread, the size update, the `Grey`
+  argument and the duration sum, plus `(rate * rate)`. `schedtrace.py
+  --census` shows the window counts.
+
+Result: 100.00%, 147/147, 32 clean references, `body_byte_exact`.

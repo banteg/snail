@@ -11,9 +11,9 @@ void cRSlug::Explode()
     int count = 70;
     do {
         float spread =
-            (float)gRMathRand2() * 0.0000305175781f * 0.2f + 0.2f;
+            ((float)gRMathRand2() * 0.0000305175781f * 0.2f) + 0.2f;
         float size = (float)gRMathRand2() * 0.000030517578f;
-        size = size * 0.75f + 0.25f;
+        size = (size * 0.75f) + 0.25f;
         cRSprite* sprite = g_sprite_manager.New(1, 129, -1, -1);
         sprite->progress = 0.0f;
         sprite->flags |=
@@ -21,7 +21,7 @@ void cRSlug::Explode()
         sprite->corner_scale = size + size;
         float progress_step =
             1.0f
-            / (((float)gRMathRand2() * 0.0000305175781f * 0.5f
+            / ((((float)gRMathRand2() * 0.0000305175781f * 0.5f)
                    + 0.6f)
                 * 60.0f)
             * owner_game->subgame_rate;
@@ -29,11 +29,11 @@ void cRSlug::Explode()
         sprite->lifetime_step = 0.0f;
         sprite->progress_step = progress_step;
         sprite->color.Grey(
-            (float)gRMathRand2() * 0.0000305175781f * 0.3f + 0.7f);
+            ((float)gRMathRand2() * 0.0000305175781f * 0.3f) + 0.7f);
         sprite->size_start = size * 0.30000001f;
         sprite->size_end = size * 1.2f;
         float rate = owner_game->subgame_rate;
-        float gravity_step = rate * rate;
+        float gravity_step = (rate * rate);
         gravity_step *= -0.0099999998f;
         sprite->gravity_step = gravity_step * 2.2f;
 
@@ -46,9 +46,9 @@ void cRSlug::Explode()
         random_velocity.z =
             (float)gRMathRand2() * spread * 0.000030517578f
             + game->player.velocity.z;
-        double speed = game->subgame_rate;
+        double speed;
         Vector3 scaled_velocity;
-        scaled_velocity.x = random_velocity.x * speed;
+        scaled_velocity.x = random_velocity.x * (speed = game->subgame_rate);
         scaled_velocity.y = random_velocity.y * speed;
         scaled_velocity.z = random_velocity.z * speed;
         sprite->velocity = scaled_velocity;

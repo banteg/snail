@@ -398,7 +398,7 @@ When the order of instructions within a window differs from native:
 | create_golb | Bit-31 field records on `this`, plus a pointer-borrow class that intersects `this` | **byte-exact**: direct `flight_transform.position` and `velocity *= 2.0f` / `*= 0.8f` |
 | initialize_game_assets_and_world | 96-record class cap reached at pair 2's strips | open; native has 4 or 5 fewer `this` ranges before pair 2 (6 over-hoists the line-1724 load). Every borrowed-pointer form tried also changes registers |
 | firework_shoot | 81-tuple cut before the position copy; flag-live `lea` advance | 96.12% (3 neutral FROUNDs); still needs the copy before the decrement and 3–5 more tuples |
-| explode_slug_hazard | the owner load falls past the 81-tuple cut | open; needs 4 fewer FROUNDs, only 1 is removable without changing code |
+| explode_slug_hazard | the owner load falls past the 81-tuple cut | **byte-exact under msvc6.3** (2026-10-05): five precedence parentheses add FROUNDs so the cut falls before the load's `fild`, plus the rate defined inside the X product |
 | initialize_star_field | 81-tuple cut inside `travel_distance` | 98.79% (+1 FROUND); needs about 4 more |
 | draw_textured_quad_immediate | 81-tuple cut after the vertex-2 U load | cut confirmed (3 tuples fix it, 98.64%); the half-height spill that supplies one of them is still unexplained, so not retained |
 | release_snail_weapons | block 1: owner load height 131 beats the `fadd` at 129; block 3: 81-tuple cut | open |
