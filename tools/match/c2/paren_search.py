@@ -151,6 +151,8 @@ def search(function, *, max_groups, max_depth, limit, jobs, out=None):
                 :limit
             ]
             break
+    if not choices:
+        return {"function": function, "groups": 0}
     variants = [
         wrap(
             source,
