@@ -5317,3 +5317,32 @@ def test_ratio_counts_each_inline_table_once() -> None:
 
     tokens = _ratio_tokens(lines("jmp dword [eax*4+ADDR]", "dd L10", "dd L20", "ret", "db.lookup 0x01"))
     assert tokens == ("jmp dword [eax*4+ADDR]", "dd L10\ndd L20", "ret", "db.lookup 0x01")
+
+
+def test_cluster_totals_use_the_scratch_end_extent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import snail.match as match_module
+
+    # "short" ends at END=0x1004; the uncurated bytes up to "next" are not its.
+    manifest = FunctionSymbolManifest(
+        name="test", primary_target="test.exe", reference_target="test.exe",
+        image_base=0x1000, unwrapped_sha256="0" * 64, source_database=None,
+        functions=(
+            FunctionSymbol(address=0x1000, name="short"),
+            FunctionSymbol(address=0x1040, name="next"),
+        ),
+    )
+    image = LoadedImage(mapped=b"\x90" * 0x44 + b"\xcc", image_base=0x1000, size_of_image=0x45)
+    monkeypatch.setattr(match_module, "load_image", lambda *_args: image)
+    status = ScratchStatus(
+        config=ScratchConfig(
+            directory=tmp_path / "short", function="short",
+            compiler="msvc6.5", cflags="/O2 /G5 /W3", end_va=0x1004, symbol=None,
+        ),
+        address=0x1000, target_size=4, ratio=1.0, prefix_instructions=0,
+        target_instructions=1, candidate_instructions=1, body_byte_exact=True, error=None,
+    )
+    totals = manifest_cluster_totals(manifest, tmp_path / "test.exe", [status])
+    assert totals.byte_total == 4 + 4
+    assert totals.matched_bytes == 4

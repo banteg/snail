@@ -7797,8 +7797,9 @@ def manifest_cluster_totals(
 ) -> ClusterTotals:
     """Separate port-relevant and platform totals over all mapped functions.
 
-    Each curated function's extent runs to the next curated address (padding
-    included); the last function ends at the next int3 padding byte.
+    A scratch-backed function counts the same extent its match is credited
+    against, honoring END. Any other function runs to the next curated
+    address, which is an upper bound (padding included).
     """
     image = load_image(image_path, manifest.image_base)
     functions = sorted(manifest.functions, key=lambda symbol: symbol.address)
@@ -7807,17 +7808,24 @@ def manifest_cluster_totals(
     platform_functions = {
         symbol.name for symbol in functions if symbol.port_scope == "replaceable-platform"
     }
+    scratch_extents: dict[str, int] = {}
+    for status in statuses:
+        if status.config.function in functions_by_name:
+            name = functions_by_name[status.config.function].name
+            scratch_extents[name] = max(status.target_size, scratch_extents.get(name, 0))
     byte_total = 0
     replaceable_platform_bytes = 0
     third_party_bytes = 0
     for index, symbol in enumerate(functions):
-        start = symbol.address
-        if index + 1 < len(functions):
-            end = functions[index + 1].address
+        if symbol.name in scratch_extents:
+            target_size = scratch_extents[symbol.name]
+        elif index + 1 < len(functions):
+            target_size = functions[index + 1].address - symbol.address
         else:
-            padding_index = image.mapped.find(b"\xcc", start - image.image_base)
-            end = image.image_base + padding_index if padding_index != -1 else start
-        target_size = len(image.function_bytes(start, end))
+            # No scratch END and no successor: stop at the first int3 byte.
+            padding_index = image.mapped.find(b"\xcc", symbol.address - image.image_base)
+            end = image.image_base + padding_index if padding_index != -1 else symbol.address
+            target_size = end - symbol.address
         if symbol.is_port_relevant:
             byte_total += target_size
         elif symbol.port_scope == "replaceable-platform":
