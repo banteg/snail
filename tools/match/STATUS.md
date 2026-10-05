@@ -2,9 +2,9 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**634/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **210345/294505** bytes (**71.42%**) are proof-grade, and overall fuzzy is **99.44%**.
+**632/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **206361/294505** bytes (**70.07%**) are proof-grade, and overall fuzzy is **99.30%**.
 
-**116/120** platform helpers matched, **120/120** have a scratch, **19889/22833** bytes (**87.11%**) are proof-grade, and overall fuzzy is **98.41%**. Platform progress is tracked separately from port-relevant totals.
+**116/120** platform helpers matched, **120/120** have a scratch, **19889/22833** bytes (**87.11%**) are proof-grade, and overall fuzzy is **97.11%**. Platform progress is tracked separately from port-relevant totals.
 
 **3** third-party functions (**568** curated-extent bytes) remain visible for context and are excluded from both progress totals.
 
@@ -12,15 +12,15 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**28** non-exact scratch-backed functions hold **84160 target bytes** without proof-grade credit and **1663 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **67.8%** of that gap; the top 10 hold **92.4%**.
+**30** non-exact scratch-backed functions hold **88144 target bytes** without proof-grade credit and **2053 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **55.6%** of that gap; the top 10 hold **83.6%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **28 / 1663** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **0 functions / 0 gap bytes**; **30 / 2053** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
 Ranked by withheld target extent. Structural similarity masks caller-saved register names and local labels; it is diagnostic and grants no proof credit. Proof blockers come from the current matcher, independently of manual residual labels.
 
-Proof blockers (overlapping extents): encoding: 6 functions / 15712 bytes; instructions: 21 functions / 67264 bytes; references: 2 functions / 3872 bytes.
+Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instructions: 24 functions / 73888 bytes; references: 2 functions / 3872 bytes.
 
 | rank | function | withheld bytes | fuzzy gap | structural | changed insns t/c | blockers | recovery | residual | evidence | current/all | flags |
 |---:|---|---:|---:|---:|---:|---|---|---|---|---:|---|
@@ -28,33 +28,35 @@ Proof blockers (overlapping extents): encoding: 6 functions / 15712 bytes; instr
 | 2 | update_subgoldy | 8464 | 61 | 99.28% | 14/16 | instructions | semantic-complete | analysis | historical-only | 0/16 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 3 | populate_runtime_track_cells_from_segments | 5056 | 430 | 99.34% | 9/9 | instructions | semantic-complete | analysis | historical-only | 0/150 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 4 | initialize_loopbow_path_template_pair | 2944 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/21 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 5 | initialize_worm_path_template_pair | 2768 | 225 | 96.52% | 29/22 | instructions | semantic-complete | analysis | historical-only | 0/14 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 6 | update_track_attachment_follow_state | 2752 | 57 | 98.48% | 11/11 | instructions | semantic-complete | analysis | historical-only | 0/24 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 7 | initialize_looptheloopw_path_template_pair | 2736 | 4 | 99.87% | 1/1 | instructions | semantic-complete | analysis | historical-only | 0/19 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
+| 5 | initialize_worm_path_template_pair | 2768 | 234 | 96.32% | 30/24 | instructions | semantic-complete | analysis | historical-only | 0/14 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 6 | update_track_attachment_follow_state | 2752 | 64 | 98.21% | 13/13 | instructions | semantic-complete | analysis | historical-only | 0/24 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 7 | initialize_looptheloopw_path_template_pair | 2736 | 105 | 99.66% | 3/2 | instructions | semantic-complete | analysis | historical-only | 0/19 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
 | 8 | update_frontend_widget_interaction | 2688 | 122 | 96.99% | 19/20 | instructions,references | semantic-complete | analysis,references | historical-only | 0/16 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 9 | update_golb_ai | 2656 | 13 | 99.50% | 3/4 | instructions | semantic-complete | analysis | historical-only | 0/34 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 10 | initialize_looptheloop_path_template_pair | 2640 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/18 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
+| 10 | initialize_looptheloop_path_template_pair | 2640 | 123 | 99.10% | 7/6 | instructions | semantic-complete | analysis | historical-only | 0/18 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
 | 11 | initialize_loopout_path_template_pair | 2624 | 0 | 100.00% | 0/0 | encoding | unspecified | unspecified | historical-only | 0/28 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 12 | initialize_halfpipe_path_template_pair | 2592 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/28 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 13 | initialize_p_path_template_pair | 2496 | 66 | 97.50% | 17/17 | instructions | semantic-complete | analysis | historical-only | 0/24 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 14 | initialize_turnunder_path_template_pair | 2496 | 15 | 99.42% | 4/4 | instructions | semantic-complete | analysis | historical-only | 0/39 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 15 | initialize_turnoverdouble_path_template_pair | 2464 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/58 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 16 | initialize_turnover_path_template_pair | 2448 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/58 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 17 | initialize_dip_path_template_pair | 2400 | 4 | 99.85% | 1/1 | instructions | semantic-complete | analysis | historical-only | 0/59 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 18 | initialize_intro_screen | 1856 | 123 | 93.77% | 32/33 | instructions | semantic-complete | analysis | historical-only | 0/13 | repeated-variants,variant-errors,historical-only,stale-dependencies |
-| 19 | border_input_text | 1584 | 20 | 99.44% | 4/1 | instructions | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
-| 20 | traverse_path_follow_golb | 1552 | 7 | 99.53% | 2/2 | instructions | semantic-complete | analysis | historical-only | 0/36 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 21 | construct_game_runtime | 1184 | 0 | 100.00% | 0/0 | references | unspecified | unspecified | historical-only | 0/1 | variant-errors,historical-only |
-| 22 | register_font_texture_sheet | 1040 | 139 | 92.50% | 21/20 | instructions | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
-| 23 | set_snail_weapon | 944 | 212 | 93.29% | 31/29 | instructions | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
-| 24 | try_enter_track_attachment_from_swept_motion | 800 | 8 | 99.02% | 2/2 | instructions | semantic-complete | analysis | historical-only | 0/13 | historical-only,stale-dependencies |
-| 25 | release_snail_weapons | 560 | 31 | 94.40% | 7/7 | instructions | semantic-complete | analysis | historical-only | 0/16 | variant-errors,historical-only,stale-dependencies |
-| 26 | explode_slug_hazard | 560 | 11 | 97.96% | 3/3 | instructions | semantic-complete | analysis | historical-only | 0/22 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 27 | calc_object_bounding_box | 416 | 3 | 99.16% | 1/1 | instructions | semantic-complete | compiler | historical-only | 0/3 | variant-errors,historical-only |
-| 28 | sample_smtrack_heightmap | 368 | 10 | 97.25% | 3/3 | instructions | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
+| 13 | initialize_dump_path_template_pair | 2576 | 7 | 99.71% | 2/2 | instructions | unspecified | unspecified | historical-only | 0/36 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 14 | initialize_turnunder_path_template_pair | 2496 | 126 | 98.32% | 13/10 | instructions | semantic-complete | analysis | historical-only | 0/39 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 15 | initialize_p_path_template_pair | 2496 | 66 | 97.50% | 17/17 | instructions | semantic-complete | analysis | historical-only | 0/24 | repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 16 | initialize_turnoverdouble_path_template_pair | 2464 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/58 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 17 | initialize_turnover_path_template_pair | 2448 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/58 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 18 | initialize_dip_path_template_pair | 2400 | 4 | 99.85% | 1/1 | instructions | semantic-complete | analysis | historical-only | 0/59 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 19 | initialize_intro_screen | 1856 | 123 | 93.77% | 32/33 | instructions | semantic-complete | analysis | historical-only | 0/13 | repeated-variants,variant-errors,historical-only,stale-dependencies |
+| 20 | border_input_text | 1584 | 20 | 99.44% | 4/1 | instructions | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
+| 21 | traverse_path_follow_golb | 1552 | 15 | 99.06% | 4/4 | instructions | semantic-complete | analysis | historical-only | 0/36 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 22 | calc_object_facequad_normals | 1408 | 23 | 99.08% | 5/3 | instructions | unspecified | unspecified | historical-only | 0/16 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 23 | construct_game_runtime | 1184 | 0 | 100.00% | 0/0 | references | unspecified | unspecified | historical-only | 0/1 | variant-errors,historical-only |
+| 24 | register_font_texture_sheet | 1040 | 139 | 92.50% | 21/20 | instructions | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
+| 25 | set_snail_weapon | 944 | 212 | 93.29% | 31/29 | instructions | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
+| 26 | try_enter_track_attachment_from_swept_motion | 800 | 8 | 99.02% | 2/2 | instructions | semantic-complete | analysis | historical-only | 0/13 | historical-only,stale-dependencies |
+| 27 | release_snail_weapons | 560 | 31 | 94.40% | 7/7 | instructions | semantic-complete | analysis | historical-only | 0/16 | variant-errors,historical-only,stale-dependencies |
+| 28 | explode_slug_hazard | 560 | 11 | 97.96% | 3/3 | instructions | semantic-complete | analysis | historical-only | 0/22 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 29 | calc_object_bounding_box | 416 | 3 | 99.16% | 1/1 | instructions | semantic-complete | compiler | historical-only | 0/3 | variant-errors,historical-only |
+| 30 | sample_smtrack_heightmap | 368 | 10 | 97.25% | 3/3 | instructions | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
 
 
-## Proof Grade (634)
+## Proof Grade (632)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -101,7 +103,7 @@ Proof blockers (overlapping extents): encoding: 6 functions / 15712 bytes; instr
 | ✅ | file_exists | 0x405140 | 48 | 14/14 | 100.00% | 14/14 | 3 ok |  | boundary |
 | ✅ | get_stream_length_preserve_position | 0x405170 | 64 | 24/24 | 100.00% | 24/24 | 4 ok |  | boundary |
 | ✅ | load_file_bytes_allocating | 0x4051b0 | 32 | 8/8 | 100.00% | 8/8 | 1 ok |  | boundary |
-| ✅ | load_file_bytes_into_optional_buffer | 0x4051d0 | 160 | 56/56 | 100.00% | 56/56 | 9 ok | msvc6.5 /O2 /G5 /W3 /TC | boundary |
+| ✅ | load_file_bytes_into_optional_buffer | 0x4051d0 | 160 | 56/56 | 100.00% | 56/56 | 9 ok |  | boundary |
 | ✅ | load_x_mesh | 0x405640 | 1616 | 492/492 | 100.00% | 492/492 | 94 ok |  | boundary |
 | ✅ | initialize_directx_loader | 0x405c90 | 48 | 13/13 | 100.00% | 13/13 | 3 ok |  | boundary |
 | ✅ | load_or_reuse_cached_x_mesh | 0x405cc0 | 160 | 65/65 | 100.00% | 65/65 | 6 ok |  | boundary |
@@ -262,7 +264,6 @@ Proof blockers (overlapping extents): encoding: 6 functions / 15712 bytes; instr
 | ✅ | apply_audio_config_volumes | 0x41b070 | 48 | 11/11 | 100.00% | 11/11 | 7 ok |  | boundary |
 | ✅ | get_path_nodes | 0x41b0a0 | 80 | 23/23 | 100.00% | 23/23 | 4 ok |  | core |
 | ✅ | initialize_hump_path_template_pair | 0x41d030 | 2560 | 685/685 | 100.00% | 685/685 | 43 ok |  | core |
-| ✅ | initialize_dump_path_template_pair | 0x41da30 | 2576 | 690/690 | 100.00% | 690/690 | 43 ok |  | core |
 | ✅ | initialize_screw_path_template_pair | 0x41eda0 | 2496 | 685/685 | 100.00% | 685/685 | 40 ok |  | core |
 | ✅ | initialize_slalom_path_template_pair | 0x41f760 | 2576 | 696/696 | 100.00% | 696/696 | 40 ok |  | core |
 | ✅ | begin_track_attachment_follow_state | 0x420c40 | 112 | 27/27 | 100.00% | 27/27 | 4 ok |  | core |
@@ -290,7 +291,7 @@ Proof blockers (overlapping extents): encoding: 6 functions / 15712 bytes; instr
 | ✅ | initialize_sbend_path_template_pair | 0x42df00 | 2080 | 579/579 | 100.00% | 579/579 | 39 ok |  | core |
 | ✅ | initialize_cage2_path_template_pair | 0x42e720 | 2432 | 648/648 | 100.00% | 648/648 | 46 ok |  | core |
 | ✅ | load_config_file | 0x42f470 | 32 | 9/9 | 100.00% | 9/9 | 1 ok |  | core |
-| ✅ | load_file_bytes_from_path | 0x42f490 | 176 | 59/59 | 100.00% | 59/59 | 9 ok | msvc6.5 /O2 /G5 /W3 /TC | boundary |
+| ✅ | load_file_bytes_from_path | 0x42f490 | 176 | 59/59 | 100.00% | 59/59 | 9 ok |  | boundary |
 | ✅ | save_config_file | 0x42f540 | 112 | 31/31 | 100.00% | 31/31 | 5 ok |  | boundary |
 | ✅ | validate_config_tail_stub | 0x42f5b0 | 16 | 2/2 | 100.00% | 2/2 | - |  | core |
 | ✅ | is_bod_after_sprites | 0x42f5c0 | 16 | 3/3 | 100.00% | 3/3 | - |  | core |
@@ -313,7 +314,6 @@ Proof blockers (overlapping extents): encoding: 6 functions / 15712 bytes; instr
 | ✅ | build_all_objects | 0x42f9e0 | 160 | 54/54 | 100.00% | 54/54 | 8 ok |  | core |
 | ✅ | apply_object_toon | 0x42fa80 | 80 | 24/24 | 100.00% | 24/24 | 4 ok |  | core |
 | ✅ | add_object_to_list | 0x42fad0 | 64 | 24/24 | 100.00% | 24/24 | 3 ok |  | core |
-| ✅ | calc_object_facequad_normals | 0x42fcb0 | 1408 | 437/437 | 100.00% | 437/437 | 22 ok |  | core |
 | ✅ | calc_object_facequad_normals_simple | 0x430230 | 448 | 139/139 | 100.00% | 139/139 | 5 ok |  | core |
 | ✅ | calc_object_texture_groups | 0x4303f0 | 128 | 55/55 | 100.00% | 55/55 | 1 ok |  | core |
 | ✅ | advance_frame_sequence | 0x430470 | 256 | 65/65 | 100.00% | 65/65 | 2 ok |  | core |
@@ -553,12 +553,12 @@ Proof blockers (overlapping extents): encoding: 6 functions / 15712 bytes; instr
 | ✅ | initialize_nuke | 0x447110 | 208 | 64/64 | 100.00% | 64/64 | 5 ok |  | core |
 | ✅ | update_nuke | 0x4471e0 | 176 | 59/59 | 100.00% | 59/59 | 8 ok |  | core |
 | ✅ | recycle_bod_to_free_list | 0x447290 | 112 | 36/36 | 100.00% | 36/36 | 4 ok |  | core |
-| ✅ | copy_segment_definition_to_level_slot | 0x447300 | 384 | 125/125 | 100.00% | 125/125 | 5 ok | msvc6.0 /O2 /G5 /W3 | core |
-| ✅ | load_level_definition_file | 0x447480 | 3040 | 926/926 | 100.00% | 926/926 | 183 ok | msvc6.0 /O2 /G5 /W3 | core |
+| ✅ | copy_segment_definition_to_level_slot | 0x447300 | 384 | 125/125 | 100.00% | 125/125 | 5 ok |  | core |
+| ✅ | load_level_definition_file | 0x447480 | 3040 | 926/926 | 100.00% | 926/926 | 183 ok |  | core |
 | ✅ | load_builtin_segment_definitions | 0x448060 | 256 | 92/92 | 100.00% | 92/92 | - |  | core |
 | ✅ | load_segment_definitions | 0x448160 | 1952 | 571/571 | 100.00% | 571/571 | 91 ok |  | core |
 | ✅ | load_level_definitions | 0x448900 | 96 | 30/30 | 100.00% | 30/30 | 6 ok |  | core |
-| ✅ | format_time_trial_string | 0x448960 | 128 | 36/36 | 100.00% | 36/36 | 12 ok | msvc6.5 /O2 /G5 /W3 /TC | core |
+| ✅ | format_time_trial_string | 0x448960 | 128 | 36/36 | 100.00% | 36/36 | 12 ok |  | core |
 | ✅ | kill_tip_widgets | 0x4489e0 | 96 | 24/24 | 100.00% | 24/24 | 6 ok |  | core |
 | ✅ | initialize_tip | 0x448a40 | 512 | 154/154 | 100.00% | 154/154 | 27 ok |  | core |
 | ✅ | update_tip | 0x448c40 | 176 | 51/51 | 100.00% | 51/51 | 9 ok |  | core |
@@ -693,19 +693,18 @@ Proof blockers (overlapping extents): encoding: 6 functions / 15712 bytes; instr
 | ✅ | attach_render_camera_source | 0x44e900 | 32 | 6/6 | 100.00% | 6/6 | - |  | boundary |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 
-## Audit Needed (7)
+## Audit Needed (6)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
-| ⚠ | construct_game_runtime | 0x407b60 | 1184 | 268/268 | 100.00% | 268/268 | 1 unresolved, 119 ok | msvc6.5 /O2 /G5 /W3 /GX | core |
-| ⚠ | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2640 | 721/721 | 100.00% | 721/721 | 49 ok |  | core |
+| ⚠ | construct_game_runtime | 0x407b60 | 1184 | 268/268 | 100.00% | 268/268 | 1 unresolved, 119 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
 | ⚠ | initialize_loopout_path_template_pair | 0x41c5f0 | 2624 | 718/718 | 100.00% | 718/718 | 52 ok |  | core |
 | ⚠ | initialize_turnover_path_template_pair | 0x426cb0 | 2448 | 671/671 | 100.00% | 671/671 | 41 ok |  | core |
 | ⚠ | initialize_turnoverdouble_path_template_pair | 0x427640 | 2464 | 680/680 | 100.00% | 680/680 | 46 ok |  | core |
 | ⚠ | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 707/707 | 100.00% | 707/707 | 55 ok |  | core |
 | ⚠ | initialize_loopbow_path_template_pair | 0x42ba80 | 2944 | 796/796 | 100.00% | 796/796 | 63 ok |  | core |
 
-## Near Match (95-99.99%) (15)
+## Near Match (95-99.99%) (17)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -714,23 +713,26 @@ Proof blockers (overlapping extents): encoding: 6 functions / 15712 bytes; instr
 | 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23072 | 5411/5411 | 99.56% | 3567/5411 | 1881 ok |  | core |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 695/694 | 99.50% | 417/694 | 71 ok |  | core |
 | 🚧 | sample_smtrack_heightmap | 0x41a360 | 368 | 109/109 | 97.25% | 67/109 | 13 ok |  | core |
-| 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2736 | 745/745 | 99.87% | 335/745 | 55 ok |  | core |
+| 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2640 | 720/721 | 95.35% | 135/721 | 49 ok |  | core |
+| 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2736 | 744/745 | 96.17% | 135/745 | 55 ok |  | core |
+| 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2576 | 690/690 | 99.71% | 59/690 | 43 ok |  | core |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2400 | 655/655 | 99.85% | 100/655 | 37 ok |  | core |
-| 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2752 | 726/726 | 97.93% | 362/726 | 65 ok |  | core |
-| 🚧 | traverse_path_follow_golb | 0x4217b0 | 1552 | 425/425 | 99.53% | 327/425 | 7 ok |  | core |
+| 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2752 | 726/726 | 97.66% | 205/726 | 65 ok |  | core |
+| 🚧 | traverse_path_follow_golb | 0x4217b0 | 1552 | 425/425 | 99.06% | 107/425 | 7 ok |  | core |
 | 🚧 | initialize_p_path_template_pair | 0x425a40 | 2496 | 679/679 | 97.35% | 2/679 | 41 ok |  | core |
-| 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2496 | 687/687 | 99.42% | 140/687 | 45 ok |  | core |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 204/204 | 99.02% | 109/204 | 47 ok |  | core |
 | 🚧 | calc_object_bounding_box | 0x42fb10 | 416 | 119/119 | 99.16% | 28/119 | 1 ok |  | core |
+| 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1408 | 435/437 | 98.39% | 382/437 | 22 ok |  | core |
 | 🚧 | update_subgoldy | 0x43b120 | 8464 | 2089/2087 | 99.28% | 548/2087 | 315 ok |  | core |
 | 🚧 | explode_slug_hazard | 0x43f680 | 560 | 147/147 | 97.96% | 79/147 | 32 ok |  | core |
 
-## High Progress (80-94.99%) (5)
+## High Progress (80-94.99%) (6)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
-| 🚧 | initialize_intro_screen | 0x4191e0 | 1856 | 522/521 | 93.38% | 88/521 | 66 ok | msvc6.0 /O2 /G5 /W3 | core |
-| 🚧 | initialize_worm_path_template_pair | 0x420170 | 2768 | 729/736 | 91.88% | 0/736 | 37 ok |  | core |
+| 🚧 | initialize_intro_screen | 0x4191e0 | 1856 | 522/521 | 93.38% | 88/521 | 66 ok |  | core |
+| 🚧 | initialize_worm_path_template_pair | 0x420170 | 2768 | 730/736 | 91.54% | 0/736 | 37 ok |  | core |
+| 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2496 | 684/687 | 94.97% | 140/687 | 45 ok |  | core |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5056 | 1246/1246 | 91.50% | 232/1246 | 165 ok |  | core |
 | 🚧 | release_snail_weapons | 0x442e40 | 560 | 125/125 | 94.40% | 15/125 | 33 ok |  | core |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1040 | 273/274 | 86.65% | 55/274 | 57 ok |  | boundary |
@@ -747,11 +749,11 @@ Proof blockers (overlapping extents): encoding: 6 functions / 15712 bytes; instr
 |---|---|---|---|---|---|---|---|---|---|
 | 🖥 | classify_archive_entry_extension | 0x4050c0 | 128 | 46/46 | 100.00% | 46/46 | - |  | replaceable-platform |
 | 🖥 | scramble_archive_bytes_in_place | 0x405270 | 48 | 25/25 | 100.00% | 25/25 | - |  | replaceable-platform |
-| 🖥 | save_file_bytes_with_optional_archive_scramble | 0x4052a0 | 160 | 56/56 | 100.00% | 56/56 | 10 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
+| 🖥 | save_file_bytes_with_optional_archive_scramble | 0x4052a0 | 160 | 56/56 | 100.00% | 56/56 | 10 ok |  | replaceable-platform |
 | 🖥 | delete_file_path | 0x405340 | 16 | 5/5 | 100.00% | 5/5 | 1 ok |  | replaceable-platform |
 | 🖥 | toggle_archive_high_bit_in_place | 0x405350 | 32 | 11/11 | 100.00% | 11/11 | - |  | replaceable-platform |
-| 🖥 | rebuild_game_archive_if_needed | 0x405370 | 720 | 232/232 | 66.38% | 5/232 | 22 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
-| 🖥 | log_startup_timestamp | 0x406d30 | 64 | 19/19 | 100.00% | 19/19 | 4 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
+| 🖥 | rebuild_game_archive_if_needed | 0x405370 | 720 | 220/232 | 25.22% | 5/232 | 2 unaudited, 22 ok |  | replaceable-platform |
+| 🖥 | log_startup_timestamp | 0x406d30 | 64 | 19/19 | 100.00% | 19/19 | 4 ok |  | replaceable-platform |
 | 🖥 | game_startup_and_main_loop | 0x406dc0 | 1328 | 325/325 | 100.00% | 325/325 | 163 ok |  | replaceable-platform |
 | 🖥 | handle_game_window_activate | 0x4072f0 | 192 | 44/44 | 100.00% | 44/44 | 26 ok |  | replaceable-platform |
 | 🖥 | show_and_focus_game_window | 0x4073b0 | 144 | 33/33 | 100.00% | 33/33 | 19 ok |  | replaceable-platform |
@@ -801,30 +803,30 @@ Proof blockers (overlapping extents): encoding: 6 functions / 15712 bytes; instr
 | 🖥 | initialize_tracked_allocation_depth | 0x430e30 | 16 | 2/2 | 100.00% | 2/2 | 1 ok |  | replaceable-platform |
 | 🖥 | initialize_game_data_archive | 0x430e40 | 176 | 47/47 | 100.00% | 47/47 | 20 ok |  | replaceable-platform |
 | 🖥 | uninitialize_game_data_archive | 0x430ef0 | 64 | 13/13 | 100.00% | 13/13 | 6 ok |  | replaceable-platform |
-| 🖥 | set_current_directory_with_drive_fallback | 0x430f30 | 160 | 48/48 | 100.00% | 48/48 | 6 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | archive_or_file_exists | 0x430fd0 | 96 | 36/36 | 100.00% | 36/36 | 7 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | load_file_bytes_fixed_size_from_archive_or_fs | 0x431030 | 544 | 188/188 | 100.00% | 188/188 | 32 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | find_archive_entry | 0x431250 | 128 | 60/60 | 100.00% | 60/60 | 2 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | load_file_bytes_from_archive_or_fs | 0x4312d0 | 592 | 206/206 | 100.00% | 206/206 | 36 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | load_file_bytes | 0x431520 | 32 | 8/8 | 100.00% | 8/8 | 1 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | delete_file_path_with_directory_walk | 0x431540 | 272 | 84/84 | 100.00% | 84/84 | 14 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | write_file_bytes | 0x431650 | 240 | 74/74 | 100.00% | 74/74 | 10 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | enumerate_matching_archive_or_fs_entries | 0x431740 | 576 | 182/182 | 92.31% | 9/182 | 26 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | xor_archive_bytes_in_place | 0x431980 | 64 | 27/27 | 100.00% | 27/27 | - | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | load_archive_index | 0x4319c0 | 192 | 67/67 | 100.00% | 67/67 | 14 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | is_archive_index_loaded | 0x431a80 | 16 | 4/4 | 100.00% | 4/4 | 1 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | get_archive_data_base | 0x431a90 | 16 | 2/2 | 100.00% | 2/2 | 1 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | get_archive_data_end | 0x431aa0 | 16 | 3/3 | 100.00% | 3/3 | 1 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | get_tracked_allocation_size | 0x431ab0 | 64 | 26/26 | 100.00% | 26/26 | 2 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | push_tracked_allocation | 0x431af0 | 64 | 19/19 | 100.00% | 19/19 | 2 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | pop_tracked_allocation | 0x431b30 | 48 | 20/20 | 100.00% | 20/20 | - | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | allocate_tracked_memory | 0x431b60 | 144 | 48/48 | 100.00% | 48/48 | 7 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | free_tracked_memory | 0x431bf0 | 128 | 43/43 | 100.00% | 43/43 | 9 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | free_tracked_allocations_to_mark | 0x431c70 | 64 | 15/15 | 100.00% | 15/15 | 6 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | set_tracked_allocation_mark | 0x431cb0 | 16 | 3/3 | 100.00% | 3/3 | 2 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | report_errorf | 0x431cc0 | 80 | 19/19 | 100.00% | 19/19 | 8 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | report_warningf | 0x431d10 | 80 | 19/19 | 100.00% | 19/19 | 8 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
-| 🖥 | report_messagef | 0x431d60 | 64 | 15/15 | 100.00% | 15/15 | 4 ok | msvc6.0 /O2 /G5 /W3 | replaceable-platform |
+| 🖥 | set_current_directory_with_drive_fallback | 0x430f30 | 160 | 48/48 | 100.00% | 48/48 | 6 ok |  | replaceable-platform |
+| 🖥 | archive_or_file_exists | 0x430fd0 | 96 | 36/36 | 100.00% | 36/36 | 7 ok |  | replaceable-platform |
+| 🖥 | load_file_bytes_fixed_size_from_archive_or_fs | 0x431030 | 544 | 188/188 | 100.00% | 188/188 | 32 ok |  | replaceable-platform |
+| 🖥 | find_archive_entry | 0x431250 | 128 | 60/60 | 100.00% | 60/60 | 2 ok |  | replaceable-platform |
+| 🖥 | load_file_bytes_from_archive_or_fs | 0x4312d0 | 592 | 206/206 | 100.00% | 206/206 | 36 ok |  | replaceable-platform |
+| 🖥 | load_file_bytes | 0x431520 | 32 | 8/8 | 100.00% | 8/8 | 1 ok |  | replaceable-platform |
+| 🖥 | delete_file_path_with_directory_walk | 0x431540 | 272 | 84/84 | 100.00% | 84/84 | 14 ok |  | replaceable-platform |
+| 🖥 | write_file_bytes | 0x431650 | 240 | 74/74 | 100.00% | 74/74 | 10 ok |  | replaceable-platform |
+| 🖥 | enumerate_matching_archive_or_fs_entries | 0x431740 | 576 | 182/182 | 92.31% | 9/182 | 26 ok |  | replaceable-platform |
+| 🖥 | xor_archive_bytes_in_place | 0x431980 | 64 | 27/27 | 100.00% | 27/27 | - |  | replaceable-platform |
+| 🖥 | load_archive_index | 0x4319c0 | 192 | 67/67 | 100.00% | 67/67 | 14 ok |  | replaceable-platform |
+| 🖥 | is_archive_index_loaded | 0x431a80 | 16 | 4/4 | 100.00% | 4/4 | 1 ok |  | replaceable-platform |
+| 🖥 | get_archive_data_base | 0x431a90 | 16 | 2/2 | 100.00% | 2/2 | 1 ok |  | replaceable-platform |
+| 🖥 | get_archive_data_end | 0x431aa0 | 16 | 3/3 | 100.00% | 3/3 | 1 ok |  | replaceable-platform |
+| 🖥 | get_tracked_allocation_size | 0x431ab0 | 64 | 26/26 | 100.00% | 26/26 | 2 ok |  | replaceable-platform |
+| 🖥 | push_tracked_allocation | 0x431af0 | 64 | 19/19 | 100.00% | 19/19 | 2 ok |  | replaceable-platform |
+| 🖥 | pop_tracked_allocation | 0x431b30 | 48 | 20/20 | 100.00% | 20/20 | - |  | replaceable-platform |
+| 🖥 | allocate_tracked_memory | 0x431b60 | 144 | 48/48 | 100.00% | 48/48 | 7 ok |  | replaceable-platform |
+| 🖥 | free_tracked_memory | 0x431bf0 | 128 | 43/43 | 100.00% | 43/43 | 9 ok |  | replaceable-platform |
+| 🖥 | free_tracked_allocations_to_mark | 0x431c70 | 64 | 15/15 | 100.00% | 15/15 | 6 ok |  | replaceable-platform |
+| 🖥 | set_tracked_allocation_mark | 0x431cb0 | 16 | 3/3 | 100.00% | 3/3 | 2 ok |  | replaceable-platform |
+| 🖥 | report_errorf | 0x431cc0 | 80 | 19/19 | 100.00% | 19/19 | 8 ok |  | replaceable-platform |
+| 🖥 | report_warningf | 0x431d10 | 80 | 19/19 | 100.00% | 19/19 | 8 ok |  | replaceable-platform |
+| 🖥 | report_messagef | 0x431d60 | 64 | 15/15 | 100.00% | 15/15 | 4 ok |  | replaceable-platform |
 | 🖥 | launch_alpha72_url | 0x433050 | 16 | 3/3 | 100.00% | 3/3 | 2 ok |  | replaceable-platform |
 | 🖥 | initialize_bass_audio_backend | 0x449460 | 624 | 176/176 | 100.00% | 176/176 | 87 ok |  | replaceable-platform |
 | 🖥 | uninitialize_bass_audio_backend | 0x4496d0 | 80 | 19/19 | 100.00% | 19/19 | 10 ok |  | replaceable-platform |
@@ -871,7 +873,7 @@ Proof blockers (overlapping extents): encoding: 6 functions / 15712 bytes; instr
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
 | 📚 | initialize_translation_matrix | 0x44fd90 | 92 | 23/34 | 7.02% | 1/34 | - |  | third-party |
-| 📚 | build_perspective_projection_matrix | 0x450314 | 148 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 | third-party |
+| 📚 | build_perspective_projection_matrix | 0x450314 | 148 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.3 /O2 /Oy- /G5 /W3 | third-party |
 | 📚 | build_camera_view_matrix | 0x451ad9 | 328 | 119/130 | 28.11% | 0/130 | 2 ok |  | third-party |
 
 ## Type Consolidation
