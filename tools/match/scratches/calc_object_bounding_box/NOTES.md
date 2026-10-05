@@ -184,3 +184,14 @@ masked reference.
 The result reproduces with the RTM, SP3, and canonical VC6 backends, isolating
 the change to `/Ow`; no source scheduling dependency or volatile fake-match is
 needed. `scratch.conf` now records that function's proved compiler mode.
+
+## 2026-10-05 profile withdrawn
+
+`/Ow` cannot be RObject.o's profile. Compiling the unchanged exact neighbours
+from the same object with `/Ow` breaks them: `calc_object_facequad_normals`
+falls to 24.51%, `calc_object_texture_groups` to 22.95%, `add_object_edge` to
+22.83%, and `calc_object_facequad_normals_simple` to 99.28%. All four are
+exact under the baseline. A flag that only this function tolerates is a better
+score, not compiler provenance, so the scratch returns to the baseline profile
+at **99.16%** (`119/119`, prefix 28) with the `bounding_radius = 0` store
+order as its recorded compiler residual.

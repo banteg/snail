@@ -5425,3 +5425,17 @@ def test_build_key_tracks_cl_option_environment(
     before = _scratch_build_key(config, tmp_path)
     monkeypatch.setenv("CL", "/Ox")
     assert _scratch_build_key(config, tmp_path) != before
+
+
+def test_stand_in_context_headers_are_reported(tmp_path: Path) -> None:
+    from snail.match import ScratchConfig, scratch_stand_in_headers
+
+    match_root = tmp_path / "match"
+    scratch = match_root / "scratches/foo"
+    scratch.mkdir(parents=True)
+    (match_root / "include").mkdir()
+    (match_root / "include/real.h").write_text("struct Real {};\n")
+    (match_root / "include/padding.h").write_text("// STAND-IN, not recovered source.\nenum Pad { a };\n")
+    (scratch / "scratch.cpp").write_text('#include "real.h"\n#include "padding.h"\n')
+    config = ScratchConfig(scratch, "foo", "msvc6.5", "/O2 /G5 /W3", None, None)
+    assert scratch_stand_in_headers(config, match_root) == ("padding.h",)

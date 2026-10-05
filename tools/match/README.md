@@ -17,7 +17,9 @@ one:
 
 - product IDs 10/11 record ordinary VC6 C/C++ contributions from build
   families 8168, 8447, and 8966; 8966 is the normal SP5 backend/object family,
-  not the Processor Pack;
+  not the Processor Pack. Every C++ row (product 11) is build 8168 or 8447;
+  8966 appears only on C rows (product 10), so no Rich row directly backs the
+  msvc6.5 C++ baseline below;
 - product IDs 28/29 record a C++-dominated VC7.0-family build-9178 population,
   while product ID 96 records one VC7.1-family build-4035 contribution;
 - MASM 6.13/6.14, alias-object, resource, old-linker/library, and import-library
@@ -95,6 +97,11 @@ Promote a new group only after checking source-object ownership, source order,
 every member's instructions and positional references, body-byte accounting,
 and the full native status for regressions. A context-dependent compiler result
 is an observation, not proof of the compiler's internal mechanism.
+
+The [file-utility profile control](file-utility-profile-20261005.md) moves the
+interleaved `0x430f30`-`0x431d60` run to one msvc6.0 C++ object: it was the only
+profile that reproduces every exact member, where the previous per-function
+`/TC` choices alternated with C++-only neighbours.
 
 The [current Path context controls](path-context-20260922.md) preserve all
 extracted bytes for LoopOut, Turnover, TurnoverDouble, and Worm in isolated,

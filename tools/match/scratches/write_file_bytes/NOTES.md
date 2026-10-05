@@ -5,7 +5,7 @@ directory, writes the final path component with `fopen("wb")`/`fwrite`, reports
 save failures with the current directory, and restores the caller's original
 working directory.
 
-The scratch compiles as C (`/TC`) so the success `fwrite`/`fclose` path and the
+The scratch was first matched as C (`/TC`) so the success `fwrite`/`fclose` path and the
 failure `_getcwd`/`report_messagef` path both coalesce cleanup into the native
 shared epilogue.
 
@@ -37,3 +37,6 @@ and ten clean masked operands.
 - The replay removes the stale overlapping local override, applies the real
   stack offsets, and verifies an idempotent readback. Paired health checks pass;
   matching remains exact at 74/74 instructions with ten clean masked operands.
+
+The file-utility run 0x430f30-0x431d60 now uses `COMPILER=msvc6.0` as one
+C++ object; see [the profile control](../../file-utility-profile-20261005.md).

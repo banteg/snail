@@ -99,3 +99,6 @@ found-state/loop/return alternatives, including the two exact forms. A standard
 C++ profile control does not independently fix the return placement. These
 results supersede the earlier claim that the block order could only be retained
 as compiler residue.
+
+The file-utility run 0x430f30-0x431d60 now uses `COMPILER=msvc6.0` as one
+C++ object; see [the profile control](../../file-utility-profile-20261005.md).

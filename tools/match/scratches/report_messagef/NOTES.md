@@ -8,7 +8,10 @@ passes it through the release-stripped debug report helper as `"%s", buffer`.
 
 Focused match: 100%, 15/15 instructions, with four clean masked operands.
 
-This scratch compiles as C (`/TC`). The C-mode MSVC 6.5 codegen coalesces the
+The scratch was first matched as C (`/TC`) under MSVC 6.5, whose codegen coalesces the
 cdecl cleanup for the three `vsprintf` arguments and the two
 `debug_report_stub` arguments into the final `add esp, 0x1014`, matching the
 native wrapper while keeping the source as straightforward sequential calls.
+
+The file-utility run 0x430f30-0x431d60 now uses `COMPILER=msvc6.0` as one
+C++ object; see [the profile control](../../file-utility-profile-20261005.md).

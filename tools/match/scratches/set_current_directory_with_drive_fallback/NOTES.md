@@ -7,3 +7,6 @@ the current directory and reports the missing target.
 
 Focused match: 100%, 48/48 instructions, with six clean masked operands. The
 single `success` tail keeps VC6 from duplicating the zero-return epilogue.
+
+The file-utility run 0x430f30-0x431d60 now uses `COMPILER=msvc6.0` as one
+C++ object; see [the profile control](../../file-utility-profile-20261005.md).

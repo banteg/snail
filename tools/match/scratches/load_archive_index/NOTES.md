@@ -41,3 +41,6 @@ byte-offset load/store sequence.
   types, so the exact loop does not depend on a scratch-local layout alias.
 - Binary Ninja and IDA replays retain distinct serialized header, decoded
   allocation, live index, rebased path, and stream lifetimes.
+
+The file-utility run 0x430f30-0x431d60 now uses `COMPILER=msvc6.0` as one
+C++ object; see [the profile control](../../file-utility-profile-20261005.md).

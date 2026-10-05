@@ -8198,6 +8198,27 @@ def _missing_scratch_status_rows(
     return rows
 
 
+STAND_IN_RE = re.compile(r"^\s*//\s*STAND-IN\b", re.MULTILINE)
+
+
+def scratch_stand_in_headers(
+    config: ScratchConfig,
+    match_root: Path,
+    *,
+    resolver: _ScratchIncludeResolver | None = None,
+) -> tuple[str, ...]:
+    """Included headers that declare placeholder context, not recovered source.
+
+    A match that depends on such context is real compiler output, but its
+    surrounding translation unit is approximated; STATUS says so.
+    """
+    return tuple(
+        header.name
+        for header in _scratch_include_headers(config, match_root, resolver=resolver)
+        if STAND_IN_RE.search(header.read_text(encoding="latin1"))
+    )
+
+
 def render_status_rows(
     statuses: list[ScratchStatus],
     *,
@@ -8207,6 +8228,7 @@ def render_status_rows(
 ) -> list[tuple[str, ...]]:
     rows = []
     functions_by_name = _function_symbols_by_name(manifest) if manifest is not None else {}
+    resolvers: dict[Path, _ScratchIncludeResolver] = {}
     for status in sorted(statuses, key=lambda item: item.address):
         ratio = f"{status.ratio:.2%}" if status.ratio is not None else "-"
         insns = (
@@ -8228,6 +8250,15 @@ def render_status_rows(
         scope_note = _port_scope_note(port_scope)
         if scope_note:
             note = scope_note + (f"; {note}" if note else "")
+        match_root = status.config.directory.parent.parent
+        stand_ins = scratch_stand_in_headers(
+            status.config,
+            match_root,
+            resolver=resolvers.setdefault(match_root, _ScratchIncludeResolver(match_root)),
+        )
+        if stand_ins:
+            stand_in_note = "stand-in context: " + ", ".join(stand_ins)
+            note = f"{note}; {stand_in_note}" if note else stand_in_note
         rows.append(
             (
                 icon,
@@ -8417,6 +8448,22 @@ def render_status_markdown(
                 "for context and are excluded from both progress totals.",
             ]
         )
+    rendered_rows = render_status_rows(statuses, manifest=manifest, image_path=image_path, image=image)
+    stand_in_rows = [row for row in rendered_rows if "stand-in context:" in row[10]]
+    if stand_in_rows:
+        lines.extend(
+            [
+                "",
+                f"**{len(stand_in_rows)}** scratches depend on placeholder context "
+                "headers (marked `STAND-IN`) rather than recovered source: "
+                + ", ".join(
+                    f"`{row[1]}` ({row[10].partition('stand-in context: ')[2]})"
+                    for row in stand_in_rows
+                )
+                + ". Their compiled bytes are real; the surrounding translation unit "
+                "is approximated.",
+            ]
+        )
     frontier_lines = render_residual_frontier_markdown(
         collect_residual_frontier_rows(
             statuses,
@@ -8427,7 +8474,6 @@ def render_status_markdown(
     )
     if frontier_lines:
         lines.extend(["", *frontier_lines])
-    rendered_rows = render_status_rows(statuses, manifest=manifest, image_path=image_path, image=image)
     for title, section_rows in _section_status_rows(rendered_rows):
         lines.extend(
             [
