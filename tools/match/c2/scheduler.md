@@ -448,11 +448,18 @@ Named locals, pointer and reference copies, int-parameter inlines and struct cop
   `(x + 1) * 4`, which carries no FROUND.
 - Parenthesizing part of a constant chain, as in `((r - k) * c) * s`, blocks VC6's folding of `c * s`
   and changes code.
+- To search wraps mechanically, `uv run tools/match/c2/paren_search.py <function> [--groups 3]
+  [--depth 2] [--out <dir>]` wraps assignment right-hand sides, arithmetic call arguments and casts,
+  grouping textually identical terms so they are wrapped together as a macro would be, and reports the
+  best and every byte-exact variant. A 14-function sweep of the msvc6.3 partials (2026-10-06) found no
+  new exacts; looptheloop and looptheloopw gained about 0.2%.
 
 **Matches from this rule.**
 - initialize_star_field: `speed * 4.0f + 4.0f` removes the FROUND between `fadd` and `fmul` (see its
   NOTES for the trace and the spellings tried).
 - firework_shoot: a `SIGNED_RANDOM(scale)` macro adds 3 FROUNDs and moves the window-3 cut.
+- explode_slug_hazard and release_snail_weapons (msvc6.3, 2026-10-05): precedence parentheses and
+  `SIGNED_UNIT_RANDOM()` / `RANDOM_FROM_HALF()` macros, found by the searches `paren_search.py` vendors.
 
 ## Block order
 
