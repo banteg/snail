@@ -391,3 +391,10 @@ store iv-first. It also moves the `Sin` argument `push ecx` and rotates the
 reload registers, which gives about 94.4%. Inlining the position operation
 and borrowing `secondary_bank` also reaches 100% normalized with the same
 single byte left.
+
+## 2026-10-05 compiler baseline
+
+The original build cannot have used the SP5 frontend this match was made
+with (see the [compiler identification](../../compiler-identification-20261005.md)). Under the corrected baseline, msvc6.3, the unchanged
+source scores 95.35% (100% before); the source shape was fitted to the newer frontend and
+needs rework under msvc6.3.

@@ -323,3 +323,10 @@ results are in `source-ownership-20260930-mutations.json` and
 `operation-boundaries-20260930-mutations.json`; receipts are appended
 to `experiments.jsonl`. These controls bound the tested ownership forms and
 their interactions; they do not establish source exhaustion or a compiler limit.
+
+## 2026-10-05 compiler baseline
+
+The original build cannot have used the SP5 frontend this match was made
+with (see the [compiler identification](../../compiler-identification-20261005.md)). Under the corrected baseline, msvc6.3, the unchanged
+source scores 99.06% (99.53% before); the source shape was fitted to the newer frontend and
+needs rework under msvc6.3.

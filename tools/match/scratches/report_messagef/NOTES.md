@@ -13,5 +13,6 @@ cdecl cleanup for the three `vsprintf` arguments and the two
 `debug_report_stub` arguments into the final `add esp, 0x1014`, matching the
 native wrapper while keeping the source as straightforward sequential calls.
 
-The file-utility run 0x430f30-0x431d60 now uses `COMPILER=msvc6.0` as one
-C++ object; see [the profile control](../../file-utility-profile-20261005.md).
+The file-utility run 0x430f30-0x431d60 compiles as part of the RShell C++
+object under the project baseline, msvc6.3; see the
+[compiler identification](../../compiler-identification-20261005.md).

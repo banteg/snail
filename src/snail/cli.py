@@ -1455,8 +1455,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     match_idioms_parser.add_argument(
         "--compiler",
-        default="msvc6.5",
-        help="Compiler bundle to use (default: msvc6.5).",
+        default="msvc6.3",
+        help="Compiler bundle to use (default: msvc6.3).",
     )
     match_idioms_parser.add_argument(
         "--cflags",

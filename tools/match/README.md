@@ -38,11 +38,14 @@ and the libpng 1.2.5 boundary remain independently identified by their
 interfaces, implementation semantics, call relationships, and library API
 fingerprints; their exact compiler-build-to-object mapping remains unknown.
 
-The project-standard reproduction baseline is `msvc6.5 /O2 /G5 /W3`.
-`msvc6.5` is a project nickname for a historically coherent SP5-style VC6
-component set: the 12.00.8804 driver invokes C++ frontend 8964 and ordinary
-backend 8966. Hundreds of exact functions make it a strong empirical baseline,
-not proof that every original game translation unit used one component set.
+The project-standard reproduction baseline is `msvc6.3 /O2 /G5 /W3`: the VC6
+SP3 component set, C++ frontend 8472 with backend 8447. The
+[compiler identification](compiler-identification-20261005.md) derives it from
+the binary rather than from match counts: the backend writes each object's
+`@comp.id`, 56 of the 66 Rich C++ rows carry backend 8447, and an 8447 backend
+rejects every newer frontend with C1900 (IL mismatch). The former `msvc6.5`
+(SP5) baseline paired a frontend the original build cannot have used; 738 of
+785 scratches compile identically under either, which is why it went unnoticed.
 `scratch.conf` therefore only needs `FUNCTION` (plus `END`/`SYMBOL` when the
 extent or symbol needs overriding). `RECOVERY` and `RESIDUAL` record reviewed
 non-exact recovery state without affecting compilation. `COMPILER`/`CFLAGS`
@@ -98,10 +101,10 @@ every member's instructions and positional references, body-byte accounting,
 and the full native status for regressions. A context-dependent compiler result
 is an observation, not proof of the compiler's internal mechanism.
 
-The [file-utility profile control](file-utility-profile-20261005.md) moves the
-interleaved `0x430f30`-`0x431d60` run to one msvc6.0 C++ object: it was the only
-profile that reproduces every exact member, where the previous per-function
-`/TC` choices alternated with C++-only neighbours.
+The [Windows link order](../../analysis/ownership/windows-link-order.md) maps
+functions to their original objects: the game and its engine library were
+linked alphabetically by source file, which also shows where mobile object
+labels have drifted from this build.
 
 The [current Path context controls](path-context-20260922.md) preserve all
 extracted bytes for LoopOut, Turnover, TurnoverDouble, and Worm in isolated,

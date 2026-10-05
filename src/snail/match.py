@@ -4302,7 +4302,7 @@ def run_match_dump(
 
 
 DEFAULT_MATCH_ROOT = Path(__file__).resolve().parents[2] / "tools/match"
-DEFAULT_SCRATCH_COMPILER = "msvc6.5"
+DEFAULT_SCRATCH_COMPILER = "msvc6.3"
 DEFAULT_SCRATCH_CFLAGS = "/O2 /G5 /W3"
 RECOVERY_VALUES = frozenset(("incomplete", "semantic-complete"))
 RESIDUAL_VALUES = frozenset(("analysis", "compiler", "references"))
@@ -8069,7 +8069,7 @@ STATUS_SECTION_ORDER = (
     "Excluded: Third-party",
 )
 # Build column stays empty unless a scratch deviates from the project-standard
-# reproduction baseline (the msvc6.5 nickname for SP5-style VC6, /O2 /G5 /W3).
+# reproduction baseline (msvc6.3: VC6 SP3 frontend 8472 + backend 8447, /O2 /G5 /W3).
 STATUS_HEADER = (
     "",
     "function",

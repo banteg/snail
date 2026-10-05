@@ -568,3 +568,10 @@ The retained source is unchanged.
 temporaries.
 
 Evidence: `/private/tmp/claude-501/sm/codex/initialize_worm_path_template_pair/RESULTS.md`.
+
+## 2026-10-05 compiler baseline
+
+The original build cannot have used the SP5 frontend this match was made
+with (see the [compiler identification](../../compiler-identification-20261005.md)). Under the corrected baseline, msvc6.3, the unchanged
+source scores 91.54% (91.88% before); the source shape was fitted to the newer frontend and
+needs rework under msvc6.3.

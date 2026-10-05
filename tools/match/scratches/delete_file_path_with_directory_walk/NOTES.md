@@ -24,5 +24,6 @@ masked operands: 14 ok, 0 unresolved, 0 mismatch
 and 14 clean masked operands survive removal of the opaque `File` and six local
 CRT declarations.
 
-The file-utility run 0x430f30-0x431d60 now uses `COMPILER=msvc6.0` as one
-C++ object; see [the profile control](../../file-utility-profile-20261005.md).
+The file-utility run 0x430f30-0x431d60 compiles as part of the RShell C++
+object under the project baseline, msvc6.3; see the
+[compiler identification](../../compiler-identification-20261005.md).

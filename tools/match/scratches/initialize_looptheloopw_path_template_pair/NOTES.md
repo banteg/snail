@@ -395,3 +395,10 @@ Not retained: the `primary_top`/`secondary_top` copies above reach 100% normaliz
 but are pure copies of an existing local, the same class rejected for
 traverse_path_follow_golb and explode_slug_hazard; the function would remain one
 SIB byte short either way.
+
+## 2026-10-05 compiler baseline
+
+The original build cannot have used the SP5 frontend this match was made
+with (see the [compiler identification](../../compiler-identification-20261005.md)). Under the corrected baseline, msvc6.3, the unchanged
+source scores 96.17% (99.87% before); the source shape was fitted to the newer frontend and
+needs rework under msvc6.3.

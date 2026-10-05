@@ -147,3 +147,10 @@ not a new gain over that seed or a complete improvement over the canonical
 The [unchanged-source compiler controls](profile-controls-20260907.md) record
 the actual 8447 components, all six platform comparisons, twelve exact
 neighbors, and three core comparisons. None resolves the current residuals.
+
+## 2026-10-05 compiler baseline
+
+This scratch compiled as C (`/TC`) at 66.38%. Its DatBuild object is C++: under
+msvc6.3 nine of ten members are exact as C++ and four cannot compile as C.
+As C++ the unchanged source scores 25.22%, so the C-mode score was a
+source-shape coincidence and the body needs a C++ shape; see the [compiler identification](../../compiler-identification-20261005.md).

@@ -1,11 +1,11 @@
 #!/bin/sh
-# Run a preserved VC6 bundle under Wibo. MSVC_VER defaults to the project's
-# msvc6.5 nickname for its SP5-style frontend/backend combination.
+# Run a preserved VC6 bundle under Wibo. MSVC_VER defaults to the project
+# baseline, msvc6.3 (VC6 SP3: frontend 8472, backend 8447).
 # Usage: cl.sh [cl args...]
 set -eu
 
 MATCH_ROOT="$(cd "$(dirname "$0")" && pwd)"
-MSVC_VER="${MSVC_VER:-msvc6.5}"
+MSVC_VER="${MSVC_VER:-msvc6.3}"
 MSVC_ROOT="$MATCH_ROOT/compilers/$MSVC_VER"
 WIBO="${WIBO:-}"
 

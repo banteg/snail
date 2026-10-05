@@ -23,7 +23,7 @@ def grouped_scratches(tmp_path):
         "schema": 1,
         "units": [{"name": "pair", "source_object": "Pair.o", "members": ["first", "second"]}],
     }))
-    compiler = root / "compilers" / "msvc6.5" / "Bin"
+    compiler = root / "compilers" / match.DEFAULT_SCRATCH_COMPILER / "Bin"
     compiler.mkdir(parents=True)
     (compiler / "CL.EXE").write_bytes(b"fixture")
     (root / "cl.sh").write_text("fixture")

@@ -202,3 +202,10 @@ explicitly (0x117/0x119/0x11b) before `local_x` (0x1bb). The Y product at target
   reads y first.
 
 Not adopted. Open: the kind-42 store schedule under `*=`.
+
+## 2026-10-05 compiler baseline
+
+The original build cannot have used the SP5 frontend this match was made
+with (see the [compiler identification](../../compiler-identification-20261005.md)). Under the corrected baseline, msvc6.3, the unchanged
+source scores 97.66% (97.93% before); the source shape was fitted to the newer frontend and
+needs rework under msvc6.3.

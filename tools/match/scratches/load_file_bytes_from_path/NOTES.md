@@ -7,7 +7,7 @@ zero asks `get_stream_length_preserve_position` for the full file size.
 Focused match: 100%, 59/59 instructions, with nine clean masked operands.
 
 The missing-file path mirrors the other file helpers by capturing `_getcwd` and
-printing the warning, so this scratch compiles as C (`/TC`) to preserve the
+printing the warning, so this scratch was first matched as C (`/TC`) to preserve the
 native cleanup shape.
 
 2026-07-15 CRT ownership: `<stdio.h>`, `<stdlib.h>`, and `<direct.h>` now own
@@ -23,3 +23,9 @@ the two-argument overload reaches each with null size output and a zero final
 argument. Windows owns the desktop `fopen`/allocation implementation while
 Android delegates to its platform backend, so the mapping establishes the
 operation and unit without transferring platform behavior.
+
+## 2026-10-05 compiler baseline
+
+The C-mode choice compensated for the SP5 C++ frontend. Under the corrected
+baseline, msvc6.3, the unchanged source is exact as C++, and its object is
+C++; see the [compiler identification](../../compiler-identification-20261005.md).

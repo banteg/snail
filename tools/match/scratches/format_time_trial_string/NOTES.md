@@ -20,14 +20,14 @@ Behavior:
 
 Focused match: 100%, 36/36 instructions, with twelve clean masked operands.
 
-This scratch compiles as C (`/TC`) with a local C-compatible `Time`
+This scratch was first matched as C (`/TC`) with a local C-compatible `Time`
 layout shell. C-mode MSVC 6.5 coalesces cdecl stack cleanup across the two
 adjacent non-zero-branch `sprintf` calls, producing the native `add esp, 0x28`
 after the second call.
 
 2026-06-20 local C-view naming: the local timer shell is now
 `TimeTrialTimeCView`. The shared `game_time.h` class is the right C++ owner,
-but this `/TC` scratch deliberately keeps a C-compatible view.
+but this scratch keeps the C-compatible view from its `/TC` history.
 The focused match stays exact at `100.00%`, `36/36`, with `12 ok` masked
 operands, and the type report no longer advertises the local view as a
 promotable local duplicate.
@@ -80,3 +80,9 @@ and all 12 clean references. The five-function batch also includes
 exact formatted-output controls. C++-to-C symbol spelling may change the raw
 COFF digest while leaving normalized instructions and audited references
 unchanged. No compiler or source declaration change is retained.
+
+## 2026-10-05 compiler baseline
+
+The C-mode choice compensated for the SP5 C++ frontend. Under the corrected
+baseline, msvc6.3, the unchanged source is exact as C++, and its object is
+C++; see the [compiler identification](../../compiler-identification-20261005.md).

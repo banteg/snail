@@ -4788,7 +4788,7 @@ def test_masked_operand_audit_uses_cached_detailed_match(
     config = ScratchConfig(
         directory=scratch_dir,
         function="foo",
-        compiler="msvc6.5",
+        compiler=match_module.DEFAULT_SCRATCH_COMPILER,
         cflags="/O2 /G5 /W3",
         end_va=None,
         symbol=None,

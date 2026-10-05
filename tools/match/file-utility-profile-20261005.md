@@ -2,6 +2,11 @@
 
 Date: 2026-10-05
 
+Superseded the same day by the
+[compiler identification](compiler-identification-20261005.md): the interleaving it
+resolves comes from the frontend, and the project baseline is now msvc6.3,
+which reproduces the whole run as C++ without a per-object override.
+
 The native run `0x430f30`-`0x431d60` (archive/file access, tracked allocation,
 and the `report_*f` wrappers) had per-function profiles that alternated:
 
