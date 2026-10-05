@@ -4618,6 +4618,12 @@ def resolve_scratch_directory(
     return path.resolve()
 
 
+def _parse_end_va(config_path: Path, value: str) -> int:
+    if not re.fullmatch(r"0x[0-9a-fA-F]+|[0-9]+", value):
+        raise ValueError(f"{config_path} END must be a hex or decimal address, not {value!r}")
+    return int(value, 0)
+
+
 def load_scratch_config(directory: Path) -> ScratchConfig:
     import shlex
 
@@ -4684,7 +4690,7 @@ def load_scratch_config(directory: Path) -> ScratchConfig:
         function=values["FUNCTION"],
         compiler=values.get("COMPILER", DEFAULT_SCRATCH_COMPILER),
         cflags=values.get("CFLAGS", DEFAULT_SCRATCH_CFLAGS),
-        end_va=int(values["END"], 0) if "END" in values else None,
+        end_va=_parse_end_va(config_path, values["END"]) if "END" in values else None,
         symbol=values.get("SYMBOL"),
         recovery=recovery,
         residuals=residuals,
@@ -5076,6 +5082,8 @@ def _scratch_build_key(
     return {
         "compiler": config.compiler,
         "runner_command": os.environ.get("WIBO") or "auto",
+        # CL prepends these to its command line, so they change the object.
+        "cl_env": {name: os.environ.get(name) for name in ("CL", "_CL_")},
         "argv": list(_scratch_compile_argv(config, match_root)),
         "dependencies": [
             [str(path.relative_to(match_root) if path.is_relative_to(match_root) else path), _file_sha256(path)]
@@ -5100,10 +5108,12 @@ def scratch_dependency_sha256(
         if resolved == source:
             name = "scratch.cpp"
         else:
+            # Content identifies files outside the root (an installed runner),
+            # so receipts compare across machines and WIBO settings.
             try:
                 name = resolved.relative_to(root).as_posix()
             except ValueError:
-                name = str(resolved)
+                name = f"external/{resolved.name}"
         dependencies.append(
             [name, hashlib.sha256(resolved.read_bytes()).hexdigest()]
         )

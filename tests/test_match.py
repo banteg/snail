@@ -5401,3 +5401,27 @@ def test_load_scratch_config_keeps_hash_in_values_and_rejects_empty(tmp_path: Pa
     conf.write_text("FUNCTION=foo\nCFLAGS=\n")
     with pytest.raises(ValueError, match="empty CFLAGS"):
         load_scratch_config(scratch_dir)
+
+
+@pytest.mark.parametrize("end", ["0b101", "0o17", "1_000", "-5", "0x"])
+def test_load_scratch_config_rejects_loose_end_forms(tmp_path: Path, end: str) -> None:
+    from snail.match import load_scratch_config
+
+    (tmp_path / "scratch.conf").write_text(f"FUNCTION=foo END={end}\n")
+    with pytest.raises(ValueError, match="END must be a hex or decimal address"):
+        load_scratch_config(tmp_path)
+
+
+def test_build_key_tracks_cl_option_environment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from snail.match import ScratchConfig, _scratch_build_key
+
+    scratch = tmp_path / "scratches/foo"
+    scratch.mkdir(parents=True)
+    (scratch / "scratch.cpp").write_text("int foo;\n")
+    config = ScratchConfig(scratch, "foo", "msvc6.5", "/O2 /G5 /W3", None, None)
+    monkeypatch.delenv("CL", raising=False)
+    before = _scratch_build_key(config, tmp_path)
+    monkeypatch.setenv("CL", "/Ox")
+    assert _scratch_build_key(config, tmp_path) != before
