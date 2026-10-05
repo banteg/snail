@@ -50,28 +50,37 @@ from snail import match as m
 
 c2 = t.c2
 
-# C2.DLL RVAs (image base 0x10700000), pinned by the profile's C2 SHA-256.
-FUNCTION_ENTRY_HOOK = rot.FUNCTION_ENTRY_HOOK
-FINAL_HOOK = rot.FINAL_HOOK
-GRAPH_HOOK = {
-    "site": 0x375A2,
-    "target": 0x3AF90,
-    "return": False,
-}  # sched_list_schedule(graph)
-CYCLE_HOOK = {
-    "site": 0x3B054,
-    "target": 0x3B176,
-    "return": False,
-}  # sched_select_cycle(cycle)
-PICK_HOOK = {
-    "site": 0x3B252,
-    "target": 0x3B53E,
-    "return": False,
-}  # sched_ready_remove(node)
-READY_HEAD = 0x9F278
-UNITS = 0x991D8  # per unit: busy cycles (dword) at +0, 12-byte stride
-CUR_FUNC_SYM = 0xAC378
-REGISTER_SYMBOLS = 0xAC730
+# C2.DLL RVAs come from the compiler's observer profile (`scheduler` section);
+# use_backend() binds them. msvc6.5 values, for documentation:
+# sched_list_schedule(graph) 0x3af90 called at 0x375a2, sched_select_cycle(cycle)
+# 0x3b176 at 0x3b054, sched_ready_remove(node) 0x3b53e at 0x3b252; the ready
+# list head 0x9f278, units 0x991d8 (busy cycles at +0, 12-byte stride), the
+# current function symbol 0xac378, register symbols 0xac730, the fmul block
+# 0xac2d8 (cycles before the next fmul may issue), the alias class count
+# 0x9d670 (ids at or above it are field records) and field records 0x9d6bc
+# (primary class, bit, mask).
+FUNCTION_ENTRY_HOOK = FINAL_HOOK = GRAPH_HOOK = CYCLE_HOOK = PICK_HOOK = None
+READY_HEAD = UNITS = CUR_FUNC_SYM = REGISTER_SYMBOLS = None
+FMUL_BLOCK = ALIAS_CLASS_COUNT = ALIAS_RECORDS = None
+
+
+def use_backend(compiler):
+    """Bind this module's C2 addresses to `compiler`'s observer profile."""
+    global FUNCTION_ENTRY_HOOK, FINAL_HOOK, GRAPH_HOOK, CYCLE_HOOK, PICK_HOOK
+    global READY_HEAD, UNITS, CUR_FUNC_SYM, REGISTER_SYMBOLS
+    global FMUL_BLOCK, ALIAS_CLASS_COUNT, ALIAS_RECORDS
+    profile = rot.use_backend(compiler)
+    sched = profile["scheduler"]
+    FUNCTION_ENTRY_HOOK, FINAL_HOOK = rot.FUNCTION_ENTRY_HOOK, rot.FINAL_HOOK
+    GRAPH_HOOK, CYCLE_HOOK, PICK_HOOK = sched["graph_hook"], sched["cycle_hook"], sched["pick_hook"]
+    READY_HEAD, UNITS = sched["ready_head"], sched["units"]
+    CUR_FUNC_SYM, REGISTER_SYMBOLS = sched["current_function_symbol"], rot.REGISTER_DESCRIPTORS
+    FMUL_BLOCK, ALIAS_CLASS_COUNT = sched["fmul_block"], sched["alias_class_count"]
+    ALIAS_RECORDS = sched["alias_records"]
+    return profile
+
+
+use_backend(m.DEFAULT_SCRATCH_COMPILER)
 REGISTER_SIZE = 0x54
 
 MAX_OPS = 8
@@ -81,9 +90,6 @@ OP_WORDS = OP_RAW + 2 + 3 + 6 + 4
 NODE_HEAD = 14
 MAX_EDGES = 1024
 MAX_READY = 128
-FMUL_BLOCK = 0xAC2D8  # cycles before the next fmul may issue
-ALIAS_CLASS_COUNT = 0x9D670  # ids at or above it are field records
-ALIAS_RECORDS = 0x9D6BC  # field records: (primary class, bit, mask)
 
 RECORDER = r"""
 static HANDLE sched_file;
@@ -262,7 +268,7 @@ def observer(profile, stock_source):
 def run_observer(scratch, out):
     """Preserving run: whole-COFF identity and matcher metrics are checked by the adapter."""
     stock_profile, stock_source = c2.load_profile, c2.observer_source
-    profile = stock_profile()
+    profile = use_backend(m.load_scratch_config(scratch).compiler)
     hooks = [FUNCTION_ENTRY_HOOK, FINAL_HOOK, GRAPH_HOOK, CYCLE_HOOK, PICK_HOOK]
     profile = dict(profile, name=profile["name"] + "-schedule", hooks=hooks)
     c2.load_profile = lambda: profile

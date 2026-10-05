@@ -79,6 +79,46 @@ def map_function(old, new, rva):
     return None, 0
 
 
+def containing_function(image, rva):
+    starts = [t for t in image.calls if t <= rva]
+    return max(starts) if starts else None
+
+
+def map_data(old, new, rva):
+    """Map a data RVA through instructions that reference it absolutely.
+
+    Each referencing instruction is located by its index inside its routine;
+    the mapped routine's instruction at the same index supplies the operand.
+    Returns {new_rva: votes}.
+    """
+    needle = (old.base + rva).to_bytes(4, "little")
+    votes = collections.Counter()
+    for offset in range(len(old.data) - 4):
+        if old.data[offset : offset + 4] != needle:
+            continue
+        site = old.va + offset
+        start = containing_function(old, site)
+        if start is None:
+            continue
+        mapped, _ = map_function(old, new, start)
+        if mapped is None:
+            continue
+        old_insns = list(old.md.disasm(old.data[start - old.va : site - old.va + 16], old.base + start))
+        index = next((i for i, insn in enumerate(old_insns)
+                      if insn.address - old.base <= site < insn.address - old.base + insn.size), None)
+        if index is None:
+            continue
+        new_insns = list(new.md.disasm(new.data[mapped - new.va : mapped - new.va + 16 * (index + 2)], new.base + mapped))
+        if index >= len(new_insns) or new_insns[index].mnemonic != old_insns[index].mnemonic:
+            continue
+        delta = site - (old_insns[index].address - old.base)
+        raw = bytes(new_insns[index].bytes)[delta : delta + 4]
+        if len(raw) == 4:
+            value = int.from_bytes(raw, "little") - new.base
+            votes[value + 0] += 1
+    return votes
+
+
 def map_site(old, new, site, new_target, width=12):
     before, after = old.backward(site, width), old.forward(site + 5, width)
     scored = sorted(
@@ -98,6 +138,7 @@ def main():
     parser.add_argument("target")
     parser.add_argument("--function", type=lambda v: int(v, 0), action="append", default=[])
     parser.add_argument("--site", action="append", default=[], help="SITE:TARGET in the source backend")
+    parser.add_argument("--data", type=lambda v: int(v, 0), action="append", default=[], help="data RVA")
     parser.add_argument("--profile", action="store_true", help="map every hook in observer/<source>.json")
     args = parser.parse_args()
     old, new = Backend(args.source), Backend(args.target)
@@ -109,6 +150,9 @@ def main():
         sites += [(h["site"], h["target"]) for h in hooks]
         sites += [(s, order["allocator"]) for s in order["allocator_sites"]]
         print("invoke", hex(old.exports["_InvokeCompilerPass@12"]), "->", hex(new.exports["_InvokeCompilerPass@12"]))
+    for rva in args.data:
+        votes = map_data(old, new, rva)
+        print(f"data {rva:#x} -> " + (", ".join(f"{v:#x} ({n})" for v, n in votes.most_common(3)) or "unmapped"))
     for rva in args.function:
         mapped, length = map_function(old, new, rva)
         print(f"function {rva:#x} -> {mapped:#x} (signature {length})" if mapped else f"function {rva:#x} -> unmapped")

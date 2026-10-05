@@ -233,5 +233,47 @@
       "target": 64730,
       "return": false
     }
-  ]
+  ],
+  "rotation": {
+    "final_hook": {
+      "site": 361905,
+      "target": 257002,
+      "return": false
+    },
+    "selector_hook": {
+      "site": 230836,
+      "target": 248188,
+      "return": true
+    },
+    "register_descriptors": 706352,
+    "order_list": 712692,
+    "cursor": 644880,
+    "holders": 644844,
+    "conflicts": 644808,
+    "rotate_enabled": 704692,
+    "bit_test": 9501
+  },
+  "scheduler": {
+    "graph_hook": {
+      "site": 226722,
+      "target": 241552,
+      "return": false
+    },
+    "cycle_hook": {
+      "site": 241748,
+      "target": 242038,
+      "return": false
+    },
+    "pick_hook": {
+      "site": 242258,
+      "target": 243006,
+      "return": false
+    },
+    "ready_head": 651896,
+    "units": 627160,
+    "current_function_symbol": 705400,
+    "fmul_block": 705240,
+    "alias_class_count": 644720,
+    "alias_records": 644796
+  }
 }

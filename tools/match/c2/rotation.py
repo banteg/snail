@@ -27,15 +27,34 @@ from snail import match as m
 
 c2 = t.c2
 
-# C2.DLL RVAs (image base 0x10700000), pinned by the profile's C2 SHA-256.
-FUNCTION_ENTRY_HOOK = {"site": 0x581EE, "target": 0x130CB, "return": False}
-SELECTOR_HOOK = {"site": 0x385B4, "target": 0x3C97C, "return": True}
-FINAL_HOOK = {
-    "site": 0x585B1,
-    "target": 0x3EBEA,
-    "return": False,
-}  # late pass, esi = function
-REGISTER_DESCRIPTORS = 0xAC730  # 0x54-byte descriptor per register number
+# C2.DLL RVAs come from the compiler's observer profile (`rotation` section);
+# use_backend() binds them. Values below are msvc6.5's, for documentation:
+# the selector 0x3c97c and its only call 0x385b4, the late pass 0x3ebea
+# (esi = function), 0x54-byte register descriptors at 0xac730, the order list
+# 0xadff4 (1,2,3,7,8,4,6,0: eax ecx edx esi edi ebx ebp), the cursor 0x9d710
+# (reset per function), holders 0x9d6ec ([reg] -> occupying operand),
+# conflicts 0x9d6c8 ([reg] -> temporaries that must avoid it), the rotate
+# flag 0xac0b4 and the bit test 0x251d.
+FUNCTION_ENTRY_HOOK = SELECTOR_HOOK = FINAL_HOOK = None
+REGISTER_DESCRIPTORS = ORDER_LIST = CURSOR = HOLDERS = CONFLICTS = None
+ROTATE_ENABLED = BIT_TEST = None
+
+
+def use_backend(compiler):
+    """Bind this module's C2 addresses to `compiler`'s observer profile."""
+    global FUNCTION_ENTRY_HOOK, SELECTOR_HOOK, FINAL_HOOK, REGISTER_DESCRIPTORS
+    global ORDER_LIST, CURSOR, HOLDERS, CONFLICTS, ROTATE_ENABLED, BIT_TEST
+    profile = c2.load_profile(compiler)
+    rotation = profile["rotation"]
+    FUNCTION_ENTRY_HOOK = profile["address_order"]["function_entry"]
+    SELECTOR_HOOK, FINAL_HOOK = rotation["selector_hook"], rotation["final_hook"]
+    REGISTER_DESCRIPTORS, ORDER_LIST = rotation["register_descriptors"], rotation["order_list"]
+    CURSOR, HOLDERS, CONFLICTS = rotation["cursor"], rotation["holders"], rotation["conflicts"]
+    ROTATE_ENABLED, BIT_TEST = rotation["rotate_enabled"], rotation["bit_test"]
+    return profile
+
+
+use_backend(m.DEFAULT_SCRATCH_COMPILER)
 DESCRIPTOR_SIZE = 0x54
 ORDER_LIST = 0xADFF4  # 1,2,3,7,8,4,6,0: eax ecx edx esi edi ebx ebp
 CURSOR = 0x9D710  # pointer into ORDER_LIST, reset per function at +0x3375e
@@ -156,7 +175,7 @@ def observer(profile, stock_source):
 def run_observer(scratch, out):
     """Preserving run: whole-COFF identity and matcher metrics are checked by the adapter."""
     stock_profile, stock_source = c2.load_profile, c2.observer_source
-    profile = stock_profile()
+    profile = use_backend(m.load_scratch_config(scratch).compiler)
     hooks = [FUNCTION_ENTRY_HOOK, FINAL_HOOK, SELECTOR_HOOK]
     profile = dict(profile, name=profile["name"] + "-rotation", hooks=hooks)
     c2.load_profile = lambda: profile
