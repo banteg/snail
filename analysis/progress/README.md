@@ -125,9 +125,10 @@ symbol. Our reference audit remains useful additional proof.
   code. No port-relevance filter. Code-section data and uncontested alignment are
   outside the code measure; data progress is not reported.
 - **Units:** disjoint native function-body code ranges, not recovered original
-  translation units. Curated owners take priority, then BN, IDA, and Ghidra;
-  within each class the highest entry address owns shared ranges. Empty duplicate
-  owners are omitted. Every byte is counted once. Five unassigned code runs are
+  translation units. Curated owners take priority, then verified library
+  bodies from the ownership attribution, then BN, IDA, and Ghidra; within each
+  class a shared byte belongs to the nearest entry at or before it, so no owner
+  loses its own entry to a later function. Empty duplicate owners are omitted. Every byte is counted once. Five unassigned code runs are
   explicit zero-progress units, without invented function-count credit.
 - **Matched:** an actual source-built scratch with 100% normalized instruction
   identity, encoded-body proof, and a clean positional reference audit. Its decoded, compared ranges

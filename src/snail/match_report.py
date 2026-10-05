@@ -60,12 +60,21 @@ def file_hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+# Modules that compile, score, or account for report evidence. Diagnostic
+# tooling (probes, mutation sweeps, storage and link checks) is excluded so
+# editing it is not mistaken for a measurement-baseline change.
+SCORING_MODULES = frozenset({
+    "match", "match_report", "match_fuzzy", "match_objdiff",
+    "symbols", "code_inventory", "library_attribution",
+})
+
+
 def _input_path(path: str) -> bool:
     p = Path(path)
     if path in {"pyproject.toml", "uv.lock"}:
         return True
     if path.startswith("src/snail/") and p.suffix == ".py":
-        return p.stem.startswith("match") or p.stem in {"symbols", "code_inventory", "library_attribution"}
+        return p.stem in SCORING_MODULES
     if path.startswith("analysis/symbols/"):
         return p.name in {"gameplay-functions.json", "gameplay-references.json"}
     if path.startswith("analysis/progress/"):
@@ -75,17 +84,27 @@ def _input_path(path: str) -> bool:
     if path in {"tools/match/cl.sh", "tools/match/translation_units.json"}:
         return True
     return path.startswith("tools/match/") and (
-        p.name in {"scratch.cpp", "scratch.conf", "fetch_objdiff.py"} or p.suffix in {".h", ".hpp", ".inc"}
+        p.name in {"scratch.cpp", "scratch.conf", "fetch_objdiff.py"}
+        or p.suffix.lower() in {".h", ".hpp", ".inc"}
     )
+
+
+def _git_paths(root: Path, *options: str) -> set[str]:
+    result = subprocess.run(
+        ["git", "ls-files", *options, "-z"], cwd=root, capture_output=True, check=True,
+    )
+    return {p for p in result.stdout.decode().split("\0") if p and _input_path(p)}
 
 
 def repository_inputs(root: Path = REPO_ROOT) -> dict[str, str]:
-    result = subprocess.run(
-        ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
-        cwd=root, capture_output=True, check=True,
-    )
-    paths = sorted({p for p in result.stdout.decode().split("\0") if p and _input_path(p)})
-    return {p: file_hash(root / p) for p in paths}
+    # CI checks out only tracked files; evidence built from an untracked input
+    # could never be reproduced there, so refuse it up front.
+    untracked = sorted(_git_paths(root, "--others", "--exclude-standard"))
+    if untracked:
+        raise ValueError(
+            "untracked report inputs; commit or remove them first: " + ", ".join(untracked)
+        )
+    return {p: file_hash(root / p) for p in sorted(_git_paths(root, "--cached"))}
 
 
 def _runs(addresses: list[int]) -> list[list[int]]:
@@ -101,11 +120,13 @@ def _runs(addresses: list[int]) -> list[list[int]]:
 def inventory() -> list[dict[str, Any]]:
     """Disjoint public symbols, including every retained code byte exactly once.
 
-Prefer curated ownership, then BN, IDA and Ghidra body owners. Shared tails
-    belong to the highest entry address within each priority class. Unowned runs get explicit units,
-not invented recovered functions. All extents remain inspectable in the report
-evidence and source bounds are checked before granting an exact match.
-"""
+    Prefer curated ownership, then verified library-attribution bodies, then
+    BN, IDA and Ghidra body owners. Within a priority class a shared byte
+    belongs to the nearest entry at or before it, so no owner loses its own
+    entry to a later function. Unowned runs get explicit units, not invented
+    recovered functions. All extents remain inspectable in the report
+    evidence and source bounds are checked before granting an exact match.
+    """
     raw = json.loads((PROGRESS / "executable-code-inventory.json").read_text())
     for name, digest in raw["inputs"].items():
         path = (REPO_ROOT / "analysis/symbols" if name == "gameplay-functions.json" else PROGRESS) / name
@@ -130,16 +151,46 @@ evidence and source bounds are checked before granting an exact match.
     expected = len(remaining)
     if expected != raw["summary"]["denominator_bytes"]:
         raise ValueError("full-executable denominator summary differs from ranges")
+    attribution = _load_attribution()
+
+    def priority(function: dict[str, Any]) -> int:
+        if "curated_name" in function:
+            return 0
+        if function["start"] in attribution:
+            return 1
+        names = function["names"]
+        return 2 if "binja" in names else 3 if "ida" in names else 4
+
+    def claimed(function: dict[str, Any]) -> set[int]:
+        ranges = function["ranges"]
+        if priority(function) == 1:
+            ranges = [*ranges, *attribution[function["start"]]["body_ranges"]]
+        return {a for start, end in ranges for a in range(start, end)}
+
+    owners: dict[int, dict[str, Any]] = {}
+    for rank in range(5):
+        claims: dict[int, list[dict[str, Any]]] = {}
+        for function in raw["functions"]:
+            if priority(function) == rank:
+                for address in claimed(function) & remaining:
+                    claims.setdefault(address, []).append(function)
+        for address, claimants in claims.items():
+            preceding = [f for f in claimants if f["start"] <= address]
+            owners[address] = (
+                max(preceding, key=lambda f: f["start"])
+                if preceding
+                else min(claimants, key=lambda f: f["start"])
+            )
+        remaining.difference_update(claims)
+    owned_by: dict[int, list[int]] = {}
+    for address, function in owners.items():
+        owned_by.setdefault(function["start"], []).append(address)
+
     rows = []
-    ordered = sorted(raw["functions"], key=lambda f: (
-        0 if "curated_name" in f else 1 if "binja" in f["names"] else 2 if "ida" in f["names"] else 3,
-        -f["start"],
-    ))
-    for function in ordered:
-        owned = sorted({a for start, end in function["ranges"] for a in range(start, end)} & remaining)
+    for function in raw["functions"]:
+        owned = sorted(owned_by.get(function["start"], ()))
         if not owned:
             continue
-        remaining.difference_update(owned)
         names = function["names"]
         name = function.get("curated_name") or names.get("ida") or names.get("binja") or names["ghidra"]
         rows.append({
@@ -544,11 +595,17 @@ def refresh_evidence(*, jobs: int = matchlib.DEFAULT_MATCH_JOBS) -> dict[str, An
         "external_inputs": external,
         "functions": rows,
     }
-    previous = (
-        json.loads(DEFAULT_EVIDENCE.read_text()) if DEFAULT_EVIDENCE.exists() else None
-    )
-    evidence["progress_delta"] = progress_delta(previous, evidence)
+    evidence["progress_delta"] = progress_delta(_committed_evidence(), evidence)
     return evidence
+
+
+def _committed_evidence() -> dict[str, Any] | None:
+    """The evidence at HEAD, so repeated local refreshes keep one baseline."""
+    result = subprocess.run(
+        ["git", "show", f"HEAD:{DEFAULT_EVIDENCE.relative_to(REPO_ROOT).as_posix()}"],
+        cwd=REPO_ROOT, capture_output=True,
+    )
+    return json.loads(result.stdout) if result.returncode == 0 else None
 
 
 def stale_inputs(evidence: dict[str, Any] | None = None) -> list[str]:
@@ -823,7 +880,7 @@ def build_report(functions: list[dict[str, Any]]) -> dict[str, Any]:
         }
         if row["source"]:
             metadata["source_path"] = row["source"]
-        if not row["is_function"] or row["candidate"] in {"archive", "import-thunk"}:
+        if not row["is_function"]:
             metadata["auto_generated"] = True
         units.append(
             {

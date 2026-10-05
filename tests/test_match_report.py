@@ -181,6 +181,18 @@ def test_full_inventory_partitions_every_byte_once_and_keeps_curated_entries():
     assert any(not r["is_function"] for r in rows)
 
 
+def test_verified_library_bodies_own_their_bytes_and_keep_every_entry():
+    rows = {r["address"]: r for r in report.inventory()}
+    attribution = report._load_attribution()
+    # Every attributed library function keeps at least its own entry.
+    assert all(address in rows for address in attribution)
+    # sse2_D3DXMatrixInverse owns its verified body, not just 14 bytes of it.
+    owned = {a for s, e in rows[0x4672A0]["ranges"] for a in range(s, e)}
+    body = {a for s, e in attribution[0x4672A0]["body_ranges"] for a in range(s, e)}
+    assert body <= owned
+    assert 0x4672AE not in rows
+
+
 def test_added_or_deleted_source_invalidates_input_set(tmp_path: Path):
     import subprocess
 
@@ -188,8 +200,10 @@ def test_added_or_deleted_source_invalidates_input_set(tmp_path: Path):
     source = tmp_path / "tools/match/scratches/example/scratch.cpp"
     source.parent.mkdir(parents=True)
     source.write_text("void example() {}")
-    assert source.relative_to(tmp_path).as_posix() in report.repository_inputs(tmp_path)
+    with pytest.raises(ValueError, match="untracked report inputs"):
+        report.repository_inputs(tmp_path)
     subprocess.run(["git", "-C", str(tmp_path), "add", "."], check=True)
+    assert source.relative_to(tmp_path).as_posix() in report.repository_inputs(tmp_path)
     source.unlink()
     with pytest.raises(ValueError, match="missing report input"):
         report.repository_inputs(tmp_path)
@@ -236,6 +250,7 @@ def test_translation_unit_order_invalidates_report_inputs(tmp_path):
         "units": [{"name": "unit", "source_object": "Unit.o", "members": ["a", "b"]}],
     }
     units.write_text(json.dumps(first))
+    subprocess.run(["git", "-C", str(tmp_path), "add", "."], check=True)
     before = report.repository_inputs(tmp_path)
     first["units"][0]["members"].reverse()
     units.write_text(json.dumps(first))
