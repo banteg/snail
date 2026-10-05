@@ -1,14 +1,13 @@
 # Preserving VC6 observations for Snail
 
-`trace.py` adapts the sibling Crimson project's C2 observer to Snail's existing
-compiler driver, source validation, function boundaries and native matcher.
-Crimson must be checked out at `../crimson`, including its generalized
-`src/crimson/match_c2.py`, `match_c2_replay.py`, `tools/match/c2` assets, Wibo,
-compiler and generated Kernel32 import providers. The adapter neither edits
-Crimson nor adds it as a package dependency.
+`trace.py` runs Snail scratches through a preserving C2 observer vendored from
+the sibling Crimson project ([c2_observer.py](c2_observer.py),
+[c2_replay.py](c2_replay.py) and the C helpers in [observer/](observer/)). It
+captures the frontend's IL streams, replays the backend standalone, and
+records IL snapshots at hooked backend calls. No Crimson checkout is needed.
 
 ```sh
-UV_CACHE_DIR=/private/tmp/snail-mail-uv-cache uv run tools/match/c2/trace.py \
+uv run tools/match/c2/trace.py \
   tools/match/scratches/initialize_slalomdouble_path_template_pair \
   --passes-only --out /private/tmp/snail-slalom-trace
 ```
@@ -16,15 +15,25 @@ UV_CACHE_DIR=/private/tmp/snail-mail-uv-cache uv run tools/match/c2/trace.py \
 The output directory must be new. Omit `--passes-only` to include the repeated
 allocation hooks; the SlalomDouble pilot produced 382 events and about 900 MB
 of raw observations. `--early-addresses` instead selects 12 earlier expression
-passes around `C2+0xfc45`. This additional profile was verified on both retained
-SlalomDouble sources. The original Crimson reader and comparator are available
-as `c2.read_verified(path)`, `c2.summarize(events, line)` and
+passes around `C2+0xfc45` (msvc6.5 addresses). The reader and comparator are
+available as `c2.read_verified(path)`, `c2.summarize(events, line)` and
 `c2.compare(left_events, right_events)` from this module.
 
-Only the pinned `msvc6.5` bundle is supported. The adapter checks that both
-projects have identical CL, C1, C1XX, C2, MSPDB and LINK binaries. The upstream
-profile checks C2 SHA-256 before installing hooks; each instrumented CALL must
-have the expected opcode and destination. The installed compiler stays intact.
+Hook addresses live in one profile per backend, `observer/<compiler>.json`,
+selected by the scratch's compiler: `msvc6.5` (Crimson's original profile)
+and `msvc6.3`, the project baseline. The msvc6.3 profile was derived by
+matching each msvc6.5 hook's target routine and call site by masked
+instruction context; the cost, hash, sort and allocator routines are
+byte-identical code at shifted addresses. Each profile also records the
+address-order and early-address hooks. A profile's C2 SHA-256 is checked
+before any hook is installed, and each instrumented CALL must have the
+expected opcode and destination. The installed compiler stays intact.
+The decomp.me bundles ship no libraries, so the helpers link against a
+KERNEL32 import library and a weak-alias object built on first use.
+
+Tracers below that hardcode other msvc6.5 RVAs (`schedtrace.py`,
+`rotation.py`, `globalregs.py`, `cse_slot_trace.py`, ...) still target
+msvc6.5 scratches only; the observer rejects their hooks on another backend.
 Translation-unit members are rejected until their full source can be frozen.
 
 Normal, captured, standalone-replayed and observed **whole COFF objects** must
@@ -177,7 +186,8 @@ The sibling Crimson project keeps the generic C2 notes in
 propagation and FROUND, frame packing, layout, register allocation), with
 tracers in `../crimson/scripts/c2/`. [`run_tracer.py`](run_tracer.py) runs
 one of those tracers on a Snail scratch: it supplies this adapter as
-`crimson.match_c2`, so the tracer compiles and measures with Snail.
+`crimson.match_c2`, so the tracer compiles and measures with Snail. Crimson's
+tracers hardcode msvc6.5 addresses.
 `--match-root` compiles against another `tools/match` root.
 
 ```sh

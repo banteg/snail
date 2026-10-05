@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "name": "msvc6.3-c2-a0cc45f8",
+  "compiler": "msvc6.3",
+  "c2_sha256": "a0cc45f83fd0ed009aa4f43df5598105a1049ad9675de0b1089be7cce7d3c153",
+  "invoke_rva": 430032,
+  "hooks": [
+    {
+      "site": 426951,
+      "target": 79381,
+      "return": false
+    },
+    {
+      "site": 426965,
+      "target": 61936,
+      "return": false
+    },
+    {
+      "site": 427042,
+      "target": 155316,
+      "return": false
+    },
+    {
+      "site": 427194,
+      "target": 162809,
+      "return": false
+    },
+    {
+      "site": 427241,
+      "target": 163323,
+      "return": false
+    },
+    {
+      "site": 427255,
+      "target": 163784,
+      "return": false
+    },
+    {
+      "site": 427365,
+      "target": 182978,
+      "return": false
+    },
+    {
+      "site": 427384,
+      "target": 184723,
+      "return": false
+    },
+    {
+      "site": 185415,
+      "target": 187274,
+      "return": false
+    },
+    {
+      "site": 185428,
+      "target": 188227,
+      "return": false
+    },
+    {
+      "site": 185435,
+      "target": 189122,
+      "return": false
+    },
+    {
+      "site": 427422,
+      "target": 203247,
+      "return": false
+    },
+    {
+      "site": 185466,
+      "target": 186249,
+      "return": true
+    },
+    {
+      "site": 185475,
+      "target": 184723,
+      "return": true
+    },
+    {
+      "site": 185482,
+      "target": 189203,
+      "return": true
+    },
+    {
+      "site": 185525,
+      "target": 189241,
+      "return": true
+    },
+    {
+      "site": 185543,
+      "target": 140387,
+      "return": true
+    },
+    {
+      "site": 185560,
+      "target": 143879,
+      "return": true
+    },
+    {
+      "site": 185604,
+      "target": 148749,
+      "return": true
+    },
+    {
+      "site": 185678,
+      "target": 205927,
+      "return": true
+    },
+    {
+      "site": 186084,
+      "target": 145319,
+      "return": true
+    },
+    {
+      "site": 186102,
+      "target": 148931,
+      "return": true
+    },
+    {
+      "site": 186122,
+      "target": 149623,
+      "return": true
+    },
+    {
+      "site": 186220,
+      "target": 145178,
+      "return": true
+    },
+    {
+      "site": 186239,
+      "target": 417081,
+      "return": true
+    },
+    {
+      "site": 185812,
+      "target": 256246,
+      "return": true
+    },
+    {
+      "site": 185849,
+      "target": 140387,
+      "return": true
+    },
+    {
+      "site": 185883,
+      "target": 260527,
+      "return": true
+    },
+    {
+      "site": 185950,
+      "target": 150448,
+      "return": true
+    }
+  ],
+  "address_order": {
+    "function_entry": {
+      "site": 426951,
+      "target": 79381,
+      "return": false
+    },
+    "address_pass": {
+      "site": 427042,
+      "target": 155316,
+      "return": false
+    },
+    "allocator": 7590,
+    "allocator_sites": [
+      9113,
+      25792,
+      60867,
+      14480,
+      84791,
+      114014
+    ]
+  },
+  "early_address_hooks": [
+    {
+      "site": 426784,
+      "target": 44082,
+      "return": false
+    },
+    {
+      "site": 426803,
+      "target": 108289,
+      "return": false
+    },
+    {
+      "site": 426835,
+      "target": 82303,
+      "return": false
+    },
+    {
+      "site": 426856,
+      "target": 44218,
+      "return": false
+    },
+    {
+      "site": 426877,
+      "target": 62281,
+      "return": false
+    },
+    {
+      "site": 426891,
+      "target": 61936,
+      "return": false
+    },
+    {
+      "site": 426903,
+      "target": 42337,
+      "return": false
+    },
+    {
+      "site": 426910,
+      "target": 78613,
+      "return": false
+    },
+    {
+      "site": 426917,
+      "target": 79000,
+      "return": false
+    },
+    {
+      "site": 426932,
+      "target": 79092,
+      "return": false
+    },
+    {
+      "site": 426951,
+      "target": 79381,
+      "return": false
+    },
+    {
+      "site": 426965,
+      "target": 61936,
+      "return": false
+    }
+  ]
+}

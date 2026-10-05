@@ -152,7 +152,7 @@ def main() -> None:
     if not scratch.is_dir():
         scratch = m.DEFAULT_MATCH_ROOT / "scratches" / args.scratch
     work = rot.prepare(scratch, args.source, args.out.parent / (args.out.name + "-input"))
-    result, events, allocations = ao.run_observer(work, args.out)
+    result, events, allocations, _address_pass = ao.run_observer(work, args.out)
     c0, creation = ao.cse_origin(allocations)
     (event,) = [e for e in events if e["target_rva"] == ao.ADDRESS_PASS_HOOK["target"]]
     print(f"metrics: {result['metrics']}")

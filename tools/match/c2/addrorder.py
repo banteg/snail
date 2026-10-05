@@ -38,16 +38,13 @@ from snail import match as m
 
 c2 = t.c2
 
-# C2.DLL RVAs (image base 0x10700000), pinned by the profile's C2 SHA-256.
-FUNCTION_ENTRY_HOOK = {"site": 0x581EE, "target": 0x130CB, "return": False}
-# Entry of the pass after the early expression passes; operand order is final.
-ADDRESS_PASS_HOOK = {"site": 0x58249, "target": 0x281CD, "return": False}
-
-# The only CALLs of the symbol-record allocator C2+0x17eb: temporaries (0x2afa,
-# 0x10038), CSE/induction temporaries (0x7ec1), inline copies (0x3c34),
-# IL symbols (0x1db6b) and the per-function sentinel (0x1ba48).
-ALLOCATOR_SITES = (0x2AFA, 0x7EC1, 0x10038, 0x3C34, 0x1DB6B, 0x1BA48)
-ALLOCATOR = 0x17EB
+# C2.DLL RVAs come from the compiler's observer profile (`address_order`):
+# the function-entry hook, the entry of the pass after the early expression
+# passes (operand order is final there), the symbol-record allocator and its
+# only CALL sites. In msvc6.5 those are C2+0x17eb, called for temporaries
+# (0x2afa, 0x10038), CSE/induction temporaries (0x7ec1), inline copies
+# (0x3c34), IL symbols (0x1db6b) and the per-function sentinel (0x1ba48);
+# observer/msvc6.3.json maps the same calls in that backend.
 CSE_CLASS = 15  # allocation class of pool E, whose records become class 3
 
 ADD = 0x16D
@@ -143,9 +140,11 @@ def observer(profile, stock_source):
 def run_observer(scratch, out):
     """Preserving run: whole-COFF identity and matcher metrics are checked by the adapter."""
     stock_profile, stock_source = c2.load_profile, c2.observer_source
-    profile = stock_profile()
-    hooks = [FUNCTION_ENTRY_HOOK, ADDRESS_PASS_HOOK] + [
-        {"site": site, "target": ALLOCATOR, "return": True} for site in ALLOCATOR_SITES
+    profile = stock_profile(m.load_scratch_config(scratch).compiler)
+    order = profile["address_order"]
+    hooks = [order["function_entry"], order["address_pass"]] + [
+        {"site": site, "target": order["allocator"], "return": True}
+        for site in order["allocator_sites"]
     ]
     profile = dict(profile, name=profile["name"] + "-address-order", hooks=hooks)
     c2.load_profile = lambda: profile
@@ -154,7 +153,8 @@ def run_observer(scratch, out):
         result, events = t.trace(scratch, out)
     finally:
         c2.load_profile, c2.observer_source = stock_profile, stock_source
-    return result, events, decode_allocations((out / "observed/alloc.bin").read_bytes())
+    allocations = decode_allocations((out / "observed/alloc.bin").read_bytes())
+    return result, events, allocations, order["address_pass"]["target"]
 
 
 def decode_allocations(data):
@@ -419,9 +419,9 @@ def main():
         scratch = m.DEFAULT_MATCH_ROOT / "scratches" / args.scratch
     out = args.out or Path(tempfile.mkdtemp(prefix="c2addr-")) / "trace"
     work = rot.prepare(scratch, args.source, out.parent / (out.name + "-input"))
-    result, events, allocations = run_observer(work, out)
+    result, events, allocations, address_pass = run_observer(work, out)
     c0, creation = cse_origin(allocations)
-    (event,) = [e for e in events if e["target_rva"] == ADDRESS_PASS_HOOK["target"]]
+    (event,) = [e for e in events if e["target_rva"] == address_pass]
     config = m.load_scratch_config(work)
     source_text = (work / "scratch.cpp").read_text()
     base = body_line(source_text, config.symbol or config.function)
