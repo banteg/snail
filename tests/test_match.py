@@ -4151,6 +4151,15 @@ def test_normalize_keeps_tail_that_decodes_to_ret() -> None:
     assert normalize_function(code) == ("pop ebx", "ret", "ret 0x4339", "db 0x80", "db 0xad", "db 0x00", "db 0x43")
 
 
+def test_normalize_strips_padding_after_noreturn_call() -> None:
+    # call exit; nop x5: the call cannot return into the next function.
+    code = bytes.fromhex("e8f1ffffff") + b"\x90" * 5
+    lines = normalize_function(
+        code, address_range=(0x400000, 0x500000), base_address=0x401000,
+    )
+    assert lines == ("call ADDR",)
+
+
 def test_normalize_keeps_targeted_terminal_padding() -> None:
     # jmp targets the trailing nop, so it is code from the matcher perspective.
     code = bytes.fromhex("eb01") + bytes.fromhex("c3") + bytes.fromhex("90")
@@ -5295,3 +5304,16 @@ def test_lint_extern_declarations_flags_uncurated_alias(tmp_path: Path) -> None:
     )
     assert [finding.status for finding in findings] == ["uncurated-alias"]
     assert findings[0].name == "g_scales/g_widths"
+
+
+def test_ratio_counts_each_inline_table_once() -> None:
+    from snail.match import _ratio_tokens
+
+    def lines(*texts: str) -> tuple[DisassemblyLine, ...]:
+        return tuple(
+            DisassemblyLine(offset=i, address=0x401000 + i, text=t)
+            for i, t in enumerate(texts)
+        )
+
+    tokens = _ratio_tokens(lines("jmp dword [eax*4+ADDR]", "dd L10", "dd L20", "ret", "db.lookup 0x01"))
+    assert tokens == ("jmp dword [eax*4+ADDR]", "dd L10\ndd L20", "ret", "db.lookup 0x01")

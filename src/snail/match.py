@@ -3,7 +3,7 @@
 Compares a function compiled from a candidate C++ scratch (VC6 COFF object)
 against the same function in the original game image, after normalizing
 addresses and relocations away. The score is a SequenceMatcher ratio over
-normalized instruction text, so struct offsets, register choice, and
+normalized instruction text (each inline table counts once), so struct offsets, register choice, and
 instruction scheduling all count toward the match. The harness also reports
 the exact common instruction prefix before the first normalized mismatch.
 """
@@ -2311,8 +2311,11 @@ def _strip_trailing_unreferenced_lines(
         trim_start -= 1
     if not trim_start or trim_start == len(lines):
         return lines
+    # A call that only padding follows cannot return: control would run off
+    # the function into its neighbour, so the callee is noreturn (exit, abort)
+    # and the tail is alignment exactly as after ret/jmp.
     if (
-        lines[trim_start - 1].text.partition(" ")[0] not in {"ret", "retf", "jmp"}
+        lines[trim_start - 1].text.partition(" ")[0] not in {"ret", "retf", "jmp", "call"}
         and not _is_inline_data(lines[trim_start - 1])
     ):
         return lines
@@ -3393,7 +3396,11 @@ def match_function(
     )
     target_lines = tuple(line.text for line in target_disassembly)
     candidate_lines = tuple(line.text for line in candidate_disassembly)
-    ratio = difflib.SequenceMatcher(a=target_lines, b=candidate_lines, autojunk=False).ratio()
+    ratio = difflib.SequenceMatcher(
+        a=_ratio_tokens(target_disassembly),
+        b=_ratio_tokens(candidate_disassembly),
+        autojunk=False,
+    ).ratio()
     prefix_instructions = common_prefix_length(target_lines, candidate_lines)
     audit = audit_masked_operands(target_disassembly, candidate_disassembly)
     compared, excluded, unexplained = comparison_ranges(
@@ -3424,6 +3431,26 @@ def match_function(
         candidate_disassembly=candidate_disassembly,
         masked_operand_audit=audit,
     )
+
+
+def _ratio_tokens(lines: tuple[DisassemblyLine, ...]) -> tuple[str, ...]:
+    """Instruction text with each inline table collapsed into one token.
+
+    A jump or lookup table is one compiler artifact; scoring each entry as an
+    instruction would let a large table outweigh the code around it.
+    """
+    tokens: list[str] = []
+    in_table = False
+    for line in lines:
+        if not _is_inline_data(line):
+            tokens.append(line.text)
+            in_table = False
+        elif in_table:
+            tokens[-1] += "\n" + line.text
+        else:
+            tokens.append(line.text)
+            in_table = True
+    return tuple(tokens)
 
 
 def common_prefix_length(target_lines: tuple[str, ...], candidate_lines: tuple[str, ...]) -> int:
