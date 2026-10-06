@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**636/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **209449/294505** bytes (**71.12%**) are proof-grade, and overall fuzzy is **99.32%**.
+**637/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **210633/294505** bytes (**71.52%**) are proof-grade, and overall fuzzy is **99.32%**.
 
 **116/120** platform helpers matched, **120/120** have a scratch, **19889/22833** bytes (**87.11%**) are proof-grade, and overall fuzzy is **97.11%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -12,15 +12,15 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**26** non-exact scratch-backed functions hold **85056 target bytes** without proof-grade credit and **1992 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **57.3%** of that gap; the top 10 hold **86.1%**.
+**25** non-exact scratch-backed functions hold **83872 target bytes** without proof-grade credit and **1992 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **57.3%** of that gap; the top 10 hold **86.1%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **26 / 1992** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **0 functions / 0 gap bytes**; **25 / 1992** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
 Ranked by withheld target extent. Structural similarity masks caller-saved register names and local labels; it is diagnostic and grants no proof credit. Proof blockers come from the current matcher, independently of manual residual labels.
 
-Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instructions: 20 functions / 70800 bytes; references: 2 functions / 3872 bytes.
+Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instructions: 20 functions / 70800 bytes; references: 1 functions / 2688 bytes.
 
 | rank | function | withheld bytes | fuzzy gap | structural | changed insns t/c | blockers | recovery | residual | evidence | current/all | flags |
 |---:|---|---:|---:|---:|---:|---|---|---|---|---:|---|
@@ -45,14 +45,13 @@ Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instr
 | 19 | initialize_intro_screen | 1856 | 123 | 93.77% | 32/33 | instructions | semantic-complete | analysis | historical-only | 0/13 | repeated-variants,variant-errors,historical-only,stale-dependencies |
 | 20 | border_input_text | 1584 | 20 | 99.44% | 4/1 | instructions | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
 | 21 | calc_object_facequad_normals | 1408 | 23 | 99.08% | 5/3 | instructions | unspecified | unspecified | historical-only | 0/16 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 22 | construct_game_runtime | 1184 | 0 | 100.00% | 0/0 | references | unspecified | unspecified | historical-only | 0/1 | variant-errors,historical-only |
-| 23 | register_font_texture_sheet | 1040 | 139 | 92.50% | 21/20 | instructions | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
-| 24 | set_snail_weapon | 944 | 212 | 93.29% | 31/29 | instructions | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
-| 25 | try_enter_track_attachment_from_swept_motion | 800 | 8 | 99.02% | 2/2 | instructions | semantic-complete | analysis | historical-only | 0/13 | historical-only,stale-dependencies |
-| 26 | sample_smtrack_heightmap | 368 | 10 | 97.25% | 3/3 | instructions | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
+| 22 | register_font_texture_sheet | 1040 | 139 | 92.50% | 21/20 | instructions | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
+| 23 | set_snail_weapon | 944 | 212 | 93.29% | 31/29 | instructions | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
+| 24 | try_enter_track_attachment_from_swept_motion | 800 | 8 | 99.02% | 2/2 | instructions | semantic-complete | analysis | historical-only | 0/13 | historical-only,stale-dependencies |
+| 25 | sample_smtrack_heightmap | 368 | 10 | 97.25% | 3/3 | instructions | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
 
 
-## Proof Grade (636)
+## Proof Grade (637)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -119,6 +118,7 @@ Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instr
 | ✅ | read_left_mouse_button_state | 0x407810 | 32 | 4/4 | 100.00% | 4/4 | 2 ok |  | boundary |
 | ✅ | read_right_mouse_button_state | 0x407830 | 32 | 4/4 | 100.00% | 4/4 | 2 ok |  | boundary |
 | ✅ | noop_runtime_ai | 0x407b50 | 16 | 1/1 | 100.00% | 1/1 | - |  | core |
+| ✅ | construct_game_runtime | 0x407b60 | 1184 | 268/268 | 100.00% | 268/268 | 120 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
 | ✅ | initialize_game_player | 0x408000 | 64 | 17/17 | 100.00% | 17/17 | 6 ok |  | core |
 | ✅ | initialize_noop_renderable_bod | 0x408040 | 32 | 7/7 | 100.00% | 7/7 | 2 ok |  | core |
 | ✅ | initialize_runtime_pools_and_path_template_bank | 0x408060 | 944 | 227/227 | 100.00% | 227/227 | 72 ok |  | core |
@@ -693,11 +693,10 @@ Proof blockers (overlapping extents): encoding: 5 functions / 13072 bytes; instr
 | ✅ | attach_render_camera_source | 0x44e900 | 32 | 6/6 | 100.00% | 6/6 | - |  | boundary |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 
-## Audit Needed (6)
+## Audit Needed (5)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
-| ⚠ | construct_game_runtime | 0x407b60 | 1184 | 268/268 | 100.00% | 268/268 | 1 unresolved, 119 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
 | ⚠ | initialize_loopout_path_template_pair | 0x41c5f0 | 2624 | 718/718 | 100.00% | 718/718 | 52 ok |  | core |
 | ⚠ | initialize_turnover_path_template_pair | 0x426cb0 | 2448 | 671/671 | 100.00% | 671/671 | 41 ok |  | core |
 | ⚠ | initialize_turnoverdouble_path_template_pair | 0x427640 | 2464 | 680/680 | 100.00% | 680/680 | 46 ok |  | core |

@@ -28,3 +28,25 @@ wrapper work do not transfer. The crosswalk records this distinction as
 
 The stable matcher identity and outer source name remain
 `construct_game_runtime`.
+
+## 2026-10-06 exact: EH handler proven structurally
+
+The source was already 100% normalized and body byte exact; the only open
+reference was the `push` of the compiler-generated EH handler thunk
+(`$L6760` against `construct_game_runtime_eh_handler` at `0x496a7b`). The
+matcher now proves such thunks end to end:
+
+- `0x48bade` is registered as `__CxxFrameHandler` (the trnsctrl.obj body
+  identified in `analysis/ownership/library-attribution.json`; all 19 EH
+  thunks in the image jump to it).
+- The thunk's `mov eax` operand is compared as a VC6 `FuncInfo` record
+  (magic `0x19930520`) rather than a float constant: equal max state, IP-map
+  and try-block counts, equal unwind states, and every cleanup funclet proven
+  equal by the same encoded-body audit as helper aliases. Here that is one
+  state (`-1`) whose funclet deletes the allocation through `scalar_delete`.
+- The proven thunk and funclet bytes (`0x496a70..0x496a85`, this function's
+  `.text$x` chunk) count as covered. Try-block maps are not audited yet and
+  never certify.
+
+**100%**, 268/268, body byte exact, 120/120 references; the report now
+credits all 1190 owned bytes.
