@@ -160,10 +160,13 @@ symbol. Our reference audit remains useful additional proof.
 The initial public inventory has 2,261 nonempty function owners plus five
 unassigned-range units. This is a deterministic reporting partition of the
 analyzer candidates, not proof of 2,261 original source functions. Boundary fixes
-must regenerate the native inventory and matching evidence together. The
-`construct_game_runtime` owner includes an out-of-line tail beyond its tested
-scratch, and `abort_startup_with_3d_error` retains five disputed padding bytes;
-these do not receive whole-function matched credit.
+must regenerate the native inventory and matching evidence together.
+`abort_startup_with_3d_error` retains five disputed padding bytes and does not
+receive whole-function matched credit. Out-of-line owned chunks earn credit only
+as proven auxiliary ranges: code reached through an audited reference (an EH
+handler thunk, its FuncInfo cleanup funclets, a helper alias) whose encoding the
+audit proved equal. `construct_game_runtime`'s `.text$x` tail is credited this
+way; try-block maps are not yet audited and never certify.
 
 ## Refresh and publish
 
@@ -254,7 +257,7 @@ The decoder retains post-return instructions and emits an undecodable suffix as
 records those exclusions. Raw byte suffixes are never stripped before decoding.
 Every supplied target byte belongs to a compared range, a documented padding
 exclusion, or an unexplained range. Public coverage intersects only compared
-ranges with owned code; an exclusion cannot earn credit even when the matcher
+ranges and proven auxiliary ranges with owned code; an exclusion cannot earn credit even when the matcher
 recognizes it as padding. Embedded tables and other tails are currently retained
 conservatively. Recovering their classification and candidate extent may restore
 credit in a future baseline; arbitrary post-return trimming must not return.
