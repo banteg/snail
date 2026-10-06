@@ -17,6 +17,9 @@
 #ifndef RSHELL_PRELUDE_H
 #define RSHELL_PRELUDE_H
 
+// The prelude only steers VC6's symbol numbering; the port needs none of it.
+#ifndef SNAIL_PORT
+
 #include <windows.h>
 #include <mmsystem.h>
 #include "../sdk/dx81/d3d8.h"
@@ -80,5 +83,7 @@ enum RShellProjectHeaderStandIn {
     rshell_standin_p0,
     rshell_standin_p1
 };
+
+#endif  // SNAIL_PORT
 
 #endif

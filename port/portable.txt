@@ -34,3 +34,26 @@ build_camera_view_matrix
 initialize_translation_matrix
 render_game_frame_scene  clears and brackets the scene through the device the shell provides
 update_keyboard_input  reads the keyboard through the DirectInput device the shell provides
+# The Direct3D 8 renderer: these call only the device and D3DX, which the shell emulates.
+initialize_direct3d_renderer  creates the device through the shell's Direct3DCreate8
+initialize_direct3d_renderer_defaults  window rectangle via the shell's AdjustWindowRectEx
+initialize_d3d8_device  the shell's Direct3D 8 object
+reset_direct3d_render_state  device render states
+restore_texture_ref_stage_states  device texture states
+create_vertex_buffer  device buffers
+create_index_buffer  device buffers
+direct3d_renderer_set_cull_mode  device render state
+set_blend_mode  device render states
+set_immediate_blend_mode  device render states
+configure_sprite_render_state  device render states
+begin_overlay_render_state  device transforms and states
+end_overlay_render_state  device transforms and states
+begin_sprite_depth_render_state  device transforms and states
+end_sprite_depth_render_state  device transforms and states
+draw_textured_quad_immediate  device draw
+present_backbuffer  device present
+clear_display_mode_state  display-mode bookkeeping
+reset_display_mode_probe_count  display-mode bookkeeping
+read_next_display_mode_view_sample  display-mode bookkeeping
+update_display_mode_view_state  display-mode bookkeeping
+query_direct3d_device_caps  device capabilities from the shell's Direct3D 8 object

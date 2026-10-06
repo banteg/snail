@@ -1,9 +1,9 @@
 # Modern port plan
 
-Status: stage 2 done (2026-10-06). The recovered source lives in
-[`decomp/`](../../decomp/README.md), and `port/` links it into a headless
-wasm32 program that loads the real archive and plays the tutorial from a key
-script. Next: stage 3, the oracles.
+Status (2026-10-06): stage 2 done, stage 4 running. The recovered source
+lives in [`decomp/`](../../decomp/README.md). `port/` links it into a headless
+wasm32 program that plays the tutorial from a key script, and into a browser
+build you can play: see [Playing in the browser](#playing-in-the-browser).
 This page records the decisions and the order of work; update it as stages
 land.
 
@@ -45,7 +45,7 @@ What makes this practical:
 | Language | C++ for core and shell | the core is the recovered source; the shell implements C++ boundary types (`cRObject`, `cRViewport`) directly |
 | Build | `zig build` (zig cc) | one host cross-compiles Windows, Linux and macOS. Explicit targets, including a 32-bit MSVC-layout target for bring-up |
 | Platform | SDL3 | window, HiDPI, event pump, gamepads, timers and paths. We own the main loop, as `game_startup_and_main_loop` did |
-| Renderer | SDL3 GPU API behind our `G0` implementation | one code path with native Metal, D3D12 and Vulkan. Explicit pipeline state means no hidden GL state to leak |
+| Renderer | the recovered `G0`/`GDX` renderer on an emulated Direct3D 8 subset; presenters on WebGL2 (now) and the SDL3 GPU API | the game's own render code runs unchanged. SDL3 GPU gives one native path to Metal, D3D12 and Vulkan, with explicit pipeline state and no hidden GL state to leak |
 | Audio | miniaudio | sample, OGG stream, voice, volume and pause, as BASS was used. One C file |
 | Assets | the original `SnailMail.dat`, read in place | the game's own loaders (X2 meshes, animations, objects, segments, levels) are recovered code. The shell adds only TGA and OGG decoding |
 
@@ -60,43 +60,32 @@ the original runs several fixed steps per rendered frame.
 title that draws a few thousand textured quads per frame. Writing a backend per
 API buys nothing. SDL3 GPU gives native Metal on macOS (where OpenGL is
 deprecated and frozen at 4.1), D3D12 on Windows and Vulkan on Linux from one
-code path. The renderer needs only a few shaders (fixed-function emulation),
-cross-compiled at build time. If a browser build becomes a goal, add a GL ES 3
-/ WebGL2 or WebGPU backend behind the same `G0` implementation.
+code path. A presenter needs one shader pair (the pixel half of the fixed
+function pipeline), and the browser already has one on WebGL2.
 
-## The renderer: fixed-function emulation for `G0`
+## The renderer: an emulated Direct3D 8 device
 
-The mobile `GL.o` is the reference implementation. It uses about 45 OpenGL ES
-1.1 calls:
+The recovered renderer talks to Direct3D 8 through a small subset, so the
+port emulates that subset and compiles the renderer unchanged: `G0` (camera,
+objects, toon edges, sprites, texture refs) and `GDX` (device creation,
+buffers, render states, overlays).
 
-- a matrix stack;
-- client arrays and VBOs;
-- fog (`glFogf`);
-- blend, cull and depth state;
-- `glTexEnvf`;
-- `glLineWidth` for toon edges.
+| Direct3D 8 use | Subset |
+|---|---|
+| vertex formats | `XYZ\|DIFFUSE\|TEX1` and `XYZ\|TEX1`; no pre-transformed vertices |
+| draws | triangle lists and fans, line lists (toon edges), indexed and not |
+| transforms | world, view, projection, texture 0 (`COUNT2`) |
+| render states | z test and write, alpha blend and test, cull, linear vertex fog; lighting off |
+| texture stage 0 | modulate or select, texture and diffuse arguments; wrap or clamp |
+| D3DX | TGA textures from memory or file (colour key), `MatrixTranslation`, `MatrixOrthoLH`, `Vec3Normalize` |
 
-Our `G0` keeps that state model on SDL3 GPU:
-
-- a matrix stack and current fog, blend, cull, depth, alpha and texture-stage
-  state;
-- a pipeline cache keyed by the state combination;
-- one vertex/fragment shader pair that implements modulate texturing, vertex
-  colour and linear fog;
-- toon edges drawn as screen-space quads, since wide lines are not portable.
-
-The entry points to implement come from the boundary scope:
-
-- `render_camera`, `render_object` and `render_object_toon`;
-- `build_object_texture_group_buffers` and `refresh_object_vertex_buffer`;
-- texture refs (`load_registered_texture_ref`, `bind_texture_ref`);
-- the sprite and font quad queues;
-- `set_cull_mode`, `set_blend_mode` and `set_object_color`;
-- the split-screen viewports.
-
-D3D8 state that has no mobile counterpart, such as texture transforms and
-blend modes the mobile build dropped, is recovered from the Windows boundary
-functions.
+`port/shell/d3d8_device.cpp` keeps the fixed-function state and runs the vertex
+stage on the CPU (transforms, texture transform, fog factors). Every draw
+reaches a presenter (`render_backend.h`) as clip-space triangles or lines with
+a snapshot of the pixel state, still in Direct3D conventions. The WebGL2
+presenter (`port/web/renderer.js`) applies texture stage 0, alpha test, fog,
+blending, depth and culling, and Direct3D's viewport and pixel centres. The
+SDL3 GPU presenter will consume the same draws.
 
 ## Source layout
 
@@ -120,10 +109,16 @@ port/
   shell/                 the only new hand-written runtime code
     main.cpp             replaces game_startup_and_main_loop and the window procedure
     files.cpp            archive start-up and _findfirst over the file system
-    input_script.cpp     scripted keyboard and mouse (stage 4: SDL3 events)
+    input_script.cpp     scripted input for headless runs
     runtime.cpp          MSVC rand, debug output, C++-linkage CRT names
     abi_shims.cpp        calls whose recovered caller and callee disagree on a signature
-    *_null.cpp           headless G0, Direct3D 8 and audio (stage 4: SDL3 GPU, miniaudio)
+    game_session.cpp     the startup and loop steps both programs share
+    input_state.cpp      live keys, pointer and buttons, read by the recovered polling code
+    d3d8_device.cpp      the emulated Direct3D 8 device; d3dx_*.cpp for D3DX
+    backend_*.cpp        presenters: null (headless) and web (WebGL2 imports)
+    main.cpp, web_main.cpp  the headless and browser entry points
+    audio_null.cpp       silent audio (stage 4: miniaudio)
+  web/                   the browser page: WASI, WebGL2 presenter, input
   scripts/               input scripts for headless runs
   generated/             local, never committed (holds the original's data bytes)
     image_data.s         the exe's .rdata and .data, with names and relocations
@@ -142,12 +137,14 @@ source of truth for both matching and the port.
 Which functions the port compiles:
 
 - `core`: always, unchanged.
-- `boundary`: reviewed one by one. Bodies that only call `RShell`, `G0` or
-  `cRSound`, such as the X2 loaders, are kept. Bodies that touch D3D8,
-  DirectInput or BASS directly are reimplemented in `shell/`.
+- `boundary`: compiled, except the functions in `port/replaced.txt`, which
+  the shell reimplements (now only `set_fullscreen_mode`). Direct3D 8 and
+  DirectInput calls reach the shell's emulated devices; BASS calls reach the
+  silent audio backend.
 - `replaceable-platform` and `third-party`: compiled only when listed in
-  `port/portable.txt`, because the recovered body is portable C (the tracked
-  allocator, archive reader, error reporting, the three D3DX matrix helpers).
+  `port/portable.txt`, because the recovered body is portable against the
+  shell's devices (the tracked allocator, archive reader, error reporting,
+  keyboard polling, the Direct3D renderer and D3DX matrix helpers).
 
 ## Correctness rules
 
@@ -176,6 +173,23 @@ Which functions the port compiles:
   (`tools/frida/`, `docs/re/frida-runtime-trace.md`).
 - **Render level:** `snail screenshots compare` against original captures.
 
+## Playing in the browser
+
+```
+uv run snail port link && uv run snail port data
+cd port && zig build
+uv run snail port serve
+```
+
+Then open http://127.0.0.1:8017/. `snail-web.wasm` is the same program as the
+headless one, built as a WASI reactor: the page loads `SnailMail.dat` from
+`artifacts/bin/` into an in-memory file system, forwards keys (as DirectInput
+scan codes), pointer, buttons and wheel, and calls the game once per animation
+frame with the elapsed time. The loop keeps the original's timing: whole 1/60 s
+steps from an accumulator capped at 25 steps, then one rendered frame. There is
+no sound yet, and scores and settings last only for the page's lifetime.
+`?warmup=N` fixes the random warmup for a repeatable start.
+
 ## Building the headless port
 
 ```
@@ -186,8 +200,8 @@ node <repo>/port/shell/run.mjs <repo>/port/zig-out/bin/snail.wasm --keys <repo>/
 ```
 
 The headless loop is `game_startup_and_main_loop` at a fixed 1/60 s per tick:
-poll input, run `cRGame::AI`, then render the scene through the null device,
-as the original does. Options:
+poll input, run `cRGame::AI`, then render the scene through the emulated
+device, with a presenter that shows nothing. Options:
 
 - `--keys SCRIPT` replays keys, mouse buttons and pointer positions
   (`shell/input_script.cpp` documents the format; `port/scripts/` has
@@ -272,8 +286,11 @@ trap; sanitizers and the stack protector off, as the original had neither.
    [Building the headless port](#building-the-headless-port).
 3. **Oracles.** Bring up the replay oracle and per-tick traces against the
    headless build, and fix divergences in the matcher, never only in the port.
-4. **Shell.** SDL3 window and input, miniaudio, then `G0` on SDL3 GPU, verified
-   with screenshot comparisons.
+4. **Shell.** Running: the recovered renderer draws through the emulated
+   Direct3D 8 device, and the browser build plays from the intro through the
+   menus into gameplay with keyboard and mouse. Left: audio (miniaudio, or Web
+   Audio in the page), persistent saves, an SDL3 window with an SDL3 GPU
+   presenter, and screenshot comparisons against the original.
 5. **64-bit and platforms.** Turn absolute size asserts into field-offset
    checks and remove the byte-stride casts that assume 4-byte pointers (about a
    dozen scratches, mostly path builders). Then ship macOS arm64, Windows x64

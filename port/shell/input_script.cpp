@@ -1,7 +1,5 @@
-// Headless input from a script. Keys reach the recovered update_keyboard_input
-// through a DirectInput device; the mouse is a 640x480 window at the origin,
-// whose buttons arrive as the window procedure would set them. The joystick
-// reports nothing. Stage 4 feeds SDL3 events into the same paths.
+// Headless input from a script, applied to the live input state
+// (input_state.cpp) once per fixed tick.
 //
 // Script lines, `#` starting a comment:
 //   <tick> <key> [<ticks held>]    DirectInput scan code (0x1c) or a kKeyNames name
@@ -15,12 +13,8 @@
 #include <strings.h>
 
 #include "direct_input_view.h"
-#include "game_root.h"
-#include "input_controller_state.h"
-#include "input_polling.h"
-#include "mouse_input_state.h"
-#include "win32_window_state.h"
 #include "input_script.h"
+#include "input_state.h"
 
 namespace {
 
@@ -49,9 +43,7 @@ struct Press {
 
 Press* g_presses = 0;
 int g_press_count = 0;
-unsigned char g_keys[DIRECT_INPUT_KEY_COUNT];
 bool g_left_held = false, g_right_held = false;
-int g_mouse_x = 320, g_mouse_y = 240;
 
 int parse_key(const char* text)
 {
@@ -67,40 +59,7 @@ int parse_key(const char* text)
     return -1;
 }
 
-struct ScriptedKeyboard : DirectInputDevice {
-    int __stdcall QueryInterface(void*, void**) override { return -1; }
-    int __stdcall AddRef() override { return 1; }
-    int __stdcall Release() override { return 0; }
-    int __stdcall GetCapabilities(void*) override { return 0; }
-    int __stdcall EnumObjects(DirectInputEnumObjectsCallback, void*, unsigned int) override { return 0; }
-    int __stdcall GetProperty(void*, void*) override { return 0; }
-    int __stdcall SetProperty(void*, DIPROPHEADER*) override { return 0; }
-    int __stdcall Acquire() override { return 0; }
-    int __stdcall Unacquire() override { return 0; }
-    int __stdcall GetDeviceState(unsigned int size, void* data) override
-    {
-        memcpy(data, g_keys, size < sizeof(g_keys) ? size : sizeof(g_keys));
-        return 0;
-    }
-    int __stdcall GetDeviceData(unsigned int, void*, unsigned int*, unsigned int) override { return 0; }
-    int __stdcall SetDataFormat(const DIDATAFORMAT*) override { return 0; }
-    int __stdcall SetEventNotification(void*) override { return 0; }
-    int __stdcall SetCooperativeLevel(int, unsigned int) override { return 0; }
-    int __stdcall GetObjectInfo(void*, unsigned int, unsigned int) override { return 0; }
-    int __stdcall GetDeviceInfo(void*) override { return 0; }
-    int __stdcall RunControlPanel(int, unsigned int) override { return 0; }
-    int __stdcall Initialize(void*, unsigned int, void*) override { return 0; }
-    int __stdcall CreateEffect(void*, void*, void**, void*) override { return 0; }
-    int __stdcall EnumEffects(void*, void*, unsigned int) override { return 0; }
-    int __stdcall GetEffectInfo(void*, void*) override { return 0; }
-    int __stdcall GetForceFeedbackState(unsigned int*) override { return 0; }
-    int __stdcall SendForceFeedbackCommand(unsigned int) override { return 0; }
-    int __stdcall EnumCreatedEffectObjects(void*, void*, unsigned int) override { return 0; }
-    int __stdcall Escape(void*) override { return 0; }
-    int __stdcall Poll() override { return 0; }
-};
 
-ScriptedKeyboard g_scripted_keyboard;
 
 }  // namespace
 
@@ -139,36 +98,30 @@ bool load_input_script(const char* path)
     return true;
 }
 
-void install_scripted_keyboard()
-{
-    g_keyboard_device = &g_scripted_keyboard;
-}
-
 void set_scripted_input(int tick)
 {
-    memset(g_keys, 0, sizeof(g_keys));
+    unsigned char keys[DIRECT_INPUT_KEY_COUNT] = {0};
     bool left = false, right = false;
     for (int i = 0; i < g_press_count; ++i) {
         const Press& press = g_presses[i];
         if (press.code < 0) {
-            if (press.tick == tick) {
-                g_mouse_x = press.duration;
-                g_mouse_y = press.y;
-            }
+            if (press.tick == tick)
+                input_set_pointer(press.duration, press.y);
         } else if (press.tick <= tick && tick < press.tick + press.duration) {
             if (press.code == kLeftButton)
                 left = true;
             else if (press.code == kRightButton)
                 right = true;
             else
-                g_keys[press.code] = 0x80;
+                keys[press.code] = 1;
         }
     }
-    // WM_LBUTTONDOWN/UP and WM_RBUTTONDOWN/UP in game_window_proc.
+    for (int code = 0; code < DIRECT_INPUT_KEY_COUNT; ++code)
+        input_set_key(code, keys[code] != 0);
     if (left != g_left_held)
-        g_left_mouse_button_latch[0] = g_left_mouse_button_state[0] = left;
+        input_set_button(INPUT_MOUSE_LEFT, left);
     if (right != g_right_held)
-        g_right_mouse_button_latch[0] = g_right_mouse_button_state[0] = right;
+        input_set_button(INPUT_MOUSE_RIGHT, right);
     g_left_held = left;
     g_right_held = right;
 }
@@ -184,20 +137,3 @@ int last_scripted_tick()
     return last;
 }
 
-int update_joystick_input(HWND) { return 0; }
-int consume_mouse_wheel_delta(int slot);       // @ 0x4077f0
-unsigned char read_left_mouse_button_state(int slot);   // @ 0x407810
-unsigned char read_right_mouse_button_state(int slot);  // @ 0x407830
-
-// update_mouse (0x44bc50) for a 640x480 client area at the screen origin with
-// no clip insets: both of its branches reduce to this call.
-int update_mouse(HWND)
-{
-    g_mouse_live_x[0] = (float)g_mouse_x;
-    g_mouse_live_y[0] = (float)g_mouse_y;
-    update_input_controller_pointer_region(0, 0, 0, 640, 480, g_mouse_x, g_mouse_y, consume_mouse_wheel_delta(0),
-        read_left_mouse_button_state(0), read_right_mouse_button_state(0), 0,
-        g_game->players[0].mouse_cursor.IsActive(), g_fullscreen_active);
-    return 0;
-}
-int read_repeating_text_input_key_code() { return 0; }

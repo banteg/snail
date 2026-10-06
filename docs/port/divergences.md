@@ -10,6 +10,7 @@ of every guard still matches.
 |---|---|---|---|
 | `decomp/game/Game/update_backdrop.cpp`, `tools/match/include/backdrop.h` | `return render_backdrop();` from an `int` function, with `render_backdrop` declared `int` everywhere but its own definition | `render_backdrop()` is `void` everywhere; `update_backdrop` returns 0 on that path | VC6 returned `render_backdrop`'s leftover `eax`, and nothing reads `update_backdrop`'s result. Wasm requires one signature per function. |
 | `decomp/game/SubGame/get_track_cell_row_index.cpp` | subtracts `(int)g_track_row_cells_offset`, a symbol whose address is the immediate `0x4340e0` | `offsetof(cRGame, subgame.runtime_cells)` | The immediate falls inside the image's address range, so matching requires a relocation; wasm cannot place a symbol at a fixed address. Same value. |
+| `tools/match/include/rshell_prelude.h` | includes the DirectX 8.1 SDK and `windows.h`, then 13,762 stand-in enumerators | empty | the prelude only sets VC6's frontend symbol numbering, which decides an operand order in `read_repeating_text_input_key_code`; no declaration in it is used |
 
 ## Shell behaviour that differs from the shipped build
 

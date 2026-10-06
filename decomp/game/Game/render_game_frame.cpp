@@ -13,7 +13,7 @@ int reset_render_counters();                // @ 0x414650
 void begin_sprite_depth_render_state();      // @ 0x413540
 void end_sprite_depth_render_state();        // @ 0x413650
 int begin_overlay_render_state();           // @ 0x411e10
-void end_overlay_render_state();             // @ 0x411de0
+int end_overlay_render_state();              // @ 0x411de0
 void noop_runtime_ai();                      // @ 0x407b50
 int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...); // @ 0x449c00, stripped in release

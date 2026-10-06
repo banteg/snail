@@ -638,6 +638,11 @@ def build_parser() -> argparse.ArgumentParser:
         "link",
         help="Compile the port's sources and generate forwarders for stand-in call names (port/generated/).",
     )
+    port_serve_parser = port_subparsers.add_parser(
+        "serve", help="Serve the browser build (port/web/, snail-web.wasm, SnailMail.dat) on localhost."
+    )
+    port_serve_parser.add_argument("--port", type=int, default=8017)
+    port_serve_parser.add_argument("--archive", type=Path, help="SnailMail.dat to serve (default: artifacts/bin/).")
     port_symbolize_parser = port_subparsers.add_parser(
         "symbolize",
         help="Annotate a wasm stack trace (stdin) or module offsets with source lines from DWARF.",
@@ -1698,6 +1703,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                 print(f"error: {port.SOURCES} is stale; run snail port sources --write", file=sys.stderr)
                 return 1
             print(f"{port.SOURCES}: {len(expected.splitlines())} sources")
+            return 0
+        if args.port_command == "serve":
+            from .port_serve import serve
+
+            serve(REPO_ROOT, port=args.port, archive=args.archive)
             return 0
         if args.port_command == "symbolize":
             from .wasm_debug import LineTable, annotate
