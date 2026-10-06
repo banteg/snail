@@ -68,7 +68,7 @@ def observer(profile, stock_source):
 def run(scratch_dir, source, out):
     work = out.parent / (out.name + "-input")
     work.mkdir(parents=True)
-    conf = (scratch_dir / "scratch.conf").read_text()
+    conf = m.overlay_scratch_conf((scratch_dir / "scratch.conf").read_text())
     conf = re.sub(r"^COMPILER=.*\n", "", conf, flags=re.M)
     (work / "scratch.conf").write_text(conf)
     (work / "scratch.cpp").write_bytes(Path(source).read_bytes())

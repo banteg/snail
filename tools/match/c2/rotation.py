@@ -474,8 +474,10 @@ def report(rows, source_lines):
 def prepare(scratch, source, work):
     """Freeze scratch.conf with the canonical or overlay source in a new directory."""
     work.mkdir(parents=True)
-    (work / "scratch.conf").write_bytes((scratch / "scratch.conf").read_bytes())
-    (work / "scratch.cpp").write_bytes((source or scratch / "scratch.cpp").read_bytes())
+    (work / "scratch.conf").write_text(
+        m.overlay_scratch_conf((scratch / "scratch.conf").read_text())
+    )
+    (work / "scratch.cpp").write_bytes((source or m.scratch_source_path(scratch)).read_bytes())
     return work
 
 

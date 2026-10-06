@@ -73,7 +73,7 @@ def main():
     parser.add_argument("--displacement", type=lambda v: int(v, 0), help="only sums addressing this displacement")
     args = parser.parse_args()
     scratch = m.DEFAULT_MATCH_ROOT / "scratches" / args.function
-    text = (args.source or scratch / "scratch.cpp").read_text()
+    text = (args.source or m.scratch_source_path(scratch)).read_text()
     print(json.dumps(address_ids(args.function, text, args.displacement), indent=2))
 
 

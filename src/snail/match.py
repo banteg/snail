@@ -4558,6 +4558,7 @@ RECOVERY_VALUES = frozenset(("incomplete", "semantic-complete"))
 RESIDUAL_VALUES = frozenset(("analysis", "compiler", "references"))
 SCRATCH_CONFIG_KEYS = frozenset(
     (
+        "SOURCE",
         "CFLAGS",
         "COMPILER",
         "END",
@@ -4579,6 +4580,41 @@ class ScratchConfig:
     symbol: str | None
     recovery: str | None = None
     residuals: tuple[str, ...] = ()
+    # Recovered source, relative to the scratch directory; canonical sources
+    # live in decomp/ and scratches point at them with SOURCE=.
+    source: str = "scratch.cpp"
+
+    @property
+    def source_path(self) -> Path:
+        return self.directory / self.source
+
+
+def scratch_source_path(directory: Path) -> Path:
+    """The recovered source file a scratch directory compiles.
+
+    Without a scratch.conf (an ad hoc directory) it is the default scratch.cpp.
+    """
+    if not (directory / "scratch.conf").exists():
+        return directory / "scratch.cpp"
+    return load_scratch_config(directory).source_path
+
+
+def iter_scratch_sources(match_root: Path = DEFAULT_MATCH_ROOT) -> list[Path]:
+    """Every scratch's recovered source, in scratch-name order."""
+    return [
+        source
+        for directory in sorted(match_root.glob("scratches/*/"))
+        if (source := scratch_source_path(directory)).exists()
+    ]
+
+
+def overlay_scratch_conf(config_text: str) -> str:
+    """A scratch.conf for a shadow directory: its overlay is local scratch.cpp."""
+    return "".join(
+        line
+        for line in config_text.splitlines(keepends=True)
+        if not line.lstrip().startswith("SOURCE=")
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -4947,6 +4983,7 @@ def load_scratch_config(directory: Path) -> ScratchConfig:
         symbol=values.get("SYMBOL"),
         recovery=recovery,
         residuals=residuals,
+        source=values.get("SOURCE", "scratch.cpp"),
     )
 
 
@@ -5016,12 +5053,14 @@ def scratch_compilation_source(
     """Compose the actual source, replacing only the selected member in a probe."""
     unit = scratch_translation_unit(config, match_root)
     members = unit.members if unit else (config.directory,)
-    return "\n".join(
-        source_text
-        if source_text is not None and member.resolve() == config.directory.resolve()
-        else (member / "scratch.cpp").read_text(encoding="utf-8")
-        for member in members
-    )
+    def member_source(member: Path) -> str:
+        if member.resolve() == config.directory.resolve():
+            if source_text is not None:
+                return source_text
+            return config.source_path.read_text(encoding="utf-8")
+        return scratch_source_path(member).read_text(encoding="utf-8")
+
+    return "\n".join(member_source(member) for member in members)
 
 
 FORBIDDEN_SOURCE_TOKENS = ("__asm", "_asm", "__declspec(naked)")
@@ -5205,10 +5244,11 @@ def _scratch_include_headers(
     """
     resolver = resolver or _ScratchIncludeResolver(match_root)
     unit = scratch_translation_unit(config, match_root)
-    sources = {
-        member / "scratch.cpp"
-        for member in (unit.members if unit else (config.directory,))
-    }
+    sources = (
+        {scratch_source_path(member) for member in unit.members}
+        if unit
+        else {config.source_path}
+    )
     # CL resolves relative /I and /FI paths from its working directory, a
     # private directory inside build/.
     compile_dir = config.directory / "build" / ".compile"
@@ -5312,8 +5352,8 @@ def _scratch_build_dependencies(
     unit_inputs = (
         (match_root / "translation_units.json",)
         + tuple(path for member in unit.members
-                for path in (member / "scratch.cpp", member / "scratch.conf"))
-        if unit else (config.directory / "scratch.cpp",)
+                for path in (scratch_source_path(member), member / "scratch.conf"))
+        if unit else (config.source_path,)
     )
     runner = _scratch_wibo_path(match_root)
     return (
@@ -5354,7 +5394,7 @@ def scratch_dependency_sha256(
     """Hash the content-stable input graph for one scratch build."""
 
     root = match_root.resolve()
-    source = (config.directory / "scratch.cpp").resolve()
+    source = config.source_path.resolve()
     dependencies: list[list[str]] = []
     for path in _scratch_build_dependencies(config, match_root):
         resolved = path.resolve()
@@ -5636,10 +5676,18 @@ def _compile_scratch(
     unit = scratch_translation_unit(config, match_root)
     if unit:
         # Every member selects from one physical object and shares its lock.
-        config = replace(config, directory=unit.members[0])
+        config = replace(
+            config,
+            directory=unit.members[0],
+            source=load_scratch_config(unit.members[0]).source,
+        )
         for member in unit.members:
-            validate_scratch_source(member / "scratch.cpp")
-    source = config.directory / "scratch.cpp"
+            validate_scratch_source(
+                config.source_path
+                if member.resolve() == config.directory.resolve()
+                else scratch_source_path(member)
+            )
+    source = config.source_path
     validate_scratch_source(source)
     build_dir = config.directory / "build"
     obj_path = build_dir / "scratch.obj"
@@ -5852,7 +5900,7 @@ def generate_compiler_listing(
     import tempfile
 
     match_root = match_root.resolve()
-    source = config.directory / "scratch.cpp"
+    source = config.source_path
     validate_scratch_source(source)
     source_data = scratch_compilation_source(config, match_root).encode("utf-8")
     canonical_path = compile_scratch(config, match_root)
@@ -6185,7 +6233,9 @@ def evaluate_source_overlay(
     ) as temp_name:
         shadow_directory = Path(temp_name)
         (shadow_directory / "scratch.conf").write_text(
-            (config.directory / "scratch.conf").read_text(encoding="utf-8"),
+            overlay_scratch_conf(
+                (config.directory / "scratch.conf").read_text(encoding="utf-8")
+            ),
             encoding="utf-8",
         )
         (shadow_directory / "scratch.cpp").write_text(
@@ -6193,7 +6243,7 @@ def evaluate_source_overlay(
             encoding="utf-8",
         )
         return evaluate_scratch(
-            replace(config, directory=shadow_directory),
+            replace(config, directory=shadow_directory, source="scratch.cpp"),
             match_root,
             image_path=image_path,
             manifest=manifest,
@@ -6219,9 +6269,7 @@ def evaluate_source_probe(
         compiler=compiler or config.compiler,
         cflags=cflags or config.cflags,
     )
-    baseline_source = (config.directory / "scratch.cpp").read_text(
-        encoding="utf-8",
-    )
+    baseline_source = config.source_path.read_text(encoding="utf-8")
     baseline_matches: list[MatchResult] = []
     baseline = evaluate_source_overlay(
         baseline_config,
@@ -9180,8 +9228,8 @@ def scan_match_type_definitions(match_root: Path = DEFAULT_MATCH_ROOT) -> list[T
     definitions: list[TypeDefinition] = []
     for header in sorted((match_root / "include").glob("*.h")):
         definitions.extend(find_type_definitions(header, is_header=True))
-    for scratch in sorted(match_root.glob("scratches/*/scratch.cpp")):
-        definitions.extend(find_type_definitions(scratch, is_header=False))
+    for source in iter_scratch_sources(match_root):
+        definitions.extend(find_type_definitions(source, is_header=False))
     return definitions
 
 
@@ -9608,9 +9656,7 @@ def lint_extern_declarations(
             (symbol.name, *symbol.aliases)
         )
 
-    sources = sorted(match_root.glob("include/*.h")) + sorted(
-        match_root.glob("scratches/*/scratch.cpp")
-    )
+    sources = sorted(match_root.glob("include/*.h")) + iter_scratch_sources(match_root)
     by_decl: dict[tuple[int, str], dict[str, list[Path]]] = {}
     names_by_address: dict[int, dict[str, list[Path]]] = {}
     for path in sources:

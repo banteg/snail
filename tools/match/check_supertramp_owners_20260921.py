@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 import capstone
+from snail.match import scratch_source_path
 
 RECEIPT = Path(__file__).with_name("supertramp-halfpipe-owners-20260921.json")
 
@@ -106,7 +107,7 @@ def verify(proof):
 def main():
     receipt = json.loads(RECEIPT.read_text())
     for name, proof in receipt["partial_proofs"].items():
-        source = RECEIPT.parent / "scratches" / name / "scratch.cpp"
+        source = scratch_source_path(RECEIPT.parent / "scratches" / name)
         assert hashlib.sha256(source.read_bytes()).hexdigest() == proof[
             "canonical_source_sha256"
         ]
@@ -118,7 +119,7 @@ def main():
         assert after["measured"]["body_byte_exact"] is False
         print(name, "575-byte prefix and relocation identities preserved; partial")
     for name, proof in receipt["proofs"].items():
-        source = RECEIPT.parent / "scratches" / name / "scratch.cpp"
+        source = scratch_source_path(RECEIPT.parent / "scratches" / name)
         assert (
             hashlib.sha256(source.read_bytes()).hexdigest()
             == proof["canonical_source_sha256"]

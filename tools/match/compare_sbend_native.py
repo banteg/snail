@@ -292,7 +292,7 @@ def make_oracle(path, *, function_name=FUNCTION, source_object=None,
         "source_compilation": (
             {
                 "dependency_sha256": dependency_sha256,
-                "source_sha256": digest((config.directory / "scratch.cpp").read_bytes()),
+                "source_sha256": digest(config.source_path.read_bytes()),
                 "compiler": config.compiler,
                 "cflags": config.cflags,
             }

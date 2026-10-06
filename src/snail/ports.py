@@ -207,7 +207,7 @@ def function_leads(
         "primary_build": registry["primary_build"],
         "windows_address": function.address_hex,
         "source_object": mapping.get("source_object"),
-        "scratch": f"tools/match/scratches/{function.name}/scratch.cpp",
+        "scratch": f"tools/match/scratches/{function.name}",
         "mobile_crosswalk": relationships["mobile_crosswalk"],
         "leads": leads,
         "relationships": authored.get("relationships", []),

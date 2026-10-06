@@ -12,6 +12,7 @@ import capstone
 
 from snail import match as matcher
 from snail import match_objdiff as exporter
+from snail.match import overlay_scratch_conf, scratch_source_path
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRATCH = ROOT / "tools/match/scratches/update_subgame"
@@ -253,7 +254,7 @@ def main():
                 }
             )
         report["changed_rows"].append(row)
-    source = (SCRATCH / "scratch.cpp").read_text()
+    source = scratch_source_path(SCRATCH).read_text()
     for filename in RECIPES:
         raw = (SCRATCH / filename).read_bytes()
         report["recipes"][filename] = exporter.sha(raw)
@@ -262,8 +263,8 @@ def main():
             directory = output / "sources" / str(number)
             directory.mkdir(parents=True)
             (directory / "scratch.cpp").write_text(text)
-            (directory / "scratch.conf").write_bytes(
-                (SCRATCH / "scratch.conf").read_bytes()
+            (directory / "scratch.conf").write_text(
+                overlay_scratch_conf((SCRATCH / "scratch.conf").read_text())
             )
             summary, _ = compare(directory, output / f"control-{number}", tool)
             summary.update(

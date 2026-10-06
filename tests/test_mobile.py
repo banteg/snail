@@ -6,6 +6,8 @@ from itertools import pairwise
 from pathlib import Path
 
 import pytest
+
+from snail.match import iter_scratch_sources, scratch_source_path
 from types import SimpleNamespace
 
 from snail.cli import main
@@ -399,7 +401,7 @@ def test_mobile_splash_lifecycle_recovers_authored_owner() -> None:
         assert entry["android_body_count"] == 1
         assert alias in functions_by_name[windows_name]["aliases"]
         assert object_symbol in references_by_name[windows_name]["aliases"]
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -464,10 +466,10 @@ def test_mobile_splash_lifecycle_recovers_authored_owner() -> None:
     assert all("ThanksScreen" not in header for header in analysis_headers)
 
     frontend = (
-        scratch_root / "update_frontend_state_machine/scratch.cpp"
+        scratch_source_path(scratch_root / "update_frontend_state_machine")
     ).read_text(encoding="utf-8")
     splash_ai = (
-        scratch_root / "update_thanks_for_playing_screen/scratch.cpp"
+        scratch_source_path(scratch_root / "update_thanks_for_playing_screen")
     ).read_text(encoding="utf-8")
     assert "splash.Init();" in frontend
     assert "splash.AI();" in frontend
@@ -570,7 +572,7 @@ def test_mobile_track_pipeline_recovers_authored_windows_members() -> None:
         assert f"void {authored_name}();" in matcher_header
 
         scratch_root = repo_root / "tools/match/scratches" / windows_name
-        scratch_source = (scratch_root / "scratch.cpp").read_text(
+        scratch_source = (scratch_source_path(scratch_root)).read_text(
             encoding="utf-8"
         )
         assert f"void cRSubGame::{authored_name}()" in scratch_source
@@ -605,7 +607,7 @@ def test_mobile_track_pipeline_recovers_authored_windows_members() -> None:
         assert f"void {authored_name}(int level_index);" in matcher_header
 
         scratch_root = repo_root / "tools/match/scratches" / windows_name
-        scratch_source = (scratch_root / "scratch.cpp").read_text(
+        scratch_source = (scratch_source_path(scratch_root)).read_text(
             encoding="utf-8"
         )
         assert (
@@ -637,11 +639,7 @@ def test_mobile_track_pipeline_recovers_authored_windows_members() -> None:
     assert call_offsets == sorted(call_offsets)
 
     windows_dispatcher = (
-        repo_root
-        / (
-            "tools/match/scratches/rebuild_track_runtime_from_segments/"
-            "scratch.cpp"
-        )
+        scratch_source_path(repo_root / "tools/match/scratches/rebuild_track_runtime_from_segments")
     ).read_text(encoding="utf-8")
     windows_calls = tuple(
         f"{authored_name}();"
@@ -732,7 +730,7 @@ def test_mobile_subgame_lifecycle_recovers_authored_windows_members() -> None:
         assert f"void {authored_name}();" in matcher_header
 
         scratch_root = repo_root / "tools/match/scratches" / windows_name
-        scratch_source = (scratch_root / "scratch.cpp").read_text(
+        scratch_source = (scratch_source_path(scratch_root)).read_text(
             encoding="utf-8"
         )
         assert f"void cRSubGame::{authored_name}()" in scratch_source
@@ -755,7 +753,7 @@ def test_mobile_subgame_lifecycle_recovers_authored_windows_members() -> None:
     complete_root = (
         repo_root / "tools/match/scratches/complete_subgame"
     )
-    complete_source = (complete_root / "scratch.cpp").read_text(
+    complete_source = (scratch_source_path(complete_root)).read_text(
         encoding="utf-8"
     )
     assert (
@@ -769,7 +767,7 @@ def test_mobile_subgame_lifecycle_recovers_authored_windows_members() -> None:
     assert "SYMBOL=?Complete@cRSubGame@@QAEXE@Z\n" in complete_config
 
     windows_init = (
-        repo_root / "tools/match/scratches/initialize_subgame/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_subgame")
     ).read_text(encoding="utf-8")
     android_init = (
         repo_root
@@ -873,7 +871,7 @@ def test_mobile_subgame_factories_recover_crsubgoldy_surface() -> None:
         assert f"void {authored_name}(" in matcher_header
 
         scratch_root = repo_root / "tools/match/scratches" / windows_name
-        scratch_source = (scratch_root / "scratch.cpp").read_text(
+        scratch_source = (scratch_source_path(scratch_root)).read_text(
             encoding="utf-8"
         )
         assert f"void cRSubGame::{authored_name}(" in scratch_source
@@ -897,7 +895,7 @@ def test_mobile_subgame_factories_recover_crsubgoldy_surface() -> None:
     assert "cRParcel* AddParcel(" in matcher_header
 
     parcel_root = repo_root / "tools/match/scratches/spawn_track_parcel"
-    parcel_source = (parcel_root / "scratch.cpp").read_text(
+    parcel_source = (scratch_source_path(parcel_root)).read_text(
         encoding="utf-8"
     )
     assert "cRParcel* cRSubGame::AddParcel(" in parcel_source
@@ -1038,7 +1036,7 @@ def test_mobile_subgame_utilities_recover_authored_surface() -> None:
         assert f"{authored_name}(" in subgame_header
 
         scratch_root = repo_root / "tools/match/scratches" / windows_name
-        scratch_source = (scratch_root / "scratch.cpp").read_text(
+        scratch_source = (scratch_source_path(scratch_root)).read_text(
             encoding="utf-8"
         )
         assert f"cRSubGame::{authored_name}(" in scratch_source
@@ -1060,7 +1058,7 @@ def test_mobile_subgame_utilities_recover_authored_surface() -> None:
     )
 
     subgoldy = (
-        repo_root / "tools/match/scratches/update_subgoldy/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/update_subgoldy")
     ).read_text(encoding="utf-8")
     assert "float sample_track_floor_height_at_position(" in subgoldy
     assert "SubgoldyFloorSamplerCallView" in subgoldy
@@ -1162,7 +1160,7 @@ def test_mobile_subloc_methods_recover_authored_surface() -> None:
         assert header_declaration in subloc_header
 
         scratch_root = repo_root / "tools/match/scratches" / windows_name
-        scratch_source = (scratch_root / "scratch.cpp").read_text(
+        scratch_source = (scratch_source_path(scratch_root)).read_text(
             encoding="utf-8"
         )
         assert f"cRSubLoc::{authored_name}(" in scratch_source
@@ -1180,10 +1178,9 @@ def test_mobile_subloc_methods_recover_authored_surface() -> None:
         "promote_track_tiles_to_fringe_variants",
     ):
         source = (
-            repo_root
+            scratch_source_path(repo_root
             / "tools/match/scratches"
-            / scratch_name
-            / "scratch.cpp"
+            / scratch_name)
         ).read_text(encoding="utf-8")
         assert "__fastcall is_sub_loc_" not in source
 
@@ -1275,7 +1272,7 @@ def test_mobile_tcolour_methods_recover_authored_surface() -> None:
         assert f"{authored_name}(" in colour_header
 
         scratch_root = repo_root / "tools/match/scratches" / windows_name
-        scratch_source = (scratch_root / "scratch.cpp").read_text(
+        scratch_source = (scratch_source_path(scratch_root)).read_text(
             encoding="utf-8"
         )
         assert f"tColour::{authored_name}(" in scratch_source
@@ -1294,7 +1291,7 @@ def test_mobile_tcolour_methods_recover_authored_surface() -> None:
         "set_color_white(",
         "set_color_black(",
     )
-    for path in (repo_root / "tools/match/scratches").rglob("*.cpp"):
+    for path in [*iter_scratch_sources(), *(repo_root / "tools/match/scratches").rglob("*.cpp")]:
         if "build" in path.parts:
             continue
         source = path.read_text(encoding="utf-8")
@@ -1313,7 +1310,7 @@ def test_mobile_tcolour_methods_recover_authored_surface() -> None:
     )
     assert "tColourSmall* operator=(const tColour& color);" in colour_header
     small_source = (
-        repo_root / "tools/match/scratches/pack_color_rgba_u8/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/pack_color_rgba_u8")
     ).read_text(encoding="utf-8")
     assert (
         "tColourSmall* tColourSmall::operator=(const tColour& color)"
@@ -1325,7 +1322,7 @@ def test_mobile_tcolour_methods_recover_authored_surface() -> None:
     small_symbol = "??4tColourSmall@@QAEPAU0@ABUtColour@@@Z"
     assert f"SYMBOL={small_symbol}\n" in small_config
     assert small_symbol in references_by_name["pack_color_rgba_u8"]["aliases"]
-    for path in (repo_root / "tools/match/scratches").rglob("scratch.cpp"):
+    for path in iter_scratch_sources():
         if "build" in path.parts:
             continue
         assert "pack_color_rgba_u8(" not in path.read_text(encoding="utf-8")
@@ -1339,7 +1336,7 @@ def test_mobile_tcolour_methods_recover_authored_surface() -> None:
         if entry["windows_name"] == "store_color4f"
     )
     store_source = (
-        repo_root / "tools/match/scratches/store_color4f/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/store_color4f")
     ).read_text(encoding="utf-8")
     assert store_entry["android_symbol"] == "tColour::Set(float, float, float, float)"
     assert "void tColour::store_color4f(" in store_source
@@ -1552,7 +1549,7 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
 
     for windows_name, owner, object_symbol in expected_owners:
         scratch_root = repo_root / "tools/match/scratches" / windows_name
-        scratch_source = (scratch_root / "scratch.cpp").read_text(
+        scratch_source = (scratch_source_path(scratch_root)).read_text(
             encoding="utf-8"
         )
         assert f"{owner}::" in scratch_source
@@ -1617,12 +1614,10 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
     assert "ios_symbol" not in object_initializer
 
     request_anim_source = (
-        repo_root
-        / "tools/match/scratches/request_object_animation/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/request_object_animation")
     ).read_text(encoding="utf-8")
     animation_loader_source = (
-        repo_root
-        / "tools/match/scratches/load_x_animation_clip/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/load_x_animation_clip")
     ).read_text(encoding="utf-8")
     assert "void cRObject::RequestAnim(" in request_anim_source
     assert "object->RequestAnim(" in animation_loader_source
@@ -1630,12 +1625,10 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
     assert "object->request_object_animation" not in animation_loader_source
 
     rotate_facequad_source = (
-        repo_root
-        / "tools/match/scratches/rotate_object_facequad_uv_pairs/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/rotate_object_facequad_uv_pairs")
     ).read_text(encoding="utf-8")
     backdrop_tile_source = (
-        repo_root
-        / "tools/match/scratches/initialize_backdrop_tile_quad/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_backdrop_tile_quad")
     ).read_text(encoding="utf-8")
     assert "void cRFaceQuad::RotateUVCCW()" in rotate_facequad_source
     assert "rotate_object_facequad_uv_pairs(" not in rotate_facequad_source
@@ -1644,10 +1637,9 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
 
     object_manager_sources = {
         windows_name: (
-            repo_root
+            scratch_source_path(repo_root
             / "tools/match/scratches"
-            / windows_name
-            / "scratch.cpp"
+            / windows_name)
         ).read_text(encoding="utf-8")
         for windows_name in (
             "initialize_object_list",
@@ -1670,21 +1662,19 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
     )
 
     constructor_source = (
-        repo_root
-        / "tools/match/scratches/initialize_object_constructor_thunk/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_object_constructor_thunk")
     ).read_text(encoding="utf-8")
     assert "cRObject::cRObject()" in constructor_source
     assert "Init();" in constructor_source
 
     initializer_source = (
-        repo_root / "tools/match/scratches/initialize_object/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_object")
     ).read_text(encoding="utf-8")
     assert "void cRObject::Init()" in initializer_source
     assert "cRObject::cRObject()" not in initializer_source
 
     gl_builder_source = (
-        repo_root
-        / "tools/match/scratches/build_object_texture_group_buffers/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/build_object_texture_group_buffers")
     ).read_text(encoding="utf-8")
     assert "void build_object_texture_group_buffers(Object* object)" in (
         gl_builder_source
@@ -1751,7 +1741,7 @@ def test_mobile_crdistort_recovers_primary_owner_and_methods() -> None:
         expected_methods
     ):
         scratch_root = repo_root / "tools/match/scratches" / windows_name
-        scratch_source = (scratch_root / "scratch.cpp").read_text(
+        scratch_source = (scratch_source_path(scratch_root)).read_text(
             encoding="utf-8"
         )
         scratch_config = (scratch_root / "scratch.conf").read_text(
@@ -1771,12 +1761,10 @@ def test_mobile_crdistort_recovers_primary_owner_and_methods() -> None:
     )
 
     subgoldy_source = (
-        repo_root
-        / "tools/match/scratches/initialize_subgoldy/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_subgoldy")
     ).read_text(encoding="utf-8")
     refresh_source = (
-        repo_root
-        / "tools/match/scratches/refresh_object_vertex_buffer/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/refresh_object_vertex_buffer")
     ).read_text(encoding="utf-8")
     assert "presentation.object->distort.Init();" in subgoldy_source
     assert "object->distort.Build(object);" in refresh_source
@@ -1836,7 +1824,7 @@ def test_mobile_crduplicatevertices_recovers_primary_owner_and_methods() -> None
         expected_methods
     ):
         scratch_root = repo_root / "tools/match/scratches" / windows_name
-        scratch_source = (scratch_root / "scratch.cpp").read_text(
+        scratch_source = (scratch_source_path(scratch_root)).read_text(
             encoding="utf-8"
         )
         scratch_config = (scratch_root / "scratch.conf").read_text(
@@ -1856,12 +1844,10 @@ def test_mobile_crduplicatevertices_recovers_primary_owner_and_methods() -> None
     )
 
     directx_init_source = (
-        repo_root
-        / "tools/match/scratches/initialize_directx_loader/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_directx_loader")
     ).read_text(encoding="utf-8")
     animation_source = (
-        repo_root
-        / "tools/match/scratches/load_x_animation_clip/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/load_x_animation_clip")
     ).read_text(encoding="utf-8")
     assert "duplicate_vertices.Init(2000);" in directx_init_source
     assert "duplicate_vertices.Clean(keyframe_count);" in animation_source
@@ -1924,7 +1910,7 @@ def test_mobile_crdirectx_recovers_primary_owner_and_methods() -> None:
         alias,
         object_symbol,
     ) in expected_methods.items():
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -1954,7 +1940,7 @@ def test_mobile_crdirectx_recovers_primary_owner_and_methods() -> None:
     assert "void LoadAnim(char* mesh_name," in header
 
     world_source = (
-        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_game_assets_and_world")
     ).read_text(encoding="utf-8")
     assert "cRDirectX* loader = &directx_loader;" in world_source
     assert "loader->Init();" in world_source
@@ -2081,7 +2067,7 @@ def test_mobile_tvector_methods_recover_authored_surface() -> None:
         assert header_declaration in vector_header
 
         scratch_root = repo_root / "tools/match/scratches" / windows_name
-        scratch_source = (scratch_root / "scratch.cpp").read_text(
+        scratch_source = (scratch_source_path(scratch_root)).read_text(
             encoding="utf-8"
         )
         assert source_spelling in scratch_source
@@ -2107,7 +2093,7 @@ def test_mobile_tvector_methods_recover_authored_surface() -> None:
         "vector_magnitude",
         "rotate_vector_by_matrix",
     )
-    for path in (repo_root / "tools/match/scratches").rglob("*.cpp"):
+    for path in [*iter_scratch_sources(), *(repo_root / "tools/match/scratches").rglob("*.cpp")]:
         if "build" in path.parts:
             continue
         source = path.read_text(encoding="utf-8")
@@ -2117,7 +2103,7 @@ def test_mobile_tvector_methods_recover_authored_surface() -> None:
             assert f"::{name}(" not in source
 
     zero_source = (
-        repo_root / "tools/match/scratches/zero_vector3/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/zero_vector3")
     ).read_text(encoding="utf-8")
     assert "int tVector::zero_vector3()" in zero_source
     assert entries["zero_vector3"]["status"] == "unverified"
@@ -2331,7 +2317,7 @@ def test_mobile_tmatrix_methods_recover_authored_surface() -> None:
         assert header_declaration in matrix_header
 
         scratch_root = repo_root / "tools/match/scratches" / windows_name
-        scratch_source = (scratch_root / "scratch.cpp").read_text(
+        scratch_source = (scratch_source_path(scratch_root)).read_text(
             encoding="utf-8"
         )
         assert source_spelling in scratch_source
@@ -2366,7 +2352,7 @@ def test_mobile_tmatrix_methods_recover_authored_surface() -> None:
         "set_matrix_z_direction",
         "look_at_point",
     )
-    for path in (repo_root / "tools/match/scratches").rglob("*.cpp"):
+    for path in [*iter_scratch_sources(), *(repo_root / "tools/match/scratches").rglob("*.cpp")]:
         if "build" in path.parts:
             continue
         source = path.read_text(encoding="utf-8")
@@ -2462,7 +2448,7 @@ def test_mobile_tquaternian_and_taxis_recover_authored_owners() -> None:
         assert object_symbol in references_by_name[windows_name]["aliases"]
 
         scratch_root = repo_root / "tools/match/scratches" / windows_name
-        scratch_source = (scratch_root / "scratch.cpp").read_text(
+        scratch_source = (scratch_source_path(scratch_root)).read_text(
             encoding="utf-8"
         )
         assert source_spelling in scratch_source
@@ -2479,8 +2465,7 @@ def test_mobile_tquaternian_and_taxis_recover_authored_owners() -> None:
         assert header_declaration in owner_header
 
     quaternion_axis_source = (
-        repo_root
-        / "tools/match/scratches/initialize_quaternion_from_axis/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_quaternion_from_axis")
     ).read_text(encoding="utf-8")
     assert "void tQuaternian::operator=" in quaternion_axis_source
     assert "tQuaternian::tQuaternian(const tAxis&" not in quaternion_axis_source
@@ -2615,7 +2600,7 @@ def test_mobile_subgoldy_methods_recover_authored_surface() -> None:
         assert f"void {authored_name}(" in player_header
 
         scratch_root = repo_root / "tools/match/scratches" / windows_name
-        scratch_source = (scratch_root / "scratch.cpp").read_text(
+        scratch_source = (scratch_source_path(scratch_root)).read_text(
             encoding="utf-8"
         )
         assert f"void cRSubGoldy::{authored_name}(" in scratch_source
@@ -2709,7 +2694,7 @@ def test_mobile_cutscene_and_subhover_recover_authored_owners() -> None:
         assert entry["android_symbol"] == mobile_symbol
         assert alias in functions_by_name[windows_name]["aliases"]
         assert object_symbol in references_by_name[windows_name]["aliases"]
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -2732,7 +2717,7 @@ def test_mobile_cutscene_and_subhover_recover_authored_owners() -> None:
         "update_jetpack_gauge": ("Hover(player->transform.position, progress);",),
     }
     for scratch_name, expected_calls in caller_expectations.items():
-        source = (scratch_root / scratch_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / scratch_name)).read_text(
             encoding="utf-8"
         )
         for expected_call in expected_calls:
@@ -2839,7 +2824,7 @@ def test_mobile_tip_family_recovers_authored_owners() -> None:
         assert entry["android_symbol"] == mobile_symbol
         assert alias in functions_by_name[windows_name]["aliases"]
         assert object_symbol in references_by_name[windows_name]["aliases"]
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -2855,7 +2840,7 @@ def test_mobile_tip_family_recovers_authored_owners() -> None:
         "update_subgoldy": "tip_manager.TipNew(&row_event.definition, 1);",
     }
     for scratch_name, expected in shared_expectations.items():
-        source = (scratch_root / scratch_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / scratch_name)).read_text(
             encoding="utf-8"
         )
         assert expected in source
@@ -3046,7 +3031,7 @@ def test_mobile_gameplay_controllers_recover_authored_owners() -> None:
         assert entry["android_symbol"] == mobile_symbol
         assert alias in functions_by_name[windows_name]["aliases"]
         assert object_symbol in references_by_name[windows_name]["aliases"]
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -3076,7 +3061,7 @@ def test_mobile_gameplay_controllers_recover_authored_owners() -> None:
         "construct_game_runtime": ("sizeof(cRCompletion)",),
     }
     for scratch_name, expected_calls in caller_expectations.items():
-        source = (scratch_root / scratch_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / scratch_name)).read_text(
             encoding="utf-8"
         )
         for expected_call in expected_calls:
@@ -3202,7 +3187,7 @@ def test_mobile_ring_and_health_recover_authored_owners() -> None:
     for windows_name, alias, definition, object_symbol in expected_methods:
         assert alias in functions_by_name[windows_name]["aliases"]
         assert object_symbol in references_by_name[windows_name]["aliases"]
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -3233,8 +3218,7 @@ def test_mobile_ring_and_health_recover_authored_owners() -> None:
     )
 
     constructor_source = (
-        scratch_root
-        / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_runtime_pools_and_path_template_bank")
     ).read_text(encoding="utf-8")
     assert "cRSubHealth* health_pickup = health_pickups;" in constructor_source
     assert (
@@ -3249,7 +3233,7 @@ def test_mobile_ring_and_health_recover_authored_owners() -> None:
     assert "new (health_pickup)" not in constructor_source
     assert "new (ring)" not in constructor_source
     ring_spawn = (
-        scratch_root / "spawn_track_ring_or_special_effect/scratch.cpp"
+        scratch_source_path(scratch_root / "spawn_track_ring_or_special_effect")
     ).read_text(encoding="utf-8")
     assert "slot->Init(player->lives);" in ring_spawn
 
@@ -3390,7 +3374,7 @@ def test_mobile_sub_lazer_and_salt_recover_authored_owners() -> None:
     ):
         assert alias in functions_by_name[windows_name]["aliases"]
         assert object_symbol in references_by_name[windows_name]["aliases"]
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -3403,16 +3387,16 @@ def test_mobile_sub_lazer_and_salt_recover_authored_owners() -> None:
             assert entries[windows_name]["status"] == "verified"
             assert entries[windows_name]["confidence"] == "high"
 
-    build_level = (scratch_root / "build_subgame_level/scratch.cpp").read_text(
+    build_level = (scratch_source_path(scratch_root / "build_subgame_level")).read_text(
         encoding="utf-8"
     )
     assert "sub_lazers.Init();" in build_level
     assert "salt_hazards.Init();" in build_level
-    sub_loc = (scratch_root / "update_sub_loc/scratch.cpp").read_text(
+    sub_loc = (scratch_source_path(scratch_root / "update_sub_loc")).read_text(
         encoding="utf-8"
     )
     assert "sub_lazers.Shoot(&spawn, &direction);" in sub_loc
-    subgame = (scratch_root / "update_subgame/scratch.cpp").read_text(
+    subgame = (scratch_source_path(scratch_root / "update_subgame")).read_text(
         encoding="utf-8"
     )
     salt_spawns = re.findall(
@@ -3421,8 +3405,7 @@ def test_mobile_sub_lazer_and_salt_recover_authored_owners() -> None:
     )
     assert len(salt_spawns) == 2
     runtime_constructor = (
-        scratch_root
-        / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_runtime_pools_and_path_template_bank")
     ).read_text(encoding="utf-8")
     assert "sizeof(cRSubLazer)" in runtime_constructor
     assert "sizeof(cRSalt)" in runtime_constructor
@@ -3546,7 +3529,7 @@ def test_mobile_slug_family_recovers_authored_owners() -> None:
     ):
         assert alias in functions_by_name[windows_name]["aliases"]
         assert object_symbol in references_by_name[windows_name]["aliases"]
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -3568,15 +3551,14 @@ def test_mobile_slug_family_recovers_authored_owners() -> None:
         "reset_subgame": ("cRSlug* slug = slug_hazards.slots;",),
     }
     for scratch_name, expected_calls in callers.items():
-        source = (scratch_root / scratch_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / scratch_name)).read_text(
             encoding="utf-8"
         )
         for expected_call in expected_calls:
             assert expected_call in source
 
     constructor = (
-        scratch_root
-        / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_runtime_pools_and_path_template_bank")
     ).read_text(encoding="utf-8")
     assert "cRSlug* slug = slug_hazards.slots;" in constructor
     assert (
@@ -3640,7 +3622,7 @@ def test_mobile_click_start_recovers_authored_owner() -> None:
     ):
         assert alias in functions_by_name[windows_name]["aliases"]
         assert object_symbol in references_by_name[windows_name]["aliases"]
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -3654,13 +3636,12 @@ def test_mobile_click_start_recovers_authored_owner() -> None:
             assert entries[windows_name]["confidence"] == "high"
 
     subgoldy_init = (
-        scratch_root / "initialize_subgoldy/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_subgoldy")
     ).read_text(encoding="utf-8")
     assert "click_start.Init(this);" in subgoldy_init
 
     constructor = (
-        scratch_root
-        / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_runtime_pools_and_path_template_bank")
     ).read_text(encoding="utf-8")
     assert "((RuntimeSlot*)&subgoldy->click_start)" in constructor
     assert "->initialize_click_start_controller_runtime();" in constructor
@@ -3731,7 +3712,7 @@ def test_mobile_subgarbage_recovers_authored_owner() -> None:
     ):
         assert alias in functions_by_name[windows_name]["aliases"]
         assert object_symbol in references_by_name[windows_name]["aliases"]
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -3745,14 +3726,13 @@ def test_mobile_subgarbage_recovers_authored_owner() -> None:
             assert entries[windows_name]["confidence"] == "high"
 
     constructor = (
-        scratch_root
-        / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_runtime_pools_and_path_template_bank")
     ).read_text(encoding="utf-8")
     assert "cRSubGarbage* garbage = garbage_hazards.slots;" in constructor
     assert "((RuntimeSlot*)garbage)->initialize_garbage_hazard();" in constructor
 
     add_garbage = (
-        scratch_root / "spawn_track_garbage_hazard/scratch.cpp"
+        scratch_source_path(scratch_root / "spawn_track_garbage_hazard")
     ).read_text(encoding="utf-8")
     assert "cRSubGarbage* scan = garbage_hazards.slots;" in add_garbage
     assert "void cRSubGame::AddGarbage(" in add_garbage
@@ -3843,7 +3823,7 @@ def test_mobile_parcel_family_recovers_authored_owners() -> None:
     ):
         assert alias in functions_by_name[windows_name]["aliases"]
         assert object_symbol in references_by_name[windows_name]["aliases"]
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -3856,15 +3836,14 @@ def test_mobile_parcel_family_recovers_authored_owners() -> None:
             assert entries[windows_name]["status"] == "verified"
             assert entries[windows_name]["confidence"] == "high"
 
-    build = (scratch_root / "build_subgame_level/scratch.cpp").read_text(
+    build = (scratch_source_path(scratch_root / "build_subgame_level")).read_text(
         encoding="utf-8"
     )
-    update = (scratch_root / "update_subgoldy/scratch.cpp").read_text(
+    update = (scratch_source_path(scratch_root / "update_subgoldy")).read_text(
         encoding="utf-8"
     )
     constructor = (
-        scratch_root
-        / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_runtime_pools_and_path_template_bank")
     ).read_text(encoding="utf-8")
     assert "parcel_manager.Init();" in build
     assert "parcel_manager.AI();" in update
@@ -3987,7 +3966,7 @@ def test_mobile_vapour_pause_and_speedup_recover_authored_owners() -> None:
     ):
         assert alias in functions_by_name[windows_name]["aliases"]
         assert object_symbol in references_by_name[windows_name]["aliases"]
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -4001,26 +3980,25 @@ def test_mobile_vapour_pause_and_speedup_recover_authored_owners() -> None:
             assert entries[windows_name]["confidence"] == "high"
 
     assets = (
-        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_game_assets_and_world")
     ).read_text(encoding="utf-8")
-    create_golb = (scratch_root / "create_golb/scratch.cpp").read_text(
+    create_golb = (scratch_source_path(scratch_root / "create_golb")).read_text(
         encoding="utf-8"
     )
-    golb_ai = (scratch_root / "update_golb_ai/scratch.cpp").read_text(
+    golb_ai = (scratch_source_path(scratch_root / "update_golb_ai")).read_text(
         encoding="utf-8"
     )
-    subgame = (scratch_root / "update_subgame/scratch.cpp").read_text(
+    subgame = (scratch_source_path(scratch_root / "update_subgame")).read_text(
         encoding="utf-8"
     )
     completion = (
-        scratch_root / "update_completion_screen/scratch.cpp"
+        scratch_source_path(scratch_root / "update_completion_screen")
     ).read_text(encoding="utf-8")
     constructor = (
-        scratch_root
-        / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_runtime_pools_and_path_template_bank")
     ).read_text(encoding="utf-8")
     size_ledger = (
-        scratch_root / "construct_game_runtime/scratch.cpp"
+        scratch_source_path(scratch_root / "construct_game_runtime")
     ).read_text(encoding="utf-8")
 
     # The authored vapour owner initializes its own object at the Golb speed;
@@ -4187,7 +4165,7 @@ def test_mobile_frontend_jetpack_and_row_owners_stay_authored() -> None:
     ):
         assert alias in functions_by_name[windows_name]["aliases"]
         assert object_symbol in references_by_name[windows_name]["aliases"]
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -4211,20 +4189,19 @@ def test_mobile_frontend_jetpack_and_row_owners_stay_authored() -> None:
     assert "cRFade_Init" in folded_function_aliases
 
     assets = (
-        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_game_assets_and_world")
     ).read_text(encoding="utf-8")
     constructor = (
-        scratch_root
-        / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_runtime_pools_and_path_template_bank")
     ).read_text(encoding="utf-8")
     size_ledger = (
-        scratch_root / "construct_game_runtime/scratch.cpp"
+        scratch_source_path(scratch_root / "construct_game_runtime")
     ).read_text(encoding="utf-8")
-    frame = (scratch_root / "run_frame_update/scratch.cpp").read_text(
+    frame = (scratch_source_path(scratch_root / "run_frame_update")).read_text(
         encoding="utf-8"
     )
     add_jetpack = (
-        scratch_root / "spawn_track_jetpack_pickup/scratch.cpp"
+        scratch_source_path(scratch_root / "spawn_track_jetpack_pickup")
     ).read_text(encoding="utf-8")
 
     # Each root overlay is linked, then initialized through its authored Init.
@@ -4435,7 +4412,7 @@ def test_mobile_fringe_logo_and_galaxy_recover_authored_owners() -> None:
     ):
         assert alias in functions_by_name[windows_name]["aliases"]
         assert object_symbol in references_by_name[windows_name]["aliases"]
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -4448,29 +4425,28 @@ def test_mobile_fringe_logo_and_galaxy_recover_authored_owners() -> None:
             assert entries[windows_name]["confidence"] == "high"
 
     constructor = (
-        scratch_root
-        / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_runtime_pools_and_path_template_bank")
     ).read_text(encoding="utf-8")
     size_ledger = (
-        scratch_root / "construct_game_runtime/scratch.cpp"
+        scratch_source_path(scratch_root / "construct_game_runtime")
     ).read_text(encoding="utf-8")
     fringe_builder = (
-        scratch_root / "build_track_fringe_objects/scratch.cpp"
+        scratch_source_path(scratch_root / "build_track_fringe_objects")
     ).read_text(encoding="utf-8")
     assets = (
-        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_game_assets_and_world")
     ).read_text(encoding="utf-8")
     frontend = (
-        scratch_root / "update_frontend_state_machine/scratch.cpp"
+        scratch_source_path(scratch_root / "update_frontend_state_machine")
     ).read_text(encoding="utf-8")
     completion = (
-        scratch_root / "update_completion_screen/scratch.cpp"
+        scratch_source_path(scratch_root / "update_completion_screen")
     ).read_text(encoding="utf-8")
     initialize_subgame = (
-        scratch_root / "initialize_subgame/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_subgame")
     ).read_text(encoding="utf-8")
     update_subgame = (
-        scratch_root / "update_subgame/scratch.cpp"
+        scratch_source_path(scratch_root / "update_subgame")
     ).read_text(encoding="utf-8")
 
     assert "sizeof(cRFringe)," in constructor
@@ -4654,7 +4630,7 @@ def test_mobile_voice_star_and_landscape_recover_authored_owners() -> None:
     for windows_name, alias, definition, object_symbol in expected_methods:
         assert alias in functions_by_name[windows_name]["aliases"]
         assert object_symbol in references_by_name[windows_name]["aliases"]
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -4667,15 +4643,15 @@ def test_mobile_voice_star_and_landscape_recover_authored_owners() -> None:
         assert entries[windows_name]["confidence"] == "high"
 
     assets = (
-        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_game_assets_and_world")
     ).read_text(encoding="utf-8")
-    frame = (scratch_root / "run_frame_update/scratch.cpp").read_text(
+    frame = (scratch_source_path(scratch_root / "run_frame_update")).read_text(
         encoding="utf-8"
     )
-    build = (scratch_root / "build_subgame_level/scratch.cpp").read_text(
+    build = (scratch_source_path(scratch_root / "build_subgame_level")).read_text(
         encoding="utf-8"
     )
-    subgoldy = (scratch_root / "update_subgoldy/scratch.cpp").read_text(
+    subgoldy = (scratch_source_path(scratch_root / "update_subgoldy")).read_text(
         encoding="utf-8"
     )
     assert "g_voice_manager.Init();" in assets
@@ -4790,7 +4766,7 @@ def test_mobile_warning_recovers_authored_owner() -> None:
         assert entry["android_symbol"] == mobile_symbol
         assert alias in functions_by_name[windows_name]["aliases"]
         assert object_symbol in references_by_name[windows_name]["aliases"]
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -4811,7 +4787,7 @@ def test_mobile_warning_recovers_authored_owner() -> None:
         "update_subgoldy": ("warning.AI();",),
     }
     for scratch_name, expected_calls in caller_expectations.items():
-        source = (scratch_root / scratch_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / scratch_name)).read_text(
             encoding="utf-8"
         )
         for expected_call in expected_calls:
@@ -4899,7 +4875,7 @@ def test_mobile_high_score_recovers_authored_lifecycle() -> None:
         assert entry["android_symbol"] == mobile_symbol
         assert alias in functions_by_name[windows_name]["aliases"]
         assert object_symbol in references_by_name[windows_name]["aliases"]
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -4910,7 +4886,7 @@ def test_mobile_high_score_recovers_authored_lifecycle() -> None:
         assert f"SYMBOL={object_symbol}\n" in config
 
     frontend = (
-        scratch_root / "update_frontend_state_machine/scratch.cpp"
+        scratch_source_path(scratch_root / "update_frontend_state_machine")
     ).read_text(encoding="utf-8")
     assert frontend.count("high_score.Init(") == 2
     assert frontend.count("high_score.AI();") == 2
@@ -5050,7 +5026,7 @@ def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -
     }
     for scratch_name, (definition, symbol) in authored_sprite_scratches.items():
         scratch_root = repo_root / "tools/match/scratches" / scratch_name
-        assert definition in (scratch_root / "scratch.cpp").read_text(
+        assert definition in (scratch_source_path(scratch_root)).read_text(
             encoding="utf-8"
         )
         assert symbol in (scratch_root / "scratch.conf").read_text(
@@ -5177,7 +5153,7 @@ def test_mobile_sprite_manager_recovers_authored_methods_and_contracts() -> None
         assert object_symbol in references_by_name[windows_name]["aliases"]
 
         scratch_root = repo_root / "tools/match/scratches" / windows_name
-        scratch_source = (scratch_root / "scratch.cpp").read_text(
+        scratch_source = (scratch_source_path(scratch_root)).read_text(
             encoding="utf-8"
         )
         scratch_config = (scratch_root / "scratch.conf").read_text(
@@ -5212,9 +5188,7 @@ def test_mobile_sprite_manager_recovers_authored_methods_and_contracts() -> None
     )
     matcher_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in (repo_root / "tools/match/scratches").glob(
-            "*/scratch.cpp"
-        )
+        for path in iter_scratch_sources()
     )
     for legacy_method in legacy_methods:
         assert f".{legacy_method}(" not in matcher_sources
@@ -5222,12 +5196,10 @@ def test_mobile_sprite_manager_recovers_authored_methods_and_contracts() -> None
         assert f"{legacy_method}(" not in sprite_header
 
     load_source = (
-        repo_root
-        / "tools/match/scratches/register_sprite_texture/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/register_sprite_texture")
     ).read_text(encoding="utf-8")
     pause_source = (
-        repo_root
-        / "tools/match/scratches/set_sprite_manager_paused/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/set_sprite_manager_paused")
     ).read_text(encoding="utf-8")
     assert "return result;" not in load_source
     assert "return paused_;" not in pause_source
@@ -5360,7 +5332,7 @@ def test_mobile_crbod_owners_use_authored_constructors() -> None:
         scratch_root = (
             repo_root / "tools/match/scratches" / windows_name
         )
-        source = (scratch_root / "scratch.cpp").read_text(encoding="utf-8")
+        source = (scratch_source_path(scratch_root)).read_text(encoding="utf-8")
         config = (scratch_root / "scratch.conf").read_text(encoding="utf-8")
         assert f"SYMBOL={symbol}" in config
         assert symbol in references_by_name[windows_name]["aliases"]
@@ -5373,28 +5345,23 @@ def test_mobile_crbod_owners_use_authored_constructors() -> None:
             assert "cRBod::" in source
 
     base_initializer = (
-        repo_root
-        / "tools/match/scratches/initialize_bod_base/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_bod_base")
     ).read_text(encoding="utf-8")
     positioned_initializer = (
-        repo_root
-        / "tools/match/scratches/initialize_renderable_bod/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_renderable_bod")
     ).read_text(encoding="utf-8")
     assert "cRBod::cRBod()" in base_initializer
     assert "cRBodPos::cRBodPos()" in (
         positioned_initializer
     )
     assert "bool cRBod::IsAfterSprites()" in (
-        repo_root
-        / "tools/match/scratches/is_bod_after_sprites/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/is_bod_after_sprites")
     ).read_text(encoding="utf-8")
     assert "int cRBod::SetObject(Object* object_)" in (
-        repo_root
-        / "tools/match/scratches/set_bod_object/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/set_bod_object")
     ).read_text(encoding="utf-8")
     assert "void cRBod::ApplyPos(TransformMatrix& matrix)" in (
-        repo_root
-        / "tools/match/scratches/apply_bod_position/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/apply_bod_position")
     ).read_text(encoding="utf-8")
     assert "initialize_bod_base" not in base_initializer
     assert "initialize_renderable_bod" not in positioned_initializer
@@ -5445,7 +5412,7 @@ def test_mobile_crmouse_methods_use_authored_primary_owner() -> None:
             f"cRMouse_{recovered['method']}",
             recovered["method"],
         ]
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -5479,7 +5446,7 @@ def test_mobile_crmouse_methods_use_authored_primary_owner() -> None:
 
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.glob("*/scratch.cpp")
+        for path in iter_scratch_sources()
     )
     for stale_method in (
         "is_mouse_captured()",
@@ -5610,7 +5577,7 @@ def test_mobile_border_exact_methods_use_authored_names() -> None:
     ] == [perform_object_symbol]
 
     init_source = (
-        scratch_root / "initialize_frontend_sprite_button/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_frontend_sprite_button")
     ).read_text(encoding="utf-8")
     init_config = (
         scratch_root / "initialize_frontend_sprite_button/scratch.conf"
@@ -5619,7 +5586,7 @@ def test_mobile_border_exact_methods_use_authored_names() -> None:
     assert f"SYMBOL={init_object_symbol}\n" in init_config
 
     perform_source = (
-        scratch_root / "apply_all_border_visibility_mode/scratch.cpp"
+        scratch_source_path(scratch_root / "apply_all_border_visibility_mode")
     ).read_text(encoding="utf-8")
     perform_config = (
         scratch_root / "apply_all_border_visibility_mode/scratch.conf"
@@ -5638,7 +5605,7 @@ def test_mobile_border_exact_methods_use_authored_names() -> None:
 
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("scratch.cpp")
+        for path in iter_scratch_sources()
         if "build" not in path.parts
     )
     assert "initialize_frontend_sprite_button(" not in all_sources
@@ -5695,8 +5662,7 @@ def test_mobile_delay_click_recovers_border_manager_owner() -> None:
 
     scratch_root = repo_root / "tools/match/scratches"
     source = (
-        scratch_root
-        / "queue_frontend_widget_flag_after_delay/scratch.cpp"
+        scratch_source_path(scratch_root / "queue_frontend_widget_flag_after_delay")
     ).read_text(encoding="utf-8")
     config = (
         scratch_root
@@ -5706,7 +5672,7 @@ def test_mobile_delay_click_recovers_border_manager_owner() -> None:
         repo_root / "tools/match/include/border_manager.h"
     ).read_text(encoding="utf-8")
     caller = (
-        scratch_root / "update_frontend_widget_interaction/scratch.cpp"
+        scratch_source_path(scratch_root / "update_frontend_widget_interaction")
     ).read_text(encoding="utf-8")
     assert "void cRBorderManager::DelayClick(" in source
     assert f"SYMBOL={object_symbol}\n" in config
@@ -5976,7 +5942,7 @@ def test_mobile_rmath_family_recovers_authored_names() -> None:
             object_symbol
         ]
 
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -6297,7 +6263,7 @@ def test_mobile_font_core_recovers_authored_windows_surface() -> None:
         ]
 
         scratch = repo_root / "tools/match/scratches" / windows_name
-        source = (scratch / "scratch.cpp").read_text(encoding="utf-8")
+        source = (scratch_source_path(scratch)).read_text(encoding="utf-8")
         config = (scratch / "scratch.conf").read_text(encoding="utf-8")
         notes = (scratch / "NOTES.md").read_text(encoding="utf-8")
         assert f"{authored_name}(" in source
@@ -6437,7 +6403,7 @@ def test_mobile_rtext_family_recovers_rshell_ownership_and_real_abis() -> None:
             object_symbols[windows_name]
         ]
         scratch = repo_root / "tools/match/scratches" / windows_name
-        source = (scratch / "scratch.cpp").read_text(encoding="utf-8")
+        source = (scratch_source_path(scratch)).read_text(encoding="utf-8")
         config = (scratch / "scratch.conf").read_text(encoding="utf-8")
         assert f"{authored_name}(" in source
         assert f"SYMBOL={object_symbols[windows_name]}\n" in config
@@ -6465,7 +6431,7 @@ def test_mobile_rtext_family_recovers_rshell_ownership_and_real_abis() -> None:
     all_scratch_sources = "\n".join(
         path.read_text(encoding="utf-8")
         for path in sorted(
-            (repo_root / "tools/match/scratches").glob("*/scratch.cpp")
+            iter_scratch_sources()
         )
     )
     for stale_name in expected:
@@ -6526,9 +6492,7 @@ def test_mobile_rtext_family_recovers_rshell_ownership_and_real_abis() -> None:
     assert "literal `str:Mirror`" in ida_apply
     assert "find_ida_binary(args.ida_bin)" in ida_runner
 
-    scratch_paths = (
-        repo_root / "tools/match/scratches"
-    ).glob("*/scratch.cpp")
+    scratch_paths = iter_scratch_sources()
     random_scratches = []
     for scratch_path in scratch_paths:
         scratch = scratch_path.read_text(encoding="utf-8")
@@ -6660,9 +6624,7 @@ def test_android_rshell_scramble_helpers_recover_windows_contracts() -> None:
         else:
             assert "^ (byte)iVar1" in body
             assert "void xor_decode_buffer_with_index(void* buffer" in (
-                repo_root
-                / "tools/match/scratches/xor_decode_buffer_with_index/"
-                "scratch.cpp"
+                scratch_source_path(repo_root / "tools/match/scratches/xor_decode_buffer_with_index")
             ).read_text(encoding="utf-8")
 
     ios_names = load_json(
@@ -6764,7 +6726,7 @@ def test_mobile_rstring_family_recovers_strict_comparator_and_windows_abi() -> N
             object_symbols[windows_name]
         ]
         scratch = repo_root / "tools/match/scratches" / windows_name
-        source = (scratch / "scratch.cpp").read_text(encoding="utf-8")
+        source = (scratch_source_path(scratch)).read_text(encoding="utf-8")
         config = (scratch / "scratch.conf").read_text(encoding="utf-8")
         assert f"{authored_name}(" in source
         assert f"SYMBOL={object_symbols[windows_name]}\n" in config
@@ -6838,7 +6800,7 @@ def test_mobile_rstring_family_recovers_strict_comparator_and_windows_abi() -> N
     scratch_sources = "\n".join(
         path.read_text(encoding="utf-8")
         for path in sorted(
-            (repo_root / "tools/match/scratches").glob("*/scratch.cpp")
+            iter_scratch_sources()
         )
     )
     for stale_name in expected:
@@ -6993,16 +6955,14 @@ def test_mobile_game_level_init_recovers_authored_virtual_owner() -> None:
         encoding="utf-8"
     )
     scratch = (
-        repo_root
-        / "tools/match/scratches/noop_runtime_callback/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/noop_runtime_callback")
     ).read_text(encoding="utf-8")
     config = (
         repo_root
         / "tools/match/scratches/noop_runtime_callback/scratch.conf"
     ).read_text(encoding="utf-8")
     constructor = (
-        repo_root
-        / "tools/match/scratches/construct_game_runtime/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/construct_game_runtime")
     ).read_text(encoding="utf-8")
     notes = (
         repo_root
@@ -7903,7 +7863,7 @@ def test_mobile_falling_init_recovers_windows_carryover_method() -> None:
         repo_root
         / "tools/match/scratches/begin_post_follow_carryover"
     )
-    scratch = (scratch_root / "scratch.cpp").read_text(encoding="utf-8")
+    scratch = (scratch_source_path(scratch_root)).read_text(encoding="utf-8")
     config = (scratch_root / "scratch.conf").read_text(encoding="utf-8")
     header = (repo_root / "tools/match/include/player.h").read_text(
         encoding="utf-8"
@@ -7920,10 +7880,9 @@ def test_mobile_falling_init_recovers_windows_carryover_method() -> None:
     }
     for scratch_name, expected_count in caller_counts.items():
         caller = (
-            repo_root
+            scratch_source_path(repo_root
             / "tools/match/scratches"
-            / scratch_name
-            / "scratch.cpp"
+            / scratch_name)
         ).read_text(encoding="utf-8")
         assert caller.count("FallingInit();") == expected_count
         assert "begin_post_follow_carryover();" not in caller
@@ -8032,7 +7991,7 @@ def test_android_golb_effects_recover_windows_methods() -> None:
         assert references[windows_name]["aliases"] == [
             object_symbols[windows_name]
         ]
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -8050,7 +8009,7 @@ def test_android_golb_effects_recover_windows_methods() -> None:
         else:
             assert "Exact at" in notes
 
-    ai_source = (scratch_root / "update_golb_ai/scratch.cpp").read_text(
+    ai_source = (scratch_source_path(scratch_root / "update_golb_ai")).read_text(
         encoding="utf-8"
     )
     assert ai_source.count("Jet(") == 3
@@ -8184,7 +8143,7 @@ def test_enemy_manager_uses_authored_method_surface() -> None:
             assert entry["ios_body_count"] == 1
         assert functions[windows_name]["aliases"] == recovered["aliases"]
 
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -8201,7 +8160,7 @@ def test_enemy_manager_uses_authored_method_surface() -> None:
 
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.glob("*/scratch.cpp")
+        for path in iter_scratch_sources()
     )
     for stale_method in (
         ".initialize_enemy_manager(",
@@ -8493,7 +8452,7 @@ def test_subgame_leaf_types_use_authored_primary_owners() -> None:
         assert f"sizeof({authored})" in header
         for function in functions:
             source = (
-                scratch_root / function / "scratch.cpp"
+                scratch_source_path(scratch_root / function)
             ).read_text(encoding="utf-8")
             member = member_names.get(function, function)
             assert f"{authored}::{member}" in source
@@ -8568,7 +8527,7 @@ def test_nuke_lifecycle_uses_authored_method_surface() -> None:
             assert entry["ios_symbol"] == recovered["mobile"]
         assert functions[windows_name]["aliases"] == recovered["aliases"]
 
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -8581,13 +8540,13 @@ def test_nuke_lifecycle_uses_authored_method_surface() -> None:
     assert "void Init();" in header
     assert "void AI();" in header
     assert "void UnInit();" in header
-    init = (scratch_root / "initialize_nuke" / "scratch.cpp").read_text(
+    init = (scratch_source_path(scratch_root / "initialize_nuke")).read_text(
         encoding="utf-8"
     )
     assert "AI();" in init
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.glob("*/scratch.cpp")
+        for path in iter_scratch_sources()
     )
     for stale_method in (
         ".initialize_nuke(",
@@ -8656,7 +8615,7 @@ def test_squidge_uses_authored_method_surface() -> None:
         assert entry["android_body_count"] == 1
         assert functions[windows_name]["aliases"] == [recovered["alias"]]
 
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -8675,7 +8634,7 @@ def test_squidge_uses_authored_method_surface() -> None:
         assert declaration in header
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("*.cpp")
+        for path in [*iter_scratch_sources(), *scratch_root.rglob("*.cpp")]
         if "build" not in path.parts
     )
     for stale_method in (
@@ -8747,7 +8706,7 @@ def test_snail_skin_uses_authored_method_surface() -> None:
             assert entry["ios_symbol"] == recovered["ios"]
         assert functions[windows_name]["aliases"] == [recovered["alias"]]
 
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -8763,7 +8722,7 @@ def test_snail_skin_uses_authored_method_surface() -> None:
     assert "Init(cRSnail*" not in header
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("*.cpp")
+        for path in [*iter_scratch_sources(), *scratch_root.rglob("*.cpp")]
         if "build" not in path.parts
     )
     for stale_method in (
@@ -8821,7 +8780,7 @@ def test_anim_manager_uses_authored_method_surface() -> None:
         assert entry["android_body_count"] == 1
         assert functions[windows_name]["aliases"] == [recovered["alias"]]
 
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -8835,7 +8794,7 @@ def test_anim_manager_uses_authored_method_surface() -> None:
     assert "void AI();" in header
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("*.cpp")
+        for path in [*iter_scratch_sources(), *scratch_root.rglob("*.cpp")]
         if "build" not in path.parts
     )
     for stale_method in (
@@ -8903,7 +8862,7 @@ def test_times_up_uses_authored_method_surface() -> None:
             assert "ios_symbol" not in entry
         assert functions[windows_name]["aliases"] == [recovered["alias"]]
 
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -8916,13 +8875,13 @@ def test_times_up_uses_authored_method_surface() -> None:
     assert "void AI();" in header
     assert "void UnInit();" in header
     assert "void Init();" in header
-    ai_source = (scratch_root / "update_times_up/scratch.cpp").read_text(
+    ai_source = (scratch_source_path(scratch_root / "update_times_up")).read_text(
         encoding="utf-8"
     )
     assert "UnInit();" in ai_source
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("*.cpp")
+        for path in [*iter_scratch_sources(), *scratch_root.rglob("*.cpp")]
         if "build" not in path.parts
     )
     for stale_method in (
@@ -8954,7 +8913,7 @@ def test_progress_bar_uses_authored_ai_surface() -> None:
         if function["name"] == "update_progress_bar"
     )
     symbol = "?AI@cRProgressBar@@QAEXXZ"
-    source = (scratch_root / "update_progress_bar/scratch.cpp").read_text(
+    source = (scratch_source_path(scratch_root / "update_progress_bar")).read_text(
         encoding="utf-8"
     )
     config = (scratch_root / "update_progress_bar/scratch.conf").read_text(
@@ -8982,7 +8941,7 @@ def test_progress_bar_uses_authored_ai_surface() -> None:
     assert "void noop_runtime_ai();" in header
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("*.cpp")
+        for path in [*iter_scratch_sources(), *scratch_root.rglob("*.cpp")]
         if "build" not in path.parts
     )
     assert ".update_progress_bar(" not in all_sources
@@ -9007,7 +8966,7 @@ def test_banner_uses_authored_ai_surface() -> None:
         if function["name"] == "update_banner"
     )
     symbol = "?AI@cRBanner@@QAEXXZ"
-    source = (scratch_root / "update_banner/scratch.cpp").read_text(
+    source = (scratch_source_path(scratch_root / "update_banner")).read_text(
         encoding="utf-8"
     )
     config = (scratch_root / "update_banner/scratch.conf").read_text(
@@ -9035,7 +8994,7 @@ def test_banner_uses_authored_ai_surface() -> None:
     assert "g_banner_callback_table" in references
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("*.cpp")
+        for path in [*iter_scratch_sources(), *scratch_root.rglob("*.cpp")]
         if "build" not in path.parts
     )
     assert ".update_banner(" not in all_sources
@@ -9059,7 +9018,7 @@ def test_barrier_uses_authored_ai_surface() -> None:
         if function["name"] == "update_barrier_ai"
     )
     symbol = "?AI@cRBarrier@@QAEXXZ"
-    source = (scratch_root / "update_barrier_ai/scratch.cpp").read_text(
+    source = (scratch_source_path(scratch_root / "update_barrier_ai")).read_text(
         encoding="utf-8"
     )
     config = (scratch_root / "update_barrier_ai/scratch.conf").read_text(
@@ -9087,7 +9046,7 @@ def test_barrier_uses_authored_ai_surface() -> None:
     assert "g_barrier_actor_callback_table" in references
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("*.cpp")
+        for path in [*iter_scratch_sources(), *scratch_root.rglob("*.cpp")]
         if "build" not in path.parts
     )
     assert ".update_barrier_ai(" not in all_sources
@@ -9150,7 +9109,7 @@ def test_exit_uses_authored_lifecycle_surface() -> None:
             assert "ios_symbol" not in entry
         assert functions[windows_name]["aliases"] == [recovered["alias"]]
 
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -9164,14 +9123,14 @@ def test_exit_uses_authored_lifecycle_surface() -> None:
     assert "void Init();" in header
     assert "void AI();" in header
     ai_source = (
-        scratch_root / "update_completion_screen/scratch.cpp"
+        scratch_source_path(scratch_root / "update_completion_screen")
     ).read_text(encoding="utf-8")
     assert sum(
         line.strip() == "UnInit();" for line in ai_source.splitlines()
     ) == 11
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("*.cpp")
+        for path in [*iter_scratch_sources(), *scratch_root.rglob("*.cpp")]
         if "build" not in path.parts
     )
     for stale_method in (
@@ -9241,7 +9200,7 @@ def test_help_uses_authored_lifecycle_surface() -> None:
             assert "ios_symbol" not in entry
         assert functions[windows_name]["aliases"] == [recovered["alias"]]
 
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -9254,13 +9213,13 @@ def test_help_uses_authored_lifecycle_surface() -> None:
     assert "void Init();" in header
     assert "void UnInit();" in header
     assert "void AI();" in header
-    ai_source = (scratch_root / "update_help_screen/scratch.cpp").read_text(
+    ai_source = (scratch_source_path(scratch_root / "update_help_screen")).read_text(
         encoding="utf-8"
     )
     assert "UnInit();" in ai_source
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("*.cpp")
+        for path in [*iter_scratch_sources(), *scratch_root.rglob("*.cpp")]
         if "build" not in path.parts
     )
     for stale_method in (
@@ -9318,7 +9277,7 @@ def test_intro_uses_authored_lifecycle_surface() -> None:
         assert entry["ios_body_count"] == 1
         assert functions[windows_name]["aliases"] == [recovered["alias"]]
 
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -9345,7 +9304,7 @@ def test_intro_uses_authored_lifecycle_surface() -> None:
     assert "void Init();" in header
     assert "void AI();" in header
     assert "void UnInit();" in header
-    ai_source = (scratch_root / "update_new_game_menu/scratch.cpp").read_text(
+    ai_source = (scratch_source_path(scratch_root / "update_new_game_menu")).read_text(
         encoding="utf-8"
     )
     assert sum(
@@ -9353,7 +9312,7 @@ def test_intro_uses_authored_lifecycle_surface() -> None:
     ) == 7
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("*.cpp")
+        for path in [*iter_scratch_sources(), *scratch_root.rglob("*.cpp")]
         if "build" not in path.parts
     )
     for stale_method in (
@@ -9421,7 +9380,7 @@ def test_main_menu_uses_authored_lifecycle_surface() -> None:
         assert entry["ios_body_count"] == 1
         assert functions[windows_name]["aliases"] == recovered["aliases"]
 
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -9434,7 +9393,7 @@ def test_main_menu_uses_authored_lifecycle_surface() -> None:
     assert "void UnInit();" in header
     assert "void Init();" in header
     assert "void AI();" in header
-    ai_source = (scratch_root / "update_main_menu/scratch.cpp").read_text(
+    ai_source = (scratch_source_path(scratch_root / "update_main_menu")).read_text(
         encoding="utf-8"
     )
     assert sum(
@@ -9442,7 +9401,7 @@ def test_main_menu_uses_authored_lifecycle_surface() -> None:
     ) == 3
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("*.cpp")
+        for path in [*iter_scratch_sources(), *scratch_root.rglob("*.cpp")]
         if "build" not in path.parts
     )
     for stale_method in (
@@ -9513,7 +9472,7 @@ def test_cheat_uses_authored_method_surface() -> None:
             assert "ios_symbol" not in entry
         assert functions[windows_name]["aliases"] == [recovered["alias"]]
 
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -9526,13 +9485,13 @@ def test_cheat_uses_authored_method_surface() -> None:
     assert "void Init();" in header
     assert "void AI();" in header
     assert "bool MatchText(char* text);" in header
-    ai_source = (scratch_root / "update_cheat/scratch.cpp").read_text(
+    ai_source = (scratch_source_path(scratch_root / "update_cheat")).read_text(
         encoding="utf-8"
     )
     assert ai_source.count("MatchText(") == 3
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("*.cpp")
+        for path in [*iter_scratch_sources(), *scratch_root.rglob("*.cpp")]
         if "build" not in path.parts
     )
     for stale_method in (
@@ -9596,7 +9555,7 @@ def test_gui_uses_authored_lifecycle_surface() -> None:
         assert entry["ios_body_count"] == 1
         assert functions[windows_name]["aliases"] == [recovered["alias"]]
 
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -9610,14 +9569,14 @@ def test_gui_uses_authored_lifecycle_surface() -> None:
     assert "void UnInit();" in header
     assert "int AI();" in header
     ai_source = (
-        scratch_root / "update_challenge_setup_screen/scratch.cpp"
+        scratch_source_path(scratch_root / "update_challenge_setup_screen")
     ).read_text(encoding="utf-8")
     assert sum(
         line.strip() == "UnInit();" for line in ai_source.splitlines()
     ) == 8
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("*.cpp")
+        for path in [*iter_scratch_sources(), *scratch_root.rglob("*.cpp")]
         if "build" not in path.parts
     )
     for stale_method in (
@@ -9681,7 +9640,7 @@ def test_options_uses_authored_lifecycle_surface() -> None:
         assert entry["ios_body_count"] == 1
         assert functions[windows_name]["aliases"] == [recovered["alias"]]
 
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -9702,7 +9661,7 @@ def test_options_uses_authored_lifecycle_surface() -> None:
     assert "void UnInit();" in header
     assert "void AI();" in header
     assert "void apply_audio_config_volumes();" in header
-    ai_source = (scratch_root / "update_options_menu/scratch.cpp").read_text(
+    ai_source = (scratch_source_path(scratch_root / "update_options_menu")).read_text(
         encoding="utf-8"
     )
     assert sum(
@@ -9711,7 +9670,7 @@ def test_options_uses_authored_lifecycle_surface() -> None:
     assert "apply_audio_config_volumes();" in ai_source
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("*.cpp")
+        for path in [*iter_scratch_sources(), *scratch_root.rglob("*.cpp")]
         if "build" not in path.parts
     )
     for stale_method in (
@@ -9847,7 +9806,7 @@ def test_high_score_storage_uses_authored_method_surface() -> None:
             assert "ios_body_count" not in entry
         assert functions[windows_name]["aliases"] == [recovered["alias"]]
 
-        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / windows_name)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / windows_name / "scratch.conf").read_text(
@@ -9875,7 +9834,7 @@ def test_high_score_storage_uses_authored_method_surface() -> None:
 
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("*.cpp")
+        for path in [*iter_scratch_sources(), *scratch_root.rglob("*.cpp")]
         if "build" not in path.parts
     )
     for stale_method in (
@@ -10038,7 +9997,7 @@ def test_screen_controller_types_use_authored_primary_owners() -> None:
         assert f"sizeof({authored})" in header
         for function in functions:
             source = (
-                scratch_root / function / "scratch.cpp"
+                scratch_source_path(scratch_root / function)
             ).read_text(encoding="utf-8")
             member = member_names.get(function, function)
             assert f"{authored}::{member}" in source
@@ -10136,7 +10095,7 @@ def test_screen_controller_types_use_authored_primary_owners() -> None:
 
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("scratch.cpp")
+        for path in iter_scratch_sources()
         if "build" not in path.parts
     )
     assert "g_loading_bar.UnInit();" in all_sources
@@ -10220,7 +10179,7 @@ def test_core_gameplay_types_use_authored_primary_owners() -> None:
         assert f"sizeof({authored})" in header
         for function in functions:
             source = (
-                scratch_root / function / "scratch.cpp"
+                scratch_source_path(scratch_root / function)
             ).read_text(encoding="utf-8")
             member = member_names.get(function, function)
             assert f"{authored}::{member}" in source
@@ -10327,7 +10286,7 @@ def test_core_gameplay_types_use_authored_primary_owners() -> None:
         assert f" {old_member}(" not in backdrop
 
     landscape_initializer = (
-        scratch_root / "initialize_landscape_script_record/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_landscape_script_record")
     ).read_text(encoding="utf-8")
     assert "cRLandscape* cRLandscape::initialize_landscape_script_record()" in (
         landscape_initializer
@@ -10335,7 +10294,7 @@ def test_core_gameplay_types_use_authored_primary_owners() -> None:
 
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("scratch.cpp")
+        for path in iter_scratch_sources()
         if "build" not in path.parts
     )
     assert all_sources.count("backdrop.Change(") == 9
@@ -10403,7 +10362,7 @@ def test_mobile_subtracks_import_recovers_authored_method_and_type() -> None:
     )
     assert references_by_name[function]["aliases"] == [object_symbol]
 
-    source = (scratch_root / function / "scratch.cpp").read_text(
+    source = (scratch_source_path(scratch_root / function)).read_text(
         encoding="utf-8"
     )
     config = (scratch_root / function / "scratch.conf").read_text(
@@ -10425,7 +10384,7 @@ def test_mobile_subtracks_import_recovers_authored_method_and_type() -> None:
     assert f"SYMBOL={object_symbol}\n" in config
 
     caller = (
-        scratch_root / "load_level_definition_file/scratch.cpp"
+        scratch_source_path(scratch_root / "load_level_definition_file")
     ).read_text(encoding="utf-8")
     assert caller.count("ImportSegment(") == 3
     assert "copy_segment_definition_to_level_slot(" not in caller
@@ -10496,7 +10455,7 @@ def test_mobile_subtrack_owner_surface_is_authored_consistently() -> None:
         assert references_by_name[windows_name]["aliases"] == [symbol]
 
         unit_root = scratch_root / windows_name
-        source = (unit_root / "scratch.cpp").read_text(encoding="utf-8")
+        source = (scratch_source_path(unit_root)).read_text(encoding="utf-8")
         config = (unit_root / "scratch.conf").read_text(encoding="utf-8")
         notes = (unit_root / "NOTES.md").read_text(encoding="utf-8")
         assert source_spelling in source
@@ -10516,17 +10475,16 @@ def test_mobile_subtrack_owner_surface_is_authored_consistently() -> None:
     assert "void Init(cRSubSegmentRaw** raw_segments);" in tracks_header
 
     frontend = (
-        scratch_root
-        / "load_frontend_level_by_mode_and_index/scratch.cpp"
+        scratch_source_path(scratch_root / "load_frontend_level_by_mode_and_index")
     ).read_text(encoding="utf-8")
     levels = (
-        scratch_root / "load_level_definitions/scratch.cpp"
+        scratch_source_path(scratch_root / "load_level_definitions")
     ).read_text(encoding="utf-8")
     world = (
-        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_game_assets_and_world")
     ).read_text(encoding="utf-8")
     subgame = (
-        scratch_root / "initialize_subgame/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_subgame")
     ).read_text(encoding="utf-8")
     assert "Init(path);" in frontend
     assert ".Init(name);" in levels
@@ -10536,10 +10494,10 @@ def test_mobile_subtrack_owner_surface_is_authored_consistently() -> None:
 
     matcher_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for root in (repo_root / "tools/match/include", scratch_root)
-        for pattern in ("*.h", "scratch.cpp")
-        for path in root.rglob(pattern)
-        if "build" not in path.parts
+        for path in [
+            *(repo_root / "tools/match/include").rglob("*.h"),
+            *iter_scratch_sources(),
+        ]
     )
     assert "load_level_definition_file" not in matcher_sources
     assert "load_builtin_segment_definitions" not in matcher_sources
@@ -10640,7 +10598,7 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
         assert f"sizeof({authored})" in header
         for function in functions:
             source = (
-                scratch_root / function / "scratch.cpp"
+                scratch_source_path(scratch_root / function)
             ).read_text(encoding="utf-8")
             method = method_names.get(function, function)
             assert f"{authored}::{method}" in source
@@ -10821,7 +10779,7 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
 
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.glob("*/scratch.cpp")
+        for path in iter_scratch_sources()
     )
     for stable_name in (*border_methods, *remaining_border_methods):
         assert f"{stable_name}(" not in all_sources
@@ -10947,7 +10905,7 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
         assert declaration in manager
 
     frontend_update = (
-        scratch_root / "update_frontend_widget_interaction/scratch.cpp"
+        scratch_source_path(scratch_root / "update_frontend_widget_interaction")
     ).read_text(encoding="utf-8")
     assert "tooltip.ReSet();" in frontend_update
     assert "twinkle_manager.AI();" in frontend_update
@@ -10956,12 +10914,12 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
     assert ".update_tooltip(" not in frontend_update
     assert ".update_twinkle_manager(" not in frontend_update
     manager_update = (
-        scratch_root / "update_twinkle_manager/scratch.cpp"
+        scratch_source_path(scratch_root / "update_twinkle_manager")
     ).read_text(encoding="utf-8")
     twinkle_update = (
-        scratch_root / "update_twinkle/scratch.cpp"
+        scratch_source_path(scratch_root / "update_twinkle")
     ).read_text(encoding="utf-8")
-    hide_init = (scratch_root / "hide_border_init/scratch.cpp").read_text(
+    hide_init = (scratch_source_path(scratch_root / "hide_border_init")).read_text(
         encoding="utf-8"
     )
     assert "twinkle->AI();" in manager_update
@@ -11012,7 +10970,7 @@ def test_snail_presentation_uses_authored_primary_owner() -> None:
         "extract_snail_local_hotspots": "ExtractHotSpots",
     }
     for function, method in methods.items():
-        source = (scratch_root / function / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / function)).read_text(
             encoding="utf-8"
         )
         assert f"cRSnail::{method}" in source
@@ -11037,7 +10995,7 @@ def test_snail_presentation_uses_authored_primary_owner() -> None:
     config = (
         scratch_root / "update_snail_presentation/scratch.conf"
     ).read_text(encoding="utf-8")
-    update = (scratch_root / "update_subgoldy/scratch.cpp").read_text(
+    update = (scratch_source_path(scratch_root / "update_subgoldy")).read_text(
         encoding="utf-8"
     )
     assert f"SYMBOL={object_symbol}\n" in config
@@ -11066,7 +11024,7 @@ def test_snail_presentation_uses_authored_primary_owner() -> None:
         scratch_root / "build_snail_world_hotspots/scratch.conf"
     ).read_text(encoding="utf-8")
     hotspot_update = (
-        scratch_root / "update_snail_presentation/scratch.cpp"
+        scratch_source_path(scratch_root / "update_snail_presentation")
     ).read_text(encoding="utf-8")
     assert f"SYMBOL={hotspot_symbol}\n" in hotspot_config
     assert "void BuildHotSpots();" in player
@@ -11096,7 +11054,7 @@ def test_snail_presentation_uses_authored_primary_owner() -> None:
         scratch_root / "extract_snail_local_hotspots/scratch.conf"
     ).read_text(encoding="utf-8")
     game_init = (
-        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_game_assets_and_world")
     ).read_text(encoding="utf-8")
     assert f"SYMBOL={extractor_symbol}\n" in extractor_config
     assert "void ExtractHotSpots();" in player
@@ -11108,7 +11066,7 @@ def test_snail_presentation_uses_authored_primary_owner() -> None:
     cut_scene = (include_root / "cut_scene.h").read_text(encoding="utf-8")
     assert "cRSnail* owner_snail" in snail_skin
     assert "cRSnail* presentation" in cut_scene
-    folded = (scratch_root / "noop_runtime_ai" / "scratch.cpp").read_text(
+    folded = (scratch_source_path(scratch_root / "noop_runtime_ai")).read_text(
         encoding="utf-8"
     )
     assert "cRSnail::" not in folded
@@ -11131,7 +11089,7 @@ def test_game_root_uses_authored_primary_owner() -> None:
         "initialize_game_assets_and_world": "initialize_game_assets_and_world",
     }
     for function, method in methods.items():
-        source = (scratch_root / function / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / function)).read_text(
             encoding="utf-8"
         )
         assert f"cRGame::{method}" in source
@@ -11171,7 +11129,7 @@ def test_game_root_uses_authored_primary_owner() -> None:
         encoding="utf-8"
     )
     main_loop = (
-        scratch_root / "game_startup_and_main_loop/scratch.cpp"
+        scratch_source_path(scratch_root / "game_startup_and_main_loop")
     ).read_text(encoding="utf-8")
     assert f"SYMBOL={object_symbol}\n" in config
     assert "int AI();" in header
@@ -11202,7 +11160,7 @@ def test_game_root_uses_authored_primary_owner() -> None:
     assert "g_game->initialize_game_last();" not in main_loop
 
     constructor = (
-        scratch_root / "construct_game_runtime" / "scratch.cpp"
+        scratch_source_path(scratch_root / "construct_game_runtime")
     ).read_text(encoding="utf-8")
     assert 'sizeof(cRGame)' in constructor
     assert "cRGame* root = (cRGame*)this" in constructor
@@ -11223,10 +11181,10 @@ def test_root_presentation_types_use_authored_primary_owners() -> None:
     assert "cRPlayer players[GAME_ROOT_PLAYER_SLOT_COUNT]" in game_root
     assert "cRCamera camera" in game_root
     constructor = (
-        scratch_root / "initialize_game_player/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_game_player")
     ).read_text(encoding="utf-8")
     player_ai = (
-        scratch_root / "update_frontend_state_machine/scratch.cpp"
+        scratch_source_path(scratch_root / "update_frontend_state_machine")
     ).read_text(encoding="utf-8")
     assert "cRPlayer::initialize_game_player" in constructor
     assert "void cRPlayer::AI()" in player_ai
@@ -11280,12 +11238,12 @@ def test_root_presentation_types_use_authored_primary_owners() -> None:
         "attach_render_camera_source": "SetCamera",
     }
     for function, method in viewport_methods.items():
-        source = (scratch_root / function / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / function)).read_text(
             encoding="utf-8"
         )
         assert f"cRViewport::{method}" in source
     assert "cRCamera* camera_" in (
-        scratch_root / "attach_render_camera_source" / "scratch.cpp"
+        scratch_source_path(scratch_root / "attach_render_camera_source")
     ).read_text(encoding="utf-8")
     viewport_set_camera = crosswalk["attach_render_camera_source"]
     assert viewport_set_camera["status"] == "verified"
@@ -11310,11 +11268,11 @@ def test_root_presentation_types_use_authored_primary_owners() -> None:
     ).read_text(encoding="utf-8")
     assert f"SYMBOL={viewport_set_camera_symbol}\n" in viewport_set_camera_config
     asset_initializer = (
-        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_game_assets_and_world")
     ).read_text(encoding="utf-8")
     assert asset_initializer.count(".SetCamera(") == 2
 
-    folded = (scratch_root / "noop_runtime_ai" / "scratch.cpp").read_text(
+    folded = (scratch_source_path(scratch_root / "noop_runtime_ai")).read_text(
         encoding="utf-8"
     )
     assert "cRCamera::" not in folded
@@ -11344,7 +11302,7 @@ def test_root_input_types_use_authored_primary_owners() -> None:
         ("cRInput", "update_input", "Update"),
         ("cRGameInput", "update_game_input", "AI"),
     ):
-        source = (scratch_root / function / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / function)).read_text(
             encoding="utf-8"
         )
         assert f"{owner}::{member}" in source
@@ -11415,13 +11373,13 @@ def test_root_input_types_use_authored_primary_owners() -> None:
         assert f"SYMBOL={object_symbol}\n" in config
 
     asset_initializer = (
-        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_game_assets_and_world")
     ).read_text(encoding="utf-8")
     assert re.search(r"\binput\.Init\(\);", asset_initializer)
     assert ".initialize_input(" not in asset_initializer
 
     game_input_ai = (
-        scratch_root / "update_game_input/scratch.cpp"
+        scratch_source_path(scratch_root / "update_game_input")
     ).read_text(encoding="utf-8")
     assert "input.Update();" in game_input_ai
     assert "input.update_input();" not in game_input_ai
@@ -11492,7 +11450,7 @@ def test_sound_facade_uses_authored_primary_owner() -> None:
         assert entry["android_body_count"] == 1
         assert functions[function]["aliases"] == recovered["aliases"]
 
-        source = (scratch_root / function / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / function)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / function / "scratch.conf").read_text(
@@ -11504,7 +11462,7 @@ def test_sound_facade_uses_authored_primary_owner() -> None:
 
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.glob("*/scratch.cpp")
+        for path in iter_scratch_sources()
     )
     for stale_method in (
         ".initialize_sound_bank(",
@@ -11522,7 +11480,7 @@ def test_sound_facade_uses_authored_primary_owner() -> None:
         "stop_warning_sample_handle": "StopLooped",
     }
     for function, authored_name in authored_loop_methods.items():
-        source = (scratch_root / function / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / function)).read_text(
             encoding="utf-8"
         )
         assert f"cRSound::{authored_name}" in source
@@ -11530,7 +11488,7 @@ def test_sound_facade_uses_authored_primary_owner() -> None:
         assert f"{authored_name}(int" in header
 
     warning = (
-        scratch_root / "stop_warning_sample" / "scratch.cpp"
+        scratch_source_path(scratch_root / "stop_warning_sample")
     ).read_text(encoding="utf-8")
     assert "g_sound_effect_manager.PlayLooped(0x32)" in warning
     assert "g_sound_effect_manager.StopLooped(handle)" in warning
@@ -11632,7 +11590,7 @@ def test_input_ok_overlay_uses_authored_primary_owner() -> None:
         "initialize_input_ok": "Init",
     }
     for function, method in methods.items():
-        source = (scratch_root / function / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / function)).read_text(
             encoding="utf-8"
         )
         assert f"cRInputOK::{method}" in source
@@ -11686,14 +11644,14 @@ def test_input_ok_overlay_uses_authored_primary_owner() -> None:
     assert "void update_input_ok();" not in header
     assert "void initialize_input_ok();" not in header
     initializer = (
-        scratch_root / "initialize_input_ok/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_input_ok")
     ).read_text(encoding="utf-8")
     assert initializer.count("AI();") == 1
     input_text_init = (
-        scratch_root / "border_input_text_init/scratch.cpp"
+        scratch_source_path(scratch_root / "border_input_text_init")
     ).read_text(encoding="utf-8")
     input_text = (
-        scratch_root / "border_input_text/scratch.cpp"
+        scratch_source_path(scratch_root / "border_input_text")
     ).read_text(encoding="utf-8")
     assert input_text_init.count("input_ok_state()->Init();") == 1
     assert input_text.count("input_ok_state()->AI();") == 1
@@ -11715,7 +11673,7 @@ def test_cameraman_uses_authored_primary_owner() -> None:
         "update_cameraman": "AI",
     }
     for function, method in methods.items():
-        source = (scratch_root / function / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / function)).read_text(
             encoding="utf-8"
         )
         assert f"cRCameraman::{method}" in source
@@ -11758,10 +11716,10 @@ def test_cameraman_uses_authored_primary_owner() -> None:
     assert "void Init(); // @ 0x446160" in header
     assert "initialize_cameraman();" not in header
     game_init = (
-        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_game_assets_and_world")
     ).read_text(encoding="utf-8")
     player_init = (
-        scratch_root / "initialize_subgoldy/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_subgoldy")
     ).read_text(encoding="utf-8")
     assert game_init.count("subgame.player.cameraman.Init();") == 1
     assert player_init.count("cameraman.Init();") == 1
@@ -11788,12 +11746,12 @@ def test_cameraman_uses_authored_primary_owner() -> None:
     assert "void AI(); // @ 0x4461d0" in header
     assert "update_cameraman();" not in header
     camera_update = (
-        scratch_root / "update_subgame_camera/scratch.cpp"
+        scratch_source_path(scratch_root / "update_subgame_camera")
     ).read_text(encoding="utf-8")
     assert camera_update.count("player.cameraman.AI();") == 1
 
     folded = (
-        scratch_root / "noop_runtime_slot_constructor" / "scratch.cpp"
+        scratch_source_path(scratch_root / "noop_runtime_slot_constructor")
     ).read_text(encoding="utf-8")
     assert "cRCameraman::" not in folded
 
@@ -11828,7 +11786,7 @@ def test_golb_projectile_types_use_authored_primary_owners() -> None:
         "spawn_golb_impact_sprite": "Explode",
     }
     for function, method in methods.items():
-        source = (scratch_root / function / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / function)).read_text(
             encoding="utf-8"
         )
         assert f"cRSubGolb::{method}" in source
@@ -11837,7 +11795,7 @@ def test_golb_projectile_types_use_authored_primary_owners() -> None:
         "traverse_path_follow_golb": "Traverse",
     }
     for function, method in path_follow_methods.items():
-        source = (scratch_root / function / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / function)).read_text(
             encoding="utf-8"
         )
         assert f"cRPathFollowGolb::{method}" in source
@@ -11890,13 +11848,13 @@ def test_golb_projectile_types_use_authored_primary_owners() -> None:
     assert "void Create(cRSubGoldy* player," in header
     assert "void update_golb_ai();" not in header
     assert "void create_golb(" not in header
-    shooter = (scratch_root / "shoot_subgoldy/scratch.cpp").read_text(
+    shooter = (scratch_source_path(scratch_root / "shoot_subgoldy")).read_text(
         encoding="utf-8"
     )
     assert shooter.count("slot->Create(owner, spawn_count, index);") == 1
     assert "slot->create_golb(" not in shooter
 
-    folded = (scratch_root / "noop_runtime_ai" / "scratch.cpp").read_text(
+    folded = (scratch_source_path(scratch_root / "noop_runtime_ai")).read_text(
         encoding="utf-8"
     )
     assert "cRGolbRocket::" not in folded
@@ -11936,7 +11894,7 @@ def test_mobile_golb_kill_recovers_authored_method() -> None:
     object_symbol = "?Kill@cRSubGolb@@QAEXXZ"
     assert references_by_name["kill_golb"]["aliases"] == [object_symbol]
 
-    source = (scratch_root / "kill_golb/scratch.cpp").read_text(
+    source = (scratch_source_path(scratch_root / "kill_golb")).read_text(
         encoding="utf-8"
     )
     config = (scratch_root / "kill_golb/scratch.conf").read_text(
@@ -11950,10 +11908,10 @@ def test_mobile_golb_kill_recovers_authored_method() -> None:
     assert "void Kill(); // @ 0x414670" in header
     assert "void kill_golb();" not in header
 
-    update = (scratch_root / "update_golb_ai/scratch.cpp").read_text(
+    update = (scratch_source_path(scratch_root / "update_golb_ai")).read_text(
         encoding="utf-8"
     )
-    cleanup = (scratch_root / "remove_subgame_bods/scratch.cpp").read_text(
+    cleanup = (scratch_source_path(scratch_root / "remove_subgame_bods")).read_text(
         encoding="utf-8"
     )
     assert update.count("Kill();") == 5
@@ -12016,7 +11974,7 @@ def test_tutorial_uses_authored_primary_owner() -> None:
             f"cRTutorial_{method}"
         ]
         assert references_by_name[function]["aliases"] == [object_symbol]
-        source = (scratch_root / function / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / function)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / function / "scratch.conf").read_text(
@@ -12031,20 +11989,20 @@ def test_tutorial_uses_authored_primary_owner() -> None:
     assert "update_tutorial();" not in header
 
     new_game = (
-        scratch_root / "update_new_game_menu/scratch.cpp"
+        scratch_source_path(scratch_root / "update_new_game_menu")
     ).read_text(encoding="utf-8")
     destroy = (
-        scratch_root / "destroy_subgame/scratch.cpp"
+        scratch_source_path(scratch_root / "destroy_subgame")
     ).read_text(encoding="utf-8")
     update = (
-        scratch_root / "update_subgame/scratch.cpp"
+        scratch_source_path(scratch_root / "update_subgame")
     ).read_text(encoding="utf-8")
     assert new_game.count("tutorial.Init();") == 1
     assert destroy.count("tutorial.UnInit();") == 1
     assert update.count("tutorial.AI();") == 1
 
     constructor = (
-        scratch_root / "construct_game_runtime" / "scratch.cpp"
+        scratch_source_path(scratch_root / "construct_game_runtime")
     ).read_text(encoding="utf-8")
     assert 'sizeof(cRTutorial)' in constructor
 
@@ -12073,7 +12031,7 @@ def test_timing_types_use_authored_primary_owners() -> None:
         ("cRTime", "zero_timer_counters"),
         ("cRTime", "advance_timer_counters"),
     ):
-        source = (scratch_root / function / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / function)).read_text(
             encoding="utf-8"
         )
         member = "Zero" if function == "zero_timer_counters" else "Add"
@@ -12086,7 +12044,7 @@ def test_timing_types_use_authored_primary_owners() -> None:
         scratch_root / "advance_timer_counters" / "scratch.conf"
     ).read_text(encoding="utf-8")
     formatter = (
-        scratch_root / "format_time_trial_string" / "scratch.cpp"
+        scratch_source_path(scratch_root / "format_time_trial_string")
     ).read_text(encoding="utf-8")
     assert "char* cRTimeTrial::" not in formatter
     assert "__stdcall format_time_trial_string" in formatter
@@ -12198,7 +12156,7 @@ def test_subgame_helper_methods_use_authored_names() -> None:
             assert entry["ios_body_count"] == ios_body_count
         assert functions_by_name[function]["aliases"] == [alias]
         assert references_by_name[function]["aliases"] == [object_symbol]
-        source = (scratch_root / function / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / function)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / function / "scratch.conf").read_text(
@@ -12218,7 +12176,7 @@ def test_subgame_helper_methods_use_authored_names() -> None:
 
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.glob("*/scratch.cpp")
+        for path in iter_scratch_sources()
     )
     for old_name in (
         "firework_shoot",
@@ -12585,7 +12543,7 @@ def test_mobile_objectproc_surface_is_authored_consistently() -> None:
         assert references_by_name[windows_name]["aliases"] == [symbol]
 
         unit_root = scratch_root / windows_name
-        source = (unit_root / "scratch.cpp").read_text(encoding="utf-8")
+        source = (scratch_source_path(unit_root)).read_text(encoding="utf-8")
         config = (unit_root / "scratch.conf").read_text(encoding="utf-8")
         notes = (unit_root / "NOTES.md").read_text(encoding="utf-8")
         assert source_spelling in source
@@ -12594,10 +12552,10 @@ def test_mobile_objectproc_surface_is_authored_consistently() -> None:
 
     matcher_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for root in (repo_root / "tools/match/include", scratch_root)
-        for pattern in ("*.h", "scratch.cpp")
-        for path in root.rglob(pattern)
-        if "build" not in path.parts
+        for path in [
+            *(repo_root / "tools/match/include").rglob("*.h"),
+            *iter_scratch_sources(),
+        ]
     )
     for windows_name in expected:
         assert windows_name not in matcher_sources
@@ -12640,7 +12598,7 @@ def test_mobile_path_mirror_recovers_authored_method() -> None:
     assert object_symbol in references_by_name["mirror_path"]["aliases"]
 
     scratch_root = repo_root / "tools/match/scratches"
-    source = (scratch_root / "mirror_path/scratch.cpp").read_text(
+    source = (scratch_source_path(scratch_root / "mirror_path")).read_text(
         encoding="utf-8"
     )
     config = (scratch_root / "mirror_path/scratch.conf").read_text(
@@ -12650,7 +12608,7 @@ def test_mobile_path_mirror_recovers_authored_method() -> None:
         repo_root / "tools/match/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
     initializer = (
-        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_game_assets_and_world")
     ).read_text(encoding="utf-8")
     assert "void cRPath::Mirror(cRPath* source)" in source
     assert f"SYMBOL={object_symbol}\n" in config
@@ -12722,7 +12680,7 @@ def test_mobile_path_queries_recover_authored_methods() -> None:
         assert functions_by_name[function]["aliases"] == [alias]
         assert references_by_name[function]["aliases"] == [object_symbol]
 
-        source = (scratch_root / function / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / function)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / function / "scratch.conf").read_text(
@@ -12741,7 +12699,7 @@ def test_mobile_path_queries_recover_authored_methods() -> None:
 
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("scratch.cpp")
+        for path in iter_scratch_sources()
         if "build" not in path.parts
     )
     assert all_sources.count("->GetPos(") == 2
@@ -12800,7 +12758,7 @@ def test_mobile_path_follow_initializers_recover_authored_methods() -> None:
         assert functions_by_name[function]["aliases"] == [alias]
         assert references_by_name[function]["aliases"] == [object_symbol]
 
-        source = (scratch_root / function / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / function)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / function / "scratch.conf").read_text(
@@ -12821,10 +12779,10 @@ def test_mobile_path_follow_initializers_recover_authored_methods() -> None:
     assert "initialize_path_follow_golb(" not in golb_header
 
     update_goldy = (
-        scratch_root / "update_subgoldy/scratch.cpp"
+        scratch_source_path(scratch_root / "update_subgoldy")
     ).read_text(encoding="utf-8")
     update_golb = (
-        scratch_root / "update_golb_ai/scratch.cpp"
+        scratch_source_path(scratch_root / "update_golb_ai")
     ).read_text(encoding="utf-8")
     assert update_goldy.count(
         "follow_state.Init(source_cell, *p_position, this);"
@@ -12884,7 +12842,7 @@ def test_mobile_path_follow_traversals_recover_authored_methods() -> None:
         assert functions_by_name[function]["aliases"] == [alias]
         assert references_by_name[function]["aliases"] == [object_symbol]
 
-        source = (scratch_root / function / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / function)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / function / "scratch.conf").read_text(
@@ -12905,12 +12863,12 @@ def test_mobile_path_follow_traversals_recover_authored_methods() -> None:
     assert "traverse_path_follow_golb(" not in golb_header
 
     swept = (
-        scratch_root / "try_enter_track_attachment_from_swept_motion/scratch.cpp"
+        scratch_source_path(scratch_root / "try_enter_track_attachment_from_swept_motion")
     ).read_text(encoding="utf-8")
-    update_goldy = (scratch_root / "update_subgoldy/scratch.cpp").read_text(
+    update_goldy = (scratch_source_path(scratch_root / "update_subgoldy")).read_text(
         encoding="utf-8"
     )
-    update_golb = (scratch_root / "update_golb_ai/scratch.cpp").read_text(
+    update_golb = (scratch_source_path(scratch_root / "update_golb_ai")).read_text(
         encoding="utf-8"
     )
     assert swept.count("follow_state.Traverse(") == 1
@@ -12972,7 +12930,7 @@ def test_mobile_path_lifecycle_recovers_authored_methods() -> None:
     ]
 
     get_nodes_source = (
-        scratch_root / "get_path_nodes/scratch.cpp"
+        scratch_source_path(scratch_root / "get_path_nodes")
     ).read_text(encoding="utf-8")
     get_nodes_config = (
         scratch_root / "get_path_nodes/scratch.conf"
@@ -12981,7 +12939,7 @@ def test_mobile_path_lifecycle_recovers_authored_methods() -> None:
     assert "SYMBOL=?GetNodes@cRPath@@QAEXXZ\n" in get_nodes_config
 
     calc_source = (
-        scratch_root / "calc_path_length_z/scratch.cpp"
+        scratch_source_path(scratch_root / "calc_path_length_z")
     ).read_text(encoding="utf-8")
     calc_config = (
         scratch_root / "calc_path_length_z/scratch.conf"
@@ -12998,7 +12956,7 @@ def test_mobile_path_lifecycle_recovers_authored_methods() -> None:
     assert "void __fastcall calc_path_length_z();" not in header
 
     loopbow_path = (
-        scratch_root / "initialize_loopbow_path_template_pair/scratch.cpp"
+        scratch_source_path(scratch_root / "initialize_loopbow_path_template_pair")
     )
     loopbow_source = loopbow_path.read_text(encoding="utf-8")
     assert loopbow_source.count("calc_path_length_z(") == 2
@@ -13007,7 +12965,7 @@ def test_mobile_path_lifecycle_recovers_authored_methods() -> None:
 
     non_loopbow_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in scratch_root.rglob("scratch.cpp")
+        for path in iter_scratch_sources()
         if "build" not in path.parts and path != loopbow_path
     )
     assert "get_path_nodes(" not in non_loopbow_sources
@@ -13104,10 +13062,10 @@ def test_mobile_face_heightmap_chain_recovers_authored_owner() -> None:
     assert "void AI(); // @ 0x430470" in movie_header
     assert "void advance_frame_sequence();" not in movie_header
     face_source = (
-        repo_root / "tools/match/scratches/update_smtracks/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/update_smtracks")
     ).read_text(encoding="utf-8")
     movie_source = (
-        repo_root / "tools/match/scratches/advance_frame_sequence/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/advance_frame_sequence")
     ).read_text(encoding="utf-8")
     face_config = (
         repo_root / "tools/match/scratches/update_smtracks/scratch.conf"

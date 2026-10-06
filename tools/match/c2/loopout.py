@@ -11,6 +11,7 @@ MATCH_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(MATCH_ROOT))
 from check_cage_loopbow_owners_20260921 import verify
 from replay_four_builder_controls_20260912 import reconstruct
+from snail.match import overlay_scratch_conf
 
 RECEIPT = MATCH_ROOT / "loopout-address-order-20260922.json"
 FUNCTION = "initialize_loopout_path_template_pair"
@@ -233,8 +234,8 @@ def main():
             scratch = args.out / (label + "-source")
             scratch.mkdir()
             (scratch / "scratch.cpp").write_text(source)
-            (scratch / "scratch.conf").write_bytes(
-                (MATCH_ROOT / "scratches" / FUNCTION / "scratch.conf").read_bytes()
+            (scratch / "scratch.conf").write_text(
+                overlay_scratch_conf((MATCH_ROOT / "scratches" / FUNCTION / "scratch.conf").read_text())
             )
             manifest, events = trace(
                 scratch, args.out / (label + "-observed"), passes_only=True

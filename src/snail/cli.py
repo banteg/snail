@@ -608,6 +608,19 @@ def build_parser() -> argparse.ArgumentParser:
         help="Write the normalized manifest JSON to this path in addition to printing a summary.",
     )
 
+    decomp_parser = subparsers.add_parser(
+        "decomp",
+        help="Recovered source tree (decomp/) organised by Windows link order.",
+    )
+    decomp_subparsers = decomp_parser.add_subparsers(dest="decomp_command", required=True)
+    decomp_layout_parser = decomp_subparsers.add_parser(
+        "layout",
+        help="Check (default) or write decomp/layout.json against link order and scratch SOURCE fields.",
+    )
+    decomp_layout_parser.add_argument(
+        "--write", action="store_true", help="Regenerate decomp/layout.json from link order."
+    )
+
     screenshots_parser = subparsers.add_parser(
         "screenshots",
         help="Compare rendered screenshots against reference captures.",
@@ -1636,6 +1649,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(json.dumps(manifest, indent=2, sort_keys=True))
         return 0
 
+    if args.command == "decomp":
+        from . import decomp_layout
+
+        if args.write:
+            (REPO_ROOT / decomp_layout.LAYOUT).write_text(
+                decomp_layout.layout_text(decomp_layout.build_layout(REPO_ROOT))
+            )
+        problems = decomp_layout.layout_problems(REPO_ROOT)
+        for problem in problems:
+            print(f"error: {problem}", file=sys.stderr)
+        if not problems:
+            print("decomp/ layout matches link order and every scratch SOURCE.")
+        return 1 if problems else 0
+
     if args.command == "format":
         parsed = parse_text_asset(Path(args.path), kind=args.kind)
         builtins = msgspec.to_builtins(parsed)
@@ -2017,7 +2044,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             manifest = load_function_symbol_manifest(args.manifest)
             image_path = args.image or REPO_ROOT / manifest.primary_target
-            source_path = config.directory / "scratch.cpp"
+            source_path = config.source_path
             if (
                 args.write_best is not None
                 and args.write_best.resolve() == source_path.resolve()

@@ -5439,3 +5439,63 @@ def test_stand_in_context_headers_are_reported(tmp_path: Path) -> None:
     (scratch / "scratch.cpp").write_text('#include "real.h"\n#include "padding.h"\n')
     config = ScratchConfig(scratch, "foo", "msvc6.5", "/O2 /G5 /W3", None, None)
     assert scratch_stand_in_headers(config, match_root) == ("padding.h",)
+
+
+def test_scratch_source_points_into_recovered_tree(tmp_path: Path) -> None:
+    from snail.match import (
+        load_scratch_config,
+        overlay_scratch_conf,
+        scratch_compilation_source,
+        scratch_source_path,
+    )
+
+    match_root = tmp_path / "match"
+    scratch = match_root / "scratches" / "foo"
+    scratch.mkdir(parents=True)
+    recovered = tmp_path / "decomp" / "game" / "Unit" / "foo.cpp"
+    recovered.parent.mkdir(parents=True)
+    recovered.write_text("int foo() { return 1; }\n")
+    conf = "FUNCTION=foo\nSOURCE=../../../decomp/game/Unit/foo.cpp\n"
+    (scratch / "scratch.conf").write_text(conf)
+
+    config = load_scratch_config(scratch)
+    assert config.source_path.resolve() == recovered.resolve()
+    assert scratch_source_path(scratch).resolve() == recovered.resolve()
+    assert scratch_compilation_source(config, match_root) == recovered.read_text()
+    # A probe overlay replaces the canonical source and its config forgets SOURCE.
+    assert (
+        scratch_compilation_source(config, match_root, source_text="int foo();\n")
+        == "int foo();\n"
+    )
+    assert overlay_scratch_conf(conf) == "FUNCTION=foo\n"
+    # Without a config, a directory compiles its own scratch.cpp.
+    assert scratch_source_path(tmp_path / "loose") == tmp_path / "loose" / "scratch.cpp"
+
+
+def test_scratch_dependency_digest_ignores_source_location(tmp_path: Path) -> None:
+    from snail.match import (
+        DEFAULT_SCRATCH_COMPILER,
+        load_scratch_config,
+        scratch_dependency_sha256,
+    )
+
+    digests = []
+    for layout in ("local", "tree"):
+        match_root = tmp_path / layout / "match"
+        scratch = match_root / "scratches" / "foo"
+        scratch.mkdir(parents=True)
+        (match_root / "include").mkdir()
+        (match_root / "cl.sh").write_text("")
+        compiler_bin = match_root / "compilers" / DEFAULT_SCRATCH_COMPILER / "Bin"
+        compiler_bin.mkdir(parents=True)
+        (compiler_bin / "CL.EXE").write_text("cl")
+        if layout == "local":
+            (scratch / "scratch.cpp").write_text("int foo() { return 1; }\n")
+            (scratch / "scratch.conf").write_text("FUNCTION=foo\n")
+        else:
+            source = tmp_path / layout / "decomp" / "foo.cpp"
+            source.parent.mkdir()
+            source.write_text("int foo() { return 1; }\n")
+            (scratch / "scratch.conf").write_text("FUNCTION=foo\nSOURCE=../../../decomp/foo.cpp\n")
+        digests.append(scratch_dependency_sha256(load_scratch_config(scratch), match_root))
+    assert digests[0] == digests[1]

@@ -98,7 +98,7 @@ def compare(runtime, out):
         records.append({
             "function": name,
             "symbol": function.name,
-            "source_sha256": digest((config.directory / "scratch.cpp").read_bytes()),
+            "source_sha256": digest(config.source_path.read_bytes()),
             "dependency_sha256": dependency_sha256,
             "config_sha256": config_sha256,
             "compiler": config.compiler,

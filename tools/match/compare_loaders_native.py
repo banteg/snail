@@ -369,7 +369,7 @@ def compare(runtime, archive, out, include_synthetic=False):
                 "native_references_ok": match.masked_operand_audit.ok_count,
                 "native_reference_debt": match.masked_operand_audit.problem_count,
                 "source_sha256": digest(
-                    (config.directory / "scratch.cpp").read_bytes()
+                    config.source_path.read_bytes()
                 ),
                 "config_sha256": digest(
                     (config.directory / "scratch.conf").read_bytes()

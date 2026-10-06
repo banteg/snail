@@ -18,7 +18,7 @@ from pathlib import Path
 
 from compare_loaders_native import verify_source_link
 from compare_quaternion_native import checked_run
-from compare_sbend_native import digest, make_oracle, verify_oracle_link
+from compare_sbend_native import make_oracle, verify_oracle_link
 from link_path_math import support_inputs
 
 from snail.match import (
@@ -174,7 +174,7 @@ def compare(runtime: Path, out: Path) -> dict:
         raise ValueError("editor must have all eight references clean")
     record = {"function": FUNCTION, "object_name": source_object.name, "symbol": function.name,
               "match_ratio": match.ratio, "compiler": config.compiler, "cflags": config.cflags,
-              "source_sha256": file_digest(config.directory / "scratch.cpp"),
+              "source_sha256": file_digest(config.source_path),
               "config_sha256": file_digest(config.directory / "scratch.conf"),
               "dependency_sha256": dependencies, "code_sha256": object_function_fingerprint(function),
               "object_sha256": file_digest(source_object)}
@@ -234,7 +234,7 @@ def compare(runtime: Path, out: Path) -> dict:
     negative_result = compare_outputs(out / "source.bin", negative)
     if negative_result["equal"] or negative_result["differing_cases"] != 1 or negative_result["differences"][0]["different_bytes"] != 1:
         raise ValueError("one-byte negative control was not isolated")
-    if scratch_dependency_sha256(config) != dependencies or file_digest(config.directory / "scratch.cpp") != record["source_sha256"]:
+    if scratch_dependency_sha256(config) != dependencies or file_digest(config.source_path) != record["source_sha256"]:
         raise ValueError("source dependencies changed during diagnostic")
     for path, expected in identities.items():
         if file_digest(Path(path)) != expected:

@@ -9,6 +9,7 @@ from pathlib import Path
 from check_cage_loopbow_owners_20260921 import verify
 
 from snail import match
+from snail.match import scratch_source_path
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRATCH = ROOT / "tools/match/scratches/initialize_loopbow_path_template_pair"
@@ -17,7 +18,7 @@ SOURCE_SHA256 = "7b603a9ce3d2faeb84d64a6c0f30b98aea44400c0c97a76296554763e323124
 
 
 def main() -> None:
-    source = (SCRATCH / "scratch.cpp").read_bytes()
+    source = scratch_source_path(SCRATCH).read_bytes()
     assert hashlib.sha256(source).hexdigest() == SOURCE_SHA256
     previous = json.loads(RECEIPT.read_text())["proofs"][
         "initialize_loopbow_path_template_pair"

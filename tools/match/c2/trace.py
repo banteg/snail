@@ -22,7 +22,7 @@ def trace(scratch, out, *, passes_only=False, early_addresses=False):
             "Trace a standalone scratch; translation units need explicit freezing"
         )
     dependency_hash = m.scratch_dependency_sha256(config)
-    source_hash = replay.sha((scratch / "scratch.cpp").read_bytes())
+    source_hash = replay.sha(config.source_path.read_bytes())
     loader = c2.load_profile
     # A caller may already have selected diagnostic hooks; otherwise use the
     # scratch's compiler profile, whose C2 hash is checked before any hook.

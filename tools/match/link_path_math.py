@@ -335,7 +335,7 @@ def main() -> None:
                 "native_address": address,
                 "native_bytes": native_bytes,
                 "object_sha256": object_sha256,
-                "source_sha256": sha(config.directory / "scratch.cpp"),
+                "source_sha256": sha(config.source_path),
                 "dependency_sha256": dependency_sha256,
                 "config_sha256": config_sha256,
                 "code_identity_sha256": object_function_fingerprint(function),

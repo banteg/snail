@@ -66,7 +66,7 @@ def main():
     for registered in registry["units"]:
         configs = [load_scratch_config(root / "scratches" / name) for name in registered["members"]]
         unit = scratch_translation_unit(configs[0])
-        sources = [(config.directory / "scratch.cpp").read_text() for config in configs]
+        sources = [config.source_path.read_text() for config in configs]
         for index, config in enumerate(configs):
             statuses = {}
             variants = {
@@ -82,7 +82,7 @@ def main():
                 # A whole-unit experiment must be an explicit shadow: a
                 # canonical overlay intentionally replaces just one member.
                 with tempfile.TemporaryDirectory(prefix="snail-unit-control-") as temp:
-                    shadow = replace(config, directory=Path(temp))
+                    shadow = replace(config, directory=Path(temp), source="scratch.cpp")
                     (shadow.directory / "scratch.cpp").write_text(source)
                     status = evaluate_scratch(shadow)
                     if status.error:

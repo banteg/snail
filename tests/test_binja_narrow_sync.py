@@ -5,6 +5,8 @@ from types import SimpleNamespace
 
 import pytest
 
+from snail.match import scratch_source_path
+
 BINJA_DIR = Path(__file__).parents[1] / "tools/binja"
 IDA_DIR = Path(__file__).parents[1] / "tools/ida"
 HEADER_DIR = Path(__file__).parents[1] / "analysis/headers"
@@ -577,7 +579,7 @@ def test_dual_mobile_texture_registry_recovers_authored_owner_and_record() -> No
     )
     for windows_name, definition, symbol in expected_methods:
         scratch_root = repo_root / "tools/match/scratches" / windows_name
-        source = (scratch_root / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root)).read_text(
             encoding="utf-8"
         )
         config = (scratch_root / "scratch.conf").read_text(
@@ -588,12 +590,10 @@ def test_dual_mobile_texture_registry_recovers_authored_owner_and_record() -> No
         assert symbol in references_by_name[windows_name]["aliases"]
 
     game_init_source = (
-        repo_root
-        / "tools/match/scratches/initialize_game_assets_and_world/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_game_assets_and_world")
     ).read_text(encoding="utf-8")
     backdrop_source = (
-        repo_root
-        / "tools/match/scratches/initialize_backdrop_tile_quad/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_backdrop_tile_quad")
     ).read_text(encoding="utf-8")
     assert "g_texture_refs.Init(500);" in game_init_source
     assert "g_texture_refs.Add(texture_path, 0, 0)" in backdrop_source
@@ -792,7 +792,7 @@ def test_mobile_subgame_utility_evidence_recovers_authored_owners() -> None:
         repo_root / "tools/match/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
     blink_source = (
-        repo_root / "tools/match/scratches/initialize_blink_random/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_blink_random")
     ).read_text(encoding="utf-8")
     health_checks = (
         repo_root / "analysis/decompile/health_checks.json"
@@ -2856,7 +2856,7 @@ def test_path_template_kind_replay_tracks_paired_mobile_owners() -> None:
     }
     for scratch_name, enum_name in proven_consumers.items():
         scratch = (
-            repo_root / "tools/match/scratches" / scratch_name / "scratch.cpp"
+            scratch_source_path(repo_root / "tools/match/scratches" / scratch_name)
         ).read_text(encoding="utf-8")
         assert enum_name in scratch
 
@@ -6145,7 +6145,7 @@ def test_audio_system_header_owns_registered_audio_globals() -> None:
     )
     scratch_root = Path(__file__).parents[1] / "tools/match/scratches"
     for scratch_name in scratch_names:
-        source = (scratch_root / scratch_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / scratch_name)).read_text(
             encoding="utf-8"
         )
         assert "#include \"audio_system.h\"" in source
@@ -6157,7 +6157,7 @@ def test_audio_system_header_owns_registered_audio_globals() -> None:
         "ensure_music_stream_from_path",
         "play_music_stream_from_bytes",
     ):
-        source = (scratch_root / scratch_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / scratch_name)).read_text(
             encoding="utf-8"
         )
         assert "#include \"audio_system.h\"" in source
@@ -6177,7 +6177,7 @@ def test_audio_system_header_owns_registered_audio_globals() -> None:
             "extern float g_audio_backend_voice_normalization_scale;",
         ),
     ):
-        source = (scratch_root / scratch_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / scratch_name)).read_text(
             encoding="utf-8"
         )
         assert "#include \"audio_system.h\"" in source
@@ -6204,7 +6204,7 @@ def test_audio_system_header_owns_registered_audio_globals() -> None:
         "pause_audio_backend_if_running",
         "uninitialize_bass_audio_backend",
     ):
-        source = (scratch_root / scratch_name / "scratch.cpp").read_text(
+        source = (scratch_source_path(scratch_root / scratch_name)).read_text(
             encoding="utf-8"
         )
         assert "typedef " not in source
@@ -6418,9 +6418,7 @@ def test_mobile_subgoldy_layout_recovers_folded_constructor_owners() -> None:
         )
     )
     constructor = (
-        repo_root
-        / "tools/match/scratches/"
-        "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_runtime_pools_and_path_template_bank")
     ).read_text(encoding="utf-8")
     cameraman_header = (
         repo_root / "tools/match/include/cameraman.h"
@@ -6625,12 +6623,10 @@ def test_frontend_fade_and_color_overlay_owners_are_replayed_cross_decompiler() 
         repo_root / "tools/match/include/frontend_overlay_color_lerp.h"
     ).read_text(encoding="utf-8")
     begin_fade_source = (
-        repo_root
-        / "tools/match/scratches/begin_frontend_fade_out/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/begin_frontend_fade_out")
     ).read_text(encoding="utf-8")
     delayed_action_source = (
-        repo_root
-        / "tools/match/scratches/queue_frontend_widget_flag_after_delay/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/queue_frontend_widget_flag_after_delay")
     ).read_text(encoding="utf-8")
     binja_joined_literals = binja_source.replace('"\n        "', "")
     ida_joined_literals = ida_source.replace('"\n        "', "")
@@ -7856,7 +7852,7 @@ def test_track_render_cache_slot_owns_active_bod_lifecycle() -> None:
         encoding="utf-8"
     )
     frame_source = (
-        repo_root / "tools/match/scratches/run_frame_update/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/run_frame_update")
     ).read_text(encoding="utf-8")
 
     assert "class TrackRenderCacheSlot : public BodBase" in matcher_header
@@ -8408,7 +8404,7 @@ def test_object_policy_flags_keep_producers_and_consumers_aligned() -> None:
 
     scratch_root = repo_root / "tools/match/scratches"
     sources = {
-        name: (scratch_root / name / "scratch.cpp").read_text(encoding="utf-8")
+        name: (scratch_source_path(scratch_root / name)).read_text(encoding="utf-8")
         for name in (
             "add_object_edge",
             "apply_object_toon",
@@ -8734,8 +8730,7 @@ def test_backdrop_tile_vertex_cursor_stays_borrowed_and_guarded() -> None:
         encoding="utf-8"
     )
     matcher_source = (
-        repo_root
-        / "tools/match/scratches/initialize_backdrop_tile_quad/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_backdrop_tile_quad")
     ).read_text(encoding="utf-8")
 
     for header in headers:
@@ -8790,8 +8785,7 @@ def test_object_distort_vertex_cursors_stay_borrowed_and_guarded() -> None:
         encoding="utf-8"
     )
     matcher_source = (
-        repo_root
-        / "tools/match/scratches/apply_distort_to_object/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/apply_distort_to_object")
     ).read_text(encoding="utf-8")
 
     for header in headers:
@@ -9027,11 +9021,10 @@ def test_main_loop_replay_keeps_winmain_and_byte_fullscreen_abis() -> None:
         repo_root / "tools/match/include/direct3d_renderer.h"
     ).read_text(encoding="utf-8")
     wrapper_scratch = (
-        repo_root / "tools/match/scratches/set_fullscreen_mode/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/set_fullscreen_mode")
     ).read_text(encoding="utf-8")
     renderer_scratch = (
-        repo_root
-        / "tools/match/scratches/direct3d_renderer_set_fullscreen_mode/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/direct3d_renderer_set_fullscreen_mode")
     ).read_text(encoding="utf-8")
 
     assert "int __stdcall game_startup_and_main_loop(" in main_header
@@ -10982,25 +10975,22 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         assert "SUBROW_FLAG_JETPACK_OFF = 0x8000" in header
 
     load_segment = (
-        repo_root / "tools/match/scratches/load_segment_definitions/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/load_segment_definitions")
     ).read_text(encoding="utf-8")
     populate_runtime_rows = (
-        repo_root
-        / "tools/match/scratches/populate_runtime_track_cells_from_segments/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/populate_runtime_track_cells_from_segments")
     ).read_text(encoding="utf-8")
     merge_track_tile_runs = (
-        repo_root / "tools/match/scratches/merge_track_tile_runs/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/merge_track_tile_runs")
     ).read_text(encoding="utf-8")
     build_track_fringe_objects = (
-        repo_root
-        / "tools/match/scratches/build_track_fringe_objects/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/build_track_fringe_objects")
     ).read_text(encoding="utf-8")
     update_subgoldy = (
-        repo_root / "tools/match/scratches/update_subgoldy/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/update_subgoldy")
     ).read_text(encoding="utf-8")
     place_challenge = (
-        repo_root
-        / "tools/match/scratches/place_challenge_parcels_on_track/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/place_challenge_parcels_on_track")
     ).read_text(encoding="utf-8")
     assert "AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY" in load_segment
     assert "AUTHORED_SEGMENT_ROW_FLAG_SUPPRESS_TRACK_RENDER" in load_segment
@@ -11033,18 +11023,16 @@ def test_parcel_spawn_position_ownership_stays_aligned() -> None:
         encoding="utf-8"
     )
     populate_rows = (
-        repo_root
-        / "tools/match/scratches/populate_runtime_track_cells_from_segments/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/populate_runtime_track_cells_from_segments")
     ).read_text(encoding="utf-8")
     place_parcels = (
-        repo_root / "tools/match/scratches/place_parcels_on_track/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/place_parcels_on_track")
     ).read_text(encoding="utf-8")
     place_challenge = (
-        repo_root
-        / "tools/match/scratches/place_challenge_parcels_on_track/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/place_challenge_parcels_on_track")
     ).read_text(encoding="utf-8")
     update_subgame = (
-        repo_root / "tools/match/scratches/update_subgame/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/update_subgame")
     ).read_text(encoding="utf-8")
 
     for header in (matcher_header, analysis_header):
@@ -11107,7 +11095,7 @@ def test_subgame_runtime_flag_ownership_stays_aligned_across_replay_lanes() -> N
     }
     for function_name, constant in consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
@@ -11121,7 +11109,7 @@ def test_subgame_runtime_flag_ownership_stays_aligned_across_replay_lanes() -> N
     }
     for function_name, constant in paired_consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
@@ -11255,7 +11243,7 @@ def test_subgame_control_prefix_ownership_stays_aligned() -> None:
     }
     for function_name, fields in consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         for field in fields:
             assert field in scratch
@@ -11519,7 +11507,7 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
     }
     for function_name, constant in consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
@@ -11685,8 +11673,7 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
         in collision_state_sync
     )
     collision_scratch = (
-        repo_root
-        / "tools/match/scratches/handle_subgoldy_collisions/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/handle_subgoldy_collisions")
     ).read_text(encoding="utf-8")
     assert (
         "SubSlugState state = game->slug_hazards.slots[m].state;"
@@ -11753,7 +11740,7 @@ def test_parcel_state_ownership_stays_aligned() -> None:
     }
     for function_name, constant in consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
@@ -12223,7 +12210,7 @@ def test_completion_state_ownership_stays_aligned() -> None:
     }
     for function_name, constant in consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
@@ -12336,7 +12323,7 @@ def test_times_up_state_ownership_stays_aligned() -> None:
     }
     for function_name, constant in consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
@@ -12425,7 +12412,7 @@ def test_track_pickup_state_and_authored_owners_stay_aligned() -> None:
     }
     for function_name, constant in consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
@@ -12517,7 +12504,7 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
     ).read_text(encoding="utf-8")
     salt_scratches = {
         name: (
-            repo_root / f"tools/match/scratches/{name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{name}")
         ).read_text(encoding="utf-8")
         for name in (
             "initialize_salt_hazard_pool",
@@ -12698,18 +12685,16 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
         in salt_scratches["initialize_salt_hazard_pool"]
     )
     assert "SubLazerState* state" in (
-        repo_root / "tools/match/scratches/initialize_sub_lazer_pool/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_sub_lazer_pool")
     ).read_text(encoding="utf-8")
     sub_lazer_update = (
-        repo_root
-        / "tools/match/scratches/update_sub_lazer_projectile/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/update_sub_lazer_projectile")
     ).read_text(encoding="utf-8")
     assert "int debug_report_stub(char* format, ...);" in sub_lazer_update
     assert "&flight_lifetime_progress" in sub_lazer_update
     assert "&flight_lifetime_step" in sub_lazer_update
     sub_lazer_spawn = (
-        repo_root
-        / "tools/match/scratches/spawn_sub_lazer_projectile/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/spawn_sub_lazer_projectile")
     ).read_text(encoding="utf-8")
     assert "flight_lifetime_progress = 0.0f;" in sub_lazer_spawn
     assert "flight_lifetime_step = owner_game->subgame_rate" in sub_lazer_spawn
@@ -13689,7 +13674,7 @@ def test_warning_state_ownership_stays_aligned() -> None:
     }
     for function_name, constant in consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
@@ -13772,7 +13757,7 @@ def test_frontend_widget_flag_ownership_stays_aligned() -> None:
     }
     for function_name, constant in consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
@@ -13814,7 +13799,7 @@ def test_frontend_widget_flag_ownership_stays_aligned() -> None:
     )
     for function_name in constructor_callers:
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert "FRONTEND_WIDGET_FLAG_" in scratch
         assert not any(
@@ -14095,7 +14080,7 @@ def test_sprite_and_texture_ownership_stays_aligned() -> None:
     }
     for function_name, constant in consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
@@ -14171,7 +14156,7 @@ def test_runtime_config_ownership_stays_aligned() -> None:
     }
     for function_name, constant in consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
@@ -14590,10 +14575,10 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
     assert "uint8_t transform[0x40];" not in path_header
 
     update_source = (
-        repo_root / "tools/match/scratches/update_subgoldy/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/update_subgoldy")
     ).read_text(encoding="utf-8")
     resurrect_source = (
-        repo_root / "tools/match/scratches/update_subgoldy_resurrect/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/update_subgoldy_resurrect")
     ).read_text(encoding="utf-8")
     assert "class cRGame {" in matcher_header
     assert "typedef cRGame GameRoot;" in matcher_header
@@ -14655,7 +14640,7 @@ def test_cut_scene_state_ownership_stays_aligned() -> None:
     }
     for function_name, constant in consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
@@ -14696,7 +14681,7 @@ def test_presentation_wobble_view_stays_exact_and_replayable() -> None:
     }
     for function_name, field in consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert field in scratch
 
@@ -14799,12 +14784,12 @@ def test_damage_guage_replay_keeps_exact_owner_and_three_member_abis() -> None:
     }
     for function_name, constant in consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
     take_scratch = (
-        repo_root / "tools/match/scratches/apply_damage_gauge_delta/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/apply_damage_gauge_delta")
     ).read_text(encoding="utf-8")
     assert "float delta, bool force" in take_scratch
     assert take_scratch.count("state != DAMAGE_GUAGE_STATE_DRAINING") == 2
@@ -15331,7 +15316,7 @@ def test_click_start_state_ownership_stays_aligned() -> None:
     }
     for function_name, constant in consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
@@ -15403,7 +15388,7 @@ def test_nuke_state_ownership_stays_aligned() -> None:
     }
     for function_name, constant in consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
@@ -15599,7 +15584,7 @@ def test_sub_hover_state_ownership_stays_aligned() -> None:
     }
     for function_name, constant in consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
@@ -15631,7 +15616,7 @@ def test_invincible_state_ownership_stays_aligned() -> None:
     }
     for function_name, constant in consumers.items():
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert constant in scratch
 
@@ -21909,15 +21894,10 @@ def test_track_fringe_mesh_cursor_views_stay_borrowed_and_replayable() -> None:
     matcher_sources = "\n".join(
         (
             (
-                repo_root
-                / "tools/match/scratches/build_track_fringe_mesh/scratch.cpp"
+                scratch_source_path(repo_root / "tools/match/scratches/build_track_fringe_mesh")
             ).read_text(encoding="utf-8"),
             (
-                repo_root
-                / (
-                    "tools/match/scratches/"
-                    "build_track_fringe_supertramp_mesh/scratch.cpp"
-                )
+                scratch_source_path(repo_root / "tools/match/scratches/build_track_fringe_supertramp_mesh")
             ).read_text(encoding="utf-8"),
         )
     )
@@ -22053,15 +22033,13 @@ def test_vapour_and_embedded_bod_owners_are_replayed() -> None:
         repo_root / "tools/match/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
     jetpack_scratch = (
-        repo_root
-        / "tools/match/scratches/initialize_track_jetpack_pickup_runtime/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_track_jetpack_pickup_runtime")
     ).read_text(encoding="utf-8")
     vapour_scratch = (
-        repo_root / "tools/match/scratches/update_vapour/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/update_vapour")
     ).read_text(encoding="utf-8")
     row_scratch = (
-        repo_root
-        / "tools/match/scratches/initialize_track_row_runtime/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_track_row_runtime")
     ).read_text(encoding="utf-8")
     binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
@@ -22489,8 +22467,7 @@ def test_slalom_path_replay_preserves_shared_owner_lifetimes() -> None:
         encoding="utf-8"
     )
     slalombig_scratch = (
-        Path(__file__).parents[1]
-        / "tools/match/scratches/initialize_slalombig_path_template_pair/scratch.cpp"
+        scratch_source_path(Path(__file__).parents[1] / "tools/match/scratches/initialize_slalombig_path_template_pair")
     ).read_text(encoding="utf-8")
 
     for type_name, width in (
@@ -22586,12 +22563,10 @@ def test_sweep_snake_path_replay_preserves_clean_owner_lifetimes() -> None:
     )
     repo_root = Path(__file__).parents[1]
     sweep_scratch = (
-        repo_root
-        / "tools/match/scratches/initialize_sweep_path_template_pair/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_sweep_path_template_pair")
     ).read_text(encoding="utf-8")
     snake_scratch = (
-        repo_root
-        / "tools/match/scratches/initialize_snake_path_template_pair/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_snake_path_template_pair")
     ).read_text(encoding="utf-8")
     health = json.loads(
         (
@@ -22759,8 +22734,7 @@ def test_slalomdouble_p_path_replay_preserves_clean_owner_lifetimes() -> None:
         encoding="utf-8"
     )
     p_scratch = (
-        Path(__file__).parents[1]
-        / "tools/match/scratches/initialize_p_path_template_pair/scratch.cpp"
+        scratch_source_path(Path(__file__).parents[1] / "tools/match/scratches/initialize_p_path_template_pair")
     ).read_text(encoding="utf-8")
     health = json.loads(
         (
@@ -22958,8 +22932,7 @@ def test_supertramp_start_path_replay_preserves_mesh_owner_lifetimes() -> None:
         encoding="utf-8"
     )
     start_scratch = (
-        Path(__file__).parents[1]
-        / "tools/match/scratches/initialize_start_path_template_pair/scratch.cpp"
+        scratch_source_path(Path(__file__).parents[1] / "tools/match/scratches/initialize_start_path_template_pair")
     ).read_text(encoding="utf-8")
 
     for type_name, width in (
@@ -24303,7 +24276,7 @@ def test_transition_family_mobile_symbols_prove_boolean_side_exit() -> None:
         assert entry["confidence"] == "high"
         assert "bool side-exit input" in entry["notes"]
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert "bool side_exit" in scratch
 
@@ -24351,7 +24324,7 @@ def test_wibble_twister_mobile_symbols_prove_boolean_selectors() -> None:
         assert entry["confidence"] == expected_confidence
         assert "authored bool" in entry["notes"]
         scratch = (
-            repo_root / f"tools/match/scratches/{function_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{function_name}")
         ).read_text(encoding="utf-8")
         assert expected_declaration in scratch
 
@@ -25952,8 +25925,7 @@ def test_c_r_track_primary_ownership_stays_aligned() -> None:
         encoding="utf-8"
     )
     scratch = (
-        repo_root
-        / "tools/match/scratches/select_level_track_texture_set/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/select_level_track_texture_set")
     ).read_text(encoding="utf-8")
     scratch_config = (
         repo_root
@@ -26026,16 +25998,14 @@ def test_c_r_path_manager_primary_ownership_stays_aligned() -> None:
         repo_root / "tools/match/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
     scratch = (
-        repo_root
-        / "tools/match/scratches/find_segment_path_index_by_name/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/find_segment_path_index_by_name")
     ).read_text(encoding="utf-8")
     scratch_config = (
         repo_root
         / "tools/match/scratches/find_segment_path_index_by_name/scratch.conf"
     ).read_text(encoding="utf-8")
     segment_loader = (
-        repo_root
-        / "tools/match/scratches/load_segment_definitions/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/load_segment_definitions")
     ).read_text(encoding="utf-8")
     analysis_header = (
         repo_root / "analysis/headers/path_template_types.h"
@@ -26126,7 +26096,7 @@ def test_c_r_path_primary_ownership_stays_aligned() -> None:
         repo_root / "tools/match/include/path_template_skeleton.h"
     ).read_text(encoding="utf-8")
     mirror_scratch = (
-        repo_root / "tools/match/scratches/mirror_path/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/mirror_path")
     ).read_text(encoding="utf-8")
     analysis_header = (
         repo_root / "analysis/headers/path_template_types.h"
@@ -26347,8 +26317,7 @@ def test_c_r_sub_loc_primary_ownership_stays_aligned() -> None:
         ),
     ):
         scratch = (
-            repo_root
-            / f"tools/match/scratches/{scratch_name}/scratch.cpp"
+            scratch_source_path(repo_root / f"tools/match/scratches/{scratch_name}")
         ).read_text(encoding="utf-8")
         assert declaration in scratch
 
@@ -26476,24 +26445,21 @@ def test_c_r_sm_tracks_primary_ownership_stays_aligned() -> None:
         repo_root / "tools/match/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
     importer = (
-        repo_root
-        / "tools/match/scratches/load_segment_definitions/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/load_segment_definitions")
     ).read_text(encoding="utf-8")
     importer_config = (
         repo_root
         / "tools/match/scratches/load_segment_definitions/scratch.conf"
     ).read_text(encoding="utf-8")
     level_loader = (
-        repo_root
-        / "tools/match/scratches/load_level_definitions/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/load_level_definitions")
     ).read_text(encoding="utf-8")
     level_loader_config = (
         repo_root
         / "tools/match/scratches/load_level_definitions/scratch.conf"
     ).read_text(encoding="utf-8")
     bootstrap = (
-        repo_root
-        / "tools/match/scratches/initialize_game_assets_and_world/scratch.cpp"
+        scratch_source_path(repo_root / "tools/match/scratches/initialize_game_assets_and_world")
     ).read_text(encoding="utf-8")
     binja_segment_sync = (
         BINJA_DIR / "sync_segment_catalog_types.py"

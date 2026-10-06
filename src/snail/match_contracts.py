@@ -127,7 +127,7 @@ def audit_contract(
     )
     # Unverified fuzzy name candidates are not contract evidence.
     mobile_evidence = mobile if mobile and mobile.get("status") == "verified" else None
-    source_text = (config.directory / "scratch.cpp").read_text()
+    source_text = config.source_path.read_text()
     # A located source excerpt, not a C++ parser or an inferred prototype.
     declaration = re.search(
         r"(?m)^[^\n;{}]*\b"
@@ -150,7 +150,7 @@ def audit_contract(
         "function": config.function,
         "address": start,
         "end_address": end,
-        "source": str(config.directory / "scratch.cpp"),
+        "source": str(config.source_path),
         "source_declaration": source_declaration,
         "callers": callers,
         "caller_outcomes": counts,

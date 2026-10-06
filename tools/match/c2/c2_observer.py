@@ -320,12 +320,17 @@ def trace(scratch: Path, out: Path, *, passes_only: bool = False) -> dict[str, A
     (out / "profile.json").write_text(json.dumps(profile, indent=2) + "\n")
     source = out / "source"
     shutil.copytree(config.directory, source, ignore=shutil.ignore_patterns("build", "__pycache__", ".git"))
+    # Freeze the recovered source (decomp/ via SOURCE=) beside its config.
+    (source / "scratch.cpp").write_bytes(config.source_path.read_bytes())
+    (source / "scratch.conf").write_text(
+        match.overlay_scratch_conf((source / "scratch.conf").read_text())
+    )
     captured_source = out / "captured-source"
     shutil.copytree(source, captured_source)
     folders = {name: out / name for name in ("helper", "capture", "replay", "observed", "missing-stream")}
     for directory in folders.values():
         directory.mkdir()
-    frozen = replace(config, directory=source)
+    frozen = replace(config, directory=source, source="scratch.cpp")
     with compiler_environment():
         helper = folders["helper"]
         shutil.copyfile(ASSETS / "capture.c", helper / "capture.c")

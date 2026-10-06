@@ -10,6 +10,7 @@ from pathlib import Path
 import capstone
 import pefile
 from replay_four_builder_controls_20260912 import reconstruct
+from snail.match import scratch_source_path
 
 ROOT = Path(__file__).resolve().parents[2]
 RECEIPT = Path(__file__).with_name("cache-cell-owners-20260922.json")
@@ -216,7 +217,7 @@ def main():
     for path, digest in receipt["build_inputs"].items():
         assert sha((ROOT / path).read_bytes()) == digest, path
     name = "build_track_render_caches"
-    canonical = ROOT / "tools/match/scratches" / name / "scratch.cpp"
+    canonical = scratch_source_path(ROOT / "tools/match/scratches" / name)
     assert sha(canonical.read_bytes()) == receipt["canonical_source_sha256"]
     baseline = receipt["baselines"][name]
     assert sha(baseline["source"].encode()) == baseline["source_sha256"]
@@ -252,7 +253,7 @@ def main():
     if args.replay_all:
         from snail import match
 
-        config = match.load_scratch_config(canonical.parent)
+        config = match.load_scratch_config(ROOT / "tools/match/scratches" / name)
         keys = (
             "state",
             "body_byte_exact",

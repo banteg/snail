@@ -175,7 +175,7 @@ def audit_mutation_specs(
             spec = match_mutation.load_mutation_spec(path)
             source_text = source_cache.get(scratch)
             if source_text is None:
-                source_text = (scratch / "scratch.cpp").read_text(encoding="utf-8")
+                source_text = matchlib.scratch_source_path(scratch).read_text(encoding="utf-8")
                 source_cache[scratch] = source_text
             match_mutation.generate_mutation_variants(
                 source_text,

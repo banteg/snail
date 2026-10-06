@@ -282,6 +282,7 @@ def source_evidence(monkeypatch, tmp_path):
         address=100,
         size=1,
         source="test/scratch.cpp",
+        scratch="test",
         scratch_target_bytes=1,
         covered_code_bytes=1,
         normalized_ratio=1.0,
@@ -327,11 +328,13 @@ def source_evidence(monkeypatch, tmp_path):
     monkeypatch.setattr(
         report.matchlib,
         "load_scratch_config",
-        lambda _: SimpleNamespace(function="test", end_va=None),
+        lambda _: SimpleNamespace(
+            function="test", end_va=None, source_path=tmp_path / "test/scratch.cpp"
+        ),
     )
     monkeypatch.setattr(report.matchlib, "resolve_function_extent", lambda *_: (100, 101))
     monkeypatch.setattr(report.matchlib, "validate_scratch_source", lambda _: None)
-    inputs = {"test/scratch.cpp": "pinned"}
+    inputs = {"test/scratch.cpp": "pinned", "test/scratch.conf": "pinned"}
     monkeypatch.setattr(report, "repository_inputs", lambda: inputs)
     external = {
         "objdiff": {"version": report.match_fuzzy.VERSION, "sha256": next(iter(report.match_fuzzy.BINARIES.values())), "config": report.match_fuzzy.CONFIG},

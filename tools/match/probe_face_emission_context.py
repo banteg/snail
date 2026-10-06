@@ -29,6 +29,7 @@ from snail.match import (
     object_function_fingerprint,
     parse_coff_object,
 )
+from snail.match import scratch_source_path
 from snail.symbols import (
     DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
     REPO_ROOT,
@@ -584,7 +585,7 @@ def main():
     args = parser.parse_args()
     output = args.out.resolve()
     output.mkdir(parents=True, exist_ok=True)
-    source_path = DEFAULT_MATCH_ROOT / "scratches" / FUNCTION / "scratch.cpp"
+    source_path = scratch_source_path(DEFAULT_MATCH_ROOT / "scratches" / FUNCTION)
     original = source_path.read_text()
     image_digest, controls = native_controls(output)
     runner_name = os.environ.get("WIBO")
@@ -595,7 +596,7 @@ def main():
     if runner is None:
         raise ValueError(f"cannot find runner: {runner_name}")
     environment = {**os.environ, "MSVC_VER": "msvc6.5", "WIBO": runner}
-    config = load_scratch_config(source_path.parent)
+    config = load_scratch_config(DEFAULT_MATCH_ROOT / "scratches" / FUNCTION)
     if config.compiler != "msvc6.5":
         raise ValueError("diagnostic baseline requires the canonical VC6 profile")
     receipt = {

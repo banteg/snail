@@ -156,7 +156,7 @@ def _export_diagnostic(
                     "members": [member.name for member in unit.members],
                     "source_sha256": hashlib.sha256(compilation_source.encode()).hexdigest(),
                 }
-            config = replace(config, directory=shadow)
+            config = replace(config, directory=shadow, source="scratch.cpp")
             (shadow / "scratch.cpp").write_text(compilation_source, encoding="utf-8")
             object_data = matchlib.compile_scratch_data(config, match_root)
             function = matchlib.extract_object_function(

@@ -83,6 +83,8 @@ def _input_path(path: str) -> bool:
         return p.name in {"library-attribution.json", "reference-build.json"}
     if path in {"tools/match/cl.sh", "tools/match/translation_units.json"}:
         return True
+    if path.startswith("decomp/"):
+        return p.suffix.lower() in {".c", ".cpp", ".h"}
     return path.startswith("tools/match/") and (
         p.name in {"scratch.cpp", "scratch.conf", "fetch_objdiff.py"}
         or p.suffix.lower() in {".h", ".hpp", ".inc"}
@@ -522,7 +524,7 @@ def refresh_evidence(*, jobs: int = matchlib.DEFAULT_MATCH_JOBS) -> dict[str, An
         raise ValueError("source candidate absent from public function inventory")
     for row in rows:
         status = by_address.get(row["address"]) if row["is_function"] else None
-        row.update({"candidate": None, "source": None, "ratio": 0.0, "matched": False, "linked": False})
+        row.update({"candidate": None, "source": None, "scratch": None, "ratio": 0.0, "matched": False, "linked": False})
         if status is None:
             continue
         compared = [
@@ -548,7 +550,10 @@ def refresh_evidence(*, jobs: int = matchlib.DEFAULT_MATCH_JOBS) -> dict[str, An
         row.update(
             {
                 "candidate": "source",
-                "source": (status.config.directory / "scratch.cpp")
+                "source": status.config.source_path.resolve()
+                .relative_to(REPO_ROOT)
+                .as_posix(),
+                "scratch": status.config.directory.resolve()
                 .relative_to(REPO_ROOT)
                 .as_posix(),
                 "ratio": fuzzy_scores[status.address]["ratio"] * covered / row["size"],
@@ -647,10 +652,14 @@ def validate_evidence(evidence: dict[str, Any]) -> None:
                 raise ValueError("non-source evidence cannot claim public progress")
             continue
         source = REPO_ROOT / row["source"]
-        if row["source"] not in recorded or source.name != "scratch.cpp":
+        config = matchlib.load_scratch_config(REPO_ROOT / row["scratch"])
+        if (
+            row["source"] not in recorded
+            or f"{row['scratch']}/scratch.conf" not in recorded
+            or config.source_path.resolve() != source.resolve()
+        ):
             raise ValueError("candidate source is absent from pinned inputs")
         matchlib.validate_scratch_source(source)
-        config = matchlib.load_scratch_config(source.parent)
         manifest = load_function_symbol_manifest(REPO_ROOT / "analysis/symbols/gameplay-functions.json")
         if matchlib._function_symbols_by_name(manifest)[config.function].address != row["address"]:
             raise ValueError("candidate source targets another function")

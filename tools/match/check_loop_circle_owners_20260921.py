@@ -7,6 +7,7 @@ from pathlib import Path
 
 from check_cage_loopbow_owners_20260921 import verify
 from replay_four_builder_controls_20260912 import reconstruct
+from snail.match import scratch_source_path
 
 RECEIPT = Path(__file__).with_name("loop-circle-owners-20260921.json")
 
@@ -20,7 +21,7 @@ def main():
     for control in receipt["controls"]:
         reconstruct(receipt["baselines"][control["function"]]["source"], control)
     for name, proof in receipt["proofs"].items():
-        source = RECEIPT.parent / "scratches" / name / "scratch.cpp"
+        source = scratch_source_path(RECEIPT.parent / "scratches" / name)
         assert hashlib.sha256(source.read_bytes()).hexdigest() == proof[
             "canonical_source_sha256"
         ]

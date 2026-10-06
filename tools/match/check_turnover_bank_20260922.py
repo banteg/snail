@@ -7,6 +7,7 @@ from pathlib import Path
 
 from check_cage_loopbow_owners_20260921 import verify
 from replay_four_builder_controls_20260912 import reconstruct
+from snail.match import scratch_source_path
 
 RECEIPT = Path(__file__).with_name("turnover-bank-20260922.json")
 
@@ -38,7 +39,7 @@ def main():
         reconstruct(receipt["baselines"][control["function"]]["source"], control)
     name = "initialize_turnover_path_template_pair"
     proof = receipt["proofs"][name]
-    source = RECEIPT.parent / "scratches" / name / "scratch.cpp"
+    source = scratch_source_path(RECEIPT.parent / "scratches" / name)
     assert hashlib.sha256(source.read_bytes()).hexdigest() == proof[
         "canonical_source_sha256"
     ]

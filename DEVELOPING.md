@@ -62,10 +62,13 @@ zensical serve
    - `tools/match/include/*.h`
    - relevant `docs/re/*.md` and scratch-local `NOTES.md`
 
-3. Create or update `tools/match/scratches/<function>/`:
-   - `scratch.cpp` for the candidate source
-   - `scratch.conf` with `FUNCTION=<manifest name>` plus only necessary `END`
-     or `SYMBOL` overrides
+3. Create or update the source and its scratch:
+   - `decomp/<game|engine>/<Unit>/<function>.cpp` for the recovered source,
+     in the unit `decomp/layout.json` assigns (`uv run snail decomp layout`
+     checks the tree)
+   - `tools/match/scratches/<function>/scratch.conf` with
+     `FUNCTION=<manifest name>`, `SOURCE=` pointing at that file, plus only
+     necessary `END` or `SYMBOL` overrides
    - `NOTES.md` for residual diffs, source-shape rationale, and evidence links
 
 4. Iterate with the harness:

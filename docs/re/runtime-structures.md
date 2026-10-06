@@ -1484,9 +1484,9 @@ High-confidence current fields, using the names in
 
 The parent owns the inline child records. Each child holds a non-owning
 `parent` backlink at `+0x04` and a separate sprite allocation handle at
-`+0x00`. [`cRSubRing::Init`](../../tools/match/scratches/initialize_ring_or_special_effect_particles/scratch.cpp)
+`+0x00`. [`cRSubRing::Init`](../../decomp/game/SubGame/initialize_ring_or_special_effect_particles.cpp)
 sets the backlink and obtains the sprite through `cRSpriteManager::New`;
-the [parent removal paths](../../tools/match/scratches/update_ring_or_special_effect_parent/scratch.cpp)
+the [parent removal paths](../../decomp/game/SubGame/update_ring_or_special_effect_parent.cpp)
 return those sprites through `Kill()`. Removing the parent from the active
 list does not free its pool slot or its inline children.
 

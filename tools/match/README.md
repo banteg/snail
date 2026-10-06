@@ -233,10 +233,16 @@ with an isolated original-code oracle. S-bend remains a partial instruction
 match; its diagnostic build does not receive exact or linked credit.
 
 1. Create `scratches/<function>/` with:
-   - `scratch.cpp` — candidate implementation; use a class member function to
-     get thiscall, mirror struct layouts at native offsets
-   - `scratch.conf` — `FUNCTION=<manifest name>`, optional `END`, `SYMBOL`,
-     `COMPILER`, `CFLAGS`, `RECOVERY`, `RESIDUAL`
+   - `scratch.conf` — `FUNCTION=<manifest name>`, `SOURCE=<path>`, optional
+     `END`, `SYMBOL`, `COMPILER`, `CFLAGS`, `RECOVERY`, `RESIDUAL`
+   - the source itself lives in the recovered tree,
+     `decomp/<game|engine>/<Unit>/<function>.cpp` (see
+     [decomp/README.md](../../decomp/README.md)); `SOURCE` points there,
+     relative to the scratch directory. Use a class member function to get
+     thiscall and mirror struct layouts at native offsets. Without `SOURCE`
+     a scratch compiles its own `scratch.cpp`, which is only for ad hoc
+     experiments; `uv run snail decomp layout` checks that every scratch
+     points at its unit.
 2. Run `tools/match/match.sh scratches/<function>` (append `--full` for a
    side-by-side listing instead of a unified diff). The script is a thin
    wrapper around `uv run snail match scratch <directory>`, so focused work

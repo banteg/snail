@@ -19,6 +19,7 @@ from pathlib import Path
 import probe_face_emission_context as p
 
 from snail.match import _manifest_target_sizes
+from snail.match import scratch_source_path
 
 
 def publication_variants(original, bases):
@@ -350,9 +351,9 @@ def main():
     args = parser.parse_args()
     output = args.out.resolve()
     output.mkdir(parents=True, exist_ok=True)
-    source_path = p.DEFAULT_MATCH_ROOT / "scratches" / p.FUNCTION / "scratch.cpp"
+    source_path = scratch_source_path(p.DEFAULT_MATCH_ROOT / "scratches" / p.FUNCTION)
     original = source_path.read_text()
-    config = p.load_scratch_config(source_path.parent)
+    config = p.load_scratch_config(p.DEFAULT_MATCH_ROOT / "scratches" / p.FUNCTION)
     if config.compiler != "msvc6.5":
         raise ValueError("diagnostic baseline requires canonical VC6")
     runner_name = os.environ.get("WIBO")

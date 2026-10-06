@@ -10,6 +10,7 @@ from pathlib import Path
 import capstone
 from check_cage_loopbow_owners_20260921 import verify as verify_bytes
 from replay_four_builder_controls_20260912 import reconstruct
+from snail.match import scratch_source_path
 
 ROOT = Path(__file__).resolve().parents[2]
 RECEIPT = Path(__file__).with_name("heightmap-coordinates-20260922.json")
@@ -144,7 +145,7 @@ def main():
     args = parser.parse_args()
     receipt = json.loads(RECEIPT.read_text())
     expected = verify(receipt)
-    source = ROOT / "tools/match/scratches" / FUNCTION / "scratch.cpp"
+    source = scratch_source_path(ROOT / "tools/match/scratches" / FUNCTION)
     assert sha(source.read_bytes()) == receipt["proof"]["canonical_source_sha256"]
     for corruption in (
         "body",

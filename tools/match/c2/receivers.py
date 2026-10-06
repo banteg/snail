@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 from trace import c2, m, replay, trace
+from snail.match import overlay_scratch_conf
 
 ROOT = Path(m.__file__).resolve().parents[2]
 SCRATCH = ROOT / "tools/match/scratches/initialize_slalomdouble_path_template_pair"
@@ -66,7 +67,7 @@ def guard_controls(source, root):
     scratch = root / "guard-source"
     scratch.mkdir()
     (scratch / "scratch.cpp").write_text(source)
-    conf = (SCRATCH / "scratch.conf").read_text()
+    conf = overlay_scratch_conf((SCRATCH / "scratch.conf").read_text())
     (scratch / "scratch.conf").write_text(conf + "COMPILER=msvc6.0\n")
     try:
         trace(scratch, root / "wrong-compiler")
@@ -112,7 +113,7 @@ def main():
         scratch = args.out / (name + "-source")
         scratch.mkdir()
         (scratch / "scratch.cpp").write_text(text)
-        (scratch / "scratch.conf").write_bytes((SCRATCH / "scratch.conf").read_bytes())
+        (scratch / "scratch.conf").write_text(overlay_scratch_conf((SCRATCH / "scratch.conf").read_text()))
         for early in (False, True):
             out = args.out / (name + ("-early" if early else "-passes"))
             receipt, snapshots = trace(

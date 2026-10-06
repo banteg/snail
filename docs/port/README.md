@@ -1,7 +1,8 @@
 # Modern port plan
 
-Status: planned (2026-10-06). No port code exists yet. This page records the
-decisions and the order of work; update it as stages land.
+Status: stage 1 done (2026-10-06): the recovered source lives in
+[`decomp/`](../../decomp/README.md). No port code exists yet. This page records
+the decisions and the order of work; update it as stages land.
 
 ## Approach: build the port from the recovered source
 
@@ -96,19 +97,17 @@ functions.
 
 ## Source layout
 
-The recovered source is still scattered across `tools/match/scratches/<function>/`.
-The first step is to organise it like the sibling projects. Crimson keeps
-`decomp/<family>/<image>/<unit>/<function>.cpp`, with each scratch's
-`SOURCE=` pointing into the tree. Harvest keeps `src/` in the original layout,
-with `units.toml`.
+The recovered source is organised like crimson's: one file per function in
+link-order units, with each scratch's `SOURCE=` pointing into the tree (see
+[decomp/README.md](../../decomp/README.md)). Shared headers stay in
+`tools/match/include/`.
 
 ```
 decomp/
-  layout.json            unit membership and evidence strength (link order)
-  include/               shared headers (from tools/match/include)
-  game/<Unit>/           Border, Cheat, Completion, … Game, Golb, Path, SubGame, …
-  engine/<Unit>/         BassPlay … RMaths, RObject, RShell, RSprite, … Viewport
-  <function>.cpp         one file per recovered function, as in crimson
+  layout.json            unit membership, link-order evidence and port_scope per function
+  game/<Unit>/           Border, Cheat, Completion, … G0, Game, GDX, GL, Golb, Path, SubGame, …
+  engine/<Unit>/         BassPlay, Font, … RMaths, RSound, RSprite, … Viewport
+    <function>.cpp       one file per recovered function
 port/
   build.zig              compiles decomp/ (minus replaced functions) and shell/
   shell/                 the only new hand-written runtime code
@@ -123,8 +122,8 @@ tools/match/scratches/   matching configs, NOTES and experiments; SOURCE= points
 Units follow the alphabetical Windows link order in
 `analysis/ownership/windows-link-order.json`. Game objects run from `Border.o`
 to `Voice.o`, followed by the engine library from `BassPlay.o` to
-`Viewport.o`. The two unnamed runs (`G0`, `GDX`) keep inferred names and are
-flagged as such in `layout.json`. Matching keeps working per function: the
+`Viewport.o`. Note that `RObject` and `RShell` link within the game sequence. The two unnamed runs with name candidates (`G0`, `GDX`) and
+twelve small `between-*` gaps are flagged as such in `layout.json`. Matching keeps working per function: the
 matcher compiles the file `SOURCE=` names, so `decomp/` becomes the single
 source of truth for both matching and the port.
 
@@ -166,10 +165,10 @@ Which functions the port compiles:
 
 ## Stages
 
-1. **Organise the source.** Generate `decomp/` from the scratches in link-order
-   units. Point every scratch at its file with `SOURCE=`, reconcile the eight
-   local compatibility types into shared headers, and keep every match intact
-   (`snail match report` unchanged).
+1. **Organise the source.** Done: `decomp/` holds all 785 functions in 58
+   link-order units, every scratch points at its file with `SOURCE=`, and every
+   match is unchanged. Left over for stage 2: fold the eight scratch-local
+   compatibility types (such as `SubgoldyPathView`) into shared headers.
 2. **Headless link.**
    - Write `port/build.zig`, null `G0` and sound backends, and a file-backed
      `RShell`.

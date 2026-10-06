@@ -137,7 +137,7 @@ def score(arguments):
 
 def search(function, *, max_groups, max_depth, limit, jobs, out=None):
     scratch = m.DEFAULT_MATCH_ROOT / "scratches" / function
-    source = (scratch / "scratch.cpp").read_text()
+    source = m.scratch_source_path(scratch).read_text()
     groups = term_groups(
         source, term_spans(source, body_start(source, m.load_scratch_config(scratch)))
     )

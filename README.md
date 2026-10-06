@@ -34,6 +34,8 @@ builds one from the recovered source on SDL3.
   function to work on; partial improvements and new findings are welcome
 - [DEVELOPING.md](DEVELOPING.md) - local setup, daily workflow, validation
   commands, and contribution rules
+- [decomp/README.md](decomp/README.md) - the recovered source, one file per
+  function in link-order units
 - [tools/match/README.md](tools/match/README.md) - matching decompilation
   harness, toolchain setup, and no-fakematching rules
 - [tools/match/STATUS.md](tools/match/STATUS.md) - generated matching dashboard
