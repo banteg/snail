@@ -638,6 +638,12 @@ def build_parser() -> argparse.ArgumentParser:
         "link",
         help="Compile the port's sources and generate forwarders for stand-in call names (port/generated/).",
     )
+    port_symbolize_parser = port_subparsers.add_parser(
+        "symbolize",
+        help="Annotate a wasm stack trace (stdin) or module offsets with source lines from DWARF.",
+    )
+    port_symbolize_parser.add_argument("offsets", nargs="*", help="Module byte offsets (0x...), as V8 prints them.")
+    port_symbolize_parser.add_argument("--wasm", type=Path, default=REPO_ROOT / "port/zig-out/bin/snail.wasm")
 
     screenshots_parser = subparsers.add_parser(
         "screenshots",
@@ -1692,6 +1698,17 @@ def main(argv: Sequence[str] | None = None) -> int:
                 print(f"error: {port.SOURCES} is stale; run snail port sources --write", file=sys.stderr)
                 return 1
             print(f"{port.SOURCES}: {len(expected.splitlines())} sources")
+            return 0
+        if args.port_command == "symbolize":
+            from .wasm_debug import LineTable, annotate
+
+            table = LineTable(args.wasm)
+            if not args.offsets:
+                sys.stdout.write(annotate(sys.stdin.read(), table))
+                return 0
+            for offset in args.offsets:
+                row = table.lookup(int(offset, 16))
+                print(f"{offset} {row.path}:{row.line}" if row else f"{offset} ?")
             return 0
         if args.port_command == "link":
             from . import port_link

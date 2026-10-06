@@ -17,3 +17,5 @@ of every guard still matches.
 |---|---|---|---|
 | `port/shell/runtime.cpp` `debug_report_stub` | empty (`0x44b7c0`) | prints to stderr | diagnostics only; changes no game state |
 | `port/shell/files.cpp` `initialize_game_data_archive`, `click_mouse_screen` | also call `GetClipCursor` / `SetCursorPos` | without the Win32 cursor calls | no window yet (stage 4 restores them on SDL3) |
+| `port/shell/input_script.cpp` `update_mouse` | DirectInput deltas and Win32 window and clip rectangles | scripted absolute pointer for a 640x480 client area at the screen origin | both native branches reduce to the same `update_input_controller_pointer_region` call for that window; buttons arrive as `game_window_proc` would set them |
+| `port/shell/main.cpp` startup | `timeGetTime() % 1000` random draws before construction | `--warmup N`, default 0 | the draw count was wall-clock noise; a fixed count makes runs repeat |

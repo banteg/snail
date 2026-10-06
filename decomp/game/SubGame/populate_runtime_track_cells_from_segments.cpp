@@ -271,33 +271,33 @@ void cRSubGame::BuildLevel()
         ROW_ATTACHMENT_COLOR =
             offsetof(SubRow, attachment_body) + offsetof(BodBase, color),
         ROW_CURSOR_BASE =
-            offsetof(SubRow, parcel_spawn_position) + offsetof(Vector3, y),
+            (int)(offsetof(SubRow, parcel_spawn_position) + offsetof(Vector3, y)),
         ROW_CURSOR_TO_FLAGS =
-            ((int)offsetof(SubRow, flags) - ROW_CURSOR_BASE) / sizeof(int),
+            ((int)offsetof(SubRow, flags) - ROW_CURSOR_BASE) / (int)sizeof(int),
         ROW_CURSOR_TO_PROJECTION_X =
             ((int)offsetof(SubRow, parcel_spawn_position)
-             + (int)offsetof(Vector3, x) - ROW_CURSOR_BASE) / sizeof(int),
+             + (int)offsetof(Vector3, x) - ROW_CURSOR_BASE) / (int)sizeof(int),
         ROW_CURSOR_TO_PROJECTION_Y = 0,
         ROW_CURSOR_TO_PROJECTION_Z =
             ((int)offsetof(SubRow, parcel_spawn_position)
-             + (int)offsetof(Vector3, z) - ROW_CURSOR_BASE) / sizeof(int),
+             + (int)offsetof(Vector3, z) - ROW_CURSOR_BASE) / (int)sizeof(int),
         ROW_CURSOR_TO_PARCEL_SET_ID =
-            ((int)offsetof(SubRow, parcel_set_id) - ROW_CURSOR_BASE) / sizeof(int),
+            ((int)offsetof(SubRow, parcel_set_id) - ROW_CURSOR_BASE) / (int)sizeof(int),
         ROW_CURSOR_TO_ATTACHMENT_TEMPLATE_INDEX =
             ((int)offsetof(SubRow, attachment_template_index) - ROW_CURSOR_BASE)
-            / sizeof(int),
+            / (int)sizeof(int),
         ROW_CURSOR_TO_PRIMARY_ATTACHMENT_CELL =
             ((int)offsetof(SubRow, primary_attachment_cell) - ROW_CURSOR_BASE)
-            / sizeof(int),
+            / (int)sizeof(int),
         ROW_CURSOR_TO_INSTALLED_HEADING =
             ((int)offsetof(SubRow, installed_heading_delta) - ROW_CURSOR_BASE)
-            / sizeof(int),
+            / (int)sizeof(int),
         ROW_CURSOR_TO_RING_SPEED =
-            ((int)offsetof(SubRow, ring_speed) - ROW_CURSOR_BASE) / sizeof(int),
+            ((int)offsetof(SubRow, ring_speed) - ROW_CURSOR_BASE) / (int)sizeof(int),
         ROW_CURSOR_TO_SOURCE_SEGMENT =
-            ((int)offsetof(SubRow, source_segment) - ROW_CURSOR_BASE) / sizeof(int),
+            ((int)offsetof(SubRow, source_segment) - ROW_CURSOR_BASE) / (int)sizeof(int),
         ROW_CURSOR_TO_ROW_EVENT_ID =
-            ((int)offsetof(SubRow, row_event_id) - ROW_CURSOR_BASE) / sizeof(int),
+            ((int)offsetof(SubRow, row_event_id) - ROW_CURSOR_BASE) / (int)sizeof(int),
         CELL_FRINGE_TO_LANE_FLAGS =
             (int)offsetof(cRSubLoc, lane_and_flags)
             - (int)offsetof(cRSubLoc, fringe_front),

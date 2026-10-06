@@ -32,3 +32,5 @@ enumerate_matching_archive_or_fs_entries
 build_perspective_projection_matrix
 build_camera_view_matrix
 initialize_translation_matrix
+render_game_frame_scene  clears and brackets the scene through the device the shell provides
+update_keyboard_input  reads the keyboard through the DirectInput device the shell provides

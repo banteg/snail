@@ -1,8 +1,9 @@
 # Modern port plan
 
-Status: stage 2 running (2026-10-06). The recovered source lives in
+Status: stage 2 done (2026-10-06). The recovered source lives in
 [`decomp/`](../../decomp/README.md), and `port/` links it into a headless
-wasm32 program that loads the real archive, builds the world and ticks frames.
+wasm32 program that loads the real archive and plays the tutorial from a key
+script. Next: stage 3, the oracles.
 This page records the decisions and the order of work; update it as stages
 land.
 
@@ -119,9 +120,11 @@ port/
   shell/                 the only new hand-written runtime code
     main.cpp             replaces game_startup_and_main_loop and the window procedure
     files.cpp            archive start-up and _findfirst over the file system
+    input_script.cpp     scripted keyboard and mouse (stage 4: SDL3 events)
     runtime.cpp          MSVC rand, debug output, C++-linkage CRT names
     abi_shims.cpp        calls whose recovered caller and callee disagree on a signature
-    *_null.cpp           headless G0, Direct3D 8, audio and input (stage 4: SDL3 GPU, miniaudio)
+    *_null.cpp           headless G0, Direct3D 8 and audio (stage 4: SDL3 GPU, miniaudio)
+  scripts/               input scripts for headless runs
   generated/             local, never committed (holds the original's data bytes)
     image_data.s         the exe's .rdata and .data, with names and relocations
     link_aliases.s       forwarders from stand-in call names to recovered definitions
@@ -178,8 +181,32 @@ Which functions the port compiles:
 ```
 uv run snail port link && uv run snail port data
 cd port && zig build
-cd <dir with SnailMail.dat> && node <repo>/port/shell/run.mjs <repo>/port/zig-out/bin/snail.wasm 600
+cd <dir with SnailMail.dat>
+node <repo>/port/shell/run.mjs <repo>/port/zig-out/bin/snail.wasm --keys <repo>/port/scripts/tutorial.keys --trace
 ```
+
+The headless loop is `game_startup_and_main_loop` at a fixed 1/60 s per tick:
+poll input, run `cRGame::AI`, then render the scene through the null device,
+as the original does. Options:
+
+- `--keys SCRIPT` replays keys, mouse buttons and pointer positions
+  (`shell/input_script.cpp` documents the format; `port/scripts/` has
+  examples). Keys go through the recovered `update_keyboard_input` via a
+  DirectInput device; the mouse is a 640x480 window at the screen origin.
+- `--trace` prints front-end state changes and, whenever the screen changes,
+  each visible widget with its rectangle and text, which is what a script
+  needs to click it.
+- `--warmup N` sets the random draws before construction. The original made
+  `timeGetTime() % 1000` of them; the port defaults to none, so runs repeat
+  exactly.
+- `--ticks N` runs that many ticks (default: until the script ends, or 600).
+
+`port/scripts/tutorial.keys` goes through the main menu into the tutorial and
+plays it. A fresh profile unlocks only the tutorial, as in the original.
+
+When the program traps, pipe the stack trace through `uv run snail port
+symbolize`, which adds the recovered `file:line` to every wasm frame from the
+build's DWARF line table.
 
 The target is `wasm32-wasi`, run under Node's WASI. It has the MSVC x86 data
 layout the size asserts expect (4-byte pointers, 8-byte-aligned `double`, no
@@ -191,6 +218,12 @@ every call must agree with its definition's signature, at link time and in
 indirect calls at run time. The build surfaced every recovered declaration that
 disagreed with its definition; most were fixed in the source (all still match),
 and the rest are listed in [divergences.md](divergences.md).
+
+Memory accesses are strict too. x86 addressing wraps at 32 bits, so a matched
+shape such as `p[(int_offset - size_t_offset) / sizeof(int)]` reaches `p[-2]`
+through an unsigned index near 2^30. Wasm folds the constant into a load offset
+that does not wrap, and traps. The fix is to keep that arithmetic signed in the
+source; the VC6 output stays byte-identical, so the match is unchanged.
 
 **Data comes from the original image.** Recovered code declares its globals,
 strings, tables and vtables `extern`. `snail port data` emits the exe's
@@ -229,12 +262,14 @@ trap; sanitizers and the stack protector off, as the original had neither.
    match is unchanged. Left over: fold the eight scratch-local compatibility
    types (such as `SubgoldyPathView`) into shared headers; meanwhile
    `port/shell/abi_shims.cpp` bridges the calls made through them.
-2. **Headless link.** Running: 680 recovered files compile unchanged and link
-   with the shell; the program constructs the 19.8 MB `cRGame`, loads every
-   asset from `SnailMail.dat`, and ticks thousands of frames (idle at the
-   front end, as nothing presses a key yet). See
-   [Building the headless port](#building-the-headless-port). Left: script
-   input so the run reaches gameplay, then hand over to the oracles.
+2. **Headless link.** Done: 682 recovered files compile unchanged and link
+   with the shell. The program constructs the 19.8 MB `cRGame`, loads every
+   asset from `SnailMail.dat`, and a key script plays through the intro, main
+   menu and new-game menu into the tutorial: level generation, render caches
+   and gameplay with its prompts, deaths and restarts. Randomised 20,000-tick
+   scripts through gameplay and the exit prompt run without a trap, and runs
+   repeat exactly. See
+   [Building the headless port](#building-the-headless-port).
 3. **Oracles.** Bring up the replay oracle and per-tick traces against the
    headless build, and fix divergences in the matcher, never only in the port.
 4. **Shell.** SDL3 window and input, miniaudio, then `G0` on SDL3 GPU, verified

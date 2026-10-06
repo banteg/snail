@@ -10,6 +10,7 @@ from snail import port
 from snail.port_data import DataPlan, ImageSection, pointer_value, render, slot_adapter
 from snail.port_link import forwarder, resolve
 from snail.symbols import REPO_ROOT
+from snail.wasm_debug import LineTable, annotate
 from snail.wasm_object import SYMBOL_FUNCTION, Signature, read_symbols
 
 I32 = ("i32",)
@@ -116,3 +117,17 @@ def test_read_symbols_signatures(tmp_path):
     caller, callee = functions["_Z6calleri"], functions["_Z6calleeif"]
     assert caller.strong_global and caller.signature == Signature(I32, I32)
     assert not callee.defined and callee.signature == Signature(("i32", "f32"), I32)
+
+
+@pytest.mark.skipif(shutil.which("zig") is None, reason="zig is not installed")
+def test_line_table_maps_trace_offsets_to_source_lines(tmp_path):
+    source = tmp_path / "trap.c"
+    source.write_text("int main(void) {\n    __builtin_trap();\n}\n")
+    module = tmp_path / "trap.wasm"
+    subprocess.run(["zig", "cc", "-target", "wasm32-wasi", "-g", "-O0", str(source), "-o", str(module)], check=True)
+    table = LineTable(module)
+    row = next(row for row in table.rows if row.path == "trap.c" and row.line == 2)
+    offset = table.code_offset + row.address
+    assert table.lookup(offset) == row
+    trace = f"    at snail.wasm.main (wasm://wasm/x:wasm-function[3]:{offset:#x})"
+    assert annotate(trace, table).endswith(f"{offset:#x} [trap.c:2])")

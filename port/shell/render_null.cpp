@@ -94,6 +94,31 @@ unsigned int fvf_stride(unsigned int fvf)
     return stride;
 }
 
+// An index buffer of 16-bit indices whose Lock hands out real memory, as the
+// track render caches fill it.
+struct NullIndexBuffer {
+    ObjectIndexBufferResource buffer;
+    void* memory;
+};
+
+int __stdcall index_buffer_lock(ObjectIndexBufferResource* self, int offset, int, void** data, int)
+{
+    *data = (char*)((NullIndexBuffer*)self)->memory + offset;
+    return 0;
+}
+int __stdcall index_buffer_unlock(ObjectIndexBufferResource*) { return 0; }
+
+ObjectIndexBufferResourceVtbl make_index_buffer_vtable()
+{
+    ObjectIndexBufferResourceVtbl vtable;
+    memset(&vtable, 0, sizeof(vtable));
+    vtable.Lock = index_buffer_lock;
+    vtable.Unlock = index_buffer_unlock;
+    return vtable;
+}
+
+ObjectIndexBufferResourceVtbl g_null_index_buffer_vtable = make_index_buffer_vtable();
+
 struct NullDeviceInstaller {
     NullDeviceInstaller()
     {
@@ -115,16 +140,20 @@ ObjectRenderBuffers* VertexBufferFactory::create_vertex_buffer(int vertex_count,
     return entry;
 }
 
-ObjectIndexBuffer* IndexBufferFactory::create_index_buffer(int)
+ObjectIndexBuffer* IndexBufferFactory::create_index_buffer(int index_count)
 {
     ObjectIndexBuffer* entry = &buffers[count++];
-    entry->buffer = 0;
+    NullIndexBuffer* buffer = (NullIndexBuffer*)calloc(1, sizeof(NullIndexBuffer));
+    buffer->buffer.vtbl = &g_null_index_buffer_vtable;
+    buffer->memory = calloc(index_count ? index_count : 1, sizeof(unsigned short));
+    entry->buffer = &buffer->buffer;
     return entry;
 }
 
 int Direct3DRenderer::direct3d_renderer_set_cull_mode(char) { return 0; }
 void Direct3DRenderer::direct3d_renderer_set_fullscreen_mode(char) {}
 void DisplayModeState::clear_display_mode_state() {}
+char DisplayModeState::update_display_mode_view_state() { return 0; }  // no display mode headless
 
 extern "C" int __stdcall D3DXCreateTextureFromFileA(Direct3DDevice8*, char*, Direct3DTexture8** texture)
 {

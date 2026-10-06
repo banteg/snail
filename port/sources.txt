@@ -131,6 +131,7 @@
 ../decomp/game/Game/update_backdrop.cpp
 ../decomp/game/Game/add_bod_to_front.cpp
 ../decomp/game/Game/append_bod_to_end.cpp
+../decomp/game/GL/render_game_frame_scene.cpp
 ../decomp/game/GL/get_or_append_object_texture_group_vertex.cpp
 ../decomp/game/between-GL-Golb/replace_object_group_texture_refs.cpp
 ../decomp/game/between-GL-Golb/reset_render_counters.cpp
@@ -577,6 +578,7 @@
 ../decomp/engine/Font/queue_textured_quad_corners.cpp
 ../decomp/engine/Font/layout_and_queue_wrapped_font_text.cpp
 ../decomp/engine/Font/initialize_font3d_objects.cpp
+../decomp/engine/Keyboard/update_keyboard_input.cpp
 ../decomp/engine/Keyboard/is_key_pressed_edge.cpp
 ../decomp/engine/Keyboard/is_key_down.cpp
 ../decomp/engine/Mouse/update_mouse_authored_scale.cpp

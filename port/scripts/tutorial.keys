@@ -1,0 +1,11 @@
+# New Game -> Tutorial -> Click to Start, then hold the pointer low and centred.
+# Fresh profiles unlock only the tutorial. Run with --trace to see each screen's widgets.
+600 escape         # skip the intro crawl once its fade-in ends
+700 mouse 345 112  # New Game
+720 click 3
+800 mouse 344 102  # Tutorial
+820 click 3
+1000 mouse 320 222 # Click to Start
+1010 click 3
+1100 mouse 320 300
+5000 mouse 320 300

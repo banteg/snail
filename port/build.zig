@@ -36,7 +36,7 @@ pub fn build(b: *std.Build) void {
             "shell/files.cpp",
             "shell/render_null.cpp",
             "shell/audio_null.cpp",
-            "shell/input_null.cpp",
+            "shell/input_script.cpp",
             "shell/abi_shims.cpp",
         },
         .flags = &.{
