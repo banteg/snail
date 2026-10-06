@@ -489,7 +489,6 @@ def test_progress_delta_reconciles_removed_owned_ranges(source_evidence):
 
 def test_run_match_hashes_the_supplied_object_snapshot(monkeypatch, tmp_path):
     """A concurrent compiler can replace the path after its bytes were captured."""
-    import hashlib
     from types import SimpleNamespace
 
     captured = b"captured COFF snapshot"
@@ -515,7 +514,7 @@ def test_run_match_hashes_the_supplied_object_snapshot(monkeypatch, tmp_path):
     )
 
     assert parsed == [captured]
-    assert actual.candidate_object_sha256 == hashlib.sha256(captured).hexdigest()
+    assert actual.candidate_object_sha256 == m.object_identity_sha256(captured)
 
 
 def inline_table_fixture(*, entries=(7, 10), native_entries=None, padding=b'\x90' * 8,
