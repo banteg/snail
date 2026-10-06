@@ -46,7 +46,7 @@ What makes this practical:
 | Build | `zig build` (zig cc) | one host cross-compiles Windows, Linux and macOS. Explicit targets, including a 32-bit MSVC-layout target for bring-up |
 | Platform | SDL3 | window, HiDPI, event pump, gamepads, timers and paths. We own the main loop, as `game_startup_and_main_loop` did |
 | Renderer | the recovered `G0`/`GDX` renderer on an emulated Direct3D 8 subset; presenters on WebGL2 (now) and the SDL3 GPU API | the game's own render code runs unchanged. SDL3 GPU gives one native path to Metal, D3D12 and Vulkan, with explicit pipeline state and no hidden GL state to leak |
-| Audio | miniaudio | sample, OGG stream, voice, volume and pause, as BASS was used. One C file |
+| Audio | the recovered `cRBass` on an emulated BASS 2.0 subset; presenters on Web Audio (now) and miniaudio | the game's own sample, music and voice code runs unchanged. Sounds stay the archive's OGG files, decoded by the presenter |
 | Assets | the original `SnailMail.dat`, read in place | the game's own loaders (X2 meshes, animations, objects, segments, levels) are recovered code. The shell adds only TGA and OGG decoding |
 
 **Why not raylib.** The game brings its own mesh loader, fonts, sprites, UI and
@@ -87,6 +87,19 @@ presenter (`port/web/renderer.js`) applies texture stage 0, alpha test, fog,
 blending, depth and culling, and Direct3D's viewport and pixel centres. The
 SDL3 GPU presenter will consume the same draws.
 
+## Audio: an emulated BASS 2.0
+
+The game loads BASS at run time: `initialize_bass_audio_backend` extracts
+`Bass.dll` from the archive to `tBass.dll`, loads it and binds 23 functions by
+name. The shell's `LoadLibraryA` and `GetProcAddress` hand it an emulation
+instead (`port/shell/bass_emu.cpp`), so the whole `cRBass` backend and the
+voice manager compile unchanged. Samples (`BASS_SampleLoad` with
+`max` instances and `OVER_POS` override), sample channels, OGG streams, the
+two global volumes, pause and stop are emulated; the presenter
+(`audio_backend.h`) decodes the archive's OGG files and plays channels on a
+sample or stream bus (Web Audio in `port/web/audio.js`, nothing headless).
+The extracted `tBass.dll` is written and deleted as the original did.
+
 ## Source layout
 
 The recovered source is organised like crimson's: one file per function in
@@ -115,10 +128,10 @@ port/
     game_session.cpp     the startup and loop steps both programs share
     input_state.cpp      live keys, pointer and buttons, read by the recovered polling code
     d3d8_device.cpp      the emulated Direct3D 8 device; d3dx_*.cpp for D3DX
-    backend_*.cpp        presenters: null (headless) and web (WebGL2 imports)
+    backend_*.cpp        presenters: null (headless) and web (WebGL2 and Web Audio imports)
     main.cpp, web_main.cpp  the headless and browser entry points
-    audio_null.cpp       silent audio (stage 4: miniaudio)
-  web/                   the browser page: WASI, WebGL2 presenter, input
+    bass_emu.cpp         the emulated BASS 2.0 library the recovered audio code binds
+  web/                   the browser page: WASI, WebGL2 and Web Audio presenters, input
   scripts/               input scripts for headless runs
   generated/             local, never committed (holds the original's data bytes)
     image_data.s         the exe's .rdata and .data, with names and relocations
@@ -187,7 +200,8 @@ headless one, built as a WASI reactor: the page loads `SnailMail.dat` from
 scan codes), pointer, buttons and wheel, and calls the game once per animation
 frame with the elapsed time. The loop keeps the original's timing: whole 1/60 s
 steps from an accumulator capped at 25 steps, then one rendered frame. There is
-no sound yet, and scores and settings last only for the page's lifetime.
+sound once the page has had a click or key press (browsers require one).
+Scores and settings last only for the page's lifetime.
 `?warmup=N` fixes the random warmup for a repeatable start.
 
 ## Building the headless port
@@ -287,10 +301,11 @@ trap; sanitizers and the stack protector off, as the original had neither.
 3. **Oracles.** Bring up the replay oracle and per-tick traces against the
    headless build, and fix divergences in the matcher, never only in the port.
 4. **Shell.** Running: the recovered renderer draws through the emulated
-   Direct3D 8 device, and the browser build plays from the intro through the
-   menus into gameplay with keyboard and mouse. Left: audio (miniaudio, or Web
-   Audio in the page), persistent saves, an SDL3 window with an SDL3 GPU
-   presenter, and screenshot comparisons against the original.
+   Direct3D 8 device and the recovered audio code through an emulated BASS
+   2.0, and the browser build plays from the intro through the menus into
+   gameplay with keyboard, mouse and sound. Left: persistent saves, an SDL3
+   window with SDL3 GPU and miniaudio presenters, and screenshot comparisons
+   against the original.
 5. **64-bit and platforms.** Turn absolute size asserts into field-offset
    checks and remove the byte-stride casts that assume 4-byte pointers (about a
    dozen scratches, mostly path builders). Then ship macOS arm64, Windows x64

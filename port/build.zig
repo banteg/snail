@@ -31,7 +31,7 @@ const shared_shell = [_][]const u8{
     "shell/d3d8_device.cpp",
     "shell/d3dx_texture.cpp",
     "shell/d3dx_math.cpp",
-    "shell/audio_null.cpp",
+    "shell/bass_emu.cpp",
     "shell/input_state.cpp",
     "shell/abi_shims.cpp",
 };

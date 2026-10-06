@@ -5,6 +5,7 @@
 // URL parameters: ?warmup=N fixes the random warmup (the original used
 // timeGetTime() % 1000, so by default every start differs).
 
+import { AudioPresenter } from "./audio.js";
 import { Renderer } from "./renderer.js";
 import { createWasi, ExitStatus, MemoryFileSystem } from "./wasi.js";
 
@@ -40,7 +41,15 @@ async function fetchBytes(url) {
   return new Uint8Array(await response.arrayBuffer());
 }
 
-function connectInput(exports) {
+function connectInput(exports, audio) {
+  // Browsers allow sound only after a gesture.
+  const unlock = () => {
+    audio.unlock();
+    if (status.textContent.startsWith("Click")) show("");
+  };
+  window.addEventListener("pointerdown", unlock);
+  window.addEventListener("keydown", unlock);
+
   const pointer = (event) => {
     const box = canvas.getBoundingClientRect();
     const x = Math.floor(((event.clientX - box.left) / box.width) * 640);
@@ -82,6 +91,7 @@ function connectInput(exports) {
 
 async function main() {
   const renderer = new Renderer(canvas);
+  const audio = new AudioPresenter();
   const fs = new MemoryFileSystem();
   show("Loading SnailMail.dat…");
   const [archive, module] = await Promise.all([
@@ -95,11 +105,12 @@ async function main() {
   });
   const instance = await WebAssembly.instantiate(module, {
     wasi_snapshot_preview1: wasi.imports,
-    snail: renderer.imports(),
+    snail: { ...renderer.imports(), ...audio.imports() },
   });
   const exports = instance.exports;
   wasi.bind(exports.memory);
   renderer.bind(exports.memory);
+  audio.bind(exports.memory);
 
   show("Starting…");
   await new Promise((resolve) => setTimeout(resolve)); // let the status paint
@@ -108,10 +119,10 @@ async function main() {
   if (!exports.snail_start(warmup === null ? Date.now() % 1000 : Number(warmup))) {
     throw new Error("startup failed (see the console)");
   }
-  connectInput(exports);
-  window.snail = { exports, renderer, fs }; // for the console
+  connectInput(exports, audio);
+  window.snail = { exports, renderer, audio, fs }; // for the console
   canvas.focus();
-  show("");
+  show(audio.unlocked ? "" : "Click or press a key for sound.");
 
   let last = performance.now();
   const frame = (now) => {

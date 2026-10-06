@@ -57,3 +57,25 @@ reset_display_mode_probe_count  display-mode bookkeeping
 read_next_display_mode_view_sample  display-mode bookkeeping
 update_display_mode_view_state  display-mode bookkeeping
 query_direct3d_device_caps  device capabilities from the shell's Direct3D 8 object
+# The BASS audio backend (cRBass): these call only the BASS functions the shell emulates.
+initialize_bass_audio_backend  loads the shell's BASS through LoadLibraryA and GetProcAddress
+uninitialize_bass_audio_backend  the shell's BASS
+ensure_music_stream_from_path  BASS streams
+prepare_music_stream_reload_if_path_changed  music path bookkeeping
+play_music_stream_from_bytes  BASS streams
+stop_music_stream  BASS streams
+load_registered_sound_sample_from_path  BASS samples
+load_registered_sound_sample_from_bytes  BASS samples
+play_registered_sound_sample_scaled  BASS samples
+play_registered_sound_sample_backend  BASS samples
+play_registered_sound_sample_scaled_panned  BASS samples
+play_registered_sound_sample_default  BASS samples
+stop_sound_sample_handle  BASS samples
+stop_registered_sound_sample  BASS samples
+is_registered_sound_sample_playing  BASS channels
+set_global_sample_volume_config  BASS configuration
+set_global_stream_volume_config  BASS configuration
+stop_audio_backend  BASS output
+resume_audio_backend_if_paused  BASS output
+pause_audio_backend_if_running  BASS output
+delete_file_path_with_directory_walk  CRT file removal (the extracted tBass.dll at shutdown)

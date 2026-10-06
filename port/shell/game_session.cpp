@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include "archive_index.h"
+#include "audio_system.h"
 #include "authored_view_state.h"
 #include "font_system.h"
 #include "frontend_fade.h"
@@ -51,6 +52,12 @@ bool start_game(int warmup)
     g_authored_view_width = 640.0f;
     g_authored_view_height = 480.0f;
 
+    // initialize_audio_subsystem, past its message window.
+    if (!g_audio_backend.initialize_bass_audio_backend(0))
+        return false;
+    g_audio_backend.set_global_sample_volume_config(g_runtime_config.sample_volume);
+    g_audio_backend.set_global_stream_volume_config(g_runtime_config.stream_volume);
+
     // initialize_game_window_and_input, past the window itself.
     initialize_direct3d_renderer();
     install_input_devices();
@@ -95,4 +102,10 @@ void render_frame()
     render_game_frame_scene();
     if (g_game->render_skip_count == 0)
         present_backbuffer();
+}
+
+void end_game()
+{
+    g_audio_backend.stop_audio_backend();
+    g_audio_backend.uninitialize_bass_audio_backend();
 }

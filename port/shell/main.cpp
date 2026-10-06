@@ -98,6 +98,7 @@ int main(int argc, char** argv)
         set_scripted_input(tick);
         if (int result = run_fixed_step(true)) {
             fprintf(stderr, "snail: quit requested at tick %d\n", tick);
+            end_game();
             return 0;
         }
         render_frame();
@@ -113,5 +114,6 @@ int main(int argc, char** argv)
         }
     }
     fprintf(stderr, "snail: ran %d ticks\n", ticks);
+    end_game();
     return 0;
 }

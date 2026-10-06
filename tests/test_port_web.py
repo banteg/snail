@@ -2,6 +2,7 @@
 
 import re
 import threading
+import urllib.error
 import urllib.request
 from functools import partial
 from http.server import ThreadingHTTPServer
@@ -35,6 +36,15 @@ def test_routes_serve_page_build_and_archive(tmp_path):
             assert response.read() == b"\0asm"
         with urllib.request.urlopen(f"{base}/SnailMail.dat") as response:
             assert response.read() == b"dat"
+        (web / "added.js").write_text("export {};")  # files added after start are served
+        with urllib.request.urlopen(f"{base}/added.js") as response:
+            assert response.read() == b"export {};"
+        for missing in ("/nothing.js", "/../pyproject.toml", "/.hidden"):
+            try:
+                urllib.request.urlopen(f"{base}{missing}")
+                raise AssertionError(missing)
+            except urllib.error.HTTPError as error:
+                assert error.code == 404
     finally:
         server.shutdown()
         server.server_close()

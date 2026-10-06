@@ -17,4 +17,8 @@ int run_fixed_step(bool renders);
 // Render the scene and present it, as the loop does when a frame is due.
 void render_frame();
 
+// The audio part of the loop's shutdown (stop_audio_backend,
+// shutdown_bass_audio_window), which also deletes the extracted tBass.dll.
+void end_game();
+
 #endif

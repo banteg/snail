@@ -18,11 +18,21 @@ CONTENT_TYPES = {".js": "text/javascript", ".wasm": "application/wasm", ".dat": 
 
 
 def routes(root: Path, archive: Path) -> dict[str, Path]:
-    table = {f"/{path.name}": path for path in sorted((root / WEB).iterdir()) if path.is_file()}
-    table["/"] = root / WEB / "index.html"
-    table["/snail-web.wasm"] = root / WASM
-    table["/SnailMail.dat"] = archive
-    return table
+    """Fixed routes; any other top-level name is looked up in port/web/ per request."""
+    return {
+        "/": root / WEB / "index.html",
+        "/snail-web.wasm": root / WASM,
+        "/SnailMail.dat": archive,
+        "": root / WEB,
+    }
+
+
+def resolve(table: dict[str, Path], request_path: str) -> Path | None:
+    path = request_path.split("?", 1)[0]
+    if path in table:
+        return table[path]
+    name = path.removeprefix("/")
+    return table[""] / name if name and "/" not in name and not name.startswith(".") else None
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -31,7 +41,7 @@ class Handler(BaseHTTPRequestHandler):
         super().__init__(*args, **kwargs)
 
     def do_GET(self):
-        path = self.table.get(self.path.split("?", 1)[0])
+        path = resolve(self.table, self.path)
         if path is None or not path.is_file():
             self.send_error(HTTPStatus.NOT_FOUND, f"{self.path} not found" + (f" ({path})" if path else ""))
             return
