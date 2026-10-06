@@ -348,7 +348,7 @@ def export_snapshot(
             manifest=manifest,
             reference_manifest=reference_manifest,
         ),
-        candidate_object_sha256=sha(object_data),
+        candidate_object_sha256=m.object_identity_sha256(object_data),
     )
     artifacts = {"compiled.obj": object_data}
     receipt = {
@@ -359,7 +359,7 @@ def export_snapshot(
         "symbol": DISPLAY_SYMBOL,
         "source_symbol": config.symbol or config.function,
         "target_image_sha256": image_sha,
-        "candidate_object_sha256": sha(object_data),
+        "candidate_object_sha256": m.object_identity_sha256(object_data),
         "experiment_epoch": epoch,
         "exporter_sha256": sha(Path(__file__).read_bytes()),
         "decoder_version": capstone.__version__,

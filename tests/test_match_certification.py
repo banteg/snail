@@ -547,3 +547,14 @@ def test_eh_thunk_audits_funcinfo_and_cleanup_funclets():
     ):
         assert not bad.exact, summarize(bad)
         assert [e.status for e in bad.masked_operand_audit.entries] == [status]
+
+
+def test_object_identity_ignores_only_the_compile_timestamp():
+    obj = bytearray(64)
+    obj[0:2] = (0x14C).to_bytes(2, "little")
+    stamped = bytearray(obj)
+    stamped[4:8] = (0x6AC4D8CF).to_bytes(4, "little")
+    assert m.object_identity_sha256(bytes(obj)) == m.object_identity_sha256(bytes(stamped))
+    changed = bytearray(stamped)
+    changed[40] ^= 1
+    assert m.object_identity_sha256(bytes(changed)) != m.object_identity_sha256(bytes(stamped))

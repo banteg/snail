@@ -556,6 +556,22 @@ class MatchDump:
     candidate_lines: tuple[DisassemblyLine, ...]
 
 
+# IMAGE_FILE_HEADER.TimeDateStamp: VC6 stamps every object with its compile time.
+COFF_TIMESTAMP = slice(4, 8)
+
+
+def object_identity_sha256(data: bytes) -> str:
+    """SHA-256 of a COFF object with its compile timestamp zeroed.
+
+    Recompiling unchanged source changes only those four bytes, so the
+    identity stays stable across clean builds while any code, data,
+    relocation or symbol difference still changes it.
+    """
+    normalized = bytearray(data)
+    normalized[COFF_TIMESTAMP] = bytes(4)
+    return hashlib.sha256(normalized).hexdigest()
+
+
 def parse_coff_object(data: bytes) -> CoffObject:
     machine, section_count, _, symtab_offset, symbol_count, optional_header_size, _ = (
         struct.unpack_from("<HHIIIHH", data, 0)
@@ -4506,7 +4522,7 @@ def run_match(
         reference_manifest=reference_manifest,
     )
     return replace(
-        result, candidate_object_sha256=hashlib.sha256(object_data).hexdigest()
+        result, candidate_object_sha256=object_identity_sha256(object_data)
     )
 
 
@@ -6816,7 +6832,7 @@ def compile_idiom_case(
 
 
 # Bump when the cache schema changes; content hashes handle scoring edits.
-CACHE_VERSION = 15
+CACHE_VERSION = 16
 
 
 def _masked_reference_cache_payload(reference: MaskedReference) -> dict:
@@ -7105,7 +7121,7 @@ def _match_precompiled_scratch_config(
         reference_manifest=reference_manifest,
     )
     return len(target_data), replace(
-        result, candidate_object_sha256=hashlib.sha256(object_data).hexdigest()
+        result, candidate_object_sha256=object_identity_sha256(object_data)
     )
 
 
