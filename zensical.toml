@@ -26,6 +26,9 @@ nav = [
         { "Reflexive wrapper" = "re/reflexive-wrapper.md" },
         { "Frida runtime trace" = "re/frida-runtime-trace.md" },
     ] },
+    { "Port" = [
+        { "Port plan" = "port/README.md" },
+    ] },
 ]
 copyright = """
 Copyright &copy; 2026 banteg

@@ -12,7 +12,8 @@ Reverse-engineering workspace for the original Windows version of Snail Mail.
 The active focus is matching decompilation against the original gameplay
 executable: recover plausible C/C++ source shapes, prove them against the
 native bytes, and make the portable game core understandable before writing a
-new runtime. There is no active port implementation in this repository.
+new runtime. There is no port code yet; the [port plan](docs/port/README.md)
+builds one from the recovered source on SDL3.
 
 ## Current Focus
 
@@ -21,8 +22,9 @@ new runtime. There is no active port implementation in this repository.
   harness under [`tools/match`](tools/match).
 - Keep recovered names, types, decompiles, and runtime notes synchronized under
   [`analysis`](analysis) and [`docs/re`](docs/re).
-- Defer new runtime work until the matching decompilation is substantially
-  complete. The eventual platform layer should stay small and explicit.
+- Build the modern port from the recovered source, replacing only the
+  original's platform layer; see the [port plan](docs/port/README.md). The
+  platform layer stays small and explicit.
 - Preserve honest partials. A near match with clear notes is more useful than
   byte-shaped source that cannot explain the original program.
 
