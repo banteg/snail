@@ -5976,6 +5976,16 @@
       "description": "Statically linked scalar new helper that requests zero-initialized heap storage; used by construct_game_runtime to allocate the root game object."
     },
     {
+      "address": "0x48bade",
+      "name": "__CxxFrameHandler",
+      "kind": "function",
+      "aliases": [
+        "___CxxFrameHandler",
+        "sub_48bade"
+      ],
+      "description": "Statically linked VC6 CRT C++ frame handler (trnsctrl.obj, see analysis/ownership/library-attribution.json). Every compiler-generated EH thunk jumps here with its FuncInfo in eax."
+    },
+    {
       "address": "0x48be4f",
       "name": "exit",
       "kind": "function",

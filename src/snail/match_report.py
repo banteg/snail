@@ -537,7 +537,13 @@ def refresh_evidence(*, jobs: int = matchlib.DEFAULT_MATCH_JOBS) -> dict[str, An
             [status.address + a, status.address + b]
             for a, b in status.unexplained_target_ranges
         ]
-        covered = intersection_size(compared, row["ranges"])
+        auxiliary = [
+            [status.address + a, status.address + b]
+            for a, b in status.proven_auxiliary_ranges
+        ]
+        # Out-of-line chunks of this function (EH funclets and thunks) count
+        # only when the reference audit proved them equal.
+        covered = intersection_size(compared + auxiliary, row["ranges"])
         complete_extent = covered == row["size"]
         row.update(
             {
@@ -554,6 +560,7 @@ def refresh_evidence(*, jobs: int = matchlib.DEFAULT_MATCH_JOBS) -> dict[str, An
                 "compared_target_ranges": compared,
                 "excluded_target_ranges": excluded,
                 "unexplained_target_ranges": unexplained,
+                "proven_auxiliary_ranges": auxiliary,
                 "target_inline_data_ranges": [
                     [status.address + a, status.address + b]
                     for a, b in status.target_inline_data_ranges
@@ -652,7 +659,11 @@ def validate_evidence(evidence: dict[str, Any]) -> None:
             raise ValueError("comparison span differs from scratch configuration")
         validate_comparison_ranges(row)
         validate_inline_table_evidence(row)
-        covered = intersection_size(row["compared_target_ranges"], row["ranges"])
+        if any(len(r) != 2 or r[0] >= r[1] for r in row["proven_auxiliary_ranges"]):
+            raise ValueError("invalid proven auxiliary range")
+        covered = intersection_size(
+            row["compared_target_ranges"] + row["proven_auxiliary_ranges"], row["ranges"]
+        )
         match_fuzzy.validate_score(row["objdiff"], evidence["external_inputs"]["objdiff"])
         if row["objdiff"]["objects"]["target"]["bytes"] != row["scratch_target_bytes"]:
             raise ValueError("objdiff target span differs from native comparison")

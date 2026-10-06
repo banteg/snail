@@ -375,6 +375,9 @@ class MatchResult:
     compared_target_ranges: tuple[tuple[int, int], ...] = ()
     excluded_target_ranges: tuple[tuple[int, int, str], ...] = ()
     unexplained_target_ranges: tuple[tuple[int, int], ...] = ()
+    # Out-of-line target code (EH thunks, cleanup funclets, helper aliases)
+    # proven equal through the reference audit, relative to the function.
+    proven_auxiliary_ranges: tuple[tuple[int, int], ...] = ()
     candidate_object_sha256: str | None = None
     encoded_body_proof: dict[str, Any] | None = None
     encoded_body_differences: tuple[dict[str, Any], ...] = ()
@@ -1178,7 +1181,8 @@ def extract_object_function(
             canonical_symbol_name = _canonical_symbol_name(symbol.name)
             retain_local_symbol = (
                 depth < MAX_ALIAS_DEPTH
-                and canonical_symbol_name.startswith(("$L", "$E"))
+                # $T records carry C++ EH metadata (FuncInfo, unwind maps).
+                and canonical_symbol_name.startswith(("$L", "$E", "$T"))
                 and symbol_end is not None
             )
             references.append(
@@ -1324,6 +1328,24 @@ def _resolve_image_reference(
     key: str | None
     explained = False
     reference_symbol = _reference_symbol_by_address(reference_manifest).get(value)
+    eh_evidence = (
+        _image_eh_funcinfo_evidence(
+            value,
+            image=image,
+            alias_depth=alias_depth,
+            manifest=manifest,
+            reference_manifest=reference_manifest,
+        )
+        if reference_symbol is None and image is not None
+        else None
+    )
+    if eh_evidence is not None:
+        # Compiler-generated EH metadata has no stable name; the structural
+        # audit in _reference_status decides identity.
+        return MaskedReference(
+            0, "", "image", value, f"eh_funcinfo@0x{value:x}", None, True,
+            code_evidence=eh_evidence,
+        )
     if reference_symbol is not None:
         text, key = _format_reference_symbol(reference_symbol)
         jump_table_entries = None
@@ -1992,6 +2014,13 @@ def disassemble_normalized_function(
             if reference is not None
             else ""
         )
+        if reference is not None and local_symbol_name.startswith("$T"):
+            code_evidence = _object_eh_funcinfo_evidence(
+                reference,
+                alias_depth=_alias_depth,
+                address_range=address_range,
+                image=image, manifest=manifest, reference_manifest=reference_manifest,
+            )
         if reference is not None and local_symbol_name.startswith(("$L", "$E")):
             symbol_addend = _signed_u32(reference.addend) if reference.addend is not None else 0
             local_offset = (
@@ -2430,6 +2459,143 @@ def _alias_evidence_lines(evidence: dict[str, Any]) -> tuple[DisassemblyLine, ..
     )
 
 
+# VC6 C++ EH FuncInfo: magic, maxState, pUnwindMap, nTryBlocks, pTryBlockMap,
+# nIPMapEntries, pIPtoStateMap. Each unwind entry is (toState, action).
+EH_FUNCINFO_MAGIC = 0x19930520
+EH_FUNCINFO_SIZE = 28
+EH_UNWIND_ENTRY_SIZE = 8
+EH_FUNCLET_MAX_SIZE = 0x100
+
+
+def _funclet_length(data: bytes) -> int | None:
+    """Byte length of a cleanup funclet: through its first ret or jmp."""
+    md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_32)
+    for instruction in md.disasm(data, 0):
+        if instruction.mnemonic in ("ret", "jmp"):
+            return instruction.address + instruction.size
+    return None
+
+
+def _eh_funcinfo_evidence(
+    record: bytes,
+    unwind_entries: list[tuple[int, dict[str, Any] | None, bool]],
+) -> dict[str, Any]:
+    """Comparable FuncInfo shape; unsupported parts are recorded as None."""
+    _magic, max_state, _unwind, try_blocks, _try, ip_entries, _ip = struct.unpack(
+        "<7I", record
+    )
+    return {
+        "eh_funcinfo": {
+            "max_state": max_state,
+            "try_blocks": try_blocks,
+            "ip_map_entries": ip_entries,
+            # An action without evidence stays unresolved; a null action is
+            # an explicit no-op state.
+            "unwind": [
+                {"to_state": to_state, "action": action, "null_action": null_action}
+                for to_state, action, null_action in unwind_entries
+            ],
+        }
+    }
+
+
+def _image_eh_funcinfo_evidence(
+    value: int,
+    *,
+    image: LoadedImage,
+    alias_depth: int,
+    **kwargs,
+) -> dict[str, Any] | None:
+    record = _read_bytes(image.mapped, value - image.image_base, EH_FUNCINFO_SIZE)
+    if record is None or _read_u32(record, 0) != EH_FUNCINFO_MAGIC:
+        return None
+    max_state, unwind_map = _read_u32(record, 4), _read_u32(record, 8)
+    entries = []
+    for index in range(max_state):
+        entry = _read_bytes(
+            image.mapped,
+            unwind_map + EH_UNWIND_ENTRY_SIZE * index - image.image_base,
+            EH_UNWIND_ENTRY_SIZE,
+        )
+        if entry is None:
+            return None
+        to_state, action = struct.unpack("<iI", entry)
+        evidence = None
+        if action:
+            window = _read_bytes(
+                image.mapped, action - image.image_base, EH_FUNCLET_MAX_SIZE
+            )
+            length = _funclet_length(window) if window is not None else None
+            if length is not None:
+                evidence = _alias_code_evidence(
+                    window[:length],
+                    address_range=(image.image_base, image.image_base + image.size_of_image),
+                    base_address=action,
+                    image=image,
+                    alias_depth=alias_depth,
+                    **kwargs,
+                )
+        entries.append((to_state, evidence, action == 0))
+    return _eh_funcinfo_evidence(record, entries)
+
+
+def _object_eh_funcinfo_evidence(
+    reference: ObjectRelocationReference,
+    *,
+    alias_depth: int,
+    **kwargs,
+) -> dict[str, Any] | None:
+    def span(ref: ObjectRelocationReference) -> tuple[bytes, dict[int, ObjectRelocationReference]] | None:
+        if ref.symbol_data is None:
+            return None
+        start = _signed_u32(ref.addend) if ref.addend is not None else 0
+        relocations = {
+            r.offset - start: r for r in ref.symbol_relocation_references if r.offset >= start
+        }
+        return ref.symbol_data[start:], relocations
+
+    record_span = span(reference)
+    if record_span is None:
+        return None
+    record, record_relocations = record_span
+    if len(record) < EH_FUNCINFO_SIZE or _read_u32(record, 0) != EH_FUNCINFO_MAGIC:
+        return None
+    max_state = _read_u32(record, 4)
+    unwind_reference = record_relocations.get(8)
+    unwind_span = span(unwind_reference) if unwind_reference is not None else None
+    if max_state and unwind_span is None:
+        return None
+    entries = []
+    for index in range(max_state):
+        table, table_relocations = unwind_span
+        offset = EH_UNWIND_ENTRY_SIZE * index
+        if offset + EH_UNWIND_ENTRY_SIZE > len(table):
+            return None
+        to_state = struct.unpack_from("<i", table, offset)[0]
+        action_reference = table_relocations.get(offset + 4)
+        evidence = None
+        action_span = span(action_reference) if action_reference is not None else None
+        if action_span is not None:
+            code, code_relocations = action_span
+            length = _funclet_length(code)
+            if length is not None:
+                references = tuple(
+                    replace(r, offset=at, symbol_offset=None)
+                    for at, r in code_relocations.items()
+                    if at < length
+                )
+                evidence = _alias_code_evidence(
+                    code[:length],
+                    relocation_offsets=frozenset(r.offset for r in references),
+                    relocation_references=references,
+                    alias_depth=alias_depth,
+                    **kwargs,
+                )
+        null_action = action_reference is None and _read_u32(table, offset + 4) == 0
+        entries.append((to_state, evidence, null_action))
+    return _eh_funcinfo_evidence(record[:EH_FUNCINFO_SIZE], entries)
+
+
 def _reference_key_options(reference: MaskedReference) -> frozenset[str]:
     keys = [key for key in (reference.key, *reference.alternate_keys) if key is not None]
     return frozenset(keys)
@@ -2571,7 +2737,13 @@ def _reference_status(
     def function_alias_status(
         target: MaskedReference, candidate: MaskedReference
     ) -> str:
-        left, right = target.code_evidence, candidate.code_evidence
+        return code_evidence_status(
+            target.code_evidence, candidate.code_evidence, candidate.text
+        )
+
+    def code_evidence_status(
+        left: dict[str, Any] | None, right: dict[str, Any] | None, name: str
+    ) -> str:
         if left is None or right is None:
             return "unresolved"
         target_lines, candidate_lines = (
@@ -2590,7 +2762,7 @@ def _reference_status(
         proof = encoded_body_evidence(
             bytes.fromhex(left["data"]),
             ObjectFunction(
-                candidate.text,
+                name,
                 bytes.fromhex(right["data"]),
                 frozenset(right["relocation_offsets"]),
                 tuple(ObjectRelocationReference(**r) for r in right["relocations"]),
@@ -2605,7 +2777,41 @@ def _reference_status(
             "ok" if proof["target_sha256"] == proof["candidate_sha256"] else "mismatch"
         )
 
+    def is_eh_funcinfo(target: MaskedReference, candidate: MaskedReference) -> bool:
+        return target.text.startswith("eh_funcinfo@") and candidate.source == "reloc"
+
+    def eh_funcinfo_status(target: MaskedReference, candidate: MaskedReference) -> str:
+        """Structural FuncInfo audit: equal counts, states and proven funclets."""
+        left = (target.code_evidence or {}).get("eh_funcinfo")
+        right = (candidate.code_evidence or {}).get("eh_funcinfo")
+        if left is None or right is None or left["try_blocks"] or right["try_blocks"]:
+            # Try-block maps (catch handlers and type descriptors) are not
+            # audited yet, so such records never count as proven.
+            return "unresolved"
+        if (
+            left["max_state"],
+            left["ip_map_entries"],
+            [entry["to_state"] for entry in left["unwind"]],
+            [entry["null_action"] for entry in left["unwind"]],
+        ) != (
+            right["max_state"],
+            right["ip_map_entries"],
+            [entry["to_state"] for entry in right["unwind"]],
+            [entry["null_action"] for entry in right["unwind"]],
+        ):
+            return "mismatch"
+        statuses = [
+            code_evidence_status(l_entry["action"], r_entry["action"], "funclet")
+            for l_entry, r_entry in zip(left["unwind"], right["unwind"])
+            if not l_entry["null_action"]
+        ]
+        if "mismatch" in statuses:
+            return "mismatch"
+        return "unresolved" if "unresolved" in statuses else "ok"
+
     def references_match(target: MaskedReference, candidate: MaskedReference) -> bool:
+        if is_eh_funcinfo(target, candidate):
+            return eh_funcinfo_status(target, candidate) == "ok"
         if is_local_jump_table(target, candidate):
             return jump_table_entries_match(target, candidate)
         if is_content_audited_reference(target, candidate):
@@ -2653,9 +2859,21 @@ def _reference_status(
         and function_alias_status(target, candidate) == "unresolved"
         for target, candidate in zip(target_references, candidate_references)
     )
+    has_unverified_eh_funcinfo = any(
+        is_eh_funcinfo(target, candidate)
+        and eh_funcinfo_status(target, candidate) == "unresolved"
+        for target, candidate in zip(target_references, candidate_references)
+    )
     if (
         not all_explained
-        or any(not keys for keys in (*target_keys, *candidate_keys))
+        or has_unverified_eh_funcinfo
+        or any(
+            not keys and not reference.text.startswith("eh_funcinfo@")
+            for reference, keys in zip(
+                (*target_references, *candidate_references),
+                (*target_keys, *candidate_keys),
+            )
+        )
         or has_unverified_jump_table
         or has_unverified_content
         or has_unverified_function_alias
@@ -3372,6 +3590,36 @@ def encoded_body_evidence(
     }
 
 
+def _proven_out_of_line_ranges(
+    audit: MaskedOperandAudit, target_va: int
+) -> tuple[tuple[int, int], ...]:
+    """Target code proven through audited references (helper aliases, EH funclets).
+
+    Only entries whose audit status is ok contribute, and every nested body in
+    them was itself proven equal. Offsets are relative to target_va.
+    """
+    ranges: set[tuple[int, int]] = set()
+
+    def visit(evidence: dict[str, Any] | None) -> None:
+        if not evidence:
+            return
+        if "data" in evidence and evidence["lines"]:
+            start = evidence["lines"][0]["address"] - target_va
+            ranges.add((start, start + len(bytes.fromhex(evidence["data"]))))
+            for line in evidence["lines"]:
+                for reference in line["masked_references"]:
+                    visit(reference["code_evidence"])
+        for entry in (evidence.get("eh_funcinfo") or {}).get("unwind", ()):
+            visit(entry["action"])
+
+    for entry in audit.entries:
+        if entry.status == "ok":
+            for reference in entry.target_references:
+                if reference.source == "image":
+                    visit(reference.code_evidence)
+    return tuple(sorted(ranges))
+
+
 def match_function(
     target_data: bytes,
     candidate: ObjectFunction,
@@ -3428,6 +3676,7 @@ def match_function(
         compared_target_ranges=compared,
         excluded_target_ranges=excluded,
         unexplained_target_ranges=unexplained,
+        proven_auxiliary_ranges=_proven_out_of_line_ranges(audit, target_va),
         ratio=ratio,
         prefix_instructions=prefix_instructions,
         target_lines=target_lines,
@@ -4173,6 +4422,7 @@ def match_result_payload(
         "unexplained_target_ranges": [
             list(r) for r in result.unexplained_target_ranges
         ],
+        "proven_auxiliary_ranges": [list(r) for r in result.proven_auxiliary_ranges],
         "candidate_object_sha256": result.candidate_object_sha256,
         "match_ratio": result.ratio,
         "prefix_instructions": result.instruction_prefix_count,
@@ -4352,6 +4602,9 @@ class ScratchStatus:
     compared_target_ranges: tuple[tuple[int, int], ...] = ()
     excluded_target_ranges: tuple[tuple[int, int, str], ...] = ()
     unexplained_target_ranges: tuple[tuple[int, int], ...] = ()
+    # Out-of-line target code (EH thunks, cleanup funclets, helper aliases)
+    # proven equal through the reference audit, relative to the function.
+    proven_auxiliary_ranges: tuple[tuple[int, int], ...] = ()
     candidate_object_sha256: str | None = None
     encoded_body_proof: dict[str, Any] | None = None
     target_inline_data_ranges: tuple[tuple[int, int], ...] = ()
@@ -5886,6 +6139,7 @@ def evaluate_scratch(
             compared_target_ranges=result.compared_target_ranges,
             excluded_target_ranges=result.excluded_target_ranges,
             unexplained_target_ranges=result.unexplained_target_ranges,
+            proven_auxiliary_ranges=result.proven_auxiliary_ranges,
             candidate_object_sha256=result.candidate_object_sha256,
             **_scratch_structural_fields(result),
             error=None,
@@ -6009,6 +6263,7 @@ def scratch_status_payload(status: ScratchStatus) -> dict:
         "unexplained_target_ranges": [
             list(r) for r in status.unexplained_target_ranges
         ],
+        "proven_auxiliary_ranges": [list(r) for r in status.proven_auxiliary_ranges],
         "code_sha256": status.code_sha256,
         "function": status.config.function,
         "address": status.address,
@@ -6513,7 +6768,7 @@ def compile_idiom_case(
 
 
 # Bump when the cache schema changes; content hashes handle scoring edits.
-CACHE_VERSION = 14
+CACHE_VERSION = 15
 
 
 def _masked_reference_cache_payload(reference: MaskedReference) -> dict:
@@ -6830,6 +7085,7 @@ def _scratch_status_fields(target_size: int, result: MatchResult) -> dict:
         "compared_target_ranges": result.compared_target_ranges,
         "excluded_target_ranges": result.excluded_target_ranges,
         "unexplained_target_ranges": result.unexplained_target_ranges,
+        "proven_auxiliary_ranges": result.proven_auxiliary_ranges,
         "candidate_object_sha256": result.candidate_object_sha256,
         "ratio": result.ratio,
         "prefix_instructions": result.instruction_prefix_count,

@@ -296,6 +296,7 @@ def source_evidence(monkeypatch, tmp_path):
         compared_target_ranges=[[100, 101]],
         excluded_target_ranges=[],
         unexplained_target_ranges=[],
+        proven_auxiliary_ranges=[],
         body_byte_exact=True,
         candidate_object_sha256="a" * 64,
         encoded_body_proof={

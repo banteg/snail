@@ -459,3 +459,91 @@ def test_function_selection_never_matches_by_substring():
     member = "?foo@Owner@@QAEXXZ"
     assert m.extract_object_function(obj("_foobar", member), "foo").name == member
     assert m.extract_object_function(obj(member), "Owner_foo").name == member
+
+
+def eh_thunk_reference(*, to_state=-1, funclet_disp=0xF0, try_blocks=0):
+    """A caller pushing a VC6 EH thunk whose FuncInfo has one cleanup funclet."""
+    caller = bytes.fromhex("6800000000c3")
+    thunk = bytes.fromhex("b800000000e900000000")
+    funclet = bytes([0x8B, 0x45, funclet_disp]) + bytes.fromhex("50e80000000059c3")
+    funcinfo = struct.pack("<7I", 0x19930520, 1, 0, try_blocks, 0, 0, 0)
+    unwind = struct.pack("<iI", to_state, 0)
+    # VC6 emits the cleanup funclets and the handler thunk in .text$x.
+    obj = m.CoffObject(
+        (
+            m.CoffSection(".text", caller, 0x20, (m.CoffRelocation(1, 1, 0x06),)),
+            m.CoffSection(
+                ".text$x",
+                funclet + thunk,
+                0x20,
+                (
+                    m.CoffRelocation(5, 6, 0x14),
+                    m.CoffRelocation(12, 2, 0x06),
+                    m.CoffRelocation(17, 5, 0x14),
+                ),
+            ),
+            m.CoffSection(
+                ".xdata$x",
+                funcinfo + unwind,
+                0x40,
+                (m.CoffRelocation(8, 3, 0x06), m.CoffRelocation(32, 4, 0x06)),
+            ),
+        ),
+        (
+            m.CoffSymbol(0, "_foo", 0, 1, 0x20, 2),
+            m.CoffSymbol(1, "$L1", 11, 2, 0, 6),
+            m.CoffSymbol(2, "$T1", 0, 3, 0, 3),
+            m.CoffSymbol(3, "$T2", 28, 3, 0, 3),
+            m.CoffSymbol(4, "$L2", 0, 2, 0, 6),
+            m.CoffSymbol(5, "___CxxFrameHandler", 0, 0, 0x20, 2),
+            m.CoffSymbol(6, "??3@YAXPAX@Z", 0, 0, 0x20, 2),
+        ),
+    )
+    references = m.ReferenceSymbolManifest(
+        "test",
+        (
+            m.ReferenceSymbol(0x401100, "foo_eh_handler", "function_alias", size=10),
+            m.ReferenceSymbol(
+                0x401300, "scalar_delete", "function", aliases=("??3@YAXPAX@Z",)
+            ),
+            m.ReferenceSymbol(
+                0x401400, "__CxxFrameHandler", "function", aliases=("___CxxFrameHandler",)
+            ),
+        ),
+    )
+    mapped = bytearray(0x3000)
+
+    def put(va, data):
+        mapped[va - 0x400000 : va - 0x400000 + len(data)] = data
+
+    put(0x401100, b"\xb8" + struct.pack("<I", 0x402000) + b"\xe9"
+        + struct.pack("<i", 0x401400 - 0x40110A))
+    put(0x401200, bytes.fromhex("8b45f050e8") + struct.pack("<i", 0x401300 - 0x401209)
+        + bytes.fromhex("59c3"))
+    put(0x402000, struct.pack("<7I", 0x19930520, 1, 0x402020, 0, 0, 0, 0))
+    put(0x402020, struct.pack("<iI", -1, 0x401200))
+    return m.match_function(
+        bytes.fromhex("6800114000c3"),
+        m.extract_object_function(obj, "foo", reference_manifest=references),
+        image=m.LoadedImage(bytes(mapped), 0x400000, len(mapped)),
+        target_va=0x401000,
+        reference_manifest=references,
+    )
+
+
+def test_eh_thunk_audits_funcinfo_and_cleanup_funclets():
+    result = eh_thunk_reference()
+    assert result.exact, summarize(result)
+    audit = m._masked_audit_from_cache(m._masked_audit_cache_payload(result.masked_operand_audit))
+    assert audit == result.masked_operand_audit
+    # The proven thunk and cleanup funclet are credited as auxiliary code.
+    assert result.proven_auxiliary_ranges == ((0x100, 0x10A), (0x200, 0x20B))
+    assert eh_thunk_reference(funclet_disp=0xEC).proven_auxiliary_ranges == ()
+    for bad, status in (
+        (eh_thunk_reference(to_state=0), "mismatch"),
+        (eh_thunk_reference(funclet_disp=0xEC), "mismatch"),
+        # Try-block maps are not audited, so they never certify.
+        (eh_thunk_reference(try_blocks=1), "unresolved"),
+    ):
+        assert not bad.exact, summarize(bad)
+        assert [e.status for e in bad.masked_operand_audit.entries] == [status]
