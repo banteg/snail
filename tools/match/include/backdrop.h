@@ -35,7 +35,7 @@ public:
     void Init(int last_mode); // @ 0x410e20
     void SetWorld(int world); // @ 0x410f40
     int draw_split_backdrop(); // @ 0x410f90
-#ifdef BACKDROP_RENDER_BACKDROP_RETURNS_VOID
+#if defined(BACKDROP_RENDER_BACKDROP_RETURNS_VOID) || defined(SNAIL_PORT)
 #define BACKDROP_RENDER_BACKDROP_RESULT void
 #else
 #define BACKDROP_RENDER_BACKDROP_RESULT int

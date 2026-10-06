@@ -2,7 +2,7 @@
 
 #include "sprite.h"
 
-void report_errorf(const char* format, ...);
+int report_errorf(const char* format, ...);
 
 void cRSpriteManager::Load(char* texture_path, int texture_id, int flags)
 {

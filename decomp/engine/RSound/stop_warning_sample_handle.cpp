@@ -2,7 +2,7 @@
 
 #include "sound_effect_manager.h"
 
-void stop_registered_warning_sample(int handle);
+int stop_registered_warning_sample(int handle);
 
 void cRSound::StopLooped(int handle)
 {

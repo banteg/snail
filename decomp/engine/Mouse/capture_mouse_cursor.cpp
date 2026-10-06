@@ -2,7 +2,7 @@
 
 #include "mouse_cursor_state.h"
 
-void* click_mouse_screen(int slot, int x, int y);
+void click_mouse_screen(int slot, int x, int y);
 
 void cRMouse::SetActive()
 {

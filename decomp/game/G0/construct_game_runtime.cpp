@@ -1,5 +1,7 @@
 // construct_game_runtime @ 0x407b60
 
+#include <stddef.h>
+
 #include "bod_types.h"
 #include "border_manager.h"
 #include "game_root.h"
@@ -7,7 +9,7 @@
 #include "runtime_slot.h"
 #include "sprite.h"
 
-void* operator new(unsigned int size);
+void* operator new(size_t size);
 
 int debug_report_stub(char* format, int value); // @ 0x449c00, stripped in release
 

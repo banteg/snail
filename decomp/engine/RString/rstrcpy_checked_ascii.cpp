@@ -2,7 +2,7 @@
 
 #include "rstring.h"
 
-void report_errorf(char* format, ...);
+int report_errorf(char* format, ...);
 
 void __cdecl Rstrcpy(char* destination, const char* source)
 {

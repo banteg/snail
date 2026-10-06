@@ -3,7 +3,7 @@
 #include "input_controller_state.h"
 
 void set_hide_system_cursor_flag(int hidden); // @ 0x44c050
-void* click_mouse_screen(int slot, int x, int y); // @ 0x44c060
+void click_mouse_screen(int slot, int x, int y); // @ 0x44c060
 
 void update_input_controller_pointer_region(
     int slot,

@@ -41,9 +41,19 @@ files. Each source entry also records its address and `port_scope` (`core`,
 compiles.
 
 Within a unit every function is still its own file and compile object, so each
-function matches independently. Functions that must compile together (the
+function matches independently. Functions the compiler emits from one
+definition (a global's constructor and its registration thunk) share that
+definition's file, and both scratches point at it. Functions that must compile together (the
 groups in `tools/match/translation_units.json`) keep separate files; the
 matcher concatenates them.
+
+## Port guards
+
+The port compiles this tree with `SNAIL_PORT` defined. A guard on it is allowed
+only where a matched VC6 shape relies on x86 ABI leniency (for example returning
+a callee's leftover `eax`), never to change behaviour; every guard is listed in
+[docs/port/divergences.md](../docs/port/divergences.md). Declarations of one
+function must agree across files, as a portable linker checks signatures.
 
 ## Maintenance
 

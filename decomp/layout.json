@@ -5524,7 +5524,7 @@
    ],
    "sources": [
     {
-     "path": "decomp/engine/RMaths/initialize_global_identity_matrix_thunk.cpp",
+     "path": "decomp/engine/RMaths/initialize_global_identity_matrix.cpp",
      "function": "initialize_global_identity_matrix_thunk",
      "address": "0x44c870",
      "port_scope": "core",

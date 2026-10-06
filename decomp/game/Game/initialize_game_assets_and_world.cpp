@@ -30,7 +30,7 @@ int report_errorf(char* format, ...); // @ 0x431cc0
 int debug_report_stub(char* format, ...); // @ 0x449c00
 void FontInit(); // @ 0x449c70
 void FontMake3D(short font_id); // @ 0x44ae10
-void register_font_texture_sheet_wrapper(
+int register_font_texture_sheet_wrapper(
     char* font_path,
     int shadow_offset_pixels,
     float width_scale,

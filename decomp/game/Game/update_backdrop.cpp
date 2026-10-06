@@ -43,7 +43,13 @@ int cRBackdrop::update_backdrop()
             if (active_split_backdrop_pair != 0) {
                 return draw_split_backdrop();
             }
+#ifdef SNAIL_PORT
+            // VC6 returned render_backdrop's leftover eax; nothing reads it.
+            render_backdrop();
+            return 0;
+#else
             return render_backdrop();
+#endif
         }
     }
     return result;

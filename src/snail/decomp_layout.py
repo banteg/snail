@@ -1,6 +1,8 @@
 """Layout of the recovered source tree (`decomp/`), derived from Windows link order.
 
-Every recovered function is one file, `decomp/<sequence>/<unit>/<function>.cpp`.
+Every recovered function lives in its unit, `decomp/<sequence>/<unit>/`, normally as
+`<function>.cpp`; functions the compiler emits from one definition (a global's
+constructor and its registration thunk) share that definition's file.
 Units follow `analysis/ownership/windows-link-order.json`: the game objects were
 linked alphabetically, then the engine library. A unit is either an attested
 object (Border, SubGame, ...), an unnamed run with a name candidate read from the
@@ -54,6 +56,16 @@ def _unit(entry: dict) -> tuple[str, str, str]:
     )
 
 
+def _source_path(root: Path, function: str, directory: Path) -> str:
+    """Where a function's scratch points, or the conventional file for a new one."""
+    scratch = root / SCRATCHES / function
+    if (scratch / "scratch.conf").exists():
+        source = load_scratch_config(scratch).source_path.resolve()
+        if source.is_relative_to((root / DECOMP).resolve()):
+            return source.relative_to(root.resolve()).as_posix()
+    return (directory / f"{function}.cpp").as_posix()
+
+
 def build_layout(root: Path) -> dict:
     link_order = json.loads((root / LINK_ORDER).read_text())
     manifest = load_function_symbol_manifest(root / FUNCTIONS)
@@ -77,7 +89,7 @@ def build_layout(root: Path) -> dict:
                 "range": [f"0x{start:x}", f"0x{end:x}" if end else None],
                 "sources": [
                     {
-                        "path": (directory / f"{function}.cpp").as_posix(),
+                        "path": _source_path(root, function, directory),
                         "function": function,
                         "address": f"0x{address[function]:x}",
                         "port_scope": scope[function],
@@ -114,8 +126,11 @@ def layout_problems(root: Path) -> list[str]:
         problems.append(f"{LAYOUT} differs from the link-order layout; run snail decomp layout --write")
     listed = set()
     for unit in expected["units"]:
+        directory = (DECOMP / unit["sequence"] / unit["name"]).as_posix()
         for source in unit["sources"]:
             listed.add(source["path"])
+            if Path(source["path"]).parent.as_posix() != directory:
+                problems.append(f"{source['function']} belongs in {directory}, not {source['path']}")
             if not (root / source["path"]).is_file():
                 problems.append(f"missing {source['path']}")
             config = load_scratch_config(root / source["config"])
