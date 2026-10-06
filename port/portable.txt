@@ -1,0 +1,34 @@
+# Platform- and third-party-scoped functions whose recovered bodies are portable C (CRT only), so the
+# port compiles them as recovered instead of reimplementing them in the shell.
+initialize_tracked_allocation_depth_thunk
+initialize_tracked_allocation_depth
+get_tracked_allocation_size
+push_tracked_allocation
+pop_tracked_allocation
+allocate_tracked_memory
+free_tracked_memory
+free_tracked_allocations_to_mark
+set_tracked_allocation_mark
+load_archive_index
+find_archive_entry
+xor_archive_bytes_in_place
+archive_or_file_exists
+is_archive_index_loaded
+get_archive_data_base
+get_archive_data_end
+load_file_bytes
+load_file_bytes_from_archive_or_fs
+load_file_bytes_fixed_size_from_archive_or_fs
+uninitialize_game_data_archive
+report_errorf
+report_warningf
+report_messagef
+set_hide_system_cursor_flag
+resolve_uncaptured_cursor_sensitivity_scale
+update_mouse_authored_scale
+write_file_bytes
+set_current_directory_with_drive_fallback
+enumerate_matching_archive_or_fs_entries
+build_perspective_projection_matrix
+build_camera_view_matrix
+initialize_translation_matrix

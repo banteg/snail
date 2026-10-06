@@ -1,0 +1,12 @@
+# Flags for the recovered source (decomp/) in the port build, relative to port/.
+# Read by port/build.zig and by `snail port data`.
+-std=c++98
+-fms-extensions
+-fdeclspec
+-fno-exceptions
+-fno-rtti
+-DSNAIL_PORT
+-Wno-everything
+-fno-sanitize=all
+-fno-stack-protector
+-fno-strict-return

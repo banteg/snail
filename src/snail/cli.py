@@ -621,6 +621,24 @@ def build_parser() -> argparse.ArgumentParser:
         "--write", action="store_true", help="Regenerate decomp/layout.json from link order."
     )
 
+    port_parser = subparsers.add_parser(
+        "port", help="Inputs for the modern port build (port/)."
+    )
+    port_subparsers = port_parser.add_subparsers(dest="port_command", required=True)
+    port_sources_parser = port_subparsers.add_parser(
+        "sources",
+        help="Check (default) or write port/sources.txt from decomp/layout.json and port/replaced.txt.",
+    )
+    port_sources_parser.add_argument("--write", action="store_true")
+    port_subparsers.add_parser(
+        "data",
+        help="Generate port/generated/image_data.s from the original image (local, never committed).",
+    )
+    port_subparsers.add_parser(
+        "link",
+        help="Compile the port's sources and generate forwarders for stand-in call names (port/generated/).",
+    )
+
     screenshots_parser = subparsers.add_parser(
         "screenshots",
         help="Compare rendered screenshots against reference captures.",
@@ -1662,6 +1680,36 @@ def main(argv: Sequence[str] | None = None) -> int:
         if not problems:
             print("decomp/ layout matches link order and every scratch SOURCE.")
         return 1 if problems else 0
+
+    if args.command == "port":
+        from . import port, port_data
+
+        if args.port_command == "sources":
+            expected = port.sources_text(REPO_ROOT)
+            if args.write:
+                (REPO_ROOT / port.SOURCES).write_text(expected)
+            if (REPO_ROOT / port.SOURCES).read_text() != expected:
+                print(f"error: {port.SOURCES} is stale; run snail port sources --write", file=sys.stderr)
+                return 1
+            print(f"{port.SOURCES}: {len(expected.splitlines())} sources")
+            return 0
+        if args.port_command == "link":
+            from . import port_link
+
+            report = port_link.generate(REPO_ROOT)
+            print(
+                f"{port_link.OUTPUT}: {len(report['aliases'])} forwarders, "
+                f"{len(report['manual'])} need a hand-written shim, "
+                f"{len(report['shell'])} left for the shell (see {port_link.REPORT})"
+            )
+            return 0
+        report = port_data.generate(REPO_ROOT)
+        print(
+            f"{port_data.OUTPUT}: {report['labels']} names, {report['local_labels']} pointer targets, "
+            f"{report['function_pointers']} function pointers, "
+            f"{len(report['unresolved_pointers'])} unresolved pointers (see {port_data.REPORT})"
+        )
+        return 0
 
     if args.command == "format":
         parsed = parse_text_asset(Path(args.path), kind=args.kind)

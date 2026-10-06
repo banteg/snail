@@ -1,8 +1,10 @@
 # Modern port plan
 
-Status: stage 1 done (2026-10-06): the recovered source lives in
-[`decomp/`](../../decomp/README.md). No port code exists yet. This page records
-the decisions and the order of work; update it as stages land.
+Status: stage 2 running (2026-10-06). The recovered source lives in
+[`decomp/`](../../decomp/README.md), and `port/` links it into a headless
+wasm32 program that loads the real archive, builds the world and ticks frames.
+This page records the decisions and the order of work; update it as stages
+land.
 
 ## Approach: build the port from the recovered source
 
@@ -109,13 +111,20 @@ decomp/
   engine/<Unit>/         BassPlay, Font, … RMaths, RSound, RSprite, … Viewport
     <function>.cpp       one file per recovered function
 port/
-  build.zig              compiles decomp/ (minus replaced functions) and shell/
+  build.zig              compiles sources.txt with cflags.txt, plus shell/ and generated/
+  sources.txt            the recovered files the port compiles (`snail port sources --write`)
+  replaced.txt           boundary functions the shell reimplements
+  portable.txt           platform functions whose recovered bodies are portable C
+  compat/                POSIX stand-ins for MSVC CRT headers (direct.h, io.h)
   shell/                 the only new hand-written runtime code
     main.cpp             replaces game_startup_and_main_loop and the window procedure
-    rshell_sdl.cpp       files, archive, memory, input lanes, timer
-    g0_gpu.cpp           G0 on SDL3 GPU
-    sound.cpp            samples, music, voice (miniaudio)
-  data/                  tables recovered from the exe's data sections (generated)
+    files.cpp            archive start-up and _findfirst over the file system
+    runtime.cpp          MSVC rand, debug output, C++-linkage CRT names
+    abi_shims.cpp        calls whose recovered caller and callee disagree on a signature
+    *_null.cpp           headless G0, Direct3D 8, audio and input (stage 4: SDL3 GPU, miniaudio)
+  generated/             local, never committed (holds the original's data bytes)
+    image_data.s         the exe's .rdata and .data, with names and relocations
+    link_aliases.s       forwarders from stand-in call names to recovered definitions
 tools/match/scratches/   matching configs, NOTES and experiments; SOURCE= points into decomp/
 ```
 
@@ -133,16 +142,17 @@ Which functions the port compiles:
 - `boundary`: reviewed one by one. Bodies that only call `RShell`, `G0` or
   `cRSound`, such as the X2 loaders, are kept. Bodies that touch D3D8,
   DirectInput or BASS directly are reimplemented in `shell/`.
-- `replaceable-platform` and `third-party`: never compiled. The three D3DX
-  matrix helpers get small portable versions.
+- `replaceable-platform` and `third-party`: compiled only when listed in
+  `port/portable.txt`, because the recovered body is portable C (the tracked
+  allocator, archive reader, error reporting, the three D3DX matrix helpers).
 
 ## Correctness rules
 
 - **No invented models.** If behaviour is unknown, match the function first.
   The port never carries its own guess at gameplay.
 - **Core code changes only through the matcher.** A change must still match,
-  or sit behind `PORT_FIX` with an entry in a divergence ledger
-  (`docs/port/divergences.md`, to be created with the first one).
+  or sit behind a `SNAIL_PORT` guard with an entry in the divergence ledger
+  ([divergences.md](divergences.md)).
 - **Exact `rand`.** Track generation reseeds with `RandSeed(runtime_build_seed)`,
   so the port implements the MSVC `rand` LCG exactly. `gRMathRand2` and the
   sine tables are recovered code and come along unchanged.
@@ -163,21 +173,68 @@ Which functions the port compiles:
   (`tools/frida/`, `docs/re/frida-runtime-trace.md`).
 - **Render level:** `snail screenshots compare` against original captures.
 
+## Building the headless port
+
+```
+uv run snail port link && uv run snail port data
+cd port && zig build
+cd <dir with SnailMail.dat> && node <repo>/port/shell/run.mjs <repo>/port/zig-out/bin/snail.wasm 600
+```
+
+The target is `wasm32-wasi`, run under Node's WASI. It has the MSVC x86 data
+layout the size asserts expect (4-byte pointers, 8-byte-aligned `double`, no
+`long double` in the source) without a Windows runtime, and it runs anywhere.
+The native SDL3 targets come with stage 4; the same sources build for them.
+
+Wasm is strict where x86 was lenient, and that strictness is the useful part:
+every call must agree with its definition's signature, at link time and in
+indirect calls at run time. The build surfaced every recovered declaration that
+disagreed with its definition; most were fixed in the source (all still match),
+and the rest are listed in [divergences.md](divergences.md).
+
+**Data comes from the original image.** Recovered code declares its globals,
+strings, tables and vtables `extern`. `snail port data` emits the exe's
+`.rdata` and `.data` as one contiguous block per section, with every known name
+as a weak label at its original offset and every pointer as a relocation:
+
+- a pointer to a recovered function becomes a function-table entry with the
+  exact signature its compiled object defines;
+- a word that reads as text counts as a pointer only if its target starts a
+  string in initialized data (string tables do; `"txt\0"` reads as `0x747874`);
+- callback slots whose recovered target has another signature get a generated
+  adapter that passes `this` and drops the result;
+- pointers into library code the port does not compile become zero, listed in
+  `generated/image_data.json`.
+
+The zero-filled tail of `.data` stays in the same section as the initialized
+bytes. Arrays such as `g_animation_directory` run across that boundary, and a
+separate `.bss` section is placed after libc's own state, which the game then
+overwrote.
+
+**Link names.** Matching compares call targets by address, so recovered code
+sometimes calls a function under a stand-in owner (`RuntimeSlot::…`) or one of
+several identical-code-folded owners. `snail port link` compiles every source,
+resolves each undefined call through the function manifest, and emits a
+forwarder when the signatures are compatible; `generated/link_report.json`
+lists the rest for the shell.
+
+**Compiler flags** (`cflags.txt`): `-fno-strict-return`, because matched
+functions that fall off the end of a non-void body (VC6 returned `eax`) would
+trap; sanitizers and the stack protector off, as the original had neither.
+
 ## Stages
 
 1. **Organise the source.** Done: `decomp/` holds all 785 functions in 58
    link-order units, every scratch points at its file with `SOURCE=`, and every
-   match is unchanged. Left over for stage 2: fold the eight scratch-local
-   compatibility types (such as `SubgoldyPathView`) into shared headers.
-2. **Headless link.**
-   - Write `port/build.zig`, null `G0` and sound backends, and a file-backed
-     `RShell`.
-   - Run startup, `construct_game_runtime` and
-     `initialize_game_assets_and_world` on the real archive, then tick frames.
-   - Target 32-bit with MSVC struct layout first, so the 263 lines of size
-     asserts in `decomp/include` hold unchanged.
-   - Extract the data tables (path names, sound bank, colour banks, BOD
-     catalogs) into `port/data/`.
+   match is unchanged. Left over: fold the eight scratch-local compatibility
+   types (such as `SubgoldyPathView`) into shared headers; meanwhile
+   `port/shell/abi_shims.cpp` bridges the calls made through them.
+2. **Headless link.** Running: 680 recovered files compile unchanged and link
+   with the shell; the program constructs the 19.8 MB `cRGame`, loads every
+   asset from `SnailMail.dat`, and ticks thousands of frames (idle at the
+   front end, as nothing presses a key yet). See
+   [Building the headless port](#building-the-headless-port). Left: script
+   input so the run reaches gameplay, then hand over to the oracles.
 3. **Oracles.** Bring up the replay oracle and per-tick traces against the
    headless build, and fix divergences in the matcher, never only in the port.
 4. **Shell.** SDL3 window and input, miniaudio, then `G0` on SDL3 GPU, verified

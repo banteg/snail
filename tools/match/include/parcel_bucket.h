@@ -13,13 +13,13 @@ enum {
 
 class ParcelCandidate {
 public:
-    void noop_runtime_slot_constructor(); // sub_408600
+    ParcelCandidate* noop_runtime_slot_constructor(); // sub_408600, returns this
 
     int row;          // +0x00, row within the source segment
     Vector3 position; // +0x04, authored or glyph-derived local position
 };
 
-typedef void (ParcelCandidate::*ParcelCandidateConstructor)();
+typedef ParcelCandidate* (ParcelCandidate::*ParcelCandidateConstructor)();
 
 void __stdcall initialize_array_with_constructor(
     ParcelCandidate* base,

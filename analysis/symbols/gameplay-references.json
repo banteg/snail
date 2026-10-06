@@ -6635,6 +6635,20 @@
       "description": "DirectInput mouse data format passed to IDirectInputDevice8A::SetDataFormat by initialize_mouse_input."
     },
     {
+      "address": "0x4a1000",
+      "name": "g_cpp_initializer_table",
+      "kind": "global",
+      "size": "0x74",
+      "description": "CRT C++ static-initializer table (`__xc_a`): a null slot, then 28 initializer thunks in link order that `_initterm` runs before WinMain. The port's main runs the same table, skipping null slots."
+    },
+    {
+      "address": "0x4a1074",
+      "name": "g_cpp_initializer_table_end",
+      "kind": "global",
+      "size": "0x4",
+      "description": "Null terminator of the CRT C++ static-initializer table (`__xc_z`)."
+    },
+    {
       "address": "0x4a1194",
       "name": "g_completion_bonus_difficulty_table",
       "kind": "global",

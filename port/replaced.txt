@@ -1,0 +1,15 @@
+# Boundary functions the shell reimplements instead of compiling the recovered body.
+# One function per line, then the reason. Platform and third-party scopes are never compiled.
+read_repeating_text_input_key_code  Win32 keyboard state; the shell maps SDL key events
+render_camera  Direct3D 8 device state; the shell's G0 renderer
+render_object  Direct3D 8 device and buffers; the shell's G0 renderer
+render_object_toon  Direct3D 8 buffers; the shell's G0 renderer
+refresh_object_vertex_buffer  Direct3D 8 vertex buffer locks; the shell's G0 renderer
+build_object_texture_group_buffers  Direct3D 8 buffer creation; the shell's G0 renderer
+set_object_color  Direct3D 8 vertex buffer locks; the shell's G0 renderer
+set_cull_mode  Direct3D 8 renderer state; the shell's G0 renderer
+set_fullscreen_mode  Direct3D 8 renderer state; the shell's window
+load_registered_texture_refs  D3DX texture creation; the shell's G0 textures
+load_registered_texture_ref  D3DX texture creation; the shell's G0 textures
+bind_texture_ref  Direct3D 8 texture stages; the shell's G0 renderer
+draw_sprite_quad  Direct3D 8 draw calls; the shell's G0 renderer
