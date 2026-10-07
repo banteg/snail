@@ -643,6 +643,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     port_serve_parser.add_argument("--port", type=int, default=8017)
     port_serve_parser.add_argument("--archive", type=Path, help="SnailMail.dat to serve (default: artifacts/bin/).")
+    port_oracle_parser = port_subparsers.add_parser(
+        "oracle", help="Replay the original's recorded high-score runs in the headless port and compare them per tick."
+    )
+    port_oracle_parser.add_argument("replays", nargs="*", help="Bank letter and row, like A1 or B3 (default: all).")
+    port_oracle_parser.add_argument("-j", "--jobs", type=int, default=8)
     port_symbolize_parser = port_subparsers.add_parser(
         "symbolize",
         help="Annotate a wasm stack trace (stdin) or module offsets with source lines from DWARF.",
@@ -1704,6 +1709,12 @@ def main(argv: Sequence[str] | None = None) -> int:
                 return 1
             print(f"{port.SOURCES}: {len(expected.splitlines())} sources")
             return 0
+        if args.port_command == "oracle":
+            from .port_oracle import report_text, run_oracle
+
+            results = run_oracle(REPO_ROOT, args.replays or None, jobs=args.jobs)
+            print(report_text(results))
+            return 0 if all(result.matches for result in results) else 1
         if args.port_command == "serve":
             from .port_serve import serve
 

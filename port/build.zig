@@ -47,6 +47,7 @@ pub fn build(b: *std.Build) void {
     const headless = program(b, target, optimize, "snail", &.{
         "shell/main.cpp",
         "shell/input_script.cpp",
+        "shell/replay_oracle.cpp",
         "shell/backend_null.cpp",
     });
     b.installArtifact(headless);

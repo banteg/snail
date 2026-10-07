@@ -1,0 +1,4 @@
+# Skip the intro and open High Scores; the replay oracle (--replay) takes over there.
+600 escape         # once the intro's fade-in has ended
+700 mouse 345 182  # High Scores
+720 click 3

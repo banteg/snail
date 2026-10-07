@@ -6,7 +6,7 @@ import { WASI } from "node:wasi";
 import { argv, cwd, exit } from "node:process";
 
 const [wasmPath, ...args] = argv.slice(2);
-const wasi = new WASI({ version: "preview1", args: ["snail", ...args], env: { PWD: cwd() }, preopens: { "/": "/" }, returnOnExit: true });
+const wasi = new WASI({ version: "preview1", args: ["snail", ...args], env: { ...process.env, PWD: cwd() }, preopens: { "/": "/" }, returnOnExit: true });
 const module = await WebAssembly.compile(await readFile(wasmPath));
 const instance = await WebAssembly.instantiate(module, wasi.getImportObject());
 exit(wasi.start(instance));

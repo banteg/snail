@@ -183,11 +183,24 @@ Which functions the port compiles:
 - **Function level:** the existing native harnesses
   (`tools/match/compare_loaders_native.py` and the other `compare_*_native.py`)
   run recovered code against relocated original code.
-- **Simulation level:** restore the replay oracle and the Windows `Score*.dat`
-  fixtures from `570772c30^`, and lockstep-compare the headless port per tick.
-  Add per-tick state captures from the original through the Frida tooling
-  (`tools/frida/`, `docs/re/frida-runtime-trace.md`).
-- **Render level:** `snail screenshots compare` against original captures.
+- **Simulation level: the replay oracle.** `uv run snail port oracle` replays
+  the high-score runs the original Windows game recorded
+  (`tests/fixtures/replays`, 20 postal and challenge runs) in the headless
+  port and compares the snail's z with the recording, tick by tick. A
+  recording stores each tick's lateral position and input flags, which
+  playback feeds back in, and the z the original's physics produced, which
+  playback leaves to the port's simulation. So any difference is a port
+  divergence; the tolerance is the recording's own 1/32 quantum. The replay
+  starts through the High Scores screen's Replay handler (the shipped game
+  hides those buttons but keeps the handler), and playback runs to the run's
+  end marker. As of 2026-10-08 all 20 replays match, 57,817 ticks, every one
+  within 0.0007 of the original. Next: more of the state per tick (lateral
+  x, speed, score) and per-tick captures from the original through Frida
+  (`tools/frida/`, `docs/re/frida-runtime-trace.md`) for what replays don't
+  record.
+- **Render level:** `snail-native --frames N --screenshot` captures any frame
+  deterministically; `snail screenshots compare` compares against original
+  captures.
 
 ## Playing in the browser
 
@@ -324,8 +337,10 @@ trap; sanitizers and the stack protector off, as the original had neither.
    scripts through gameplay and the exit prompt run without a trap, and runs
    repeat exactly. See
    [Building the headless port](#building-the-headless-port).
-3. **Oracles.** Bring up the replay oracle and per-tick traces against the
-   headless build, and fix divergences in the matcher, never only in the port.
+3. **Oracles.** Running: the replay oracle passes on every recorded run (see
+   [Oracles](#oracles)). Left: compare more state per tick, per-tick traces
+   from the original, and screenshot comparisons. Fix divergences in the
+   matcher, never only in the port.
 4. **Shell.** Running: the recovered renderer draws through the emulated
    Direct3D 8 device and the recovered audio code through an emulated BASS
    2.0, and the browser build plays from the intro through the menus into

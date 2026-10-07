@@ -2,12 +2,14 @@
 // fixed 1/60 s per tick, with scripted input and a presenter that shows
 // nothing. The browser build (web_main.cpp) runs the same session live.
 //
-// Usage: snail.wasm [--ticks N] [--keys SCRIPT] [--warmup N] [--trace]
+// Usage: snail.wasm [--ticks N] [--keys SCRIPT] [--warmup N] [--trace] [--replay A3]
 //   --ticks   ticks to run (default 600; with --keys, until the script ends)
 //   --keys    input script (shell/input_script.cpp)
 //   --warmup  random draws before construction; the original used
 //             timeGetTime() % 1000, so a run is reproducible only with this
 //   --trace   print front-end state changes and each screen's widgets
+//   --replay  replay row 3 of ScoreA.dat (B: ScoreB.dat) against its recording
+//             (shell/replay_oracle.cpp); pair with scripts/high_scores.keys
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,6 +20,7 @@
 #include "game_root.h"
 #include "game_session.h"
 #include "input_script.h"
+#include "replay_oracle.h"
 
 namespace {
 
@@ -73,8 +76,14 @@ int main(int argc, char** argv)
             warmup = atoi(argv[++i]);
         else if (strcmp(argv[i], "--trace") == 0)
             trace = true;
+        else if (strcmp(argv[i], "--replay") == 0 && i + 1 < argc) {
+            if (!replay_oracle_configure(argv[++i])) {
+                fprintf(stderr, "snail: --replay takes a bank letter and row, like A3 or B10\n");
+                return 2;
+            }
+        }
         else {
-            fprintf(stderr, "usage: snail [--ticks N] [--keys SCRIPT] [--warmup N] [--trace]\n");
+            fprintf(stderr, "usage: snail [--ticks N] [--keys SCRIPT] [--warmup N] [--trace] [--replay A3]\n");
             return 2;
         }
     }
@@ -86,11 +95,13 @@ int main(int argc, char** argv)
         return 2;
     }
     if (ticks < 0)
-        ticks = keys ? last_scripted_tick() : 600;
+        ticks = replay_oracle_enabled() ? 60 * 60 * 30 : keys ? last_scripted_tick() : 600;
 
     if (!start_game(warmup))
         return 1;
     fprintf(stderr, "snail: world initialized\n");
+    if (replay_oracle_enabled())
+        replay_oracle_started();
 
     int state = -1;
     unsigned int widgets = 0;
@@ -102,6 +113,10 @@ int main(int argc, char** argv)
             return 0;
         }
         render_frame();
+        if (replay_oracle_enabled() && replay_oracle_tick(tick)) {
+            end_game();
+            return replay_oracle_report();
+        }
         if (trace && g_game->players[0].frontend_state != state) {
             state = g_game->players[0].frontend_state;
             fprintf(stderr, "tick %d: frontend_state %d\n", tick, state);
@@ -115,5 +130,5 @@ int main(int argc, char** argv)
     }
     fprintf(stderr, "snail: ran %d ticks\n", ticks);
     end_game();
-    return 0;
+    return replay_oracle_enabled() ? replay_oracle_report() : 0;
 }
