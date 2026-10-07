@@ -7,7 +7,8 @@
 //
 // URL parameters: ?warmup=N fixes the random warmup (the original used
 // timeGetTime() % 1000, so by default every start differs); ?reset clears
-// saved progress, scores and options.
+// saved progress, scores and options; ?mute silences the game and ?mute=0
+// brings sound back (both remembered).
 
 import { AudioPresenter } from "./audio.js";
 import { Renderer } from "./renderer.js";
@@ -96,7 +97,17 @@ function connectInput(exports, audio) {
 
 async function main() {
   const renderer = new Renderer(canvas);
-  const audio = new AudioPresenter();
+  const params = new URLSearchParams(location.search);
+  if (params.has("mute")) {
+    try {
+      localStorage.setItem("snail-mail-mute", params.get("mute") === "0" ? "0" : "1");
+    } catch {}
+  }
+  let muted = false;
+  try {
+    muted = localStorage.getItem("snail-mail-mute") === "1";
+  } catch {}
+  const audio = new AudioPresenter({ muted });
   const fs = new MemoryFileSystem();
   show("Loading SnailMail.dat…");
   const [archive, module] = await Promise.all([
@@ -139,7 +150,7 @@ async function main() {
   window.addEventListener("pagehide", save);
   window.snail = { exports, renderer, audio, fs }; // for the console
   canvas.focus();
-  show(audio.unlocked ? "" : "Click or press a key for sound.");
+  show(audio.unlocked || muted ? "" : "Click or press a key for sound.");
 
   let last = performance.now();
   const frame = (now) => {

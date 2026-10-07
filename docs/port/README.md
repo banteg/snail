@@ -204,7 +204,8 @@ sound once the page has had a click or key press (browsers require one).
 Files the game writes (`SnailMail.cfg` with progress and options, the
 `ScoreA/B/C.dat` tables) persist in the browser's IndexedDB. The game wrote
 its score tables only when quitting, so the page runs those saves when it is
-hidden or closed. `?reset` clears them.
+hidden or closed. `?reset` clears them, and `?mute` silences the game until
+`?mute=0` (the page remembers either).
 `?warmup=N` fixes the random warmup for a repeatable start.
 
 ## Building the headless port

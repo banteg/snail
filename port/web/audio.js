@@ -3,18 +3,21 @@
 // browser; a channel plays one sound on the sample or stream bus with a
 // volume, pan, rate and loop flag. Browsers start audio only after a user
 // gesture, so the context resumes on the first click or key press; until then
-// channels wait silently, as if paused.
+// channels wait silently, as if paused. `muted` silences everything.
 
 export class AudioPresenter {
-  constructor() {
+  constructor({ muted = false } = {}) {
     this.context = new AudioContext();
+    this.master = this.context.createGain();
+    this.master.gain.value = muted ? 0 : 1;
+    this.master.connect(this.context.destination);
     this.memory = null;
     this.sounds = new Map(); // id -> { buffer, failed, decoding }
     this.channels = new Map(); // id -> { sound, options, source, ended }
     this.unlocked = false;
     this.paused = false;
     this.buses = [this.context.createGain(), this.context.createGain()];
-    for (const bus of this.buses) bus.connect(this.context.destination);
+    for (const bus of this.buses) bus.connect(this.master);
     this.warned = false;
   }
 
