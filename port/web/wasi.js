@@ -55,7 +55,8 @@ export class MemoryFileSystem {
   }
 }
 
-export function createWasi(fs, { log = console.log } = {}) {
+// `onClose(path, data)` sees every file the program wrote, when it closes.
+export function createWasi(fs, { log = console.log, onClose = () => {} } = {}) {
   let memory = null;
   const descriptors = new Map(); // fd -> { path, directory, data?, position }
   let nextFd = ROOT_FD + 1;
@@ -120,6 +121,7 @@ export function createWasi(fs, { log = console.log } = {}) {
         }
         file.data.set(chunk, descriptor.position);
         descriptor.position = end;
+        descriptor.written = true;
       }
       view().setUint32(written, total, true);
       return ERRNO.SUCCESS;
@@ -151,7 +153,11 @@ export function createWasi(fs, { log = console.log } = {}) {
       return ERRNO.SUCCESS;
     },
     fd_close(fd) {
-      return descriptors.delete(fd) ? ERRNO.SUCCESS : ERRNO.BADF;
+      const descriptor = descriptors.get(fd);
+      if (!descriptor) return ERRNO.BADF;
+      descriptors.delete(fd);
+      if (descriptor.written) onClose(descriptor.path, fs.file(descriptor.path).data);
+      return ERRNO.SUCCESS;
     },
     fd_fdstat_get(fd, pointer) {
       const v = view();
@@ -197,7 +203,9 @@ export function createWasi(fs, { log = console.log } = {}) {
         }
       }
       const opened = nextFd++;
-      descriptors.set(opened, { path, directory, position: 0 });
+      // A created or truncated file counts as written even if nothing follows.
+      const written = !directory && (oflags & (OFLAGS.CREAT | OFLAGS.TRUNC)) !== 0;
+      descriptors.set(opened, { path, directory, position: 0, written });
       view().setUint32(result, opened, true);
       return ERRNO.SUCCESS;
     },

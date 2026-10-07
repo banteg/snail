@@ -2,11 +2,16 @@
 // system, forwards keyboard and mouse input in DirectInput terms, and calls
 // snail_frame once per animation frame with the elapsed time.
 //
+// Files the game writes are kept in IndexedDB (storage.js). The game saved its
+// score tables only when quitting, so the page saves when it is hidden.
+//
 // URL parameters: ?warmup=N fixes the random warmup (the original used
-// timeGetTime() % 1000, so by default every start differs).
+// timeGetTime() % 1000, so by default every start differs); ?reset clears
+// saved progress, scores and options.
 
 import { AudioPresenter } from "./audio.js";
 import { Renderer } from "./renderer.js";
+import { openSaves } from "./storage.js";
 import { createWasi, ExitStatus, MemoryFileSystem } from "./wasi.js";
 
 const canvas = document.getElementById("screen");
@@ -99,9 +104,16 @@ async function main() {
     WebAssembly.compileStreaming(fetch("snail-web.wasm")),
   ]);
   fs.write("SnailMail.dat", archive);
+  const saves = await openSaves();
+  if (new URLSearchParams(location.search).has("reset")) await saves.clear();
+  for (const [name, bytes] of await saves.load()) fs.write(name, bytes);
 
   const wasi = createWasi(fs, {
     log: (line, fd) => (fd === 2 ? console.warn : console.log)(line),
+    onClose: (path, data) => {
+      // The extracted BASS library is a temporary file, deleted on a clean quit.
+      if (!/(^|\/)tbass\.dll$/i.test(path)) saves.save(path, data.slice());
+    },
   });
   const instance = await WebAssembly.instantiate(module, {
     wasi_snapshot_preview1: wasi.imports,
@@ -120,6 +132,11 @@ async function main() {
     throw new Error("startup failed (see the console)");
   }
   connectInput(exports, audio);
+  const save = () => exports.snail_save();
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") save();
+  });
+  window.addEventListener("pagehide", save);
   window.snail = { exports, renderer, audio, fs }; // for the console
   canvas.focus();
   show(audio.unlocked ? "" : "Click or press a key for sound.");
@@ -137,6 +154,7 @@ async function main() {
       return;
     }
     if (quit) {
+      save();
       show(`The game quit (code ${quit}). Reload to play again.`);
       return;
     }

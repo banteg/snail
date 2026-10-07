@@ -22,3 +22,4 @@ of every guard still matches.
 | `port/shell/main.cpp` startup | `timeGetTime() % 1000` random draws before construction | `--warmup N`, default 0 | the draw count was wall-clock noise; a fixed count makes runs repeat |
 | `port/shell/bass_emu.cpp` | BASS 2.0 (`tBass.dll`) | emulated BASS subset | the game stops a looped sound by passing its channel to `BASS_SampleStop`, and asks `BASS_ChannelIsActive` about a sample (voice overlap checks). The emulation relates channels to their sample for both; the shipped `BASS.DLL` is packed, so this reading of BASS 2.0 is unverified |
 | `port/shell/game_session.cpp` audio start | `initialize_audio_subsystem` registers a hidden `BASS` window first | no window | BASS used the window only as its owner |
+| `port/web/snail.js`, `save_game` | score tables saved only on a clean quit | also saved whenever the page is hidden or closed | a browser tab never quits; the saved files are the ones the quit path writes |

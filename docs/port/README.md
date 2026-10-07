@@ -201,7 +201,10 @@ scan codes), pointer, buttons and wheel, and calls the game once per animation
 frame with the elapsed time. The loop keeps the original's timing: whole 1/60 s
 steps from an accumulator capped at 25 steps, then one rendered frame. There is
 sound once the page has had a click or key press (browsers require one).
-Scores and settings last only for the page's lifetime.
+Files the game writes (`SnailMail.cfg` with progress and options, the
+`ScoreA/B/C.dat` tables) persist in the browser's IndexedDB. The game wrote
+its score tables only when quitting, so the page runs those saves when it is
+hidden or closed. `?reset` clears them.
 `?warmup=N` fixes the random warmup for a repeatable start.
 
 ## Building the headless port
@@ -303,7 +306,7 @@ trap; sanitizers and the stack protector off, as the original had neither.
 4. **Shell.** Running: the recovered renderer draws through the emulated
    Direct3D 8 device and the recovered audio code through an emulated BASS
    2.0, and the browser build plays from the intro through the menus into
-   gameplay with keyboard, mouse and sound. Left: persistent saves, an SDL3
+   gameplay with keyboard, mouse and sound, and saves persist. Left: an SDL3
    window with SDL3 GPU and miniaudio presenters, and screenshot comparisons
    against the original.
 5. **64-bit and platforms.** Turn absolute size asserts into field-offset

@@ -41,6 +41,13 @@ WEB_EXPORT("snail_frame") int snail_frame(float elapsed_seconds)
     return 0;
 }
 
+// The page calls this when it is hidden or closed: the game only saved its
+// score tables on quitting, which a browser tab never does.
+WEB_EXPORT("snail_save") void snail_save()
+{
+    save_game();
+}
+
 WEB_EXPORT("snail_key") void snail_key(int scan_code, int down)
 {
     input_set_key(scan_code, down != 0);

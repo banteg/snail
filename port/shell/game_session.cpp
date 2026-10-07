@@ -34,6 +34,7 @@ int construct_game_runtime();                            // @ 0x407b60
 void set_tracked_allocation_mark();                      // @ 0x431cb0
 void load_registered_texture_refs(int debug_fallback);   // @ 0x412a00
 void render_game_frame_scene();                          // @ 0x4134c0
+char* save_config_file(char* file_name, void* bytes, int byte_count);  // @ 0x42f540
 int present_backbuffer();                                // @ 0x413520
 
 bool start_game(int warmup)
@@ -102,6 +103,13 @@ void render_frame()
     render_game_frame_scene();
     if (g_game->render_skip_count == 0)
         present_backbuffer();
+}
+
+void save_game()
+{
+    for (unsigned char mask = 1; mask <= 16; mask <<= 1)
+        g_game->subgame.sub_high_score.MiniSave(mask);
+    save_config_file((char*)"SnailMail.cfg", &g_runtime_config, sizeof(g_runtime_config));
 }
 
 void end_game()

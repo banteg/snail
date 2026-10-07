@@ -17,6 +17,11 @@ int run_fixed_step(bool renders);
 // Render the scene and present it, as the loop does when a frame is due.
 void render_frame();
 
+// The saves of the loop's shutdown: the high-score tables (ScoreA/B/C.dat)
+// and SnailMail.cfg. Progress and options save as they change; scores only
+// here, so a host that never quits runs this when the player leaves.
+void save_game();
+
 // The audio part of the loop's shutdown (stop_audio_backend,
 // shutdown_bass_audio_window), which also deletes the extracted tBass.dll.
 void end_game();
