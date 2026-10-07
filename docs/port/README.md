@@ -1,9 +1,11 @@
 # Modern port plan
 
-Status (2026-10-06): stage 2 done, stage 4 running. The recovered source
+Status (2026-10-08): stage 2 done, stage 4 running. The recovered source
 lives in [`decomp/`](../../decomp/README.md). `port/` links it into a headless
-wasm32 program that plays the tutorial from a key script, and into a browser
-build you can play: see [Playing in the browser](#playing-in-the-browser).
+wasm32 program that plays the tutorial from a key script, and into a build you
+can play in the browser or natively on macOS: see
+[Playing in the browser](#playing-in-the-browser) and
+[Playing natively](#playing-natively-macos).
 This page records the decisions and the order of work; update it as stages
 land.
 
@@ -46,7 +48,7 @@ What makes this practical:
 | Build | `zig build` (zig cc) | one host cross-compiles Windows, Linux and macOS. Explicit targets, including a 32-bit MSVC-layout target for bring-up |
 | Platform | SDL3 | window, HiDPI, event pump, gamepads, timers and paths. We own the main loop, as `game_startup_and_main_loop` did |
 | Renderer | the recovered `G0`/`GDX` renderer on an emulated Direct3D 8 subset; presenters on WebGL2 (now) and the SDL3 GPU API | the game's own render code runs unchanged. SDL3 GPU gives one native path to Metal, D3D12 and Vulkan, with explicit pipeline state and no hidden GL state to leak |
-| Audio | the recovered `cRBass` on an emulated BASS 2.0 subset; presenters on Web Audio (now) and miniaudio | the game's own sample, music and voice code runs unchanged. Sounds stay the archive's OGG files, decoded by the presenter |
+| Audio | the recovered `cRBass` on an emulated BASS 2.0 subset; presenters on Web Audio and SDL3_mixer | the game's own sample, music and voice code runs unchanged. Sounds stay the archive's OGG files, decoded by the presenter. SDL3_mixer replaced the planned miniaudio: it already has tagged buses, per-track gain, pan, rate and loops |
 | Assets | the original `SnailMail.dat`, read in place | the game's own loaders (X2 meshes, animations, objects, segments, levels) are recovered code. The shell adds only TGA and OGG decoding |
 
 **Why not raylib.** The game brings its own mesh loader, fonts, sprites, UI and
@@ -132,6 +134,7 @@ port/
     main.cpp, web_main.cpp  the headless and browser entry points
     bass_emu.cpp         the emulated BASS 2.0 library the recovered audio code binds
   web/                   the browser page: WASI, WebGL2 and Web Audio presenters, input
+  native/                the native host for snail-web.wasm via wasm2c: WASI, SDL3 GPU, SDL3_mixer
   scripts/               input scripts for headless runs
   generated/             local, never committed (holds the original's data bytes)
     image_data.s         the exe's .rdata and .data, with names and relocations
@@ -207,6 +210,25 @@ its score tables only when quitting, so the page runs those saves when it is
 hidden or closed. `?reset` clears them, and `?mute` silences the game until
 `?mute=0` (the page remembers either).
 `?warmup=N` fixes the random warmup for a repeatable start.
+
+## Playing natively (macOS)
+
+```
+brew install sdl3 sdl3_mixer wabt
+cd port && zig build native -Doptimize=ReleaseFast
+zig-out/bin/snail-native [--mute] <directory with SnailMail.dat>
+```
+
+Native builds can't compile the game for 64-bit yet (stage 5), so the native
+host runs the same 32-bit `snail-web.wasm`: wasm2c translates it to C, and
+`port/native/` implements its imports in an SDL3 window. WASI maps to the real
+file system (the data directory is the root, paths match case-insensitively),
+so saves land beside `SnailMail.dat` as they did on Windows. The presenters
+are SDL3 GPU (Metal shaders for now; other platforms need SPIR-V or DXIL
+versions of the same two shaders) and SDL3_mixer. The window scales the
+640x480 frame with letterboxing. `--frames N --screenshot FILE` runs N fixed
+frames in a hidden window and saves the last one; runs with the same
+`--warmup` give byte-identical frames.
 
 ## Building the headless port
 
@@ -307,9 +329,10 @@ trap; sanitizers and the stack protector off, as the original had neither.
 4. **Shell.** Running: the recovered renderer draws through the emulated
    Direct3D 8 device and the recovered audio code through an emulated BASS
    2.0, and the browser build plays from the intro through the menus into
-   gameplay with keyboard, mouse and sound, and saves persist. Left: an SDL3
-   window with SDL3 GPU and miniaudio presenters, and screenshot comparisons
-   against the original.
+   gameplay with keyboard, mouse and sound, and saves persist. The native host
+   runs the same build in an SDL3 window on macOS (SDL3 GPU, SDL3_mixer).
+   Left: SPIR-V and DXIL shaders for Linux and Windows, and screenshot
+   comparisons against the original.
 5. **64-bit and platforms.** Turn absolute size asserts into field-offset
    checks and remove the byte-stride casts that assume 4-byte pointers (about a
    dozen scratches, mostly path builders). Then ship macOS arm64, Windows x64

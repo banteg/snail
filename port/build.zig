@@ -3,13 +3,15 @@
 //! Two wasm32-wasi programs share the recovered source and the shell:
 //! `snail` runs headless from the command line (input scripts, no output),
 //! `snail-web` is a WASI reactor that port/web/ drives in a browser with
-//! WebGL2. Before building, generate the local inputs from the original
-//! executable:
+//! WebGL2. The `native` step translates snail-web.wasm to C with wasm2c (from
+//! wabt) and links it with an SDL3 host (port/native/) for the build machine.
+//! Before building, generate the local inputs from the original executable:
 //!
 //!     uv run snail port link && uv run snail port data
 //!     zig build
 //!     node shell/run.mjs zig-out/bin/snail.wasm --keys scripts/tutorial.keys
 //!     uv run snail port serve
+//!     zig build native -Doptimize=ReleaseFast && zig-out/bin/snail-native <data dir>
 const std = @import("std");
 
 const shell_flags = [_][]const u8{
@@ -56,6 +58,42 @@ pub fn build(b: *std.Build) void {
     web.entry = .disabled;
     web.wasi_exec_model = .reactor;
     b.installArtifact(web);
+
+    const native = nativeHost(b, web.getEmittedBin(), optimize);
+    const native_step = b.step("native", "Build snail-native: snail-web.wasm through wasm2c, in an SDL3 window");
+    native_step.dependOn(&b.addInstallArtifact(native, .{}).step);
+}
+
+/// The native host: wasm2c's C for the browser build, its runtime (installed
+/// beside wasm2c as share/wabt/wasm2c), and port/native/ on SDL3 and SDL3_mixer.
+fn nativeHost(b: *std.Build, wasm: std.Build.LazyPath, optimize: std.builtin.OptimizeMode) *std.Build.Step.Compile {
+    const wasm2c = b.findProgramLazy(.{ .names = &.{"wasm2c"} });
+    const prefix = wasm2c.dirname().dirname();
+    const translate = std.Build.Step.Run.create(b, "wasm2c");
+    translate.addFileArg(wasm2c);
+    translate.addFileArg(wasm);
+    translate.addArgs(&.{ "--module-name", "game", "-o" });
+    const game_c = translate.addOutputFileArg("game.c");
+
+    const module = b.createModule(.{
+        .target = b.graph.host,
+        .optimize = optimize,
+        .link_libc = true,
+        .link_libcpp = true,
+    });
+    module.addIncludePath(game_c.dirname());
+    module.addIncludePath(prefix.path(b, "include"));
+    module.addIncludePath(prefix.path(b, "share/wabt/wasm2c"));
+    module.addCSourceFile(.{ .file = game_c, .flags = &.{ "-Wno-everything", "-fno-strict-aliasing" } });
+    module.addCSourceFile(.{ .file = prefix.path(b, "share/wabt/wasm2c/wasm-rt-impl.c"), .flags = &.{"-Wno-everything"} });
+    module.addCSourceFile(.{ .file = prefix.path(b, "share/wabt/wasm2c/wasm-rt-mem-impl.c"), .flags = &.{"-Wno-everything"} });
+    module.addCSourceFiles(.{
+        .files = &.{ "native/main.cpp", "native/wasi.cpp", "native/gpu.cpp", "native/mixer.cpp" },
+        .flags = &.{"-std=c++17"},
+    });
+    // SDL3_mixer's pkg-config entry brings SDL3 with it; naming both links SDL3 twice.
+    module.linkSystemLibrary("sdl3-mixer", .{});
+    return b.addExecutable(.{ .name = "snail-native", .root_module = module });
 }
 
 fn program(
