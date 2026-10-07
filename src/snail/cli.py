@@ -648,6 +648,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     port_oracle_parser.add_argument("replays", nargs="*", help="Bank letter and row, like A1 or B3 (default: all).")
     port_oracle_parser.add_argument("-j", "--jobs", type=int, default=8)
+    port_lockstep_parser = port_subparsers.add_parser(
+        "lockstep-script",
+        help="Check (default) or write the generated layout in tools/frida/snailmail-lockstep.js.",
+    )
+    port_lockstep_parser.add_argument("--write", action="store_true")
     port_symbolize_parser = port_subparsers.add_parser(
         "symbolize",
         help="Annotate a wasm stack trace (stdin) or module offsets with source lines from DWARF.",
@@ -1715,6 +1720,17 @@ def main(argv: Sequence[str] | None = None) -> int:
             results = run_oracle(REPO_ROOT, args.replays or None, jobs=args.jobs)
             print(report_text(results))
             return 0 if all(result.matches for result in results) else 1
+        if args.port_command == "lockstep-script":
+            from .port_lockstep import SCRIPT, script_text
+
+            expected = script_text(REPO_ROOT)
+            if args.write:
+                (REPO_ROOT / SCRIPT).write_text(expected)
+            if (REPO_ROOT / SCRIPT).read_text() != expected:
+                print(f"error: {SCRIPT} is stale; run snail port lockstep-script --write", file=sys.stderr)
+                return 1
+            print(f"{SCRIPT}: layout is current")
+            return 0
         if args.port_command == "serve":
             from .port_serve import serve
 

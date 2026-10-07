@@ -5,6 +5,8 @@ from the original Windows game when static analysis is insufficient.
 
 The broad runtime script lives at [tools/frida/snailmail-runtime-trace.js](../../tools/frida/snailmail-runtime-trace.js).
 
+To record a session for the port to replay tick for tick, use the lockstep capture: [frida-lockstep-capture.md](frida-lockstep-capture.md).
+
 For path-family questions, use the focused collector at
 [tools/frida/snailmail-path-oracle.js](../../tools/frida/snailmail-path-oracle.js).
 

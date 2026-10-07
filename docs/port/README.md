@@ -197,7 +197,10 @@ Which functions the port compiles:
   within 0.0007 of the original. Next: more of the state per tick (lateral
   x, speed, score) and per-tick captures from the original through Frida
   (`tools/frida/`, `docs/re/frida-runtime-trace.md`) for what replays don't
-  record.
+  record. The lockstep capture
+  ([docs/re/frida-lockstep-capture.md](../re/frida-lockstep-capture.md))
+  records whole sessions of the original for that: the input state before
+  every tick, the render cadence, a snapshot after every tick, and frames.
 - **Render level:** `snail-native --frames N --screenshot` captures any frame
   deterministically; `snail screenshots compare` compares against original
   captures.
