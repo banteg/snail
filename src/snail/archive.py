@@ -69,15 +69,18 @@ def xor_mask(index: int) -> int:
     return ((index * index) & 0xFF) ^ ((index * 3) & 0xFF)
 
 
-def xor_decode_in_place(buffer: bytearray, start_offset: int = 0) -> None:
-    for offset, value in enumerate(buffer, start=start_offset):
-        buffer[offset - start_offset] = value ^ xor_mask(offset)
+XOR_KEY = bytes(xor_mask(index) for index in range(256))  # the mask repeats every 256 bytes
 
 
 def decode_bytes(data: bytes, start_offset: int = 0) -> bytes:
-    buffer = bytearray(data)
-    xor_decode_in_place(buffer, start_offset=start_offset)
-    return bytes(buffer)
+    """XOR with the mask at each file offset; the XOR is its own inverse, so this also encodes."""
+    phase = start_offset % len(XOR_KEY)
+    key = (XOR_KEY[phase:] + XOR_KEY[:phase]) * (len(data) // len(XOR_KEY) + 1)
+    return (int.from_bytes(data, "little") ^ int.from_bytes(key[: len(data)], "little")).to_bytes(len(data), "little")
+
+
+def xor_decode_in_place(buffer: bytearray, start_offset: int = 0) -> None:
+    buffer[:] = decode_bytes(buffer, start_offset)
 
 
 def _read_c_string(blob: bytes, offset: int) -> str:

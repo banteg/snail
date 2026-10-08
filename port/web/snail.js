@@ -1,5 +1,5 @@
-// Runs snail-web.wasm in the page: loads SnailMail.dat into the in-memory file
-// system, forwards keyboard and mouse input in DirectInput terms, and calls
+// Runs snail-web.wasm in the page: loads SnailMail.dat (served packed, see
+// fetchArchive) into the in-memory file system, forwards keyboard and mouse input in DirectInput terms, and calls
 // snail_frame once per animation frame with the elapsed time.
 //
 // Files the game writes are kept in IndexedDB (storage.js). The game saved its
@@ -41,10 +41,17 @@ const SCAN_CODES = {
   ArrowRight: 0xcd, End: 0xcf, ArrowDown: 0xd0, PageDown: 0xd1, Insert: 0xd2, Delete: 0xd3,
 };
 
-async function fetchBytes(url) {
+// SnailMail.dat.gz is the archive without its XOR obfuscation, gzipped
+// (src/snail/port_serve.py). The game's loader expects the original bytes, so
+// the mask goes back on: it follows the file offset and repeats every 256 bytes.
+const XOR_KEY = Uint8Array.from({ length: 256 }, (_, i) => ((i * i) & 0xff) ^ ((i * 3) & 0xff));
+
+async function fetchArchive(url) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`${url}: ${response.status} ${response.statusText}`);
-  return new Uint8Array(await response.arrayBuffer());
+  const data = new Uint8Array(await new Response(response.body.pipeThrough(new DecompressionStream("gzip"))).arrayBuffer());
+  for (let i = 0; i < data.length; i++) data[i] ^= XOR_KEY[i & 0xff];
+  return data;
 }
 
 function connectInput(exports, audio) {
@@ -111,7 +118,7 @@ async function main() {
   const fs = new MemoryFileSystem();
   show("Loading SnailMail.dat…");
   const [archive, module] = await Promise.all([
-    fetchBytes("SnailMail.dat"),
+    fetchArchive("SnailMail.dat.gz"),
     WebAssembly.compileStreaming(fetch("snail-web.wasm")),
   ]);
   fs.write("SnailMail.dat", archive);

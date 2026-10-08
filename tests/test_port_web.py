@@ -1,5 +1,6 @@
 """The browser build's server and the presenter's view of the render state."""
 
+import gzip
 import re
 import threading
 import urllib.error
@@ -7,6 +8,7 @@ import urllib.request
 from functools import partial
 from http.server import ThreadingHTTPServer
 
+from snail.archive import decode_bytes
 from snail.port_serve import Handler, routes
 from snail.symbols import REPO_ROOT
 
@@ -20,7 +22,7 @@ def test_routes_serve_page_build_and_archive(tmp_path):
     wasm.parent.mkdir(parents=True)
     wasm.write_bytes(b"\0asm")
     archive = tmp_path / "SnailMail.dat"
-    archive.write_bytes(b"dat")
+    archive.write_bytes(bytes(range(256)) * 3)
 
     table = routes(tmp_path, archive)
     server = ThreadingHTTPServer(("127.0.0.1", 0), partial(Handler, table=table))
@@ -34,8 +36,9 @@ def test_routes_serve_page_build_and_archive(tmp_path):
         with urllib.request.urlopen(f"{base}/snail-web.wasm") as response:
             assert response.headers["Content-Type"] == "application/wasm"
             assert response.read() == b"\0asm"
-        with urllib.request.urlopen(f"{base}/SnailMail.dat") as response:
-            assert response.read() == b"dat"
+        with urllib.request.urlopen(f"{base}/SnailMail.dat.gz") as response:
+            assert response.headers["Content-Type"] == "application/gzip"
+            assert decode_bytes(gzip.decompress(response.read())) == archive.read_bytes()
         (web / "added.js").write_text("export {};")  # files added after start are served
         with urllib.request.urlopen(f"{base}/added.js") as response:
             assert response.read() == b"export {};"
