@@ -31,6 +31,7 @@ FUNCTIONS_USED = {
     "game_ai": "cRGame_AI",
     "render_scene": "render_game_frame_scene",
     "present": "present_backbuffer",
+    "template_bank": "initialize_runtime_pools_and_path_template_bank",
 }
 
 # Globals read, by reference-manifest name, with the bytes to read.

@@ -11,7 +11,9 @@
 // Output, one directory per session under OUTPUT_ROOT:
 //   tape.ndjson   session, startup (warmup count, RNG, config), one `tick` row
 //                 per cRGame::AI call (inputs at entry, state at exit),
-//                 `render` rows between ticks, `frame` rows for captures
+//                 `render` rows between ticks, `frame` rows for captures,
+//                 `fpu` rows with the x87 control word (at startup, the path
+//                 template build, and whenever it changes between ticks)
 //   frames/       BMP captures of the game window every CAPTURE_EVERY presents
 //   start/        SnailMail.cfg and Score?.dat as they were at launch
 
@@ -20,13 +22,13 @@ const CAPTURE_EVERY = 120; // presents between frame captures; 0 turns captures 
 const FLUSH_EVERY = 30; // rows between flushes
 const TARGET_MODULE_NAMES = ['SnailMail_unwrapped.exe', 'SnailMail.RWG'];
 const PREFERRED_IMAGE_BASE = 0x400000;
-const SCRIPT_VERSION = 1;
+const SCRIPT_VERSION = 2;
 
 // Addresses and field offsets, generated from the symbol manifests and the
 // recovered headers: `uv run snail port lockstep-script --write`.
 // @layout-begin (generated; do not edit)
 const LAYOUT = {
-  "functions": {"main_loop": "0x406dc0", "random_float": "0x44dc90", "construct_game_runtime": "0x407b60", "game_ai": "0x40a2a0", "render_scene": "0x4134c0", "present": "0x413520"},
+  "functions": {"main_loop": "0x406dc0", "random_float": "0x44dc90", "construct_game_runtime": "0x407b60", "game_ai": "0x40a2a0", "render_scene": "0x4134c0", "present": "0x413520", "template_bank": "0x408060"},
   "main_loop_end": "0x4072f0",
   "globals": {"game": ["0x4df904", 4], "keyboard_current": ["0x777c4c", 256], "keyboard_previous": ["0x777b4c", 256], "controller_slot0": ["0x50333c", 56], "controller_slot1": ["0x503374", 56], "mouse_live_x": ["0x777d58", 4], "mouse_live_y": ["0x777d60", 4], "left_button_state": ["0x4b7234", 1], "left_button_latch": ["0x4b7764", 1], "right_button_state": ["0x4b7640", 1], "right_button_latch": ["0x4b7230", 1], "mouse_wheel_delta": ["0x4dfad0", 4], "render_queue_active": ["0x4b7236", 1], "runtime_config": ["0x4df918", 196], "math_random_index": ["0x77ff3c", 4], "d3d_device": ["0x502fec", 4], "main_window": ["0x4dfaf0", 4], "crt_rand_seed": ["0x4b1f40", 4]},
   "snapshot": {"frontend_state": ["0x1b8", "i32"], "saved_frontend_state": ["0x1bc", "i32"], "fade_state": ["0x24", "i32"], "frame_counter": ["0x51c", "i32"], "fixed_update_count": ["0x3c", "i32"], "fixed_update_accumulator": ["0x518", "f32"], "subgame_state": ["0x74654", "i32"], "level_mode": ["0x74658", "i32"], "level_mode_arg": ["0x7465c", "i32"], "subgame_rate": ["0x74650", "f32"], "replay_cursor": ["0x1066bf4", "i32"], "x": ["0x42fde4", "f32"], "y": ["0x42fde8", "f32"], "z": ["0x42fdec", "f32"], "vx": ["0x43018c", "f32"], "vy": ["0x430190", "f32"], "vz": ["0x430194", "f32"], "score": ["0x430060", "i32"], "lives": ["0x430180", "i32"], "life_stock": ["0x4340bc", "i32"], "shooting_tier": ["0x430084", "i32"], "track_z_offset": ["0x4324b8", "f32"], "track_z_anchor": ["0x4324bc", "f32"], "right_x": ["0x42fdb4", "f32"], "right_y": ["0x42fdb8", "f32"], "right_z": ["0x42fdbc", "f32"], "up_x": ["0x42fdc4", "f32"], "up_y": ["0x42fdc8", "f32"], "up_z": ["0x42fdcc", "f32"], "forward_x": ["0x42fdd4", "f32"], "forward_y": ["0x42fdd8", "f32"], "forward_z": ["0x42fddc", "f32"], "follow_active": ["0x430100", "u8"], "follow_sample": ["0x43010c", "i32"], "follow_progress": ["0x430110", "f32"], "follow_vertical": ["0x430114", "f32"], "follow_up_x": ["0x430120", "f32"], "follow_up_y": ["0x430124", "f32"], "follow_up_z": ["0x430128", "f32"]},
@@ -41,6 +43,31 @@ let ticks = 0;
 let presents = 0;
 let warmup = 0;
 let constructed = false;
+let lastControlWord = null;
+
+// The x87 control word of the calling thread (precision and rounding control),
+// which decides how the original rounds its float arithmetic.
+let readControlWord = null;
+try {
+  const fpu = new CModule(`
+    unsigned short read_fpu_control_word(void) {
+      unsigned short cw;
+      __asm__ volatile ("fnstcw %0" : "=m" (cw));
+      return cw;
+    }
+  `);
+  readControlWord = new NativeFunction(fpu.read_fpu_control_word, 'uint16', []);
+} catch (error) {
+  console.error('[snailmail-lockstep] cannot read the FPU control word: ' + error);
+}
+
+function recordControlWord(where) {
+  if (readControlWord === null) return;
+  const cw = readControlWord();
+  if (cw === lastControlWord && where === 'tick') return;
+  lastControlWord = cw;
+  write({ t: 'fpu', where, after: ticks, cw: '0x' + cw.toString(16) });
+}
 
 function va(address) {
   return image.base.add(ptr(address).sub(PREFERRED_IMAGE_BASE));
@@ -275,11 +302,18 @@ function start() {
         t: 'startup', warmup, crt_rand_seed: seed, math_random_index: index,
         config: hexBytes(globalAt('runtime_config'), LAYOUT.globals.runtime_config[1]),
       });
+      recordControlWord('startup');
       tape.flush();
+    },
+  });
+  hook('template_bank', {
+    onEnter() {
+      recordControlWord('template_bank');
     },
   });
   hook('game_ai', {
     onEnter() {
+      recordControlWord('tick');
       this.game = this.context.ecx;
       this.inputs = inputs();
     },
