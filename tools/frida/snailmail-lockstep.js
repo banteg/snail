@@ -22,7 +22,7 @@ const CAPTURE_EVERY = 120; // presents between frame captures; 0 turns captures 
 const FLUSH_EVERY = 30; // rows between flushes
 const TARGET_MODULE_NAMES = ['SnailMail_unwrapped.exe', 'SnailMail.RWG'];
 const PREFERRED_IMAGE_BASE = 0x400000;
-const SCRIPT_VERSION = 3;
+const SCRIPT_VERSION = 4;
 
 // Addresses and field offsets, generated from the symbol manifests and the
 // recovered headers: `uv run snail port lockstep-script --write`.
@@ -79,6 +79,120 @@ function recordControlWord(where) {
   if (cw === lastControlWord && where === 'tick') return;
   lastControlWord = cw;
   write({ t: 'fpu', where, after: ticks, cw: '0x' + cw.toString(16) });
+}
+
+function va(address) {
+  return image.base.add(ptr(address).sub(PREFERRED_IMAGE_BASE));
+}
+
+function globalAt(name) {
+  return va(LAYOUT.globals[name][0]);
+}
+
+function exportOf(moduleName, name) {
+  if (typeof Module.getExportByName === 'function') {
+    return Module.getExportByName(moduleName, name); // Frida 16
+  }
+  return Process.getModuleByName(moduleName).getExportByName(name); // Frida 17
+}
+
+const kernel32 = {};
+const user32 = {};
+
+function bindWin32() {
+  kernel32.CreateDirectoryW = new NativeFunction(exportOf('kernel32.dll', 'CreateDirectoryW'), 'int', ['pointer', 'pointer'], 'stdcall');
+  user32.GetClientRect = new NativeFunction(exportOf('user32.dll', 'GetClientRect'), 'int', ['pointer', 'pointer'], 'stdcall');
+  user32.ClientToScreen = new NativeFunction(exportOf('user32.dll', 'ClientToScreen'), 'int', ['pointer', 'pointer'], 'stdcall');
+}
+
+function makeDirectory(path) {
+  // Creates each missing level; existing directories are fine.
+  let current = '';
+  for (const part of path.split('\\')) {
+    current = current ? current + '\\' + part : part;
+    if (/^[A-Za-z]:$/.test(current)) continue;
+    kernel32.CreateDirectoryW(Memory.allocUtf16String(current), NULL);
+  }
+}
+
+function timestamp() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+}
+
+function write(row) {
+  tape.write(JSON.stringify(row) + '\n');
+  if (++rows % FLUSH_EVERY === 0) tape.flush();
+}
+
+function hexBytes(address, size) {
+  const bytes = new Uint8Array(address.readByteArray(size));
+  let out = '';
+  for (const b of bytes) out += (b < 16 ? '0' : '') + b.toString(16);
+  return out;
+}
+
+function pressedKeys(address) {
+  const bytes = new Uint8Array(address.readByteArray(256));
+  const keys = [];
+  for (let i = 0; i < 256; ++i) if (bytes[i]) keys.push(i);
+  return keys;
+}
+
+function readField(base, offset, kind) {
+  const at = base.add(ptr(offset));
+  switch (kind) {
+    case 'f32': return at.readFloat();
+    case 'u8': return at.readU8();
+    default: return at.readS32();
+  }
+}
+
+function rng() {
+  return [globalAt('crt_rand_seed').readU32(), globalAt('math_random_index').readS32()];
+}
+
+// The input state cRGame::AI reads, as the main loop left it after polling
+// the keyboard, joystick and mouse.
+function inputs() {
+  return {
+    rq: globalAt('render_queue_active').readU8(),
+    k: pressedKeys(globalAt('keyboard_current')),
+    kp: pressedKeys(globalAt('keyboard_previous')),
+    s0: hexBytes(globalAt('controller_slot0'), LAYOUT.globals.controller_slot0[1]),
+    s1: hexBytes(globalAt('controller_slot1'), LAYOUT.globals.controller_slot1[1]),
+    mx: globalAt('mouse_live_x').readFloat(),
+    my: globalAt('mouse_live_y').readFloat(),
+    lb: [globalAt('left_button_state').readU8(), globalAt('left_button_latch').readU8()],
+    rb: [globalAt('right_button_state').readU8(), globalAt('right_button_latch').readU8()],
+    wh: globalAt('mouse_wheel_delta').readS32(),
+  };
+}
+
+function snapshot(game) {
+  const out = {};
+  for (const [name, [offset, kind]] of Object.entries(LAYOUT.snapshot)) out[name] = readField(game, offset, kind);
+  return out;
+}
+
+function copyStartFiles() {
+  // The game reads these at startup; the port needs the same ones.
+  const gameDir = image.path.replace(/\\[^\\]*$/, '');
+  const copied = [];
+  makeDirectory(sessionDir + '\\start');
+  for (const name of ['SnailMail.cfg', 'ScoreA.dat', 'ScoreB.dat', 'ScoreC.dat']) {
+    try {
+      const bytes = File.readAllBytes(gameDir + '\\' + name);
+      const out = new File(sessionDir + '\\start\\' + name, 'wb');
+      out.write(bytes);
+      out.close();
+      copied.push(name);
+    } catch (_) {
+      // missing (a first run has no cfg or scores) or an older Frida without File.readAllBytes
+    }
+  }
+  return { game_dir: gameDir, copied };
 }
 
 // --- frame captures ------------------------------------------------------------
