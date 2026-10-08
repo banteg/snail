@@ -9,21 +9,27 @@
 // - everything the row scan in cRSubGame::AI links or spawns, up to
 //   active_window_min_z + 46 (player z + 38): row models, uncached cells
 //   (wall2, trampolines, path entries) and every pickup, hazard, parcel and
-//   ring. The spawns draw RAND and allocate from pools, so they stay as they
-//   are; the bodies that already exist are previewed here;
+//   ring. The bodies that already exist are linked here. Of the spawns, the
+//   ones the level fixes completely (parcels, health and jetpack pickups,
+//   slugs) are made here by the game's own Add* calls, so they appear as
+//   they will; the ones random numbers decide (garbage, salt, rings) still
+//   appear where the game spawns them;
 // - the ten landscape repeats, hidden past fog_end and wrapped three repeats
 //   ahead by update_active_landscape_entry;
 // - the star field's warp streaks (cRStarManager::UpdateStars), sprites 50
 //   units ahead of the camera that write depth: behind everything the
 //   original could show, in front of the track past 50 units.
 //
-// Each write below goes through an undo log that draw_distance_end_frame
-// replays backwards, so the game's state after a frame is the state before it.
+// Each write below, and everything the Add* calls may touch, goes through an
+// undo log that draw_distance_end_frame replays backwards, so the game's state
+// after a frame is the state before it.
 
 #include <string.h>
 
 #include "draw_distance.h"
 #include "game_root.h"
+#include "rmath_tables.h"
+#include "sprite.h"
 #include "star_manager.h"
 #include "viewport.h"
 #include "subgame_runtime.h"
@@ -40,23 +46,29 @@ const int kCacheRowSpan = 24;       // rows per SegmentCache row
 struct Saved {
     void* at;
     unsigned int size;
-    unsigned char bytes[16];
+    unsigned int offset;  // into g_saved_bytes
 };
 
 Saved g_undo[16384];
 int g_undo_count = 0;
+// Large enough for the sprite manager (540 KB) and the spawn pools.
+unsigned char g_saved_bytes[1 << 20];
+unsigned int g_saved_used = 0;
 float g_extra = 0;
+
+void save_bytes(void* at, unsigned int size)
+{
+    if (g_undo_count == (int)(sizeof(g_undo) / sizeof(g_undo[0])) || g_saved_used + size > sizeof(g_saved_bytes))
+        __builtin_trap();
+    g_undo[g_undo_count++] = {at, size, g_saved_used};
+    memcpy(g_saved_bytes + g_saved_used, at, size);
+    g_saved_used += size;
+}
 
 template <typename T>
 void save(T& value)
 {
-    static_assert(sizeof(T) <= sizeof(Saved::bytes), "undo slot too small");
-    if (g_undo_count == (int)(sizeof(g_undo) / sizeof(g_undo[0])))
-        __builtin_trap();
-    Saved& slot = g_undo[g_undo_count++];
-    slot.at = &value;
-    slot.size = sizeof(T);
-    memcpy(slot.bytes, &value, sizeof(T));
+    save_bytes(&value, sizeof(T));
 }
 
 template <typename T>
@@ -128,8 +140,6 @@ void preview_cache_rows(cRSubGame* game, float horizon)
 // RAND draws and pool slots), so they still appear at the original distance.
 void preview_scan_rows(cRSubGame* game, int end)
 {
-    if (end > game->completion_row_start + 20)
-        end = game->completion_row_start + 20;
     if (end > game->runtime_row_count)
         end = game->runtime_row_count;
     for (int row = game->runtime_row_scan_end; row < end; ++row) {
@@ -151,6 +161,63 @@ void preview_scan_rows(cRSubGame* game, int end)
                 set(sub_row.attachment_body.position, cell.position);
             } else {
                 link_after(&cell, &game->track_body_list_head);
+            }
+        }
+    }
+}
+
+// The spawns of the rows from the scan's end to `end` that the level fixes
+// completely, made by the game's own calls in the scan's order and under its
+// conditions. They allocate from the sprite manager and the pickup, slug and
+// parcel pools, link into the active list (at its front, or before the
+// player) and draw a slug's blink rate from the math table: all saved first.
+void preview_spawns(cRSubGame* game, int end)
+{
+    if (end > game->runtime_row_count)
+        end = game->runtime_row_count;
+    if (game->runtime_row_scan_end >= end)
+        return;
+    save(g_sprite_manager);
+    save(game->parcel_manager);
+    save(game->health_pickups);
+    save(game->jetpack_pickup);
+    save(game->slug_hazards);
+    save(game->next_slug_voice_trigger_z);
+    save(g_math_random_index);
+    cRSubGoldy* player = game->embedded_player();
+    BodList& active = g_game->active_bod_list;
+    auto save_links = [&] {
+        save(active.first);
+        if (active.first)
+            save(active.first->list_prev);
+        save(player->list_prev);
+        if (player->list_prev)
+            save(player->list_prev->list_next);
+    };
+    for (int row = game->runtime_row_scan_end; row < end; ++row) {
+        if (row < 0)
+            continue;
+        if ((game->runtime_rows[row].flags & SUBROW_FLAG_PARCEL_SPAWN_REQUESTED)
+            && (game->runtime_flags & SUBGAME_RUNTIME_FLAG_PARCEL_SPAWNS))
+            game->AddParcel(&game->runtime_rows[row].parcel_spawn_position, player);
+        if (row < game->first_block_row_count || row >= game->completion_row_start)
+            continue;
+        for (int lane = 0; lane < SUBGAME_TRACK_LANE_COUNT; ++lane) {
+            cRSubLoc* cell = &game->runtime_cells[row][lane];
+            if (cell->list_flags & BOD_FLAG_LINKED)
+                continue;
+            unsigned char tile = cell->tile_id;
+            if (tile == SUBLOC_TILE_HEALTH_PICKUP && (game->runtime_flags & SUBGAME_RUNTIME_FLAG_HEALTH_PICKUPS)) {
+                save_links();
+                game->AddHealth(cell, player);
+            }
+            if (tile == SUBLOC_TILE_JETPACK_PICKUP) {
+                save_links();
+                game->AddJetPack(cell, player);
+            }
+            if (tile == SUBLOC_TILE_SLUG_HAZARD && (game->runtime_flags & SUBGAME_RUNTIME_FLAG_SLUG_HAZARDS)) {
+                save_links();
+                game->AddSlug(cell, player);
             }
         }
     }
@@ -227,6 +294,7 @@ float draw_distance_scale()
 void draw_distance_begin_frame()
 {
     g_undo_count = 0;
+    g_saved_used = 0;
     g_extra = 0;
     if (g_port_draw_distance <= 1.0f)
         return;
@@ -237,7 +305,11 @@ void draw_distance_begin_frame()
     g_extra = kOriginalFarZ * (g_port_draw_distance - 1.0f);
     cRSubGoldy* player = game->embedded_player();
     preview_cache_rows(game, player->transform.position.z + 46.0f + g_extra);
-    preview_scan_rows(game, (int)player->active_window_min_z + 46 + (int)g_extra);
+    int scan_end = (int)player->active_window_min_z + 46 + (int)g_extra;
+    if (scan_end > game->completion_row_start + 20)
+        scan_end = game->completion_row_start + 20;
+    preview_scan_rows(game, scan_end);
+    preview_spawns(game, scan_end);
     preview_landscape(game, player->transform.position.z + g_game->fog_end * draw_distance_scale());
     preview_star_field(draw_distance_scale());
 }
@@ -246,7 +318,7 @@ void draw_distance_end_frame()
 {
     while (g_undo_count > 0) {
         Saved& slot = g_undo[--g_undo_count];
-        memcpy(slot.at, slot.bytes, slot.size);
+        memcpy(slot.at, g_saved_bytes + slot.offset, slot.size);
     }
 }
 

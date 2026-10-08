@@ -318,9 +318,16 @@ logic, so the oracles hold either way.
   shell links what the game would link further on, moves the far plane out to
   match and stretches the fog band by the same factor (so the track fades out
   as gradually as the original's), and undoes every write after drawing, so the
-  simulation never sees it. Pickups, hazards and parcels still appear 38 units
-  ahead, where the game spawns them: spawning draws random numbers. Both
-  oracles match with it on (`--draw-distance` in the headless program).
+  simulation never sees it. What the game spawns 38 units ahead is shown
+  further out where the level fixes it completely: parcels, health and jetpack
+  pickups and slugs are made before the frame by the game's own `Add*` calls,
+  with the sprite manager, their pools and the math table's index saved and
+  restored around them, so they wait where they will appear. Garbage, salt and
+  rings are decided by random numbers when spawned, so they still appear at
+  38 units. The warp streaks (star field sprites 50 units ahead, which write
+  depth) move out and grow by the view's factor, so they stay behind the
+  track. Both oracles run with it on (`snail port oracle --draw-distance 3`,
+  `snail port lockstep --draw-distance 3`) and match.
 
 ### Hosting
 

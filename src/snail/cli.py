@@ -655,10 +655,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
     port_oracle_parser.add_argument("replays", nargs="*", help="Bank letter and row, like A1 or B3 (default: all).")
     port_oracle_parser.add_argument("-j", "--jobs", type=int, default=8)
+    port_oracle_parser.add_argument(
+        "--draw-distance", type=float, default=1.0, help="Render with the longer view (it must not change a run)."
+    )
     port_tape_parser = port_subparsers.add_parser(
         "lockstep", help="Replay sessions the original recorded (Frida lockstep capture) and compare them per tick."
     )
     port_tape_parser.add_argument("sessions", nargs="+", type=Path, help="Session directories with tape.ndjson.")
+    port_tape_parser.add_argument(
+        "--draw-distance", type=float, default=1.0, help="Render with the longer view (it must not change a session)."
+    )
     port_lockstep_parser = port_subparsers.add_parser(
         "lockstep-script",
         help="Check (default) or write the generated layout in tools/frida/snailmail-lockstep.js.",
@@ -1728,13 +1734,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.port_command == "oracle":
             from .port_oracle import report_text, run_oracle
 
-            results = run_oracle(REPO_ROOT, args.replays or None, jobs=args.jobs)
+            results = run_oracle(REPO_ROOT, args.replays or None, jobs=args.jobs, draw_distance=args.draw_distance)
             print(report_text(results))
             return 0 if all(result.matches for result in results) else 1
         if args.port_command == "lockstep":
             from .port_tape import report_text, run_session
 
-            results = [run_session(REPO_ROOT, session) for session in args.sessions]
+            results = [run_session(REPO_ROOT, session, args.draw_distance) for session in args.sessions]
             print(report_text(results))
             return 0 if all(result.matches for result in results) else 1
         if args.port_command == "lockstep-script":
