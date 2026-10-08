@@ -2,6 +2,11 @@
 // fetchArchive) into the in-memory file system, forwards keyboard and mouse input in DirectInput terms, and calls
 // snail_frame once per animation frame with the elapsed time.
 //
+// A splash covers the screen while the page loads and starts the game, then
+// waits for a click or key press: browsers allow sound only after a gesture,
+// and taking that gesture here keeps it from reaching the game (where it would
+// skip the intro).
+//
 // Files the game writes are kept in IndexedDB (storage.js). The game saved its
 // score tables only when quitting, so the page saves when it is hidden.
 //
@@ -17,6 +22,9 @@ import { createWasi, ExitStatus, MemoryFileSystem } from "./wasi.js";
 
 const canvas = document.getElementById("screen");
 const status = document.getElementById("status");
+const splash = document.getElementById("splash");
+const detail = document.getElementById("detail");
+const bar = document.getElementById("bar");
 
 function show(text, error = false) {
   status.textContent = text;
@@ -46,23 +54,42 @@ const SCAN_CODES = {
 // the mask goes back on: it follows the file offset and repeats every 256 bytes.
 const XOR_KEY = Uint8Array.from({ length: 256 }, (_, i) => ((i * i) & 0xff) ^ ((i * 3) & 0xff));
 
-async function fetchArchive(url) {
+async function fetchArchive(url, onProgress) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`${url}: ${response.status} ${response.statusText}`);
-  const data = new Uint8Array(await new Response(response.body.pipeThrough(new DecompressionStream("gzip"))).arrayBuffer());
+  const total = Number(response.headers.get("Content-Length"));
+  let received = 0;
+  const counter = new TransformStream({
+    transform(chunk, controller) {
+      received += chunk.length;
+      onProgress(received, total);
+      controller.enqueue(chunk);
+    },
+  });
+  const unpacked = response.body.pipeThrough(counter).pipeThrough(new DecompressionStream("gzip"));
+  const data = new Uint8Array(await new Response(unpacked).arrayBuffer());
   for (let i = 0; i < data.length; i++) data[i] ^= XOR_KEY[i & 0xff];
   return data;
 }
 
-function connectInput(exports, audio) {
-  // Browsers allow sound only after a gesture.
-  const unlock = () => {
-    audio.unlock();
-    if (status.textContent.startsWith("Click")) show("");
-  };
-  window.addEventListener("pointerdown", unlock);
-  window.addEventListener("keydown", unlock);
+// Resolves on the first click on the splash or key press, which the game never sees.
+function waitForGesture() {
+  splash.classList.add("ready");
+  detail.textContent = "or press any key";
+  document.getElementById("play").focus();
+  return new Promise((resolve) => {
+    const start = (event) => {
+      event.preventDefault();
+      splash.removeEventListener("pointerdown", start);
+      window.removeEventListener("keydown", start);
+      resolve();
+    };
+    splash.addEventListener("pointerdown", start);
+    window.addEventListener("keydown", start);
+  });
+}
 
+function connectInput(exports) {
   const pointer = (event) => {
     const box = canvas.getBoundingClientRect();
     const x = Math.floor(((event.clientX - box.left) / box.width) * 640);
@@ -116,9 +143,12 @@ async function main() {
   } catch {}
   const audio = new AudioPresenter({ muted });
   const fs = new MemoryFileSystem();
-  show("Loading SnailMail.dat…");
+  const megabytes = (bytes) => (bytes / 1e6).toFixed(1);
   const [archive, module] = await Promise.all([
-    fetchArchive("SnailMail.dat.gz"),
+    fetchArchive("SnailMail.dat.gz", (received, total) => {
+      bar.style.width = `${(100 * received) / total}%`;
+      detail.textContent = `Loading ${megabytes(received)} / ${megabytes(total)} MB`;
+    }),
     WebAssembly.compileStreaming(fetch("snail-web.wasm")),
   ]);
   fs.write("SnailMail.dat", archive);
@@ -142,14 +172,17 @@ async function main() {
   renderer.bind(exports.memory);
   audio.bind(exports.memory);
 
-  show("Starting…");
-  await new Promise((resolve) => setTimeout(resolve)); // let the status paint
+  detail.textContent = "Starting…";
+  await new Promise((resolve) => setTimeout(resolve)); // let the splash paint
   exports._initialize();
   const warmup = new URLSearchParams(location.search).get("warmup");
   if (!exports.snail_start(warmup === null ? Date.now() % 1000 : Number(warmup))) {
     throw new Error("startup failed (see the console)");
   }
-  connectInput(exports, audio);
+  await waitForGesture();
+  audio.unlock();
+  splash.classList.add("gone");
+  connectInput(exports);
   const save = () => exports.snail_save();
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") save();
@@ -157,7 +190,6 @@ async function main() {
   window.addEventListener("pagehide", save);
   window.snail = { exports, renderer, audio, fs }; // for the console
   canvas.focus();
-  show(audio.unlocked || muted ? "" : "Click or press a key for sound.");
 
   let last = performance.now();
   const frame = (now) => {

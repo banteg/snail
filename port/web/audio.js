@@ -2,8 +2,8 @@
 // audio_backend.h). Sounds are the game's encoded OGG files, decoded by the
 // browser; a channel plays one sound on the sample or stream bus with a
 // volume, pan, rate and loop flag. Browsers start audio only after a user
-// gesture, so the context resumes on the first click or key press; until then
-// channels wait silently, as if paused. `muted` silences everything.
+// gesture, so the context resumes when the splash is clicked (snail.js); until
+// then channels wait silently, as if paused. `muted` silences everything.
 
 export class AudioPresenter {
   constructor({ muted = false } = {}) {
