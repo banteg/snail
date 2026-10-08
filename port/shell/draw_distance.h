@@ -16,8 +16,12 @@ void draw_distance_begin_frame();
 void draw_distance_end_frame();
 
 // World units the current frame sees past the original's view (0 when off
-// or outside a level). Read by the emulated device.
+// or outside a level), and the view as a multiple of the original's (1 when
+// off or outside a level). The emulated device moves the far plane out by the
+// first and scales the fog band by the second, so the track fades out over a
+// proportionally longer stretch, as the original's did over its own.
 float draw_distance_extra();
+float draw_distance_scale();
 
 // The projection the device uses for `projection`: a perspective matrix with
 // its far plane moved out by draw_distance_extra(); others unchanged.

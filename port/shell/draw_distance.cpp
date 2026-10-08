@@ -196,6 +196,11 @@ float draw_distance_extra()
     return g_extra;
 }
 
+float draw_distance_scale()
+{
+    return 1.0f + g_extra / kOriginalFarZ;
+}
+
 void draw_distance_begin_frame()
 {
     g_undo_count = 0;
@@ -210,7 +215,7 @@ void draw_distance_begin_frame()
     cRSubGoldy* player = game->embedded_player();
     preview_cache_rows(game, player->transform.position.z + 46.0f + g_extra);
     preview_scan_rows(game, (int)player->active_window_min_z + 46 + (int)g_extra);
-    preview_landscape(game, player->transform.position.z + g_game->fog_end + g_extra);
+    preview_landscape(game, player->transform.position.z + g_game->fog_end * draw_distance_scale());
 }
 
 void draw_distance_end_frame()

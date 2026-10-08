@@ -315,8 +315,9 @@ logic, so the oracles hold either way.
   units from the camera; the whole track is built at level start, but its
   render caches are linked only 46 units ahead of the snail, and row models and
   uncached cells 38 units ahead, by the fixed step. Before a frame renders, the
-  shell links what the game would link further on, moves the far plane (and
-  fog band) out to match, and undoes every write after drawing, so the
+  shell links what the game would link further on, moves the far plane out to
+  match and stretches the fog band by the same factor (so the track fades out
+  as gradually as the original's), and undoes every write after drawing, so the
   simulation never sees it. Pickups, hazards and parcels still appear 38 units
   ahead, where the game spawns them: spawning draws random numbers. Both
   oracles match with it on (`--draw-distance` in the headless program).
