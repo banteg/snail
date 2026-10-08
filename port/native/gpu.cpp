@@ -5,7 +5,9 @@
 // the target is scaled into the window with letterboxing. The target is
 // 640x480, or with `hidpi` the size the frame fills in the window's pixels:
 // viewports scale with it, while the half-pixel offset stays half of an
-// original pixel, so everything lands where it did.
+// original pixel, so everything lands where it did. Lines (the toon outlines)
+// stay one original pixel wide: above 640x480 each becomes a quad that wide,
+// as the GPU draws lines one device pixel wide.
 //
 // Shaders are Metal Shading Language, so this runs on macOS. Other platforms
 // need the same two shaders as SPIR-V or DXIL.
@@ -22,6 +24,7 @@ namespace {
 
 const int kWidth = 640, kHeight = 480;
 const int kVertexBytes = 32;
+const int kTriangles = 0, kLines = 1;  // render_backend.h RenderPrimitive
 const int kStateWords = 28;
 
 // render_backend.h RenderState, field for field.
@@ -365,7 +368,7 @@ SDL_GPUGraphicsPipeline* pipeline(GpuPresenter* gpu, const Command& command)
         info.vertex_input_state.vertex_attributes = attributes;
         info.vertex_input_state.num_vertex_attributes = 4;
         info.primitive_type =
-            command.primitive == 1 ? SDL_GPU_PRIMITIVETYPE_LINELIST : SDL_GPU_PRIMITIVETYPE_TRIANGLELIST;
+            command.primitive == kLines ? SDL_GPU_PRIMITIVETYPE_LINELIST : SDL_GPU_PRIMITIVETYPE_TRIANGLELIST;
         info.rasterizer_state.cull_mode =
             s.cull == 3 ? SDL_GPU_CULLMODE_BACK : s.cull == 2 ? SDL_GPU_CULLMODE_FRONT : SDL_GPU_CULLMODE_NONE;
         if (s.alpha_blend) {
@@ -587,6 +590,40 @@ bool gpu_save_frame(GpuPresenter* gpu, const char* path)
     return saved;
 }
 
+// Each line (two vertices) as two triangles one original pixel wide, facing the
+// screen. A segment touching or behind the eye plane collapses, as clipping
+// would have cut it.
+static void widen_lines(GpuPresenter* gpu, const uint8_t* source, uint32_t count, const State& s)
+{
+    const float pixels_x = s.viewport_width * gpu->scale, pixels_y = s.viewport_height * gpu->scale;
+    const int floats = kVertexBytes / 4;
+    for (uint32_t line = 0; line + 1 < count; line += 2) {
+        float a[floats], b[floats];
+        memcpy(a, source + line * kVertexBytes, kVertexBytes);
+        memcpy(b, source + (line + 1) * kVertexBytes, kVertexBytes);
+        float nx = 0, ny = 0;
+        if (a[3] > 0 && b[3] > 0) {
+            float dx = (b[0] / b[3] - a[0] / a[3]) * pixels_x, dy = (b[1] / b[3] - a[1] / a[3]) * pixels_y;
+            float length = SDL_sqrtf(dx * dx + dy * dy);
+            if (length > 0) {
+                nx = -dy / length * gpu->scale / pixels_x;
+                ny = dx / length * gpu->scale / pixels_y;
+            }
+        }
+        // Corners a+, a-, b+, b-, as triangles (a+, a-, b+) and (b+, a-, b-).
+        const float* corners[6] = {a, a, b, b, a, b};
+        const float sides[6] = {1, -1, 1, 1, -1, -1};
+        for (int k = 0; k < 6; ++k) {
+            float vertex[floats];
+            memcpy(vertex, corners[k], kVertexBytes);
+            vertex[0] += sides[k] * nx * vertex[3];
+            vertex[1] += sides[k] * ny * vertex[3];
+            const uint8_t* bytes = (const uint8_t*)vertex;
+            gpu->vertices.insert(gpu->vertices.end(), bytes, bytes + kVertexBytes);
+        }
+    }
+}
+
 // --- imports from the game ---------------------------------------------------------
 
 extern "C" {
@@ -630,7 +667,14 @@ void w2c_snail_draw(w2c_snail* host, uint32_t primitive, uint32_t pointer, uint3
     command.first = (uint32_t)(gpu->vertices.size() / kVertexBytes);
     command.count = count;
     const uint8_t* source = linear_memory(host->game) + pointer;
-    gpu->vertices.insert(gpu->vertices.end(), source, source + (size_t)count * kVertexBytes);
+    if (primitive == kLines && gpu->scale > 1) {
+        widen_lines(gpu, source, count, command.state);
+        command.primitive = kTriangles;
+        command.count = count * 3;
+        command.state.cull = 1;  // D3DCULL_NONE: lines had no facing
+    } else {
+        gpu->vertices.insert(gpu->vertices.end(), source, source + (size_t)count * kVertexBytes);
+    }
     gpu->commands.push_back(command);
 }
 

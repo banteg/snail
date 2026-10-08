@@ -6,6 +6,8 @@
 // The game draws in 640x480 coordinates. setResolution renders them at a
 // multiple of that instead (HiDPI): viewports scale, while the half-pixel
 // offset stays half of an original pixel, so everything lands where it did.
+// Lines (the toon outlines) stay one original pixel wide: above 640x480 each
+// becomes a quad that wide, as WebGL draws lines one device pixel wide.
 
 const VERTEX_BYTES = 32;
 const STATE_WORDS = 28; // RenderState, in 4-byte fields
@@ -106,6 +108,36 @@ function compile(gl, type, source) {
   gl.compileShader(shader);
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(shader));
   return shader;
+}
+
+// Each line (two vertices) as two triangles `width` device pixels wide, facing
+// the screen, in a viewport `pixels` wide and high. A segment touching or
+// behind the eye plane collapses, as clipping would have cut it.
+function widenLines(source, count, width, pixels) {
+  const input = new Float32Array(source.buffer, source.byteOffset, (count * VERTEX_BYTES) / 4);
+  const output = new Float32Array(count * 3 * (VERTEX_BYTES / 4));
+  const floats = VERTEX_BYTES / 4;
+  for (let line = 0; line < count / 2; line++) {
+    const a = line * 2 * floats, b = a + floats;
+    const [xa, ya, wa] = [input[a], input[a + 1], input[a + 3]];
+    const [xb, yb, wb] = [input[b], input[b + 1], input[b + 3]];
+    let nx = 0, ny = 0;
+    if (wa > 0 && wb > 0) {
+      const dx = (xb / wb - xa / wa) * pixels[0], dy = (yb / wb - ya / wa) * pixels[1];
+      const length = Math.hypot(dx, dy);
+      if (length > 0) [nx, ny] = [(-dy / length) * (width / pixels[0]), (dx / length) * (width / pixels[1])];
+    }
+    // Corners a+, a-, b+, b-, as triangles (a+, a-, b+) and (b+, a-, b-).
+    const corners = [[a, 1], [a, -1], [b, 1], [b, 1], [a, -1], [b, -1]];
+    corners.forEach(([vertex, side], k) => {
+      const at = (line * 6 + k) * floats;
+      output.set(input.subarray(vertex, vertex + floats), at);
+      const w = input[vertex + 3];
+      output[at] += side * nx * w;
+      output[at + 1] += side * ny * w;
+    });
+  }
+  return new Uint8Array(output.buffer);
 }
 
 function argb(value) {
@@ -279,7 +311,8 @@ export class Renderer {
           gl.disable(gl.DEPTH_TEST);
         }
         gl.depthMask(!!s.zWrite);
-        if (s.cull === 2 || s.cull === 3) {
+        const widen = primitive === 1 && this.scale > 1;
+        if (!widen && (s.cull === 2 || s.cull === 3)) {
           gl.enable(gl.CULL_FACE);
           gl.cullFace(s.cull === 3 ? gl.BACK : gl.FRONT); // D3DCULL_CCW culls counter-clockwise (back) faces
         } else {
@@ -287,8 +320,15 @@ export class Renderer {
         }
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Uint8Array(this.memory.buffer, pointer, count * VERTEX_BYTES), gl.STREAM_DRAW);
-        gl.drawArrays(primitive === 1 ? gl.LINES : gl.TRIANGLES, 0, count);
+        const vertices = new Uint8Array(this.memory.buffer, pointer, count * VERTEX_BYTES);
+        if (widen) {
+          const pixels = [s.viewport[2] * this.scale, s.viewport[3] * this.scale];
+          gl.bufferData(gl.ARRAY_BUFFER, widenLines(vertices, count, this.scale, pixels), gl.STREAM_DRAW);
+          gl.drawArrays(gl.TRIANGLES, 0, count * 3);
+        } else {
+          gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STREAM_DRAW);
+          gl.drawArrays(primitive === 1 ? gl.LINES : gl.TRIANGLES, 0, count);
+        }
       },
     };
   }

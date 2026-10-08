@@ -309,7 +309,10 @@ logic, so the oracles hold either way.
 
 - **Sharp rendering:** the presenter draws at the canvas's size in device
   pixels instead of 640x480. Viewports scale, while the half-pixel offset stays
-  half an original pixel, so every draw lands where it did, only finer.
+  half an original pixel, so every draw lands where it did, only finer. The
+  toon outlines are Direct3D lines, one pixel wide; GPUs draw lines one device
+  pixel wide, so above 640x480 each line is drawn as a screen-facing quad one
+  original pixel wide, and the outlines keep their weight.
 - **Fullscreen:** the game's own Fullscreen option (`set_fullscreen_mode`, which
   the shell replaces) puts the page in fullscreen. Browsers allow that only
   after a gesture, so a saved fullscreen setting waits for the click that
