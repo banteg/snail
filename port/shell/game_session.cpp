@@ -16,6 +16,7 @@
 #include "loading_bar.h"
 #include "main_loop_state.h"
 #include "rmath_random.h"
+#include "rmath_tables.h"
 #include "runtime_config.h"
 
 // The CRT ran these static initializers before WinMain; null slots belonged to
@@ -36,6 +37,13 @@ void load_registered_texture_refs(int debug_fallback);   // @ 0x412a00
 void render_game_frame_scene();                          // @ 0x4134c0
 char* save_config_file(char* file_name, void* bytes, int byte_count);  // @ 0x42f540
 int present_backbuffer();                                // @ 0x413520
+unsigned int msvc_rand_seed();                           // shell/runtime.cpp
+
+namespace {
+StartupRng g_startup_rng;
+}
+
+StartupRng startup_rng() { return g_startup_rng; }
 
 bool start_game(int warmup)
 {
@@ -70,6 +78,8 @@ bool start_game(int warmup)
         RAND(1.0f, 0);
         gRMathRand2();
     }
+    g_startup_rng.crt_rand_seed = msvc_rand_seed();
+    g_startup_rng.math_random_index = g_math_random_index;
     construct_game_runtime();
     set_tracked_allocation_mark();
     if (g_game->initialize_game_assets_and_world() == 0) {

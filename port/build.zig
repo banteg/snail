@@ -48,6 +48,7 @@ pub fn build(b: *std.Build) void {
         "shell/main.cpp",
         "shell/input_script.cpp",
         "shell/replay_oracle.cpp",
+        "shell/lockstep_tape.cpp",
         "shell/backend_null.cpp",
     });
     b.installArtifact(headless);

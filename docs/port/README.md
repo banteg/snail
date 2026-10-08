@@ -197,10 +197,28 @@ Which functions the port compiles:
   within 0.0007 of the original. Next: more of the state per tick (lateral
   x, speed, score) and per-tick captures from the original through Frida
   (`tools/frida/`, `docs/re/frida-runtime-trace.md`) for what replays don't
-  record. The lockstep capture
+  record.
+- **Simulation level: the session oracle.** The lockstep capture
   ([docs/re/frida-lockstep-capture.md](../re/frida-lockstep-capture.md))
-  records whole sessions of the original for that: the input state before
-  every tick, the render cadence, a snapshot after every tick, and frames.
+  records whole sessions of the original: the startup warmup, the input
+  state before every tick, the render cadence, a snapshot after every tick,
+  and frames. `uv run snail port lockstep <session dirs>` replays each in the
+  headless port from the same save files and compares every tick. Results on
+  the first five sessions (2026-10-08: menus, tutorial, postal, time trial,
+  challenge with high-score entries; 43,050 ticks):
+  - the RNG state after the startup warmup matches in every session;
+  - every integer field (front-end and subgame state, level mode, score,
+    lives, shooting tier, both RNG states, `cRGame::AI`'s result) matches on
+    every tick;
+  - floats match bit for bit until the snail first moves along a level (ticks
+    674 to 3667), then drift by single-precision ULPs: at most 0.0005 in z
+    after 9,600 ticks, without reaching any integer state. The first drift is
+    in z while velocity is still identical, so it enters through a path that
+    sets z directly (path follow, with trigonometry and double constants)
+    rather than the plain `z += velocity.z`. The original ran the x87 at the
+    24-bit precision Direct3D 8 sets, rounding every operation to single
+    precision, and clang evaluates mixed float and double expressions in
+    double. A focused capture inside `update_subgoldy` would pin it down.
 - **Render level:** `snail-native --frames N --screenshot` captures any frame
   deterministically; `snail screenshots compare` compares against original
   captures.
@@ -340,10 +358,12 @@ trap; sanitizers and the stack protector off, as the original had neither.
    scripts through gameplay and the exit prompt run without a trap, and runs
    repeat exactly. See
    [Building the headless port](#building-the-headless-port).
-3. **Oracles.** Running: the replay oracle passes on every recorded run (see
-   [Oracles](#oracles)). Left: compare more state per tick, per-tick traces
-   from the original, and screenshot comparisons. Fix divergences in the
-   matcher, never only in the port.
+3. **Oracles.** Running: the replay oracle passes on every recorded run, and
+   the session oracle replays captured sessions of the original with every
+   integer field exact and floats within single-precision ULPs (see
+   [Oracles](#oracles)). Left: the source of the ULP drift, comparing the
+   captured frames with the port's renders, and more snapshot fields. Fix
+   divergences in the matcher, never only in the port.
 4. **Shell.** Running: the recovered renderer draws through the emulated
    Direct3D 8 device and the recovered audio code through an emulated BASS
    2.0, and the browser build plays from the intro through the menus into

@@ -96,3 +96,17 @@ each.
 Zip `C:\share\snail\lockstep` (or the session folders you want compared) and
 put the archive somewhere the Mac can read. Note next to each session what
 you did in it.
+
+## Comparing (Mac)
+
+```
+uv run snail port lockstep <session dir> [<session dir> ...]
+```
+
+For each session: convert the tape for the headless port, stage a game
+directory with the session's `start/` files and the archive, replay every
+tick with the recorded inputs and render cadence
+(`port/shell/lockstep_tape.cpp`), and compare the port's snapshot, RNG state
+and `cRGame::AI` result with the original's after every tick. The report
+lists the first divergent tick with its fields, the largest float errors, and
+any integer field that ever diverges.

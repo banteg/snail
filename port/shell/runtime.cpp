@@ -23,6 +23,11 @@ extern "C" int rand(void)
     return (int)((g_msvc_rand_state >> 16) & 0x7fff);
 }
 
+unsigned int msvc_rand_seed()
+{
+    return g_msvc_rand_state;
+}
+
 // Recovered sources that declare these without C linkage call them by their
 // C++ names; forward to the C library.
 int sprintf(char* buffer, char* format, ...)

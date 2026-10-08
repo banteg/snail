@@ -8,6 +8,14 @@
 // timeGetTime() % 1000 random draws. Returns false with a message on stderr.
 bool start_game(int warmup);
 
+// The RNG state right after the warmup, as the lockstep capture records it at
+// construct_game_runtime's entry.
+struct StartupRng {
+    unsigned int crt_rand_seed;
+    int math_random_index;
+};
+StartupRng startup_rng();
+
 // One fixed 1/60 s step: poll input and run cRGame::AI fixed_update_count
 // times. `renders` says whether a frame is rendered after this step; the game
 // queues text and overlays only then (g_render_queue_active). Returns the

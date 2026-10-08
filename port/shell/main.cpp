@@ -3,6 +3,7 @@
 // nothing. The browser build (web_main.cpp) runs the same session live.
 //
 // Usage: snail.wasm [--ticks N] [--keys SCRIPT] [--warmup N] [--trace] [--replay A3]
+//        snail.wasm --tape TAPE --tape-out STATES
 //   --ticks   ticks to run (default 600; with --keys, until the script ends)
 //   --keys    input script (shell/input_script.cpp)
 //   --warmup  random draws before construction; the original used
@@ -10,6 +11,8 @@
 //   --trace   print front-end state changes and each screen's widgets
 //   --replay  replay row 3 of ScoreA.dat (B: ScoreB.dat) against its recording
 //             (shell/replay_oracle.cpp); pair with scripts/high_scores.keys
+//   --tape    replay a session the original recorded and write the port's
+//             state per tick (shell/lockstep_tape.cpp; snail port lockstep)
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,6 +23,7 @@
 #include "game_root.h"
 #include "game_session.h"
 #include "input_script.h"
+#include "lockstep_tape.h"
 #include "replay_oracle.h"
 
 namespace {
@@ -66,6 +70,8 @@ int main(int argc, char** argv)
     int ticks = -1;
     int warmup = 0;
     const char* keys = 0;
+    const char* tape = 0;
+    const char* tape_out = 0;
     bool trace = false;
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--ticks") == 0 && i + 1 < argc)
@@ -76,6 +82,10 @@ int main(int argc, char** argv)
             warmup = atoi(argv[++i]);
         else if (strcmp(argv[i], "--trace") == 0)
             trace = true;
+        else if (strcmp(argv[i], "--tape") == 0 && i + 1 < argc)
+            tape = argv[++i];
+        else if (strcmp(argv[i], "--tape-out") == 0 && i + 1 < argc)
+            tape_out = argv[++i];
         else if (strcmp(argv[i], "--replay") == 0 && i + 1 < argc) {
             if (!replay_oracle_configure(argv[++i])) {
                 fprintf(stderr, "snail: --replay takes a bank letter and row, like A3 or B10\n");
@@ -90,6 +100,8 @@ int main(int argc, char** argv)
     // WASI starts in the root of the preopened file system; the launcher passes the caller's directory.
     if (const char* directory = getenv("PWD"))
         chdir(directory);
+    if (tape)
+        return tape_out ? run_tape(tape, tape_out) : 2;
     if (keys && !load_input_script(keys)) {
         fprintf(stderr, "snail: cannot read key script %s\n", keys);
         return 2;
