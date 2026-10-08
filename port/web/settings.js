@@ -1,6 +1,7 @@
 // Port options: enhancements over the original, each switchable, kept per
 // browser. "Original" turns them all off, "Enhanced" all on. A gear in the
-// corner opens the panel; while it is open, keys stay out of the game.
+// corner opens the panel; while it is open, keys stay out of the game and the
+// pointer is free (`releasePointer`).
 
 const KEY = "snail-mail-settings";
 
@@ -11,8 +12,9 @@ export const OPTIONS = [
 ];
 
 export class Settings {
-  constructor(onChange) {
+  constructor(onChange, releasePointer) {
     this.onChange = onChange;
+    this.releasePointer = releasePointer;
     this.values = Object.fromEntries(OPTIONS.map((option) => [option.id, true]));
     try {
       Object.assign(this.values, JSON.parse(localStorage.getItem(KEY)) ?? {});
@@ -73,6 +75,6 @@ export class Settings {
   toggle(open = !this.open) {
     this.open = open;
     this.panel.hidden = !open;
-    if (open && document.pointerLockElement) document.exitPointerLock();
+    if (open) this.releasePointer();
   }
 }

@@ -153,6 +153,28 @@ function connectInput(exports, settings) {
   });
 }
 
+// Escape is the game's pause key, but a browser takes it to release a locked
+// pointer and keeps it from the page. A release the page did not ask for while
+// it has focus can only be that Escape, so the game gets it, held long enough
+// for its per-tick poll to see.
+let releasing = false;
+
+function releasePointer() {
+  if (!document.pointerLockElement) return;
+  releasing = true;
+  document.exitPointerLock();
+}
+
+function forwardEscapeOnRelease(exports) {
+  document.addEventListener("pointerlockchange", () => {
+    if (document.pointerLockElement === null && !releasing && document.hasFocus()) {
+      exports.snail_key(SCAN_CODES.Escape, 1);
+      setTimeout(() => exports.snail_key(SCAN_CODES.Escape, 0), 100);
+    }
+    releasing = false;
+  });
+}
+
 function lockPointer() {
   // Safari returns nothing; others a promise that rejects when the page may not lock yet.
   canvas.requestPointerLock()?.catch?.(() => {});
@@ -229,8 +251,8 @@ async function main() {
   const settings = new Settings((changes) => {
     if ("hidpi" in changes) updateResolution();
     if ("fullscreen" in changes) fullscreen.apply();
-    if (changes.trapMouse === false && document.pointerLockElement) document.exitPointerLock();
-  });
+    if (changes.trapMouse === false) releasePointer();
+  }, releasePointer);
   const fullscreen = new Fullscreen(settings);
   const updateResolution = connectResolution(renderer, settings);
   const fs = new MemoryFileSystem();
@@ -270,6 +292,7 @@ async function main() {
   fullscreen.apply(); // a fullscreen request at startup waited for this gesture
   splash.classList.add("gone");
   connectInput(exports, settings);
+  forwardEscapeOnRelease(exports);
   const save = () => exports.snail_save();
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") save();

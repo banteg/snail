@@ -317,7 +317,10 @@ logic, so the oracles hold either way.
   so the Options menu stays truthful. In fullscreen, Escape still reaches the
   game where the browser supports keyboard lock; holding it leaves fullscreen.
 - **Trap the mouse:** a click locks the pointer to the game (pointer lock), and
-  its motion moves the game's cursor at the speed it had. Escape lets it go.
+  its motion moves the game's cursor at the speed it had. Escape lets it go
+  and still reaches the game: browsers keep the Escape that releases a lock
+  from the page, so a release the page did not ask for is passed on as an
+  Escape press, and the in-game menu opens.
   The original trapped the pointer only by taking over the display in
   fullscreen.
 - **See further ahead** is shelved on the `shelf/draw-distance` branch: it
