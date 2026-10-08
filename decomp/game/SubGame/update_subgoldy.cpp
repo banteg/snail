@@ -8,6 +8,7 @@
 // slow commentary, collisions, anim managers, movement flags/emitters,
 // and the replay cursor / times-up tail.
 
+#include "x87_store.h"
 #include <stddef.h>
 
 #include "attachment_sample.h"
@@ -382,7 +383,12 @@ steering_stored:
             p_position->z = p_velocity->z + p_position->z;
             velocity.z = (1.0f - game->subgame_rate * 0.003f) * velocity.z;
             velocity.y = (1.0f - game->subgame_rate * 0.003f) * velocity.y;
+#ifdef SNAIL_PORT
+            // The decay underflows into denormals once nothing steers the snail.
+            p_velocity->x = x87_store_float((double)(1.0f - game->subgame_rate * 0.1f) * p_velocity->x);
+#else
             p_velocity->x = (1.0f - game->subgame_rate * 0.1f) * p_velocity->x;
+#endif
             {
                 float rate = game->subgame_rate;
                 float gravity = rate * rate * -0.0099999998f;
@@ -442,7 +448,12 @@ steering_stored:
         if (!trampoline_bounce_active)
             velocity.z = (1.0f - game->subgame_rate * 0.003f) * velocity.z;
         velocity.y = (1.0f - game->subgame_rate * 0.003f) * velocity.y;
+#ifdef SNAIL_PORT
+        // The decay underflows into denormals once nothing steers the snail.
+        velocity.x = x87_store_float((double)(1.0f - game->subgame_rate * 0.1f) * velocity.x);
+#else
         velocity.x = (1.0f - game->subgame_rate * 0.1f) * velocity.x;
+#endif
         if (boost_one_tick) {
             float rate = game->subgame_rate;
             float quantum = rate * rate * 0.0040000002f;

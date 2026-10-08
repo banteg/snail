@@ -240,15 +240,15 @@ Which functions the port compiles:
     `(p * dir.z + anchor.z) + transform.z`; written in that order, clang
     rounds the same and the VC6 object stays byte-identical. See
     [Correctness rules](#correctness-rules).
-  - **Denormal stores (open, cosmetic):** an x87 register has a wider
-    exponent range, so a float product that underflows is rounded to 24 bits
-    first and to a denormal on store; wasm rounds once. The snail's lateral
-    velocity decays into denormals when nothing steers it, so `vx` differs
-    by one or two denormal ULPs (about 1e-45) until it reaches zero.
+  - **Denormal stores (fixed):** an x87 register has a wider exponent
+    range, so a float product that underflows is rounded to 24 bits first
+    and to a denormal on store; wasm rounds once. The snail's lateral
+    velocity decays into denormals when nothing steers it. At the two decay
+    sites a `SNAIL_PORT` guard stores through `x87_store_float`
+    (`tools/match/include/x87_store.h`), which rounds twice the same way.
 
-  With both fixes, 7 of the 10 captured sessions match the original bit for
-  bit on every tick and field (56,977 ticks in all); the other three differ
-  only in that denormal `vx`.
+  With these fixes, all 10 captured sessions match the original bit for bit
+  on every tick and field (56,977 ticks).
 - **Render level:** `snail-native --frames N --screenshot` captures any frame
   deterministically; `snail screenshots compare` compares against original
   captures.
@@ -389,11 +389,10 @@ trap; sanitizers and the stack protector off, as the original had neither.
    repeat exactly. See
    [Building the headless port](#building-the-headless-port).
 3. **Oracles.** Running: the replay oracle passes on every recorded run, and
-   the session oracle replays captured sessions of the original with every
-   integer field exact and floats within single-precision ULPs (see
-   [Oracles](#oracles)). Left: the source of the ULP drift, comparing the
-   captured frames with the port's renders, and more snapshot fields. Fix
-   divergences in the matcher, never only in the port.
+   the session oracle replays all 10 captured sessions of the original bit
+   for bit (see [Oracles](#oracles)). Left: comparing the captured frames
+   with the port's renders, and longer sessions. Fix divergences in the
+   matcher, never only in the port.
 4. **Shell.** Running: the recovered renderer draws through the emulated
    Direct3D 8 device and the recovered audio code through an emulated BASS
    2.0, and the browser build plays from the intro through the menus into
