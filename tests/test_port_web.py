@@ -13,7 +13,14 @@ from http.server import ThreadingHTTPServer
 from PIL import Image
 
 from snail.archive import decode_bytes
-from snail.port_serve import SPLASH_IMAGES, Handler, routes
+from snail.port_serve import (
+    CARD,
+    CARD_HALVES,
+    CARD_WIDTH,
+    SPLASH_IMAGES,
+    Handler,
+    routes,
+)
 from snail.symbols import REPO_ROOT
 
 
@@ -44,7 +51,7 @@ def test_routes_serve_page_build_and_archive(tmp_path):
     wasm.parent.mkdir(parents=True)
     wasm.write_bytes(b"\0asm")
     archive = tmp_path / "SnailMail.dat"
-    write_archive(archive, {path: tga((40, 10, 70)) for path in SPLASH_IMAGES.values()})
+    write_archive(archive, {path: tga((40, 10, 70)) for path in (*SPLASH_IMAGES.values(), *CARD_HALVES)})
 
     table = routes(tmp_path, archive)
     server = ThreadingHTTPServer(("127.0.0.1", 0), partial(Handler, table=table))
@@ -65,6 +72,9 @@ def test_routes_serve_page_build_and_archive(tmp_path):
             with urllib.request.urlopen(f"{base}/{name}") as response:
                 assert response.headers["Content-Type"] == "image/avif"
                 assert Image.open(io.BytesIO(response.read())).size == (8, 8)
+        with urllib.request.urlopen(f"{base}/{CARD}") as response:  # the link-preview card, from the splash art
+            assert response.headers["Content-Type"] == "image/jpeg"
+            assert Image.open(io.BytesIO(response.read())).width == CARD_WIDTH
         (web / "added.js").write_text("export {};")  # files added after start are served
         with urllib.request.urlopen(f"{base}/added.js") as response:
             assert response.read() == b"export {};"
