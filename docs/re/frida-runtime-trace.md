@@ -529,6 +529,13 @@ Use a few focused capture runs instead of one giant noisy trace:
 
 ## Notes
 
+- Hook only where the x87 register stack is empty: function entries and
+  exits of ordinary calls. Frida saves the general registers but not the x87
+  stack, so a hook inside x87 code (the C runtime's `_CIacos`, `_ftol`, or
+  mid-expression in game code) lets the script's own work corrupt live
+  floating-point values; the lockstep capture's version 5 crashed level
+  generation that way.
+
 - The script assumes the current 2006 gameplay image with preferred PE base `0x400000`.
 - It resolves all hook addresses relative to the actual loaded module base at runtime.
 - The hook set is designed for 32-bit Windows Frida because both [`SnailMail_unwrapped.exe`](../../artifacts/bin/SnailMail_unwrapped.exe) and [`SnailMail.RWG`](../../artifacts/bin/SnailMail.RWG) are 32-bit PEs with the same gameplay code after unwrap.
