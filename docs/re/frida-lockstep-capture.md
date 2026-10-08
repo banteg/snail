@@ -34,7 +34,7 @@ One directory per session, `C:\share\snail\lockstep\<time>-<pid>\`:
   - `frame`: a capture in `frames/`.
   - `fpu`: the x87 control word of the game thread (precision and rounding
     control), at startup, when the path template bank is built, and whenever
-    it changes between ticks (script version 2).
+    it changes between ticks (script version 3; version 2's reader faulted).
 - `frames/present-NNNNNN.bmp`: the game window, every 120th present and the
   first. Change `CAPTURE_EVERY` at the top of the script; 0 turns captures
   off.
