@@ -172,9 +172,16 @@ Which functions the port compiles:
 - **Exact `rand`.** Track generation reseeds with `RandSeed(runtime_build_seed)`,
   so the port implements the MSVC `rand` LCG exactly. `gRMathRand2` and the
   sine tables are recovered code and come along unchanged.
-- **Floats.** The original used x87 with 53-bit precision; the port uses SSE.
-  Replays store positions, not inputs, so ghosts don't depend on this. Any
-  tick-level divergence it causes is measured by the oracles, not assumed away.
+- **Float sums in the binary's order.** VC6 reassociates float additions; clang
+  evaluates the source exactly. When a matched function's float sum is
+  written in another order than the object computes it, rewrite it in the
+  object's order (the VC6 object stays byte-identical) so the port rounds the
+  same. The session oracle finds these.
+- **Floats.** The original used the x87, at the precision Direct3D 8 left it
+  (24-bit, since the device is created without `D3DCREATE_FPU_PRESERVE`; not
+  yet confirmed at run time); the port uses wasm/SSE single and double
+  precision. Any tick-level divergence this causes is measured by the
+  oracles, not assumed away.
 - **PORT(verified)** means checked against native behaviour: multi-frame
   screenshot comparisons and oracle runs, not a single good frame.
 
@@ -210,15 +217,27 @@ Which functions the port compiles:
   - every integer field (front-end and subgame state, level mode, score,
     lives, shooting tier, both RNG states, `cRGame::AI`'s result) matches on
     every tick;
-  - floats match bit for bit until the snail first moves along a level (ticks
-    674 to 3667), then drift by single-precision ULPs: at most 0.0005 in z
-    after 9,600 ticks, without reaching any integer state. The first drift is
-    in z while velocity is still identical, so it enters through a path that
-    sets z directly (path follow, with trigonometry and double constants)
-    rather than the plain `z += velocity.z`. The original ran the x87 at the
-    24-bit precision Direct3D 8 sets, rounding every operation to single
-    precision, and clang evaluates mixed float and double expressions in
-    double. A focused capture inside `update_subgoldy` would pin it down.
+  - floats drift by single-precision ULPs once the snail follows a path:
+    at most 0.0005 in z after 9,600 ticks, without reaching any integer
+    state.
+
+  Two sources found so far, both while the snail follows a path (its
+  position then comes from `cRPathFollowGoldy::Traverse`):
+  - **z (fixed):** VC6 reassociates float sums (no `/Op`).
+    `base_position.z = p * dir.z + transform.z + anchor.z` compiles to
+    `(p * dir.z + anchor.z) + transform.z`, and clang evaluates the source
+    order, which rounds differently. Writing the sum in the binary's order
+    leaves the VC6 object byte-identical and removed every z divergence; see
+    [Correctness rules](#correctness-rules).
+  - **y (open):** the path orientation (`basis_up`) differs by about 1e-4
+    relative at the first divergent tick, far more than rounding. Path
+    orientation runs through `tMatrix::Interpolate`, whose table `Sin`/`Cos`
+    (8,192 entries, no interpolation) and quaternion snapping turn a single
+    upstream ULP into a jump of that size. The capture script now also
+    records the snail's basis vectors and path-follow state, so the next
+    capture shows where it starts. MSVC 6's `acos` (`_CIacos`) under 24-bit
+    precision differs from an exact acos in the last place, but emulating it
+    did not move the y divergence, so the port keeps libm's.
 - **Render level:** `snail-native --frames N --screenshot` captures any frame
   deterministically; `snail screenshots compare` compares against original
   captures.

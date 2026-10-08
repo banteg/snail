@@ -131,14 +131,18 @@ def compare(session: Session, states: bytes) -> Comparison:
         raise ValueError("the port wrote no lockstep states")
     seed, index, _ = struct.unpack_from("<IiI", states, 4)
     result = Comparison(session.path.name, len(session.ticks), (seed, index) == tuple(session.startup_rng))
-    row = struct.Struct("<" + "".join("f" if kind == "f32" else "i" for _, _, kind in session.fields) + "Iii")
+    row = struct.Struct("<" + "".join({"f32": "f", "u8": "I"}.get(kind, "i") for _, _, kind in session.fields) + "Iii")
     offset = 16
     for tick in session.ticks:
         port = row.unpack_from(states, offset)
         offset += row.size
         differences = {}
         for (name, _, kind), value in zip(session.fields, port, strict=False):
-            original = tick["s"][name]
+            original = tick["s"].get(name)
+            if original is None:  # captured by an older script
+                continue
+            if kind == "u8":
+                value &= 0xFF
             if kind == "f32":
                 original = as_float32(original)
                 error = abs(original - value) if math.isfinite(original) and math.isfinite(value) else math.inf

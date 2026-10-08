@@ -83,6 +83,23 @@ SNAPSHOT = {
     "shooting_tier": ("subgame.player.shooting_tier", "i32"),
     "track_z_offset": ("subgame.player.track_z_offset", "f32"),
     "track_z_anchor": ("subgame.player.track_z_anchor", "f32"),
+    # The snail's orientation and path-follow state, which set its position while it follows a path.
+    "right_x": ("subgame.player.transform.basis_right.x", "f32"),
+    "right_y": ("subgame.player.transform.basis_right.y", "f32"),
+    "right_z": ("subgame.player.transform.basis_right.z", "f32"),
+    "up_x": ("subgame.player.transform.basis_up.x", "f32"),
+    "up_y": ("subgame.player.transform.basis_up.y", "f32"),
+    "up_z": ("subgame.player.transform.basis_up.z", "f32"),
+    "forward_x": ("subgame.player.transform.basis_forward.x", "f32"),
+    "forward_y": ("subgame.player.transform.basis_forward.y", "f32"),
+    "forward_z": ("subgame.player.transform.basis_forward.z", "f32"),
+    "follow_active": ("subgame.player.follow_state.active", "u8"),
+    "follow_sample": ("subgame.player.follow_state.sample_index", "i32"),
+    "follow_progress": ("subgame.player.follow_state.progress", "f32"),
+    "follow_vertical": ("subgame.player.follow_state.vertical_offset", "f32"),
+    "follow_up_x": ("subgame.player.follow_state.orientation_up.x", "f32"),
+    "follow_up_y": ("subgame.player.follow_state.orientation_up.y", "f32"),
+    "follow_up_z": ("subgame.player.follow_state.orientation_up.z", "f32"),
 }
 
 

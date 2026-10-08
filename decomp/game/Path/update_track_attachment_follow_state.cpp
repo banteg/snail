@@ -148,11 +148,11 @@ int cRPathFollowGoldy::Traverse(
             float anchor_y = source_cell->position.y;
             float anchor_z = source_cell->position.z;
             base_position.x = lateral_scale * (sample_progress * secondary[current_index].delta_dir_to_next.x)
-                + secondary[current_index].transform.position.x + anchor_x;
+                + anchor_x + secondary[current_index].transform.position.x;
             base_position.y = lateral_scale * (sample_progress * secondary[current_index].delta_dir_to_next.y)
-                + secondary[current_index].transform.position.y + anchor_y;
+                + anchor_y + secondary[current_index].transform.position.y;
             base_position.z = sample_progress * secondary[current_index].delta_dir_to_next.z
-                + secondary[current_index].transform.position.z + anchor_z;
+                + anchor_z + secondary[current_index].transform.position.z;
             if (current_index == (unsigned int)(sample_count - 1)) {
                 transform.Identity();
             } else {
