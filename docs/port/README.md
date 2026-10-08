@@ -265,7 +265,8 @@ Then open http://127.0.0.1:8017/. `snail-web.wasm` is the same program as the
 headless one, built as a WASI reactor: the page loads `SnailMail.dat` from
 `artifacts/bin/` into an in-memory file system (the server sends it gzipped
 with its XOR obfuscation removed, 7.1 MB instead of 27.4 MB, and the page
-restores the original bytes), forwards keys (as DirectInput
+restores the original bytes; `uv run snail port pack` writes that file to
+`artifacts/web/` for hosting the page elsewhere), forwards keys (as DirectInput
 scan codes), pointer, buttons and wheel, and calls the game once per animation
 frame with the elapsed time. The loop keeps the original's timing: whole 1/60 s
 steps from an accumulator capped at 25 steps, then one rendered frame. There is
