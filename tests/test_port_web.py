@@ -1,16 +1,38 @@
 """The browser build's server and the presenter's view of the render state."""
 
 import gzip
+import io
 import re
+import struct
 import threading
 import urllib.error
 import urllib.request
 from functools import partial
 from http.server import ThreadingHTTPServer
 
+from PIL import Image
+
 from snail.archive import decode_bytes
-from snail.port_serve import Handler, routes
+from snail.port_serve import SPLASH_IMAGES, Handler, routes
 from snail.symbols import REPO_ROOT
+
+
+def write_archive(path, files: dict[str, bytes]) -> None:
+    """A SnailMail.dat: entry count, (path offset, data offset, size) records and paths, then the data, XOR-masked."""
+    names = b"".join(name.encode() + b"\0" for name in files)
+    index_size = 4 + 12 * len(files) + len(names)
+    index, path_offset, data_offset = struct.pack("<I", len(files)), 4 + 12 * len(files), index_size
+    for name, data in files.items():
+        index += struct.pack("<III", path_offset, data_offset, len(data))
+        path_offset += len(name) + 1
+        data_offset += len(data)
+    path.write_bytes(decode_bytes(index + names + b"".join(files.values())))
+
+
+def tga(color) -> bytes:
+    out = io.BytesIO()
+    Image.new("RGB", (8, 8), color).save(out, "TGA")
+    return out.getvalue()
 
 
 def test_routes_serve_page_build_and_archive(tmp_path):
@@ -22,7 +44,7 @@ def test_routes_serve_page_build_and_archive(tmp_path):
     wasm.parent.mkdir(parents=True)
     wasm.write_bytes(b"\0asm")
     archive = tmp_path / "SnailMail.dat"
-    archive.write_bytes(bytes(range(256)) * 3)
+    write_archive(archive, {path: tga((40, 10, 70)) for path in SPLASH_IMAGES.values()})
 
     table = routes(tmp_path, archive)
     server = ThreadingHTTPServer(("127.0.0.1", 0), partial(Handler, table=table))
@@ -39,6 +61,10 @@ def test_routes_serve_page_build_and_archive(tmp_path):
         with urllib.request.urlopen(f"{base}/SnailMail.dat.gz") as response:
             assert response.headers["Content-Type"] == "application/gzip"
             assert decode_bytes(gzip.decompress(response.read())) == archive.read_bytes()
+        for name in SPLASH_IMAGES:  # the loading screen's textures, from the archive
+            with urllib.request.urlopen(f"{base}/{name}") as response:
+                assert response.headers["Content-Type"] == "image/avif"
+                assert Image.open(io.BytesIO(response.read())).size == (8, 8)
         (web / "added.js").write_text("export {};")  # files added after start are served
         with urllib.request.urlopen(f"{base}/added.js") as response:
             assert response.read() == b"export {};"

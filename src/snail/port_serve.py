@@ -9,11 +9,17 @@ its XOR obfuscation is removed first, because the mask follows the file offset
 and hides nearly all redundancy from the compressor. gzip, because every
 browser decompresses it natively as it downloads; the page puts the XOR back.
 
-`pack_site` writes the same three things as static files for hosting, with a
-stripped release build of the game.
+The splash the page shows while it loads is the game's own loading screen
+(cRLoadingBar): its two textures come from the archive as AVIF, small enough to
+appear long before the archive arrives. 4:4:4 chroma, because subsampling
+smears the thin orange lettering.
+
+`pack_site` writes all of this as static files for hosting, with a stripped
+release build of the game.
 """
 
 import gzip
+import io
 import mimetypes
 import shutil
 import subprocess
@@ -23,16 +29,30 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from .archive import decode_bytes
+from PIL import Image
+
+from .archive import decode_bytes, parse_archive_index, read_archive_entry
 
 WEB = Path("port/web")
 WASM = Path("port/zig-out/bin/snail-web.wasm")
 ARCHIVE = Path("artifacts/bin/SnailMail.dat")
-CONTENT_TYPES = {".js": "text/javascript", ".wasm": "application/wasm", ".gz": "application/gzip"}
+CONTENT_TYPES = {".js": "text/javascript", ".wasm": "application/wasm", ".gz": "application/gzip", ".avif": "image/avif"}
+SPLASH_IMAGES = {"loading.avif": "Sprites/Loading.tga", "loading-bar.avif": "Sprites/LoadingBarOn.tga"}
 
 
 def pack_archive(archive: Path) -> bytes:
     return gzip.compress(decode_bytes(archive.read_bytes()), compresslevel=9, mtime=0)
+
+
+def splash_images(archive: Path) -> dict[str, bytes]:
+    index = parse_archive_index(archive)
+    images = {}
+    for name, path in SPLASH_IMAGES.items():
+        texture = Image.open(io.BytesIO(read_archive_entry(archive, index.entry_by_path(path))))
+        out = io.BytesIO()
+        texture.convert("RGB").save(out, "AVIF", quality=60, subsampling="4:4:4")
+        images[name] = out.getvalue()
+    return images
 
 
 def pack_site(root: Path, out: Path, archive: Path) -> None:
@@ -46,6 +66,8 @@ def pack_site(root: Path, out: Path, archive: Path) -> None:
         shutil.copytree(root / WEB, out)
         shutil.copy(Path(prefix) / "bin" / WASM.name, out / WASM.name)
     (out / "SnailMail.dat.gz").write_bytes(pack_archive(archive))
+    for name, image in splash_images(archive).items():
+        (out / name).write_bytes(image)
 
 
 def routes(root: Path, archive: Path) -> dict[str, Path | bytes]:
@@ -54,6 +76,7 @@ def routes(root: Path, archive: Path) -> dict[str, Path | bytes]:
         "/": root / WEB / "index.html",
         "/snail-web.wasm": root / WASM,
         "/SnailMail.dat.gz": pack_archive(archive),
+        **{f"/{name}": image for name, image in splash_images(archive).items()},
         "": root / WEB,
     }
 

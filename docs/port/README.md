@@ -268,8 +268,12 @@ with its XOR obfuscation removed, 7.1 MB instead of 27.4 MB, and the page
 restores the original bytes), forwards keys (as DirectInput
 scan codes), pointer, buttons and wheel, and calls the game once per animation
 frame with the elapsed time. The loop keeps the original's timing: whole 1/60 s
-steps from an accumulator capped at 25 steps, then one rendered frame. There is
-sound once the page has had a click or key press (browsers require one).
+steps from an accumulator capped at 25 steps, then one rendered frame. While
+it loads, the page shows the game's own loading screen (`Sprites/Loading.tga`
+with `LoadingBarOn.tga` filled as `cRLoadingBar` fills it, both served from the
+archive as AVIF, about 16 KB together); when the game has started it waits for
+a click or key press, which unlocks sound (browsers require a gesture) without
+reaching the game, so the intro plays from its start.
 Files the game writes (`SnailMail.cfg` with progress and options, the
 `ScoreA/B/C.dat` tables) persist in the browser's IndexedDB. The game wrote
 its score tables only when quitting, so the page runs those saves when it is
@@ -289,7 +293,7 @@ wrangler deploy -c port/wrangler.jsonc
 
 `pack` writes `artifacts/web/`: the page, a stripped `ReleaseFast` build of
 `snail-web.wasm` (4.1 MB, about 0.2 MB as sent compressed; the DWARF is 7 MB of
-the development build) and the packed archive. The release build replays the
+the development build), the packed archive and the loading screen images. The release build replays the
 lockstep sessions and high-score runs bit for bit, like the development one.
 The deploy also points the custom domain at the Worker and provisions its
 certificate.

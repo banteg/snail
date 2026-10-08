@@ -2,8 +2,8 @@
 // fetchArchive) into the in-memory file system, forwards keyboard and mouse input in DirectInput terms, and calls
 // snail_frame once per animation frame with the elapsed time.
 //
-// A splash covers the screen while the page loads and starts the game, then
-// waits for a click or key press: browsers allow sound only after a gesture,
+// The game's own loading screen covers the canvas while the page loads and
+// starts the game, then waits for a click or key press: browsers allow sound only after a gesture,
 // and taking that gesture here keeps it from reaching the game (where it would
 // skip the intro).
 //
@@ -23,8 +23,13 @@ import { createWasi, ExitStatus, MemoryFileSystem } from "./wasi.js";
 const canvas = document.getElementById("screen");
 const status = document.getElementById("status");
 const splash = document.getElementById("splash");
-const detail = document.getElementById("detail");
 const bar = document.getElementById("bar");
+
+// As cRLoadingBar::AI draws it: 92% of the progress until it is nearly done.
+function showProgress(percent) {
+  const shown = percent > 98 ? 100 : percent * 0.92;
+  bar.style.clipPath = `inset(0 ${100 - shown}% 0 0)`;
+}
 
 function show(text, error = false) {
   status.textContent = text;
@@ -74,9 +79,8 @@ async function fetchArchive(url, onProgress) {
 
 // Resolves on the first click on the splash or key press, which the game never sees.
 function waitForGesture() {
+  showProgress(100);
   splash.classList.add("ready");
-  detail.textContent = "or press any key";
-  document.getElementById("play").focus();
   return new Promise((resolve) => {
     const start = (event) => {
       event.preventDefault();
@@ -143,12 +147,8 @@ async function main() {
   } catch {}
   const audio = new AudioPresenter({ muted });
   const fs = new MemoryFileSystem();
-  const megabytes = (bytes) => (bytes / 1e6).toFixed(1);
   const [archive, module] = await Promise.all([
-    fetchArchive("SnailMail.dat.gz", (received, total) => {
-      bar.style.width = `${(100 * received) / total}%`;
-      detail.textContent = `Loading ${megabytes(received)} / ${megabytes(total)} MB`;
-    }),
+    fetchArchive("SnailMail.dat.gz", (received, total) => showProgress(Math.min(98, (100 * received) / total))),
     WebAssembly.compileStreaming(fetch("snail-web.wasm")),
   ]);
   fs.write("SnailMail.dat", archive);
@@ -172,8 +172,6 @@ async function main() {
   renderer.bind(exports.memory);
   audio.bind(exports.memory);
 
-  detail.textContent = "Starting…";
-  await new Promise((resolve) => setTimeout(resolve)); // let the splash paint
   exports._initialize();
   const warmup = new URLSearchParams(location.search).get("warmup");
   if (!exports.snail_start(warmup === null ? Date.now() % 1000 : Number(warmup))) {
