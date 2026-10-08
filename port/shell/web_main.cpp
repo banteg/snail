@@ -4,8 +4,10 @@
 // loop's timing: whole 1/60 s steps from an accumulator capped at 25 steps,
 // then one rendered frame.
 
+#include "draw_distance.h"
 #include "game_session.h"
 #include "input_state.h"
+#include "runtime_config.h"
 
 #define WEB_EXPORT(name) __attribute__((export_name(name)))
 
@@ -48,6 +50,18 @@ WEB_EXPORT("snail_save") void snail_save()
     save_game();
 }
 
+// The host left or entered fullscreen on its own (the browser's Escape, a
+// window button): the game's option follows, as the Options menu shows it.
+WEB_EXPORT("snail_fullscreen_changed") void snail_fullscreen_changed(int enabled)
+{
+    g_runtime_config.fullscreen_enabled = (char)(enabled != 0);
+}
+
+WEB_EXPORT("snail_fullscreen_enabled") int snail_fullscreen_enabled()
+{
+    return g_runtime_config.fullscreen_enabled;
+}
+
 WEB_EXPORT("snail_key") void snail_key(int scan_code, int down)
 {
     input_set_key(scan_code, down != 0);
@@ -66,4 +80,10 @@ WEB_EXPORT("snail_button") void snail_button(int button, int down)
 WEB_EXPORT("snail_wheel") void snail_wheel(int direction)
 {
     input_add_wheel(direction);
+}
+
+// The longer view (shell/draw_distance.h): a multiple of the original's, 1 for off.
+WEB_EXPORT("snail_set_draw_distance") void snail_set_draw_distance(float scale)
+{
+    g_port_draw_distance = scale;
 }

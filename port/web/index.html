@@ -31,6 +31,27 @@
   }
   @keyframes blink { 50% { opacity: 0.35; } }
   #splash.ready #play { display: block; }
+
+  /* Port options (settings.js). */
+  #gear {
+    position: fixed; top: 8px; right: 8px; z-index: 2; width: 32px; height: 32px; border: 0; border-radius: 50%;
+    background: #0008; color: #ddd; font-size: 18px; line-height: 32px; cursor: pointer; opacity: 0.35; transition: opacity 0.2s;
+  }
+  #gear:hover, #gear:focus-visible { opacity: 1; }
+  #options {
+    position: fixed; top: 48px; right: 8px; z-index: 2; width: 300px; max-width: calc(100vw - 32px); padding: 14px 16px;
+    border: 1px solid #ffffff22; border-radius: 10px; background: #160a22ee; color: #eee; font: 13px/1.35 system-ui, sans-serif;
+    box-shadow: 0 8px 30px #000a;
+  }
+  #options h2 { margin: 0 0 10px; font-size: 14px; }
+  #options .presets { display: flex; gap: 6px; margin-bottom: 10px; }
+  #options .presets button {
+    flex: 1; padding: 6px; border: 1px solid #ffffff33; border-radius: 6px; background: transparent; color: inherit; cursor: pointer; font: inherit;
+  }
+  #options .presets button.active { background: #ffd36e; border-color: #ffd36e; color: #2a0b3e; font-weight: 600; }
+  #options label { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; cursor: pointer; }
+  #options input { margin-top: 2px; accent-color: #ffd36e; }
+  #options small { display: block; color: #b9a3d6; }
 </style>
 </head>
 <body>

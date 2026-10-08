@@ -53,4 +53,9 @@ void backend_clear(int flags, unsigned int color, float z, const RenderState* st
 void backend_draw(int primitive, const RenderVertex* vertices, int count, const RenderState* state);
 void backend_present();
 
+// The window: the game's fullscreen option (set_fullscreen_mode) asks the host
+// to enter or leave fullscreen. The host reports changes it makes itself
+// through snail_fullscreen_changed (web_main.cpp).
+void backend_set_fullscreen(int enabled);
+
 #endif

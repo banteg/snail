@@ -283,6 +283,39 @@ hidden or closed. `?reset` clears them, and `?mute` silences the game until
 `?mute=0` (the page remembers either).
 `?warmup=N` fixes the random warmup for a repeatable start.
 
+### Enhancements
+
+The gear in the page's corner switches the port's enhancements over the
+original, one by one or all at once (Original, Enhanced); the page remembers
+the choice. They live in the host and the presenters, never in the game's
+logic, so the oracles hold either way.
+
+- **Sharp rendering:** the presenter draws at the canvas's size in device
+  pixels instead of 640x480. Viewports scale, while the half-pixel offset stays
+  half an original pixel, so every draw lands where it did, only finer.
+- **Fullscreen:** the game's own Fullscreen option (`set_fullscreen_mode`, which
+  the shell replaces) puts the page in fullscreen. Browsers allow that only
+  after a gesture, so a saved fullscreen setting waits for the click that
+  starts the game. Leaving fullscreen through the browser turns the option off,
+  so the Options menu stays truthful. In fullscreen, Escape still reaches the
+  game where the browser supports keyboard lock; holding it leaves fullscreen.
+- **Trap the mouse:** a click locks the pointer to the game (pointer lock), and
+  its motion moves the game's cursor at the speed it had. Escape lets it go.
+  The original trapped the pointer only by taking over the display in
+  fullscreen.
+- **See further ahead:** the track is drawn three times as far
+  (`shell/draw_distance.cpp`). The original's view ends at its far plane, 52
+  units from the camera; the whole track is built at level start, but its
+  render caches are linked only 46 units ahead of the snail, and row models and
+  uncached cells 38 units ahead, by the fixed step. Before a frame renders, the
+  shell links what the game would link further on, moves the far plane (and
+  fog band) out to match, and undoes every write after drawing, so the
+  simulation never sees it. Pickups, hazards and parcels still appear 38 units
+  ahead, where the game spawns them: spawning draws random numbers. Both
+  oracles match with it on (`--draw-distance` in the headless program).
+  The original's linear vertex fog (30 to 50 units) does not show with its
+  right-handed view, in the port as in captures of the original.
+
 ### Hosting
 
 https://snail.banteg.xyz serves the same page as static files from Cloudflare
@@ -318,6 +351,16 @@ versions of the same two shaders) and SDL3_mixer. The window scales the
 640x480 frame with letterboxing. `--frames N --screenshot FILE` runs N fixed
 frames in a hidden window and saves the last one; runs with the same
 `--warmup` give byte-identical frames.
+
+The native host has the same enhancements, on by default: rendering at the
+window's pixel resolution, the game's Fullscreen option making the window
+fullscreen (the window's own controls turn the option off and on), a click
+trapping the pointer (Escape in a window, or leaving it, frees it), and the
+longer view.
+`--no-hidpi`, `--no-fullscreen` and `--no-trap-mouse` switch them off one by
+one, `--draw-distance S` sets the view (default 3, 1 for the original's),
+`--original` switches all of them off; compare screenshots with the original's at
+640x480 with `--original`.
 
 ## Building the headless port
 

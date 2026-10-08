@@ -9,6 +9,7 @@ WEB_IMPORT("texture_create") void web_texture_create(int id, int width, int heig
 WEB_IMPORT("texture_destroy") void web_texture_destroy(int id);
 WEB_IMPORT("clear") void web_clear(int flags, unsigned int color, float z, const RenderState* state);
 WEB_IMPORT("draw") void web_draw(int primitive, const RenderVertex* vertices, int count, const RenderState* state);
+WEB_IMPORT("set_fullscreen") void web_set_fullscreen(int enabled);
 
 void backend_create_texture(int id, int width, int height, const unsigned char* rgba)
 {
@@ -29,6 +30,8 @@ void backend_draw(int primitive, const RenderVertex* vertices, int count, const 
 
 // The browser shows the canvas when the animation-frame callback returns.
 void backend_present() {}
+
+void backend_set_fullscreen(int enabled) { web_set_fullscreen(enabled); }
 
 // Audio goes to Web Audio in port/web/audio.js.
 #include "audio_backend.h"

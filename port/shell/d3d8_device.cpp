@@ -16,6 +16,7 @@
 #include "d3d8_device.h"
 #include "direct3d_device8_view.h"
 #include "direct3d_renderer.h"
+#include "draw_distance.h"
 #include "object_render_types.h"
 #include "render_backend.h"
 #include "vertex_buffer_view.h"
@@ -196,11 +197,13 @@ struct VertexStage {
     VertexStage()
     {
         const int* rs = g_device.render_states;
+        Matrix projection;
+        draw_distance_projection(g_device.projection, projection);
         multiply(g_device.world, g_device.view, world_view);
-        multiply(world_view, g_device.projection, clip);
+        multiply(world_view, projection, clip);
         fog = rs[D3DRS_FOGENABLE] != 0;
-        fog_start = as_float(rs[D3DRS_FOGSTART]);
-        fog_end = as_float(rs[D3DRS_FOGEND]);
+        fog_start = as_float(rs[D3DRS_FOGSTART]) + draw_distance_extra();
+        fog_end = as_float(rs[D3DRS_FOGEND]) + draw_distance_extra();
         texture_transform = g_device.stage_states[D3DTSS_TEXTURETRANSFORMFLAGS] == D3DTTFF_COUNT2;
         has_diffuse = (g_device.fvf & D3DFVF_DIFFUSE) != 0;
         has_texture = ((g_device.fvf >> D3DFVF_TEXCOUNT_SHIFT) & 0xf) != 0;

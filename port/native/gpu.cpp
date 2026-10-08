@@ -1,8 +1,11 @@
 // SDL3 GPU presenter for the emulated Direct3D 8 device (port/shell/
 // render_backend.h), the native counterpart of port/web/renderer.js. A frame's
 // clears and draws are recorded as they arrive, then submitted together:
-// vertices go up in one buffer, the scene renders into a 640x480 target with
-// depth, and the target is scaled into the window with letterboxing.
+// vertices go up in one buffer, the scene renders into a target with depth, and
+// the target is scaled into the window with letterboxing. The target is
+// 640x480, or with `hidpi` the size the frame fills in the window's pixels:
+// viewports scale with it, while the half-pixel offset stays half of an
+// original pixel, so everything lands where it did.
 //
 // Shaders are Metal Shading Language, so this runs on macOS. Other platforms
 // need the same two shaders as SPIR-V or DXIL.
@@ -242,8 +245,11 @@ struct GpuPresenter {
     SDL_Window* window;
     SDL_GPUDevice* device;
     SDL_GPUShader *vertex, *fragment, *clear_vertex, *clear_fragment;
-    SDL_GPUTexture *target, *depth, *blank;
+    SDL_GPUTexture *target = nullptr, *depth = nullptr, *blank;
     SDL_GPUTextureFormat depth_format;
+    bool hidpi;
+    int width = 0, height = 0;  // of the target
+    float scale = 1;            // target pixels per original pixel
     SDL_GPUSampler* samplers[5][5];
     std::unordered_map<uint64_t, SDL_GPUGraphicsPipeline*> pipelines;
     std::unordered_map<int, SDL_GPUTexture*> textures;
@@ -379,19 +385,39 @@ SDL_GPUGraphicsPipeline* pipeline(GpuPresenter* gpu, const Command& command)
     return result;
 }
 
-void set_viewport(SDL_GPURenderPass* pass, const State& s)
+void set_viewport(GpuPresenter* gpu, SDL_GPURenderPass* pass, const State& s)
 {
-    SDL_GPUViewport viewport = {(float)s.viewport_x, (float)s.viewport_y, (float)s.viewport_width,
-        (float)s.viewport_height, s.viewport_min_z, s.viewport_max_z};
+    float k = gpu->scale;
+    SDL_GPUViewport viewport = {SDL_roundf(s.viewport_x * k), SDL_roundf(s.viewport_y * k),
+        SDL_roundf(s.viewport_width * k), SDL_roundf(s.viewport_height * k), s.viewport_min_z, s.viewport_max_z};
     SDL_SetGPUViewport(pass, &viewport);
+}
+
+// (Re)creates the target at `width` pixels across, 4:3.
+void resize_target(GpuPresenter* gpu, int width)
+{
+    int height = (width * 3 + 2) / 4;
+    if (width == gpu->width && height == gpu->height)
+        return;
+    if (gpu->target) {
+        SDL_ReleaseGPUTexture(gpu->device, gpu->target);
+        SDL_ReleaseGPUTexture(gpu->device, gpu->depth);
+    }
+    gpu->target = create_texture(gpu, width, height, SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
+        SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER);
+    gpu->depth = create_texture(gpu, width, height, gpu->depth_format, SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET);
+    gpu->width = width;
+    gpu->height = height;
+    gpu->scale = (float)width / kWidth;
 }
 
 }  // namespace
 
-GpuPresenter* gpu_create(SDL_Window* window)
+GpuPresenter* gpu_create(SDL_Window* window, bool hidpi)
 {
     GpuPresenter* gpu = new GpuPresenter;
     gpu->window = window;
+    gpu->hidpi = hidpi;
     gpu->device = SDL_CreateGPUDevice(SDL_GPU_SHADERFORMAT_MSL, false, nullptr);
     if (!gpu->device || !SDL_ClaimWindowForGPUDevice(gpu->device, window)) {
         SDL_Log("snail: GPU device: %s", SDL_GetError());
@@ -406,9 +432,7 @@ GpuPresenter* gpu_create(SDL_Window* window)
         return nullptr;
 
     gpu->depth_format = SDL_GPU_TEXTUREFORMAT_D32_FLOAT;
-    gpu->target = create_texture(gpu, kWidth, kHeight, SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM,
-        SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER);
-    gpu->depth = create_texture(gpu, kWidth, kHeight, gpu->depth_format, SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET);
+    resize_target(gpu, kWidth);
     gpu->blank = create_texture(gpu, 1, 1, SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM, SDL_GPU_TEXTUREUSAGE_SAMPLER);
     const uint8_t black[4] = {0, 0, 0, 255};
     upload_texture(gpu, gpu->blank, 1, 1, black);
@@ -430,6 +454,11 @@ bool gpu_frame_pending(GpuPresenter* gpu) { return !gpu->commands.empty(); }
 
 void gpu_end_frame(GpuPresenter* gpu, bool present)
 {
+    if (gpu->hidpi) {
+        int width, height;
+        SDL_GetWindowSizeInPixels(gpu->window, &width, &height);
+        resize_target(gpu, SDL_max(kWidth, SDL_min(width, height * 4 / 3)));
+    }
     SDL_GPUCommandBuffer* commands = SDL_AcquireGPUCommandBuffer(gpu->device);
 
     // All of the frame's vertices in one buffer.
@@ -473,7 +502,7 @@ void gpu_end_frame(GpuPresenter* gpu, bool present)
         if (!state_pipeline)
             continue;
         SDL_BindGPUGraphicsPipeline(pass, state_pipeline);
-        set_viewport(pass, command.state);
+        set_viewport(gpu, pass, command.state);
         if (command.clear) {
             ClearUniforms uniforms = {};
             argb(command.color, uniforms.color);
@@ -508,7 +537,7 @@ void gpu_end_frame(GpuPresenter* gpu, bool present)
     gpu->commands.clear();
     gpu->vertices.clear();
 
-    // Scale the 640x480 frame into the window, letterboxed.
+    // Scale the frame into the window, letterboxed.
     SDL_GPUTexture* swapchain;
     Uint32 width, height;
     if (present && SDL_WaitAndAcquireGPUSwapchainTexture(commands, gpu->window, &swapchain, &width, &height) && swapchain) {
@@ -516,8 +545,8 @@ void gpu_end_frame(GpuPresenter* gpu, bool present)
         float w = kWidth * scale, h = kHeight * scale;
         SDL_GPUBlitInfo blit = {};
         blit.source.texture = gpu->target;
-        blit.source.w = kWidth;
-        blit.source.h = kHeight;
+        blit.source.w = gpu->width;
+        blit.source.h = gpu->height;
         blit.destination.texture = swapchain;
         blit.destination.x = (Uint32)((width - w) / 2);
         blit.destination.y = (Uint32)((height - h) / 2);
@@ -533,23 +562,23 @@ void gpu_end_frame(GpuPresenter* gpu, bool present)
 
 bool gpu_save_frame(GpuPresenter* gpu, const char* path)
 {
-    uint32_t size = kWidth * kHeight * 4;
+    uint32_t size = (uint32_t)gpu->width * gpu->height * 4;
     SDL_GPUTransferBufferCreateInfo transfer_info = {SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD, size, 0};
     SDL_GPUTransferBuffer* transfer = SDL_CreateGPUTransferBuffer(gpu->device, &transfer_info);
     SDL_GPUCommandBuffer* commands = SDL_AcquireGPUCommandBuffer(gpu->device);
     SDL_GPUCopyPass* copy = SDL_BeginGPUCopyPass(commands);
     SDL_GPUTextureRegion source = {};
     source.texture = gpu->target;
-    source.w = kWidth;
-    source.h = kHeight;
+    source.w = gpu->width;
+    source.h = gpu->height;
     source.d = 1;
-    SDL_GPUTextureTransferInfo destination = {transfer, 0, kWidth, kHeight};
+    SDL_GPUTextureTransferInfo destination = {transfer, 0, (Uint32)gpu->width, (Uint32)gpu->height};
     SDL_DownloadFromGPUTexture(copy, &source, &destination);
     SDL_EndGPUCopyPass(copy);
     SDL_GPUFence* fence = SDL_SubmitGPUCommandBufferAndAcquireFence(commands);
     SDL_WaitForGPUFences(gpu->device, true, &fence, 1);
     SDL_ReleaseGPUFence(gpu->device, fence);
-    SDL_Surface* surface = SDL_CreateSurface(kWidth, kHeight, SDL_PIXELFORMAT_RGBA32);
+    SDL_Surface* surface = SDL_CreateSurface(gpu->width, gpu->height, SDL_PIXELFORMAT_RGBA32);
     memcpy(surface->pixels, SDL_MapGPUTransferBuffer(gpu->device, transfer, false), size);
     SDL_UnmapGPUTransferBuffer(gpu->device, transfer);
     SDL_ReleaseGPUTransferBuffer(gpu->device, transfer);

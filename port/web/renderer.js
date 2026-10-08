@@ -2,6 +2,10 @@
 // render_backend.h). Draws arrive fully transformed in Direct3D conventions;
 // this does the pixel stage: texture stage 0 (D3DTOP/D3DTA), alpha test, vertex
 // fog, blending, depth and culling, with Direct3D's viewport and pixel centres.
+//
+// The game draws in 640x480 coordinates. setResolution renders them at a
+// multiple of that instead (HiDPI): viewports scale, while the half-pixel
+// offset stays half of an original pixel, so everything lands where it did.
 
 const VERTEX_BYTES = 32;
 const STATE_WORDS = 28; // RenderState, in 4-byte fields
@@ -114,6 +118,7 @@ export class Renderer {
     if (!gl) throw new Error("WebGL2 is not available");
     this.gl = gl;
     this.canvas = canvas;
+    this.scale = canvas.width / 640;
     this.memory = null;
     this.textures = new Map();
 
@@ -161,6 +166,15 @@ export class Renderer {
     this.memory = memory;
   }
 
+  // Backing store width in device pixels; 640 is the original resolution.
+  setResolution(width) {
+    const height = Math.round((width * 3) / 4);
+    if (this.canvas.width === width && this.canvas.height === height) return;
+    this.canvas.width = width;
+    this.canvas.height = height;
+    this.scale = width / 640;
+  }
+
   state(pointer) {
     const words = new Int32Array(this.memory.buffer, pointer, STATE_WORDS);
     const floats = new Float32Array(this.memory.buffer, pointer, STATE_WORDS);
@@ -183,10 +197,12 @@ export class Renderer {
   applyViewport(state) {
     const gl = this.gl;
     const [x, y, width, height] = state.viewport;
-    gl.viewport(x, this.canvas.height - y - height, width, height);
-    gl.scissor(x, this.canvas.height - y - height, width, height);
+    const k = this.scale;
+    const box = [Math.round(x * k), Math.round(this.canvas.height - (y + height) * k), Math.round(width * k), Math.round(height * k)];
+    gl.viewport(...box);
+    gl.scissor(...box);
     gl.depthRange(state.depthRange[0], state.depthRange[1]);
-    gl.uniform2f(this.uniforms.u_pixel, 1 / width, 1 / height);
+    gl.uniform2f(this.uniforms.u_pixel, 1 / width, 1 / height); // half an original pixel, in NDC
   }
 
   imports() {

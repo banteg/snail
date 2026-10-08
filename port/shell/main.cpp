@@ -2,7 +2,7 @@
 // fixed 1/60 s per tick, with scripted input and a presenter that shows
 // nothing. The browser build (web_main.cpp) runs the same session live.
 //
-// Usage: snail.wasm [--ticks N] [--keys SCRIPT] [--warmup N] [--trace] [--replay A3]
+// Usage: snail.wasm [--ticks N] [--keys SCRIPT] [--warmup N] [--trace] [--replay A3] [--draw-distance S]
 //        snail.wasm --tape TAPE --tape-out STATES
 //   --ticks   ticks to run (default 600; with --keys, until the script ends)
 //   --keys    input script (shell/input_script.cpp)
@@ -13,6 +13,8 @@
 //             (shell/replay_oracle.cpp); pair with scripts/high_scores.keys
 //   --tape    replay a session the original recorded and write the port's
 //             state per tick (shell/lockstep_tape.cpp; snail port lockstep)
+//   --draw-distance  render S times as far down the track (shell/draw_distance.h);
+//             it must leave every replay and tape unchanged
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,6 +23,7 @@
 
 #include "frontend_widget.h"
 #include "game_root.h"
+#include "draw_distance.h"
 #include "game_session.h"
 #include "input_script.h"
 #include "lockstep_tape.h"
@@ -80,6 +83,8 @@ int main(int argc, char** argv)
             keys = argv[++i];
         else if (strcmp(argv[i], "--warmup") == 0 && i + 1 < argc)
             warmup = atoi(argv[++i]);
+        else if (strcmp(argv[i], "--draw-distance") == 0 && i + 1 < argc)
+            g_port_draw_distance = (float)atof(argv[++i]);
         else if (strcmp(argv[i], "--trace") == 0)
             trace = true;
         else if (strcmp(argv[i], "--tape") == 0 && i + 1 < argc)

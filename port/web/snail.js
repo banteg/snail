@@ -10,6 +10,12 @@
 // Files the game writes are kept in IndexedDB (storage.js). The game saved its
 // score tables only when quitting, so the page saves when it is hidden.
 //
+// Enhancements over the original (settings.js) switch on and off in the page:
+// rendering at the display's resolution, the game's Fullscreen option filling
+// the screen, trapping the mouse (pointer lock: the game's cursor then moves by
+// relative motion, at the speed it had), and drawing the track further ahead
+// (shell/draw_distance.h; the simulation never sees it).
+//
 // URL parameters: ?warmup=N fixes the random warmup (the original used
 // timeGetTime() % 1000, so by default every start differs); ?reset clears
 // saved progress, scores and options; ?mute silences the game and ?mute=0
@@ -17,6 +23,7 @@
 
 import { AudioPresenter } from "./audio.js";
 import { Renderer } from "./renderer.js";
+import { Settings } from "./settings.js";
 import { openSaves } from "./storage.js";
 import { createWasi, ExitStatus, MemoryFileSystem } from "./wasi.js";
 
@@ -57,6 +64,8 @@ const SCAN_CODES = {
 // SnailMail.dat.gz is the archive without its XOR obfuscation, gzipped
 // (src/snail/port_serve.py). The game's loader expects the original bytes, so
 // the mask goes back on: it follows the file offset and repeats every 256 bytes.
+const DRAW_DISTANCE = 3; // the longer view, as a multiple of the original's
+
 const XOR_KEY = Uint8Array.from({ length: 256 }, (_, i) => ((i * i) & 0xff) ^ ((i * 3) & 0xff));
 
 async function fetchArchive(url, onProgress) {
@@ -93,12 +102,25 @@ function waitForGesture() {
   });
 }
 
-function connectInput(exports) {
+function clamp(value, low, high) {
+  return Math.max(low, Math.min(high, value));
+}
+
+function connectInput(exports, settings) {
+  // The cursor in game pixels: from the pointer's position, or moved by its
+  // motion while the pointer is locked.
+  let x = 320, y = 240;
+  const locked = () => document.pointerLockElement === canvas;
   const pointer = (event) => {
     const box = canvas.getBoundingClientRect();
-    const x = Math.floor(((event.clientX - box.left) / box.width) * 640);
-    const y = Math.floor(((event.clientY - box.top) / box.height) * 480);
-    exports.snail_pointer(Math.max(0, Math.min(639, x)), Math.max(0, Math.min(479, y)));
+    if (locked()) {
+      x = clamp(x + (event.movementX * 640) / box.width, 0, 639);
+      y = clamp(y + (event.movementY * 480) / box.height, 0, 479);
+    } else {
+      x = clamp(((event.clientX - box.left) / box.width) * 640, 0, 639);
+      y = clamp(((event.clientY - box.top) / box.height) * 480, 0, 479);
+    }
+    exports.snail_pointer(Math.floor(x), Math.floor(y));
   };
   const button = (event, down) => {
     if (event.button === 0 || event.button === 2) exports.snail_button(event.button === 0 ? 0 : 1, down);
@@ -106,7 +128,8 @@ function connectInput(exports) {
   canvas.addEventListener("pointermove", pointer);
   canvas.addEventListener("pointerdown", (event) => {
     canvas.focus();
-    canvas.setPointerCapture(event.pointerId);
+    if (settings.get("trapMouse") && !locked()) lockPointer();
+    if (!locked()) canvas.setPointerCapture(event.pointerId);
     pointer(event);
     button(event, 1);
   });
@@ -121,7 +144,7 @@ function connectInput(exports) {
   }, { passive: false });
   const key = (event, down) => {
     const code = SCAN_CODES[event.code];
-    if (code === undefined || event.metaKey) return;
+    if (code === undefined || event.metaKey || settings.open) return;
     event.preventDefault();
     exports.snail_key(code, down);
   };
@@ -131,6 +154,66 @@ function connectInput(exports) {
   window.addEventListener("blur", () => {
     for (const code of Object.values(SCAN_CODES)) exports.snail_key(code, 0);
   });
+}
+
+function lockPointer() {
+  // Safari returns nothing; others a promise that rejects when the page may not lock yet.
+  canvas.requestPointerLock()?.catch?.(() => {});
+}
+
+// The game's Fullscreen option (set_fullscreen_mode) with the page as the
+// screen. Browsers enter fullscreen only after a gesture: a request without
+// one waits for the click that starts the game. Leaving fullscreen through the
+// browser turns the game's option off, so its Options menu stays truthful.
+class Fullscreen {
+  constructor(settings) {
+    this.settings = settings;
+    this.wanted = false;
+    this.exports = null;
+    document.addEventListener("fullscreenchange", () => {
+      const full = document.fullscreenElement !== null;
+      if (full && this.settings.get("trapMouse")) lockPointer();
+      if (full !== this.wanted && this.settings.get("fullscreen") && this.exports) {
+        this.wanted = full;
+        this.exports.snail_fullscreen_changed(full ? 1 : 0);
+      }
+    });
+  }
+
+  request(enabled) {
+    this.wanted = enabled;
+    this.apply();
+  }
+
+  apply() {
+    const want = this.wanted && this.settings.get("fullscreen");
+    if (want && !document.fullscreenElement && (navigator.userActivation?.isActive ?? true)) {
+      document.documentElement
+        .requestFullscreen({ navigationUI: "hide" })
+        // Escape belongs to the game; holding it still leaves fullscreen.
+        .then(() => navigator.keyboard?.lock?.(["Escape"]))
+        .catch(() => {});
+    } else if (!want && document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    }
+  }
+}
+
+// Sharp rendering draws at the canvas's size in device pixels; otherwise at
+// 640x480, scaled up by the page as before.
+function connectResolution(renderer, settings) {
+  let devicePixels = 640;
+  const update = () => renderer.setResolution(settings.get("hidpi") ? Math.max(640, devicePixels) : 640);
+  const observer = new ResizeObserver(([entry]) => {
+    devicePixels = Math.round(entry.devicePixelContentBoxSize?.[0].inlineSize ?? entry.contentRect.width * devicePixelRatio);
+    update();
+  });
+  try {
+    observer.observe(canvas, { box: "device-pixel-content-box" });
+  } catch {
+    observer.observe(canvas);
+  }
+  return update;
 }
 
 async function main() {
@@ -146,6 +229,15 @@ async function main() {
     muted = localStorage.getItem("snail-mail-mute") === "1";
   } catch {}
   const audio = new AudioPresenter({ muted });
+  const settings = new Settings((changes) => {
+    if ("hidpi" in changes) updateResolution();
+    if ("fullscreen" in changes) fullscreen.apply();
+    if (changes.trapMouse === false && document.pointerLockElement) document.exitPointerLock();
+    if ("drawDistance" in changes) applyDrawDistance();
+  });
+  let applyDrawDistance = () => {};
+  const fullscreen = new Fullscreen(settings);
+  const updateResolution = connectResolution(renderer, settings);
   const fs = new MemoryFileSystem();
   const [archive, module] = await Promise.all([
     fetchArchive("SnailMail.dat.gz", (received, total) => showProgress(Math.min(98, (100 * received) / total))),
@@ -165,7 +257,7 @@ async function main() {
   });
   const instance = await WebAssembly.instantiate(module, {
     wasi_snapshot_preview1: wasi.imports,
-    snail: { ...renderer.imports(), ...audio.imports() },
+    snail: { ...renderer.imports(), ...audio.imports(), set_fullscreen: (enabled) => fullscreen.request(enabled !== 0) },
   });
   const exports = instance.exports;
   wasi.bind(exports.memory);
@@ -177,16 +269,20 @@ async function main() {
   if (!exports.snail_start(warmup === null ? Date.now() % 1000 : Number(warmup))) {
     throw new Error("startup failed (see the console)");
   }
+  fullscreen.exports = exports;
+  applyDrawDistance = () => exports.snail_set_draw_distance(settings.get("drawDistance") ? DRAW_DISTANCE : 1);
+  applyDrawDistance();
   await waitForGesture();
   audio.unlock();
+  fullscreen.apply(); // a fullscreen request at startup waited for this gesture
   splash.classList.add("gone");
-  connectInput(exports);
+  connectInput(exports, settings);
   const save = () => exports.snail_save();
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") save();
   });
   window.addEventListener("pagehide", save);
-  window.snail = { exports, renderer, audio, fs }; // for the console
+  window.snail = { exports, renderer, audio, fs, settings }; // for the console
   canvas.focus();
 
   let last = performance.now();

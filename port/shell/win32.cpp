@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "rect.h"
+#include "render_backend.h"
 #include "win32_window_state.h"
 
 // initialize_direct3d_renderer_defaults sizes the windowed clip rectangle.
@@ -14,8 +15,11 @@ extern "C" BOOL __stdcall AdjustWindowRectEx(Rect*, UINT, BOOL, UINT)
 }
 
 // set_fullscreen_mode (port/replaced.txt) toggled the window and display mode;
-// the shell's window has one mode.
-void set_fullscreen_mode(char) {}
+// the host owns the window, so it decides how to go fullscreen.
+void set_fullscreen_mode(char enabled)
+{
+    backend_set_fullscreen(enabled);
+}
 
 // The original showed a message box; the shell has no window to own one.
 int abort_startup_with_3d_error()

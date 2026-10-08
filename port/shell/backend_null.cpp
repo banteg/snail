@@ -7,6 +7,7 @@ void backend_destroy_texture(int) {}
 void backend_clear(int, unsigned int, float, const RenderState*) {}
 void backend_draw(int, const RenderVertex*, int, const RenderState*) {}
 void backend_present() {}
+void backend_set_fullscreen(int) {}
 
 // Headless audio: nothing plays, so no channel is ever active.
 #include "audio_backend.h"

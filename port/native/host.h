@@ -11,12 +11,26 @@
 
 struct GpuPresenter;
 struct MixerPresenter;
+struct SDL_Window;
 
-// Import module "snail": the presenters. `game` gives them linear memory.
+// Enhancements over the original, each on unless switched off (--original
+// turns them all off): rendering at the window's pixel resolution, the game's
+// Fullscreen option filling the screen, trapping the mouse, and a longer view
+// down the track (a multiple of the original's; 1 is the original).
+struct HostOptions {
+    bool hidpi = true;
+    bool fullscreen = true;
+    bool trap_mouse = true;
+    float draw_distance = 3.0f;
+};
+
+// Import module "snail": the presenters and the window. `game` gives them linear memory.
 struct w2c_snail {
     w2c_game* game;
     GpuPresenter* gpu;
     MixerPresenter* mixer;
+    SDL_Window* window;
+    HostOptions options;
 };
 
 struct WasiState;
@@ -32,12 +46,12 @@ inline uint8_t* linear_memory(w2c_game* game) { return game->w2c_memory.data; }
 // wasi.cpp: the file system root is `root`, the directory holding SnailMail.dat.
 WasiState* wasi_create(const char* root);
 
-// gpu.cpp
-GpuPresenter* gpu_create(struct SDL_Window* window);
+// gpu.cpp; `hidpi` renders at the window's pixel resolution instead of 640x480.
+GpuPresenter* gpu_create(SDL_Window* window, bool hidpi);
 // Submit what the frame drew; `present` also scales it into the window.
 void gpu_end_frame(GpuPresenter* gpu, bool present);
 bool gpu_frame_pending(GpuPresenter* gpu);
-bool gpu_save_frame(GpuPresenter* gpu, const char* path);  // the last 640x480 frame, as PNG
+bool gpu_save_frame(GpuPresenter* gpu, const char* path);  // the last frame at its resolution, as PNG
 
 // mixer.cpp
 MixerPresenter* mixer_create(bool muted);

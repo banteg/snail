@@ -1,8 +1,16 @@
 // Native Snail Mail: snail-web.wasm translated by wasm2c, run in an SDL3
-// window. Usage: snail-native [--mute] [--warmup N] [--frames N --screenshot FILE] [data directory]
+// window. Usage: snail-native [options] [data directory]
+//   --mute                  no sound
+//   --warmup N              N random draws before construction (default: the clock, as the original)
+//   --frames N --screenshot FILE
+//                           run N fixed 1/60 s frames without input in a hidden window, save the last as PNG
+//   --original              switch off every enhancement below
+//   --no-hidpi              render at 640x480 instead of the window's pixel resolution
+//   --no-fullscreen         ignore the game's Fullscreen option
+//   --no-trap-mouse         leave the pointer free (by default a click traps it; Escape or leaving the window frees it)
+//   --draw-distance S       see S times as far down the track (default 3; 1 is the original view)
 // The data directory holds SnailMail.dat (default: the current directory);
-// saves land beside it, as with the original. --frames runs N fixed 1/60 s
-// frames without input in a hidden window, then saves the last one as a PNG.
+// saves land beside it, as with the original.
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
@@ -68,22 +76,51 @@ int dik(SDL_Scancode scancode)
     }
 }
 
-// Window coordinates -> the 640x480 frame, letterboxed as gpu.cpp draws it.
-void pointer(w2c_game* game, SDL_Window* window, float x, float y)
-{
-    int width, height;
-    SDL_GetWindowSize(window, &width, &height);
-    float scale = SDL_min((float)width / kWidth, (float)height / kHeight);
-    float left = (width - kWidth * scale) / 2, top = (height - kHeight * scale) / 2;
-    int px = (int)SDL_floorf((x - left) / scale), py = (int)SDL_floorf((y - top) / scale);
-    w2c_game_snail_pointer(game, (uint32_t)SDL_clamp(px, 0, kWidth - 1), (uint32_t)SDL_clamp(py, 0, kHeight - 1));
-}
+// The game's cursor in 640x480 pixels: from the pointer's window position, or
+// moved by its relative motion while trapped, at the same speed.
+struct Cursor {
+    float x = kWidth / 2, y = kHeight / 2;
+
+    // Window points per original pixel, and the letterbox's top left (as gpu.cpp draws it).
+    static float frame(SDL_Window* window, float* left, float* top)
+    {
+        int width, height;
+        SDL_GetWindowSize(window, &width, &height);
+        float scale = SDL_min((float)width / kWidth, (float)height / kHeight);
+        *left = (width - kWidth * scale) / 2;
+        *top = (height - kHeight * scale) / 2;
+        return scale;
+    }
+
+    void move(w2c_game* game, SDL_Window* window, float window_x, float window_y, float dx, float dy)
+    {
+        float left, top, scale = frame(window, &left, &top);
+        if (SDL_GetWindowRelativeMouseMode(window)) {
+            x += dx / scale;
+            y += dy / scale;
+        } else {
+            x = (window_x - left) / scale;
+            y = (window_y - top) / scale;
+        }
+        x = SDL_clamp(x, 0.0f, kWidth - 1.0f);
+        y = SDL_clamp(y, 0.0f, kHeight - 1.0f);
+        w2c_game_snail_pointer(game, (uint32_t)x, (uint32_t)y);
+    }
+};
 
 }  // namespace
+
+// The game's Fullscreen option (set_fullscreen_mode): fullscreen on the desktop's mode.
+extern "C" void w2c_snail_set_fullscreen(w2c_snail* host, uint32_t enabled)
+{
+    if (host->options.fullscreen)
+        SDL_SetWindowFullscreen(host->window, enabled != 0);
+}
 
 int main(int argc, char** argv)
 {
     bool muted = false;
+    HostOptions options;
     int warmup = -1;
     const char* root = ".";
     int frames = 0;
@@ -97,10 +134,21 @@ int main(int argc, char** argv)
             frames = atoi(argv[++i]);
         else if (strcmp(argv[i], "--screenshot") == 0 && i + 1 < argc)
             screenshot = argv[++i];
+        else if (strcmp(argv[i], "--draw-distance") == 0 && i + 1 < argc)
+            options.draw_distance = (float)atof(argv[++i]);
+        else if (strcmp(argv[i], "--original") == 0)
+            options = {false, false, false, 1.0f};
+        else if (strcmp(argv[i], "--no-hidpi") == 0)
+            options.hidpi = false;
+        else if (strcmp(argv[i], "--no-fullscreen") == 0)
+            options.fullscreen = false;
+        else if (strcmp(argv[i], "--no-trap-mouse") == 0)
+            options.trap_mouse = false;
         else if (argv[i][0] != '-')
             root = argv[i];
         else {
-            SDL_Log("usage: snail-native [--mute] [--warmup N] [--frames N --screenshot FILE] [data directory]");
+            SDL_Log("usage: snail-native [--mute] [--warmup N] [--frames N --screenshot FILE] [--original] "
+                    "[--no-hidpi] [--no-fullscreen] [--no-trap-mouse] [--draw-distance S] [data directory]");
             return 2;
         }
     }
@@ -120,8 +168,13 @@ int main(int argc, char** argv)
     static w2c_game game;
     static w2c_snail host;
     static w2c_wasi__snapshot__preview1 wasi;
+    // A hidden screenshot run stays in its window.
+    if (frames)
+        options.fullscreen = false;
     host.game = &game;
-    host.gpu = gpu_create(window);
+    host.window = window;
+    host.options = options;
+    host.gpu = gpu_create(window, options.hidpi);
     host.mixer = mixer_create(muted);
     wasi.game = &game;
     wasi.state = wasi_create(root);
@@ -136,6 +189,7 @@ int main(int argc, char** argv)
         SDL_Log("snail: startup failed; is SnailMail.dat in %s?", root);
         return 1;
     }
+    w2c_game_snail_set_draw_distance(&game, options.draw_distance);
 
     if (frames) {
         for (int frame = 0; frame < frames; ++frame) {
@@ -151,6 +205,11 @@ int main(int argc, char** argv)
         return saved ? 0 : 1;
     }
 
+    Cursor cursor;
+    auto trap = [&](bool on) {
+        if (options.trap_mouse)
+            SDL_SetWindowRelativeMouseMode(window, on);
+    };
     Uint64 last = SDL_GetTicksNS();
     bool running = true;
     while (running) {
@@ -164,13 +223,19 @@ int main(int argc, char** argv)
             case SDL_EVENT_KEY_UP:
                 if (int code = dik(event.key.scancode); code >= 0 && !event.key.repeat)
                     w2c_game_snail_key(&game, (uint32_t)code, event.type == SDL_EVENT_KEY_DOWN);
+                // Escape frees a trapped pointer in a window (the game sees it too).
+                if (event.key.scancode == SDL_SCANCODE_ESCAPE && event.type == SDL_EVENT_KEY_DOWN
+                    && !(SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN))
+                    trap(false);
                 break;
             case SDL_EVENT_MOUSE_MOTION:
-                pointer(&game, window, event.motion.x, event.motion.y);
+                cursor.move(&game, window, event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel);
                 break;
             case SDL_EVENT_MOUSE_BUTTON_DOWN:
             case SDL_EVENT_MOUSE_BUTTON_UP:
-                pointer(&game, window, event.button.x, event.button.y);
+                if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
+                    trap(true);
+                cursor.move(&game, window, event.button.x, event.button.y, 0, 0);
                 if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
                     w2c_game_snail_button(&game, event.button.button == SDL_BUTTON_LEFT ? 0 : 1,
                         event.type == SDL_EVENT_MOUSE_BUTTON_DOWN);
@@ -183,6 +248,14 @@ int main(int argc, char** argv)
                 // Keys held while the window loses focus would otherwise stay down.
                 for (int code = 0; code < 256; ++code)
                     w2c_game_snail_key(&game, (uint32_t)code, 0);
+                trap(false);
+                break;
+            case SDL_EVENT_WINDOW_ENTER_FULLSCREEN:
+            case SDL_EVENT_WINDOW_LEAVE_FULLSCREEN:
+                // Also when the window's own controls change it: the game's option follows.
+                if (options.fullscreen)
+                    w2c_game_snail_fullscreen_changed(&game, event.type == SDL_EVENT_WINDOW_ENTER_FULLSCREEN);
+                trap(event.type == SDL_EVENT_WINDOW_ENTER_FULLSCREEN);
                 break;
             default:
                 break;
