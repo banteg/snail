@@ -11,9 +11,10 @@ Reverse-engineering workspace for the original Windows version of Snail Mail.
 
 The active focus is matching decompilation against the original gameplay
 executable: recover plausible C/C++ source shapes, prove them against the
-native bytes, and make the portable game core understandable before writing a
-new runtime. There is no port code yet; the [port plan](docs/port/README.md)
-builds one from the recovered source on SDL3.
+native bytes, and make the portable game core understandable. The recovered
+source also builds into a port, playable in the browser at
+[snail.banteg.xyz](https://snail.banteg.xyz) and natively on macOS; see the
+[port plan](docs/port/README.md).
 
 ## Current Focus
 
