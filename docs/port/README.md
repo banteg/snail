@@ -1,6 +1,6 @@
 # Modern port plan
 
-Status (2026-10-08, v0.1.0): stages 1 and 2 done, stages 3 and 4 running.
+Status (2026-10-08, v0.2.0): stages 1 and 2 done, stages 3 and 4 running.
 The recovered source lives in [`decomp/`](../../decomp/README.md). `port/`
 links it into a headless wasm32 program for scripts and oracles, and into a
 build you can play in the browser, hosted at

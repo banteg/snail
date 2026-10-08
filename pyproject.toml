@@ -1,6 +1,6 @@
 [project]
 name = "snail"
-version = "0.1.0"
+version = "0.2.0"
 description = "Reverse-engineering helpers for the Snail Mail game bundle"
 readme = "README.md"
 authors = [

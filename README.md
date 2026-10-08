@@ -21,7 +21,7 @@ source also builds into a port, playable in the browser at
 - **Matching:** 637 of 662 port-relevant functions are byte-proven against the
   original; the other 25 are semantically complete partials
   ([STATUS.md](tools/match/STATUS.md)).
-- **Port (v0.1.0):** the recovered source compiles into a 32-bit wasm
+- **Port (v0.2.0):** the recovered source compiles into a 32-bit wasm
   program (a few `SNAIL_PORT` guards aside, each listed in
   [divergences.md](docs/port/divergences.md)) that plays the game from the
   intro and menus through the tutorial, postal, challenge and time trial modes,
