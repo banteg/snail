@@ -89,7 +89,14 @@ reaches a presenter (`render_backend.h`) as clip-space triangles or lines with
 a snapshot of the pixel state, still in Direct3D conventions. The WebGL2
 presenter (`port/web/renderer.js`) applies texture stage 0, alpha test, fog,
 blending, depth and culling, and Direct3D's viewport and pixel centres. The
-SDL3 GPU presenter will consume the same draws.
+SDL3 GPU presenter consumes the same draws.
+
+Fog follows what the drivers did, not only the documented formula: vertex fog
+takes the magnitude of the eye-space z (on every GPU, per Wine's d3d9
+`test_negative_fixedfunction_fog`). The game's view is right-handed, so
+everything ahead has negative z; with the signed value the 30-50 unit fog band
+never showed. Captures from a modern Windows machine show no fog either, so
+they are no reference for it.
 
 ## Audio: an emulated BASS 2.0
 
@@ -313,8 +320,6 @@ logic, so the oracles hold either way.
   simulation never sees it. Pickups, hazards and parcels still appear 38 units
   ahead, where the game spawns them: spawning draws random numbers. Both
   oracles match with it on (`--draw-distance` in the headless program).
-  The original's linear vertex fog (30 to 50 units) does not show with its
-  right-handed view, in the port as in captures of the original.
 
 ### Hosting
 
