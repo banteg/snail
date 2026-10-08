@@ -4,6 +4,9 @@
 //   --warmup N              N random draws before construction (default: the clock, as the original)
 //   --frames N --screenshot FILE
 //                           run N fixed 1/60 s frames without input in a hidden window, save the last as PNG
+//   --tape T --screenshot FILE
+//                           replay T ticks of session.tape in the data directory (a session the original
+//                           recorded, as snail port lockstep writes it) in a hidden window, save the last frame
 //   --original              switch off every enhancement below
 //   --no-hidpi              render at 640x480 instead of the window's pixel resolution
 //   --no-fullscreen         ignore the game's Fullscreen option
@@ -123,6 +126,7 @@ int main(int argc, char** argv)
     int warmup = -1;
     const char* root = ".";
     int frames = 0;
+    int tape_ticks = 0;
     const char* screenshot = nullptr;
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--mute") == 0)
@@ -133,6 +137,8 @@ int main(int argc, char** argv)
             frames = atoi(argv[++i]);
         else if (strcmp(argv[i], "--screenshot") == 0 && i + 1 < argc)
             screenshot = argv[++i];
+        else if (strcmp(argv[i], "--tape") == 0 && i + 1 < argc)
+            tape_ticks = atoi(argv[++i]);
         else if (strcmp(argv[i], "--original") == 0)
             options = {false, false, false};
         else if (strcmp(argv[i], "--no-hidpi") == 0)
@@ -144,7 +150,7 @@ int main(int argc, char** argv)
         else if (argv[i][0] != '-')
             root = argv[i];
         else {
-            SDL_Log("usage: snail-native [--mute] [--warmup N] [--frames N --screenshot FILE] [--original] "
+            SDL_Log("usage: snail-native [--mute] [--warmup N] [--frames N | --tape T] [--screenshot FILE] [--original] "
                     "[--no-hidpi] [--no-fullscreen] [--no-trap-mouse] [data directory]");
             return 2;
         }
@@ -154,7 +160,7 @@ int main(int argc, char** argv)
         SDL_Log("snail: %s", SDL_GetError());
         return 1;
     }
-    SDL_WindowFlags flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY | (frames ? SDL_WINDOW_HIDDEN : 0);
+    SDL_WindowFlags flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY | (frames || tape_ticks ? SDL_WINDOW_HIDDEN : 0);
     SDL_Window* window = SDL_CreateWindow("Snail Mail", kWidth * 2, kHeight * 2, flags);
     if (!window) {
         SDL_Log("snail: %s", SDL_GetError());
@@ -166,7 +172,7 @@ int main(int argc, char** argv)
     static w2c_snail host;
     static w2c_wasi__snapshot__preview1 wasi;
     // A hidden screenshot run stays in its window.
-    if (frames)
+    if (frames || tape_ticks)
         options.fullscreen = false;
     host.game = &game;
     host.window = window;
@@ -181,6 +187,21 @@ int main(int argc, char** argv)
     wasm_rt_init();
     wasm2c_game_instantiate(&game, &host, &wasi);
     w2c_game_0x5Finitialize(&game);
+    if (tape_ticks) {
+        if (!w2c_game_snail_tape_open(&game)) {
+            SDL_Log("snail: cannot replay session.tape in %s", root);
+            return 1;
+        }
+        for (int tick = 0; tick < tape_ticks && (int)w2c_game_snail_tape_step(&game) >= 0; ++tick)
+            if (gpu_frame_pending(host.gpu))
+                gpu_end_frame(host.gpu, false);
+        bool saved = !screenshot || gpu_save_frame(host.gpu, screenshot);
+        if (!saved)
+            SDL_Log("snail: %s: %s", screenshot, SDL_GetError());
+        SDL_Quit();
+        return saved ? 0 : 1;
+    }
+
     // The original drew timeGetTime() % 1000 random numbers before construction.
     if (!w2c_game_snail_start(&game, (uint32_t)(warmup >= 0 ? warmup : SDL_GetTicks() % 1000))) {
         SDL_Log("snail: startup failed; is SnailMail.dat in %s?", root);

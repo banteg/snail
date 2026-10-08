@@ -54,3 +54,13 @@ void TrackedAllocationStack::initialize_tracked_allocation_stack()
 {
     depth = 0;
 }
+
+// apply_bod_position calls tVector::operator* through a view that returns the
+// hidden result pointer, as VC6 left it in EAX (this, then the result slot).
+// Wasm passes the result slot before `this` and returns nothing, so a forwarder
+// would hand `this` over as the result and the caller a garbage pointer.
+tVector* tVector::multiply_vector_by_matrix_copy(tVector* out, const tMatrix* matrix) const
+{
+    *out = *this * *matrix;
+    return out;
+}

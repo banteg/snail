@@ -57,6 +57,7 @@ pub fn build(b: *std.Build) void {
 
     const web = program(b, target, optimize, strip, "snail-web", &.{
         "shell/web_main.cpp",
+        "shell/lockstep_tape.cpp",
         "shell/backend_web.cpp",
     });
     web.entry = .disabled;

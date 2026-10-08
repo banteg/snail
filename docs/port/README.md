@@ -260,7 +260,17 @@ Which functions the port compiles:
   on every tick and field (56,977 ticks).
 - **Render level:** `snail-native --frames N --screenshot` captures any frame
   deterministically; `snail screenshots compare` compares against original
-  captures.
+  captures. A lockstep session's captured frames can be rendered by the port
+  at the same tick: `snail port lockstep <session> --stage DIR` lays out the
+  archive, the session's start files and `session.tape`, and `snail-native
+  --original --tape T --screenshot FILE DIR` replays T ticks with the recorded
+  cadence and saves the last frame, where T is the frame row's `after`. The
+  first such comparison found the wall2 turrets (the pillar meshes) missing:
+  `cRBod::ApplyPos` calls `tVector::operator*` through a view that returns
+  the hidden result pointer, and the generated forwarder passed `this` where
+  wasm expects the result slot, zeroing every pillar vertex. A hand-written
+  shim (`shell/abi_shims.cpp`) bridges it, and `snail port link` no longer
+  forwards what the shims define.
 
 ## Playing in the browser
 

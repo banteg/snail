@@ -6,6 +6,7 @@
 
 #include "game_session.h"
 #include "input_state.h"
+#include "lockstep_tape.h"
 #include "runtime_config.h"
 
 #define WEB_EXPORT(name) __attribute__((export_name(name)))
@@ -79,4 +80,18 @@ WEB_EXPORT("snail_button") void snail_button(int button, int down)
 WEB_EXPORT("snail_wheel") void snail_wheel(int direction)
 {
     input_add_wheel(direction);
+}
+
+// Replaying a recorded session instead of live input (shell/lockstep_tape.cpp):
+// snail_tape_open starts the game from session.tape in the game directory, as
+// `snail port lockstep` writes it; each snail_tape_step runs one recorded tick
+// and the frames after it, returning how many it rendered, or -1 at the end.
+WEB_EXPORT("snail_tape_open") int snail_tape_open()
+{
+    return tape_open("session.tape") ? 1 : 0;
+}
+
+WEB_EXPORT("snail_tape_step") int snail_tape_step()
+{
+    return tape_step(nullptr);
 }

@@ -659,6 +659,12 @@ def build_parser() -> argparse.ArgumentParser:
         "lockstep", help="Replay sessions the original recorded (Frida lockstep capture) and compare them per tick."
     )
     port_tape_parser.add_argument("sessions", nargs="+", type=Path, help="Session directories with tape.ndjson.")
+    port_tape_parser.add_argument(
+        "--stage",
+        type=Path,
+        help="Instead of comparing, lay out one session in this directory (archive, start files, session.tape) "
+        "for snail-native --tape T --screenshot FILE, to render the frame its capture took after tick T.",
+    )
     port_lockstep_parser = port_subparsers.add_parser(
         "lockstep-script",
         help="Check (default) or write the generated layout in tools/frida/snailmail-lockstep.js.",
@@ -1732,8 +1738,24 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(report_text(results))
             return 0 if all(result.matches for result in results) else 1
         if args.port_command == "lockstep":
-            from .port_tape import report_text, run_session
+            from .port_tape import (
+                load_session,
+                report_text,
+                run_session,
+                stage,
+                tape_bytes,
+            )
 
+            if args.stage:
+                if len(args.sessions) != 1:
+                    print("error: --stage takes one session", file=sys.stderr)
+                    return 2
+                session = load_session(REPO_ROOT, args.sessions[0])
+                args.stage.mkdir(parents=True)
+                stage(REPO_ROOT, session, args.stage)
+                (args.stage / "session.tape").write_bytes(tape_bytes(session))
+                print(f"{args.stage}: {len(session.ticks)} ticks")
+                return 0
             results = [run_session(REPO_ROOT, session) for session in args.sessions]
             print(report_text(results))
             return 0 if all(result.matches for result in results) else 1
@@ -1777,7 +1799,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             report = port_link.generate(REPO_ROOT)
             print(
                 f"{port_link.OUTPUT}: {len(report['aliases'])} forwarders, "
-                f"{len(report['manual'])} need a hand-written shim, "
+                f"{len(report['shimmed'])} hand-written shims, {len(report['manual'])} still needed, "
                 f"{len(report['shell'])} left for the shell (see {port_link.REPORT})"
             )
             return 0

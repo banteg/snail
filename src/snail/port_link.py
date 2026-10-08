@@ -13,7 +13,11 @@ address, and emits a wasm forwarder from the called name to the defined one:
   member) drops the rest;
 - a caller expecting `this` back from a target that returns nothing gets `this`.
 
-Anything else is reported for a hand-written shim. Calls that resolve to no
+Anything else is reported for a hand-written shim in port/shell/abi_shims.cpp;
+what that file defines is never forwarded. It also takes calls a forwarder
+would bridge wrongly: a wasm signature does not show whether a function returns
+a struct through a hidden result slot, which wasm passes before `this` and VC6
+after it. Calls that resolve to no
 compiled function remain for the shell, and the report lists them: it is the
 port's link-progress measure.
 """
@@ -30,6 +34,7 @@ from .wasm_object import SYMBOL_FUNCTION, Signature, read_symbols
 FUNCTIONS = Path("analysis/symbols/gameplay-functions.json")
 OUTPUT = Path("port/generated/link_aliases.s")
 REPORT = Path("port/generated/link_report.json")
+SHIMS = "shell/abi_shims.cpp"
 
 
 @dataclass(frozen=True)
@@ -107,9 +112,10 @@ def forwarder(name: str, call: Signature, target: str, defined: Signature) -> li
 
 def generate(root: Path) -> dict:
     sources = port.source_list(root)
-    if errors := port.compile_objects(root, sources):
+    if errors := port.compile_objects(root, [*sources, SHIMS]):
         raise ValueError("port sources do not compile:\n" + "\n".join(errors))
     defined, referenced, by_source = object_symbols(root, sources)
+    shimmed, _, _ = object_symbols(root, [SHIMS])
     function_source = {
         function: f"../{source['path']}"
         for unit in json.loads((root / port.LAYOUT).read_text())["units"]
@@ -117,7 +123,7 @@ def generate(root: Path) -> dict:
         for function in (source["function"],)
     }
     index = manifest_index(root)
-    missing = sorted(name for name in referenced if name not in defined)
+    missing = sorted(name for name in referenced if name not in defined and name not in shimmed)
     names = demangle(missing)
     aliases, manual, shell = [], [], []
     declared: set[str] = set()
@@ -149,6 +155,11 @@ def generate(root: Path) -> dict:
         text += alias.pop("lines")
     (root / OUTPUT).parent.mkdir(parents=True, exist_ok=True)
     (root / OUTPUT).write_text("\n".join(text) + "\n")
-    report = {"aliases": aliases, "manual": manual, "shell": shell}
+    shims = [
+        {"symbol": name, "demangled": readable}
+        for name, readable in zip(sorted(shimmed), demangle(sorted(shimmed)), strict=True)
+        if name in referenced
+    ]
+    report = {"aliases": aliases, "shimmed": shims, "manual": manual, "shell": shell}
     (root / REPORT).write_text(json.dumps(report, indent=1) + "\n")
     return report
