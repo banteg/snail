@@ -12,9 +12,8 @@
 //
 // Enhancements over the original (settings.js) switch on and off in the page:
 // rendering at the display's resolution, the game's Fullscreen option filling
-// the screen, trapping the mouse (pointer lock: the game's cursor then moves by
-// relative motion, at the speed it had), and drawing the track further ahead
-// (shell/draw_distance.h; the simulation never sees it).
+// the screen, and trapping the mouse (pointer lock: the game's cursor then
+// moves by relative motion, at the speed it had).
 //
 // URL parameters: ?warmup=N fixes the random warmup (the original used
 // timeGetTime() % 1000, so by default every start differs); ?reset clears
@@ -64,8 +63,6 @@ const SCAN_CODES = {
 // SnailMail.dat.gz is the archive without its XOR obfuscation, gzipped
 // (src/snail/port_serve.py). The game's loader expects the original bytes, so
 // the mask goes back on: it follows the file offset and repeats every 256 bytes.
-const DRAW_DISTANCE = 3; // the longer view, as a multiple of the original's
-
 const XOR_KEY = Uint8Array.from({ length: 256 }, (_, i) => ((i * i) & 0xff) ^ ((i * 3) & 0xff));
 
 async function fetchArchive(url, onProgress) {
@@ -233,9 +230,7 @@ async function main() {
     if ("hidpi" in changes) updateResolution();
     if ("fullscreen" in changes) fullscreen.apply();
     if (changes.trapMouse === false && document.pointerLockElement) document.exitPointerLock();
-    if ("drawDistance" in changes) applyDrawDistance();
   });
-  let applyDrawDistance = () => {};
   const fullscreen = new Fullscreen(settings);
   const updateResolution = connectResolution(renderer, settings);
   const fs = new MemoryFileSystem();
@@ -270,8 +265,6 @@ async function main() {
     throw new Error("startup failed (see the console)");
   }
   fullscreen.exports = exports;
-  applyDrawDistance = () => exports.snail_set_draw_distance(settings.get("drawDistance") ? DRAW_DISTANCE : 1);
-  applyDrawDistance();
   await waitForGesture();
   audio.unlock();
   fullscreen.apply(); // a fullscreen request at startup waited for this gesture

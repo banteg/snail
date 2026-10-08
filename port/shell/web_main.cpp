@@ -4,7 +4,6 @@
 // loop's timing: whole 1/60 s steps from an accumulator capped at 25 steps,
 // then one rendered frame.
 
-#include "draw_distance.h"
 #include "game_session.h"
 #include "input_state.h"
 #include "runtime_config.h"
@@ -80,10 +79,4 @@ WEB_EXPORT("snail_button") void snail_button(int button, int down)
 WEB_EXPORT("snail_wheel") void snail_wheel(int direction)
 {
     input_add_wheel(direction);
-}
-
-// The longer view (shell/draw_distance.h): a multiple of the original's, 1 for off.
-WEB_EXPORT("snail_set_draw_distance") void snail_set_draw_distance(float scale)
-{
-    g_port_draw_distance = scale;
 }

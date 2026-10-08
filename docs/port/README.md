@@ -310,24 +310,10 @@ logic, so the oracles hold either way.
   its motion moves the game's cursor at the speed it had. Escape lets it go.
   The original trapped the pointer only by taking over the display in
   fullscreen.
-- **See further ahead:** the track is drawn three times as far
-  (`shell/draw_distance.cpp`). The original's view ends at its far plane, 52
-  units from the camera; the whole track is built at level start, but its
-  render caches are linked only 46 units ahead of the snail, and row models and
-  uncached cells 38 units ahead, by the fixed step. Before a frame renders, the
-  shell links what the game would link further on, moves the far plane out to
-  match and stretches the fog band by the same factor (so the track fades out
-  as gradually as the original's), and undoes every write after drawing, so the
-  simulation never sees it. What the game spawns 38 units ahead is shown
-  further out where the level fixes it completely: parcels, health and jetpack
-  pickups and slugs are made before the frame by the game's own `Add*` calls,
-  with the sprite manager, their pools and the math table's index saved and
-  restored around them, so they wait where they will appear. Garbage, salt and
-  rings are decided by random numbers when spawned, so they still appear at
-  38 units. The warp streaks (star field sprites 50 units ahead, which write
-  depth) move out and grow by the view's factor, so they stay behind the
-  track. Both oracles run with it on (`snail port oracle --draw-distance 3`,
-  `snail port lockstep --draw-distance 3`) and match.
+- **See further ahead** is shelved on the `shelf/draw-distance` branch: it
+  drew the track three times as far (render-time links undone after each
+  frame, both oracles matching), but objects still spawn 38 units ahead, and
+  the longer view made that pop-in plain.
 
 ### Hosting
 
@@ -368,11 +354,9 @@ frames in a hidden window and saves the last one; runs with the same
 The native host has the same enhancements, on by default: rendering at the
 window's pixel resolution, the game's Fullscreen option making the window
 fullscreen (the window's own controls turn the option off and on), a click
-trapping the pointer (Escape in a window, or leaving it, frees it), and the
-longer view.
+trapping the pointer (Escape in a window, or leaving it, frees it).
 `--no-hidpi`, `--no-fullscreen` and `--no-trap-mouse` switch them off one by
-one, `--draw-distance S` sets the view (default 3, 1 for the original's),
-`--original` switches all of them off; compare screenshots with the original's at
+one, `--original` all at once; compare screenshots with the original's at
 640x480 with `--original`.
 
 ## Building the headless port

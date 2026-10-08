@@ -51,14 +51,10 @@ class ReplayResult:
         )
 
 
-def run_replay(root: Path, workdir: Path, spec: str, draw_distance: float = 1.0) -> ReplayResult | None:
-    """Replay one record; None when the bank has no record in that row.
-
-    `draw_distance` renders with the port's longer view, which must not change the run.
-    """
-    command = ["node", str(root / RUNNER), str(root / WASM), "--keys", str(root / SCRIPT), "--replay", spec]
+def run_replay(root: Path, workdir: Path, spec: str) -> ReplayResult | None:
+    """Replay one record; None when the bank has no record in that row."""
     completed = subprocess.run(
-        [*command, "--draw-distance", str(draw_distance)],
+        ["node", str(root / RUNNER), str(root / WASM), "--keys", str(root / SCRIPT), "--replay", spec],
         cwd=workdir,
         capture_output=True,
         text=True,
@@ -89,15 +85,11 @@ def stage(root: Path, workdir: Path) -> Path:
     return workdir
 
 
-def run_oracle(
-    root: Path, specs: list[str] | None = None, *, jobs: int = 8, draw_distance: float = 1.0
-) -> list[ReplayResult]:
+def run_oracle(root: Path, specs: list[str] | None = None, *, jobs: int = 8) -> list[ReplayResult]:
     specs = specs or [f"{letter}{row}" for letter in BANKS for row in range(1, ROWS + 1)]
     # The game writes (and deletes) tBass.dll where it runs, so each replay gets its own directory.
     with tempfile.TemporaryDirectory(prefix="snail-oracle-") as temp, ThreadPoolExecutor(jobs) as pool:
-        results = list(
-            pool.map(lambda spec: run_replay(root, stage(root, Path(temp) / spec), spec, draw_distance), specs)
-        )
+        results = list(pool.map(lambda spec: run_replay(root, stage(root, Path(temp) / spec), spec), specs))
     return [result for result in results if result is not None]
 
 

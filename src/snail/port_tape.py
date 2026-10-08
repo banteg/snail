@@ -164,16 +164,14 @@ def compare(session: Session, states: bytes) -> Comparison:
     return result
 
 
-def run_session(root: Path, path: Path, draw_distance: float = 1.0) -> Comparison:
-    """`draw_distance` renders with the port's longer view, which must not change the session."""
+def run_session(root: Path, path: Path) -> Comparison:
     session = load_session(root, path)
     with tempfile.TemporaryDirectory(prefix="snail-lockstep-") as temp:
         workdir = Path(temp)
         stage(root, session, workdir)
         (workdir / "session.tape").write_bytes(tape_bytes(session))
         completed = subprocess.run(
-            ["node", str(root / RUNNER), str(root / WASM), "--tape", "session.tape", "--tape-out", "states.bin",
-             "--draw-distance", str(draw_distance)],
+            ["node", str(root / RUNNER), str(root / WASM), "--tape", "session.tape", "--tape-out", "states.bin"],
             cwd=workdir, capture_output=True, text=True, check=False,
         )  # fmt: skip
         if completed.returncode != 0:

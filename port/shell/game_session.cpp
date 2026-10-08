@@ -6,7 +6,6 @@
 
 #include "archive_index.h"
 #include "audio_system.h"
-#include "draw_distance.h"
 #include "authored_view_state.h"
 #include "font_system.h"
 #include "frontend_fade.h"
@@ -111,9 +110,7 @@ int run_fixed_step(bool renders)
 
 void render_frame()
 {
-    draw_distance_begin_frame();
     render_game_frame_scene();
-    draw_distance_end_frame();
     if (g_game->render_skip_count == 0)
         present_backbuffer();
 }

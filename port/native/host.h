@@ -15,13 +15,11 @@ struct SDL_Window;
 
 // Enhancements over the original, each on unless switched off (--original
 // turns them all off): rendering at the window's pixel resolution, the game's
-// Fullscreen option filling the screen, trapping the mouse, and a longer view
-// down the track (a multiple of the original's; 1 is the original).
+// Fullscreen option filling the screen, and trapping the mouse.
 struct HostOptions {
     bool hidpi = true;
     bool fullscreen = true;
     bool trap_mouse = true;
-    float draw_distance = 3.0f;
 };
 
 // Import module "snail": the presenters and the window. `game` gives them linear memory.

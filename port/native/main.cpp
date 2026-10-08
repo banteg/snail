@@ -8,7 +8,6 @@
 //   --no-hidpi              render at 640x480 instead of the window's pixel resolution
 //   --no-fullscreen         ignore the game's Fullscreen option
 //   --no-trap-mouse         leave the pointer free (by default a click traps it; Escape or leaving the window frees it)
-//   --draw-distance S       see S times as far down the track (default 3; 1 is the original view)
 // The data directory holds SnailMail.dat (default: the current directory);
 // saves land beside it, as with the original.
 
@@ -134,10 +133,8 @@ int main(int argc, char** argv)
             frames = atoi(argv[++i]);
         else if (strcmp(argv[i], "--screenshot") == 0 && i + 1 < argc)
             screenshot = argv[++i];
-        else if (strcmp(argv[i], "--draw-distance") == 0 && i + 1 < argc)
-            options.draw_distance = (float)atof(argv[++i]);
         else if (strcmp(argv[i], "--original") == 0)
-            options = {false, false, false, 1.0f};
+            options = {false, false, false};
         else if (strcmp(argv[i], "--no-hidpi") == 0)
             options.hidpi = false;
         else if (strcmp(argv[i], "--no-fullscreen") == 0)
@@ -148,7 +145,7 @@ int main(int argc, char** argv)
             root = argv[i];
         else {
             SDL_Log("usage: snail-native [--mute] [--warmup N] [--frames N --screenshot FILE] [--original] "
-                    "[--no-hidpi] [--no-fullscreen] [--no-trap-mouse] [--draw-distance S] [data directory]");
+                    "[--no-hidpi] [--no-fullscreen] [--no-trap-mouse] [data directory]");
             return 2;
         }
     }
@@ -189,7 +186,6 @@ int main(int argc, char** argv)
         SDL_Log("snail: startup failed; is SnailMail.dat in %s?", root);
         return 1;
     }
-    w2c_game_snail_set_draw_distance(&game, options.draw_distance);
 
     if (frames) {
         for (int frame = 0; frame < frames; ++frame) {

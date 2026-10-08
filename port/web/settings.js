@@ -8,7 +8,6 @@ export const OPTIONS = [
   { id: "hidpi", label: "Sharp rendering", detail: "Draw at the display's resolution instead of 640×480" },
   { id: "fullscreen", label: "Fullscreen", detail: "The game's Fullscreen option fills the screen" },
   { id: "trapMouse", label: "Trap the mouse", detail: "Keep the pointer in the game; Esc lets it go" },
-  { id: "drawDistance", label: "See further ahead", detail: "Draw the track three times as far" },
 ];
 
 export class Settings {
