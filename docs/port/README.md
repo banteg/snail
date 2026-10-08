@@ -265,8 +265,7 @@ Then open http://127.0.0.1:8017/. `snail-web.wasm` is the same program as the
 headless one, built as a WASI reactor: the page loads `SnailMail.dat` from
 `artifacts/bin/` into an in-memory file system (the server sends it gzipped
 with its XOR obfuscation removed, 7.1 MB instead of 27.4 MB, and the page
-restores the original bytes; `uv run snail port pack` writes that file to
-`artifacts/web/` for hosting the page elsewhere), forwards keys (as DirectInput
+restores the original bytes), forwards keys (as DirectInput
 scan codes), pointer, buttons and wheel, and calls the game once per animation
 frame with the elapsed time. The loop keeps the original's timing: whole 1/60 s
 steps from an accumulator capped at 25 steps, then one rendered frame. There is
@@ -277,6 +276,23 @@ its score tables only when quitting, so the page runs those saves when it is
 hidden or closed. `?reset` clears them, and `?mute` silences the game until
 `?mute=0` (the page remembers either).
 `?warmup=N` fixes the random warmup for a repeatable start.
+
+### Hosting
+
+https://snail.banteg.xyz serves the same page as static files from Cloudflare
+(a Worker with static assets, [`port/wrangler.jsonc`](../../port/wrangler.jsonc)):
+
+```
+uv run snail port pack
+wrangler deploy -c port/wrangler.jsonc
+```
+
+`pack` writes `artifacts/web/`: the page, a stripped `ReleaseFast` build of
+`snail-web.wasm` (4.1 MB, about 0.2 MB as sent compressed; the DWARF is 7 MB of
+the development build) and the packed archive. The release build replays the
+lockstep sessions and high-score runs bit for bit, like the development one.
+The deploy also points the custom domain at the Worker and provisions its
+certificate.
 
 ## Playing natively (macOS)
 

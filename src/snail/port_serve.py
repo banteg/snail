@@ -8,10 +8,16 @@ The archive is packed once at startup (`SnailMail.dat.gz`, a quarter of the size
 its XOR obfuscation is removed first, because the mask follows the file offset
 and hides nearly all redundancy from the compressor. gzip, because every
 browser decompresses it natively as it downloads; the page puts the XOR back.
+
+`pack_site` writes the same three things as static files for hosting, with a
+stripped release build of the game.
 """
 
 import gzip
 import mimetypes
+import shutil
+import subprocess
+import tempfile
 from functools import partial
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -27,6 +33,19 @@ CONTENT_TYPES = {".js": "text/javascript", ".wasm": "application/wasm", ".gz": "
 
 def pack_archive(archive: Path) -> bytes:
     return gzip.compress(decode_bytes(archive.read_bytes()), compresslevel=9, mtime=0)
+
+
+def pack_site(root: Path, out: Path, archive: Path) -> None:
+    """The page, a release build of snail-web.wasm and the packed archive, in `out`."""
+    with tempfile.TemporaryDirectory(prefix="snail-site-") as prefix:
+        subprocess.run(
+            ["zig", "build", "-Doptimize=ReleaseFast", "-Dstrip", "-p", prefix], cwd=root / "port", check=True
+        )
+        if out.exists():
+            shutil.rmtree(out)
+        shutil.copytree(root / WEB, out)
+        shutil.copy(Path(prefix) / "bin" / WASM.name, out / WASM.name)
+    (out / "SnailMail.dat.gz").write_bytes(pack_archive(archive))
 
 
 def routes(root: Path, archive: Path) -> dict[str, Path | bytes]:

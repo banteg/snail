@@ -644,10 +644,12 @@ def build_parser() -> argparse.ArgumentParser:
     port_serve_parser.add_argument("--port", type=int, default=8017)
     port_serve_parser.add_argument("--archive", type=Path, help="SnailMail.dat to serve (default: artifacts/bin/).")
     port_pack_parser = port_subparsers.add_parser(
-        "pack", help="Write the archive packed for the browser build (SnailMail.dat.gz), for hosting it elsewhere."
+        "pack",
+        help="Write the browser build as a static site for hosting: the page, a release snail-web.wasm, "
+        "and the archive packed for it (SnailMail.dat.gz).",
     )
     port_pack_parser.add_argument("--archive", type=Path, help="SnailMail.dat to pack (default: artifacts/bin/).")
-    port_pack_parser.add_argument("--out", type=Path, default=REPO_ROOT / "artifacts/web/SnailMail.dat.gz")
+    port_pack_parser.add_argument("--out", type=Path, default=REPO_ROOT / "artifacts/web")
     port_oracle_parser = port_subparsers.add_parser(
         "oracle", help="Replay the original's recorded high-score runs in the headless port and compare them per tick."
     )
@@ -1752,12 +1754,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             serve(REPO_ROOT, port=args.port, archive=args.archive)
             return 0
         if args.port_command == "pack":
-            from .port_serve import ARCHIVE, pack_archive
+            from .port_serve import ARCHIVE, pack_site
 
-            archive = args.archive or REPO_ROOT / ARCHIVE
-            args.out.parent.mkdir(parents=True, exist_ok=True)
-            args.out.write_bytes(pack_archive(archive))
-            print(f"{args.out}: {args.out.stat().st_size:,} bytes from {archive.stat().st_size:,}")
+            pack_site(REPO_ROOT, args.out, args.archive or REPO_ROOT / ARCHIVE)
+            for path in sorted(args.out.iterdir()):
+                print(f"{path}: {path.stat().st_size:,} bytes")
             return 0
         if args.port_command == "symbolize":
             from .wasm_debug import LineTable, annotate

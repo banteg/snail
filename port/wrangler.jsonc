@@ -1,0 +1,9 @@
+// The hosted browser build at https://snail.banteg.xyz: static files only.
+// Write the site with `uv run snail port pack`, then `wrangler deploy -c port/wrangler.jsonc`.
+{
+  "name": "snail",
+  "compatibility_date": "2026-01-01",
+  "assets": { "directory": "../artifacts/web" },
+  "routes": [{ "pattern": "snail.banteg.xyz", "custom_domain": true }],
+  "workers_dev": false
+}

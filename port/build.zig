@@ -43,8 +43,10 @@ pub fn build(b: *std.Build) void {
         .default_target = .{ .cpu_arch = .wasm32, .os_tag = .wasi },
     });
     const optimize = b.standardOptimizeOption(.{});
+    // Hosted builds drop the DWARF (7 MB of the browser build); `snail port symbolize` needs it.
+    const strip = b.option(bool, "strip", "Omit debug information") orelse false;
 
-    const headless = program(b, target, optimize, "snail", &.{
+    const headless = program(b, target, optimize, strip, "snail", &.{
         "shell/main.cpp",
         "shell/input_script.cpp",
         "shell/replay_oracle.cpp",
@@ -53,7 +55,7 @@ pub fn build(b: *std.Build) void {
     });
     b.installArtifact(headless);
 
-    const web = program(b, target, optimize, "snail-web", &.{
+    const web = program(b, target, optimize, strip, "snail-web", &.{
         "shell/web_main.cpp",
         "shell/backend_web.cpp",
     });
@@ -102,12 +104,14 @@ fn program(
     b: *std.Build,
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
+    strip: bool,
     name: []const u8,
     entry_files: []const []const u8,
 ) *std.Build.Step.Compile {
     const module = b.createModule(.{
         .target = target,
         .optimize = optimize,
+        .strip = strip,
         .link_libc = true,
         .link_libcpp = true,
     });
