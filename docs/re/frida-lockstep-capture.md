@@ -32,9 +32,12 @@ One directory per session, `C:\share\snail\lockstep\<time>-<pid>\`:
     on its own cadence (several ticks per frame, or none), and the port
     replays that cadence too.
   - `frame`: a capture in `frames/`.
-  - `fpu`: the x87 control word of the game thread (precision and rounding
-    control), at startup, when the path template bank is built, and whenever
-    it changes between ticks (script version 4; version 2's reader faulted, and version 3 lost helper functions in an edit).
+  - `fpu`: the x87 control word (precision and rounding control), read where
+    the C runtime's trig entries store it (`fnstcw [esp]` in `_CIacos` and
+    its sibling, reached from `ACos` and `Cos`), one row per new value in each
+    phase: `startup` (the trig tables), `template_bank` (the path template
+    build), `construct`, and `tick` (script version 5; earlier versions'
+    readers faulted or were lost in an edit).
 - `frames/present-NNNNNN.bmp`: the game window, every 120th present and the
   first. Change `CAPTURE_EVERY` at the top of the script; 0 turns captures
   off.

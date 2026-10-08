@@ -59,6 +59,12 @@ GLOBALS_USED = {
 # which RAND reaches through j_rand (0x44c920). Not in the reference manifest.
 CRT_RAND_SEED = 0x4B1F40
 
+# Where the original's C runtime has just stored the x87 control word: the
+# `cmp word [esp], 0x27f` right after `fnstcw [esp]` in _CIacos (0x48c47f) and
+# in its sibling entry (0x48c556), reached from ACos and Cos. A hook there reads
+# the control word at [esp] without running code of its own.
+CONTROL_WORD_SITES = {"acos": 0x48C484, "trig": 0x48C559}
+
 # Per-tick snapshot fields: offsetof(GameRoot, <path>) and how to read them.
 SNAPSHOT = {
     "frontend_state": ("players[0].frontend_state", "i32"),
@@ -151,6 +157,7 @@ def layout(root: Path) -> dict:
     offsets = snapshot_offsets(root)
     return {
         "functions": functions,
+        "control_word_sites": {name: f"0x{address:x}" for name, address in CONTROL_WORD_SITES.items()},
         "main_loop_end": main_loop_end(root, functions["main_loop"]),
         "globals": globals_,
         "snapshot": {key: [f"0x{offsets[key]:x}", kind] for key, (_, kind) in SNAPSHOT.items()},
