@@ -237,12 +237,15 @@ struct VertexStage {
             // Fog depth is the eye-space z's magnitude: Direct3D drivers take
             // abs(z) for vertex fog on every GPU (Wine's d3d9 visual tests,
             // test_negative_fixedfunction_fog), and the game's right-handed
-            // view puts everything ahead at negative z.
+            // view puts everything ahead at negative z, so the depth of
+            // anything visible is -z. The factor stays unclamped: it is
+            // linear in z, so the presenters' interpolation and clamp give
+            // each pixel its own depth's fog, as the original's captures show
+            // on the barriers, strips that run from behind the camera to past
+            // the fog's end.
             float eye[4];
             transform(world_view, position[0], position[1], position[2], 1, eye);
-            float depth = eye[2] < 0 ? -eye[2] : eye[2];
-            float factor = fog_end != fog_start ? (fog_end - depth) / (fog_end - fog_start) : 1;
-            out->fog = factor < 0 ? 0 : factor > 1 ? 1 : factor;
+            out->fog = fog_end != fog_start ? (fog_end + eye[2]) / (fog_end - fog_start) : 1;
         }
     }
 };
