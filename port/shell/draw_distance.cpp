@@ -12,7 +12,10 @@
 //   ring. The spawns draw RAND and allocate from pools, so they stay as they
 //   are; the bodies that already exist are previewed here;
 // - the ten landscape repeats, hidden past fog_end and wrapped three repeats
-//   ahead by update_active_landscape_entry.
+//   ahead by update_active_landscape_entry;
+// - the star field's warp streaks (cRStarManager::UpdateStars), sprites 50
+//   units ahead of the camera that write depth: behind everything the
+//   original could show, in front of the track past 50 units.
 //
 // Each write below goes through an undo log that draw_distance_end_frame
 // replays backwards, so the game's state after a frame is the state before it.
@@ -21,6 +24,8 @@
 
 #include "draw_distance.h"
 #include "game_root.h"
+#include "star_manager.h"
+#include "viewport.h"
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 
@@ -189,6 +194,24 @@ void preview_landscape(cRSubGame* game, float horizon)
     }
 }
 
+// The streaks move out from the camera by the view's factor and grow by the
+// same factor, so each projects to the same pixels at a depth behind the
+// longer track, as the original's were behind its view.
+void preview_star_field(float scale)
+{
+    const Vector3& eye = g_game->viewports[0].camera->transform.position;
+    cRStarManager& stars = g_game->star_manager;
+    for (int i = 0; i < stars.count; ++i) {
+        cRSprite* sprite = stars.entries[i].sprite;
+        if (!sprite)
+            continue;
+        set(sprite->position, eye + (sprite->position - eye) * scale);
+        set(sprite->previous_position, eye + (sprite->previous_position - eye) * scale);
+        set(sprite->size_start, sprite->size_start * scale);
+        set(sprite->size_end, sprite->size_end * scale);
+    }
+}
+
 }  // namespace
 
 float draw_distance_extra()
@@ -216,6 +239,7 @@ void draw_distance_begin_frame()
     preview_cache_rows(game, player->transform.position.z + 46.0f + g_extra);
     preview_scan_rows(game, (int)player->active_window_min_z + 46 + (int)g_extra);
     preview_landscape(game, player->transform.position.z + g_game->fog_end * draw_distance_scale());
+    preview_star_field(draw_distance_scale());
 }
 
 void draw_distance_end_frame()
