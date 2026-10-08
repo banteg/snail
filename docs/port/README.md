@@ -177,13 +177,13 @@ Which functions the port compiles:
   written in another order than the object computes it, rewrite it in the
   object's order (the VC6 object stays byte-identical) so the port rounds the
   same. The session oracle finds these.
-- **Floats.** The original used the x87, and the session oracle shows it
-  computing at least some float math at double precision, rounding to float
-  only where VC6 stores to memory (Direct3D 8 was expected to force 24-bit
-  precision; the lockstep capture's `fpu` rows settle what it was). The port
-  uses wasm single and double precision as the source is written. Any
-  tick-level divergence this causes is measured by the oracles, not assumed
-  away.
+- **Floats.** The original's x87 runs at 24-bit precision once Direct3D 8
+  creates its device (control word 0x7f, from the lockstep capture), so
+  float arithmetic in registers rounds like the port's float32. Code that
+  runs before that (`RMathInit`) ran at 53-bit precision; where VC6 keeps
+  such a value in a register, the port declares it `double` under
+  `SNAIL_PORT`. Any tick-level divergence is measured by the oracles, not
+  assumed away.
 - **PORT(verified)** means checked against native behaviour: multi-frame
   screenshot comparisons and oracle runs, not a single good frame.
 
@@ -223,34 +223,32 @@ Which functions the port compiles:
     at most 0.0005 in z after 9,600 ticks, without reaching any integer
     state.
 
-  Two sources found so far, both while the snail follows a path (its
-  position then comes from `cRPathFollowGoldy::Traverse`):
-  - **z (fixed):** VC6 reassociates float sums (no `/Op`).
+  Every source of drift is now pinned:
+  - **Trig tables (fixed):** the lockstep capture's `fpu` rows show the x87
+    at 24-bit precision (control word 0x7f) from Direct3D 8's device
+    creation on, which makes in-register float arithmetic round like the
+    port's float32. `RMathInit` runs earlier, at the C runtime's default
+    53-bit precision, and VC6 keeps each table angle in a register without
+    rounding it to float, so the `Sin`/`Cos` tables were built from double
+    angles: more than half of the 8,192 entries differ from float-angle
+    tables by a ULP. Path orientation looks them up (`tMatrix::Interpolate`,
+    the template builders), which is where the y drift came from. A
+    `SNAIL_PORT` guard declares the angle `double` for the port
+    ([divergences.md](divergences.md)); the VC6 object is unchanged.
+  - **Float sum order (fixed):** VC6 reassociates float sums (no `/Op`).
     `base_position.z = p * dir.z + transform.z + anchor.z` compiles to
-    `(p * dir.z + anchor.z) + transform.z`, and clang evaluates the source
-    order, which rounds differently. Writing the sum in the binary's order
-    leaves the VC6 object byte-identical and removed every z divergence; see
+    `(p * dir.z + anchor.z) + transform.z`; written in that order, clang
+    rounds the same and the VC6 object stays byte-identical. See
     [Correctness rules](#correctness-rules).
-  - **y (pinned, not fixed):** the sixth session, captured with the snail's
-    basis vectors and path-follow state, shows the orientation diverging
-    first (tick 750: `basis_right.x` 1.0 in the original, 1.0000001 in the
-    port). Tracing it back: the start ramp's sample transforms are built at
-    level load by `initialize_start_path_template_pair`, whose
-    `Normalize` computes `Sqrt((float)Dot(v, v))` and `1 / length`. The
-    original computes them at double precision and does not round the dot
-    product to float despite the cast; the port rounds every step to float.
-    Emulating the original's way reproduces its value at tick 750 bit for
-    bit, after the same emulation reproduces the port's.
+  - **Denormal stores (open, cosmetic):** an x87 register has a wider
+    exponent range, so a float product that underflows is rounded to 24 bits
+    first and to a denormal on store; wasm rounds once. The snail's lateral
+    velocity decays into denormals when nothing steers it, so `vx` differs
+    by one or two denormal ULPs (about 1e-45) until it reaches zero.
 
-  So the original's x87 was not at 24-bit precision when building templates,
-  contrary to the Direct3D 8 assumption below: it ran at the C runtime's
-  53 bits, with VC6 keeping values in registers across operations and
-  rounding to float only when it stores. Exact float fidelity therefore
-  depends on where VC6 stores in each function, which a compiler flag cannot
-  reproduce: `-ffp-eval-method=double` for all recovered code made the
-  sessions diverge earlier, including integer state. The capture script now
-  records the x87 control word (at startup, the template build, and on every
-  change) to settle the precision directly.
+  With both fixes, 7 of the 10 captured sessions match the original bit for
+  bit on every tick and field (56,977 ticks in all); the other three differ
+  only in that denormal `vx`.
 - **Render level:** `snail-native --frames N --screenshot` captures any frame
   deterministically; `snail screenshots compare` compares against original
   captures.

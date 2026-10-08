@@ -2,8 +2,8 @@
 
 Recovered source in `decomp/` compiles unchanged for the port, with one switch:
 the port build defines `SNAIL_PORT`. A `SNAIL_PORT` guard is allowed only where a
-matched VC6 source shape depends on x86 ABI leniency that a portable target does
-not have, and never to change behaviour. Each guard is listed here; the VC6 side
+matched VC6 source shape depends on x86 ABI leniency, or on x87 register
+precision, that a portable target does not have, and never to change behaviour. Each guard is listed here; the VC6 side
 of every guard still matches.
 
 | Where | Native shape | Port shape | Why |
@@ -11,6 +11,7 @@ of every guard still matches.
 | `decomp/game/Game/update_backdrop.cpp`, `tools/match/include/backdrop.h` | `return render_backdrop();` from an `int` function, with `render_backdrop` declared `int` everywhere but its own definition | `render_backdrop()` is `void` everywhere; `update_backdrop` returns 0 on that path | VC6 returned `render_backdrop`'s leftover `eax`, and nothing reads `update_backdrop`'s result. Wasm requires one signature per function. |
 | `decomp/game/SubGame/get_track_cell_row_index.cpp` | subtracts `(int)g_track_row_cells_offset`, a symbol whose address is the immediate `0x4340e0` | `offsetof(cRGame, subgame.runtime_cells)` | The immediate falls inside the image's address range, so matching requires a relocation; wasm cannot place a symbol at a fixed address. Same value. |
 | `tools/match/include/rshell_prelude.h` | includes the DirectX 8.1 SDK and `windows.h`, then 13,762 stand-in enumerators | empty | the prelude only sets VC6's frontend symbol numbering, which decides an operand order in `read_repeating_text_input_key_code`; no declaration in it is used |
+| `decomp/engine/RMaths/initialize_trigonometry_tables.cpp` | `float angle`, which VC6 keeps in an x87 register at the C runtime's 53-bit precision (RMathInit runs before Direct3D 8 lowers it to 24-bit) | `double angle` | the `Sin`/`Cos` tables must hold the same entries; float angles change more than half of them by a ULP. Same values the original computed |
 
 ## Shell behaviour that differs from the shipped build
 
