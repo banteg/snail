@@ -16,6 +16,27 @@ source also builds into a port, playable in the browser at
 [snail.banteg.xyz](https://snail.banteg.xyz) and natively on macOS; see the
 [port plan](docs/port/README.md).
 
+## Status
+
+- **Matching:** 637 of 662 port-relevant functions are byte-proven against the
+  original; the other 25 are semantically complete partials
+  ([STATUS.md](tools/match/STATUS.md)).
+- **Port (v0.1.0):** the recovered source compiles into a 32-bit wasm
+  program (a few `SNAIL_PORT` guards aside, each listed in
+  [divergences.md](docs/port/divergences.md)) that plays the game from the
+  intro and menus through the tutorial, postal, challenge and time trial modes,
+  with sound and saves. The original's Direct3D 8 and BASS layers are emulated
+  underneath it. It runs in the browser at
+  [snail.banteg.xyz](https://snail.banteg.xyz) and natively on macOS (SDL3,
+  through wasm2c).
+- **Fidelity:** two oracles compare the port with the original executable tick
+  by tick, and both match bit for bit: 20 of 20 recorded high-score runs, and
+  10 of 10 sessions captured from the original under Frida (56,977 ticks of
+  menus, tutorial, postal, challenge and time trial play).
+- **Next:** comparing rendered frames with the original, native shaders for
+  Linux and Windows, then 64-bit builds (stage 5 of the
+  [port plan](docs/port/README.md)).
+
 ## Current Focus
 
 - Match gameplay functions from
@@ -23,9 +44,9 @@ source also builds into a port, playable in the browser at
   harness under [`tools/match`](tools/match).
 - Keep recovered names, types, decompiles, and runtime notes synchronized under
   [`analysis`](analysis) and [`docs/re`](docs/re).
-- Build the modern port from the recovered source, replacing only the
-  original's platform layer; see the [port plan](docs/port/README.md). The
-  platform layer stays small and explicit.
+- Keep the port built from the recovered source, replacing only the original's
+  platform layer; see the [port plan](docs/port/README.md). Oracle divergences
+  get fixed in the recovered source, never only in the port.
 - Preserve honest partials. A near match with clear notes is more useful than
   byte-shaped source that cannot explain the original program.
 
@@ -77,3 +98,16 @@ uv run pytest
 ```
 
 Use [DEVELOPING.md](DEVELOPING.md) for the fuller matching workflow.
+
+To build and play the port locally (with `SnailMail.dat` and
+`SnailMail_unwrapped.exe` in `artifacts/bin/`):
+
+```sh
+uv run snail port link && uv run snail port data
+cd port && zig build && cd ..
+uv run snail port serve
+```
+
+See [Playing in the browser](docs/port/README.md#playing-in-the-browser),
+[Playing natively](docs/port/README.md#playing-natively-macos) and
+[Oracles](docs/port/README.md#oracles).

@@ -1,11 +1,13 @@
 # Modern port plan
 
-Status (2026-10-08): stage 2 done, stage 4 running. The recovered source
-lives in [`decomp/`](../../decomp/README.md). `port/` links it into a headless
-wasm32 program that plays the tutorial from a key script, and into a build you
-can play in the browser or natively on macOS: see
+Status (2026-10-08, v0.1.0): stages 1 and 2 done, stages 3 and 4 running.
+The recovered source lives in [`decomp/`](../../decomp/README.md). `port/`
+links it into a headless wasm32 program for scripts and oracles, and into a
+build you can play in the browser, hosted at
+[snail.banteg.xyz](https://snail.banteg.xyz), or natively on macOS: see
 [Playing in the browser](#playing-in-the-browser) and
-[Playing natively](#playing-natively-macos).
+[Playing natively](#playing-natively-macos). Both oracles match the original
+bit for bit on everything recorded so far.
 This page records the decisions and the order of work; update it as stages
 land.
 
@@ -352,7 +354,8 @@ build's DWARF line table.
 The target is `wasm32-wasi`, run under Node's WASI. It has the MSVC x86 data
 layout the size asserts expect (4-byte pointers, 8-byte-aligned `double`, no
 `long double` in the source) without a Windows runtime, and it runs anywhere.
-The native SDL3 targets come with stage 4; the same sources build for them.
+Until stage 5, native builds run this same 32-bit program through wasm2c (see
+[Playing natively](#playing-natively-macos)).
 
 Wasm is strict where x86 was lenient, and that strictness is the useful part:
 every call must agree with its definition's signature, at link time and in
@@ -419,8 +422,9 @@ trap; sanitizers and the stack protector off, as the original had neither.
 4. **Shell.** Running: the recovered renderer draws through the emulated
    Direct3D 8 device and the recovered audio code through an emulated BASS
    2.0, and the browser build plays from the intro through the menus into
-   gameplay with keyboard, mouse and sound, and saves persist. The native host
-   runs the same build in an SDL3 window on macOS (SDL3 GPU, SDL3_mixer).
+   gameplay with keyboard, mouse and sound, and saves persist; it is hosted at
+   snail.banteg.xyz (see [Hosting](#hosting)). The native host runs the same
+   build in an SDL3 window on macOS (SDL3 GPU, SDL3_mixer).
    Left: SPIR-V and DXIL shaders for Linux and Windows, and screenshot
    comparisons against the original.
 5. **64-bit and platforms.** Turn absolute size asserts into field-offset

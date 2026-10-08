@@ -13,5 +13,6 @@ This section is for deeper reverse-engineering work: hardcoded runtime behavior,
 - [Symbol workflow](symbols.md): how the curated Binary Ninja function manifest is maintained
 - [Reflexive wrapper](reflexive-wrapper.md): bootstrap and wrapper-obfuscation notes
 - [Frida runtime trace](frida-runtime-trace.md): the Windows tracing harness and capture strategy
+- [Frida lockstep capture](frida-lockstep-capture.md): recording sessions of the original for the port's session oracle
 
 Published docs stay here. Repo-only analysis artifacts, including the tracked symbol manifest JSON, live under `analysis/`.

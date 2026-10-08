@@ -25,9 +25,11 @@ nav = [
         { "Symbol workflow" = "re/symbols.md" },
         { "Reflexive wrapper" = "re/reflexive-wrapper.md" },
         { "Frida runtime trace" = "re/frida-runtime-trace.md" },
+        { "Frida lockstep capture" = "re/frida-lockstep-capture.md" },
     ] },
     { "Port" = [
         { "Port plan" = "port/README.md" },
+        { "Divergences" = "port/divergences.md" },
     ] },
 ]
 copyright = """

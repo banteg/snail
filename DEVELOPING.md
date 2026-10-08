@@ -2,8 +2,10 @@
 
 This repo is evidence-first. The current goal is to recover the original game
 through matching decompilation. Runtime captures may fill specific evidence
-gaps, but implementation work waits until the portable game core is understood;
-the later platform glue should be small enough to audit directly.
+gaps. The port ([docs/port/README.md](docs/port/README.md)) compiles the
+recovered source as it is, and its platform glue stays small enough to audit
+directly; when it diverges from the original, the fix goes into the recovered
+source.
 
 ## Ground Rules
 
