@@ -13,6 +13,7 @@ nav = [
         { "OBJECT format" = "original/object-format.md" },
         { "Segment format" = "original/segment-format.md" },
         { "Level format" = "original/level-format.md" },
+        { "Shockwave web demo" = "original/shockwave-web-demo.md" },
     ] },
     { "RE" = [
         { "Overview" = "re/index.md" },

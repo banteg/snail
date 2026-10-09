@@ -152,6 +152,26 @@
       "analysis_cautions": [
         "Stripped; lower priority. Less source overlap has not been established."
       ]
+    },
+    {
+      "id": "windows-shockwave-web-x86",
+      "label": "Windows Shockwave web demo (Snail Mail Online)",
+      "role": "deferred",
+      "architecture": "x86-le32",
+      "binary": {
+        "path": "artifacts/flashpoint/extracted/setup/app/SnailMailWeb.exe",
+        "sha256": "3d81f8fc0a57fcd391b5c26c9c6d7fb7715b970976a5ef92a8156ebb0a968824"
+      },
+      "compiler": {
+        "status": "unidentified configuration",
+        "evidence": "docs/original/shockwave-web-demo.md",
+        "family": "VC6; Rich header C++ backend 8966 (SP5), linked 2005-05-31"
+      },
+      "provenance": "docs/original/shockwave-web-demo.md",
+      "analysis_cautions": [
+        "A trimmed build linked six months after retail with a newer VC6 backend; do not assume retail codegen.",
+        "Its archive SnailMailWeb.dam uses a constant 0x80 XOR mask, not the retail offset mask."
+      ]
     }
   ]
 }

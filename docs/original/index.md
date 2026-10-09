@@ -13,5 +13,6 @@ The point of this section is to separate stable facts about the shipped files fr
 - [OBJECT format](object-format.md): `_OBJECT.TXT` mesh structure
 - [Segment format](segment-format.md): `SEGMENTS/*.TXT` structure and authored metadata
 - [Level format](level-format.md): `LEVELS/*.TXT` structure and level-script fields
+- [Shockwave web demo](shockwave-web-demo.md): "Snail Mail Online", the 2005 ActiveX demo build, its provenance and archive
 
 Use this section for stable facts about the original content. Put lower-level reversing workflows and function-by-function runtime notes under [RE](../re/index.md).
