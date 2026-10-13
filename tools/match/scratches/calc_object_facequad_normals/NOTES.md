@@ -3,12 +3,11 @@
 Current result: **100.00%**, 437/437 instructions, all 22 references clean.
 The result below supersedes historical tally/compiler residual claims.
 
-Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+Current recovery: semantic-complete, proof-grade under msvc6.3. Exact Android/iOS
 `cRObject::CalcFaceQuadNormals` bodies and the live Windows `Object` method
 establish the complete face-pair construction, weighted vertex accumulation,
 validation, normalization, inversion, and temporary-tally lifetime. All 22
-references are clean; the four-instruction deficit is bounded VC6 tally/x87
-and scale-one SIB allocation.
+references are clean; the encoded body and all 437 instructions match.
 
 Ownership-recovered scratch for `calc_object_facequad_normals @ 0x42fcb0`.
 
@@ -194,3 +193,18 @@ with (see the [compiler identification](../../compiler-identification-20261005.m
 source scores 98.39% (exact before); the remaining difference is how
 the normal-array index is materialized; the source shape was fitted to the newer frontend and
 needs rework under msvc6.3.
+
+## 2026-10-14 SP3 edge-value recovery
+
+The first two face edges now use the component-wise subtraction and temporary
+Vector3 copy shape already recovered in `calc_object_facequad_normals_simple`.
+The second quad pair keeps its vector subtraction expressions. Expanding only
+one initial edge, or expanding both quad edges too, does not close the function.
+
+Under the established msvc6.3 baseline this improves 98.39% (435/437
+instructions, prefix 382) to **100.00%**, 437/437 instructions, prefix 437,
+exact encoded body, and 22 clean references with no unresolved, mismatched,
+or unaudited operands. No compiler, flags, shared headers, or masking changed.
+The candidate was recovered from OMP session
+`01a136b2-2c7a-7150-98a2-70c7db86b48e` and independently recompiled before
+promotion. This supersedes the October 5 residual above.

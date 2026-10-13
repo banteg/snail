@@ -76,6 +76,11 @@ shapes fit a frontend the original build cannot have used; for example
 materialized. These are matching work under the corrected baseline, not
 profile exceptions.
 
+The table records the unchanged sources on October 5. On October 14,
+`calc_object_facequad_normals` was recovered to an exact match under msvc6.3
+by restoring component-wise initial edge values; see its
+[scratch notes](scratches/calc_object_facequad_normals/NOTES.md#2026-10-14-sp3-edge-value-recovery).
+
 ## Language
 
 Former `/TC` scratches were chosen because the SP5 C++ frontend did not

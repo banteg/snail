@@ -33,8 +33,21 @@ void cRObject::CalcFaceQuadNormals()
         do {
             cRFaceQuad *const &quad_bank = facequads;
 
-            Vector3 lhs = vertices[CURRENT_FACE->vertex_1] - vertices[CURRENT_FACE->vertex_0];
-            Vector3 rhs = vertices[CURRENT_FACE->vertex_2] - vertices[CURRENT_FACE->vertex_0];
+            Vector3* base_a = &vertices[CURRENT_FACE->vertex_0];
+            Vector3* base_b = &vertices[CURRENT_FACE->vertex_1];
+            Vector3 lhs_value;
+            lhs_value.x = base_b->x - base_a->x;
+            lhs_value.y = base_b->y - base_a->y;
+            lhs_value.z = base_b->z - base_a->z;
+            Vector3 lhs = lhs_value;
+
+            base_a = &vertices[CURRENT_FACE->vertex_0];
+            Vector3* base_c = &vertices[CURRENT_FACE->vertex_2];
+            Vector3 rhs_value;
+            rhs_value.x = base_c->x - base_a->x;
+            rhs_value.y = base_c->y - base_a->y;
+            rhs_value.z = base_c->z - base_a->z;
+            Vector3 rhs = rhs_value;
 
             Vector3 normal_a;
             normal_a.Cross(lhs, rhs);

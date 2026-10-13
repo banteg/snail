@@ -152,9 +152,9 @@ def main() -> None:
     if not scratch.is_dir():
         scratch = m.DEFAULT_MATCH_ROOT / "scratches" / args.scratch
     work = rot.prepare(scratch, args.source, args.out.parent / (args.out.name + "-input"))
-    result, events, allocations, _address_pass = ao.run_observer(work, args.out)
+    result, events, allocations, address_pass = ao.run_observer(work, args.out)
     c0, creation = ao.cse_origin(allocations)
-    (event,) = [e for e in events if e["target_rva"] == ao.ADDRESS_PASS_HOOK["target"]]
+    (event,) = [e for e in events if e["target_rva"] == address_pass]
     print(f"metrics: {result['metrics']}")
     print(f"C0 (first CSE temporary): {c0:#x}" if c0 is not None else "C0: none")
     print("first operand = SIB base; key = need<<24 | size<<16 | hash")
