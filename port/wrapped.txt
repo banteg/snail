@@ -6,3 +6,6 @@ load_file_bytes_fixed_size_from_archive_or_fs  ../decomp/game/RShell/load_file_b
 select_level_track_texture_set                 ../decomp/game/Game/select_level_track_texture_set.cpp                   Change
 load_level_definition_file                     ../decomp/game/Subtrack/load_level_definition_file.cpp                   Init
 build_subgame_level                            ../decomp/game/SubGame/build_subgame_level.cpp                          StartLevel
+find_segment_path_index_by_name                ../decomp/game/Path/find_segment_path_index_by_name.cpp                  NameCode
+compute_kind42_attachment_transform            ../decomp/game/Path/compute_kind42_attachment_transform.cpp              compute_kind42_attachment_transform
+start_squidge_y                                ../decomp/game/SubGame/start_squidge_y.cpp                               StartY

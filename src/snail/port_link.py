@@ -34,7 +34,7 @@ from .wasm_object import SYMBOL_FUNCTION, Signature, read_symbols
 FUNCTIONS = Path("analysis/symbols/gameplay-functions.json")
 OUTPUT = Path("port/generated/link_aliases.s")
 REPORT = Path("port/generated/link_report.json")
-SHIMS = ("shell/abi_shims.cpp", "shell/extras.cpp")
+SHIMS = ("shell/abi_shims.cpp", "shell/extras.cpp", "shell/extras_paths.cpp")
 
 
 @dataclass(frozen=True)

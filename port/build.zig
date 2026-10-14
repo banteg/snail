@@ -28,6 +28,7 @@ const shell_flags = [_][]const u8{
 const shared_shell = [_][]const u8{
     "shell/game_session.cpp",
     "shell/extras.cpp",
+    "shell/extras_paths.cpp",
     "shell/runtime.cpp",
     "shell/files.cpp",
     "shell/win32.cpp",

@@ -106,6 +106,7 @@ int run_fixed_step(bool renders)
         update_mouse(0);
         FontAI();
         int result = g_game->AI();
+        extras_step_tramp_rings();
         if (result == 1 || result == 2 || result == 3)
             return result;
     }
