@@ -275,5 +275,37 @@
     "fmul_block": 705240,
     "alias_class_count": 644720,
     "alias_records": 644796
+  },
+  "cse_slots": {
+    "expr_operand_scratch": 628256,
+    "cse_alloc_hook": {
+      "site": 25680,
+      "target": 25787,
+      "return": true
+    },
+    "owner_sites": [
+      {"site": 70151, "target": 26431, "what": "src address", "kind": 4},
+      {"site": 70216, "target": 26431, "what": "dst address", "kind": 4},
+      {"site": 70866, "target": 27316, "what": "copy 0x165", "kind": 3},
+      {"site": 71059, "target": 27316, "what": "pure expr", "kind": 3},
+      {"site": 70372, "target": 359369, "what": "intrinsic", "kind": 3},
+      {"site": 70637, "target": 26805, "what": "0x18f expr", "kind": 3},
+      {"site": 70929, "target": 68499, "what": "compare", "kind": 3},
+      {"site": 71213, "target": 24336, "what": "assignment", "kind": 5}
+    ],
+    "number_assignment": 24336,
+    "number_assignment_sites": [
+      31770,
+      34528,
+      36745,
+      37150,
+      68006,
+      68252,
+      271789,
+      281505,
+      289008,
+      292835,
+      298301
+    ]
   }
 }
