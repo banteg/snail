@@ -199,6 +199,7 @@ void extras_init_assets()
     g_extra_slide_textures[5] = g_texture_refs.Add((char*)"Objects/World00/Slide5.tga", 0, 0);
     g_extra_track_textures[6] = g_texture_refs.Add((char*)"Objects/World00/Track6.tga", 0, 0);
     g_extra_slide_textures[6] = g_texture_refs.Add((char*)"Objects/World00/Slide6.tga", 0, 0);
+    extras_init_paths();
 }
 
 const char* extras_track_texture_name(int slot)
@@ -339,12 +340,14 @@ void cRSubTracks::Init(char* filename)
 
     if (this == &g_game->subgame.level_definition)
         g_random_fringe_pending = random_fringe;
+    extras_map_level_paths(this);
 }
 
 // Android cRSubGame::StartLevel (000817ac): when Track: r (8) or Fringe: random
 // is active, pick the random background, backdrop flip, and random fringe colour.
 void cRSubGame::StartLevel(int level_index)
 {
+    extras_clear_tramp_rings();
     subgame_start_level_recovered(this, level_index);
     if (!g_port_extras)
         return;

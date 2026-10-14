@@ -44,6 +44,8 @@ def build_extras_files(android_root: Path) -> dict[str, bytes]:
         files[f"OBJECTS/WORLD00/SLIDE{index}.TGA"] = slide_tga
     fringe_path = android_root / "SPRITES/FRINGECOLOURS.TGA"
     files["SPRITES/FRINGECOLOURS.TGA"] = fringe_path.read_bytes()
+    files["OBJECTS/TRAMPRING/_OBJECT.TXT"] = (android_root / "OBJECTS/TRAMPRING/_OBJECT.TXT").read_bytes()
+    files["OBJECTS/TRAMPRING/TRAMPRING.TGA"] = (android_root / "OBJECTS/TRAMPRING/TRAMPRING.TGA").read_bytes()
     return files
 
 

@@ -221,3 +221,153 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
         check=True,
     )
     assert 'level "Challenge 0" track_set 6 (Objects/World00/Track6.tga) fringe (0.733, 0.000, 1.000)' in challenge.stderr
+
+
+@pytest.mark.skipif(
+    shutil.which("node") is None
+    or not (REPO_ROOT / "port/zig-out/bin/snail.wasm").exists()
+    or not (REPO_ROOT / "artifacts/bin/SnailMail.dat").exists()
+    or not (REPO_ROOT / "artifacts/bin/SnailMailExtras.dat").exists()
+    or not (REPO_ROOT / "artifacts/android/asm_extracted/DATA/O_HALFPOLE.SMO").exists(),
+    reason="needs node, snail.wasm, SnailMail.dat, SnailMailExtras.dat and Android .SMO meshes",
+)
+def test_extras_mobile_path_meshes_and_tramp_rings(tmp_path):
+    import json
+    import struct
+    from pathlib import Path
+
+    def parse_smo_unique_verts(path: Path) -> list[tuple[float, float, float]]:
+        data = path.read_bytes()
+        pos = 0
+        while pos + 8 <= len(data):
+            tag, _size = struct.unpack_from("<II", data, pos)
+            if tag == 0:
+                pos += 16
+            elif tag == 3:
+                n_tex = struct.unpack_from("<I", data, pos + 8)[0]
+                pos += 12 + n_tex * 32
+            elif tag == 5:
+                n_verts = struct.unpack_from("<I", data, pos + 8)[0]
+                shorts = struct.unpack_from(f"<{n_verts * 5}h", data, pos + 12)
+                seen: list[tuple[float, float, float]] = []
+                for i in range(n_verts):
+                    v = (
+                        shorts[i * 5] * 0.0078125,
+                        shorts[i * 5 + 1] * 0.0078125,
+                        shorts[i * 5 + 2] * 0.0078125,
+                    )
+                    if v not in seen:
+                        seen.append(v)
+                return seen
+            else:
+                break
+        return []
+
+    wasm = REPO_ROOT / "port/zig-out/bin/snail.wasm"
+    runner = REPO_ROOT / "port/shell/run.mjs"
+    dump_script = tmp_path / "dump_paths.mjs"
+    dump_script.write_text(
+        f"""
+import {{ readFile }} from "node:fs/promises";
+import {{ WASI }} from "node:wasi";
+process.env.SPUD = "/";
+const wasi = new WASI({{
+    version: "preview1",
+    args: ["snail.wasm", "--extras", "--ticks", "1"],
+    env: process.env,
+    preopens: {{ "/": "." }},
+    returnOnExit: true,
+}});
+const bytes = await readFile({json.dumps(str(wasm.resolve()))});
+const module = await WebAssembly.compile(bytes);
+const instance = await WebAssembly.instantiate(module, wasi.getImportObject());
+wasi.start(instance);
+const dv = new DataView(instance.exports.memory.buffer);
+const out = [];
+for (let i = 0; i < 16; ++i) {{
+    const pairPtr = instance.exports.snail_extra_path_pair(i);
+    const primObj = dv.getUint32(pairPtr + 0x24, true);
+    const secObj = dv.getUint32(pairPtr + 0xa8 + 0x24, true);
+    const readVerts = (objPtr) => {{
+        const count = dv.getInt32(objPtr + 0x2c, true);
+        const vertsPtr = dv.getUint32(objPtr + 0x38, true);
+        const verts = [];
+        for (let v = 0; v < count; ++v) {{
+            const base = vertsPtr + v * 12;
+            verts.push([
+                dv.getFloat32(base, true),
+                dv.getFloat32(base + 4, true),
+                dv.getFloat32(base + 8, true),
+            ]);
+        }}
+        return verts;
+    }};
+    out.push({{ primary: readVerts(primObj), secondary: readVerts(secObj) }});
+}}
+console.log(JSON.stringify(out));
+"""
+    )
+    dump_res = subprocess.run(
+        ["node", str(dump_script)],
+        cwd=REPO_ROOT / "artifacts/bin",
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    dumped = json.loads(dump_res.stdout.splitlines()[-1])
+    names = [
+        "LOOPTHELOOP1", "SBEND1", "SBEND2", "SBEND4",
+        "DETOUR2", "DETOUR3", "DETOUR",
+        "SUPERTRAMPLEFT", "TURNOVER2", "TURNOVER3",
+        "SHIMMY1", "SHIMMY2", "SHIMMY4", "SHIMMY",
+        "INVERT1", "HALFPOLE",
+    ]
+    data_dir = REPO_ROOT / "artifacts/android/asm_extracted/DATA"
+    for i, name in enumerate(names):
+        prim_smo = parse_smo_unique_verts(data_dir / f"O_{name}.SMO")
+        sec_smo = parse_smo_unique_verts(data_dir / f"O_{name}_M.SMO")
+        prim_gen = dumped[i]["primary"]
+        sec_gen = dumped[i]["secondary"]
+        if name.startswith(("SBEND", "SHIMMY")):
+            # Mobile .SMO bakes 1 quad (2 outer-edge vertices) per row with GL_REPEAT v-UVs,
+            # whereas PC build_strip_mesh subdivides each flat row into width_cells unit-UV quads
+            # (width_cells + 1 collinear vertices per row). Verify every generated vertex against
+            # linear interpolation between the .SMO row's outer edges.
+            n_rows = len(prim_smo) // 2
+            w_plus_1 = len(prim_gen) // n_rows
+            assert len(prim_gen) == len(sec_gen) == n_rows * w_plus_1
+            for sign, smo, gen in ((1, prim_smo, prim_gen), (-1, sec_smo, sec_gen)):
+                smo_sorted = sorted(smo, key=lambda v: (round(v[2], 2), sign * v[0]))
+                for r in range(n_rows):
+                    c0, cw = smo_sorted[r * 2], smo_sorted[r * 2 + 1]
+                    for c in range(w_plus_1):
+                        t = c / (w_plus_1 - 1)
+                        gx, gy, gz = gen[r * w_plus_1 + c]
+                        ex = c0[0] + t * (cw[0] - c0[0])
+                        ey = c0[1] + t * (cw[1] - c0[1])
+                        ez = c0[2] + t * (cw[2] - c0[2])
+                        assert max(abs(gx - ex), abs(gy - ey), abs(gz - ez)) < 0.009, f"{name} row {r} col {c}"
+        else:
+            assert len(prim_gen) == len(prim_smo) == len(sec_gen) == len(sec_smo), f"{name} vertex count"
+            for smo, gen in ((prim_smo, prim_gen), (sec_smo, sec_gen)):
+                fwd = max(min(max(abs(a[0] - b[0]), abs(a[1] - b[1]), abs(a[2] - b[2])) for a in gen) for b in smo)
+                rev = max(min(max(abs(a[0] - b[0]), abs(a[1] - b[1]), abs(a[2] - b[2])) for b in smo) for a in gen)
+                assert fwd < 0.012 and rev < 0.012, f"{name} error fwd={fwd} rev={rev}"
+
+    shutil.copy2(REPO_ROOT / "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat", tmp_path / "ScoreA.dat")
+    (tmp_path / "SnailMail.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMail.dat")
+    (tmp_path / "SnailMailExtras.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMailExtras.dat")
+    replay = subprocess.run(
+        [
+            "node", str(runner), str(wasm), "--extras", "--trace",
+            "--keys", str(REPO_ROOT / "port/scripts/high_scores.keys"),
+            "--replay", "A4",
+        ],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert "tick 2294: tramp_rings 1" in replay.stderr
+    assert "tick 2340: tramp_rings 0" in replay.stderr
+    assert "matches the original" in replay.stderr
