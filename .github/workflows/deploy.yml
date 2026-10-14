@@ -1,0 +1,152 @@
+name: Deploy snail.banteg.xyz
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Master or a version tag to deploy (v0.3.0 or newer)
+        type: string
+        default: master
+      dry_run:
+        description: Build and validate without changing production
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  WRANGLER_SEND_METRICS: "false"
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      revision: ${{ steps.source.outputs.revision }}
+    steps:
+      - name: Require the deployment workflow from master
+        env:
+          WORKFLOW_REF: ${{ github.ref }}
+        run: test "$WORKFLOW_REF" = refs/heads/master
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Select a source commit with successful master CI
+        id: source
+        env:
+          TARGET_REF: ${{ inputs.ref }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$TARGET_REF" = master ]; then
+            revision=$(git rev-parse origin/master)
+          elif [[ "$TARGET_REF" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            revision=$(git rev-parse --verify "refs/tags/$TARGET_REF^{commit}")
+          else
+            echo 'Choose master or a version tag'; exit 1
+          fi
+          git merge-base --is-ancestor "$revision" origin/master
+          checks=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow decomp.yml \
+            --commit "$revision" --branch master --event push --status success --json headSha --jq length)
+          test "$checks" -gt 0 || { echo "No successful master CI for $revision"; exit 1; }
+          echo "revision=$revision" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ steps.source.outputs.revision }}
+          path: source
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.13"
+          enable-cache: true
+          cache-dependency-glob: source/uv.lock
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - name: Install pinned Zig and the WASM tools
+        run: |
+          curl --fail --location --retry 3 -o "$RUNNER_TEMP/zig.tar.xz" \
+            https://ziglang.org/download/0.17.0/zig-x86_64-linux-0.17.0.tar.xz
+          echo "1cbe9df9f27e6b78d14ccbca43b6703a404ef79ef1c463de901d7f088d4e2026  $RUNNER_TEMP/zig.tar.xz" | sha256sum --check
+          mkdir "$RUNNER_TEMP/zig"
+          tar -xJf "$RUNNER_TEMP/zig.tar.xz" -C "$RUNNER_TEMP/zig" --strip-components=1
+          echo "$RUNNER_TEMP/zig" >> "$GITHUB_PATH"
+          sudo apt-get update -qq
+          sudo apt-get install -y wabt
+      - name: Install the selected source's dependencies
+        working-directory: source
+        run: uv sync --frozen
+      - name: Download and verify both game archives
+        run: uv run --directory source --no-sync python ../tools/port/deploy.py fetch-assets --root "$GITHUB_WORKSPACE/source"
+      - name: Generate the recovered-source link inputs
+        working-directory: source
+        run: |
+          uv run --no-sync tools/match/fetch_target.py
+          uv run --no-sync snail port link
+          uv run --no-sync snail port data
+      - name: Build and test the release
+        working-directory: source
+        run: |
+          (cd port && zig build -Doptimize=ReleaseFast -Dstrip)
+          uv run --no-sync pytest -q tests/test_port*.py
+          uv run --no-sync snail port oracle
+          uv run --no-sync snail port pack
+      - name: Record and validate the complete site
+        env:
+          REVISION: ${{ steps.source.outputs.revision }}
+          TARGET_REF: ${{ inputs.ref }}
+        run: |
+          uv run --directory source --no-sync python ../tools/port/deploy.py receipt \
+            --root "$GITHUB_WORKSPACE/source" --site "$GITHUB_WORKSPACE/source/artifacts/web" --revision "$REVISION" --ref "$TARGET_REF"
+          uv run --directory source --no-sync python ../tools/port/deploy.py verify --site "$GITHUB_WORKSPACE/source/artifacts/web"
+          cat source/artifacts/web/build.json >> "$GITHUB_STEP_SUMMARY"
+      - name: Validate the Cloudflare deployment without credentials
+        run: npx --yes wrangler@4.59.1 deploy -c source/port/wrangler.jsonc --dry-run
+      - uses: actions/upload-artifact@v4
+        with:
+          name: snail-site
+          path: source/artifacts/web
+          if-no-files-found: error
+
+  deploy:
+    needs: prepare
+    if: github.ref == 'refs/heads/master' && !inputs.dry_run
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: snail-production
+      cancel-in-progress: false
+    environment:
+      name: production
+      url: https://snail.banteg.xyz
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.13"
+      - uses: actions/download-artifact@v4
+        with:
+          name: snail-site
+          path: artifacts/web
+      - name: Verify the prepared files
+        run: uv run --frozen python tools/port/deploy.py verify
+      - name: Require configured Cloudflare credentials
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo 'Add the CLOUDFLARE_API_TOKEN Actions secret'; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo 'Add the CLOUDFLARE_ACCOUNT_ID Actions variable'; exit 1; }
+      - name: Deploy the prepared site
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          REVISION: ${{ needs.prepare.outputs.revision }}
+        run: npx --yes wrangler@4.59.1 deploy -c port/wrangler.jsonc --tag "$REVISION" --message "GitHub deployment $REVISION"
+      - name: Verify every deployed file
+        run: uv run --frozen python tools/port/deploy.py verify --url https://snail.banteg.xyz
