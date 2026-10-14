@@ -12,6 +12,7 @@
 //   --no-fullscreen         ignore the game's Fullscreen option
 //   --no-trap-mouse         leave the pointer free (by default a click traps it; Escape or leaving the window frees it)
 // The data directory holds SnailMail.dat (default: the current directory);
+//   --extras                enable opt-in mobile content (track colours 3-6, Fringe: random)
 // saves land beside it, as with the original.
 
 #include <SDL3/SDL.h>
@@ -123,6 +124,7 @@ int main(int argc, char** argv)
 {
     bool muted = false;
     HostOptions options;
+    bool extras = false;
     int warmup = -1;
     const char* root = ".";
     int frames = 0;
@@ -139,8 +141,10 @@ int main(int argc, char** argv)
             screenshot = argv[++i];
         else if (strcmp(argv[i], "--tape") == 0 && i + 1 < argc)
             tape_ticks = atoi(argv[++i]);
+        else if (strcmp(argv[i], "--extras") == 0)
+            extras = true;
         else if (strcmp(argv[i], "--original") == 0)
-            options = {false, false, false};
+            options = {false, false, false}, extras = false;
         else if (strcmp(argv[i], "--no-hidpi") == 0)
             options.hidpi = false;
         else if (strcmp(argv[i], "--no-fullscreen") == 0)
@@ -150,8 +154,8 @@ int main(int argc, char** argv)
         else if (argv[i][0] != '-')
             root = argv[i];
         else {
-            SDL_Log("usage: snail-native [--mute] [--warmup N] [--frames N | --tape T] [--screenshot FILE] [--original] "
-                    "[--no-hidpi] [--no-fullscreen] [--no-trap-mouse] [data directory]");
+            SDL_Log("usage: snail-native [--mute] [--warmup N] [--frames N | --tape T] [--screenshot FILE] [--extras] "
+                    "[--original] [--no-hidpi] [--no-fullscreen] [--no-trap-mouse] [data directory]");
             return 2;
         }
     }
@@ -202,6 +206,7 @@ int main(int argc, char** argv)
         return saved ? 0 : 1;
     }
 
+    w2c_game_snail_set_extras(&game, extras ? 1 : 0);
     // The original drew timeGetTime() % 1000 random numbers before construction.
     if (!w2c_game_snail_start(&game, (uint32_t)(warmup >= 0 ? warmup : SDL_GetTicks() % 1000))) {
         SDL_Log("snail: startup failed; is SnailMail.dat in %s?", root);

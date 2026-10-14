@@ -5,6 +5,7 @@
 // then one rendered frame.
 
 #include "game_session.h"
+#include "extras.h"
 #include "input_state.h"
 #include "lockstep_tape.h"
 #include "runtime_config.h"
@@ -17,6 +18,11 @@ const float kMaxAccumulated = 0.41666666f;    // cap after a stall
 const float kSnapToZero = 0.0000083333334f;
 float g_accumulator = 0;
 }  // namespace
+
+WEB_EXPORT("snail_set_extras") void snail_set_extras(int enabled)
+{
+    g_port_extras = enabled != 0;
+}
 
 WEB_EXPORT("snail_start") int snail_start(int warmup)
 {

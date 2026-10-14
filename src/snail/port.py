@@ -15,6 +15,7 @@ from pathlib import Path
 
 LAYOUT = Path("decomp/layout.json")
 REPLACED = Path("port/replaced.txt")
+WRAPPED = Path("port/wrapped.txt")
 PORTABLE = Path("port/portable.txt")
 SOURCES = Path("port/sources.txt")
 CFLAGS = Path("port/cflags.txt")
@@ -34,23 +35,40 @@ def _listed(root: Path, path: Path) -> dict[str, str]:
     return listed
 
 
+def wrapped_list(root: Path) -> dict[str, tuple[str, str]]:
+    """`function path symbol` lines in port/wrapped.txt, or empty when absent."""
+    path = root / WRAPPED
+    if not path.exists():
+        return {}
+    wrapped = {}
+    for line in path.read_text().splitlines():
+        if line.strip() and not line.startswith("#"):
+            function, source, symbol = line.split()[:3]
+            wrapped[function] = (source, symbol)
+    return wrapped
+
 def source_list(root: Path) -> list[str]:
     """Source paths relative to port/, one per compiled file, in link order."""
     layout = json.loads((root / LAYOUT).read_text())
-    replaced, portable = _listed(root, REPLACED), _listed(root, PORTABLE)
+    replaced, portable, wrapped = _listed(root, REPLACED), _listed(root, PORTABLE), wrapped_list(root)
     scope = {s["function"]: s["port_scope"] for unit in layout["units"] for s in unit["sources"]}
+    by_function = {s["function"]: f"../{s['path']}" for unit in layout["units"] for s in unit["sources"]}
     for listing, names, expected in (
         (REPLACED, replaced, {"boundary"}),
         (PORTABLE, portable, {"replaceable-platform", "third-party"}),
+        (WRAPPED, wrapped, COMPILED_SCOPES | {"replaceable-platform"}),
     ):
         if wrong := sorted(name for name in names if scope.get(name) not in expected):
             raise ValueError(f"{listing} lists functions outside {sorted(expected)}: {', '.join(wrong)}")
+    if bad_paths := sorted(name for name, (src, _) in wrapped.items() if by_function.get(name) != src):
+        raise ValueError(f"{WRAPPED} paths disagree with {LAYOUT}: {', '.join(bad_paths)}")
     paths = []
     for unit in layout["units"]:
         for source in unit["sources"]:
+            fn = source["function"]
             compiled = (
-                source["port_scope"] in COMPILED_SCOPES and source["function"] not in replaced
-            ) or source["function"] in portable
+                (source["port_scope"] in COMPILED_SCOPES and fn not in replaced) or fn in portable
+            ) and fn not in wrapped
             path = f"../{source['path']}"
             if compiled and path not in paths:
                 paths.append(path)
@@ -78,10 +96,12 @@ def compile_objects(root: Path, sources: list[str], *, jobs: int = 10) -> dict[s
     """Compile sources (relative to port/) to wasm32 objects; return compiler errors."""
     (root / OBJECTS).mkdir(parents=True, exist_ok=True)
     flags = compile_flags(root)
+    wrapped_defines = {src: f"-D{sym}={sym}_recovered" for src, sym in wrapped_list(root).values()}
 
     def build(source: str) -> tuple[str, str]:
+        extra = [wrapped_defines[source]] if source in wrapped_defines else []
         completed = subprocess.run(
-            ["zig", "c++", "-target", "wasm32-wasi", "-c", *flags, source, "-o", str(object_path(root, source))],
+            ["zig", "c++", "-target", "wasm32-wasi", "-c", *flags, *extra, source, "-o", str(object_path(root, source))],
             cwd=root / "port",
             capture_output=True,
             text=True,

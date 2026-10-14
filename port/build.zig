@@ -27,6 +27,7 @@ const shell_flags = [_][]const u8{
 
 const shared_shell = [_][]const u8{
     "shell/game_session.cpp",
+    "shell/extras.cpp",
     "shell/runtime.cpp",
     "shell/files.cpp",
     "shell/win32.cpp",
@@ -121,10 +122,21 @@ fn program(
 
     // Recovered source compiles as-is; the flags and file list are shared with
     // `snail port` (cflags.txt, sources.txt).
+    const cflags = lines(b, @embedFile("cflags.txt"));
     module.addCSourceFiles(.{
         .files = lines(b, @embedFile("sources.txt")),
-        .flags = lines(b, @embedFile("cflags.txt")),
+        .flags = cflags,
     });
+    for (lines(b, @embedFile("wrapped.txt"))) |line| {
+        var fields = std.mem.tokenizeAny(u8, line, " \t");
+        _ = fields.next().?;
+        const file = fields.next().?;
+        const symbol = fields.next().?;
+        var file_flags: std.ArrayList([]const u8) = .empty;
+        file_flags.appendSlice(b.allocator, cflags) catch @panic("out of memory");
+        file_flags.append(b.allocator, b.fmt("-D{s}={s}_recovered", .{ symbol, symbol })) catch @panic("out of memory");
+        module.addCSourceFile(.{ .file = b.path(file), .flags = file_flags.items });
+    }
     module.addCSourceFiles(.{ .files = &shared_shell, .flags = &shell_flags });
     module.addCSourceFiles(.{ .files = entry_files, .flags = &shell_flags });
     // Generated locally from the original executable; never committed.

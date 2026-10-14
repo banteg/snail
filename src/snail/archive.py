@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from collections import Counter
 import json
+from collections import Counter
 from pathlib import Path
 
-from construct import Array, Int32ul, Struct as CStruct, this
 import msgspec
-
+from construct import Array, Int32ul, this
+from construct import Struct as CStruct
 
 ARCHIVE_PROBE_SIZE = 0x7C
 
@@ -72,7 +72,7 @@ def xor_mask(index: int) -> int:
 XOR_KEY = bytes(xor_mask(index) for index in range(256))  # the mask repeats every 256 bytes
 
 
-def decode_bytes(data: bytes, start_offset: int = 0) -> bytes:
+def decode_bytes(data: bytes | bytearray, start_offset: int = 0) -> bytes:
     """XOR with the mask at each file offset; the XOR is its own inverse, so this also encodes."""
     phase = start_offset % len(XOR_KEY)
     key = (XOR_KEY[phase:] + XOR_KEY[:phase]) * (len(data) // len(XOR_KEY) + 1)
@@ -83,7 +83,7 @@ def xor_decode_in_place(buffer: bytearray, start_offset: int = 0) -> None:
     buffer[:] = decode_bytes(buffer, start_offset)
 
 
-def _read_c_string(blob: bytes, offset: int) -> str:
+def _read_c_string(blob: bytes | bytearray, offset: int) -> str:
     terminator = blob.find(b"\x00", offset)
     if terminator == -1:
         raise ValueError(f"Missing string terminator at archive offset {offset}")
@@ -182,3 +182,23 @@ def extract_archive(
     manifest_path = output_dir / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return manifest
+
+
+def encode_archive(files: dict[str, bytes]) -> bytes:
+    """Build a XOR-masked .dat archive from path -> raw bytes."""
+    normalized = {name.replace("\\", "/").upper(): data for name, data in files.items()}
+    names = b"".join(name.encode("ascii") + b"\x00" for name in normalized)
+    index_size = 4 + ARCHIVE_ENTRY_SIZE * len(normalized) + len(names)
+    header = bytearray(Int32ul.build(len(normalized)))
+    path_offset = 4 + ARCHIVE_ENTRY_SIZE * len(normalized)
+    data_offset = index_size
+    for name, data in normalized.items():
+        header += ARCHIVE_RECORD.build({"path_offset": path_offset, "data_offset": data_offset, "size": len(data)})
+        path_offset += len(name) + 1
+        data_offset += len(data)
+    return decode_bytes(bytes(header) + names + b"".join(normalized.values()))
+
+
+def write_archive(path: Path, files: dict[str, bytes]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(encode_archive(files))

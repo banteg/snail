@@ -119,7 +119,6 @@
 ../decomp/game/Game/initialize_game_assets_and_world.cpp
 ../decomp/game/Game/zero_vector3.cpp
 ../decomp/game/Game/initialize_game_last.cpp
-../decomp/game/Game/select_level_track_texture_set.cpp
 ../decomp/game/Game/update_frontend_state_machine.cpp
 ../decomp/game/Game/initialize_global_color4f_bank_32_thunk.cpp
 ../decomp/game/Game/initialize_global_color4f_bank_32.cpp
@@ -311,10 +310,7 @@
 ../decomp/game/between-RObject-RShell/initialize_tracked_allocation_depth.cpp
 ../decomp/game/RShell/uninitialize_game_data_archive.cpp
 ../decomp/game/RShell/set_current_directory_with_drive_fallback.cpp
-../decomp/game/RShell/archive_or_file_exists.cpp
-../decomp/game/RShell/load_file_bytes_fixed_size_from_archive_or_fs.cpp
 ../decomp/game/RShell/find_archive_entry.cpp
-../decomp/game/RShell/load_file_bytes_from_archive_or_fs.cpp
 ../decomp/game/RShell/load_file_bytes.cpp
 ../decomp/game/RShell/delete_file_path_with_directory_walk.cpp
 ../decomp/game/RShell/write_file_bytes.cpp
@@ -415,7 +411,6 @@
 ../decomp/game/SubGame/update_progress_bar.cpp
 ../decomp/game/SubGame/rebuild_track_runtime_from_segments.cpp
 ../decomp/game/SubGame/calc_slider_to_rate.cpp
-../decomp/game/SubGame/build_subgame_level.cpp
 ../decomp/game/SubGame/complete_subgame.cpp
 ../decomp/game/SubGame/destroy_subgame.cpp
 ../decomp/game/SubGame/update_subgame.cpp
@@ -570,7 +565,6 @@
 ../decomp/game/SubGame/update_nuke.cpp
 ../decomp/game/SubGame/recycle_bod_to_free_list.cpp
 ../decomp/game/Subtrack/copy_segment_definition_to_level_slot.cpp
-../decomp/game/Subtrack/load_level_definition_file.cpp
 ../decomp/game/Subtrack/load_builtin_segment_definitions.cpp
 ../decomp/game/Subtrack/load_segment_definitions.cpp
 ../decomp/game/Subtrack/load_level_definitions.cpp

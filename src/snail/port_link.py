@@ -34,7 +34,7 @@ from .wasm_object import SYMBOL_FUNCTION, Signature, read_symbols
 FUNCTIONS = Path("analysis/symbols/gameplay-functions.json")
 OUTPUT = Path("port/generated/link_aliases.s")
 REPORT = Path("port/generated/link_report.json")
-SHIMS = "shell/abi_shims.cpp"
+SHIMS = ("shell/abi_shims.cpp", "shell/extras.cpp")
 
 
 @dataclass(frozen=True)
@@ -111,11 +111,13 @@ def forwarder(name: str, call: Signature, target: str, defined: Signature) -> li
 
 
 def generate(root: Path) -> dict:
-    sources = port.source_list(root)
-    if errors := port.compile_objects(root, [*sources, SHIMS]):
+    sources = [*port.source_list(root), *(src for src, _ in port.wrapped_list(root).values())]
+    if errors := port.compile_objects(root, [*sources, *SHIMS]):
         raise ValueError("port sources do not compile:\n" + "\n".join(errors))
     defined, referenced, by_source = object_symbols(root, sources)
-    shimmed, _, _ = object_symbols(root, [SHIMS])
+    shimmed, shim_referenced, _ = object_symbols(root, list(SHIMS))
+    for name, sigs in shim_referenced.items():
+        referenced.setdefault(name, set()).update(sigs)
     function_source = {
         function: f"../{source['path']}"
         for unit in json.loads((root / port.LAYOUT).read_text())["units"]
