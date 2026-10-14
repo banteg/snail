@@ -96,7 +96,6 @@
 ../decomp/game/G0/initialize_sub_loc.cpp
 ../decomp/game/Galaxy/load_galaxy_layout.cpp
 ../decomp/game/Galaxy/destroy_galaxy.cpp
-../decomp/game/Galaxy/initialize_galaxy.cpp
 ../decomp/game/Galaxy/update_galaxy.cpp
 ../decomp/game/Galaxy/draw_galaxy_line.cpp
 ../decomp/game/Galaxy/update_galaxy_route_record.cpp
@@ -182,20 +181,15 @@
 ../decomp/game/Help/initialize_help_screen.cpp
 ../decomp/game/Help/destroy_help_screen.cpp
 ../decomp/game/Help/update_help_screen.cpp
-../decomp/game/HighScore/initialize_high_score_screen.cpp
 ../decomp/game/HighScore/destroy_high_score_screen.cpp
-../decomp/game/HighScore/update_high_score_screen.cpp
 ../decomp/game/HighScore/initialize_high_score_tables.cpp
 ../decomp/game/HighScore/load_high_scores_from_file.cpp
 ../decomp/game/HighScore/add_arcade_high_score.cpp
 ../decomp/game/HighScore/add_survival_high_score.cpp
 ../decomp/game/HighScore/add_time_trial_high_score.cpp
-../decomp/game/HighScore/save_high_scores_and_config.cpp
 ../decomp/game/HighScore/initialize_high_score_entry.cpp
 ../decomp/game/HighScore/mini_delete_high_score_entry.cpp
 ../decomp/game/HighScore/exit_high_score_screen.cpp
-../decomp/game/Intro/initialize_new_game_menu.cpp
-../decomp/game/Intro/update_new_game_menu.cpp
 ../decomp/game/Landscape/reset_landscape_manager.cpp
 ../decomp/game/Landscape/load_landscape_script_by_name.cpp
 ../decomp/game/Landscape/activate_landscape_entry.cpp
@@ -271,7 +265,6 @@
 ../decomp/game/Path/initialize_cage2_path_template_pair.cpp
 ../decomp/game/Register/load_config_file.cpp
 ../decomp/game/Register/load_file_bytes_from_path.cpp
-../decomp/game/Register/save_config_file.cpp
 ../decomp/game/Register/validate_config_tail_stub.cpp
 ../decomp/game/RObject/is_bod_after_sprites.cpp
 ../decomp/game/RObject/set_bod_object.cpp
@@ -362,7 +355,6 @@
 ../decomp/game/SegmentCache/update_active_bod.cpp
 ../decomp/game/SegmentCache/remove_track_render_cache_bods.cpp
 ../decomp/game/between-SegmentCache-Splash/bind_subgame_owner.cpp
-../decomp/game/Splash/initialize_thanks_for_playing_screen.cpp
 ../decomp/game/Splash/uninit_thanks_screen.cpp
 ../decomp/game/Splash/update_thanks_for_playing_screen.cpp
 ../decomp/game/Star/destroy_star_field.cpp
@@ -469,7 +461,6 @@
 ../decomp/game/SubGame/clear_subgoldy_score_buckets.cpp
 ../decomp/game/SubGame/display_score_stats.cpp
 ../decomp/game/SubGame/set_subgame_rate.cpp
-../decomp/game/SubGame/calc_subgame_rate.cpp
 ../decomp/game/SubGame/uninit_pause_menu.cpp
 ../decomp/game/SubGame/initialize_pause_menu.cpp
 ../decomp/game/SubGame/update_pause_menu.cpp
@@ -509,7 +500,6 @@
 ../decomp/game/SubGame/initialize_track_parcel_slots.cpp
 ../decomp/game/SubGame/allocate_track_parcel_slot.cpp
 ../decomp/game/SubGame/update_track_parcel.cpp
-../decomp/game/SubGame/load_frontend_level_by_mode_and_index.cpp
 ../decomp/game/SubGame/spawn_track_parcel.cpp
 ../decomp/game/SubGame/initialize_parcel_set_bucket_pool_thunk.cpp
 ../decomp/game/SubGame/initialize_parcel_set_bucket_pool.cpp
@@ -561,7 +551,6 @@
 ../decomp/game/SubGame/initialize_nuke.cpp
 ../decomp/game/SubGame/update_nuke.cpp
 ../decomp/game/SubGame/recycle_bod_to_free_list.cpp
-../decomp/game/Subtrack/copy_segment_definition_to_level_slot.cpp
 ../decomp/game/Subtrack/load_builtin_segment_definitions.cpp
 ../decomp/game/Subtrack/load_segment_definitions.cpp
 ../decomp/game/Subtrack/load_level_definitions.cpp

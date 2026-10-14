@@ -9,3 +9,14 @@ build_subgame_level                            ../decomp/game/SubGame/build_subg
 find_segment_path_index_by_name                ../decomp/game/Path/find_segment_path_index_by_name.cpp                  NameCode
 compute_kind42_attachment_transform            ../decomp/game/Path/compute_kind42_attachment_transform.cpp              compute_kind42_attachment_transform
 start_squidge_y                                ../decomp/game/SubGame/start_squidge_y.cpp                               StartY
+copy_segment_definition_to_level_slot          ../decomp/game/Subtrack/copy_segment_definition_to_level_slot.cpp        ImportSegment
+initialize_new_game_menu                       ../decomp/game/Intro/initialize_new_game_menu.cpp                        Init
+update_new_game_menu                           ../decomp/game/Intro/update_new_game_menu.cpp                            AI
+initialize_galaxy                              ../decomp/game/Galaxy/initialize_galaxy.cpp                              Init
+load_frontend_level_by_mode_and_index          ../decomp/game/SubGame/load_frontend_level_by_mode_and_index.cpp         load_frontend_level_by_mode_and_index
+calc_subgame_rate                              ../decomp/game/SubGame/calc_subgame_rate.cpp                             CalcRate
+initialize_thanks_for_playing_screen           ../decomp/game/Splash/initialize_thanks_for_playing_screen.cpp           Init
+initialize_high_score_screen                   ../decomp/game/HighScore/initialize_high_score_screen.cpp                Init
+update_high_score_screen                       ../decomp/game/HighScore/update_high_score_screen.cpp                    AI
+save_high_scores_and_config                    ../decomp/game/HighScore/save_high_scores_and_config.cpp                 MiniSave
+save_config_file                               ../decomp/game/Register/save_config_file.cpp                             save_config_file

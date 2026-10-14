@@ -334,21 +334,27 @@ logic, so the oracles hold either way.
   in the browser, off by default): opt-in content backported from the Android
   release (#28). `uv run snail port extras` builds `artifacts/bin/SnailMailExtras.dat`
   from the extracted Android assets: splitting `OBJECTS/WORLD00/SURFACE4`–`6.PNG`
-  into PC-layout 24-bit `Track4`–`6.tga` and `Slide4`–`6.tga` textures, and
-  packing `Sprites/FringeColours.tga` and `Objects/TrampRing/`. The narrow hooks
-  (`port/wrapped.txt`, `port/shell/extras.cpp`, `port/shell/extras_paths.cpp`)
-  delegate directly to the `_recovered` bodies when the option is off. When on,
-  `cRSubTracks::Init` and `cRTrack::Change` support track colours 3–6 (moving
-  Postal routes 21–25 and 41–45 onto purple `Track: 3`, and 46–50 onto red
-  `Track: 4`) and `Track: r` across all seven sets; `cRSubGame::StartLevel`
-  samples `Sprites/FringeColours.tga` for `Fringe: random`; `cRPathManager::NameCode`
+  into PC-layout 24-bit `Track4`–`6.tga` and `Slide4`–`6.tga` textures,
+  converting the Pro backgrounds (`SpacePro`, `SpacePro2`, `StarmapProbg`,
+  `SplashPro_A`/`_B`) and `Galaxy/*Pro.tga` overlays to PC TGA conventions, and
+  packing `Sprites/FringeColours.tga`, `Objects/TrampRing/`, `Galaxy/_GalaxyPro.txt`,
+  `Levels/ArcadePro000`–`010.txt`, and the 43 mobile-only `Segments/*.txt` files.
+  The narrow hooks (`port/wrapped.txt`, `port/shell/extras.cpp`,
+  `port/shell/extras_paths.cpp`, `port/shell/extras_pro.cpp`) delegate directly
+  to the `_recovered` bodies when the option is off. When on, `cRSubTracks::Init`
+  and `cRTrack::Change` support track colours 3–6 (moving Postal routes 21–25
+  and 41–45 onto purple `Track: 3`, and 46–50 onto red `Track: 4`) and
+  `Track: r` across all seven sets; `cRSubGame::StartLevel` samples
+  `Sprites/FringeColours.tga` for `Fringe: random`; `cRPathManager::NameCode`
   and the lifted ARM path builders (`BuildInvert1`, `BuildHalfPole`/`HalfPolePos`,
   `BuildShimmy`, `BuildDetour`, `BuildSBend`) supply the 16 mobile path template
-  pairs (`LOOPTHELOOP1`, `SBEND1`/`2`/`4`, `DETOUR2`/`3`/`DETOUR`, `SUPERTRAMPLEFT`,
-  `TURNOVER2`/`3`, `SHIMMY1`/`2`/`4`/`SHIMMY`, `INVERT1`, `HALFPOLE`) plus their
-  entry-transition pairs, remapped into unused level-local `path_pairs` slots;
-  and `cRSquidge::StartY` triggers `cRSubTrampRingManager` bounce rings on
-  trampoline tiles.
+  pairs and entry-transition pairs, remapped into unused level-local `path_pairs`
+  slots; `cRSquidge::StartY` triggers `cRSubTrampRingManager` bounce rings on
+  trampoline tiles; and the New Game menu adds **Pro-Challenge**, opening the
+  10-level **Special Assignment** galaxy (`Limax maximus` and
+  `Ariolimax columbianus`, `GUniverse1` layout) with the mobile power-up speed
+  curve (`cRSubGame::CalcRate`) and separate `ScorePro.dat` / `SnailMailPro.cfg`
+  persistence (**Pro High Scores**).
 
 ### Hosting
 

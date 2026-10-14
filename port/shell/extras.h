@@ -19,4 +19,10 @@ void extras_step_tramp_rings();
 const PathPair* extras_get_mobile_path_pair(int extra_index);
 int extras_tramp_ring_active_count();
 
+struct ArchiveIndex;
+ArchiveIndex* extras_get_archive_index();
+void extras_init_pro();
+bool extras_is_pro_mode();
+void extras_set_pro_mode(bool active);
+
 #endif

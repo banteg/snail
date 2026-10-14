@@ -265,17 +265,18 @@ def test_extras_mobile_path_meshes_and_tramp_rings(tmp_path):
 
     wasm = REPO_ROOT / "port/zig-out/bin/snail.wasm"
     runner = REPO_ROOT / "port/shell/run.mjs"
+    (tmp_path / "SnailMail.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMail.dat")
+    (tmp_path / "SnailMailExtras.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMailExtras.dat")
     dump_script = tmp_path / "dump_paths.mjs"
     dump_script.write_text(
         f"""
 import {{ readFile }} from "node:fs/promises";
 import {{ WASI }} from "node:wasi";
-process.env.SPUD = "/";
 const wasi = new WASI({{
     version: "preview1",
     args: ["snail.wasm", "--extras", "--ticks", "1"],
-    env: process.env,
-    preopens: {{ "/": "." }},
+    env: {{ ...process.env, PWD: process.cwd() }},
+    preopens: {{ "/": "/" }},
     returnOnExit: true,
 }});
 const bytes = await readFile({json.dumps(str(wasm.resolve()))});
@@ -309,7 +310,7 @@ console.log(JSON.stringify(out));
     )
     dump_res = subprocess.run(
         ["node", str(dump_script)],
-        cwd=REPO_ROOT / "artifacts/bin",
+        cwd=tmp_path,
         capture_output=True,
         text=True,
         check=True,
@@ -355,8 +356,6 @@ console.log(JSON.stringify(out));
                 assert fwd < 0.012 and rev < 0.012, f"{name} error fwd={fwd} rev={rev}"
 
     shutil.copy2(REPO_ROOT / "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat", tmp_path / "ScoreA.dat")
-    (tmp_path / "SnailMail.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMail.dat")
-    (tmp_path / "SnailMailExtras.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMailExtras.dat")
     replay = subprocess.run(
         [
             "node", str(runner), str(wasm), "--extras", "--trace",
@@ -371,3 +370,150 @@ console.log(JSON.stringify(out));
     assert "tick 2294: tramp_rings 1" in replay.stderr
     assert "tick 2340: tramp_rings 0" in replay.stderr
     assert "matches the original" in replay.stderr
+
+
+@pytest.mark.skipif(
+    shutil.which("node") is None
+    or not (REPO_ROOT / "port/zig-out/bin/snail.wasm").exists()
+    or not (REPO_ROOT / "artifacts/bin/SnailMail.dat").exists()
+    or not (REPO_ROOT / "artifacts/bin/SnailMailExtras.dat").exists(),
+    reason="needs node, snail.wasm, SnailMail.dat and SnailMailExtras.dat",
+)
+def test_extras_pro_challenge_galaxy_and_high_scores(tmp_path):
+    import json
+    import struct
+
+    def scramble_score_bytes(data: bytes) -> bytearray:
+        return bytearray(b ^ (i & 0xFF) for i, b in enumerate(data))
+
+    wasm = REPO_ROOT / "port/zig-out/bin/snail.wasm"
+    runner = REPO_ROOT / "port/shell/run.mjs"
+    (tmp_path / "SnailMail.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMail.dat")
+    (tmp_path / "SnailMailExtras.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMailExtras.dat")
+
+    sprite_script = tmp_path / "check_sprites.mjs"
+    sprite_script.write_text(
+        f"""
+import {{ readFile }} from "node:fs/promises";
+import {{ WASI }} from "node:wasi";
+const wasi = new WASI({{
+    version: "preview1",
+    args: ["snail.wasm", "--extras", "--ticks", "1"],
+    env: {{ ...process.env, PWD: process.cwd() }},
+    preopens: {{ "/": "/" }},
+    returnOnExit: true,
+}});
+const bytes = await readFile({json.dumps(str(wasm.resolve()))});
+const module = await WebAssembly.compile(bytes);
+const instance = await WebAssembly.instantiate(module, wasi.getImportObject());
+wasi.start(instance);
+const mem = new Uint8Array(instance.exports.memory.buffer);
+const cstr = (ptr) => {{
+    let end = ptr;
+    while (mem[end]) ++end;
+    return new TextDecoder().decode(mem.subarray(ptr, end));
+}};
+const slots = [22, 27, 500, 502, 503, 504, 506];
+console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.exports.snail_sprite_texture_name(s))]))));
+"""
+    )
+    sprite_res = subprocess.run(
+        ["node", str(sprite_script)],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    sprites = json.loads(sprite_res.stdout.splitlines()[-1])
+    assert sprites == {
+        "22": "Sprites/Mouse.tga",
+        "27": "Sprites/Play.tga",
+        "500": "Backgrounds/StarmapProbg.tga",
+        "502": "Backgrounds/SplashPro_A.tga",
+        "503": "Backgrounds/SplashPro_B.tga",
+        "504": "Backgrounds/SpacePro.tga",
+        "506": "Backgrounds/SpacePro2.tga",
+    }
+
+    score_a_orig = (REPO_ROOT / "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat").read_bytes()
+    dec = scramble_score_bytes(score_a_orig)
+    rec0_len = struct.unpack_from("<I", dec, 0)[0]
+    rec0 = bytearray(dec[:rec0_len])
+    struct.pack_into("<I", rec0, 0x2C, 1)
+    rec0[0x5C : 0x5C + 20] = b"ProChamp\x00".ljust(20, b"\x00")
+    score_pro_orig = bytes(scramble_score_bytes(rec0))
+    (tmp_path / "ScoreA.dat").write_bytes(score_a_orig)
+    (tmp_path / "ScorePro.dat").write_bytes(score_pro_orig)
+
+    cfg = bytearray(196)
+    struct.pack_into("<ff", cfg, 0, 1.0, 1.0)
+    cfg[0x60:0x69] = b"Fluctuosa"
+    struct.pack_into("<ifi", cfg, 0x40, 50, 0.5, 50)
+    struct.pack_into("<ii", cfg, 0xA0, 50, 7)
+    cfg[0xC0] = 1
+    (tmp_path / "SnailMail.cfg").write_bytes(cfg)
+
+    (tmp_path / "pro1.keys").write_text(
+        "600 escape\n700 mouse 345 112\n720 click 3\n"
+        "800 mouse 345 383\n820 click 3\n"
+        "900 mouse 289 287\n920 click 3\n"
+    )
+    pro1 = subprocess.run(
+        ["node", str(runner), str(wasm), "--extras", "--trace", "--ticks", "1000", "--keys", str(tmp_path / "pro1.keys")],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert '"Pro-Challenge"' in pro1.stderr
+    assert '"Special Assignment"' in pro1.stderr
+    assert '"Limax maximus"' in pro1.stderr
+    assert 'level "Pros Only" track_set 5 (Objects/World00/Track5.tga) fringe (0.871, 1.000, 0.039)' in pro1.stderr
+    # save_game() runs at the end of pro1 while g_pro_state_swapped == true inside "Pros Only"
+    assert struct.unpack("<ii", (tmp_path / "SnailMailPro.cfg").read_bytes()) == (1, 1)
+    assert struct.unpack_from("<ii", (tmp_path / "SnailMail.cfg").read_bytes(), 0xA0) == (50, 7)
+    assert (tmp_path / "ScoreA.dat").read_bytes() == score_a_orig
+    assert (tmp_path / "ScorePro.dat").read_bytes() == score_pro_orig
+    (tmp_path / "SnailMailPro.cfg").write_bytes(struct.pack("<ii", 10, 10))
+    (tmp_path / "pro10.keys").write_text(
+        "600 escape\n700 mouse 345 112\n720 click 3\n"
+        "800 mouse 345 383\n820 click 3\n"
+        "900 mouse 248 414\n920 click 3\n"
+    )
+    pro10 = subprocess.run(
+        ["node", str(runner), str(wasm), "--extras", "--trace", "--ticks", "1000", "--keys", str(tmp_path / "pro10.keys")],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert '"Ariolimax columbianus"' in pro10.stderr
+    assert 'level "Eximius Ferreus" track_set 6 (Objects/World00/Track6.tga) fringe (1.000, 0.980, 0.196)' in pro10.stderr
+    assert struct.unpack("<ii", (tmp_path / "SnailMailPro.cfg").read_bytes()) == (10, 10)
+    assert struct.unpack_from("<ii", (tmp_path / "SnailMail.cfg").read_bytes(), 0xA0) == (50, 7)
+    assert (tmp_path / "ScoreA.dat").read_bytes() == score_a_orig
+    assert (tmp_path / "ScorePro.dat").read_bytes() == score_pro_orig
+    (tmp_path / "hs_quit.keys").write_text(
+        "600 escape\n700 mouse 345 180\n720 click 3\n"
+        "800 mouse 420 400\n820 click 3\n"
+        "900 mouse 420 400\n920 click 3\n"
+        "1000 mouse 210 400\n1020 click 3\n"
+        "1120 mouse 345 393\n1140 click 3\n"
+        "1200 mouse 239 292\n1220 click 3\n"
+    )
+    hs = subprocess.run(
+        ["node", str(runner), str(wasm), "--extras", "--trace", "--ticks", "1400", "--keys", str(tmp_path / "hs_quit.keys")],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    postal_view = hs.stderr.split("tick 833:")[0]
+    pro_view = hs.stderr.split("tick 933:")[1]
+    assert '"Postal High Scores"' in postal_view and '"banteg"' in postal_view and '"ProChamp"' not in postal_view
+    assert '"Pro Scores"' in hs.stderr
+    assert '"Pro High Scores"' in pro_view and '"ProChamp"' in pro_view
+    assert "snail: quit requested" in hs.stderr
+    assert (tmp_path / "ScoreA.dat").read_bytes() == score_a_orig
+    assert (tmp_path / "ScorePro.dat").read_bytes() == score_pro_orig
+    assert struct.unpack_from("<ii", (tmp_path / "SnailMail.cfg").read_bytes(), 0xA0) == (50, 7)

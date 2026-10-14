@@ -185,6 +185,11 @@ bool extras_init_archive()
     return true;
 }
 
+ArchiveIndex* extras_get_archive_index()
+{
+    return g_extras_archive_index;
+}
+
 void extras_init_assets()
 {
     if (!g_port_extras)
@@ -200,6 +205,7 @@ void extras_init_assets()
     g_extra_track_textures[6] = g_texture_refs.Add((char*)"Objects/World00/Track6.tga", 0, 0);
     g_extra_slide_textures[6] = g_texture_refs.Add((char*)"Objects/World00/Slide6.tga", 0, 0);
     extras_init_paths();
+    extras_init_pro();
 }
 
 const char* extras_track_texture_name(int slot)
@@ -216,6 +222,11 @@ char __cdecl archive_or_file_exists(char* path, char force_filesystem)
     if (g_port_extras && force_filesystem == 0 && find_extras_archive_entry(path))
         return 1;
     return archive_or_file_exists_recovered(path, force_filesystem);
+}
+
+char __cdecl archive_or_file_exists(char* path, int force_filesystem)
+{
+    return archive_or_file_exists(path, (char)force_filesystem);
 }
 
 char* __cdecl load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out_size)
@@ -237,6 +248,16 @@ char* __cdecl load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, 
     return load_file_bytes_from_archive_or_fs_recovered(file_name, buffer, out_size);
 }
 
+char* __cdecl load_file_bytes_from_archive_or_fs(char* file_name, void* buffer, int* out_size)
+{
+    return load_file_bytes_from_archive_or_fs(file_name, (char*)buffer, out_size);
+}
+
+char* __cdecl load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, void* out_size)
+{
+    return load_file_bytes_from_archive_or_fs(file_name, buffer, (int*)out_size);
+}
+
 char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(char* file_name, char* buffer, int byte_count)
 {
     if (g_port_extras) {
@@ -252,6 +273,11 @@ char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(char* file_name, cha
         }
     }
     return load_file_bytes_fixed_size_from_archive_or_fs_recovered(file_name, buffer, byte_count);
+}
+
+char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(char* file_name, char* buffer, unsigned int byte_count)
+{
+    return load_file_bytes_fixed_size_from_archive_or_fs(file_name, buffer, (int)byte_count);
 }
 
 // Android cRTrack::Change (0003f330): supports Track: 0-6 and 8 (random 0-6).

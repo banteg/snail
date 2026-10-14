@@ -126,6 +126,7 @@ int main(int argc, char** argv)
         set_scripted_input(tick);
         if (int result = run_fixed_step(true)) {
             fprintf(stderr, "snail: quit requested at tick %d\n", tick);
+            save_game();
             end_game();
             return 0;
         }
@@ -161,6 +162,8 @@ int main(int argc, char** argv)
         }
     }
     fprintf(stderr, "snail: ran %d ticks\n", ticks);
+    if (!replay_oracle_enabled() && !tape)
+        save_game();
     end_game();
     return replay_oracle_enabled() ? replay_oracle_report() : 0;
 }
