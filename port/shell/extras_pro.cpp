@@ -231,6 +231,23 @@ void swap_out_pro_state()
     g_pro_state_swapped = false;
 }
 
+void import_pro_landscape(char* name, int target_sprite_id)
+{
+    cRLandscapeManager& lm = g_game->subgame.landscape_manager;
+    int old_count = lm.script_count;
+    int default_id = old_count * 2 + 6;
+    cRTexture* saved_a = g_sprite_texture_table[default_id];
+    cRTexture* saved_b = g_sprite_texture_table[default_id + 1];
+    int idx = lm.Import(name);
+    if (idx == old_count) {
+        g_sprite_texture_table[target_sprite_id] = g_sprite_texture_table[default_id];
+        g_sprite_texture_table[target_sprite_id + 1] = g_sprite_texture_table[default_id + 1];
+        g_sprite_texture_table[default_id] = saved_a;
+        g_sprite_texture_table[default_id + 1] = saved_b;
+        lm.scripts[idx].backdrop_texture_id = target_sprite_id;
+    }
+}
+
 void build_pro_galaxy_layout()
 {
     memset(&g_pro_galaxy_layout, 0, sizeof(g_pro_galaxy_layout));
@@ -331,10 +348,10 @@ void extras_init_pro()
     g_pro_border_tex = g_texture_refs.Add((char*)"Galaxy/BorderSpacemapPro.tga", 0, 0x400);
     g_pro_line_tex = g_texture_refs.Add((char*)"Galaxy/LinePro.tga", 0, 0x400);
 
-    g_game->subgame.landscape_manager.Import((char*)"StarMapPro.txt");
-    g_game->subgame.landscape_manager.Import((char*)"SplashPro.txt");
-    g_game->subgame.landscape_manager.Import((char*)"SpacePro.txt");
-    g_game->subgame.landscape_manager.Import((char*)"SpacePro2.txt");
+    import_pro_landscape((char*)"StarMapPro.txt", 500);
+    import_pro_landscape((char*)"SplashPro.txt", 502);
+    import_pro_landscape((char*)"SpacePro.txt", 504);
+    import_pro_landscape((char*)"SpacePro2.txt", 506);
     g_postal_galaxy_layout = g_game->subgame.galaxy;
     build_pro_galaxy_layout();
 
@@ -477,6 +494,15 @@ void cRGalaxy::Init()
     galaxy_init_recovered(this);
     if (!g_port_extras || !g_pro_mode_active)
         return;
+    if (g_runtime_config.highest_galaxy_route_index >= 1
+        && g_runtime_config.highest_galaxy_route_index <= kProMaxRouteIndex) {
+        g_pro_highest_route_index = g_runtime_config.highest_galaxy_route_index;
+    }
+    if (selected_index >= 1 && selected_index <= g_pro_highest_route_index) {
+        g_pro_selected_route_index = selected_index;
+        g_runtime_config.landscape_backdrop_variant_selector = selected_index;
+    }
+    save_pro_progress_file();
 
     int landscape_index = g_game->subgame.landscape_manager.Import((char*)"StarMapPro.txt");
     g_game->backdrop.Change(&g_game->subgame.landscape_manager.scripts[landscape_index], 0);
@@ -494,6 +520,10 @@ void cRGalaxy::Init()
 void cRSubTracks::load_frontend_level_by_mode_and_index(int mode, int level_index)
 {
     if (g_port_extras && g_pro_mode_active && mode == 0) {
+        if (level_index >= 1 && level_index <= g_pro_highest_route_index) {
+            g_pro_selected_route_index = level_index;
+            save_pro_progress_file();
+        }
         char path[128];
         sprintf(path, "ArcadePro%03i.txt", level_index);
         Init(path);
@@ -677,4 +707,12 @@ extern "C" void border_init_sprite_recovered(
     cRBorder* self, int flags, int sprite_id, float x, float y, tColour* color, float scale, int mode)
 {
     self->Init(flags, sprite_id, x, y, color, scale, mode);
+}
+
+__attribute__((export_name("snail_sprite_texture_name")))
+const char* extras_sprite_texture_name(int slot)
+{
+    if (slot < 0 || slot >= SPRITE_TEXTURE_CAPACITY || !g_sprite_texture_table[slot])
+        return "";
+    return g_sprite_texture_table[slot]->name;
 }
