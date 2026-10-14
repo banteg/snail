@@ -12,6 +12,61 @@ from .archive import write_archive
 ANDROID_ROOT = Path("artifacts/android/asm_extracted")
 OUTPUT = Path("artifacts/bin/SnailMailExtras.dat")
 
+MOBILE_ONLY_SEGMENTS = (
+    "BARRAGE.TXT",
+    "BIG JUMPE.TXT",
+    "DETOUR.TXT",
+    "DETOUR2.TXT",
+    "DETOUR3.TXT",
+    "DUEL CARRIAGEWAYE.TXT",
+    "EASY GAPE.TXT",
+    "HALFPOLE.TXT",
+    "INVERT1.TXT",
+    "JETPACKJUMP.TXT",
+    "LOOP THE LOOP SLUG.TXT",
+    "LOOP THE LOOP1.TXT",
+    "LOOP THE LOOPT4JUMP.TXT",
+    "OUTER LOOP BIG.TXT",
+    "PADDING.TXT",
+    "PARCELTEST2E.TXT",
+    "PARCELTESTE.TXT",
+    "SBEND.TXT",
+    "SBEND1.TXT",
+    "SBEND2.TXT",
+    "SBEND4.TXT",
+    "SENTRY.TXT",
+    "SENTRYE.TXT",
+    "SHIMMY.TXT",
+    "SHIMMY1.TXT",
+    "SHIMMY2.TXT",
+    "SHIMMY4.TXT",
+    "SLUGLINE.TXT",
+    "SLUGTROOP.TXT",
+    "SNAKEE.TXT",
+    "STEPPING STONESE.TXT",
+    "STUMPED.TXT",
+    "STUMPEDHARD.TXT",
+    "SUPERTRAMPE.TXT",
+    "SUPERTRAMPJETPACK.TXT",
+    "SUPERTRAMPLEFT.TXT",
+    "TRAMPOLINEDROP.TXT",
+    "TRAMPOLINEE.TXT",
+    "TURNOVER2.TXT",
+    "TURNOVER3.TXT",
+    "VALLEYJUMP.TXT",
+    "WORMJUMP.TXT",
+    "ZIGZAG JUMP SLUG.TXT",
+)
+
+
+def swap_tga32_rb(raw: bytes) -> bytes:
+    """Swap OpenGL ES RGBA 32-bit TGA pixels to PC D3D BGRA layout."""
+    width = int.from_bytes(raw[12:14], "little")
+    height = int.from_bytes(raw[14:16], "little")
+    n = width * height * 4
+    out = bytearray(raw[: 18 + n] + b"\x00\x00")
+    out[18 : 18 + n : 4], out[20 : 18 + n : 4] = raw[20 : 18 + n : 4], raw[18 : 18 + n : 4]
+    return bytes(out)
 
 def tga_rgb24(image: Image.Image) -> bytes:
     """Encode an image as a 24-bit uncompressed bottom-up TGA matching PC Track0-3.tga."""
@@ -44,8 +99,50 @@ def build_extras_files(android_root: Path) -> dict[str, bytes]:
         files[f"OBJECTS/WORLD00/SLIDE{index}.TGA"] = slide_tga
     fringe_path = android_root / "SPRITES/FRINGECOLOURS.TGA"
     files["SPRITES/FRINGECOLOURS.TGA"] = fringe_path.read_bytes()
-    files["OBJECTS/TRAMPRING/_OBJECT.TXT"] = (android_root / "OBJECTS/TRAMPRING/_OBJECT.TXT").read_bytes()
-    files["OBJECTS/TRAMPRING/TRAMPRING.TGA"] = (android_root / "OBJECTS/TRAMPRING/TRAMPRING.TGA").read_bytes()
+    for rel in ("OBJECTS/TRAMPRING/_OBJECT.TXT", "OBJECTS/TRAMPRING/TRAMPRING.TGA", "GALAXY/_GALAXYPRO.TXT"):
+        p = android_root / rel
+        if p.exists():
+            files[rel] = p.read_bytes()
+    for rel in ("GALAXY/BORDERSPACEMAPPRO.TGA", "GALAXY/LEVELSELECTPRO.TGA", "GALAXY/LINEPRO.TGA"):
+        p = android_root / rel
+        if p.exists():
+            files[rel] = swap_tga32_rb(p.read_bytes())
+    for i in range(11):
+        rel = f"LEVELS/ARCADEPRO{i:03d}.TXT"
+        p = android_root / rel
+        if p.exists():
+            files[rel] = p.read_bytes()
+    for seg in MOBILE_ONLY_SEGMENTS:
+        rel = f"SEGMENTS/{seg}"
+        p = android_root / rel
+        if p.exists():
+            files[rel] = p.read_bytes()
+    for stem in ("SPACEPRO", "SPACEPRO2"):
+        txt_p = android_root / f"BACKGROUNDS/{stem}.TXT"
+        jpg_p = android_root / f"BACKGROUNDS/{stem}.JPG"
+        if txt_p.exists() and jpg_p.exists():
+            files[f"BACKGROUNDS/{stem}.TXT"] = txt_p.read_bytes()
+            im = Image.open(io.BytesIO(jpg_p.read_bytes())).convert("RGB").resize((512, 256), Image.Resampling.BILINEAR)
+            files[f"BACKGROUNDS/{stem}.TGA"] = tga_rgb24(im)
+    starmap_txt = android_root / "BACKGROUNDS/STARMAPPRO.TXT"
+    starmap_jpg = android_root / "BACKGROUNDS/STARMAPPROBG.JPG"
+    if starmap_txt.exists() and starmap_jpg.exists():
+        files["BACKGROUNDS/STARMAPPRO.TXT"] = starmap_txt.read_bytes()
+        src = Image.open(io.BytesIO(starmap_jpg.read_bytes())).convert("RGB").crop((0, 0, 480, 320))
+        tile = src.resize((320, 240), Image.Resampling.BILINEAR)
+        canvas = src.resize((512, 256), Image.Resampling.BILINEAR)
+        canvas.paste(tile, (0, 0))
+        files["BACKGROUNDS/STARMAPPROBG.TGA"] = tga_rgb24(canvas)
+    splash_txt = android_root / "BACKGROUNDS/SPLASHPRO.TXT"
+    splash_png = android_root / "BACKGROUNDS/SPLASHPRO.PNG"
+    if splash_txt.exists() and splash_png.exists():
+        files["BACKGROUNDS/SPLASHPRO.TXT"] = splash_txt.read_bytes()
+        src = Image.open(io.BytesIO(splash_png.read_bytes())).convert("RGB").crop((0, 0, 480, 320))
+        scaled = src.resize((640, 480), Image.Resampling.BILINEAR)
+        canvas = Image.new("RGB", (640, 512))
+        canvas.paste(scaled, (0, 0))
+        files["BACKGROUNDS/SPLASHPRO_A.TGA"] = tga_rgb24(canvas.crop((0, 0, 512, 512)))
+        files["BACKGROUNDS/SPLASHPRO_B.TGA"] = tga_rgb24(canvas.crop((512, 0, 640, 512)))
     return files
 
 

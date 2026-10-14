@@ -371,3 +371,76 @@ console.log(JSON.stringify(out));
     assert "tick 2294: tramp_rings 1" in replay.stderr
     assert "tick 2340: tramp_rings 0" in replay.stderr
     assert "matches the original" in replay.stderr
+
+
+@pytest.mark.skipif(
+    shutil.which("node") is None
+    or not (REPO_ROOT / "port/zig-out/bin/snail.wasm").exists()
+    or not (REPO_ROOT / "artifacts/bin/SnailMail.dat").exists()
+    or not (REPO_ROOT / "artifacts/bin/SnailMailExtras.dat").exists(),
+    reason="needs node, snail.wasm, SnailMail.dat and SnailMailExtras.dat",
+)
+def test_extras_pro_challenge_galaxy_and_high_scores(tmp_path):
+    import struct
+
+    wasm = REPO_ROOT / "port/zig-out/bin/snail.wasm"
+    runner = REPO_ROOT / "port/shell/run.mjs"
+    (tmp_path / "SnailMail.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMail.dat")
+    (tmp_path / "SnailMailExtras.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMailExtras.dat")
+
+    cfg = bytearray(196)
+    struct.pack_into("<ff", cfg, 0, 1.0, 1.0)
+    cfg[0x60:0x69] = b"Fluctuosa"
+    struct.pack_into("<ifi", cfg, 0x40, 50, 0.5, 50)
+    struct.pack_into("<ii", cfg, 0xA0, 50, 1)
+    cfg[0xC0] = 1
+    (tmp_path / "SnailMail.cfg").write_bytes(cfg)
+
+    (tmp_path / "pro1.keys").write_text(
+        "600 escape\n700 mouse 345 112\n720 click 3\n"
+        "800 mouse 345 383\n820 click 3\n"
+        "900 mouse 289 287\n920 click 3\n"
+    )
+    pro1 = subprocess.run(
+        ["node", str(runner), str(wasm), "--extras", "--trace", "--ticks", "1000", "--keys", str(tmp_path / "pro1.keys")],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert '"Pro-Challenge"' in pro1.stderr
+    assert '"Special Assignment"' in pro1.stderr
+    assert '"Limax maximus"' in pro1.stderr
+    assert 'level "Pros Only" track_set 5 (Objects/World00/Track5.tga) fringe (0.871, 1.000, 0.039)' in pro1.stderr
+
+    (tmp_path / "SnailMailPro.cfg").write_bytes(struct.pack("<ii", 10, 10))
+    (tmp_path / "pro10.keys").write_text(
+        "600 escape\n700 mouse 345 112\n720 click 3\n"
+        "800 mouse 345 383\n820 click 3\n"
+        "900 mouse 248 414\n920 click 3\n"
+    )
+    pro10 = subprocess.run(
+        ["node", str(runner), str(wasm), "--extras", "--trace", "--ticks", "1000", "--keys", str(tmp_path / "pro10.keys")],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert '"Ariolimax columbianus"' in pro10.stderr
+    assert 'level "Eximius Ferreus" track_set 6 (Objects/World00/Track6.tga) fringe (1.000, 0.980, 0.196)' in pro10.stderr
+    assert struct.unpack_from("<ii", (tmp_path / "SnailMail.cfg").read_bytes(), 0xA0) == (50, 1)
+
+    (tmp_path / "hs.keys").write_text(
+        "600 escape\n700 mouse 345 180\n720 click 3\n"
+        "800 mouse 420 400\n820 click 3\n"
+        "900 mouse 420 400\n920 click 3\n"
+    )
+    hs = subprocess.run(
+        ["node", str(runner), str(wasm), "--extras", "--trace", "--ticks", "980", "--keys", str(tmp_path / "hs.keys")],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert '"Pro Scores"' in hs.stderr
+    assert '"Pro High Scores"' in hs.stderr
