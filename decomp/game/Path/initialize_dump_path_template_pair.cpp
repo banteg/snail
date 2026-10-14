@@ -179,12 +179,12 @@ static __forceinline void compute_terminal_deltas(Path *path)
         } while (i < path->segment_count - 1);
     }
 
-    path->primary_samples[path->segment_count - 1].delta_dir_to_next =
+    (path->primary_samples + path->segment_count - 1)->delta_dir_to_next =
         Vector3(0.0f, 0.0f, 1.0f);
-    path->primary_samples[path->segment_count - 1].delta_length = 1.0f;
-    path->secondary_samples[path->segment_count - 1].delta_dir_to_next =
+    (path->primary_samples + path->segment_count - 1)->delta_length = 1.0f;
+    (path->secondary_samples + path->segment_count - 1)->delta_dir_to_next =
         Vector3(0.0f, 0.0f, 1.0f);
-    path->secondary_samples[path->segment_count - 1].delta_length = 1.0f;
+    (path->secondary_samples + path->segment_count - 1)->delta_length = 1.0f;
 }
 
 void cRPath::initialize_dump_path_template_pair(float curve_source, float height_scale,

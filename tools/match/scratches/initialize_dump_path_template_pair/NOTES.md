@@ -504,3 +504,19 @@ The original build cannot have used the SP5 frontend this match was made
 with (see the [compiler identification](../../compiler-identification-20261005.md)). Under the corrected baseline, msvc6.3, the unchanged
 source scores 99.71% (exact before); the source shape was fitted to the newer frontend and
 needs rework under msvc6.3.
+
+## 2026-10-15 SP3 terminal-delta pointer recovery
+
+Under `msvc6.3`, the indexed terminal-delta writes `path->primary_samples[path->segment_count - 1]`
+and `path->secondary_samples[path->segment_count - 1]` push Pool A's expression-temporary allocation
+three slots into chunk `0x4e0` (`max_id = 0x4e2`), opening `C0 = 0x500` instead of `0x4e0`. That
+shifts the lead loop's induction temporary from `0x77e` (hash `0xdf80`) to `0x79e` (hash `0xe780`),
+above `[lead_secondary]` (`local 0xf`, hash `0xe007`), flipping the lead secondary `Identity()`
+receiver from bank-first to offset-first.
+
+Writing the four terminal-delta stores in pointer form
+`(path->primary_samples + path->segment_count - 1)->...` and
+`(path->secondary_samples + path->segment_count - 1)->...` keeps Pool A within chunk `0x4c0`,
+restoring `C0 = 0x4e0` and recovering the complete **100.00% proof-grade byte-exact match**
+(690/690 instructions, prefix 690, 43 clean positional references, `body_byte_exact = true`) under
+`msvc6.3`.
