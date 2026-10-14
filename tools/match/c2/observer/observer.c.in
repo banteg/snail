@@ -64,6 +64,8 @@ void __stdcall start(void)
     DWORD old;
     int result;
     unsigned long header[3];
+    unsigned short cw = 0x027f;
+    __asm { fldcw cw }
     if (!LoadLibraryA(pdb_path)) ExitProcess(90);
     module = LoadLibraryA(backend_path);
     if (!module) ExitProcess(91);

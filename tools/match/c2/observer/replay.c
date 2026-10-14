@@ -9,6 +9,9 @@ void __stdcall start(void)
     HMODULE module;
     invoke_t invoke;
     int result;
+    unsigned short cw = 0x027f;
+    /* Match CL's 53-bit x87 precision so C2's constant folding matches normal builds. */
+    __asm { fldcw cw }
     /* Match CL's compiler-directory dependency search before loading C2. */
     if (!LoadLibraryA(pdb_path)) ExitProcess(90);
     module = LoadLibraryA(backend_path);
