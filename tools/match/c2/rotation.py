@@ -56,12 +56,6 @@ def use_backend(compiler):
 
 use_backend(m.DEFAULT_SCRATCH_COMPILER)
 DESCRIPTOR_SIZE = 0x54
-ORDER_LIST = 0xADFF4  # 1,2,3,7,8,4,6,0: eax ecx edx esi edi ebx ebp
-CURSOR = 0x9D710  # pointer into ORDER_LIST, reset per function at +0x3375e
-HOLDERS = 0x9D6EC  # [reg] -> operand currently occupying the register
-CONFLICTS = 0x9D6C8  # [reg] -> bit set of temporaries that must avoid it
-ROTATE_ENABLED = 0xAC0B4
-BIT_TEST = 0x251D
 
 REGISTERS = {
     1: "eax",
