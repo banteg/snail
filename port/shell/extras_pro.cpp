@@ -511,10 +511,6 @@ void cRGalaxy::Init()
         Rstrcpy(route_title_widget->text_buffer, (char*)"Special Assignment");
         route_title_widget->RePosition();
     }
-    if (route_icon_widget) {
-        route_icon_widget->layout_anchor_x = 290.0f;
-        route_icon_widget->RePosition();
-    }
 }
 
 void cRSubTracks::load_frontend_level_by_mode_and_index(int mode, int level_index)

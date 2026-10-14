@@ -99,11 +99,16 @@ def build_extras_files(android_root: Path) -> dict[str, bytes]:
         files[f"OBJECTS/WORLD00/SLIDE{index}.TGA"] = slide_tga
     fringe_path = android_root / "SPRITES/FRINGECOLOURS.TGA"
     files["SPRITES/FRINGECOLOURS.TGA"] = fringe_path.read_bytes()
-    for rel in ("OBJECTS/TRAMPRING/_OBJECT.TXT", "OBJECTS/TRAMPRING/TRAMPRING.TGA", "GALAXY/_GALAXYPRO.TXT"):
+    for rel in ("OBJECTS/TRAMPRING/_OBJECT.TXT", "GALAXY/_GALAXYPRO.TXT"):
         p = android_root / rel
         if p.exists():
             files[rel] = p.read_bytes()
-    for rel in ("GALAXY/BORDERSPACEMAPPRO.TGA", "GALAXY/LEVELSELECTPRO.TGA", "GALAXY/LINEPRO.TGA"):
+    for rel in (
+        "OBJECTS/TRAMPRING/TRAMPRING.TGA",
+        "GALAXY/BORDERSPACEMAPPRO.TGA",
+        "GALAXY/LEVELSELECTPRO.TGA",
+        "GALAXY/LINEPRO.TGA",
+    ):
         p = android_root / rel
         if p.exists():
             files[rel] = swap_tga32_rb(p.read_bytes())

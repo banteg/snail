@@ -265,17 +265,18 @@ def test_extras_mobile_path_meshes_and_tramp_rings(tmp_path):
 
     wasm = REPO_ROOT / "port/zig-out/bin/snail.wasm"
     runner = REPO_ROOT / "port/shell/run.mjs"
+    (tmp_path / "SnailMail.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMail.dat")
+    (tmp_path / "SnailMailExtras.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMailExtras.dat")
     dump_script = tmp_path / "dump_paths.mjs"
     dump_script.write_text(
         f"""
 import {{ readFile }} from "node:fs/promises";
 import {{ WASI }} from "node:wasi";
-process.env.SPUD = "/";
 const wasi = new WASI({{
     version: "preview1",
     args: ["snail.wasm", "--extras", "--ticks", "1"],
-    env: process.env,
-    preopens: {{ "/": "." }},
+    env: {{ ...process.env, PWD: process.cwd() }},
+    preopens: {{ "/": "/" }},
     returnOnExit: true,
 }});
 const bytes = await readFile({json.dumps(str(wasm.resolve()))});
@@ -309,7 +310,7 @@ console.log(JSON.stringify(out));
     )
     dump_res = subprocess.run(
         ["node", str(dump_script)],
-        cwd=REPO_ROOT / "artifacts/bin",
+        cwd=tmp_path,
         capture_output=True,
         text=True,
         check=True,
@@ -355,8 +356,6 @@ console.log(JSON.stringify(out));
                 assert fwd < 0.012 and rev < 0.012, f"{name} error fwd={fwd} rev={rev}"
 
     shutil.copy2(REPO_ROOT / "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat", tmp_path / "ScoreA.dat")
-    (tmp_path / "SnailMail.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMail.dat")
-    (tmp_path / "SnailMailExtras.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMailExtras.dat")
     replay = subprocess.run(
         [
             "node", str(runner), str(wasm), "--extras", "--trace",
@@ -397,12 +396,11 @@ def test_extras_pro_challenge_galaxy_and_high_scores(tmp_path):
         f"""
 import {{ readFile }} from "node:fs/promises";
 import {{ WASI }} from "node:wasi";
-process.env.SPUD = "/";
 const wasi = new WASI({{
     version: "preview1",
     args: ["snail.wasm", "--extras", "--ticks", "1"],
-    env: process.env,
-    preopens: {{ "/": "." }},
+    env: {{ ...process.env, PWD: process.cwd() }},
+    preopens: {{ "/": "/" }},
     returnOnExit: true,
 }});
 const bytes = await readFile({json.dumps(str(wasm.resolve()))});
@@ -421,7 +419,7 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
     )
     sprite_res = subprocess.run(
         ["node", str(sprite_script)],
-        cwd=REPO_ROOT / "artifacts/bin",
+        cwd=tmp_path,
         capture_output=True,
         text=True,
         check=True,
@@ -471,8 +469,11 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
     assert '"Special Assignment"' in pro1.stderr
     assert '"Limax maximus"' in pro1.stderr
     assert 'level "Pros Only" track_set 5 (Objects/World00/Track5.tga) fringe (0.871, 1.000, 0.039)' in pro1.stderr
+    # save_game() runs at the end of pro1 while g_pro_state_swapped == true inside "Pros Only"
     assert struct.unpack("<ii", (tmp_path / "SnailMailPro.cfg").read_bytes()) == (1, 1)
-
+    assert struct.unpack_from("<ii", (tmp_path / "SnailMail.cfg").read_bytes(), 0xA0) == (50, 7)
+    assert (tmp_path / "ScoreA.dat").read_bytes() == score_a_orig
+    assert (tmp_path / "ScorePro.dat").read_bytes() == score_pro_orig
     (tmp_path / "SnailMailPro.cfg").write_bytes(struct.pack("<ii", 10, 10))
     (tmp_path / "pro10.keys").write_text(
         "600 escape\n700 mouse 345 112\n720 click 3\n"
@@ -488,7 +489,10 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
     )
     assert '"Ariolimax columbianus"' in pro10.stderr
     assert 'level "Eximius Ferreus" track_set 6 (Objects/World00/Track6.tga) fringe (1.000, 0.980, 0.196)' in pro10.stderr
-
+    assert struct.unpack("<ii", (tmp_path / "SnailMailPro.cfg").read_bytes()) == (10, 10)
+    assert struct.unpack_from("<ii", (tmp_path / "SnailMail.cfg").read_bytes(), 0xA0) == (50, 7)
+    assert (tmp_path / "ScoreA.dat").read_bytes() == score_a_orig
+    assert (tmp_path / "ScorePro.dat").read_bytes() == score_pro_orig
     (tmp_path / "hs_quit.keys").write_text(
         "600 escape\n700 mouse 345 180\n720 click 3\n"
         "800 mouse 420 400\n820 click 3\n"
@@ -506,7 +510,7 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
     )
     postal_view = hs.stderr.split("tick 833:")[0]
     pro_view = hs.stderr.split("tick 933:")[1]
-    assert '"Postal High Scores"' in postal_view and '"ProChamp"' not in postal_view
+    assert '"Postal High Scores"' in postal_view and '"banteg"' in postal_view and '"ProChamp"' not in postal_view
     assert '"Pro Scores"' in hs.stderr
     assert '"Pro High Scores"' in pro_view and '"ProChamp"' in pro_view
     assert "snail: quit requested" in hs.stderr

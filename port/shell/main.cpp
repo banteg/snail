@@ -162,6 +162,8 @@ int main(int argc, char** argv)
         }
     }
     fprintf(stderr, "snail: ran %d ticks\n", ticks);
+    if (!replay_oracle_enabled() && !tape)
+        save_game();
     end_game();
     return replay_oracle_enabled() ? replay_oracle_report() : 0;
 }

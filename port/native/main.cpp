@@ -191,6 +191,7 @@ int main(int argc, char** argv)
     wasm_rt_init();
     wasm2c_game_instantiate(&game, &host, &wasi);
     w2c_game_0x5Finitialize(&game);
+    w2c_game_snail_set_extras(&game, extras ? 1 : 0);
     if (tape_ticks) {
         if (!w2c_game_snail_tape_open(&game)) {
             SDL_Log("snail: cannot replay session.tape in %s", root);
@@ -206,7 +207,6 @@ int main(int argc, char** argv)
         return saved ? 0 : 1;
     }
 
-    w2c_game_snail_set_extras(&game, extras ? 1 : 0);
     // The original drew timeGetTime() % 1000 random numbers before construction.
     if (!w2c_game_snail_start(&game, (uint32_t)(warmup >= 0 ? warmup : SDL_GetTicks() % 1000))) {
         SDL_Log("snail: startup failed; is SnailMail.dat in %s?", root);
