@@ -373,6 +373,47 @@ lockstep sessions and high-score runs bit for bit, like the development one.
 The deploy also points the custom domain at the Worker and provisions its
 certificate.
 
+#### Deploying from GitHub Actions
+
+Run **Actions → Deploy snail.banteg.xyz → Run workflow** from `master`.
+Choose `master` or a version tag (`v0.3.0` and later). Keep **dry_run** checked
+to build, test and download a complete site without changing production;
+uncheck it to deploy. There is no automatic deployment on pushes or tags.
+
+The workflow requires successful master CI for the selected commit, compiles
+the recovered source with Zig 0.17.0, runs the port tests and replay oracle,
+and includes both the original archive and the mobile extras pack. It uploads
+the prepared site as the `snail-site` Actions artifact. Production deploys use
+that artifact and run one at a time. Afterwards every live file is checked
+against its prepared SHA-256. `/build.json` records the source commit, version,
+selected ref and asset bundle identity.
+
+Set these in the repository's **Settings → Secrets and variables → Actions**:
+
+- Secret `CLOUDFLARE_API_TOKEN`: a scoped Cloudflare Workers deployment token
+  for the account hosting `snail.banteg.xyz`. Follow
+  [Cloudflare's GitHub Actions setup](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/).
+- Variable `CLOUDFLARE_ACCOUNT_ID`: that Cloudflare account's ID.
+
+Dry runs need neither credential. Production uses the `production` GitHub
+environment, where deployment protection rules can be configured separately.
+
+The untracked game archives are supplied by the release attachment pinned in
+[`port/deploy-assets.json`](../../port/deploy-assets.json). The downloader
+checks the bundle and both archives before writing any file; game binaries
+remain outside Git. To publish an updated bundle after changing mobile assets:
+
+```sh
+uv run snail port extras
+uv run tools/port/deploy.py package-assets \
+  --out /tmp/snail-port-assets-v2.tar.gz \
+  --url 'https://github.com/banteg/snail/releases/download/<tag>/snail-port-assets-v2.tar.gz'
+gh release upload '<tag>' /tmp/snail-port-assets-v2.tar.gz
+```
+
+Commit the updated manifest with the asset change, using a new attachment name
+so prior versions retain their original bundle.
+
 ## Playing natively (macOS)
 
 ```

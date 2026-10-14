@@ -1,0 +1,17 @@
+{
+  "url": "https://github.com/banteg/snail/releases/download/v0.3.0/snail-port-assets-v1.tar.gz",
+  "bundle": {
+    "size": 13443937,
+    "sha256": "5fcd0d10b937e4c6e45fcdf72ff8be249c4ec066515b7b718c5a83196f6a56b2"
+  },
+  "files": {
+    "SnailMail.dat": {
+      "size": 27441956,
+      "sha256": "77385671c3f7513d5bdc3ca54983c58f76f3c41963a52a166f3b00af8e696576"
+    },
+    "SnailMailExtras.dat": {
+      "size": 2608665,
+      "sha256": "b9902ce5282d146ca2f432ce5f2172305ba113a64ff1370680b7bee10efa2c68"
+    }
+  }
+}
