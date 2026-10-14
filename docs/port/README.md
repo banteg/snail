@@ -330,6 +330,18 @@ logic, so the oracles hold either way.
   drew the track three times as far (render-time links undone after each
   frame, both oracles matching), but objects still spawn 38 units ahead, and
   the longer view made that pop-in plain.
+- **Mobile extras** (`--extras` natively and headless, `?extras` or the gear menu
+  in the browser, off by default): opt-in content backported from the Android
+  release (#28). `uv run snail port extras` builds `artifacts/bin/SnailMailExtras.dat`
+  from the extracted Android assets, splitting `OBJECTS/WORLD00/SURFACE4`–`6.PNG`
+  into PC-layout 24-bit `Track4`–`6.tga` and `Slide4`–`6.tga` textures and packing
+  `Sprites/FringeColours.tga`. The narrow hooks (`port/wrapped.txt`,
+  `port/shell/extras.cpp`) delegate directly to the `_recovered` bodies when the
+  option is off. When on, `cRSubTracks::Init` and `cRTrack::Change` support
+  track colours 3–6 (moving Postal routes 21–25 and 41–45 onto purple `Track: 3`,
+  and 46–50 onto red `Track: 4`) and `Track: r` across all seven sets, while
+  `cRSubGame::StartLevel` samples `Sprites/FringeColours.tga` for `Fringe: random`
+  in Challenge mode.
 
 ### Hosting
 

@@ -638,6 +638,12 @@ def build_parser() -> argparse.ArgumentParser:
         "link",
         help="Compile the port's sources and generate forwarders for stand-in call names (port/generated/).",
     )
+    port_extras_parser = port_subparsers.add_parser(
+        "extras",
+        help="Build artifacts/bin/SnailMailExtras.dat from the extracted Android release assets.",
+    )
+    port_extras_parser.add_argument("--out", type=Path)
+    port_extras_parser.add_argument("--android-root", type=Path)
     port_serve_parser = port_subparsers.add_parser(
         "serve", help="Serve the browser build (port/web/, snail-web.wasm, SnailMail.dat) on localhost."
     )
@@ -1802,6 +1808,12 @@ def main(argv: Sequence[str] | None = None) -> int:
                 f"{len(report['shimmed'])} hand-written shims, {len(report['manual'])} still needed, "
                 f"{len(report['shell'])} left for the shell (see {port_link.REPORT})"
             )
+            return 0
+        if args.port_command == "extras":
+            from . import port_extras
+
+            out = port_extras.generate(REPO_ROOT, out=args.out, android_root=args.android_root)
+            print(f"{out}: {out.stat().st_size:,} bytes")
             return 0
         report = port_data.generate(REPO_ROOT)
         print(

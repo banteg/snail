@@ -38,6 +38,7 @@ from .archive import decode_bytes, parse_archive_index, read_archive_entry
 WEB = Path("port/web")
 WASM = Path("port/zig-out/bin/snail-web.wasm")
 ARCHIVE = Path("artifacts/bin/SnailMail.dat")
+EXTRAS_ARCHIVE = Path("artifacts/bin/SnailMailExtras.dat")
 CONTENT_TYPES = {".js": "text/javascript", ".wasm": "application/wasm", ".gz": "application/gzip", ".avif": "image/avif"}
 SPLASH_IMAGES = {"loading.avif": "Sprites/Loading.tga", "loading-bar.avif": "Sprites/LoadingBarOn.tga"}
 CARD = "card.jpg"
@@ -86,19 +87,24 @@ def pack_site(root: Path, out: Path, archive: Path) -> None:
         shutil.copytree(root / WEB, out)
         shutil.copy(Path(prefix) / "bin" / WASM.name, out / WASM.name)
     (out / "SnailMail.dat.gz").write_bytes(pack_archive(archive))
+    if (root / EXTRAS_ARCHIVE).exists():
+        (out / "SnailMailExtras.dat.gz").write_bytes(pack_archive(root / EXTRAS_ARCHIVE))
     for name, image in page_images(archive).items():
         (out / name).write_bytes(image)
 
 
 def routes(root: Path, archive: Path) -> dict[str, Path | bytes]:
     """Fixed routes; any other top-level name is looked up in port/web/ per request."""
-    return {
+    table: dict[str, Path | bytes] = {
         "/": root / WEB / "index.html",
         "/snail-web.wasm": root / WASM,
         "/SnailMail.dat.gz": pack_archive(archive),
         **{f"/{name}": image for name, image in page_images(archive).items()},
         "": root / WEB,
     }
+    if (root / EXTRAS_ARCHIVE).exists():
+        table["/SnailMailExtras.dat.gz"] = pack_archive(root / EXTRAS_ARCHIVE)
+    return table
 
 
 def resolve(table: dict[str, Path | bytes], request_path: str) -> Path | bytes | None:

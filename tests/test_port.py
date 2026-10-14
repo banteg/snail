@@ -6,7 +6,8 @@ import subprocess
 
 import pytest
 
-from snail import port
+from snail import port, port_extras
+from snail.archive import parse_archive_index, read_archive_entry, write_archive
 from snail.port_data import DataPlan, ImageSection, pointer_value, render, slot_adapter
 from snail.port_link import forwarder, resolve
 from snail.symbols import REPO_ROOT
@@ -20,9 +21,9 @@ def test_committed_sources_are_current():
     assert (REPO_ROOT / port.SOURCES).read_text() == port.sources_text(REPO_ROOT)
 
 
-def _layout_root(tmp_path, replaced="", portable=""):
-    (tmp_path / "decomp").mkdir()
-    (tmp_path / "port").mkdir()
+def _layout_root(tmp_path, replaced="", portable="", wrapped=""):
+    (tmp_path / "decomp").mkdir(exist_ok=True)
+    (tmp_path / "port").mkdir(exist_ok=True)
     sources = [
         {"function": "update_world", "path": "decomp/game/A/update_world.cpp", "port_scope": "core"},
         {"function": "draw_world", "path": "decomp/game/A/draw_world.cpp", "port_scope": "boundary"},
@@ -32,8 +33,9 @@ def _layout_root(tmp_path, replaced="", portable=""):
     (tmp_path / port.LAYOUT).write_text(json.dumps({"units": [{"sources": sources}]}))
     (tmp_path / port.REPLACED).write_text(replaced)
     (tmp_path / port.PORTABLE).write_text(portable)
+    if wrapped:
+        (tmp_path / port.WRAPPED).write_text(wrapped)
     return tmp_path
-
 
 def test_source_list_compiles_core_boundary_and_portable_platform(tmp_path):
     root = _layout_root(tmp_path, replaced="# shell\ndraw_world G0\n", portable="read_file\n")
@@ -47,6 +49,33 @@ def test_source_list_rejects_listings_outside_their_scope(tmp_path, replaced, po
     with pytest.raises(ValueError, match="lists functions outside"):
         port.source_list(_layout_root(tmp_path, replaced=replaced, portable=portable))
 
+
+
+def test_wrapped_list_excludes_wrapped_sources_and_checks_paths(tmp_path):
+    root = _layout_root(tmp_path, wrapped="update_world ../decomp/game/A/update_world.cpp Step\n")
+    assert port.source_list(root) == ["../decomp/game/A/draw_world.cpp"]
+    with pytest.raises(ValueError, match="paths disagree"):
+        port.source_list(_layout_root(tmp_path, wrapped="update_world ../decomp/game/A/wrong.cpp Step\n"))
+
+
+def test_split_surface_strip_and_archive_roundtrip(tmp_path):
+    import io
+
+    from PIL import Image
+
+    strip = Image.new("RGB", (512, 128))
+    strip.paste((200, 10, 20), (0, 0, 128, 128))
+    strip.paste((180, 30, 40), (128, 0, 256, 128))
+    buf = io.BytesIO()
+    strip.save(buf, format="PNG")
+    track_tga, slide_tga = port_extras.split_surface_strip(buf.getvalue())
+    assert Image.open(io.BytesIO(track_tga)).getpixel((64, 64)) == (200, 10, 20)
+    assert Image.open(io.BytesIO(slide_tga)).getpixel((64, 64)) == (180, 30, 40)
+
+    archive = tmp_path / "SnailMailExtras.dat"
+    write_archive(archive, {"Objects/World00/Track4.tga": track_tga, "Objects/World00/Slide4.tga": slide_tga})
+    index = parse_archive_index(archive)
+    assert read_archive_entry(archive, index.entry_by_path("objects/world00/track4.tga")) == track_tga
 
 BASE, END = 0x400000, 0x500000
 
@@ -131,3 +160,64 @@ def test_line_table_maps_trace_offsets_to_source_lines(tmp_path):
     assert table.lookup(offset) == row
     trace = f"    at snail.wasm.main (wasm://wasm/x:wasm-function[3]:{offset:#x})"
     assert annotate(trace, table).endswith(f"{offset:#x} [trap.c:2])")
+
+
+@pytest.mark.skipif(
+    shutil.which("node") is None
+    or not (REPO_ROOT / "port/zig-out/bin/snail.wasm").exists()
+    or not (REPO_ROOT / "artifacts/bin/SnailMail.dat").exists()
+    or not (REPO_ROOT / "artifacts/bin/SnailMailExtras.dat").exists(),
+    reason="needs node, snail.wasm, SnailMail.dat and SnailMailExtras.dat",
+)
+def test_extras_track_colours_and_random_fringe(tmp_path):
+    import struct
+
+    wasm = REPO_ROOT / "port/zig-out/bin/snail.wasm"
+    runner = REPO_ROOT / "port/shell/run.mjs"
+    (tmp_path / "SnailMail.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMail.dat")
+
+    missing = subprocess.run(
+        ["node", str(runner), str(wasm), "--extras", "--ticks", "1"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert missing.returncode == 1
+    assert "requires SnailMailExtras.dat" in missing.stderr
+
+    (tmp_path / "SnailMailExtras.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMailExtras.dat")
+    cfg = bytearray(196)
+    struct.pack_into("<ff", cfg, 0, 1.0, 1.0)
+    cfg[0x60:0x69] = b"Fluctuosa"
+    struct.pack_into("<ifi", cfg, 0x40, 50, 0.5, 50)
+    struct.pack_into("<ii", cfg, 0xA0, 50, 46)
+    cfg[0xC0] = 1
+    (tmp_path / "SnailMail.cfg").write_bytes(cfg)
+
+    (tmp_path / "postal46.keys").write_text(
+        "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 170\n820 click 3\n"
+        "900 mouse 480 300\n920 click 3\n1000 mouse 320 300\n"
+    )
+    postal = subprocess.run(
+        ["node", str(runner), str(wasm), "--extras", "--trace", "--keys", str(tmp_path / "postal46.keys")],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert 'level "70 Gph!" track_set 4 (Objects/World00/Track4.tga)' in postal.stderr
+
+    (tmp_path / "SnailMail.cfg").write_bytes(cfg)
+    (tmp_path / "challenge.keys").write_text(
+        "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 310\n820 click 3\n"
+        "900 mouse 320 320\n920 click 3\n1000 mouse 320 300\n"
+    )
+    challenge = subprocess.run(
+        ["node", str(runner), str(wasm), "--extras", "--warmup", "0", "--trace", "--keys", str(tmp_path / "challenge.keys")],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert 'level "Challenge 0" track_set 6 (Objects/World00/Track6.tga) fringe (0.733, 0.000, 1.000)' in challenge.stderr

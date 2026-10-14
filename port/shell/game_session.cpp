@@ -7,6 +7,7 @@
 #include "archive_index.h"
 #include "audio_system.h"
 #include "authored_view_state.h"
+#include "extras.h"
 #include "font_system.h"
 #include "frontend_fade.h"
 #include "game_root.h"
@@ -58,6 +59,8 @@ bool start_game(int warmup)
         fprintf(stderr, "snail: cannot open SnailMail.dat in the working directory\n");
         return false;
     }
+    if (!extras_init_archive())
+        return false;
     g_authored_view_width = 640.0f;
     g_authored_view_height = 480.0f;
 
@@ -86,6 +89,7 @@ bool start_game(int warmup)
         fprintf(stderr, "snail: initialize_game_assets_and_world failed\n");
         return false;
     }
+    extras_init_assets();
     load_registered_texture_refs(1);
     g_game->InitLast();
     g_loading_bar.UnInit();

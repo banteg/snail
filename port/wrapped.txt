@@ -1,0 +1,8 @@
+# Functions shell/extras.cpp wraps for opt-in mobile content (--extras):
+# manifest name, source path (from port/), and the identifier renamed to *_recovered.
+archive_or_file_exists                         ../decomp/game/RShell/archive_or_file_exists.cpp                         archive_or_file_exists
+load_file_bytes_from_archive_or_fs             ../decomp/game/RShell/load_file_bytes_from_archive_or_fs.cpp             load_file_bytes_from_archive_or_fs
+load_file_bytes_fixed_size_from_archive_or_fs  ../decomp/game/RShell/load_file_bytes_fixed_size_from_archive_or_fs.cpp  load_file_bytes_fixed_size_from_archive_or_fs
+select_level_track_texture_set                 ../decomp/game/Game/select_level_track_texture_set.cpp                   Change
+load_level_definition_file                     ../decomp/game/Subtrack/load_level_definition_file.cpp                   Init
+build_subgame_level                            ../decomp/game/SubGame/build_subgame_level.cpp                          StartLevel

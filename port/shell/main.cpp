@@ -19,6 +19,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "extras.h"
 #include "frontend_widget.h"
 #include "game_root.h"
 #include "game_session.h"
@@ -82,6 +83,8 @@ int main(int argc, char** argv)
             warmup = atoi(argv[++i]);
         else if (strcmp(argv[i], "--trace") == 0)
             trace = true;
+        else if (strcmp(argv[i], "--extras") == 0)
+            g_port_extras = true;
         else if (strcmp(argv[i], "--tape") == 0 && i + 1 < argc)
             tape = argv[++i];
         else if (strcmp(argv[i], "--tape-out") == 0 && i + 1 < argc)
@@ -93,7 +96,7 @@ int main(int argc, char** argv)
             }
         }
         else {
-            fprintf(stderr, "usage: snail [--ticks N] [--keys SCRIPT] [--warmup N] [--trace] [--replay A3]\n");
+            fprintf(stderr, "usage: snail [--ticks N] [--keys SCRIPT] [--warmup N] [--trace] [--extras] [--replay A3]\n");
             return 2;
         }
     }
@@ -116,6 +119,7 @@ int main(int argc, char** argv)
         replay_oracle_started();
 
     int state = -1;
+    int subgame_state = -1;
     unsigned int widgets = 0;
     for (int tick = 0; tick < ticks; ++tick) {
         set_scripted_input(tick);
@@ -132,6 +136,17 @@ int main(int argc, char** argv)
         if (trace && g_game->players[0].frontend_state != state) {
             state = g_game->players[0].frontend_state;
             fprintf(stderr, "tick %d: frontend_state %d\n", tick, state);
+        }
+        if (trace && g_game->subgame.subgame_state != subgame_state) {
+            subgame_state = g_game->subgame.subgame_state;
+            if (subgame_state == 2) {
+                const tColour& f = g_game->subgame.level_definition.fringe_color;
+                fprintf(stderr, "tick %d: level \"%s\" track_set %d (%s) fringe (%.3f, %.3f, %.3f)\n",
+                    tick, g_game->subgame.level_definition.level_display_name,
+                    g_game->track.current_texture_set,
+                    extras_track_texture_name(g_game->track.current_texture_set),
+                    f.r, f.g, f.b);
+            }
         }
         // Once a screen has settled, list its widgets (for writing click scripts).
         if (trace && g_game->fade.state == 0 && widget_set_signature() != widgets) {

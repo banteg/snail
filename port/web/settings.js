@@ -9,13 +9,14 @@ export const OPTIONS = [
   { id: "hidpi", label: "Sharp rendering", detail: "Draw at the display's resolution instead of 640×480" },
   { id: "fullscreen", label: "Fullscreen", detail: "The game's Fullscreen option fills the screen" },
   { id: "trapMouse", label: "Trap the mouse", detail: "Keep the pointer in the game; Esc lets it go" },
+  { id: "extras", label: "Mobile extras", detail: "Track colours 3–6 and mobile bonus content (reloads)", defaultValue: false },
 ];
 
 export class Settings {
   constructor(onChange, releasePointer) {
     this.onChange = onChange;
     this.releasePointer = releasePointer;
-    this.values = Object.fromEntries(OPTIONS.map((option) => [option.id, true]));
+    this.values = Object.fromEntries(OPTIONS.map((option) => [option.id, option.defaultValue ?? true]));
     try {
       Object.assign(this.values, JSON.parse(localStorage.getItem(KEY)) ?? {});
     } catch {}
