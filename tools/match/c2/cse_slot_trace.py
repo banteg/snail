@@ -132,12 +132,22 @@ static void slot_observe(unsigned long phase, unsigned long *registers)
 """
 
 
-def hooks() -> list[dict]:
-    rows = [dict(ao.FUNCTION_ENTRY_HOOK, kind=PASS), dict(ao.ADDRESS_PASS_HOOK, kind=PASS)]
-    rows += [{"site": s, "target": ao.ALLOCATOR, "return": True, "kind": SYMBOL_ALLOC} for s in ao.ALLOCATOR_SITES]
-    rows.append(CSE_ALLOC_HOOK)
-    rows += [{"site": s, "target": t, "return": False, "kind": k} for s, (_, t, k) in OWNER_SITES.items()]
-    rows += [{"site": s, "target": 0x8C14, "return": False, "kind": TUPLE_ECX} for s in NUMBER_ASSIGNMENT_SITES]
+def hooks(profile: dict | None = None) -> list[dict]:
+    if profile is None:
+        profile = ao.c2.load_profile()
+    order = profile["address_order"]
+    cse = profile["cse_slots"]
+    rows = [dict(order["function_entry"], kind=PASS), dict(order["address_pass"], kind=PASS)]
+    rows += [{"site": s, "target": order["allocator"], "return": True, "kind": SYMBOL_ALLOC} for s in order["allocator_sites"]]
+    rows.append(dict(cse["cse_alloc_hook"], kind=CSE_ALLOC))
+    rows += [
+        {"site": s["site"], "target": s["target"], "return": False, "kind": s["kind"], "what": s["what"]}
+        for s in cse["owner_sites"]
+    ]
+    rows += [
+        {"site": s, "target": cse["number_assignment"], "return": False, "kind": TUPLE_ECX, "what": "number_assignment"}
+        for s in cse["number_assignment_sites"]
+    ]
     return rows
 
 
@@ -157,9 +167,9 @@ def observer(profile, stock_source, kinds, phantom=((-1, 0),)):
             raise ValueError(f"Unexpected Crimson observer template near {anchor!r}")
     source = source.replace("if(op) ExitProcess(98);", "")
     recorder = RECORDER.replace("{KINDS}", "{" + ",".join(map(str, kinds)) + "}")
-    recorder = recorder.replace("EXPR_SCRATCH", str(EXPR_OPERAND_SCRATCH))
+    recorder = recorder.replace("EXPR_SCRATCH", str(profile["cse_slots"]["expr_operand_scratch"]))
     recorder = recorder.replace("FIRST_TARGET", str(profile["hooks"][0]["target"]))
-    recorder = recorder.replace("ALLOCATOR_RVA", str(ao.ALLOCATOR))
+    recorder = recorder.replace("ALLOCATOR_RVA", str(profile["address_order"]["allocator"]))
     recorder = recorder.replace("PHANTOM_AT", ",".join(str(at) for at, _ in phantom))
     recorder = recorder.replace("PHANTOM_COUNT", ",".join(str(count) for _, count in phantom))
     source = source.replace(anchors[3], recorder + anchors[3])
@@ -178,8 +188,8 @@ def observer(profile, stock_source, kinds, phantom=((-1, 0),)):
 
 def run_observer(scratch: Path, out: Path):
     stock_profile, stock_source = ao.c2.load_profile, ao.c2.observer_source
-    table = hooks()
-    profile = stock_profile()
+    profile = stock_profile(m.load_scratch_config(scratch).compiler)
+    table = hooks(profile)
     profile = dict(
         profile,
         name=profile["name"] + "-cse-slots",
@@ -192,7 +202,7 @@ def run_observer(scratch: Path, out: Path):
     finally:
         ao.c2.load_profile, ao.c2.observer_source = stock_profile, stock_source
     words = struct.iter_unpack(f"<{RECORD_WORDS}I", (out / "observed/slots.bin").read_bytes())
-    return result, events, table, list(words)
+    return result, events, table, list(words), profile["address_order"]["address_pass"]["target"]
 
 
 def run_phantom(out: Path, phantom: list[tuple[int, int]]) -> Path:
@@ -201,8 +211,8 @@ def run_phantom(out: Path, phantom: list[tuple[int, int]]) -> Path:
     This modifies a compiler decision on purpose, so it is not a preserving trace: it reuses the verified
     replay inputs of `out` and returns the resulting object for the matcher.
     """
-    table = hooks()
     profile = ao.c2.load_profile()
+    table = hooks(profile)
     profile = dict(profile, hooks=[{k: h[k] for k in ("site", "target", "return")} for h in table])
     work = out / ("phantom-" + "-".join(f"{at}_{count}" for at, count in phantom))
     work.mkdir()
@@ -228,7 +238,7 @@ def decode(table: list[dict], records: list[tuple]) -> list[dict]:
         kind = table[index]["kind"]
         if kind in (TUPLE_ESI, MEMOP_ESI_EDI, TUPLE_ECX):
             site = table[index]["site"]
-            what = OWNER_SITES.get(site, ("number_assignment",))[0]
+            what = table[index].get("what") or OWNER_SITES.get(site, ("number_assignment",))[0]
             context = {"site": site, "what": what, "line": rec[9], "op": rec[10], "tuple": rec[12]}
             if kind == MEMOP_ESI_EDI:
                 context |= {"alias": rec[13], "base": rec[15], "base_class": rec[16]}
@@ -290,9 +300,9 @@ def main() -> None:
     if not scratch.is_dir():
         scratch = m.DEFAULT_MATCH_ROOT / "scratches" / args.scratch
     work = rot.prepare(scratch, args.source, args.out.parent / (args.out.name + "-input"))
-    result, events, table, records = run_observer(work, args.out)
+    result, events, table, records, address_pass = run_observer(work, args.out)
     slots = decode(table, records)
-    (event,) = [e for e in events if e["target_rva"] == ao.ADDRESS_PASS_HOOK["target"]]
+    (event,) = [e for e in events if e["target_rva"] == address_pass]
     live = referenced_ids(event)
     print(f"metrics: {result['metrics']}")
     c0 = slots[0]["id"] if slots else None

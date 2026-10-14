@@ -31,7 +31,8 @@ from pathlib import Path
 import cse_slot_trace as cst
 
 m, ao = cst.m, cst.ao
-SYMBOLS = ao.t.CRIMSON / "analysis/binary_ninja/c2/c2_symbols.json"
+CRIMSON = Path(m.__file__).resolve().parents[3] / "crimson"
+SYMBOLS = CRIMSON / "analysis/binary_ninja/c2/c2_symbols.json"
 C2_BASE = 0x10700000
 WRAPPERS = {
     "symbol_alloc",
@@ -56,9 +57,18 @@ CHAIN_CAPTURE = (
 )
 
 
-def function_names():
+def function_names(compiler: str = m.DEFAULT_SCRATCH_COMPILER):
     functions = json.loads(SYMBOLS.read_text())["functions"]
     rows = sorted((int(address, 16) - C2_BASE, row["name"]) for address, row in functions.items())
+    if compiler != "msvc6.5":
+        import map_rvas as mr
+        old_be, new_be = mr.Backend("msvc6.5"), mr.Backend(compiler)
+        mapped = []
+        for rva, sym_name in rows:
+            target_rva, _ = mr.map_function(old_be, new_be, rva)
+            if target_rva is not None:
+                mapped.append((target_rva, sym_name))
+        rows = sorted(mapped)
     starts = [rva for rva, _ in rows]
 
     def name(rva: int) -> str:
@@ -87,7 +97,7 @@ def expand(items: list[str]) -> list[str]:
 
 
 def chunk_report(table: list[dict], records: list[tuple]) -> None:
-    name = function_names()
+    name = function_names(m.DEFAULT_SCRATCH_COMPILER)
     top, pending, entered = -1, [], False
     openers = []
     for rec in records:
@@ -120,8 +130,8 @@ def chunk_report(table: list[dict], records: list[tuple]) -> None:
 
 def phantom_match(out: Path, config, manifest, spec: str) -> str:
     phantom = [tuple(int(x, 0) for x in item.split(":")) for item in spec.split(",")]
-    table = cst.hooks()
-    profile = ao.c2.load_profile()
+    profile = ao.c2.load_profile(config.compiler)
+    table = cst.hooks(profile)
     profile = dict(profile, hooks=[{k: h[k] for k in ("site", "target", "return")} for h in table])
     work = out / ("window-" + "-".join(f"{at}_{count}" for at, count in phantom))
     if work.exists():
@@ -168,7 +178,7 @@ def main() -> None:
             raise ValueError("Unexpected cse_slot_trace recorder near the allocation capture")
         cst.RECORDER = cst.RECORDER.replace(CHAIN_ANCHOR, CHAIN_ANCHOR + CHAIN_CAPTURE)
     work = cst.rot.prepare(scratch, args.source, args.out.parent / (args.out.name + "-input"))
-    result, _, table, records = cst.run_observer(work, args.out)
+    result, _, table, records, _ = cst.run_observer(work, args.out)
     slots = cst.decode(table, records)
     print(f"metrics: {result['metrics']}")
     print(f"C0 (first CSE slot): {slots[0]['id']:#x}, {len(slots)} CSE slots")
