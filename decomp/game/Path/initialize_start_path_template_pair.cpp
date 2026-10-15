@@ -11,7 +11,7 @@ float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
-static __forceinline void build_direct_strip_mesh(Path* path, char* texture)
+static __forceinline void build_start_strip_mesh(Path* path, char* texture)
 {
     path->strip_mesh->RequestVertices(
         (path->width_cells + 1) * (path->segment_count + 1));
@@ -297,7 +297,7 @@ void cRPath::initialize_start_path_template_pair(
             ++delta_index;
         } while (delta_index < segment_count);
     }
-    build_direct_strip_mesh(this, texture_a);
+    build_start_strip_mesh(this, texture_a);
     CalcLengthZ();
     (void)side_exit;
     (void)texture_b;

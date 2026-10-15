@@ -5,20 +5,12 @@
 #include "object_render_types.h"
 #include "sprite.h"
 #include "transform_matrix.h"
+#include "path_helpers.h"
 
 float Sin(float angle);
 float Cos(float angle);
 
 typedef AttachmentSample PathAttachmentSample;
-
-static inline void interpolate_path_center(
-    AttachmentSample* const& bank, int sample_index, int loop_segment_count,
-    float sample_f, float curve_count_f)
-{
-    bank[sample_index].center_x =
-        (bank[loop_segment_count - 1].center_x - bank[0].center_x)
-        * sample_f / curve_count_f + bank[0].center_x;
-}
 
 static __forceinline void orient_sample(
     AttachmentSample* const& bank, int sample_index, float loop_radius) {

@@ -1,11 +1,7 @@
 // get_path_position_at_node @ 0x42b9c0 (thiscall, ret 0x10)
 
 #include "track_attachment.h"
-
-inline Vector3 operator*(float scale, const Vector3& vector)
-{
-    return Vector3(scale * vector.x, scale * vector.y, scale * vector.z);
-}
+#include "path_helpers.h"
 
 void cRPath::GetPos(
     tVector& out, int node, int row_index, tVector& local)

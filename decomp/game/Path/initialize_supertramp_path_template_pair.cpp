@@ -11,9 +11,9 @@ float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
-static __forceinline void build_direct_strip_mesh(Path *path, char *top_texture,
-                                                  char *bottom_texture,
-                                                  char *cap_texture, int &row)
+static __forceinline void build_supertramp_strip_mesh(Path *path, char *top_texture,
+                                                      char *bottom_texture,
+                                                      char *cap_texture, int &row)
 {
     path->strip_mesh->RequestVertices((path->width_cells + 1) *
                                       (path->segment_count + 1));
@@ -289,7 +289,7 @@ void cRPath::initialize_supertramp_path_template_pair(float length, int width_ce
             ++delta_index;
         } while (delta_index < segment_count);
     }
-    build_direct_strip_mesh(this, texture_a, texture_b, cap_texture, curve_index);
+    build_supertramp_strip_mesh(this, texture_a, texture_b, cap_texture, curve_index);
     CalcLengthZ();
     (void)side_exit;
     (void)unused_texture;

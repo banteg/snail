@@ -20,6 +20,10 @@ these slots moved by M?" without touching the source (the preserving trace itsel
 
     uv run tools/match/c2/cse_slot_trace.py <scratch> --out <new-dir> [--source overlay.cpp]
 
+With several functions in the source, the last one is traced. A first function in a file compiles
+differently from the same function later in a translation unit, so an overlay that starts with any
+other definition (`void f() {}` is enough) reproduces whole-unit results without the whole unit.
+
 See [cse-ids.md](cse-ids.md).
 """
 
@@ -232,7 +236,9 @@ def decode(table: list[dict], records: list[tuple]) -> list[dict]:
     for rec in records:
         phase = rec[0]
         if phase >= 1000:
-            entered = entered or phase == 1000
+            if phase == 1000:
+                # A new function: keep only the last one's slots.
+                entered, slots = True, []
             continue
         index = phase % 100
         kind = table[index]["kind"]
@@ -302,7 +308,7 @@ def main() -> None:
     work = rot.prepare(scratch, args.source, args.out.parent / (args.out.name + "-input"))
     result, events, table, records, address_pass = run_observer(work, args.out)
     slots = decode(table, records)
-    (event,) = [e for e in events if e["target_rva"] == address_pass]
+    event = [e for e in events if e["target_rva"] == address_pass][-1]
     live = referenced_ids(event)
     print(f"metrics: {result['metrics']}")
     c0 = slots[0]["id"] if slots else None

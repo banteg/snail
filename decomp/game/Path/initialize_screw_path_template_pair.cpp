@@ -11,7 +11,7 @@ float Cos(float angle);
 
 typedef AttachmentSample PathAttachmentSample;
 
-static __forceinline void build_strip_mesh(
+static __forceinline void build_screw_strip_mesh(
     const int &width_cells, const int &segment_count,
     cRObject *const &strip_mesh, PathAttachmentSample *const &primary_samples,
     char *texture_a, char *texture_b)
@@ -309,8 +309,8 @@ void cRPath::initialize_screw_path_template_pair(
     secondary_samples[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
     secondary_samples[segment_count - 1].delta_length = 1.0f;
 
-    build_strip_mesh(width_cells, segment_count, strip_mesh, primary_samples,
-                     texture_a, texture_b);
+    build_screw_strip_mesh(width_cells, segment_count, strip_mesh, primary_samples,
+                           texture_a, texture_b);
 
     CalcLengthZ();
     (void)side_exit;

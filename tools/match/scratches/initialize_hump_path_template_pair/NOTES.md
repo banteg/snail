@@ -490,3 +490,15 @@ the existing lateral offset. This recovers the native aggregate temporary
 lifetime without changing shared vector definitions or reference rules. The full
 function remains partial; earlier percentages above belong to prior source
 or dependency epochs. Existing reference debt, where present, is unchanged.
+
+## 2026-10-16 whole-unit Path
+
+Path compiles as one translation unit, where the previous source fell to
+95.54% (secondary-bank receivers came out bank-first). The mesh and terminal
+deltas now come from the shared `build_strip_mesh` and
+`compute_terminal_deltas` in `path_helpers.h`, and the old
+`initialize_primary_position` helper is written out at its two call sites.
+Exact in context with two levers that also matched Hill/Valley: the split
+increment `segment_count = departure_index; segment_count += 7;` and grouping
+parentheses in `((float)width_cells * 0.5f) - 4.0f`. See
+[whole-tu-compilation-20261015.md](../../whole-tu-compilation-20261015.md#path).
