@@ -216,9 +216,9 @@ void cRPath::initialize_turnunder_path_template_pair(float turns, int width_cell
     int interior_count = (int)(turns * 6.2831855f);
     width_or_scale = 1.0f;
     segment_count = interior_count + 8;
-    segment_count_f = (float)segment_count;
+    segment_count_f = ((float)segment_count);
     float interior_count_f = (float)interior_count;
-    turns = interior_count_f * 0.15915494f;
+    turns = (interior_count_f * 0.15915494f);
     GetNodes();
     has_entry_mesh_transition = 0;
 
@@ -250,45 +250,50 @@ void cRPath::initialize_turnunder_path_template_pair(float turns, int width_cell
     int endpoint_index = interior_count + 6;
     int endpoint_offset = endpoint_index * sizeof(AttachmentSample);
     i = endpoint_index;
+    int tail_sample_offset = endpoint_offset;
     int tail_origin = -6 - interior_count;
     do
     {
-        primary_samples[i].center_x = -(4.0f - (float)width_cells * 0.5f);
-        primary_samples[i].rotation_scalar_98 = 0.0f;
-        primary_samples[i].rotation_scalar_94 = 0.0f;
-        primary_samples[i].special_scalar = 0.0f;
-        primary_samples[i].lateral_scale = 1.0f;
-        primary_samples[i].transform.Identity();
+        ((AttachmentSample *)((char *)primary_samples + tail_sample_offset))->center_x =
+            -(4.0f - (float)width_cells * 0.5f);
+        ((AttachmentSample *)((char *)primary_samples + tail_sample_offset))->rotation_scalar_98 = 0.0f;
+        ((AttachmentSample *)((char *)primary_samples + tail_sample_offset))->rotation_scalar_94 = 0.0f;
+        ((AttachmentSample *)((char *)primary_samples + tail_sample_offset))->special_scalar = 0.0f;
+        ((AttachmentSample *)((char *)primary_samples + tail_sample_offset))->lateral_scale = 1.0f;
+        ((AttachmentSample *)((char *)primary_samples + tail_sample_offset))->transform.Identity();
         float z = (float)i;
-        primary_samples[i].transform.position.x =
-            primary_samples[i].center_x;
-        primary_samples[i].transform.position.y = 0.0f;
-        primary_samples[i].transform.position.z = z;
-        primary_samples[i].delta_length = 1.0f;
+        ((AttachmentSample *)((char *)primary_samples + tail_sample_offset))->transform.position.x =
+            ((AttachmentSample *)((char *)primary_samples + tail_sample_offset))->center_x;
+        ((AttachmentSample *)((char *)primary_samples + tail_sample_offset))->transform.position.y = 0.0f;
+        ((AttachmentSample *)((char *)primary_samples + tail_sample_offset))->transform.position.z = z;
+        ((AttachmentSample *)((char *)primary_samples + tail_sample_offset))->delta_length = 1.0f;
 
-        secondary_samples[i].transform.Identity();
-        secondary_samples[i].transform.position.x =
-            primary_samples[i].center_x;
-        secondary_samples[i].transform.position.y = 0.49000001f;
-        secondary_samples[i].transform.position.z = z;
-        secondary_samples[i].delta_length = 1.0f;
+        ((AttachmentSample *)((char *)secondary_samples + tail_sample_offset))->transform.Identity();
+        ((AttachmentSample *)((char *)secondary_samples + tail_sample_offset))->transform.position.x =
+            ((AttachmentSample *)((char *)primary_samples + tail_sample_offset))->center_x;
+        ((AttachmentSample *)((char *)secondary_samples + tail_sample_offset))->transform.position.y = 0.49000001f;
+        ((AttachmentSample *)((char *)secondary_samples + tail_sample_offset))->transform.position.z = z;
+        ((AttachmentSample *)((char *)secondary_samples + tail_sample_offset))->delta_length = 1.0f;
+        tail_sample_offset += sizeof(AttachmentSample);
         ++i;
     } while (i + tail_origin < 2);
 
     sample_step = 0;
     if (interior_count > 0)
     {
-        for (i = 6; sample_step < interior_count; ++sample_step)
+        for (; sample_step < interior_count; ++sample_step)
         {
+            i = sample_step + 6;
             float t = (float)sample_step;
             float angle = t * -6.2831855f / interior_count_f;
 
+            AttachmentSample *const &primary_bank = primary_samples;
             primary_samples[i].center_x =
-                (((AttachmentSample *)((char *)primary_samples + endpoint_offset))
+                (((AttachmentSample *)((char *)primary_bank + endpoint_offset))
                      ->center_x -
-                 primary_samples[0].center_x) *
+                 primary_bank[0].center_x) *
                     t / interior_count_f +
-                primary_samples[0].center_x;
+                primary_bank[0].center_x;
             primary_samples[i].rotation_scalar_98 = 0.0f;
             primary_samples[i].rotation_scalar_94 = 0.0f;
             primary_samples[i].special_scalar = 0.0f;
@@ -322,8 +327,6 @@ void cRPath::initialize_turnunder_path_template_pair(float turns, int width_cell
             secondary_position->x += secondary_offset.x;
             secondary_position->y += secondary_offset.y;
             secondary_position->z += secondary_offset.z;
-
-            ++i;
         }
     }
 
