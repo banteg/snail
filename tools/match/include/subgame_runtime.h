@@ -226,6 +226,8 @@ public:
     // gauges, cameraman, and presentation controller all share this owner;
     // the former sparse cRSubGame aliases merely reached into this field.
     cRSubGoldy player; // +0x3bb764, ends at +0x3bfac8
+    // Offsets below describe Windows. SNAIL_PORT enlarges both row arrays;
+    // the typed owners and offsetof-based cursors follow their new layout.
     // Fixed row-major runtime grid owned by cRSubGame. Gameplay actors
     // retain pointers into this slab only for the lifetime of the built track.
     cRSubLoc runtime_cells[SUBGAME_RUNTIME_ROW_CAPACITY][SUBGAME_TRACK_LANE_COUNT];
@@ -297,7 +299,9 @@ public:
 // high-score-bank fields above all share this single owner.
 typedef cRSubGame SubgameRuntime; // compatibility analysis name
 typedef char cRSubGame_must_be_0x1272838[
-    (sizeof(cRSubGame) == 0x1272838) ? 1 : -1];
+    (sizeof(cRSubGame) == 0x1272838
+        + (SUBGAME_RUNTIME_ROW_CAPACITY - 3200)
+            * (sizeof(cRSubLoc) * SUBGAME_TRACK_LANE_COUNT + sizeof(cRSubRow))) ? 1 : -1];
 
 inline cRSubGoldy* cRSubGame::embedded_player()
 {
