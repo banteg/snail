@@ -1,4 +1,5 @@
-# Functions shell/extras.cpp wraps for opt-in mobile content (--extras):
+# Functions the shell wraps for opt-in mobile content (shell/extras*.cpp, --extras)
+# and fixes for the original's own bugs (shell/fixes.cpp):
 # manifest name, source path (from port/), and the identifier renamed to *_recovered.
 archive_or_file_exists                         ../decomp/game/RShell/archive_or_file_exists.cpp                         archive_or_file_exists
 load_file_bytes_from_archive_or_fs             ../decomp/game/RShell/load_file_bytes_from_archive_or_fs.cpp             load_file_bytes_from_archive_or_fs
@@ -10,6 +11,8 @@ find_segment_path_index_by_name                ../decomp/game/Path/find_segment_
 compute_kind42_attachment_transform            ../decomp/game/Path/compute_kind42_attachment_transform.cpp              compute_kind42_attachment_transform
 spawn_track_ring_or_special_effect             ../decomp/game/SubGame/spawn_track_ring_or_special_effect.cpp           AddRing
 initialize_ring_or_special_effect_particles    ../decomp/game/SubGame/initialize_ring_or_special_effect_particles.cpp  Init
+spawn_slug_hazard                              ../decomp/game/SubGame/spawn_slug_hazard.cpp                            AddSlug
+spawn_track_garbage_hazard                     ../decomp/game/SubGame/spawn_track_garbage_hazard.cpp                   AddGarbage
 start_squidge_y                                ../decomp/game/SubGame/start_squidge_y.cpp                               StartY
 copy_segment_definition_to_level_slot          ../decomp/game/Subtrack/copy_segment_definition_to_level_slot.cpp        ImportSegment
 initialize_new_game_menu                       ../decomp/game/Intro/initialize_new_game_menu.cpp                        Init
