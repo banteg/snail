@@ -85,7 +85,8 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
         primary_samples[current_sample].special_scalar = 0.0f;
         primary_samples[current_sample].lateral_scale = 1.0f;
         primary_samples[current_sample].transform.Identity();
-        primary_samples[current_sample].transform.position.x = primary_samples[current_sample].center_x;
+        AttachmentSample* const& bank = primary_samples;
+        bank[current_sample].transform.position.x = bank[current_sample].center_x;
 
         primary_samples[current_sample].transform.position.y = 0.49000001f;
         primary_samples[current_sample].transform.position.z =

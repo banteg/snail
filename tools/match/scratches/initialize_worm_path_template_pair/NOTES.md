@@ -575,3 +575,17 @@ The original build cannot have used the SP5 frontend this match was made
 with (see the [compiler identification](../../compiler-identification-20261005.md)). Under the corrected baseline, msvc6.3, the unchanged
 source scores 91.54% (91.88% before); the source shape was fitted to the newer frontend and
 needs rework under msvc6.3.
+
+## 2026-10-15 SP3 middle-loop secondary receiver recovery
+
+Under `msvc6.3`, the middle loop's `secondary_bank` reference is `local 0xb` (`11 & 7 == 3`,
+load/leaf key `0x00016007`), whereas the loop's byte-offset induction temporary is `iv-temp 0x9b0`
+(key `0x00016c00`), flipping the middle secondary `Identity()` receiver from bank-first to
+offset-first (`91.54%`, `730/736` instructions, structural `30/24` changed).
+
+Borrowing `AttachmentSample* const& bank = primary_samples;` for the middle loop's
+`bank[current_sample].transform.position.x = bank[current_sample].center_x;` store (matching the
+entrance and exit loops at lines 40 and 66) shifts `secondary_bank` to `local 0xc` (`12 & 7 == 4`,
+key `0x00018007 > 0x00016c00`), restoring the native bank-first `mov ecx, [esi+0x5c]; add ecx, edi`
+receiver and recovering **91.88%** (`729/736` instructions, structural `28/21` changed, `96.52%`,
+`37` clean references) under `msvc6.3`.

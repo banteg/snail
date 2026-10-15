@@ -1668,3 +1668,34 @@ references.
 - Jump-table padding.
 
 Evidence: `/private/tmp/claude-501/sm/codex/populate_runtime_track_cells_from_segments/RESULTS.md`.
+
+## 2026-10-15: lane-word XOR operand sort and `eax` narrowing mechanism
+
+Traced on the `91.50%` (`1246/1246`, structural `99.34%`, `9/9` changed) baseline with
+`schedtrace.py` and `rotation.py`:
+
+- **Why the candidate emits `and ecx, 0xffffffe0; xor edx, ecx; mov [esi+0x3bfb08], edx` and hoists
+  `mov ecx, [esi+eax*4+0x3bfb08]`.** `forward_propagate_definitions` folds `*cell_word &= 0xffffffe0`
+  into `*cell_word ^= lane & 7` as one commutative `XOR` (`0x174`). Because `cell_word` is `local 0x49`
+  (`0x49 & 7 == 1`, load hash `0x2007`), `*cell_word & -0x20` gets packed cost `0x0102_2026`, below
+  `lane & 7` (`0x0102_29c7`). `compute_tree_cost_and_sort` therefore places `lane & 7` first, making
+  `edx` the `xor` destination. Removing the `cell_word` local (addressing
+  `runtime_cells[build_row][lane].lane_and_flags` directly) raises the masked load's cost above
+  `0x0102_29c7` and restores native `xor reg, edx; mov [esi+0x3bfb08], reg` order.
+- **Why native emits `mov eax, [esi+0x3bfb08]; and al, 0xe0` after `lea esi, [esi+eax*4]` and hoists
+  `xor ecx, ecx`.** In x86, `and al, 0xe0` (`24 e0`, 2 bytes) is shorter than `and r32, -0x20`
+  (`83 e0 e0`, 3 bytes) only for `eax`; for `ecx`, `and cl, 0xe0` is still 3 bytes, so C2 only narrows
+  to an 8-bit `and` when the temporary gets `eax`. In Window 87, `lea esi, [esi+eax*4]` has a breakable
+  displacement edge (`brk0x5`) to the `[esi+0x3bfb08]` load. When that load is allocated `ecx`, it has
+  no register conflict with `eax`, so the `/G5` scheduler breaks `brk0x5`, issues the load before
+  `lea esi, [esi+eax*4]` as `[esi+eax*4+0x3bfb08]`, and pins `xor ecx, ecx` (`subobject_slot` zero)
+  below the `ecx` chain. When the load is instead allocated `eax`, its WAR edge on `eax` from
+  `lea esi, [esi+eax*4]` keeps `mov eax, [esi+0x3bfb08]` below `lea esi`, narrows `and eax, -0x20` to
+  `and al, 0xe0` (-2 bytes, shifting every subsequent switch label and the jump-table pad `nop` ->
+  `lea ecx, [ecx]`), and frees `ecx` at cycle 4 so the scheduler hoists `xor ecx, ecx` ahead of
+  `lea eax, [eax+eax*2]`.
+- **Rotation state.** Entering the lane loop, `#73` (`lea eax, [eax+eax*2]`, uncoloured single-use
+  index step) enters with `cursor = 2`, skips excluded `edx` (`lane`), takes `eax` and leaves
+  `cursor = 1` (`ecx`), so `#74` (`[esi+0x3bfb08]` load) takes `ecx`. Reproducing native requires
+  either `cursor = 0/2` at `#74` or `ecx` excluded across `#74` while still leaving `cursor = 2` at
+  `#76` (`L598`).
