@@ -46,11 +46,11 @@ definition's file, and both scratches point at it.
 
 Units listed in `tools/match/translation_units.json` compile as one
 translation unit: the matcher concatenates their files in address order into
-one object, and each member must match in that context. 35 units compile this
+one object, and each member must match in that context. 38 units compile this
 way (see
 [whole-tu-compilation-20261015.md](../tools/match/whole-tu-compilation-20261015.md)),
 and so do two SubGame pairs. The rest still compile one object per function
-until their declarations agree across files (G0, RMaths, RShell, Game, GL, GDX),
+until their declarations agree across files (G0, RMaths, RShell),
 their helpers and in-context matches are reconciled (Path, SubGame), or their
 boundaries are known (`between-*`). Register a unit with
 `uv run tools/match/whole_tu_experiment.py units <Unit>`, and only when scores

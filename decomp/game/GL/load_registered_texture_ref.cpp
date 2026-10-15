@@ -1,17 +1,17 @@
 // load_registered_texture_ref @ 0x412a70 (cdecl, exact); mobile G0TextureLoad(int, int)
 
+#include "rerror.h"
+#include "rshell.h"
 #include "texture_registry.h"
 #include "tga_image_view.h"
 
 char archive_or_file_exists(char* path, char force_filesystem); // @ 0x430fd0
 char* load_file_bytes(char* file_name, int* out_size); // @ 0x431520
 char is_archive_index_loaded(); // @ 0x431a80
-char* get_archive_data_base(); // @ 0x431a90
 char* load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out_size);
 char* load_file_bytes_fixed_size_from_archive_or_fs(char* path, char* out_buffer,
     int byte_count);
 int report_warningf(char* format, ...); // @ 0x431d10
-int report_errorf(char* format, ...); // @ 0x431cc0
 
 extern "C" int __stdcall D3DXCreateTextureFromFileInMemoryEx(Direct3DDevice8* device,
     void* src_data, unsigned int src_data_size, unsigned int width, unsigned int height,
@@ -57,7 +57,7 @@ void load_registered_texture_ref(int texture_index, int unused_legacy_mode)
         (tga_header.bits_per_pixel == 0x20) ? 0x00ffffff : 0;
     int texture_result;
     if (is_archive_index_loaded() != 0) {
-        char* archive_base = get_archive_data_base();
+        char* archive_base = (char*)get_archive_data_base();
         int byte_count;
         load_file_bytes_from_archive_or_fs(path, archive_base, &byte_count);
         Direct3DDevice8* device = g_d3d_device;

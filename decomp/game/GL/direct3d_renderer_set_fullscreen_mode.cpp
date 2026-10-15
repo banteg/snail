@@ -2,6 +2,7 @@
 
 #include "authored_view_state.h"
 #include "direct3d_renderer.h"
+#include "rdebug.h"
 #include "win32_window_state.h"
 
 extern "C" __declspec(dllimport) BOOL __stdcall GetWindowRect(HWND window, Rect* rect);
@@ -12,8 +13,6 @@ extern "C" __declspec(dllimport) BOOL __stdcall ShowWindow(HWND window, int comm
 extern "C" __declspec(dllimport) BOOL __stdcall SetForegroundWindow(HWND window);
 extern "C" __declspec(dllimport) HWND __stdcall SetFocus(HWND window);
 extern "C" __declspec(dllimport) BOOL __stdcall SetCursorPos(int x, int y);
-
-extern int debug_report_stub(char* message); // @ 0x449c00
 
 void Direct3DRenderer::direct3d_renderer_set_fullscreen_mode(char enabled)
 {

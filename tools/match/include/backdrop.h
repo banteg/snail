@@ -35,13 +35,7 @@ public:
     void Init(int last_mode); // @ 0x410e20
     void SetWorld(int world); // @ 0x410f40
     int draw_split_backdrop(); // @ 0x410f90
-#if defined(BACKDROP_RENDER_BACKDROP_RETURNS_VOID) || defined(SNAIL_PORT)
-#define BACKDROP_RENDER_BACKDROP_RESULT void
-#else
-#define BACKDROP_RENDER_BACKDROP_RESULT int
-#endif
-    BACKDROP_RENDER_BACKDROP_RESULT render_backdrop(); // @ 0x411040
-#undef BACKDROP_RENDER_BACKDROP_RESULT
+    void render_backdrop(); // @ 0x411040
     int update_backdrop(); // @ 0x4112f0
 
     unsigned char active_split_backdrop_pair; // +0x38
@@ -61,8 +55,8 @@ public:
         BackdropDistortCell distort_cells[64]; // +0x58, flat traversal view
         BackdropDistortCell distort_grid[8][8]; // +0x58, [row][column]
     };
-    // Persistent 0/1 draw gate. update_backdrop decrements only a local copy
-    // to test the authored `== 1` state; this field is not a countdown.
+    // Persistent 0/1 draw gate. update_backdrop switches on it with a single
+    // `case 1` (VC6 emits `dec eax`); this field is not a countdown.
     int backdrop_render_enabled; // +0x658
     // Android's corresponding +0x84 member is passed to glGenBuffers as the
     // element-buffer handle for the four grid-corner indices.

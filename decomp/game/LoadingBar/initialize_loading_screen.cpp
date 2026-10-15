@@ -6,6 +6,7 @@
 #include "runtime_config.h"
 #include "loading_vertex.h"
 #include "object_render_types.h"
+#include "rshell.h"
 
 extern "C" int __stdcall D3DXCreateTextureFromFileInMemoryEx(Direct3DDevice8* device,
     void* src_data, unsigned int src_data_size, unsigned int width, unsigned int height,
@@ -20,7 +21,6 @@ extern "C" int __stdcall D3DXCreateTextureFromFileA(
     Direct3DDevice8* device, char* path, Direct3DTexture8** texture);
 
 char is_archive_index_loaded(); // @ 0x431a80
-char* get_archive_data_base(); // @ 0x431a90
 char* load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out_size);
 int report_errorf(char* format, ...);
 int begin_overlay_render_state();
@@ -31,7 +31,7 @@ void cRLoadingBar::Init()
 
     int texture_result;
     if (is_archive_index_loaded() != 0) {
-        char* archive_base = get_archive_data_base();
+        char* archive_base = (char*)get_archive_data_base();
         int byte_count;
         load_file_bytes_from_archive_or_fs("Sprites/Loading.tga", archive_base, &byte_count);
         Direct3DDevice8* device = g_d3d_device;
@@ -57,7 +57,7 @@ void cRLoadingBar::Init()
     g_d3d_device->vtbl->SetTextureStageState(g_d3d_device, 0, 14, 3);
 
     if (is_archive_index_loaded() != 0) {
-        char* archive_base = get_archive_data_base();
+        char* archive_base = (char*)get_archive_data_base();
         int byte_count;
         load_file_bytes_from_archive_or_fs(
             "Sprites/LoadingBarOn.tga", archive_base, &byte_count);

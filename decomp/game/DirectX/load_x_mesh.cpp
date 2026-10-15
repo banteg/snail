@@ -4,11 +4,11 @@
 #include <string.h>
 
 #include "directx_loader.h"
+#include "rshell.h"
 #include "rstring.h"
 #include "rtext.h"
 #include "sprite.h"
 
-char* get_archive_data_base(); // @ 0x431a90
 char is_archive_index_loaded(); // @ 0x431a80
 char* load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out_size);
 void* allocate_tracked_memory(int size, char* name); // @ 0x431b60
@@ -18,7 +18,7 @@ int report_warningf(char* format, ...); // @ 0x431d10
 
 void cRDirectX::Load(char* mesh_path, Object* object, int options_flags)
 {
-    char* file_text = get_archive_data_base();
+    char* file_text = (char*)get_archive_data_base();
     char mesh_file_path[0x100];
     char texture_path[0x100];
     int byte_count;

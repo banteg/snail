@@ -35,22 +35,18 @@ int cRBackdrop::update_backdrop()
         }
     }
 
-    int result = active_primary_texture_id;
-    if (result != -1) {
-        result = backdrop_render_enabled;
-        result--;
-        if (result == 0) {
+    if (active_primary_texture_id != -1) {
+        switch (backdrop_render_enabled) {
+        case 1:
             if (active_split_backdrop_pair != 0) {
                 return draw_split_backdrop();
             }
-#ifdef SNAIL_PORT
-            // VC6 returned render_backdrop's leftover eax; nothing reads it.
             render_backdrop();
-            return 0;
-#else
-            return render_backdrop();
-#endif
+            break;
         }
     }
-    return result;
+#ifdef SNAIL_PORT
+    return 0;
+#endif
+    // Falls off the end (C4715): VC6 returns whatever eax holds.
 }

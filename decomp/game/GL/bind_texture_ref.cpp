@@ -2,10 +2,9 @@
 
 #include "direct3d_device8_view.h"
 #include "render_pipeline_state.h"
+#include "rerror.h"
 #include "sprite.h"
 #include "texture_registry.h"
-
-int report_errorf(char* format, ...);
 
 void bind_texture_ref(cRTexture* texture)
 {

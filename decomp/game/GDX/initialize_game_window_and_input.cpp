@@ -1,5 +1,6 @@
 // initialize_game_window_and_input @ 0x4119d0 (cdecl)
 
+#include "direct3d_renderer.h"
 #include "rect.h"
 #include "runtime_config.h"
 #include "win32_window_state.h"
@@ -36,7 +37,6 @@ extern int g_controller_count_view; // data_4b776c
 
 int __stdcall game_window_proc(HWND hwnd, UINT message, UINT wparam, int lparam);
 int abort_startup_with_3d_error(); // @ 0x4088a0
-int release_global_direct3d_renderer_resources(); // @ 0x411d70
 void update_mouse_authored_scale(float width, float height); // @ 0x44bbd0
 char initialize_direct3d_renderer(); // @ 0x4129c0
 int initialize_keyboard_input(HWND hwnd); // @ 0x44b7d0

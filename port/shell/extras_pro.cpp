@@ -15,6 +15,7 @@
 #include "input_state.h"
 #include "landscape_manager.h"
 #include "new_game_menu.h"
+#include "rshell.h"
 #include "rstring.h"
 #include "rtext.h"
 #include "runtime_config.h"
@@ -31,7 +32,6 @@ extern char g_back_text[];
 
 float Sin(float angle);
 char* load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, int* out_size);
-char* get_archive_data_base();
 void* allocate_tracked_memory(int size, char* name);
 void free_tracked_memory(void* memory);
 void xor_decode_buffer_with_index(void* buffer, int byte_count);
@@ -253,7 +253,7 @@ void build_pro_galaxy_layout()
     g_pro_galaxy_layout.level_progress_base = &g_game->subgame;
 
     char* file_text = load_file_bytes_from_archive_or_fs(
-        (char*)"Galaxy/_GalaxyPro.txt", get_archive_data_base(), 0);
+        (char*)"Galaxy/_GalaxyPro.txt", (char*)get_archive_data_base(), 0);
     if (!file_text)
         return;
 

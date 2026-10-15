@@ -1,10 +1,10 @@
 // load_object_definition @ 0x44c420 (cdecl)
 
 #include "object_render_types.h"
+#include "rshell.h"
 #include "rtext.h"
 #include "sprite.h"
 
-char* get_archive_data_base();
 char* load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out_size);
 int sprintf(char* buffer, char* format, ...);
 
@@ -15,7 +15,7 @@ void load_object_definition(char* path, Object* object)
     char texture_name[0x80];
     int byte_count;
 
-    char* file_text = get_archive_data_base();
+    char* file_text = (char*)get_archive_data_base();
     sprintf(object_file_path, "%s/_Object.txt", path);
     load_file_bytes_from_archive_or_fs(
         object_file_path, file_text, &byte_count);

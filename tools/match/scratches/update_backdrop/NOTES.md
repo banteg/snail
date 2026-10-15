@@ -23,8 +23,8 @@ Recovered layout:
   column-first (`+0x18` outer, `+0xc0` inner), while `set_backdrop_distort`
   seeds it row-first and `render_backdrop` samples it by `row + 8 * column`.
 - `backdrop_render_enabled +0x658` is a persistent draw gate, not a refresh
-  countdown: every writer stores only zero or one, and this function decrements
-  a local copy solely to spell the native `value == 1` test.
+  countdown: every writer stores only zero or one, and this function's
+  single-case `switch` is what VC6 compiles to `dec eax; jne`.
 
 Historical source-shape issue (resolved 2026-09-05): the bit-shadowed phase local recovers the native
 8-byte frame and stack compare without using `volatile`, but VC6 still spills
@@ -193,3 +193,11 @@ term is ×4. There are two candidates:
 
 The sum therefore lives at `[esp+0x10]`: `fadd; fst [esp+0x10]; fstp [esi]; fld [esp+0x10]; fcomp`.
 This matches native byte for byte.
+
+2026-10-16 (whole Game unit): with `render_backdrop` declared `void`
+everywhere, the tail is `switch (backdrop_render_enabled) { case 1: ... }`
+(VC6's `dec eax; jne` for a single case), returning `draw_split_backdrop()` or
+calling `render_backdrop()` and falling off the end (C4715), so `eax` holds
+whatever `render_backdrop` left. The earlier `result--` local spelled the same
+test but needed `return render_backdrop();` through an `int` prototype. Exact
+both per-function and inside the Game translation unit.
