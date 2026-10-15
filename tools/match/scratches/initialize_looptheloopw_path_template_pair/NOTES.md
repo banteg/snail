@@ -402,3 +402,18 @@ The original build cannot have used the SP5 frontend this match was made
 with (see the [compiler identification](../../compiler-identification-20261005.md)). Under the corrected baseline, msvc6.3, the unchanged
 source scores 96.17% (99.87% before); the source shape was fitted to the newer frontend and
 needs rework under msvc6.3.
+
+## 2026-10-15 SP3 100% normalized match
+
+Under `msvc6.3`, the split mesh vector temporaries pushed Pool A's expression-temporary allocation
+two slots into chunk `0x4e0` (`max_id = 0x4e1`), opening `C0 = 0x500` instead of `0x4e0` and
+wrapping the departure loop's induction temporary to `0x81f` (hash `0x07c0 < 0x2007` for
+`[secondary_bank]`), which flipped the departure secondary `Identity()` receiver to bank-first.
+
+Combining the ordinary and terminal `generated_position` expressions with `(primary_bank + row - 1)->`
+and direct `vertices[...]` assignment keeps Pool A within chunk `0x4c0` (`C0 = 0x4e0`), while
+parenthesizing both `basis_up.y = (curve_source - ...)` expressions supplies the two `IL_FROUND`
+tuples needed for window 9's 81-tuple cut without synthetic local copies. The function now reaches
+**100.00% normalized** (`745/745` instructions, prefix `745/745`, structural `0/0` changed, `55`
+clean positional references) under `msvc6.3`, with only the known `+0x359` interpolation-store SIB
+byte (`[edi+eax+0x90]` vs `[eax+edi+0x90]`) remaining.

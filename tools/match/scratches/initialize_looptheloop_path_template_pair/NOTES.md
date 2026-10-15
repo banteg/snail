@@ -398,3 +398,13 @@ The original build cannot have used the SP5 frontend this match was made
 with (see the [compiler identification](../../compiler-identification-20261005.md)). Under the corrected baseline, msvc6.3, the unchanged
 source scores 95.35% (100% before); the source shape was fitted to the newer frontend and
 needs rework under msvc6.3.
+
+## 2026-10-15 SP3 100% normalized match
+
+Under `msvc6.3`, binding separate `primary` and `secondary` references inside
+`initialize_circular_positions` pushed `C0` to `0x520` and altered the departure and curve
+`Identity()` receivers. Sharing the `interpolate_path_center` helper and inline `primary_bank` /
+`secondary_bank` curve body with `initialize_looptheloopw_path_template_pair` restores `C0 = 0x500`
+and recovers **100.00% normalized** (`721/721` instructions, prefix `721/721`, structural `0/0`
+changed, `49` clean positional references) under `msvc6.3`, with only the known `+0x316`
+interpolation-store SIB byte (`[edi+eax+0x90]` vs `[eax+edi+0x90]`) remaining.

@@ -11,29 +11,13 @@ float Cos(float angle);
 
 typedef AttachmentSample PathAttachmentSample;
 
-static __forceinline void initialize_circular_positions(
-    AttachmentSample* const& primary, AttachmentSample* const& secondary,
-    int sample_index, float sample_f, float angle, int loop_segment_count,
-    float curve_count_f, float loop_radius, float secondary_radius, float loop_wiggle) {
-    primary[sample_index].center_x =
-        (primary[loop_segment_count - 1].center_x - primary[0].center_x) * sample_f /
-            curve_count_f +
-        primary[0].center_x;
-    primary[sample_index].center_x += Sin(angle * 0.5f + 4.712389f) * loop_wiggle;
-    primary[sample_index].rotation_scalar_98 = 0.0f;
-    primary[sample_index].rotation_scalar_94 = 0.0f;
-    primary[sample_index].special_scalar = 0.0f;
-    primary[sample_index].lateral_scale = 1.0f;
-    primary[sample_index].transform.Identity();
-    primary[sample_index].transform.position.x = primary[sample_index].center_x;
-    primary[sample_index].transform.position.z = Sin(angle) * loop_radius + 7.0f;
-    primary[sample_index].transform.position.y = loop_radius - Cos(angle) * loop_radius;
-
-    secondary[sample_index].transform.Identity();
-    secondary[sample_index].transform.position.x = primary[sample_index].center_x;
-    secondary[sample_index].transform.position.z = Sin(angle) * secondary_radius + 7.0f;
-    secondary[sample_index].transform.position.y =
-        loop_radius - Cos(angle) * secondary_radius;
+static inline void interpolate_path_center(
+    AttachmentSample* const& bank, int sample_index, int loop_segment_count,
+    float sample_f, float curve_count_f)
+{
+    bank[sample_index].center_x =
+        (bank[loop_segment_count - 1].center_x - bank[0].center_x)
+        * sample_f / curve_count_f + bank[0].center_x;
 }
 
 static __forceinline void orient_sample(
@@ -134,10 +118,29 @@ void cRPath::initialize_looptheloop_path_template_pair(float curve_source,
             int sample_index = i + 7;
             float sample_f = (float)i;
             float angle = sample_f * 6.2831855f / curve_count_f;
-            initialize_circular_positions(primary_samples, secondary_samples,
-                                          sample_index, sample_f, angle,
-                                          loop_segment_count, curve_count_f,
-                                          curve_source, secondary_radius, loop_wiggle);
+            interpolate_path_center(primary_samples, sample_index,
+                loop_segment_count, sample_f, curve_count_f);
+            primary_bank[sample_index].center_x +=
+                Sin(angle * 0.5f + 4.712389f) * loop_wiggle;
+            primary_bank[sample_index].rotation_scalar_98 = 0.0f;
+            primary_bank[sample_index].rotation_scalar_94 = 0.0f;
+            primary_bank[sample_index].special_scalar = 0.0f;
+            primary_bank[sample_index].lateral_scale = 1.0f;
+            primary_bank[sample_index].transform.Identity();
+            primary_bank[sample_index].transform.position.x =
+                primary_bank[sample_index].center_x;
+            primary_bank[sample_index].transform.position.z =
+                Sin(angle) * curve_source + 7.0f;
+            primary_bank[sample_index].transform.position.y =
+                curve_source - Cos(angle) * curve_source;
+
+            secondary_bank[sample_index].transform.Identity();
+            secondary_bank[sample_index].transform.position.x =
+                primary_bank[sample_index].center_x;
+            secondary_bank[sample_index].transform.position.z =
+                Sin(angle) * secondary_radius + 7.0f;
+            secondary_bank[sample_index].transform.position.y =
+                curve_source - Cos(angle) * secondary_radius;
             orient_sample(primary_bank, sample_index, curve_source);
             orient_sample(secondary_bank, sample_index, curve_source);
 
