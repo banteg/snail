@@ -83,6 +83,9 @@ by restoring component-wise initial edge values; see its
 On October 15, `initialize_dump_path_template_pair` was also recovered to an
 exact match under msvc6.3; see its
 [scratch notes](scratches/initialize_dump_path_template_pair/NOTES.md#2026-10-15-sp3-terminal-delta-pointer-recovery).
+`initialize_looptheloop_path_template_pair` and
+`initialize_looptheloopw_path_template_pair` also reach 100% normalized
+(audit-blocked on their single interpolation-store SIB byte) under msvc6.3.
 
 ## Language
 

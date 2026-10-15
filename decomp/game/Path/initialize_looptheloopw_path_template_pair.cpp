@@ -130,7 +130,7 @@ void cRPath::initialize_looptheloopw_path_template_pair(
                 Vector3(1.0f, 0.0f, 0.0f);
             primary_bank[sample_index].transform.basis_up.x = 0.0f;
             primary_bank[sample_index].transform.basis_up.y =
-                curve_source - primary_bank[sample_index].transform.position.y;
+                (curve_source - primary_bank[sample_index].transform.position.y);
             primary_bank[sample_index].transform.basis_up.z =
                 7.0f - primary_bank[sample_index].transform.position.z;
             primary_bank[sample_index].transform.basis_up.Normalize();
@@ -143,7 +143,7 @@ void cRPath::initialize_looptheloopw_path_template_pair(
                 Vector3(1.0f, 0.0f, 0.0f);
             secondary_bank[sample_index].transform.basis_up.x = 0.0f;
             secondary_bank[sample_index].transform.basis_up.y =
-                curve_source - secondary_bank[sample_index].transform.position.y;
+                (curve_source - secondary_bank[sample_index].transform.position.y);
             secondary_bank[sample_index].transform.basis_up.z =
                 7.0f - secondary_bank[sample_index].transform.position.z;
             secondary_bank[sample_index].transform.basis_up.Normalize();
@@ -194,24 +194,18 @@ void cRPath::initialize_looptheloopw_path_template_pair(
             if (row != segment_count) {
                 double lateral =
                     (float)column - (float)width_cells * 0.5f;
-                Vector3 lateral_offset =
-                    primary_bank[row].transform.basis_right * lateral;
                 Vector3 generated_position =
-                    primary_bank[row].transform.position + lateral_offset;
-                Vector3* vertex =
-                    &vertices[column + row * (width_cells + 1)];
-                *vertex = generated_position;
+                    primary_bank[row].transform.position
+                    + (primary_bank[row].transform.basis_right * lateral);
+                vertices[column + row * (width_cells + 1)] = generated_position;
             } else {
                 double lateral =
                     (float)column - (float)width_cells * 0.5f;
-                Vector3 lateral_offset =
-                    primary_bank[row - 1].transform.basis_right * lateral;
-                Vector3 endpoint = primary_bank[row - 1].transform.position
-                    + Vector3(0.0f, 0.0f, 1.0f);
-                Vector3 generated_position = endpoint + lateral_offset;
-                Vector3* vertex =
-                    &vertices[column + row * (width_cells + 1)];
-                *vertex = generated_position;
+                Vector3 generated_position =
+                    ((primary_bank + row - 1)->transform.position
+                     + Vector3(0.0f, 0.0f, 1.0f))
+                    + ((primary_bank + row - 1)->transform.basis_right * lateral);
+                vertices[column + row * (width_cells + 1)] = generated_position;
             }
         }
     }
