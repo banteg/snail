@@ -146,7 +146,6 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-          REVISION: ${{ needs.prepare.outputs.revision }}
-        run: npx --yes wrangler@4.59.1 deploy -c port/wrangler.jsonc --tag "$REVISION" --message "GitHub deployment $REVISION"
+        run: npx --yes wrangler@4.59.1 deploy -c port/wrangler.jsonc
       - name: Verify every deployed file
         run: uv run --frozen python tools/port/deploy.py verify --url https://snail.banteg.xyz
