@@ -456,9 +456,8 @@ def main():
     work = rot.prepare(scratch, args.source, out.parent / (out.name + "-input"))
     if args.as_msvc65:
         conf = work / "scratch.conf"
-        conf.write_text(
-            re.sub(r"^COMPILER=.*\n", "", conf.read_text(), flags=re.MULTILINE)
-        )
+        text = re.sub(r"^COMPILER=.*\n", "", conf.read_text(), flags=re.MULTILINE)
+        conf.write_text(text.rstrip("\n") + "\nCOMPILER=msvc6.5\n")
     rows = decode(run_observer(work, out))
     functions = list(
         dict.fromkeys(row["function"] for row in rows if "function" in row)
