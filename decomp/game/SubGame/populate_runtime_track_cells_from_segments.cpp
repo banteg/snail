@@ -4,7 +4,7 @@
 #include <stddef.h>
 #ifdef SNAIL_PORT
 #include <stdlib.h>
-extern bool g_port_extras;
+extern bool g_port_ultimate;
 #endif
 
 extern "C" void* memset(void* destination, int value, unsigned int count);
@@ -124,7 +124,7 @@ void cRSubGame::BuildLevel()
         }
         completion_row_start = runtime_row_count - level_definition.last_segment.row_count;
 #ifdef SNAIL_PORT
-        const int row_limit = g_port_extras ? SUBGAME_RUNTIME_ROW_LIMIT : 3100;
+        const int row_limit = g_port_ultimate ? SUBGAME_RUNTIME_ROW_LIMIT : 3100;
         if (runtime_row_count >= row_limit) {
             report_errorf(
                 "Track (%s) too long, Maximum Length %i",

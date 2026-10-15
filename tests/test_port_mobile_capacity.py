@@ -19,8 +19,8 @@ EXTRAS = REPO_ROOT / "artifacts/bin/SnailMailExtras.dat"
     shutil.which("node") is None or not all(p.exists() for p in (WASM, BASE, EXTRAS)),
     reason="needs node, snail.wasm, and both game archives",
 )
-@pytest.mark.parametrize("rows,extras,accepted", [(3231, True, True), (3500, True, False), (3231, False, False)])
-def test_mobile_course_capacity_before_condensation(tmp_path, rows, extras, accepted):
+@pytest.mark.parametrize("rows,ultimate,accepted", [(3231, True, True), (3500, True, False), (3231, False, False)])
+def test_mobile_course_capacity_before_condensation(tmp_path, rows, ultimate, accepted):
     index = parse_archive_index(EXTRAS)
     files = {entry.path.upper(): read_archive_entry(EXTRAS, entry) for entry in index.entries}
     # Keep the entry/exit definitions independent of later mobile asset changes.
@@ -50,7 +50,7 @@ def test_mobile_course_capacity_before_condensation(tmp_path, rows, extras, acce
     level = re.sub(rb"(First:[^\r\n]*\s*)Start.txt", rb"\g<1>CapacityStart.txt", level)
     level = re.sub(rb"(Last:[^\r\n]*\s*)Finish.txt", rb"\g<1>CapacityFinish.txt", level)
     files["LEVELS/ARCADEPRO010.TXT"] = level
-    if extras:
+    if ultimate:
         (tmp_path / "SnailMail.dat").symlink_to(BASE)
         write_archive(tmp_path / "SnailMailExtras.dat", files)
     else:
@@ -68,15 +68,15 @@ def test_mobile_course_capacity_before_condensation(tmp_path, rows, extras, acce
     (tmp_path / "SnailMailMobile.cfg").write_bytes(config)
     (tmp_path / "SnailMailPro.cfg").write_bytes(struct.pack("<ii", 10, 10))
     keys = tmp_path / "pro10.keys"
-    menu_y = 383 if extras else 172
+    menu_y = 383 if ultimate else 172
     menu = (
         "600 escape\n700 mouse 345 112\n720 click 3\n"
         f"800 mouse 345 {menu_y}\n820 click 3\n"
     )
     keys.write_text(menu)
     args = ["node", str(REPO_ROOT / "port/shell/run.mjs"), str(WASM)]
-    if extras:
-        args.append("--extras")
+    if ultimate:
+        args += ["--profile", "ultimate"]
     args.extend(["--trace", "--keys", str(keys)])
     preview = subprocess.run(
         [*args, "--ticks", "900"], cwd=tmp_path,
@@ -96,5 +96,5 @@ def test_mobile_course_capacity_before_condensation(tmp_path, rows, extras, acce
         assert "too long" not in process.stderr
     else:
         assert process.returncode != 0
-        limit = 3500 if extras else 3100
+        limit = 3500 if ultimate else 3100
         assert f"Track (Eximius Ferreus) too long, Maximum Length {limit}" in process.stderr

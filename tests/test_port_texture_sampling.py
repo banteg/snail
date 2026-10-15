@@ -25,7 +25,7 @@ def test_mobile_road_textures_repeat_like_pc_surfaces(tmp_path):
 import { readFile } from 'node:fs/promises';
 import { WASI } from 'node:wasi';
 const wasi = new WASI({
-  version: 'preview1', args: ['snail.wasm', '--extras', '--ticks', '1'],
+  version: 'preview1', args: ['snail.wasm', '--profile', 'ultimate', '--ticks', '1'],
   env: { ...process.env, PWD: process.cwd() }, preopens: { '/': '/' },
   returnOnExit: true,
 });

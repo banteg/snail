@@ -22,7 +22,7 @@
 
 import { AudioPresenter } from "./audio.js";
 import { Renderer } from "./renderer.js";
-import { Settings } from "./settings.js";
+import { PROFILES, Settings } from "./settings.js";
 import { openSaves } from "./storage.js";
 import { createWasi, ExitStatus, MemoryFileSystem } from "./wasi.js";
 
@@ -252,9 +252,9 @@ async function main() {
     if ("hidpi" in changes) updateResolution();
     if ("fullscreen" in changes) fullscreen.apply();
     if (changes.trapMouse === false) releasePointer();
-    if ("extras" in changes) location.reload();
+    if ("profile" in changes) location.reload();
   }, releasePointer);
-  if (params.has("extras")) settings.values.extras = params.get("extras") !== "0";
+  if (PROFILES.some((profile) => profile.id === params.get("profile"))) settings.values.profile = params.get("profile");
   const fullscreen = new Fullscreen(settings);
   const updateResolution = connectResolution(renderer, settings);
   const fs = new MemoryFileSystem();
@@ -263,11 +263,8 @@ async function main() {
     WebAssembly.compileStreaming(fetch("snail-web.wasm")),
   ]);
   fs.write("SnailMail.dat", archive);
-  if (settings.get("extras")) {
-    try {
-      fs.write("SnailMailExtras.dat", await fetchArchive("SnailMailExtras.dat.gz", () => {}));
-    } catch {}
-  }
+  const ultimate = settings.get("profile") === "ultimate";
+  if (ultimate) fs.write("SnailMailExtras.dat", await fetchArchive("SnailMailExtras.dat.gz", () => {}));
   const saves = await openSaves();
   if (new URLSearchParams(location.search).has("reset")) await saves.clear();
   for (const [name, bytes] of await saves.load()) fs.write(name, bytes);
@@ -289,7 +286,7 @@ async function main() {
   audio.bind(exports.memory);
 
   exports._initialize();
-  if (settings.get("extras")) exports.snail_set_extras(1);
+  exports.snail_set_profile(ultimate ? 1 : 0);
   const warmup = new URLSearchParams(location.search).get("warmup");
   if (!exports.snail_start(warmup === null ? Date.now() % 1000 : Number(warmup))) {
     throw new Error("startup failed (see the console)");

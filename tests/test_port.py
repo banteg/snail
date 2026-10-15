@@ -168,9 +168,10 @@ def test_line_table_maps_trace_offsets_to_source_lines(tmp_path):
     or not (REPO_ROOT / "artifacts/bin/SnailMail.dat").exists(),
     reason="needs node, snail.wasm and SnailMail.dat",
 )
-def test_fix_hazards_spawn_turned_to_the_track(tmp_path):
-    # Without the fix, A1 draws a slug or garbage upright on a tilted cell on
-    # three spawn ticks (docs/port/original-bugs.md).
+def test_original_profile_keeps_upright_hazard_spawns(tmp_path):
+    # The Original profile keeps the original's bugs: A1 draws a slug or garbage
+    # upright on a tilted cell on three spawn ticks (docs/port/original-bugs.md),
+    # and the replay still matches.
     (tmp_path / "SnailMail.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMail.dat")
     shutil.copy2(REPO_ROOT / "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat", tmp_path / "ScoreA.dat")
     replay = subprocess.run(
@@ -184,7 +185,7 @@ def test_fix_hazards_spawn_turned_to_the_track(tmp_path):
         text=True,
         check=True,
     )
-    assert "upright_hazards" not in replay.stderr
+    assert replay.stderr.count("upright_hazards 1") == 3
     assert "matches the original" in replay.stderr
 
 
@@ -203,14 +204,14 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
     (tmp_path / "SnailMail.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMail.dat")
 
     missing = subprocess.run(
-        ["node", str(runner), str(wasm), "--extras", "--ticks", "1"],
+        ["node", str(runner), str(wasm), "--profile", "ultimate", "--ticks", "1"],
         cwd=tmp_path,
         capture_output=True,
         text=True,
         check=False,
     )
     assert missing.returncode == 1
-    assert "requires SnailMailExtras.dat" in missing.stderr
+    assert "the ultimate profile needs SnailMailExtras.dat" in missing.stderr
 
     (tmp_path / "SnailMailExtras.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMailExtras.dat")
     cfg = bytearray(196)
@@ -227,7 +228,7 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
         "900 mouse 480 300\n920 click 3\n1000 mouse 320 300\n"
     )
     postal = subprocess.run(
-        ["node", str(runner), str(wasm), "--extras", "--trace", "--keys", str(tmp_path / "postal46.keys")],
+        ["node", str(runner), str(wasm), "--profile", "ultimate", "--trace", "--keys", str(tmp_path / "postal46.keys")],
         cwd=tmp_path,
         capture_output=True,
         text=True,
@@ -242,7 +243,7 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
         "900 mouse 320 320\n920 click 3\n1000 mouse 320 300\n"
     )
     challenge = subprocess.run(
-        ["node", str(runner), str(wasm), "--extras", "--warmup", "0", "--trace", "--keys", str(tmp_path / "challenge.keys")],
+        ["node", str(runner), str(wasm), "--profile", "ultimate", "--warmup", "0", "--trace", "--keys", str(tmp_path / "challenge.keys")],
         cwd=tmp_path,
         capture_output=True,
         text=True,
@@ -302,7 +303,7 @@ import {{ readFile }} from "node:fs/promises";
 import {{ WASI }} from "node:wasi";
 const wasi = new WASI({{
     version: "preview1",
-    args: ["snail.wasm", "--extras", "--ticks", "1"],
+    args: ["snail.wasm", "--profile", "ultimate", "--ticks", "1"],
     env: {{ ...process.env, PWD: process.cwd() }},
     preopens: {{ "/": "/" }},
     returnOnExit: true,
@@ -395,7 +396,7 @@ console.log(JSON.stringify(out));
     shutil.copy2(tmp_path / "ScoreA.dat", tmp_path / "ScoreMobileA.dat")
     replay = subprocess.run(
         [
-            "node", str(runner), str(wasm), "--extras", "--trace",
+            "node", str(runner), str(wasm), "--profile", "ultimate", "--trace",
             "--keys", str(REPO_ROOT / "port/scripts/high_scores.keys"),
             "--replay", "A4",
         ],
@@ -454,7 +455,7 @@ import {{ readFile }} from "node:fs/promises";
 import {{ WASI }} from "node:wasi";
 const wasi = new WASI({{
     version: "preview1",
-    args: ["snail.wasm", "--extras", "--ticks", "1"],
+    args: ["snail.wasm", "--profile", "ultimate", "--ticks", "1"],
     env: {{ ...process.env, PWD: process.cwd() }},
     preopens: {{ "/": "/" }},
     returnOnExit: true,
@@ -517,7 +518,7 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
         "900 mouse 289 287\n920 click 3\n"
     )
     pro1 = subprocess.run(
-        ["node", str(runner), str(wasm), "--extras", "--trace", "--ticks", "1000", "--keys", str(tmp_path / "pro1.keys")],
+        ["node", str(runner), str(wasm), "--profile", "ultimate", "--trace", "--ticks", "1000", "--keys", str(tmp_path / "pro1.keys")],
         cwd=tmp_path,
         capture_output=True,
         text=True,
@@ -539,7 +540,7 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
         "900 mouse 248 414\n920 click 3\n"
     )
     pro10 = subprocess.run(
-        ["node", str(runner), str(wasm), "--extras", "--trace", "--ticks", "1000", "--keys", str(tmp_path / "pro10.keys")],
+        ["node", str(runner), str(wasm), "--profile", "ultimate", "--trace", "--ticks", "1000", "--keys", str(tmp_path / "pro10.keys")],
         cwd=tmp_path,
         capture_output=True,
         text=True,
@@ -560,7 +561,7 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
         "1200 mouse 239 292\n1220 click 3\n"
     )
     hs = subprocess.run(
-        ["node", str(runner), str(wasm), "--extras", "--trace", "--ticks", "1400", "--keys", str(tmp_path / "hs_quit.keys")],
+        ["node", str(runner), str(wasm), "--profile", "ultimate", "--trace", "--ticks", "1400", "--keys", str(tmp_path / "hs_quit.keys")],
         cwd=tmp_path,
         capture_output=True,
         text=True,

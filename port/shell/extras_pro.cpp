@@ -328,7 +328,7 @@ void build_pro_galaxy_layout()
 
 void extras_init_pro()
 {
-    if (!g_port_extras || g_pro_initialized || !g_game)
+    if (!g_port_ultimate || g_pro_initialized || !g_game)
         return;
 
     g_pro_initialized = true;
@@ -369,12 +369,12 @@ void extras_init_pro()
 
 bool extras_is_pro_mode()
 {
-    return g_port_extras && g_pro_mode_active;
+    return g_port_ultimate && g_pro_mode_active;
 }
 
 void extras_set_pro_mode(bool active)
 {
-    if (!g_port_extras || !g_pro_initialized)
+    if (!g_port_ultimate || !g_pro_initialized)
         return;
     g_pro_mode_active = active;
     if (active) {
@@ -388,13 +388,13 @@ void extras_set_pro_mode(bool active)
 // Android cRIntro::Init (000674f8): adds "Pro-Challenge" below Challenge Mode.
 void cRIntro::Init()
 {
-    if (g_port_extras && g_pro_initialized) {
+    if (g_port_ultimate && g_pro_initialized) {
         g_high_score_pro_view = false;
         extras_set_pro_mode(false);
     }
     intro_init_recovered(this);
     g_pro_challenge_button = 0;
-    if (!g_port_extras || !g_pro_initialized)
+    if (!g_port_ultimate || !g_pro_initialized)
         return;
 
     tColour color;
@@ -427,7 +427,7 @@ void cRIntro::Init()
 // Android cRIntro::AI (00067ab8): dispatches Pro-Challenge into Pro galaxy mode.
 void cRIntro::AI()
 {
-    if (g_port_extras && g_pro_challenge_button) {
+    if (g_port_ultimate && g_pro_challenge_button) {
         if (hide_for_replay_latch == 1
             && (read_pressed_text_input_key_code() != 0
                 || (g_game->players[0].game_input->input.pressed_buttons & INPUT_BUTTON_PRIMARY) != 0)) {
@@ -453,7 +453,7 @@ void cRIntro::AI()
 void cRGalaxy::Init()
 {
     galaxy_init_recovered(this);
-    if (!g_port_extras || !g_pro_mode_active)
+    if (!g_port_ultimate || !g_pro_mode_active)
         return;
     if (g_runtime_config.highest_galaxy_route_index >= 1
         && g_runtime_config.highest_galaxy_route_index <= kProMaxRouteIndex) {
@@ -476,7 +476,7 @@ void cRGalaxy::Init()
 
 void cRSubTracks::load_frontend_level_by_mode_and_index(int mode, int level_index)
 {
-    if (g_port_extras && g_pro_mode_active && mode == 0) {
+    if (g_port_ultimate && g_pro_mode_active && mode == 0) {
         if (level_index >= 1 && level_index <= g_pro_highest_route_index) {
             g_pro_selected_route_index = level_index;
             save_pro_progress_file();
@@ -493,7 +493,7 @@ void cRSubTracks::load_frontend_level_by_mode_and_index(int mode, int level_inde
 // while extras is enabled; classic mode delegates without adjustment.
 void cRSubGame::CalcRate()
 {
-    if (!g_port_extras) {
+    if (!g_port_ultimate) {
         calc_rate_recovered(this);
         return;
     }
@@ -519,7 +519,7 @@ void cRSubGame::CalcRate()
 void cRSplash::Init()
 {
     splash_init_recovered(this);
-    if (!g_port_extras || !g_pro_mode_active)
+    if (!g_port_ultimate || !g_pro_mode_active)
         return;
     int script_index = g_game->subgame.landscape_manager.Import((char*)"SplashPro.txt");
     g_game->backdrop.Change(&g_game->subgame.landscape_manager.scripts[script_index], 0);
@@ -527,7 +527,7 @@ void cRSplash::Init()
 
 void cRHighScore::Init(int mode_, int rank)
 {
-    if (!g_port_extras || !g_pro_initialized) {
+    if (!g_port_ultimate || !g_pro_initialized) {
         high_score_init_recovered(this, mode_, rank);
         return;
     }
@@ -565,7 +565,7 @@ void cRHighScore::Init(int mode_, int rank)
 
 void cRHighScore::AI()
 {
-    if (!g_port_extras || !g_pro_initialized || entering_name != 0) {
+    if (!g_port_ultimate || !g_pro_initialized || entering_name != 0) {
         high_score_ai_recovered(this);
         return;
     }
@@ -610,7 +610,7 @@ void cRHighScore::AI()
 
 void cRSubHighScore::MiniSave(unsigned char save_mask)
 {
-    if (!g_port_extras || !g_pro_initialized) {
+    if (!g_port_ultimate || !g_pro_initialized) {
         mini_save_recovered(this, save_mask);
         return;
     }
@@ -633,7 +633,7 @@ void cRSubHighScore::MiniSave(unsigned char save_mask)
 char* __cdecl save_config_file(char* file_name, void* bytes, int byte_count)
 {
     file_name = (char*)extras_save_path(file_name);
-    if (g_port_extras && g_pro_initialized && g_pro_state_swapped && bytes == &g_runtime_config) {
+    if (g_port_ultimate && g_pro_initialized && g_pro_state_swapped && bytes == &g_runtime_config) {
         if (g_runtime_config.highest_galaxy_route_index >= 1
             && g_runtime_config.highest_galaxy_route_index <= kProMaxRouteIndex) {
             g_pro_highest_route_index = g_runtime_config.highest_galaxy_route_index;

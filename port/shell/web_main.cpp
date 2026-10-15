@@ -5,9 +5,9 @@
 // then one rendered frame.
 
 #include "game_session.h"
-#include "extras.h"
 #include "input_state.h"
 #include "lockstep_tape.h"
+#include "profile.h"
 #include "runtime_config.h"
 
 #define WEB_EXPORT(name) __attribute__((export_name(name)))
@@ -19,9 +19,10 @@ const float kSnapToZero = 0.0000083333334f;
 float g_accumulator = 0;
 }  // namespace
 
-WEB_EXPORT("snail_set_extras") void snail_set_extras(int enabled)
+// 1 selects the Ultimate profile, 0 Original (the default).
+WEB_EXPORT("snail_set_profile") void snail_set_profile(int ultimate)
 {
-    g_port_extras = enabled != 0;
+    g_port_ultimate = ultimate != 0;
 }
 
 WEB_EXPORT("snail_start") int snail_start(int warmup)

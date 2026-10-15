@@ -1,6 +1,6 @@
-// Opt-in mobile content layer (extras.h). Wraps the narrow seams listed in
-// port/wrapped.txt; every wrapper delegates to its *_recovered body when
-// g_port_extras is false.
+// Mobile content layer for the Ultimate profile (extras.h, profile.h). Wraps
+// the narrow seams listed in port/wrapped.txt; every wrapper delegates to its
+// *_recovered body in the Original profile.
 
 #include <ctype.h>
 #include <stdio.h>
@@ -49,8 +49,6 @@ void sub_ring_init_recovered(cRSubRing* self, int lives_snapshot)
 
 void* allocate_tracked_memory(int size, char* name);
 void xor_archive_bytes_in_place(int start_offset, char* bytes, int count);
-
-bool g_port_extras = false;
 
 namespace {
 
@@ -156,7 +154,7 @@ int parse_arcade_number(const char* filename)
 // remain available for PC-only bonus courses and older extras bundles.
 void cRSMTracks::Import()
 {
-    if (!g_port_extras || this != &g_game->subgame.sm_tracks) {
+    if (!g_port_ultimate || this != &g_game->subgame.sm_tracks) {
         sm_tracks_import_recovered(this);
         return;
     }
@@ -191,7 +189,7 @@ void cRSMTracks::Import()
 
 const char* extras_save_path(const char* name)
 {
-    if (g_port_extras) {
+    if (g_port_ultimate) {
         if (path_equals_ignore_case(name, "SnailMail.cfg")) return "SnailMailMobile.cfg";
         if (path_equals_ignore_case(name, "ScoreA.dat")) return "ScoreMobileA.dat";
         if (path_equals_ignore_case(name, "ScoreB.dat")) return "ScoreMobileB.dat";
@@ -203,7 +201,7 @@ const char* extras_save_path(const char* name)
 void* load_config_file(char* file_name, void* buffer)
 {
     const char* mapped = extras_save_path(file_name);
-    if (g_port_extras && path_equals_ignore_case(file_name, "SnailMail.cfg")
+    if (g_port_ultimate && path_equals_ignore_case(file_name, "SnailMail.cfg")
         && !archive_or_file_exists_recovered((char*)mapped, 1)) {
         // Carry display/audio preferences across once, but start the mobile
         // campaign separately. Do not rewrite the classic save.
@@ -224,11 +222,11 @@ int write_file_bytes(char* path, void* bytes, int byte_count)
 
 bool extras_init_archive()
 {
-    if (!g_port_extras)
+    if (!g_port_ultimate)
         return true;
     FILE* f = fopen("SnailMailExtras.dat", "rb");
     if (!f) {
-        fprintf(stderr, "snail: --extras requires SnailMailExtras.dat (run `uv run snail port extras`)\n");
+        fprintf(stderr, "snail: the ultimate profile needs SnailMailExtras.dat (run `uv run snail port extras`)\n");
         return false;
     }
     char probe[0x10];
@@ -275,7 +273,7 @@ ArchiveIndex* extras_get_archive_index()
 
 void extras_init_assets()
 {
-    if (!g_port_extras)
+    if (!g_port_ultimate)
         return;
     for (int i = 0; i < 4; ++i) {
         g_extra_track_textures[i] = g_game->track.track_textures[i];
@@ -303,7 +301,7 @@ const char* extras_track_texture_name(int slot)
 {
     if (slot >= 0 && slot < 4 && g_game && g_game->track.track_textures[slot])
         return g_game->track.track_textures[slot]->name;
-    if (g_port_extras && slot >= 0 && slot < kMobileTrackSetCount && g_extra_track_textures[slot])
+    if (g_port_ultimate && slot >= 0 && slot < kMobileTrackSetCount && g_extra_track_textures[slot])
         return g_extra_track_textures[slot]->name;
     return "?";
 }
@@ -311,7 +309,7 @@ const char* extras_track_texture_name(int slot)
 char __cdecl archive_or_file_exists(char* path, char force_filesystem)
 {
     path = (char*)extras_save_path(path);
-    if (g_port_extras && force_filesystem == 0 && find_extras_archive_entry(path))
+    if (g_port_ultimate && force_filesystem == 0 && find_extras_archive_entry(path))
         return 1;
     return archive_or_file_exists_recovered(path, force_filesystem);
 }
@@ -324,7 +322,7 @@ char __cdecl archive_or_file_exists(char* path, int force_filesystem)
 char* __cdecl load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out_size)
 {
     file_name = (char*)extras_save_path(file_name);
-    if (g_port_extras) {
+    if (g_port_ultimate) {
         if (const ArchiveEntry* entry = find_extras_archive_entry(file_name)) {
             g_loading_bar.AI();
             if (out_size)
@@ -354,7 +352,7 @@ char* __cdecl load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, 
 char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(char* file_name, char* buffer, int byte_count)
 {
     file_name = (char*)extras_save_path(file_name);
-    if (g_port_extras) {
+    if (g_port_ultimate) {
         if (const ArchiveEntry* entry = find_extras_archive_entry(file_name)) {
             g_loading_bar.AI();
             if (buffer == (char*)-1)
@@ -377,7 +375,7 @@ char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(char* file_name, cha
 // Android cRTrack::Change (0003f330): supports Track: 0-6 and 8 (random 0-6).
 void cRTrack::Change(int texture_set)
 {
-    if (!g_port_extras) {
+    if (!g_port_ultimate) {
         track_change_recovered(this, texture_set);
         return;
     }
@@ -417,7 +415,7 @@ void cRTrack::Change(int texture_set)
 void cRSubTracks::Init(char* filename)
 {
     subtracks_init_recovered(this, filename);
-    if (!g_port_extras)
+    if (!g_port_ultimate)
         return;
 
     char* cursor = Rstrfind((char*)"Track:", g_level_file_text_buffer);
@@ -469,7 +467,7 @@ void cRSubGame::StartLevel(int level_index)
 {
     extras_clear_tramp_rings();
     subgame_start_level_recovered(this, level_index);
-    if (!g_port_extras)
+    if (!g_port_ultimate)
         return;
 
     if (level_definition.track_texture_set == kRandomTrackSetCode) {
@@ -514,7 +512,7 @@ void cRSubGame::AddRing(cRSubLoc* cell, int requested_kind, cRSubGoldy* player, 
 
 void cRSubRing::Init(int lives_snapshot)
 {
-    if (g_port_extras) {
+    if (g_port_ultimate) {
         oscillate_x = 1;
         switch (kind) {
         case SUB_RING_KIND_EXPLODE_RAMP:
@@ -570,7 +568,7 @@ void cRBackdrop::render_backdrop()
 {
     cRTexture* texture = active_primary_texture_id >= 0 && active_primary_texture_id < SPRITE_TEXTURE_CAPACITY
         ? g_sprite_texture_table[active_primary_texture_id] : 0;
-    if (!g_port_extras || !texture
+    if (!g_port_ultimate || !texture
         || (!path_equals_ignore_case(texture->name, "Backgrounds/SpacePro.tga")
             && !path_equals_ignore_case(texture->name, "Backgrounds/SpacePro2.tga"))) {
         backdrop_render_recovered(this);

@@ -60,7 +60,7 @@ def test_mobile_skies_use_whole_image_and_flip_correctly(tmp_path):
     assert len(draws) == 6
     for draw in draws:
         assert draw["count"] == 49 * 6
-        if draw["extras"] and draw["name"] in ("SpacePro", "SpacePro2"):
+        if draw["ultimate"] and draw["name"] in ("SpacePro", "SpacePro2"):
             assert [draw[k] for k in ("minU", "maxU", "minV", "maxV")] == pytest.approx(
                 [0, 1, 0, 1]
             )
