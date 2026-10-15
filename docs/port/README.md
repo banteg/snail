@@ -348,7 +348,9 @@ content hooks described below.
   geometry, trampoline effects and moving weapon rings. The New Game menu
   adds **Pro-Challenge**, opening the ten-level **Special Assignment** galaxy.
   Mobile acceleration and power-up pacing apply in every game mode while
-  extras is on; extras off delegates to the PC rules.
+  extras is on; extras off delegates to the PC rules. Pro skies use the full
+  converted image with normalized UVs, including horizontal flips; PC
+  backdrops retain their padded-image UV layout.
 
   Mobile campaign progress and scores use `SnailMailMobile.cfg` and
   `ScoreMobileA/B/C.dat`. The first mobile launch copies display/audio

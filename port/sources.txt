@@ -128,7 +128,6 @@
 ../decomp/game/Game/initialize_backdrop.cpp
 ../decomp/game/Game/set_backdrop_texture_target.cpp
 ../decomp/game/Game/draw_split_backdrop.cpp
-../decomp/game/Game/render_backdrop.cpp
 ../decomp/game/Game/update_backdrop.cpp
 ../decomp/game/Game/add_bod_to_front.cpp
 ../decomp/game/Game/append_bod_to_end.cpp

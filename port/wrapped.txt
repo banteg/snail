@@ -24,3 +24,4 @@ save_config_file                               ../decomp/game/Register/save_conf
 load_segment_definitions                      ../decomp/game/Subtrack/load_segment_definitions.cpp                                       Import
 load_config_file                              ../decomp/game/Register/load_config_file.cpp                                               load_config_file
 write_file_bytes                              ../decomp/game/RShell/write_file_bytes.cpp                                                 write_file_bytes
+render_backdrop                               ../decomp/game/Game/render_backdrop.cpp                                                       render_backdrop
