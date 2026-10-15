@@ -6,9 +6,20 @@ import trace as t
 from snail import match as m
 c2 = t.c2
 
-PACK_HOOK = {"site": 0x33CDE, "target": 0x4B617, "return": True}
-PRIO_HOOK = {"site": 0x33607, "target": 0x31D21, "return": False}
-PRIO2_HOOK = {"site": 0x215BB, "target": 0x31D21, "return": False}
+import rotation as rot
+
+PACK_HOOK = PRIO_HOOK = PRIO2_HOOK = None
+
+
+def use_backend(compiler):
+    global PACK_HOOK, PRIO_HOOK, PRIO2_HOOK
+    profile = rot.use_backend(compiler)
+    PACK_HOOK = profile["stack_packing"]["pack_hook"]
+    PRIO_HOOK, _, PRIO2_HOOK = profile["global_allocation"]["queue_hooks"]
+    return profile
+
+
+use_backend(m.DEFAULT_SCRATCH_COMPILER)
 MAXV = 400
 RECORDER = r"""
 static HANDLE stk_file;
@@ -19,7 +30,7 @@ static void stk_write(void *data, unsigned long size)
 }
 static void stk_observe(unsigned long phase, unsigned long *registers)
 {
-    unsigned char *base = (unsigned char *)targets[STK_HOOK] - 0x4B617;
+    unsigned char *base = (unsigned char *)targets[STK_HOOK] - PACK_TARGET;
     unsigned long *v, *sym, rec[12], n = 0, i, cnt;
     unsigned char *tab;
     if (phase < 100 && phase != STK_HOOK) {
@@ -60,7 +71,7 @@ def observer(profile, stock_source):
     a1 = "    unsigned long first, node, count = 0, record[742], op, side, j, k, at;\n"
     a2 = "    trace_file = CreateFileA("
     a3 = "    CloseHandle(trace_file);"
-    source = source.replace("static void __cdecl observe(", f"#define STK_HOOK {hook}\n" + RECORDER + "static void __cdecl observe(")
+    source = source.replace("static void __cdecl observe(", f"#define STK_HOOK {hook}\n#define PACK_TARGET {PACK_HOOK['target']}\n" + RECORDER + "static void __cdecl observe(")
     source = source.replace(a1, a1 + "    { stk_observe(phase, registers); return; }\n")
     source = source.replace(a2, '    stk_file = CreateFileA("stack.bin", GENERIC_WRITE, 0, 0, CREATE_ALWAYS, 0, 0);\n    if (stk_file == INVALID_HANDLE_VALUE) ExitProcess(78);\n' + a2)
     return source.replace(a3, "    CloseHandle(stk_file);\n" + a3)
@@ -73,8 +84,7 @@ def run(scratch_dir, source, out):
     (work / "scratch.conf").write_text(conf)
     (work / "scratch.cpp").write_bytes(Path(source).read_bytes())
     sp, ss = c2.load_profile, c2.observer_source
-    profile = sp()
-    from rotation import FUNCTION_ENTRY_HOOK, FINAL_HOOK
+    profile = use_backend(m.load_scratch_config(work).compiler)
     profile = dict(profile, name=profile["name"] + "-stack", hooks=[PRIO_HOOK, PRIO2_HOOK, PACK_HOOK])
     c2.load_profile = lambda: profile
     c2.observer_source = lambda p: observer(p, ss)

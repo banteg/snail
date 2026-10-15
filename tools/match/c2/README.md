@@ -25,15 +25,15 @@ and `msvc6.3`, the project baseline. The msvc6.3 profile was derived by
 matching each msvc6.5 hook's target routine and call site by masked
 instruction context; the cost, hash, sort and allocator routines are
 byte-identical code at shifted addresses. Each profile also records the
-address-order and early-address hooks. A profile's C2 SHA-256 is checked
+address-order, early-address, rotation, scheduler, CSE-slot, global-allocation
+and stack-packing hooks. A profile's C2 SHA-256 is checked
 before any hook is installed, and each instrumented CALL must have the
 expected opcode and destination. The installed compiler stays intact.
 The decomp.me bundles ship no libraries, so the helpers link against a
 KERNEL32 import library and a weak-alias object built on first use.
 
-Tracers below that hardcode other msvc6.5 RVAs (`schedtrace.py`,
-`rotation.py`, `globalregs.py`, `cse_slot_trace.py`, ...) still target
-msvc6.5 scratches only; the observer rejects their hooks on another backend.
+External Crimson tracers invoked through `run_tracer.py` still hardcode
+msvc6.5 RVAs; the observer rejects their hooks on another backend.
 Translation-unit members are rejected until their full source can be frozen.
 
 Normal, captured, standalone-replayed and observed **whole COFF objects** must

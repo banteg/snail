@@ -29,18 +29,27 @@ from snail import match as m
 
 c2 = t.c2
 
-# C2.DLL RVAs (image base 0x10700000), pinned by the profile's C2 SHA-256.
-GLOBAL_ENTRY_HOOK = {"site": 0x583B2, "target": 0x2FB58, "return": False}
-LOCAL_ENTRY_HOOK = {"site": 0x583C5, "target": 0x336F4, "return": False}
-QUEUE_HOOKS = (
-    {"site": 0x33607, "target": 0x31D21, "return": False},  # initial priority queue
-    {"site": 0x2FED5, "target": 0x31D21, "return": False},  # requeue after a split
-    {"site": 0x215BB, "target": 0x31D21, "return": False},  # requeue of split pieces
-)
-CHOOSE_HOOK = {"site": 0x2FE5F, "target": 0x32F7C, "return": True}
-COSTS = 0x9D868  # int[9], per-register cost built by the chooser
-RANGES = 0x9D88C  # live-range hash buckets by id & 0x3ff, chained through +0x2c
-BIT_TEST = 0x251D
+# C2.DLL RVAs come from the compiler's observer profile (`global_allocation`);
+# use_backend() binds them.
+GLOBAL_ENTRY_HOOK = LOCAL_ENTRY_HOOK = QUEUE_HOOKS = CHOOSE_HOOK = None
+COSTS = RANGES = BIT_TEST = None
+
+
+def use_backend(compiler):
+    """Bind this module's C2 addresses to `compiler`'s observer profile."""
+    global GLOBAL_ENTRY_HOOK, LOCAL_ENTRY_HOOK, QUEUE_HOOKS, CHOOSE_HOOK
+    global COSTS, RANGES, BIT_TEST
+    profile = rot.use_backend(compiler)
+    glob = profile["global_allocation"]
+    GLOBAL_ENTRY_HOOK, LOCAL_ENTRY_HOOK = glob["global_entry_hook"], glob["local_entry_hook"]
+    QUEUE_HOOKS = tuple(glob["queue_hooks"])
+    CHOOSE_HOOK = glob["choose_hook"]
+    COSTS, RANGES = glob["costs"], glob["ranges"]
+    BIT_TEST = rot.BIT_TEST
+    return profile
+
+
+use_backend(m.DEFAULT_SCRATCH_COMPILER)
 LR_WORDS = 18
 SYM_WORDS = 8
 MAX_PREFS = 8
@@ -141,7 +150,7 @@ REGISTERS = rot.REGISTERS
 
 def observer(profile, stock_source):
     hooks = profile["hooks"]
-    [i for i, h in enumerate(hooks) if h["target"] == 0x31D21]
+    [i for i, h in enumerate(hooks) if h in QUEUE_HOOKS]
     choose = hooks.index(CHOOSE_HOOK)
     defines = {
         "LR_WORDS": LR_WORDS,
@@ -187,7 +196,7 @@ def observer(profile, stock_source):
 
 def run_observer(scratch, out):
     stock_profile, stock_source = c2.load_profile, c2.observer_source
-    profile = stock_profile()
+    profile = use_backend(m.load_scratch_config(scratch).compiler)
     hooks = [GLOBAL_ENTRY_HOOK, LOCAL_ENTRY_HOOK, *QUEUE_HOOKS, CHOOSE_HOOK]
     profile = dict(profile, name=profile["name"] + "-global", hooks=hooks)
     c2.load_profile = lambda: profile
@@ -462,7 +471,7 @@ def main():
     source_text = (work / "scratch.cpp").read_text()
     first_line = rot.definition_line(source_text, config.symbol or config.function)
     object_path = m.compile_scratch(config)
-    metrics = t.metrics(config, object_path)
+    metrics = c2.replay.function_metrics(config, object_path)
     natives = native_map(config, work, object_path, first_line)
     chosen, rest = ranges(rows)
     for row in chosen:
