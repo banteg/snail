@@ -34,7 +34,8 @@ elif ! command -v "$WIBO" >/dev/null 2>&1; then
 fi
 
 # wibo accepts Z:-prefixed host paths, so unix paths become Windows include paths.
-INCLUDE="Z:$(echo "$MSVC_ROOT/Include" | tr '/' '\\');Z:$(echo "$MATCH_ROOT/include" | tr '/' '\\')"
+PROJECT_INCLUDE="$(cd "$MATCH_ROOT/../../decomp/include" && pwd)"
+INCLUDE="Z:$(echo "$MSVC_ROOT/Include" | tr '/' '\\');Z:$(echo "$PROJECT_INCLUDE" | tr '/' '\\')"
 export INCLUDE
 
 exec "$WIBO" "$MSVC_ROOT/Bin/CL.EXE" /nologo "$@"

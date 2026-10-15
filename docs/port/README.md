@@ -115,8 +115,8 @@ The extracted `tBass.dll` is written and deleted as the original did.
 
 The recovered source is organised like crimson's: one file per function in
 link-order units, with each scratch's `SOURCE=` pointing into the tree (see
-[decomp/README.md](../../decomp/README.md)). Shared headers stay in
-`tools/match/include/`.
+[decomp/README.md](../../decomp/README.md)). Shared headers live in
+`decomp/include/`.
 
 ```
 decomp/
@@ -124,10 +124,11 @@ decomp/
   game/<Unit>/           Border, Cheat, Completion, … G0, Game, GDX, GL, Golb, Path, SubGame, …
   engine/<Unit>/         BassPlay, Font, … RMaths, RSound, RSprite, … Viewport
     <function>.cpp       one file per recovered function
+  include/               shared recovered headers
 port/
   build.zig              compiles sources.txt with cflags.txt, plus shell/ and generated/
   sources.txt            the recovered files the port compiles (`snail port sources --write`)
-  patches/               diffs against decomp/ and tools/match/include/ (divergences.md#patches)
+  patches/               diffs against decomp/ (divergences.md#patches)
   replaced.txt           boundary functions the shell reimplements
   portable.txt           platform functions whose recovered bodies are portable C
   compat/                POSIX stand-ins for MSVC CRT headers (direct.h, io.h)
@@ -257,7 +258,7 @@ Which functions the port compiles:
     and to a denormal on store; wasm rounds once. The snail's lateral
     velocity decays into denormals when nothing steers it. At the two decay
     sites a `SNAIL_PORT` guard stores through `x87_store_float`
-    (`tools/match/include/x87_store.h`), which rounds twice the same way.
+    (`decomp/include/x87_store.h`), which rounds twice the same way.
 
   With these fixes, all 10 captured sessions match the original bit for bit
   on every tick and field (56,977 ticks).

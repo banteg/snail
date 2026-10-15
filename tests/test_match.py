@@ -38,6 +38,7 @@ from snail.match import (
     extract_object_function,
     find_type_definitions,
     generate_compiler_listing,
+    include_root,
     load_default_reference_symbol_manifest,
     load_image,
     load_reference_symbol_manifest,
@@ -3075,8 +3076,8 @@ def test_idiom_case_registry_contains_bitfield_probe() -> None:
 
 
 def test_find_type_definitions_and_consolidation_findings(tmp_path: Path) -> None:
-    match_root = tmp_path / "match"
-    include_dir = match_root / "include"
+    match_root = tmp_path / "tools" / "match"
+    include_dir = include_root(match_root)
     include_dir.mkdir(parents=True)
     scratches = match_root / "scratches"
     (scratches / "a").mkdir(parents=True)
@@ -3170,8 +3171,8 @@ struct Game {
 
 
 def test_type_consolidation_diverges_on_function_pointer_abi(tmp_path: Path) -> None:
-    match_root = tmp_path / "match"
-    (match_root / "include").mkdir(parents=True)
+    match_root = tmp_path / "tools" / "match"
+    (include_root(match_root)).mkdir(parents=True)
     scratches = match_root / "scratches"
     (scratches / "a").mkdir(parents=True)
     (scratches / "b").mkdir()
@@ -3188,8 +3189,8 @@ def test_type_consolidation_diverges_on_function_pointer_abi(tmp_path: Path) -> 
 
 
 def test_type_consolidation_flags_method_abi_conflicts(tmp_path: Path) -> None:
-    match_root = tmp_path / "match"
-    (match_root / "include").mkdir(parents=True)
+    match_root = tmp_path / "tools" / "match"
+    (include_root(match_root)).mkdir(parents=True)
     scratches = match_root / "scratches"
     (scratches / "a").mkdir(parents=True)
     (scratches / "b").mkdir()
@@ -3209,8 +3210,8 @@ def test_type_consolidation_flags_method_abi_conflicts(tmp_path: Path) -> None:
 
 
 def test_type_consolidation_allows_overloads_within_one_definition(tmp_path: Path) -> None:
-    match_root = tmp_path / "match"
-    include_dir = match_root / "include"
+    match_root = tmp_path / "tools" / "match"
+    include_dir = include_root(match_root)
     include_dir.mkdir(parents=True)
     scratches = match_root / "scratches"
     (scratches / "a").mkdir(parents=True)
@@ -3242,8 +3243,8 @@ struct Quaternion {
 
 
 def test_type_consolidation_flags_virtual_owner_collisions(tmp_path: Path) -> None:
-    match_root = tmp_path / "match"
-    (match_root / "include").mkdir(parents=True)
+    match_root = tmp_path / "tools" / "match"
+    (include_root(match_root)).mkdir(parents=True)
     scratches = match_root / "scratches"
     (scratches / "a").mkdir(parents=True)
     (scratches / "b").mkdir()
@@ -3259,8 +3260,8 @@ def test_type_consolidation_flags_virtual_owner_collisions(tmp_path: Path) -> No
 
 
 def test_type_consolidation_conflicts_when_any_header_disagrees(tmp_path: Path) -> None:
-    match_root = tmp_path / "match"
-    include_dir = match_root / "include"
+    match_root = tmp_path / "tools" / "match"
+    include_dir = include_root(match_root)
     include_dir.mkdir(parents=True)
     scratches = match_root / "scratches"
     (scratches / "a").mkdir(parents=True)
@@ -3273,8 +3274,8 @@ def test_type_consolidation_conflicts_when_any_header_disagrees(tmp_path: Path) 
 
 
 def test_type_consolidation_flags_overbroad_follow_state_header(tmp_path: Path) -> None:
-    match_root = tmp_path / "match"
-    include_dir = match_root / "include"
+    match_root = tmp_path / "tools" / "match"
+    include_dir = include_root(match_root)
     include_dir.mkdir(parents=True)
     scratches = match_root / "scratches"
     (scratches / "a").mkdir(parents=True)
@@ -3588,7 +3589,7 @@ def test_scratch_experiment_epoch_tracks_baseline_inputs(tmp_path: Path, monkeyp
     scoring = tmp_path / "matcher.py"
     scoring.write_text("decoder-a\n", encoding="utf-8")
     monkeypatch.setattr(match_module, "_EXPERIMENT_SCORING_INPUTS", (scoring,))
-    match_root = tmp_path / "match"
+    match_root = tmp_path / "tools" / "match"
     scratch = match_root / "scratches" / "foo"
     scratch.mkdir(parents=True)
     source = scratch / "scratch.cpp"
@@ -4214,7 +4215,7 @@ def test_validate_scratch_source_rejects_inline_asm(tmp_path: Path) -> None:
 def test_run_scratch_match_rejects_inline_asm(tmp_path: Path) -> None:
     from snail.match import run_scratch_match
 
-    match_root = tmp_path / "match"
+    match_root = tmp_path / "tools" / "match"
     scratch_dir = match_root / "scratches/foo"
     scratch_dir.mkdir(parents=True)
     (scratch_dir / "scratch.conf").write_text("FUNCTION=foo\n")
@@ -4262,11 +4263,11 @@ def test_scratch_status_cache_roundtrip(tmp_path: Path) -> None:
         _store_cached_status,
     )
 
-    match_root = tmp_path / "match"
+    match_root = tmp_path / "tools" / "match"
     scratch_dir = match_root / "scratches/foo"
     scratch_dir.mkdir(parents=True)
-    include_dir = match_root / "include"
-    include_dir.mkdir()
+    include_dir = include_root(match_root)
+    include_dir.mkdir(parents=True)
     header = include_dir / "shared.h"
     header.write_text("struct Shared { int x; };\n")
     unrelated_header = include_dir / "unrelated.h"
@@ -4479,11 +4480,11 @@ def test_masked_operand_audit_cache_roundtrip() -> None:
 def test_scratch_include_headers_follow_transitive_local_graph(tmp_path: Path) -> None:
     from snail.match import ScratchConfig, _scratch_include_headers
 
-    match_root = tmp_path / "match"
+    match_root = tmp_path / "tools" / "match"
     scratch_dir = match_root / "scratches/foo"
-    include_dir = match_root / "include"
+    include_dir = include_root(match_root)
     scratch_dir.mkdir(parents=True)
-    include_dir.mkdir()
+    include_dir.mkdir(parents=True)
     source = scratch_dir / "scratch.cpp"
     first = include_dir / "first.h"
     nested = include_dir / "nested.h"
@@ -4513,8 +4514,8 @@ def test_scratch_include_resolver_reuses_shared_header_parses(
         _scratch_include_headers,
     )
 
-    match_root = tmp_path / "match"
-    include_dir = match_root / "include"
+    match_root = tmp_path / "tools" / "match"
+    include_dir = include_root(match_root)
     include_dir.mkdir(parents=True)
     shared = include_dir / "shared.h"
     leaf = include_dir / "leaf.h"
@@ -4570,11 +4571,11 @@ def test_scratch_headers_follow_compiler_precedence_and_include_delimiters(
         _ScratchIncludeResolver,
     )
 
-    match_root = tmp_path / "match"
+    match_root = tmp_path / "tools" / "match"
     scratch = match_root / "scratches/foo"
-    project = match_root / "include"
+    project = include_root(match_root)
     scratch.mkdir(parents=True)
-    project.mkdir()
+    project.mkdir(parents=True)
     (scratch / "scratch.cpp").write_text('#include "shared.h"\n')
     shared = project / "shared.h"
     shared.write_text('#include <stddef.h>\n#include "local.h"\n')
@@ -4609,8 +4610,8 @@ def test_scratch_include_resolver_serializes_parallel_cache_misses(
 
     from snail.match import _ScratchIncludeResolver
 
-    match_root = tmp_path / "match"
-    include_dir = match_root / "include"
+    match_root = tmp_path / "tools" / "match"
+    include_dir = include_root(match_root)
     include_dir.mkdir(parents=True)
     shared = include_dir / "shared.h"
     leaf = include_dir / "leaf.h"
@@ -4652,7 +4653,7 @@ def test_collect_scratch_statuses_runs_uncached_work_in_parallel(
     import snail.match as match_module
     from snail.match import MatchResult, collect_scratch_statuses
 
-    match_root = tmp_path / "match"
+    match_root = tmp_path / "tools" / "match"
     for name in ("first", "second"):
         scratch_dir = match_root / f"scratches/{name}"
         scratch_dir.mkdir(parents=True)
@@ -4766,7 +4767,7 @@ def test_masked_operand_audit_uses_cached_detailed_match(
         collect_masked_operand_issues,
     )
 
-    match_root = tmp_path / "match"
+    match_root = tmp_path / "tools" / "match"
     scratch_dir = match_root / "scratches/foo"
     scratch_dir.mkdir(parents=True)
     (scratch_dir / "scratch.conf").write_text("FUNCTION=foo\n")
@@ -4857,7 +4858,7 @@ def test_masked_operand_audit_runs_cache_misses_in_parallel(
         collect_masked_operand_issues,
     )
 
-    match_root = tmp_path / "match"
+    match_root = tmp_path / "tools" / "match"
     for name in ("first", "second"):
         scratch_dir = match_root / f"scratches/{name}"
         scratch_dir.mkdir(parents=True)
@@ -4972,13 +4973,13 @@ def test_scratch_object_current_tracks_build_inputs(tmp_path: Path) -> None:
     import os
     import time
 
-    match_root = tmp_path / "match"
+    match_root = tmp_path / "tools" / "match"
     scratch_dir = match_root / "scratches/foo"
     build_dir = scratch_dir / "build"
-    include_dir = match_root / "include"
+    include_dir = include_root(match_root)
     compiler_dir = match_root / "compilers/msvc6.5/Bin"
     build_dir.mkdir(parents=True)
-    include_dir.mkdir()
+    include_dir.mkdir(parents=True)
     compiler_dir.mkdir(parents=True)
     (match_root / "cl.sh").write_text("#!/bin/sh\n")
     (compiler_dir / "CL.EXE").write_bytes(b"cl")
@@ -5105,7 +5106,7 @@ def test_compile_scratch_removes_stale_object_before_vc6(
 
     from snail.match import ScratchConfig, compile_scratch
 
-    match_root = tmp_path / "match"
+    match_root = tmp_path / "tools" / "match"
     scratch_dir = match_root / "scratches/foo"
     build_dir = scratch_dir / "build"
     compiler_dir = match_root / "compilers/msvc6.5/Bin"
@@ -5248,8 +5249,8 @@ def test_format_cl_failure_preserves_real_diagnostics(tmp_path: Path) -> None:
 def test_lint_extern_declarations_flags_conflicts(tmp_path: Path) -> None:
     from snail.match import ReferenceSymbol, ReferenceSymbolManifest, lint_extern_declarations
 
-    match_root = tmp_path / "match"
-    include_dir = match_root / "include"
+    match_root = tmp_path / "tools" / "match"
+    include_dir = include_root(match_root)
     include_dir.mkdir(parents=True)
     (include_dir / "a.h").write_text(
         "extern char* g_base; // data_4df904\n"
@@ -5291,7 +5292,7 @@ def test_lint_extern_declarations_flags_conflicts(tmp_path: Path) -> None:
 def test_lint_extern_declarations_flags_uncurated_alias(tmp_path: Path) -> None:
     from snail.match import ReferenceSymbolManifest, lint_extern_declarations
 
-    match_root = tmp_path / "match"
+    match_root = tmp_path / "tools" / "match"
     scratch = match_root / "scratches/one"
     scratch.mkdir(parents=True)
     (scratch / "scratch.cpp").write_text("extern float g_scales[]; // data_7770e8\n")
@@ -5355,11 +5356,11 @@ def test_scratch_headers_resolve_case_insensitively_and_follow_cflags(
 
     from snail.match import ScratchConfig, _scratch_include_headers
 
-    match_root = tmp_path / "match"
+    match_root = tmp_path / "tools" / "match"
     compiler_include = match_root / "compilers/msvc6.5/Include"
     extra = tmp_path / "extra"
     scratch_dir = match_root / "scratches/foo"
-    for directory in (compiler_include, extra, scratch_dir, match_root / "include"):
+    for directory in (compiler_include, extra, scratch_dir, include_root(match_root)):
         directory.mkdir(parents=True)
     stdio = compiler_include / "STDIO.H"
     stdio.write_text("struct FILE;\n")
@@ -5430,12 +5431,12 @@ def test_build_key_tracks_cl_option_environment(
 def test_stand_in_context_headers_are_reported(tmp_path: Path) -> None:
     from snail.match import ScratchConfig, scratch_stand_in_headers
 
-    match_root = tmp_path / "match"
+    match_root = tmp_path / "tools" / "match"
     scratch = match_root / "scratches/foo"
     scratch.mkdir(parents=True)
-    (match_root / "include").mkdir()
-    (match_root / "include/real.h").write_text("struct Real {};\n")
-    (match_root / "include/padding.h").write_text("// STAND-IN, not recovered source.\nenum Pad { a };\n")
+    include_root(match_root).mkdir(parents=True)
+    (include_root(match_root) / "real.h").write_text("struct Real {};\n")
+    (include_root(match_root) / "padding.h").write_text("// STAND-IN, not recovered source.\nenum Pad { a };\n")
     (scratch / "scratch.cpp").write_text('#include "real.h"\n#include "padding.h"\n')
     config = ScratchConfig(scratch, "foo", "msvc6.5", "/O2 /G5 /W3", None, None)
     assert scratch_stand_in_headers(config, match_root) == ("padding.h",)
@@ -5449,13 +5450,13 @@ def test_scratch_source_points_into_recovered_tree(tmp_path: Path) -> None:
         scratch_source_path,
     )
 
-    match_root = tmp_path / "match"
+    match_root = tmp_path / "tools" / "match"
     scratch = match_root / "scratches" / "foo"
     scratch.mkdir(parents=True)
     recovered = tmp_path / "decomp" / "game" / "Unit" / "foo.cpp"
     recovered.parent.mkdir(parents=True)
     recovered.write_text("int foo() { return 1; }\n")
-    conf = "FUNCTION=foo\nSOURCE=../../../decomp/game/Unit/foo.cpp\n"
+    conf = "FUNCTION=foo\nSOURCE=../../../../decomp/game/Unit/foo.cpp\n"
     (scratch / "scratch.conf").write_text(conf)
 
     config = load_scratch_config(scratch)
@@ -5481,10 +5482,10 @@ def test_scratch_dependency_digest_ignores_source_location(tmp_path: Path) -> No
 
     digests = []
     for layout in ("local", "tree"):
-        match_root = tmp_path / layout / "match"
+        match_root = tmp_path / layout / "tools" / "match"
         scratch = match_root / "scratches" / "foo"
         scratch.mkdir(parents=True)
-        (match_root / "include").mkdir()
+        include_root(match_root).mkdir(parents=True)
         (match_root / "cl.sh").write_text("")
         compiler_bin = match_root / "compilers" / DEFAULT_SCRATCH_COMPILER / "Bin"
         compiler_bin.mkdir(parents=True)
@@ -5494,8 +5495,8 @@ def test_scratch_dependency_digest_ignores_source_location(tmp_path: Path) -> No
             (scratch / "scratch.conf").write_text("FUNCTION=foo\n")
         else:
             source = tmp_path / layout / "decomp" / "foo.cpp"
-            source.parent.mkdir()
+            source.parent.mkdir(exist_ok=True)
             source.write_text("int foo() { return 1; }\n")
-            (scratch / "scratch.conf").write_text("FUNCTION=foo\nSOURCE=../../../decomp/foo.cpp\n")
+            (scratch / "scratch.conf").write_text("FUNCTION=foo\nSOURCE=../../../../decomp/foo.cpp\n")
         digests.append(scratch_dependency_sha256(load_scratch_config(scratch), match_root))
     assert digests[0] == digests[1]

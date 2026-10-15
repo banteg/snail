@@ -23,7 +23,6 @@ from .port import recovered_sources
 SCRIPT = Path("tools/frida/snailmail-lockstep.js")
 FUNCTIONS = Path("analysis/symbols/gameplay-functions.json")
 REFERENCES = Path("analysis/symbols/gameplay-references.json")
-INCLUDE = Path("tools/match/include")
 RUNNER = Path("port/shell/run.mjs")
 BLOCK = re.compile(r"(// @layout-begin[^\n]*\n).*?(\n// @layout-end)", re.DOTALL)
 
@@ -116,10 +115,10 @@ def layout_offsets(root: Path, expressions: tuple[tuple[str, str], ...], *, port
     the Windows process; with `port`, in the layout the port compiles (its
     patches enlarge runtime arrays).
     """
-    include = root / INCLUDE
+    include = root / port_patch.INCLUDE
     if port:
         port_patch.write(root, recovered_sources(root))
-        include = root / port_patch.PATCHED / INCLUDE
+        include = root / port_patch.PATCHED / port_patch.INCLUDE
     with tempfile.TemporaryDirectory(prefix="snail-offsets-") as temp:
         source = Path(temp) / "offsets.cpp"
         lines = ["#include <stddef.h>", "#include <stdio.h>", '#include "game_root.h"', "int main() {"]

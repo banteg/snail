@@ -438,10 +438,10 @@ def test_mobile_splash_lifecycle_recovers_authored_owner() -> None:
     assert "aliases" not in references_by_name["g_player_squidge_offset"]
 
     splash_header = (
-        repo_root / "tools/match/include/thanks_screen.h"
+        repo_root / "decomp/include/thanks_screen.h"
     ).read_text(encoding="utf-8")
     subgame_header = (
-        repo_root / "tools/match/include/subgame_runtime.h"
+        repo_root / "decomp/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
     analysis_headers = [
         (repo_root / "analysis/headers/bn_subgame_runtime_types.h").read_text(
@@ -553,7 +553,7 @@ def test_mobile_track_pipeline_recovers_authored_windows_members() -> None:
         ),
     )
     matcher_header = (
-        repo_root / "tools/match/include/subgame_runtime.h"
+        repo_root / "decomp/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
 
     for windows_name, authored_name, symbol, has_ios_body in expected_members:
@@ -667,7 +667,7 @@ def test_mobile_subgame_lifecycle_recovers_authored_windows_members() -> None:
         for entry in functions["functions"]
     }
     matcher_header = (
-        repo_root / "tools/match/include/subgame_runtime.h"
+        repo_root / "decomp/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
     expected_members = (
         (
@@ -801,7 +801,7 @@ def test_mobile_subgame_factories_recover_crsubgoldy_surface() -> None:
         entry["address"]: entry for entry in references["symbols"]
     }
     matcher_header = (
-        repo_root / "tools/match/include/subgame_runtime.h"
+        repo_root / "decomp/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
     expected_factories = (
         (
@@ -933,7 +933,7 @@ def test_mobile_subgame_utilities_recover_authored_surface() -> None:
         for entry in references["symbols"]
     }
     subgame_header = (
-        repo_root / "tools/match/include/subgame_runtime.h"
+        repo_root / "decomp/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
     expected_methods = (
         (
@@ -1086,7 +1086,7 @@ def test_mobile_subloc_methods_recover_authored_surface() -> None:
         for entry in references["symbols"]
     }
     subloc_header = (
-        repo_root / "tools/match/include/track_attachment_types.h"
+        repo_root / "decomp/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
     expected_methods = (
         (
@@ -1207,7 +1207,7 @@ def test_mobile_tcolour_methods_recover_authored_surface() -> None:
         for entry in references["symbols"]
     }
     colour_header = (
-        repo_root / "tools/match/include/sprite.h"
+        repo_root / "decomp/include/sprite.h"
     ).read_text(encoding="utf-8")
     expected_methods = (
         (
@@ -1358,10 +1358,10 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
         for entry in references["symbols"]
     }
     object_header = (
-        repo_root / "tools/match/include/object_render_types.h"
+        repo_root / "decomp/include/object_render_types.h"
     ).read_text(encoding="utf-8")
     object_fwd = (
-        repo_root / "tools/match/include/object_fwd.h"
+        repo_root / "decomp/include/object_fwd.h"
     ).read_text(encoding="utf-8")
 
     assert "struct cRObject {" in object_header
@@ -1689,7 +1689,7 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
         "vapour.h",
     ):
         header = (
-            repo_root / "tools/match/include" / header_name
+            repo_root / "decomp/include" / header_name
         ).read_text(encoding="utf-8")
         assert '#include "object_fwd.h"' in header
         assert "struct Object;" not in header
@@ -1710,7 +1710,7 @@ def test_mobile_crdistort_recovers_primary_owner_and_methods() -> None:
         for entry in references["symbols"]
     }
     object_header = (
-        repo_root / "tools/match/include/object_render_types.h"
+        repo_root / "decomp/include/object_render_types.h"
     ).read_text(encoding="utf-8")
 
     assert "struct cRDistort {" in object_header
@@ -1787,10 +1787,10 @@ def test_mobile_crduplicatevertices_recovers_primary_owner_and_methods() -> None
         for entry in references["symbols"]
     }
     duplicate_header = (
-        repo_root / "tools/match/include/duplicate_vertices.h"
+        repo_root / "decomp/include/duplicate_vertices.h"
     ).read_text(encoding="utf-8")
     directx_header = (
-        repo_root / "tools/match/include/directx_loader.h"
+        repo_root / "decomp/include/directx_loader.h"
     ).read_text(encoding="utf-8")
 
     assert "class cRDuplicateVertices {" in duplicate_header
@@ -1875,7 +1875,7 @@ def test_mobile_crdirectx_recovers_primary_owner_and_methods() -> None:
         )["symbols"]
     }
     header = (
-        repo_root / "tools/match/include/directx_loader.h"
+        repo_root / "decomp/include/directx_loader.h"
     ).read_text(encoding="utf-8")
 
     expected_methods = {
@@ -1971,7 +1971,7 @@ def test_mobile_tvector_methods_recover_authored_surface() -> None:
         for entry in references["symbols"]
     }
     vector_header = (
-        repo_root / "tools/match/include/vector3.h"
+        repo_root / "decomp/include/vector3.h"
     ).read_text(encoding="utf-8")
     expected_methods = (
         (
@@ -2131,10 +2131,10 @@ def test_mobile_tmatrix_methods_recover_authored_surface() -> None:
         for entry in references["symbols"]
     }
     matrix_header = (
-        repo_root / "tools/match/include/transform_matrix.h"
+        repo_root / "decomp/include/transform_matrix.h"
     ).read_text(encoding="utf-8")
     matrix_fwd = (
-        repo_root / "tools/match/include/transform_matrix_fwd.h"
+        repo_root / "decomp/include/transform_matrix_fwd.h"
     ).read_text(encoding="utf-8")
     expected_methods = (
         (
@@ -2384,16 +2384,16 @@ def test_mobile_tquaternian_and_taxis_recover_authored_owners() -> None:
         for entry in references["symbols"]
     }
     quaternion_header = (
-        repo_root / "tools/match/include/quaternion.h"
+        repo_root / "decomp/include/quaternion.h"
     ).read_text(encoding="utf-8")
     quaternion_fwd = (
-        repo_root / "tools/match/include/quaternion_fwd.h"
+        repo_root / "decomp/include/quaternion_fwd.h"
     ).read_text(encoding="utf-8")
     axis_header = (
-        repo_root / "tools/match/include/axis.h"
+        repo_root / "decomp/include/axis.h"
     ).read_text(encoding="utf-8")
     axis_fwd = (
-        repo_root / "tools/match/include/axis_fwd.h"
+        repo_root / "decomp/include/axis_fwd.h"
     ).read_text(encoding="utf-8")
 
     assert "struct tQuaternian {" in quaternion_header
@@ -2497,7 +2497,7 @@ def test_mobile_subgoldy_methods_recover_authored_surface() -> None:
         for entry in references["symbols"]
     }
     player_header = (
-        repo_root / "tools/match/include/player.h"
+        repo_root / "decomp/include/player.h"
     ).read_text(encoding="utf-8")
     expected_methods = (
         (
@@ -2624,7 +2624,7 @@ def test_mobile_cutscene_and_subhover_recover_authored_owners() -> None:
     references_by_name = {
         entry["name"]: entry for entry in references["symbols"]
     }
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     cutscene_header = (include_root / "cut_scene.h").read_text(encoding="utf-8")
     subhover_header = (include_root / "sub_hover.h").read_text(encoding="utf-8")
@@ -2738,7 +2738,7 @@ def test_mobile_tip_family_recovers_authored_owners() -> None:
     references_by_name = {
         entry["name"]: entry for entry in references["symbols"]
     }
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     header = (include_root / "tip_manager.h").read_text(encoding="utf-8")
 
@@ -2874,7 +2874,7 @@ def test_mobile_gameplay_controllers_recover_authored_owners() -> None:
     references_by_name = {
         entry["name"]: entry for entry in references["symbols"]
     }
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     invincible_header = (include_root / "invincible.h").read_text(
         encoding="utf-8"
@@ -3098,7 +3098,7 @@ def test_mobile_ring_and_health_recover_authored_owners() -> None:
     references_by_name = {
         entry["name"]: entry for entry in references["symbols"]
     }
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     health_header = (include_root / "track_health_pickup.h").read_text(
         encoding="utf-8"
@@ -3252,7 +3252,7 @@ def test_mobile_sub_lazer_and_salt_recover_authored_owners() -> None:
     references_by_name = {
         entry["name"]: entry for entry in references["symbols"]
     }
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     sub_lazer_header = (include_root / "sub_lazer_types.h").read_text(
         encoding="utf-8"
@@ -3425,7 +3425,7 @@ def test_mobile_slug_family_recovers_authored_owners() -> None:
     references_by_name = {
         entry["name"]: entry for entry in references["symbols"]
     }
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     slug_header = (include_root / "slug_hazard_types.h").read_text(
         encoding="utf-8"
@@ -3581,7 +3581,7 @@ def test_mobile_click_start_recovers_authored_owner() -> None:
     references_by_name = {
         entry["name"]: entry for entry in references["symbols"]
     }
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     header = (include_root / "click_start.h").read_text(encoding="utf-8")
     player_header = (include_root / "player.h").read_text(encoding="utf-8")
@@ -3661,7 +3661,7 @@ def test_mobile_subgarbage_recovers_authored_owner() -> None:
     references_by_name = {
         entry["name"]: entry for entry in references["symbols"]
     }
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     header = (include_root / "garbage_hazard_slot.h").read_text(
         encoding="utf-8"
@@ -3752,7 +3752,7 @@ def test_mobile_parcel_family_recovers_authored_owners() -> None:
     references_by_name = {
         entry["name"]: entry for entry in references["symbols"]
     }
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     header = (include_root / "track_parcel_runtime.h").read_text(
         encoding="utf-8"
@@ -3865,7 +3865,7 @@ def test_mobile_vapour_pause_and_speedup_recover_authored_owners() -> None:
     references_by_name = {
         entry["name"]: entry for entry in references["symbols"]
     }
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
 
     vapour_header = (include_root / "vapour.h").read_text(encoding="utf-8")
@@ -4037,7 +4037,7 @@ def test_mobile_frontend_jetpack_and_row_owners_stay_authored() -> None:
     references_by_name = {
         entry["name"]: entry for entry in references["symbols"]
     }
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
 
     fade_header = (include_root / "frontend_fade.h").read_text(encoding="utf-8")
@@ -4238,7 +4238,7 @@ def test_mobile_fringe_logo_and_galaxy_recover_authored_owners() -> None:
     references_by_name = {
         entry["name"]: entry for entry in references["symbols"]
     }
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
 
     fringe_header = (include_root / "fringe_object.h").read_text(
@@ -4479,7 +4479,7 @@ def test_mobile_voice_star_and_landscape_recover_authored_owners() -> None:
     references_by_name = {
         entry["name"]: entry for entry in references["symbols"]
     }
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
 
     voice_header = (include_root / "voice_manager.h").read_text(encoding="utf-8")
@@ -4682,7 +4682,7 @@ def test_mobile_warning_recovers_authored_owner() -> None:
         entry["name"]: entry for entry in references["symbols"]
     }
     scratch_root = repo_root / "tools/match/scratches"
-    warning_header = (repo_root / "tools/match/include/warning.h").read_text(
+    warning_header = (repo_root / "decomp/include/warning.h").read_text(
         encoding="utf-8"
     )
 
@@ -4708,7 +4708,7 @@ def test_mobile_warning_recovers_authored_owner() -> None:
     ):
         assert retired_method not in warning_header
 
-    player_header = (repo_root / "tools/match/include/player.h").read_text(
+    player_header = (repo_root / "decomp/include/player.h").read_text(
         encoding="utf-8"
     )
     assert "cRWarning warning;" in player_header
@@ -4809,7 +4809,7 @@ def test_mobile_high_score_recovers_authored_lifecycle() -> None:
         entry["name"]: entry for entry in references["symbols"]
     }
     scratch_root = repo_root / "tools/match/scratches"
-    high_score_header = (repo_root / "tools/match/include/high_score.h").read_text(
+    high_score_header = (repo_root / "decomp/include/high_score.h").read_text(
         encoding="utf-8"
     )
 
@@ -4831,7 +4831,7 @@ def test_mobile_high_score_recovers_authored_lifecycle() -> None:
     ):
         assert retired_method not in high_score_header
 
-    game_root_header = (repo_root / "tools/match/include/game_root.h").read_text(
+    game_root_header = (repo_root / "decomp/include/game_root.h").read_text(
         encoding="utf-8"
     )
     assert "cRHighScore high_score;" in game_root_header
@@ -4968,16 +4968,16 @@ def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -
     )
 
     sprite_header = (
-        repo_root / "tools/match/include/sprite.h"
+        repo_root / "decomp/include/sprite.h"
     ).read_text(encoding="utf-8")
     sprite_forward_header = (
-        repo_root / "tools/match/include/sprite_fwd.h"
+        repo_root / "decomp/include/sprite_fwd.h"
     ).read_text(encoding="utf-8")
     player_header = (
-        repo_root / "tools/match/include/player.h"
+        repo_root / "decomp/include/player.h"
     ).read_text(encoding="utf-8")
     player_forward_header = (
-        repo_root / "tools/match/include/player_fwd.h"
+        repo_root / "decomp/include/player_fwd.h"
     ).read_text(encoding="utf-8")
     assert '#include "sprite_fwd.h"' in sprite_header
     assert "class cRSprite {" in sprite_header
@@ -5035,7 +5035,7 @@ def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -
     assert "class cRSubGoldy : public RenderableBod" in player_header
     assert "typedef cRSubGoldy Player;" in player_forward_header
     assert "class Player;" not in player_header
-    matcher_include_root = repo_root / "tools/match/include"
+    matcher_include_root = repo_root / "decomp/include"
     for header_path in matcher_include_root.glob("*.h"):
         header_text = header_path.read_text(encoding="utf-8")
         if header_path.name != "player_fwd.h":
@@ -5163,7 +5163,7 @@ def test_mobile_sprite_manager_recovers_authored_methods_and_contracts() -> None
         assert f"SYMBOL={object_symbol}\n" in scratch_config
 
     sprite_header = (
-        repo_root / "tools/match/include/sprite.h"
+        repo_root / "decomp/include/sprite.h"
     ).read_text(encoding="utf-8")
     expected_declarations = (
         "void Load(char* texture_path, int texture_id, int flags);",
@@ -5253,10 +5253,10 @@ def test_mobile_animation_keyframes_recover_crbodpos_tail_lane() -> None:
         assert "this_00 = this_00 + 0x74" in loader
 
     bod_header = (
-        repo_root / "tools/match/include/bod_types.h"
+        repo_root / "decomp/include/bod_types.h"
     ).read_text(encoding="utf-8")
     animation_header = (
-        repo_root / "tools/match/include/object_animation_types.h"
+        repo_root / "decomp/include/object_animation_types.h"
     ).read_text(encoding="utf-8")
     analysis_header = (
         repo_root / "analysis/headers/path_template_types.h"
@@ -5300,10 +5300,10 @@ def test_mobile_crbod_owners_use_authored_constructors() -> None:
         assert entry["source_object"] == "RObject.o"
 
     bod_header = (
-        repo_root / "tools/match/include/bod_types.h"
+        repo_root / "decomp/include/bod_types.h"
     ).read_text(encoding="utf-8")
     bod_forward_header = (
-        repo_root / "tools/match/include/bod_fwd.h"
+        repo_root / "decomp/include/bod_fwd.h"
     ).read_text(encoding="utf-8")
     assert "class cRBod : public BodNode" in bod_header
     assert "class cRBodPos : public cRBod" in bod_header
@@ -5434,9 +5434,9 @@ def test_mobile_crmouse_methods_use_authored_primary_owner() -> None:
             assert "*this" in body
 
     header = (
-        repo_root / "tools/match/include/mouse_cursor_state.h"
+        repo_root / "decomp/include/mouse_cursor_state.h"
     ).read_text(encoding="utf-8")
-    game_root = (repo_root / "tools/match/include/game_root.h").read_text(
+    game_root = (repo_root / "decomp/include/game_root.h").read_text(
         encoding="utf-8"
     )
     assert "class cRMouse" in header
@@ -5517,7 +5517,7 @@ def test_mobile_sprite_renderer_recovers_gl_owner_and_void_boundaries() -> None:
         assert alias in functions_by_name[windows_name]["aliases"]
 
     border_fwd = (
-        repo_root / "tools/match/include/border_fwd.h"
+        repo_root / "decomp/include/border_fwd.h"
     ).read_text(encoding="utf-8")
     assert "typedef cRBorder FrontendWidget;" in border_fwd
 
@@ -5595,10 +5595,10 @@ def test_mobile_border_exact_methods_use_authored_names() -> None:
     assert f"SYMBOL={perform_object_symbol}\n" in perform_config
 
     frontend_header = (
-        repo_root / "tools/match/include/frontend_widget.h"
+        repo_root / "decomp/include/frontend_widget.h"
     ).read_text(encoding="utf-8")
     stack_header = (
-        repo_root / "tools/match/include/border_batch_state.h"
+        repo_root / "decomp/include/border_batch_state.h"
     ).read_text(encoding="utf-8")
     assert "void Init(int flags, int sprite, float x, float y," in frontend_header
     assert "void Perform(int mode); // @ 0x404360" in stack_header
@@ -5669,7 +5669,7 @@ def test_mobile_delay_click_recovers_border_manager_owner() -> None:
         / "queue_frontend_widget_flag_after_delay/scratch.conf"
     ).read_text(encoding="utf-8")
     header = (
-        repo_root / "tools/match/include/border_manager.h"
+        repo_root / "decomp/include/border_manager.h"
     ).read_text(encoding="utf-8")
     caller = (
         scratch_source_path(scratch_root / "update_frontend_widget_interaction")
@@ -5956,7 +5956,7 @@ def test_mobile_rmath_family_recovers_authored_names() -> None:
         assert alias in notes
 
     random_header = (
-        repo_root / "tools/match/include/rmath_random.h"
+        repo_root / "decomp/include/rmath_random.h"
     ).read_text(encoding="utf-8")
     declarations = {
         "short __cdecl MathType32to16(float value, float scale);",
@@ -5993,7 +5993,7 @@ def test_mobile_rmath_family_recovers_authored_names() -> None:
     }
     matcher_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for root in (repo_root / "tools/match/include", scratch_root)
+        for root in (repo_root / "decomp/include", scratch_root)
         for pattern in ("*.h", "*.cpp")
         for path in root.rglob(pattern)
         if "build" not in path.parts
@@ -6271,7 +6271,7 @@ def test_mobile_font_core_recovers_authored_windows_surface() -> None:
         assert authored_name in notes
 
     font_header = (
-        repo_root / "tools/match/include/font_system.h"
+        repo_root / "decomp/include/font_system.h"
     ).read_text(encoding="utf-8")
     for declaration in (
         "void FontInit();",
@@ -6293,7 +6293,7 @@ def test_mobile_font_core_recovers_authored_windows_surface() -> None:
     matcher_sources = "\n".join(
         path.read_text(encoding="utf-8")
         for root in (
-            repo_root / "tools/match/include",
+            repo_root / "decomp/include",
             repo_root / "tools/match/scratches",
         )
         for pattern in ("*.h", "*.cpp")
@@ -6416,7 +6416,7 @@ def test_mobile_rtext_family_recovers_rshell_ownership_and_real_abis() -> None:
     )
 
     rtext_header = (
-        repo_root / "tools/match/include/rtext.h"
+        repo_root / "decomp/include/rtext.h"
     ).read_text(encoding="utf-8")
     for declaration in (
         "void __cdecl RTextCopy(char* destination, char* source);",
@@ -6739,7 +6739,7 @@ def test_mobile_rstring_family_recovers_strict_comparator_and_windows_abi() -> N
     assert "inferred bool ABI changes" in comparator_description
 
     rstring_header = (
-        repo_root / "tools/match/include/rstring.h"
+        repo_root / "decomp/include/rstring.h"
     ).read_text(encoding="utf-8")
     for declaration in (
         "char __cdecl RstrASC(char value);",
@@ -6807,7 +6807,7 @@ def test_mobile_rstring_family_recovers_strict_comparator_and_windows_abi() -> N
         assert f"{stale_name}(" not in rstring_header
         assert f"{stale_name}(" not in scratch_sources
     assert '#include "rstring.h"' in (
-        repo_root / "tools/match/include/high_score.h"
+        repo_root / "decomp/include/high_score.h"
     ).read_text(encoding="utf-8")
     assert "bool transcription changes those writes to AL" in (
         repo_root
@@ -6898,7 +6898,7 @@ def test_mobile_bod_list_add_recovers_authored_template_owner() -> None:
     )
     assert "cLinkedList_cRBod_Add" in function["aliases"]
 
-    header = (repo_root / "tools/match/include/bod_list.h").read_text(
+    header = (repo_root / "decomp/include/bod_list.h").read_text(
         encoding="utf-8"
     )
     notes = (
@@ -6951,7 +6951,7 @@ def test_mobile_game_level_init_recovers_authored_virtual_owner() -> None:
     assert "g_root_runtime_callback_table" in callback_table["aliases"]
     assert callback_table["kind"] == "vtable"
 
-    header = (repo_root / "tools/match/include/game_root.h").read_text(
+    header = (repo_root / "decomp/include/game_root.h").read_text(
         encoding="utf-8"
     )
     scratch = (
@@ -7553,7 +7553,7 @@ def test_mobile_register_run_recovers_config_file_family() -> None:
             assert entry["ios_body_count"] == 1
 
     runtime_header = (
-        repo_root / "tools/match/include/runtime_config.h"
+        repo_root / "decomp/include/runtime_config.h"
     ).read_text(encoding="utf-8")
     assert "char registration_key[0x11]" in runtime_header
     assert "unsigned char registration_key_valid" in runtime_header
@@ -7865,7 +7865,7 @@ def test_mobile_falling_init_recovers_windows_carryover_method() -> None:
     )
     scratch = (scratch_source_path(scratch_root)).read_text(encoding="utf-8")
     config = (scratch_root / "scratch.conf").read_text(encoding="utf-8")
-    header = (repo_root / "tools/match/include/player.h").read_text(
+    header = (repo_root / "decomp/include/player.h").read_text(
         encoding="utf-8"
     )
     assert "void cRSubGoldy::FallingInit()" in scratch
@@ -8101,7 +8101,7 @@ def test_enemy_manager_uses_authored_method_surface() -> None:
         repo_root / "analysis/symbols/gameplay-references.json"
     ).read_text(encoding="utf-8")
     header = (
-        repo_root / "tools/match/include/contact_target.h"
+        repo_root / "decomp/include/contact_target.h"
     ).read_text(encoding="utf-8")
     expected = {
         "initialize_enemy_manager": {
@@ -8372,7 +8372,7 @@ def test_android_global_constructor_recovers_font_initializer_unit() -> None:
 
 def test_subgame_leaf_types_use_authored_primary_owners() -> None:
     repo_root = Path(__file__).parents[1]
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     owners = {
         "anim_manager.h": (
@@ -8492,7 +8492,7 @@ def test_nuke_lifecycle_uses_authored_method_surface() -> None:
     references = (
         repo_root / "analysis/symbols/gameplay-references.json"
     ).read_text(encoding="utf-8")
-    header = (repo_root / "tools/match/include/nuke.h").read_text(
+    header = (repo_root / "decomp/include/nuke.h").read_text(
         encoding="utf-8"
     )
     expected = {
@@ -8575,7 +8575,7 @@ def test_squidge_uses_authored_method_surface() -> None:
     references = (
         repo_root / "analysis/symbols/gameplay-references.json"
     ).read_text(encoding="utf-8")
-    header = (repo_root / "tools/match/include/squidge.h").read_text(
+    header = (repo_root / "decomp/include/squidge.h").read_text(
         encoding="utf-8"
     )
     expected = {
@@ -8666,7 +8666,7 @@ def test_snail_skin_uses_authored_method_surface() -> None:
     references = (
         repo_root / "analysis/symbols/gameplay-references.json"
     ).read_text(encoding="utf-8")
-    header = (repo_root / "tools/match/include/snail_skin.h").read_text(
+    header = (repo_root / "decomp/include/snail_skin.h").read_text(
         encoding="utf-8"
     )
     expected = {
@@ -8752,7 +8752,7 @@ def test_anim_manager_uses_authored_method_surface() -> None:
     references = (
         repo_root / "analysis/symbols/gameplay-references.json"
     ).read_text(encoding="utf-8")
-    header = (repo_root / "tools/match/include/anim_manager.h").read_text(
+    header = (repo_root / "decomp/include/anim_manager.h").read_text(
         encoding="utf-8"
     )
     expected = {
@@ -8822,7 +8822,7 @@ def test_times_up_uses_authored_method_surface() -> None:
     references = (
         repo_root / "analysis/symbols/gameplay-references.json"
     ).read_text(encoding="utf-8")
-    header = (repo_root / "tools/match/include/times_up.h").read_text(
+    header = (repo_root / "decomp/include/times_up.h").read_text(
         encoding="utf-8"
     )
     expected = {
@@ -8919,7 +8919,7 @@ def test_progress_bar_uses_authored_ai_surface() -> None:
     config = (scratch_root / "update_progress_bar/scratch.conf").read_text(
         encoding="utf-8"
     )
-    header = (repo_root / "tools/match/include/progress_bar.h").read_text(
+    header = (repo_root / "decomp/include/progress_bar.h").read_text(
         encoding="utf-8"
     )
     references = (
@@ -8972,7 +8972,7 @@ def test_banner_uses_authored_ai_surface() -> None:
     config = (scratch_root / "update_banner/scratch.conf").read_text(
         encoding="utf-8"
     )
-    header = (repo_root / "tools/match/include/banner.h").read_text(
+    header = (repo_root / "decomp/include/banner.h").read_text(
         encoding="utf-8"
     )
     references = (
@@ -9024,7 +9024,7 @@ def test_barrier_uses_authored_ai_surface() -> None:
     config = (scratch_root / "update_barrier_ai/scratch.conf").read_text(
         encoding="utf-8"
     )
-    header = (repo_root / "tools/match/include/barrier_actor.h").read_text(
+    header = (repo_root / "decomp/include/barrier_actor.h").read_text(
         encoding="utf-8"
     )
     references = (
@@ -9068,7 +9068,7 @@ def test_exit_uses_authored_lifecycle_surface() -> None:
     references = (
         repo_root / "analysis/symbols/gameplay-references.json"
     ).read_text(encoding="utf-8")
-    header = (repo_root / "tools/match/include/exit.h").read_text(
+    header = (repo_root / "decomp/include/exit.h").read_text(
         encoding="utf-8"
     )
     expected = {
@@ -9159,7 +9159,7 @@ def test_help_uses_authored_lifecycle_surface() -> None:
     references = (
         repo_root / "analysis/symbols/gameplay-references.json"
     ).read_text(encoding="utf-8")
-    header = (repo_root / "tools/match/include/help.h").read_text(
+    header = (repo_root / "decomp/include/help.h").read_text(
         encoding="utf-8"
     )
     expected = {
@@ -9248,7 +9248,7 @@ def test_intro_uses_authored_lifecycle_surface() -> None:
     references = (
         repo_root / "analysis/symbols/gameplay-references.json"
     ).read_text(encoding="utf-8")
-    header = (repo_root / "tools/match/include/new_game_menu.h").read_text(
+    header = (repo_root / "decomp/include/new_game_menu.h").read_text(
         encoding="utf-8"
     )
     expected = {
@@ -9341,7 +9341,7 @@ def test_main_menu_uses_authored_lifecycle_surface() -> None:
     references = (
         repo_root / "analysis/symbols/gameplay-references.json"
     ).read_text(encoding="utf-8")
-    header = (repo_root / "tools/match/include/main_menu.h").read_text(
+    header = (repo_root / "decomp/include/main_menu.h").read_text(
         encoding="utf-8"
     )
     expected = {
@@ -9431,7 +9431,7 @@ def test_cheat_uses_authored_method_surface() -> None:
     references = (
         repo_root / "analysis/symbols/gameplay-references.json"
     ).read_text(encoding="utf-8")
-    header = (repo_root / "tools/match/include/cheat_state.h").read_text(
+    header = (repo_root / "decomp/include/cheat_state.h").read_text(
         encoding="utf-8"
     )
     expected = {
@@ -9520,7 +9520,7 @@ def test_gui_uses_authored_lifecycle_surface() -> None:
     references = (
         repo_root / "analysis/symbols/gameplay-references.json"
     ).read_text(encoding="utf-8")
-    header = (repo_root / "tools/match/include/gui.h").read_text(
+    header = (repo_root / "decomp/include/gui.h").read_text(
         encoding="utf-8"
     )
     expected = {
@@ -9605,7 +9605,7 @@ def test_options_uses_authored_lifecycle_surface() -> None:
     references = (
         repo_root / "analysis/symbols/gameplay-references.json"
     ).read_text(encoding="utf-8")
-    header = (repo_root / "tools/match/include/options.h").read_text(
+    header = (repo_root / "decomp/include/options.h").read_text(
         encoding="utf-8"
     )
     expected = {
@@ -9824,7 +9824,7 @@ def test_high_score_storage_uses_authored_method_surface() -> None:
     # Only the owner of the harness name is pinned; no authored name is claimed.
     assert functions["load_high_scores_from_file"]["aliases"] == ["cRSubHighScore_load_high_scores_from_file"]
     loader_header = (
-        repo_root / "tools/match/include/sub_high_score.h"
+        repo_root / "decomp/include/sub_high_score.h"
     ).read_text(encoding="utf-8")
     assert "void load_high_scores_from_file(char* file_name);" in loader_header
     loader_config = (
@@ -9862,7 +9862,7 @@ def test_high_score_storage_uses_authored_method_surface() -> None:
 
 def test_screen_controller_types_use_authored_primary_owners() -> None:
     repo_root = Path(__file__).parents[1]
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     owners = {
         "help.h": (
@@ -10108,7 +10108,7 @@ def test_screen_controller_types_use_authored_primary_owners() -> None:
 
 def test_core_gameplay_types_use_authored_primary_owners() -> None:
     repo_root = Path(__file__).parents[1]
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     owners = {
         "backdrop.h": (
@@ -10369,10 +10369,10 @@ def test_mobile_subtracks_import_recovers_authored_method_and_type() -> None:
         encoding="utf-8"
     )
     segment_header = (
-        repo_root / "tools/match/include/segment_catalog_types.h"
+        repo_root / "decomp/include/segment_catalog_types.h"
     ).read_text(encoding="utf-8")
     tracks_header = (
-        repo_root / "tools/match/include/sub_tracks.h"
+        repo_root / "decomp/include/sub_tracks.h"
     ).read_text(encoding="utf-8")
     assert "struct cRSubSegment {" in segment_header
     assert "typedef cRSubSegment SubSegment;" in segment_header
@@ -10463,10 +10463,10 @@ def test_mobile_subtrack_owner_surface_is_authored_consistently() -> None:
         assert mobile.split("(", 1)[0] in notes
 
     segment_header = (
-        repo_root / "tools/match/include/segment_catalog_types.h"
+        repo_root / "decomp/include/segment_catalog_types.h"
     ).read_text(encoding="utf-8")
     tracks_header = (
-        repo_root / "tools/match/include/sub_tracks.h"
+        repo_root / "decomp/include/sub_tracks.h"
     ).read_text(encoding="utf-8")
     assert "struct cRSubSegmentRaw {" in segment_header
     assert "typedef cRSubSegmentRaw SubSegmentRaw;" in segment_header
@@ -10495,7 +10495,7 @@ def test_mobile_subtrack_owner_surface_is_authored_consistently() -> None:
     matcher_sources = "\n".join(
         path.read_text(encoding="utf-8")
         for path in [
-            *(repo_root / "tools/match/include").rglob("*.h"),
+            *(repo_root / "decomp/include").rglob("*.h"),
             *iter_scratch_sources(),
         ]
     )
@@ -10505,7 +10505,7 @@ def test_mobile_subtrack_owner_surface_is_authored_consistently() -> None:
 
 def test_border_presentation_types_use_authored_primary_owners() -> None:
     repo_root = Path(__file__).parents[1]
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     method_names = {
         "border_add_text_number": "AddTextNumber",
@@ -10929,7 +10929,7 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
 
 def test_snail_presentation_uses_authored_primary_owner() -> None:
     repo_root = Path(__file__).parents[1]
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
     entries = {
@@ -11074,7 +11074,7 @@ def test_snail_presentation_uses_authored_primary_owner() -> None:
 
 def test_game_root_uses_authored_primary_owner() -> None:
     repo_root = Path(__file__).parents[1]
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     header = (include_root / "game_root.h").read_text(encoding="utf-8")
 
@@ -11170,7 +11170,7 @@ def test_game_root_uses_authored_primary_owner() -> None:
 
 def test_root_presentation_types_use_authored_primary_owners() -> None:
     repo_root = Path(__file__).parents[1]
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     game_root = (include_root / "game_root.h").read_text(encoding="utf-8")
     viewport = (include_root / "viewport.h").read_text(encoding="utf-8")
@@ -11280,7 +11280,7 @@ def test_root_presentation_types_use_authored_primary_owners() -> None:
 
 def test_root_input_types_use_authored_primary_owners() -> None:
     repo_root = Path(__file__).parents[1]
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     input_header = (include_root / "input_state.h").read_text(
         encoding="utf-8"
@@ -11387,7 +11387,7 @@ def test_root_input_types_use_authored_primary_owners() -> None:
 
 def test_sound_facade_uses_authored_primary_owner() -> None:
     repo_root = Path(__file__).parents[1]
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
     entries = {
@@ -11575,7 +11575,7 @@ def test_mobile_sound_loop_methods_recover_authored_surface() -> None:
 
 def test_input_ok_overlay_uses_authored_primary_owner() -> None:
     repo_root = Path(__file__).parents[1]
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     header = (include_root / "input_ok_state.h").read_text(encoding="utf-8")
     forward = (include_root / "input_ok_fwd.h").read_text(encoding="utf-8")
@@ -11659,7 +11659,7 @@ def test_input_ok_overlay_uses_authored_primary_owner() -> None:
 
 def test_cameraman_uses_authored_primary_owner() -> None:
     repo_root = Path(__file__).parents[1]
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     header = (include_root / "cameraman.h").read_text(encoding="utf-8")
     player = (include_root / "player.h").read_text(encoding="utf-8")
@@ -11758,7 +11758,7 @@ def test_cameraman_uses_authored_primary_owner() -> None:
 
 def test_golb_projectile_types_use_authored_primary_owners() -> None:
     repo_root = Path(__file__).parents[1]
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     header = (include_root / "golb.h").read_text(encoding="utf-8")
     player = (include_root / "player.h").read_text(encoding="utf-8")
@@ -11900,7 +11900,7 @@ def test_mobile_golb_kill_recovers_authored_method() -> None:
     config = (scratch_root / "kill_golb/scratch.conf").read_text(
         encoding="utf-8"
     )
-    header = (repo_root / "tools/match/include/golb.h").read_text(
+    header = (repo_root / "decomp/include/golb.h").read_text(
         encoding="utf-8"
     )
     assert "void cRSubGolb::Kill()" in source
@@ -11922,7 +11922,7 @@ def test_mobile_golb_kill_recovers_authored_method() -> None:
 
 def test_tutorial_uses_authored_primary_owner() -> None:
     repo_root = Path(__file__).parents[1]
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     header = (include_root / "tutorial.h").read_text(encoding="utf-8")
     subgame = (include_root / "subgame_runtime.h").read_text(
@@ -12009,7 +12009,7 @@ def test_tutorial_uses_authored_primary_owner() -> None:
 
 def test_timing_types_use_authored_primary_owners() -> None:
     repo_root = Path(__file__).parents[1]
-    include_root = repo_root / "tools/match/include"
+    include_root = repo_root / "decomp/include"
     scratch_root = repo_root / "tools/match/scratches"
     time_header = (include_root / "game_time.h").read_text(encoding="utf-8")
     trial_header = (include_root / "time_trial.h").read_text(encoding="utf-8")
@@ -12165,10 +12165,10 @@ def test_subgame_helper_methods_use_authored_names() -> None:
         assert f"void {owner}::{method}(" in source
         assert f"SYMBOL={object_symbol}\n" in config
 
-    player = (repo_root / "tools/match/include/player.h").read_text(
+    player = (repo_root / "decomp/include/player.h").read_text(
         encoding="utf-8"
     )
-    weapon = (repo_root / "tools/match/include/weapon.h").read_text(
+    weapon = (repo_root / "decomp/include/weapon.h").read_text(
         encoding="utf-8"
     )
     assert "SetAnimation(int animation, bool immediate," in player
@@ -12553,7 +12553,7 @@ def test_mobile_objectproc_surface_is_authored_consistently() -> None:
     matcher_sources = "\n".join(
         path.read_text(encoding="utf-8")
         for path in [
-            *(repo_root / "tools/match/include").rglob("*.h"),
+            *(repo_root / "decomp/include").rglob("*.h"),
             *iter_scratch_sources(),
         ]
     )
@@ -12605,7 +12605,7 @@ def test_mobile_path_mirror_recovers_authored_method() -> None:
         encoding="utf-8"
     )
     header = (
-        repo_root / "tools/match/include/track_attachment_types.h"
+        repo_root / "decomp/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
     initializer = (
         scratch_source_path(scratch_root / "initialize_game_assets_and_world")
@@ -12690,7 +12690,7 @@ def test_mobile_path_queries_recover_authored_methods() -> None:
         assert f"SYMBOL={object_symbol}\n" in config
 
     header = (
-        repo_root / "tools/match/include/track_attachment_types.h"
+        repo_root / "decomp/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
     assert "void GetPos(" in header
     assert "bool SearchPos(" in header
@@ -12768,9 +12768,9 @@ def test_mobile_path_follow_initializers_recover_authored_methods() -> None:
         assert f"SYMBOL={object_symbol}\n" in config
 
     goldy_header = (
-        repo_root / "tools/match/include/track_attachment_types.h"
+        repo_root / "decomp/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
-    golb_header = (repo_root / "tools/match/include/golb.h").read_text(
+    golb_header = (repo_root / "decomp/include/golb.h").read_text(
         encoding="utf-8"
     )
     assert "tVector& world_position" in goldy_header
@@ -12852,9 +12852,9 @@ def test_mobile_path_follow_traversals_recover_authored_methods() -> None:
         assert f"SYMBOL={object_symbol}\n" in config
 
     goldy_header = (
-        repo_root / "tools/match/include/track_attachment_types.h"
+        repo_root / "decomp/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
-    golb_header = (repo_root / "tools/match/include/golb.h").read_text(
+    golb_header = (repo_root / "decomp/include/golb.h").read_text(
         encoding="utf-8"
     )
     assert "int Traverse(\n        float rate, tVector& out_position" in goldy_header
@@ -12948,7 +12948,7 @@ def test_mobile_path_lifecycle_recovers_authored_methods() -> None:
     assert "SYMBOL=?CalcLengthZ@cRPath@@QAIXXZ\n" in calc_config
 
     header = (
-        repo_root / "tools/match/include/track_attachment_types.h"
+        repo_root / "decomp/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
     assert "void GetNodes(); // @ 0x41b0a0" in header
     assert "void __fastcall CalcLengthZ(); // @ 0x42c600" in header
@@ -13045,10 +13045,10 @@ def test_mobile_face_heightmap_chain_recovers_authored_owner() -> None:
     assert "g_smtracks_callback_table" in callback_table["aliases"]
 
     matcher_header = (
-        repo_root / "tools/match/include/smtracks.h"
+        repo_root / "decomp/include/smtracks.h"
     ).read_text(encoding="utf-8")
     movie_header = (
-        repo_root / "tools/match/include/movie.h"
+        repo_root / "decomp/include/movie.h"
     ).read_text(encoding="utf-8")
     assert "class cRFace : public BodBase" in matcher_header
     assert "typedef cRFace Face;" in matcher_header

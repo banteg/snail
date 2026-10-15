@@ -4568,6 +4568,13 @@ def run_match_dump(
 
 
 DEFAULT_MATCH_ROOT = Path(__file__).resolve().parents[2] / "tools/match"
+
+
+def include_root(match_root: Path = DEFAULT_MATCH_ROOT) -> Path:
+    """Shared recovered headers: `decomp/include` in the matcher's repository."""
+    return match_root.parent.parent / "decomp/include"
+
+
 DEFAULT_SCRATCH_COMPILER = "msvc6.3"
 DEFAULT_SCRATCH_CFLAGS = "/O2 /G5 /W3"
 RECOVERY_VALUES = frozenset(("incomplete", "semantic-complete"))
@@ -5146,7 +5153,7 @@ class _ScratchIncludeResolver:
 
     def __init__(self, match_root: Path) -> None:
         self.match_root = match_root
-        self.include_dir = match_root / "include"
+        self.include_dir = include_root(match_root)
         self._direct_dependencies: dict[
             tuple[Path, bool, str, tuple[Path, ...], str | None], tuple[Path, ...]
         ] = {}
@@ -5283,7 +5290,7 @@ def _scratch_include_headers(
                 for directory in (
                     compile_dir, *include_dirs,
                     match_root / "compilers" / config.compiler / "Include",
-                    match_root / "include",
+                    include_root(match_root),
                 )
                 if (found := resolver.find(Path(os.path.normpath(directory)), name_path))
                 is not None
@@ -9242,7 +9249,7 @@ def find_type_definitions(path: Path, *, is_header: bool = False) -> list[TypeDe
 
 def scan_match_type_definitions(match_root: Path = DEFAULT_MATCH_ROOT) -> list[TypeDefinition]:
     definitions: list[TypeDefinition] = []
-    for header in sorted((match_root / "include").glob("*.h")):
+    for header in sorted(include_root(match_root).glob("*.h")):
         definitions.extend(find_type_definitions(header, is_header=True))
     for source in iter_scratch_sources(match_root):
         definitions.extend(find_type_definitions(source, is_header=False))
@@ -9672,7 +9679,7 @@ def lint_extern_declarations(
             (symbol.name, *symbol.aliases)
         )
 
-    sources = sorted(match_root.glob("include/*.h")) + iter_scratch_sources(match_root)
+    sources = sorted(include_root(match_root).glob("*.h")) + iter_scratch_sources(match_root)
     by_decl: dict[tuple[int, str], dict[str, list[Path]]] = {}
     names_by_address: dict[int, dict[str, list[Path]]] = {}
     for path in sources:

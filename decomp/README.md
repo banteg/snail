@@ -13,10 +13,8 @@ decomp/
   game/<Unit>/           the game objects, 0x401000-0x449460 (43 units, 628 functions)
   engine/<Unit>/         the engine library, 0x449460-0x44fd90 (15 units, 157 functions)
     <function>.cpp       one recovered function, named like its scratch
+  include/               the shared recovered headers, on both the matcher's and the port's include path
 ```
-
-Shared headers stay in `tools/match/include/`, which the matcher already puts
-on the include path.
 
 ## Units
 
@@ -50,7 +48,7 @@ one object, and each member must match in that context. 39 units compile this
 way (see
 [whole-tu-compilation-20261015.md](../tools/match/whole-tu-compilation-20261015.md)),
 and so do two SubGame pairs. Path's shared helpers live once in
-`tools/match/include/path_helpers.h`; a builder whose code differs carries its
+`decomp/include/path_helpers.h`; a builder whose code differs carries its
 copy written out. The rest still compile one object per function until their
 declarations agree across files (G0, RMaths, RShell), their in-context matches
 are reconciled (SubGame), or their boundaries are known (`between-*`). Register

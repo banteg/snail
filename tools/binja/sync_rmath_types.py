@@ -15,7 +15,7 @@ from _narrow_sync import (
 from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_HEADER_PATH = REPO_ROOT / "tools/match/include/rmath_random.h"
+DEFAULT_HEADER_PATH = REPO_ROOT / "decomp/include/rmath_random.h"
 
 FUNCTION_SYMBOL_UPDATES = (
     ("0x44c8d0", "initialize_math_random_table"),

@@ -72,7 +72,7 @@ def test_x87_store_rounds_denormals_twice(tmp_path):
         "}\n"
     )
     program = tmp_path / "x87.wasm"
-    include = REPO_ROOT / "tools/match/include"
+    include = REPO_ROOT / "decomp/include"
     subprocess.run(["zig", "c++", "-target", "wasm32-wasi", "-DSNAIL_PORT", f"-I{include}", str(source), "-o", str(program)], check=True)
     output = subprocess.run(
         ["node", str(REPO_ROOT / "port/shell/run.mjs"), str(program)], cwd=tmp_path, capture_output=True, text=True, check=True

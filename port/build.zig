@@ -125,7 +125,7 @@ fn program(
         .link_libc = true,
         .link_libcpp = true,
     });
-    module.addIncludePath(b.path("generated/patched/tools/match/include"));
+    module.addIncludePath(b.path("generated/patched/decomp/include"));
     module.addIncludePath(b.path("compat"));
 
     // Recovered source compiles as-is, or as patched; the flags and file list

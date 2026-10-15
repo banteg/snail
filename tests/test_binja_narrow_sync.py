@@ -52,7 +52,7 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
         encoding="utf-8"
     )
     matcher_header = (
-        repo_root / "tools/match/include/galaxy_route_types.h"
+        repo_root / "decomp/include/galaxy_route_types.h"
     ).read_text(encoding="utf-8")
     health_checks = (
         repo_root / "analysis/decompile/health_checks.json"
@@ -243,17 +243,17 @@ def test_mobile_galaxy_and_backdrop_evidence_preserves_windows_abi_boundaries() 
     assert "ios_symbol" not in crosswalk_by_address["0x410e20"]
 
     galaxy_header = (
-        repo_root / "tools/match/include/galaxy_route_types.h"
+        repo_root / "decomp/include/galaxy_route_types.h"
     ).read_text(encoding="utf-8")
     assert "class cRGalaxyStar" in galaxy_header
     assert "typedef cRGalaxyStar GalaxyStar;" in galaxy_header
     assert "typedef GalaxyStar GalaxyRouteSlot;" in galaxy_header
     assert "class cRGalaxy" in galaxy_header
     assert "typedef cRGalaxy Galaxy;" in galaxy_header
-    backdrop_header = (repo_root / "tools/match/include/backdrop.h").read_text(
+    backdrop_header = (repo_root / "decomp/include/backdrop.h").read_text(
         encoding="utf-8"
     )
-    font_header = (repo_root / "tools/match/include/font_system.h").read_text(
+    font_header = (repo_root / "decomp/include/font_system.h").read_text(
         encoding="utf-8"
     )
     assert "void Line(" in galaxy_header
@@ -376,13 +376,13 @@ def test_mobile_finalizer_high_score_and_tip_lifecycles_are_persisted() -> None:
         crosswalk_by_address["0x4489e0"]["notes"]
     )
 
-    game_root_header = (repo_root / "tools/match/include/game_root.h").read_text(
+    game_root_header = (repo_root / "decomp/include/game_root.h").read_text(
         encoding="utf-8"
     )
     sub_high_score_header = (
-        repo_root / "tools/match/include/sub_high_score.h"
+        repo_root / "decomp/include/sub_high_score.h"
     ).read_text(encoding="utf-8")
-    tip_header = (repo_root / "tools/match/include/tip_manager.h").read_text(
+    tip_header = (repo_root / "decomp/include/tip_manager.h").read_text(
         encoding="utf-8"
     )
     assert "cRGame::InitLast" in game_root_header
@@ -482,7 +482,7 @@ def test_dual_mobile_object_geometry_owners_preserve_platform_boundaries() -> No
     )
 
     object_header = (
-        repo_root / "tools/match/include/object_render_types.h"
+        repo_root / "decomp/include/object_render_types.h"
     ).read_text(encoding="utf-8")
     for method in (
         "cRObject::CalcTextureGroups",
@@ -544,10 +544,10 @@ def test_dual_mobile_texture_registry_recovers_authored_owner_and_record() -> No
     assert "hash table" in add_notes
     assert "Windows matcher conservatively retains its observed void* ABI" in add_notes
 
-    sprite_header = (repo_root / "tools/match/include/sprite.h").read_text(
+    sprite_header = (repo_root / "decomp/include/sprite.h").read_text(
         encoding="utf-8"
     )
-    texture_fwd = (repo_root / "tools/match/include/texture_fwd.h").read_text(
+    texture_fwd = (repo_root / "decomp/include/texture_fwd.h").read_text(
         encoding="utf-8"
     )
     assert "struct cRTexture {" in sprite_header
@@ -601,10 +601,10 @@ def test_dual_mobile_texture_registry_recovers_authored_owner_and_record() -> No
     assert "g_texture_refs.get_or_create_texture_ref(" not in backdrop_source
 
     object_header = (
-        repo_root / "tools/match/include/object_render_types.h"
+        repo_root / "decomp/include/object_render_types.h"
     ).read_text(encoding="utf-8")
     texture_registry_header = (
-        repo_root / "tools/match/include/texture_registry.h"
+        repo_root / "decomp/include/texture_registry.h"
     ).read_text(encoding="utf-8")
     assert '#include "texture_fwd.h"' in object_header
     assert "cRTexture* texture_ref;" in object_header
@@ -789,7 +789,7 @@ def test_mobile_subgame_utility_evidence_recovers_authored_owners() -> None:
     assert "ghost" not in kill_description.lower()
 
     matcher_header = (
-        repo_root / "tools/match/include/subgame_runtime.h"
+        repo_root / "decomp/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
     blink_source = (
         scratch_source_path(repo_root / "tools/match/scratches/initialize_blink_random")
@@ -903,7 +903,7 @@ def test_voice_manager_replay_keeps_exact_owners_and_void_mutator_abis() -> None
     analysis_header = (HEADER_DIR / "voice_manager_types.h").read_text(
         encoding="utf-8"
     )
-    matcher_header = (repo_root / "tools/match/include/voice_manager.h").read_text(
+    matcher_header = (repo_root / "decomp/include/voice_manager.h").read_text(
         encoding="utf-8"
     )
     references = (repo_root / "analysis/symbols/gameplay-references.json").read_text(
@@ -974,7 +974,7 @@ def test_cheat_state_replay_keeps_exact_global_owner_and_authored_abis() -> None
     analysis_header = (HEADER_DIR / "cheat_state_types.h").read_text(
         encoding="utf-8"
     )
-    matcher_header = (repo_root / "tools/match/include/cheat_state.h").read_text(
+    matcher_header = (repo_root / "decomp/include/cheat_state.h").read_text(
         encoding="utf-8"
     )
     functions = (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
@@ -1047,9 +1047,9 @@ def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners(
         encoding="utf-8"
     )
     matcher_invincible = (
-        repo_root / "tools/match/include/invincible.h"
+        repo_root / "decomp/include/invincible.h"
     ).read_text(encoding="utf-8")
-    matcher_player = (repo_root / "tools/match/include/player.h").read_text(
+    matcher_player = (repo_root / "decomp/include/player.h").read_text(
         encoding="utf-8"
     )
 
@@ -1396,7 +1396,7 @@ def test_sound_manager_replay_keeps_empty_owner_bank_and_void_init_abi() -> None
         encoding="utf-8"
     )
     matcher_header = (
-        repo_root / "tools/match/include/sound_effect_manager.h"
+        repo_root / "decomp/include/sound_effect_manager.h"
     ).read_text(encoding="utf-8")
     references = (repo_root / "analysis/symbols/gameplay-references.json").read_text(
         encoding="utf-8"
@@ -1445,7 +1445,7 @@ def test_warning_replay_keeps_exact_owner_and_six_member_abis() -> None:
     path_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
-    matcher_header = (repo_root / "tools/match/include/warning.h").read_text(
+    matcher_header = (repo_root / "decomp/include/warning.h").read_text(
         encoding="utf-8"
     )
 
@@ -1865,7 +1865,7 @@ def test_ida_catalog_and_loader_lanes_replay_the_shared_root_graph() -> None:
 def test_root_track_slice_triplet_stride_view_is_borrowed_and_fail_closed() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_header = (
-        repo_root / "tools/match/include/root_bod_catalog.h"
+        repo_root / "decomp/include/root_bod_catalog.h"
     ).read_text(encoding="utf-8")
     catalog_header = (HEADER_DIR / "bn_root_bod_catalog_types.h").read_text(
         encoding="utf-8"
@@ -1942,10 +1942,10 @@ def test_root_track_slice_triplet_stride_view_is_borrowed_and_fail_closed() -> N
 def test_root_fringe_catalog_object_cursors_are_borrowed_and_fail_closed() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_catalog_header = (
-        repo_root / "tools/match/include/root_bod_catalog.h"
+        repo_root / "decomp/include/root_bod_catalog.h"
     ).read_text(encoding="utf-8")
     matcher_fringe_header = (
-        repo_root / "tools/match/include/track_fringe_bod_catalog.h"
+        repo_root / "decomp/include/track_fringe_bod_catalog.h"
     ).read_text(encoding="utf-8")
     catalog_header = (HEADER_DIR / "bn_root_bod_catalog_types.h").read_text(
         encoding="utf-8"
@@ -2790,7 +2790,7 @@ def test_path_template_kind_replay_tracks_paired_mobile_owners() -> None:
     repo_root = Path(__file__).parents[1]
     header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
     matcher_header = (
-        repo_root / "tools/match/include/track_attachment_types.h"
+        repo_root / "decomp/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
     replay = (BINJA_DIR / "sync_path_template_kind.py").read_text(
         encoding="utf-8"
@@ -3404,10 +3404,10 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
         encoding="utf-8"
     )
     matcher_header = (
-        Path(__file__).parents[1] / "tools/match/include/star_manager.h"
+        Path(__file__).parents[1] / "decomp/include/star_manager.h"
     ).read_text(encoding="utf-8")
     sprite_matcher_header = (
-        Path(__file__).parents[1] / "tools/match/include/sprite.h"
+        Path(__file__).parents[1] / "decomp/include/sprite.h"
     ).read_text(encoding="utf-8")
     star_analysis_header = (HEADER_DIR / "star_manager_types.h").read_text(
         encoding="utf-8"
@@ -4406,7 +4406,7 @@ def test_golb_shot_inherited_base_and_nested_vapour_owner_are_replayed() -> None
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
-    matcher_header = (repo_root / "tools/match/include/golb.h").read_text(
+    matcher_header = (repo_root / "decomp/include/golb.h").read_text(
         encoding="utf-8"
     )
     binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
@@ -5186,7 +5186,7 @@ def test_anim_manager_replay_keeps_authored_owner_layout_and_method_abis() -> No
     path_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
-    matcher_header = (repo_root / "tools/match/include/anim_manager.h").read_text(
+    matcher_header = (repo_root / "decomp/include/anim_manager.h").read_text(
         encoding="utf-8"
     )
     health_checks = (
@@ -6121,7 +6121,7 @@ def test_archive_shell_replays_preserve_exact_bass_dispatch_table() -> None:
 
 def test_audio_system_header_owns_registered_audio_globals() -> None:
     audio_header = (
-        Path(__file__).parents[1] / "tools/match/include/audio_system.h"
+        Path(__file__).parents[1] / "decomp/include/audio_system.h"
     ).read_text(encoding="utf-8")
     assert "extern char g_cached_music_path[0x100];" in audio_header
     assert "extern int g_registered_sound_sample_handles[RSHELL_SOUND_MAX];" in audio_header
@@ -6290,7 +6290,7 @@ def test_ios_bass_symbols_recover_windows_audio_owner_without_fakematching() -> 
     assert "Authored cRBass global" in bass_global["description"]
 
     for header_path in (
-        repo_root / "tools/match/include/audio_system.h",
+        repo_root / "decomp/include/audio_system.h",
         HEADER_DIR / "bn_archive_shell_types.h",
         HEADER_DIR / "archive_shell_types.h",
     ):
@@ -6371,19 +6371,19 @@ def test_mobile_noop_vtables_recover_distinct_folded_owners() -> None:
     for address, owner in expected_tables.items():
         assert owner in references_by_address[address]["description"]
 
-    bod_header = (repo_root / "tools/match/include/bod_types.h").read_text(
+    bod_header = (repo_root / "decomp/include/bod_types.h").read_text(
         encoding="utf-8"
     )
     bod_forward_header = (
-        repo_root / "tools/match/include/bod_fwd.h"
+        repo_root / "decomp/include/bod_fwd.h"
     ).read_text(encoding="utf-8")
-    viewport_header = (repo_root / "tools/match/include/viewport.h").read_text(
+    viewport_header = (repo_root / "decomp/include/viewport.h").read_text(
         encoding="utf-8"
     )
-    golb_header = (repo_root / "tools/match/include/golb.h").read_text(
+    golb_header = (repo_root / "decomp/include/golb.h").read_text(
         encoding="utf-8"
     )
-    player_header = (repo_root / "tools/match/include/player.h").read_text(
+    player_header = (repo_root / "decomp/include/player.h").read_text(
         encoding="utf-8"
     )
     analysis_header = (
@@ -6402,7 +6402,7 @@ def test_mobile_noop_vtables_recover_distinct_folded_owners() -> None:
     assert "typedef cRGolbRocket GolbRocket;" in golb_header
     assert "cRGolbRocket tertiary_body;" in golb_header
     player_fwd_header = (
-        repo_root / "tools/match/include/player_fwd.h"
+        repo_root / "decomp/include/player_fwd.h"
     ).read_text(encoding="utf-8")
     assert "class cRSnail : public RenderableBod" in player_header
     assert "typedef cRSnail Snail;" in player_fwd_header
@@ -6421,10 +6421,10 @@ def test_mobile_subgoldy_layout_recovers_folded_constructor_owners() -> None:
         scratch_source_path(repo_root / "tools/match/scratches/initialize_runtime_pools_and_path_template_bank")
     ).read_text(encoding="utf-8")
     cameraman_header = (
-        repo_root / "tools/match/include/cameraman.h"
+        repo_root / "decomp/include/cameraman.h"
     ).read_text(encoding="utf-8")
     attachment_header = (
-        repo_root / "tools/match/include/track_attachment_types.h"
+        repo_root / "decomp/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
     analysis_header = (
         repo_root / "analysis/headers/path_template_types.h"
@@ -6617,10 +6617,10 @@ def test_frontend_fade_and_color_overlay_owners_are_replayed_cross_decompiler() 
         for name in ("bn_frame_renderer_types.h", "frame_renderer_types.h")
     )
     fade_header = (
-        repo_root / "tools/match/include/frontend_fade.h"
+        repo_root / "decomp/include/frontend_fade.h"
     ).read_text(encoding="utf-8")
     flash_header = (
-        repo_root / "tools/match/include/frontend_overlay_color_lerp.h"
+        repo_root / "decomp/include/frontend_overlay_color_lerp.h"
     ).read_text(encoding="utf-8")
     begin_fade_source = (
         scratch_source_path(repo_root / "tools/match/scratches/begin_frontend_fade_out")
@@ -6751,7 +6751,7 @@ def test_frontend_fade_and_color_overlay_owners_are_replayed_cross_decompiler() 
 def test_matcher_authored_frontend_pickup_and_row_owners_preserve_analysis_vocabulary() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_headers = {
-        name: (repo_root / "tools/match/include" / name).read_text(
+        name: (repo_root / "decomp/include" / name).read_text(
             encoding="utf-8"
         )
         for name in (
@@ -6799,16 +6799,16 @@ def test_matcher_authored_frontend_pickup_and_row_owners_preserve_analysis_vocab
 def test_matcher_fringe_logo_and_galaxy_owners_preserve_recovered_vocabulary() -> None:
     repo_root = Path(__file__).parents[1]
     fringe_matcher = (
-        repo_root / "tools/match/include/fringe_object.h"
+        repo_root / "decomp/include/fringe_object.h"
     ).read_text(encoding="utf-8")
-    fringe_fwd = (repo_root / "tools/match/include/fringe_fwd.h").read_text(
+    fringe_fwd = (repo_root / "decomp/include/fringe_fwd.h").read_text(
         encoding="utf-8"
     )
     logo_matcher = (
-        repo_root / "tools/match/include/intro_screen_runtime.h"
+        repo_root / "decomp/include/intro_screen_runtime.h"
     ).read_text(encoding="utf-8")
     galaxy_matcher = (
-        repo_root / "tools/match/include/galaxy_route_types.h"
+        repo_root / "decomp/include/galaxy_route_types.h"
     ).read_text(encoding="utf-8")
     path_analysis = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
@@ -6850,10 +6850,10 @@ def test_matcher_fringe_logo_and_galaxy_owners_preserve_recovered_vocabulary() -
 
 def test_viewport_owner_and_borrowed_camera_are_replayed_cross_decompiler() -> None:
     repo_root = Path(__file__).parents[1]
-    matcher_header = (repo_root / "tools/match/include/viewport.h").read_text(
+    matcher_header = (repo_root / "decomp/include/viewport.h").read_text(
         encoding="utf-8"
     )
-    game_root_header = (repo_root / "tools/match/include/game_root.h").read_text(
+    game_root_header = (repo_root / "decomp/include/game_root.h").read_text(
         encoding="utf-8"
     )
     analysis_headers = tuple(
@@ -6895,7 +6895,7 @@ def test_viewport_owner_and_borrowed_camera_are_replayed_cross_decompiler() -> N
 
 def test_mouse_cursor_and_borrowed_input_owner_graph_is_replayed_cross_decompiler() -> None:
     repo_root = Path(__file__).parents[1]
-    matcher_root = (repo_root / "tools/match/include/game_root.h").read_text(
+    matcher_root = (repo_root / "decomp/include/game_root.h").read_text(
         encoding="utf-8"
     )
     analysis_headers = tuple(
@@ -6993,10 +6993,10 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         for header_name in ("bn_frame_renderer_types.h", "frame_renderer_types.h")
     )
     matcher_controller_header = (
-        repo_root / "tools/match/include/input_controller_state.h"
+        repo_root / "decomp/include/input_controller_state.h"
     ).read_text(encoding="utf-8")
     matcher_button_header = (
-        repo_root / "tools/match/include/input_buttons.h"
+        repo_root / "decomp/include/input_buttons.h"
     ).read_text(encoding="utf-8")
 
     assert "InputControllerSlot_must_be_0x20" in matcher_controller_header
@@ -7644,7 +7644,7 @@ def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
         (HEADER_DIR / header_name).read_text(encoding="utf-8")
         for header_name in ("bn_object_render_types.h", "object_render_types.h")
     ]
-    matcher_header = (repo_root / "tools/match/include/bod_types.h").read_text(
+    matcher_header = (repo_root / "decomp/include/bod_types.h").read_text(
         encoding="utf-8"
     )
 
@@ -7711,10 +7711,10 @@ def test_bod_intrusive_list_lifecycle_replay_owns_shared_layout() -> None:
     normalized_header = (
         " ".join(path_header.split()).replace("( ", "(").replace(" )", ")")
     )
-    bod_list_header = (repo_root / "tools/match/include/bod_list.h").read_text(
+    bod_list_header = (repo_root / "decomp/include/bod_list.h").read_text(
         encoding="utf-8"
     )
-    bod_types_header = (repo_root / "tools/match/include/bod_types.h").read_text(
+    bod_types_header = (repo_root / "decomp/include/bod_types.h").read_text(
         encoding="utf-8"
     )
 
@@ -7784,9 +7784,9 @@ def test_fringe_replay_owns_authored_pool_and_callback_abi() -> None:
         " ".join(path_header.split()).replace("( ", "(").replace(" )", ")")
     )
     fringe_header = (
-        repo_root / "tools/match/include/fringe_object.h"
+        repo_root / "decomp/include/fringe_object.h"
     ).read_text(encoding="utf-8")
-    fringe_fwd = (repo_root / "tools/match/include/fringe_fwd.h").read_text(
+    fringe_fwd = (repo_root / "decomp/include/fringe_fwd.h").read_text(
         encoding="utf-8"
     )
 
@@ -7848,7 +7848,7 @@ def test_track_render_cache_slot_owns_active_bod_lifecycle() -> None:
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
-    matcher_header = (repo_root / "tools/match/include/segment_cache.h").read_text(
+    matcher_header = (repo_root / "decomp/include/segment_cache.h").read_text(
         encoding="utf-8"
     )
     frame_source = (
@@ -7858,7 +7858,7 @@ def test_track_render_cache_slot_owns_active_bod_lifecycle() -> None:
     assert "class TrackRenderCacheSlot : public BodBase" in matcher_header
     assert "TrackRenderCacheSlot* initialize_active_bod();" in matcher_header
     assert "void update_active_bod();" in matcher_header
-    assert not (repo_root / "tools/match/include/active_bod.h").exists()
+    assert not (repo_root / "decomp/include/active_bod.h").exists()
     assert "BodNode* bod = active_bod_list.first;" in frame_source
     assert "((BodAiDispatch*)bod)->update_bod_ai();" in frame_source
 
@@ -7912,11 +7912,11 @@ def test_click_start_and_landscape_lifecycle_replay_share_real_owners() -> None:
     focused_header = (HEADER_DIR / "click_start_types.h").read_text(
         encoding="utf-8"
     )
-    click_matcher = (repo_root / "tools/match/include/click_start.h").read_text(
+    click_matcher = (repo_root / "decomp/include/click_start.h").read_text(
         encoding="utf-8"
     )
     landscape_matcher = (
-        repo_root / "tools/match/include/active_landscape_entry.h"
+        repo_root / "decomp/include/active_landscape_entry.h"
     ).read_text(encoding="utf-8")
 
     assert '"ActiveLandscapeEntry",' in path_sync
@@ -8004,7 +8004,7 @@ def test_slug_voice_manager_replay_uses_embedded_owner() -> None:
         encoding="utf-8"
     )
     matcher_header = (
-        repo_root / "tools/match/include/slug_voice_manager.h"
+        repo_root / "decomp/include/slug_voice_manager.h"
     ).read_text(encoding="utf-8")
 
     declarations = (
@@ -8042,7 +8042,7 @@ def test_object_list_replay_owns_global_lifecycle_and_allocation_consumers() -> 
         for name in ("bn_object_render_types.h", "object_render_types.h")
     )
     matcher_header = (
-        repo_root / "tools/match/include/object_render_types.h"
+        repo_root / "decomp/include/object_render_types.h"
     ).read_text(encoding="utf-8")
 
     for address, name in (
@@ -8098,7 +8098,7 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
         for header_name in ("bn_object_render_types.h", "object_render_types.h")
     ]
     matcher_header = (
-        repo_root / "tools/match/include/object_render_types.h"
+        repo_root / "decomp/include/object_render_types.h"
     ).read_text(encoding="utf-8")
 
     for address, name, data_type in (
@@ -8298,10 +8298,10 @@ def test_backdrop_quad_helper_replay_keeps_object_owners_and_void_abis() -> None
         for header_name in ("bn_object_render_types.h", "object_render_types.h")
     ]
     matcher_header = (
-        repo_root / "tools/match/include/object_render_types.h"
+        repo_root / "decomp/include/object_render_types.h"
     ).read_text(encoding="utf-8")
     matcher_fwd = (
-        repo_root / "tools/match/include/object_fwd.h"
+        repo_root / "decomp/include/object_fwd.h"
     ).read_text(encoding="utf-8")
 
     for function_name in (
@@ -8359,7 +8359,7 @@ def test_object_policy_flags_keep_producers_and_consumers_aligned() -> None:
         encoding="utf-8"
     )
     matcher_header = (
-        repo_root / "tools/match/include/object_render_types.h"
+        repo_root / "decomp/include/object_render_types.h"
     ).read_text(encoding="utf-8")
     analysis_headers = [
         (HEADER_DIR / header_name).read_text(encoding="utf-8")
@@ -8448,7 +8448,7 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
         for header_name in ("bn_object_render_types.h", "object_render_types.h")
     ]
     matcher_header = (
-        repo_root / "tools/match/include/object_render_types.h"
+        repo_root / "decomp/include/object_render_types.h"
     ).read_text(encoding="utf-8")
     mobile_crosswalk = {
         entry["address"]: entry
@@ -8580,10 +8580,10 @@ def test_direct3d_renderer_replay_keeps_singleton_and_device_ownership() -> None
         for header_name in ("bn_object_render_types.h", "object_render_types.h")
     ]
     matcher_header = (
-        repo_root / "tools/match/include/direct3d_renderer.h"
+        repo_root / "decomp/include/direct3d_renderer.h"
     ).read_text(encoding="utf-8")
     matcher_device_header = (
-        repo_root / "tools/match/include/direct3d_device8_view.h"
+        repo_root / "decomp/include/direct3d_device8_view.h"
     ).read_text(encoding="utf-8")
 
     for address, name, data_type in (
@@ -9018,7 +9018,7 @@ def test_main_loop_replay_keeps_winmain_and_byte_fullscreen_abis() -> None:
         encoding="utf-8"
     )
     matcher_header = (
-        repo_root / "tools/match/include/direct3d_renderer.h"
+        repo_root / "decomp/include/direct3d_renderer.h"
     ).read_text(encoding="utf-8")
     wrapper_scratch = (
         scratch_source_path(repo_root / "tools/match/scratches/set_fullscreen_mode")
@@ -9217,7 +9217,7 @@ def test_display_mode_replay_recovers_only_the_proven_owner_prefix() -> None:
         HEADER_DIR / "display_mode_types.h"
     ).read_text(encoding="utf-8")
     matcher_header = (
-        repo_root / "tools/match/include/display_mode_state.h"
+        repo_root / "decomp/include/display_mode_state.h"
     ).read_text(encoding="utf-8")
     binja_sync = (
         BINJA_DIR / "sync_display_mode_types.py"
@@ -9338,7 +9338,7 @@ def test_movie_ownership_stays_aligned_across_replay_lanes() -> None:
         encoding="utf-8"
     )
     matcher_header = (
-        repo_root / "tools/match/include/movie.h"
+        repo_root / "decomp/include/movie.h"
     ).read_text(encoding="utf-8")
 
     assert "MOVIE_FIELDS = (" in binja_object_sync
@@ -9450,13 +9450,13 @@ def test_sub_loc_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         encoding="utf-8"
     )
     matcher_header = (
-        repo_root / "tools/match/include/track_attachment_types.h"
+        repo_root / "decomp/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
     matcher_tile_ids = (
-        repo_root / "tools/match/include/sub_loc_tile_ids.h"
+        repo_root / "decomp/include/sub_loc_tile_ids.h"
     ).read_text(encoding="utf-8")
     tile_view_header = (
-        repo_root / "tools/match/include/track_row_cell_tile_views.h"
+        repo_root / "decomp/include/track_row_cell_tile_views.h"
     ).read_text(encoding="utf-8")
 
     assert '("0x3c", "tile_id", "SubLocTileId")' in binja_source
@@ -9514,7 +9514,7 @@ def test_sub_loc_runtime_row_owner_replay_stays_guarded() -> None:
         encoding="utf-8"
     )
     matcher_header = (
-        repo_root / "tools/match/include/subgame_runtime.h"
+        repo_root / "decomp/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
     ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
         encoding="utf-8"
@@ -9956,10 +9956,10 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         encoding="utf-8"
     )
     matcher_row_header = (
-        repo_root / "tools/match/include/track_attachment_types.h"
+        repo_root / "decomp/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
     matcher_segment_header = (
-        repo_root / "tools/match/include/segment_catalog_types.h"
+        repo_root / "decomp/include/segment_catalog_types.h"
     ).read_text(encoding="utf-8")
     ida_segment_sync = (IDA_DIR / "apply_segment_catalog_types.py").read_text(
         encoding="utf-8"
@@ -11008,7 +11008,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
 def test_parcel_spawn_position_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_header = (
-        repo_root / "tools/match/include/track_attachment_types.h"
+        repo_root / "decomp/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
@@ -11062,7 +11062,7 @@ def test_subgame_runtime_flag_ownership_stays_aligned_across_replay_lanes() -> N
             "ida_subgame_runtime_types.h",
         )
     )
-    matcher_header = (repo_root / "tools/match/include/subgame_runtime.h").read_text(
+    matcher_header = (repo_root / "decomp/include/subgame_runtime.h").read_text(
         encoding="utf-8"
     )
 
@@ -11124,7 +11124,7 @@ def test_subgame_control_prefix_ownership_stays_aligned() -> None:
             "ida_subgame_runtime_types.h",
         )
     )
-    matcher_header = (repo_root / "tools/match/include/subgame_runtime.h").read_text(
+    matcher_header = (repo_root / "decomp/include/subgame_runtime.h").read_text(
         encoding="utf-8"
     )
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
@@ -11329,7 +11329,7 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
         for name in ("bn_subgame_pool_types.h", "path_template_types.h")
     )
     matcher_header = (
-        repo_root / "tools/match/include/ring_special_effect_types.h"
+        repo_root / "decomp/include/ring_special_effect_types.h"
     ).read_text(encoding="utf-8")
     health_checks = (
         repo_root / "analysis/decompile/health_checks.json"
@@ -11479,7 +11479,7 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
     for header in analysis_headers:
         assert "int32_t requested_kind" in header
     assert "int requested_kind" in (
-        repo_root / "tools/match/include/subgame_runtime.h"
+        repo_root / "decomp/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"' in ida_runner
     for prototype in (
@@ -11531,7 +11531,7 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
         for name in ("bn_subgame_pool_types.h", "path_template_types.h")
     )
     matcher_header = (
-        repo_root / "tools/match/include/slug_hazard_types.h"
+        repo_root / "decomp/include/slug_hazard_types.h"
     ).read_text(encoding="utf-8")
 
     assert '"Slug",' in pool_sync
@@ -11633,7 +11633,7 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
         in ida_sync
     )
     matcher_subgame = (
-        repo_root / "tools/match/include/subgame_runtime.h"
+        repo_root / "decomp/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
     assert "void AddSlug(" in matcher_subgame
     assert "cRSubLoc* cell, cRSubGoldy* owner_player);" in matcher_subgame
@@ -11704,7 +11704,7 @@ def test_parcel_state_ownership_stays_aligned() -> None:
         )
     )
     matcher_header = (
-        repo_root / "tools/match/include/track_parcel_runtime.h"
+        repo_root / "decomp/include/track_parcel_runtime.h"
     ).read_text(encoding="utf-8")
 
     assert '"ParcelState",' in runtime_sync
@@ -11762,7 +11762,7 @@ def test_parcel_manager_replay_owns_fixed_pool_lifecycle_and_consumers() -> None
         )
     )
     matcher_header = (
-        repo_root / "tools/match/include/track_parcel_runtime.h"
+        repo_root / "decomp/include/track_parcel_runtime.h"
     ).read_text(encoding="utf-8")
 
     lifecycle = (
@@ -12049,7 +12049,7 @@ def test_track_colour_banks_replay_semantic_owners_without_collapsing_slide() ->
         encoding="utf-8"
     )
     matcher_header = (
-        repo_root / "tools/match/include/track_colour_banks.h"
+        repo_root / "decomp/include/track_colour_banks.h"
     ).read_text(encoding="utf-8")
     binja_sync = (BINJA_DIR / "sync_track_colour_bank_types.py").read_text(
         encoding="utf-8"
@@ -12146,7 +12146,7 @@ def test_completion_state_ownership_stays_aligned() -> None:
             "ida_subgame_runtime_types.h",
         )
     )
-    matcher_header = (repo_root / "tools/match/include/completion.h").read_text(
+    matcher_header = (repo_root / "decomp/include/completion.h").read_text(
         encoding="utf-8"
     )
 
@@ -12297,7 +12297,7 @@ def test_times_up_state_ownership_stays_aligned() -> None:
             "ida_subgame_runtime_types.h",
         )
     )
-    matcher_header = (repo_root / "tools/match/include/times_up.h").read_text(
+    matcher_header = (repo_root / "decomp/include/times_up.h").read_text(
         encoding="utf-8"
     )
 
@@ -12355,7 +12355,7 @@ def test_track_pickup_state_and_authored_owners_stay_aligned() -> None:
         )
     )
     matcher_header = (
-        repo_root / "tools/match/include/track_pickup_state.h"
+        repo_root / "decomp/include/track_pickup_state.h"
     ).read_text(encoding="utf-8")
 
     assert '"TrackPickupState"' in pool_sync
@@ -12497,10 +12497,10 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
         )
     )
     matcher_sub_lazer = (
-        repo_root / "tools/match/include/sub_lazer_types.h"
+        repo_root / "decomp/include/sub_lazer_types.h"
     ).read_text(encoding="utf-8")
     matcher_salt = (
-        repo_root / "tools/match/include/salt_hazard_types.h"
+        repo_root / "decomp/include/salt_hazard_types.h"
     ).read_text(encoding="utf-8")
     salt_scratches = {
         name: (
@@ -12717,7 +12717,7 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
 
 def test_banner_backlink_owner_survives_every_replay_lane() -> None:
     repo_root = Path(__file__).parents[1]
-    matcher = (repo_root / "tools/match/include/banner.h").read_text(
+    matcher = (repo_root / "decomp/include/banner.h").read_text(
         encoding="utf-8"
     )
     headers = tuple(
@@ -12865,10 +12865,10 @@ def test_presentation_animation_object_cursor_survives_every_replay_lane() -> No
     ida_runtime_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
         encoding="utf-8"
     )
-    matcher_weapon = (repo_root / "tools/match/include/weapon.h").read_text(
+    matcher_weapon = (repo_root / "decomp/include/weapon.h").read_text(
         encoding="utf-8"
     )
-    matcher_player = (repo_root / "tools/match/include/player.h").read_text(
+    matcher_player = (repo_root / "decomp/include/player.h").read_text(
         encoding="utf-8"
     )
 
@@ -12940,7 +12940,7 @@ def test_presentation_animation_object_cursor_survives_every_replay_lane() -> No
 def test_sub_lazer_asset_cursor_is_field_first_borrowed_and_fail_closed() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_header = (
-        repo_root / "tools/match/include/sub_lazer_types.h"
+        repo_root / "decomp/include/sub_lazer_types.h"
     ).read_text(encoding="utf-8")
     narrow_header = (
         HEADER_DIR / "bn_subgame_runtime_types.h"
@@ -13031,7 +13031,7 @@ def test_sub_lazer_asset_cursor_is_field_first_borrowed_and_fail_closed() -> Non
 def test_salt_asset_cursor_is_field_first_borrowed_and_fail_closed() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_header = (
-        repo_root / "tools/match/include/salt_hazard_types.h"
+        repo_root / "decomp/include/salt_hazard_types.h"
     ).read_text(encoding="utf-8")
     narrow_header = (
         HEADER_DIR / "bn_subgame_runtime_types.h"
@@ -13115,7 +13115,7 @@ def test_salt_asset_cursor_is_field_first_borrowed_and_fail_closed() -> None:
 def test_border_flags_stride_cursor_is_borrowed_and_fail_closed() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_header = (
-        repo_root / "tools/match/include/border_manager.h"
+        repo_root / "decomp/include/border_manager.h"
     ).read_text(encoding="utf-8")
     headers = tuple(
         (HEADER_DIR / name).read_text(encoding="utf-8")
@@ -13180,7 +13180,7 @@ def test_border_flags_stride_cursor_is_borrowed_and_fail_closed() -> None:
 
 def test_game_player_initializer_stride_view_is_borrowed_and_fail_closed() -> None:
     repo_root = Path(__file__).parents[1]
-    matcher_header = (repo_root / "tools/match/include/game_root.h").read_text(
+    matcher_header = (repo_root / "decomp/include/game_root.h").read_text(
         encoding="utf-8"
     )
     headers = tuple(
@@ -13498,7 +13498,7 @@ def test_ida_player_state_gates_are_exact_and_fail_closed() -> None:
 
 def test_cameraman_force_update_owner_survives_path_replay() -> None:
     repo_root = Path(__file__).parents[1]
-    matcher = (repo_root / "tools/match/include/cameraman.h").read_text(
+    matcher = (repo_root / "decomp/include/cameraman.h").read_text(
         encoding="utf-8"
     )
     path_header = (HEADER_DIR / "path_template_types.h").read_text(
@@ -13543,7 +13543,7 @@ def test_sub_garbage_owner_replays_stay_aligned() -> None:
         encoding="utf-8"
     )
     matcher_header = (
-        repo_root / "tools/match/include/garbage_hazard_slot.h"
+        repo_root / "decomp/include/garbage_hazard_slot.h"
     ).read_text(encoding="utf-8")
 
     for header in (garbage_header, path_header):
@@ -13655,7 +13655,7 @@ def test_warning_state_ownership_stays_aligned() -> None:
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
-    matcher_header = (repo_root / "tools/match/include/warning.h").read_text(
+    matcher_header = (repo_root / "decomp/include/warning.h").read_text(
         encoding="utf-8"
     )
 
@@ -13696,7 +13696,7 @@ def test_frontend_widget_flag_ownership_stays_aligned() -> None:
         )
     ]
     matcher_header = (
-        repo_root / "tools/match/include/frontend_widget.h"
+        repo_root / "decomp/include/frontend_widget.h"
     ).read_text(encoding="utf-8")
 
     assert '("0x1a0", "widget_flags", "FrontendWidgetFlag")' in frontend_sync
@@ -13821,10 +13821,10 @@ def test_frontend_widget_backing_lifecycle_stays_aligned() -> None:
         )
     ]
     matcher_header = (
-        repo_root / "tools/match/include/frontend_widget.h"
+        repo_root / "decomp/include/frontend_widget.h"
     ).read_text(encoding="utf-8")
     backing_header = (
-        repo_root / "tools/match/include/border_manager.h"
+        repo_root / "decomp/include/border_manager.h"
     ).read_text(encoding="utf-8")
 
     assert '("0x6c", "color_06c", "tColour")' in frontend_sync
@@ -13982,7 +13982,7 @@ def test_sprite_and_texture_ownership_stays_aligned() -> None:
             "star_manager_types.h",
         )
     ]
-    matcher_header = (repo_root / "tools/match/include/sprite.h").read_text(
+    matcher_header = (repo_root / "decomp/include/sprite.h").read_text(
         encoding="utf-8"
     )
 
@@ -14090,7 +14090,7 @@ def test_runtime_config_ownership_stays_aligned() -> None:
     analysis_header = (HEADER_DIR / "runtime_config_types.h").read_text(
         encoding="utf-8"
     )
-    matcher_header = (repo_root / "tools/match/include/runtime_config.h").read_text(
+    matcher_header = (repo_root / "decomp/include/runtime_config.h").read_text(
         encoding="utf-8"
     )
     binja_sync = (BINJA_DIR / "sync_runtime_config_types.py").read_text(
@@ -14166,7 +14166,7 @@ def test_font_system_ownership_stays_aligned() -> None:
     analysis_header = (HEADER_DIR / "font_system_types.h").read_text(
         encoding="utf-8"
     )
-    matcher_header = (repo_root / "tools/match/include/font_system.h").read_text(
+    matcher_header = (repo_root / "decomp/include/font_system.h").read_text(
         encoding="utf-8"
     )
     binja_sync = (BINJA_DIR / "sync_font_system_types.py").read_text(
@@ -14440,7 +14440,7 @@ def test_font_system_ownership_stays_aligned() -> None:
 
 def test_frontend_bridge_root_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
-    matcher_header = (repo_root / "tools/match/include/game_root.h").read_text(
+    matcher_header = (repo_root / "decomp/include/game_root.h").read_text(
         encoding="utf-8"
     )
     binja_header = (HEADER_DIR / "bn_frame_renderer_types.h").read_text(
@@ -14570,7 +14570,7 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
     assert "types_declare(" not in intro_sync
     assert "types_declare_missing_only" in logo_sync
     assert "types_declare(" not in logo_sync
-    assert not (repo_root / "tools/match/include/app_shell.h").exists()
+    assert not (repo_root / "decomp/include/app_shell.h").exists()
     assert "TransformMatrix transform;" in path_header
     assert "uint8_t transform[0x40];" not in path_header
 
@@ -14598,7 +14598,7 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
 
 def test_cut_scene_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
-    matcher_header = (repo_root / "tools/match/include/cut_scene.h").read_text(
+    matcher_header = (repo_root / "decomp/include/cut_scene.h").read_text(
         encoding="utf-8"
     )
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
@@ -14647,7 +14647,7 @@ def test_cut_scene_state_ownership_stays_aligned() -> None:
 
 def test_presentation_wobble_view_stays_exact_and_replayable() -> None:
     repo_root = Path(__file__).parents[1]
-    matcher_header = (repo_root / "tools/match/include/player.h").read_text(
+    matcher_header = (repo_root / "decomp/include/player.h").read_text(
         encoding="utf-8"
     )
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
@@ -14710,7 +14710,7 @@ def test_damage_guage_replay_keeps_exact_owner_and_three_member_abis() -> None:
         encoding="utf-8"
     )
     matcher_header = (
-        repo_root / "tools/match/include/damage_guage.h"
+        repo_root / "decomp/include/damage_guage.h"
     ).read_text(encoding="utf-8")
 
     for source in (binja_sync, ida_focused_sync, path_sync, ida_sync):
@@ -14819,7 +14819,7 @@ def test_progress_bar_replay_keeps_exact_empty_owner_and_ai_abi() -> None:
         encoding="utf-8"
     )
     matcher_header = (
-        repo_root / "tools/match/include/progress_bar.h"
+        repo_root / "decomp/include/progress_bar.h"
     ).read_text(encoding="utf-8")
     health_checks = (
         repo_root / "analysis/decompile/health_checks.json"
@@ -14885,7 +14885,7 @@ def test_squidge_replay_keeps_authored_owner_layout_and_method_abis() -> None:
     path_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
-    matcher_header = (repo_root / "tools/match/include/squidge.h").read_text(
+    matcher_header = (repo_root / "decomp/include/squidge.h").read_text(
         encoding="utf-8"
     )
     health_checks = (
@@ -14989,7 +14989,7 @@ def test_snail_skin_replay_keeps_authored_owner_layout_and_method_abis() -> None
     path_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
-    matcher_header = (repo_root / "tools/match/include/snail_skin.h").read_text(
+    matcher_header = (repo_root / "decomp/include/snail_skin.h").read_text(
         encoding="utf-8"
     )
     health_checks = (
@@ -15104,7 +15104,7 @@ def test_time_replay_keeps_authored_owner_layout_and_method_abis() -> None:
             "frontend_replay_types.h",
         )
     )
-    matcher_header = (repo_root / "tools/match/include/game_time.h").read_text(
+    matcher_header = (repo_root / "decomp/include/game_time.h").read_text(
         encoding="utf-8"
     )
     health_checks = (
@@ -15211,7 +15211,7 @@ def test_times_up_replay_keeps_authored_owner_layout_and_method_abis() -> None:
             "ida_subgame_runtime_types.h",
         )
     )
-    matcher_header = (repo_root / "tools/match/include/times_up.h").read_text(
+    matcher_header = (repo_root / "decomp/include/times_up.h").read_text(
         encoding="utf-8"
     )
     health_checks = (
@@ -15292,7 +15292,7 @@ def test_click_start_state_ownership_stays_aligned() -> None:
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
-    matcher_header = (repo_root / "tools/match/include/click_start.h").read_text(
+    matcher_header = (repo_root / "decomp/include/click_start.h").read_text(
         encoding="utf-8"
     )
 
@@ -15329,7 +15329,7 @@ def test_nuke_state_ownership_stays_aligned() -> None:
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
-    matcher_header = (repo_root / "tools/match/include/nuke.h").read_text(
+    matcher_header = (repo_root / "decomp/include/nuke.h").read_text(
         encoding="utf-8"
     )
     ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
@@ -15404,7 +15404,7 @@ def test_tip_manager_lifecycle_replay_keeps_exact_owner_graph() -> None:
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
-    matcher_header = (repo_root / "tools/match/include/tip_manager.h").read_text(
+    matcher_header = (repo_root / "decomp/include/tip_manager.h").read_text(
         encoding="utf-8"
     )
 
@@ -15496,11 +15496,11 @@ def test_tutorial_lifecycle_replay_keeps_runtime_and_tip_manager_owners() -> Non
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
-    matcher_tutorial = (repo_root / "tools/match/include/tutorial.h").read_text(
+    matcher_tutorial = (repo_root / "decomp/include/tutorial.h").read_text(
         encoding="utf-8"
     )
     matcher_subgame = (
-        repo_root / "tools/match/include/subgame_runtime.h"
+        repo_root / "decomp/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
     ida_root_owner = (IDA_DIR / "game_root_owner.py").read_text(encoding="utf-8")
 
@@ -15562,7 +15562,7 @@ def test_sub_hover_state_ownership_stays_aligned() -> None:
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
-    matcher_header = (repo_root / "tools/match/include/sub_hover.h").read_text(
+    matcher_header = (repo_root / "decomp/include/sub_hover.h").read_text(
         encoding="utf-8"
     )
 
@@ -15597,7 +15597,7 @@ def test_invincible_state_ownership_stays_aligned() -> None:
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
     )
-    matcher_header = (repo_root / "tools/match/include/invincible.h").read_text(
+    matcher_header = (repo_root / "decomp/include/invincible.h").read_text(
         encoding="utf-8"
     )
 
@@ -19854,7 +19854,7 @@ def test_runtime_grid_clear_field_cursors_are_borrowed_and_fail_closed() -> None
         encoding="utf-8"
     )
     matcher_header = (
-        repo_root / "tools/match/include/track_attachment_types.h"
+        repo_root / "decomp/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
     canonical_binja = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
@@ -20386,7 +20386,7 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
         encoding="utf-8"
     )
     matcher_border_header = (
-        repo_root / "tools/match/include/border_manager.h"
+        repo_root / "decomp/include/border_manager.h"
     ).read_text(encoding="utf-8")
 
     assert '"kill_all_borders"' in frame_sync
@@ -20660,10 +20660,10 @@ def test_embedded_subgame_ai_void_abis_are_persisted() -> None:
         encoding="utf-8"
     )
     header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
-    tutorial_header = (repo_root / "tools/match/include/tutorial.h").read_text(
+    tutorial_header = (repo_root / "decomp/include/tutorial.h").read_text(
         encoding="utf-8"
     )
-    barrier_header = (repo_root / "tools/match/include/barrier_actor.h").read_text(
+    barrier_header = (repo_root / "decomp/include/barrier_actor.h").read_text(
         encoding="utf-8"
     )
 
@@ -20711,7 +20711,7 @@ def test_input_ok_overlay_and_void_abis_are_persisted() -> None:
         )
     ]
     matcher_header = (
-        repo_root / "tools/match/include/input_ok_state.h"
+        repo_root / "decomp/include/input_ok_state.h"
     ).read_text(encoding="utf-8")
 
     for header in analysis_headers:
@@ -20738,7 +20738,7 @@ def test_input_ok_overlay_and_void_abis_are_persisted() -> None:
     assert "void AI(); // @ 0x4034d0, Android cRInputOK::AI()" in matcher_header
     assert "void Init(); // @ 0x403560, Android cRInputOK::Init()" in matcher_header
     matcher_fwd = (
-        repo_root / "tools/match/include/input_ok_fwd.h"
+        repo_root / "decomp/include/input_ok_fwd.h"
     ).read_text(encoding="utf-8")
     assert "class cRInputOK" in matcher_header
     assert "typedef cRInputOK InputOkState;" in matcher_fwd
@@ -20779,7 +20779,7 @@ def test_twinkle_array_ownership_and_void_abis_are_persisted() -> None:
         )
     ]
     matcher_manager_header = (
-        repo_root / "tools/match/include/twinkle_manager.h"
+        repo_root / "decomp/include/twinkle_manager.h"
     ).read_text(encoding="utf-8")
 
     for header in analysis_headers:
@@ -20826,10 +20826,10 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
         encoding="utf-8"
     )
     matcher_sample = (
-        repo_root / "tools/match/include/attachment_sample.h"
+        repo_root / "decomp/include/attachment_sample.h"
     ).read_text(encoding="utf-8")
     matcher_follow = (
-        repo_root / "tools/match/include/track_attachment_types.h"
+        repo_root / "decomp/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
 
     sample_struct = analysis_header.split(
@@ -22026,11 +22026,11 @@ def test_vapour_and_embedded_bod_owners_are_replayed() -> None:
     pool_header = (HEADER_DIR / "bn_subgame_pool_types.h").read_text(
         encoding="utf-8"
     )
-    matcher_header = (repo_root / "tools/match/include/vapour.h").read_text(
+    matcher_header = (repo_root / "decomp/include/vapour.h").read_text(
         encoding="utf-8"
     )
     track_header = (
-        repo_root / "tools/match/include/track_attachment_types.h"
+        repo_root / "decomp/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
     jetpack_scratch = (
         scratch_source_path(repo_root / "tools/match/scratches/initialize_track_jetpack_pickup_runtime")
@@ -22869,7 +22869,7 @@ def test_slalomdouble_p_path_replay_preserves_clean_owner_lifetimes() -> None:
     assert "float angle = (float)curve_index" in p_scratch
     # P's mesh is the shared Path.cpp helper.
     path_helpers = (
-        Path(__file__).parents[1] / "tools/match/include/path_helpers.h"
+        Path(__file__).parents[1] / "decomp/include/path_helpers.h"
     ).read_text(encoding="utf-8")
     assert "build_strip_mesh(this, texture_a, texture_b);" in p_scratch
     assert "int face_index;" in path_helpers
@@ -25188,7 +25188,7 @@ def test_create_golb_replay_splits_real_pointer_owners() -> None:
         repo_root / "analysis/headers/path_template_types.h"
     ).read_text(encoding="utf-8")
     match_header = (
-        repo_root / "tools/match/include/golb.h"
+        repo_root / "decomp/include/golb.h"
     ).read_text(encoding="utf-8")
     catalog_replay = (
         BINJA_DIR / "sync_path_template_types.py"
@@ -25212,7 +25212,7 @@ def test_create_golb_replay_splits_real_pointer_owners() -> None:
 def test_time_trial_replays_inline_course_record_ownership() -> None:
     repo_root = Path(__file__).parents[1]
     match_header = (
-        repo_root / "tools/match/include/time_trial.h"
+        repo_root / "decomp/include/time_trial.h"
     ).read_text(encoding="utf-8")
     analysis_headers = [
         (HEADER_DIR / header_name).read_text(encoding="utf-8")
@@ -25819,10 +25819,10 @@ def test_mobile_utility_abis_and_overlay_owners_are_persisted() -> None:
         ),
     )
     matcher_duplicate_header = (
-        repo_root / "tools/match/include/duplicate_vertices.h"
+        repo_root / "decomp/include/duplicate_vertices.h"
     ).read_text(encoding="utf-8")
     matcher_subgame_header = (
-        repo_root / "tools/match/include/subgame_runtime.h"
+        repo_root / "decomp/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
 
     clean_prototype = (
@@ -25910,10 +25910,10 @@ def test_replay_start_cursor_ownership_has_guarded_ida_replay() -> None:
     assert "--replay-start-cursor-only" in ida_wrapper
 
     matcher_player = (
-        repo_root / "tools/match/include/player.h"
+        repo_root / "decomp/include/player.h"
     ).read_text(encoding="utf-8")
     matcher_record = (
-        repo_root / "tools/match/include/sub_solution.h"
+        repo_root / "decomp/include/sub_solution.h"
     ).read_text(encoding="utf-8")
     for source in (matcher_player, matcher_record):
         assert "replay_start_cursor" in source
@@ -25923,10 +25923,10 @@ def test_replay_start_cursor_ownership_has_guarded_ida_replay() -> None:
 
 def test_c_r_track_primary_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
-    matcher_header = (repo_root / "tools/match/include/track.h").read_text(
+    matcher_header = (repo_root / "decomp/include/track.h").read_text(
         encoding="utf-8"
     )
-    matcher_root = (repo_root / "tools/match/include/game_root.h").read_text(
+    matcher_root = (repo_root / "decomp/include/game_root.h").read_text(
         encoding="utf-8"
     )
     scratch = (
@@ -25997,10 +25997,10 @@ def test_c_r_track_primary_ownership_stays_aligned() -> None:
 def test_c_r_path_manager_primary_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_header = (
-        repo_root / "tools/match/include/path_manager.h"
+        repo_root / "decomp/include/path_manager.h"
     ).read_text(encoding="utf-8")
     matcher_runtime = (
-        repo_root / "tools/match/include/subgame_runtime.h"
+        repo_root / "decomp/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
     scratch = (
         scratch_source_path(repo_root / "tools/match/scratches/find_segment_path_index_by_name")
@@ -26095,10 +26095,10 @@ def test_c_r_path_manager_primary_ownership_stays_aligned() -> None:
 def test_c_r_path_primary_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_header = (
-        repo_root / "tools/match/include/track_attachment_types.h"
+        repo_root / "decomp/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
     matcher_skeleton = (
-        repo_root / "tools/match/include/path_template_skeleton.h"
+        repo_root / "decomp/include/path_template_skeleton.h"
     ).read_text(encoding="utf-8")
     mirror_scratch = (
         scratch_source_path(repo_root / "tools/match/scratches/mirror_path")
@@ -26155,7 +26155,7 @@ def test_c_r_path_primary_ownership_stays_aligned() -> None:
 def test_c_r_subgame_primary_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_header = (
-        repo_root / "tools/match/include/subgame_runtime.h"
+        repo_root / "decomp/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
     analysis_header = (
         repo_root / "analysis/headers/path_template_types.h"
@@ -26285,13 +26285,13 @@ def test_c_r_subgame_primary_ownership_stays_aligned() -> None:
 def test_c_r_sub_loc_primary_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_header = (
-        repo_root / "tools/match/include/track_attachment_types.h"
+        repo_root / "decomp/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
     matcher_forward = (
-        repo_root / "tools/match/include/sub_loc_fwd.h"
+        repo_root / "decomp/include/sub_loc_fwd.h"
     ).read_text(encoding="utf-8")
     matcher_runtime = (
-        repo_root / "tools/match/include/subgame_runtime.h"
+        repo_root / "decomp/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
     analysis_header = (
         repo_root / "analysis/headers/path_template_types.h"
@@ -26444,10 +26444,10 @@ def test_c_r_sub_loc_primary_ownership_stays_aligned() -> None:
 def test_c_r_sm_tracks_primary_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_header = (
-        repo_root / "tools/match/include/segment_catalog_types.h"
+        repo_root / "decomp/include/segment_catalog_types.h"
     ).read_text(encoding="utf-8")
     matcher_runtime = (
-        repo_root / "tools/match/include/subgame_runtime.h"
+        repo_root / "decomp/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
     importer = (
         scratch_source_path(repo_root / "tools/match/scratches/load_segment_definitions")
