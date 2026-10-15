@@ -60,7 +60,7 @@ def _source_path(root: Path, function: str, directory: Path) -> str:
     """Where a function's scratch points, or the conventional file for a new one."""
     scratch = root / SCRATCHES / function
     if (scratch / "scratch.conf").exists():
-        source = load_scratch_config(scratch).source_path.resolve()
+        source = load_scratch_config(scratch).source_path
         if source.is_relative_to((root / DECOMP).resolve()):
             return source.relative_to(root.resolve()).as_posix()
     return (directory / f"{function}.cpp").as_posix()
@@ -134,7 +134,7 @@ def layout_problems(root: Path) -> list[str]:
             if not (root / source["path"]).is_file():
                 problems.append(f"missing {source['path']}")
             config = load_scratch_config(root / source["config"])
-            if config.source_path.resolve() != (root / source["path"]).resolve():
+            if config.source_path != (root / source["path"]).resolve():
                 problems.append(f"{source['config']} does not point at {source['path']}")
     for path in sorted((root / DECOMP).rglob("*.cpp")):
         relative = path.relative_to(root).as_posix()

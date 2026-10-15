@@ -63,7 +63,7 @@ def compare(directory, output, tool):
     native = json.loads((output / "native-diagnostics.json").read_text())
     symbol = diff["left"]["symbols"][0]
     summary = {
-        "source_sha256": exporter.sha((directory / "scratch.cpp").read_bytes()),
+        "source_sha256": exporter.sha(scratch_source_path(directory).read_bytes()),
         "snapshot_receipt_sha256": exporter.sha((output / "receipt.json").read_bytes()),
         "snapshot": str(output),
         "candidate_function_sha256": receipt["objects"]["candidate"]["input_sha256"],

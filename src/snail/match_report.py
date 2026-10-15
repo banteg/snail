@@ -550,7 +550,7 @@ def refresh_evidence(*, jobs: int = matchlib.DEFAULT_MATCH_JOBS) -> dict[str, An
         row.update(
             {
                 "candidate": "source",
-                "source": status.config.source_path.resolve()
+                "source": status.config.source_path
                 .relative_to(REPO_ROOT)
                 .as_posix(),
                 "scratch": status.config.directory.resolve()
@@ -656,7 +656,7 @@ def validate_evidence(evidence: dict[str, Any]) -> None:
         if (
             row["source"] not in recorded
             or f"{row['scratch']}/scratch.conf" not in recorded
-            or config.source_path.resolve() != source.resolve()
+            or config.source_path != source.resolve()
         ):
             raise ValueError("candidate source is absent from pinned inputs")
         matchlib.validate_scratch_source(source)
