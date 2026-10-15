@@ -27,7 +27,6 @@ const shell_flags = [_][]const u8{
 
 const shared_shell = [_][]const u8{
     "shell/game_session.cpp",
-    "shell/render_fixes.cpp",
     "shell/extras.cpp",
     "shell/fixes.cpp",
     "shell/extras_paths.cpp",

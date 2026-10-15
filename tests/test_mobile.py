@@ -11654,7 +11654,8 @@ def test_input_ok_overlay_uses_authored_primary_owner() -> None:
         scratch_source_path(scratch_root / "border_input_text")
     ).read_text(encoding="utf-8")
     assert input_text_init.count("input_ok_state()->Init();") == 1
-    assert input_text.count("input_ok_state()->AI();") == 1
+    assert input_text.count("cRInputOK* ok = input_ok_state();") == 1
+    assert input_text.count("ok->AI();") == 2
 
 
 def test_cameraman_uses_authored_primary_owner() -> None:
