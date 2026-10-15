@@ -1,0 +1,52 @@
+# Original bugs
+
+The shipped `SnailMail.exe` has a few behaviours that read as genuine bugs once
+the recovered source shows how they arise. The port fixes them **by default**,
+with no switch. The one large switch is [Mobile extras](README.md#enhancements),
+for content backported from the Android release.
+
+Each fix wraps the matched function (`port/wrapped.txt`) and lives in
+`port/shell/fixes.cpp`. The recovered source in `decomp/` stays as the original
+compiled it. So far every fix changes only what is drawn, so the replay and
+session oracles still match with the fixes in.
+
+## 1) Slugs and garbage appear upright for a frame
+
+Native behaviour:
+
+- `cRSubGame::AddSlug` (`spawn_slug_hazard`, `0x43dc80`) and
+  `cRSubGame::AddGarbage` (`spawn_track_garbage_hazard`, `0x43da80`) place the
+  hazard on its cell and call `CalcRealPos`, which returns the track's tilt
+  there as `attachment_facing_angle`. They then allocate the hazard's sprite
+  but leave its `facing_angle` at the 0 that `cRSprite::Init` sets.
+- The sprite only turns in the hazard's own update. `cRSlug::AI`
+  (`update_slug_hazard_ai`, `0x43f930`) and `cRSubGarbage::AI`
+  (`update_garbage_hazard`, `0x43f200`) set
+  `facing_angle = heading_roll + attachment_facing_angle`, plus the player's
+  `follow_state.orientation_b` while the player rides a path.
+- A hazard spawns during `cRSubGame::AI`, after that tick's hazard updates have
+  run, so the frame drawn on its spawn tick shows it upright. On the next
+  tick it snaps to the track's angle.
+
+Why it's a bug:
+
+- The spawn code already has the angle, and every later frame uses it. Only the
+  first frame draws the hazard upright.
+- On flat track the angle is 0 and nothing shows. It shows where hazards spawn
+  on tilted cells: `Angle=` segments, Wibble, and half-pipes. In Pro-Challenge's
+  "Pros Only" (HalfPole, `Wibble.txt Angle=±30`), a slug at z 110.5 has a facing
+  of 0 on its spawn tick and 0.196 from the next tick on.
+- All four functions are byte-matched, so this is the original's code. Android's
+  `cRSubGame::AddSlug` (`0007953c`) doesn't set the facing at spawn either.
+
+Evidence: with `--trace`, the headless build prints `upright_hazards N`
+whenever the number of active hazards drawn upright on a tilted cell changes.
+Before the fix, replays A1, A3, A4 and A5 each showed such a hazard on three
+spawn ticks. After it, none of the 20 replays does.
+
+Port behaviour:
+
+- `AddSlug` and `AddGarbage` run unchanged, then the wrapper gives the new
+  sprite the facing its first update would give it.
+- The facing is presentation only. Nothing in play reads it, and both oracles
+  match (20/20 replays, 10/10 sessions).

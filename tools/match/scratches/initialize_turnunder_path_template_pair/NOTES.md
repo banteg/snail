@@ -642,3 +642,13 @@ The original build cannot have used the SP5 frontend this match was made
 with (see the [compiler identification](../../compiler-identification-20261005.md)). Under the corrected baseline, msvc6.3, the unchanged
 source scores 94.97% (99.42% before); the source shape was fitted to the newer frontend and
 needs rework under msvc6.3.
+
+## 2026-10-15: 100% byte-exact under msvc6.3
+
+Keeping `&this->primary_samples` (`0x500`) and `&this->secondary_samples` (`0x518`) at `mod 4 == 0` (`cost = 0x10007`) restores the offset-first `Identity()` and `rep movsd` receivers under `msvc6.3`, allowing:
+
+- `tail_sample_offset = endpoint_offset` in the departure loop (`tail_sample_offset += sizeof(AttachmentSample); ++i;`) to recover the native latch order without flipping the departure `Identity()` receivers;
+- `i = sample_step + 6;` inside `for (; sample_step < interior_count; ++sample_step)` (single basic IV) to place `sample_step = 0` (`mov [esp+0x6c], ebx`) before the loop guard without flipping the curve `Identity()` or `rep movsd` receivers;
+- `AttachmentSample *const &primary_bank = primary_samples;` on the RHS of `primary_samples[i].center_x = ...` so the RHS endpoint load sorts `primary_bank` (`0x15500`) above `endpoint_offset` (`0x101c0`) while the LHS store keeps `this->primary_samples` (`memory [temp slot 0x500]`, `cost = 0x10007`) below the induction variable (`0x10240`), matching `+0x297` (`fstp dword ptr [ebx + eax + 0x90]`).
+
+Result: **100.00% proof-grade byte-exact** (`687/687` instructions, prefix `687`, `body_byte_exact = true`, `45/45` masked operands ok).
