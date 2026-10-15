@@ -128,9 +128,9 @@ allocation remain unresolved.
 
 The complete recipes are tracked beside their append-only receipts:
 
-- [S-bend phase and face owners](scratches/initialize_sbend_path_template_pair/phase-index-face-owner-coupling-20260908.json)
-- [Sweep vertex and face owners](scratches/initialize_sweep_path_template_pair/vertex-index-face-owner-coupling-20260908.json)
-- [Snake vertex and face owners](scratches/initialize_snake_path_template_pair/vertex-index-face-owner-coupling-20260908.json)
+- [S-bend phase and face owners](https://github.com/banteg/snail/blob/c51d7ce23/tools/match/scratches/initialize_sbend_path_template_pair/phase-index-face-owner-coupling-20260908.json)
+- [Sweep vertex and face owners](https://github.com/banteg/snail/blob/c51d7ce23/tools/match/scratches/initialize_sweep_path_template_pair/vertex-index-face-owner-coupling-20260908.json)
+- [Snake vertex and face owners](https://github.com/banteg/snail/blob/c51d7ce23/tools/match/scratches/initialize_snake_path_template_pair/vertex-index-face-owner-coupling-20260908.json)
 
 ## Reproduce
 

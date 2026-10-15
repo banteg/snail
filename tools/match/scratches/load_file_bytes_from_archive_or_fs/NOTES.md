@@ -116,7 +116,7 @@ VC6 8168 C++ reproduces all native instructions. The same source under the
 standard SP5-style C++ profile reaches 94.92%, 207/206, prefix 41, with all
 36 references clean. Compiler selection is supported by the independently
 verified RShell sibling evidence in
-[the fixed-size loader profile record](../load_file_bytes_fixed_size_from_archive_or_fs/profile-evidence-20260907.md):
+[the fixed-size loader profile record](https://github.com/banteg/snail/blob/c51d7ce23/tools/match/scratches/load_file_bytes_fixed_size_from_archive_or_fs/profile-evidence-20260907.md):
 the executable has valid 8168 C++ contributions, and twelve unchanged nearby
 controls match under that profile, six distinguishing it from SP5-style C++.
 Both verified mobile ports name this contract `RShellLoadFile(char*, void*,

@@ -2217,7 +2217,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             source_path = config.source_path
             if (
                 args.write_best is not None
-                and args.write_best.resolve() == source_path.resolve()
+                and args.write_best.resolve() == source_path
             ):
                 raise ValueError(
                     "--write-best cannot overwrite the tracked scratch source"

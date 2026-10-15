@@ -5460,7 +5460,7 @@ def test_scratch_source_points_into_recovered_tree(tmp_path: Path) -> None:
     (scratch / "scratch.conf").write_text(conf)
 
     config = load_scratch_config(scratch)
-    assert config.source_path.resolve() == recovered.resolve()
+    assert config.source_path == recovered.resolve()
     assert scratch_source_path(scratch).resolve() == recovered.resolve()
     assert scratch_compilation_source(config, match_root) == recovered.read_text()
     # A probe overlay replaces the canonical source and its config forgets SOURCE.

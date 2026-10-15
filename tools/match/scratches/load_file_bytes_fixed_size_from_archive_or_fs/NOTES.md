@@ -100,7 +100,7 @@ contract in `RShell.o`, and all twelve adjacent archive/file/report controls
 match under the same 8168 C++ profile. Six controls distinguish it from the
 SP5-style C++ profile through native instruction/cleanup differences.
 
-See [the profile evidence](profile-evidence-20260907.md) for the exact control
+See [the profile evidence](https://github.com/banteg/snail/blob/c51d7ce23/tools/match/scratches/load_file_bytes_fixed_size_from_archive_or_fs/profile-evidence-20260907.md) for the exact control
 matrix and component identities. This establishes a supported reproduction
 profile; the Rich header does not map an individual object to this address.
 The project-wide default and neighboring scratch configurations are unchanged.

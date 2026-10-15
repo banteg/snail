@@ -27,11 +27,11 @@ oracle are readable with `git show 570772c30^:<path>`.
 
 What makes this practical:
 
-- **785 functions** of recovered C++ (about 50k lines) on 158 shared headers
-  (about 9k lines) in `tools/match/`. There is no inline assembly. Only 8
-  scratches declare local compatibility types.
-- **637 of 662** port-relevant functions are byte-proven. The remaining 25 are
-  semantically complete and fuzzy-match at 77–100% (`tools/match/STATUS.md`).
+- **785 functions** of recovered C++ (about 50k lines) in `decomp/` on 159
+  shared headers (about 9k lines) in `decomp/include/`. There is no inline
+  assembly. Only 9 scratches declare local compatibility types.
+- **646 of 662** port-relevant functions are byte-proven. The remaining 16
+  fuzzy-match at 77–100% (`tools/match/STATUS.md`).
 - **The engine already has a seam.** Gameplay calls an `RShell` API (files,
   archive, memory, input, sound), a `G0` render facade and `cRSound`/voice/music
   calls, never Direct3D or BASS directly. The Android and iOS builds replaced
@@ -568,7 +568,7 @@ trap; sanitizers and the stack protector off, as the original had neither.
 
 1. **Organise the source.** Done: `decomp/` holds all 785 functions in 58
    link-order units, every scratch points at its file with `SOURCE=`, and every
-   match is unchanged. Left over: fold the eight scratch-local compatibility
+   match is unchanged. Left over: fold the 11 scratch-local compatibility
    types (such as `SubgoldyPathView`) into shared headers; meanwhile
    `port/shell/abi_shims.cpp` bridges the calls made through them.
 2. **Headless link.** Done: 682 recovered files compile unchanged and link
@@ -599,7 +599,7 @@ trap; sanitizers and the stack protector off, as the original had neither.
 6. **Modern options.** Resolution, widescreen and frame interpolation live only
    in `shell/`, behind flags. They never change core behaviour.
 
-Matching the remaining 25 partials continues in parallel. The port can include
+Matching the remaining 16 partials continues in parallel. The port can include
 them now, but `update_subgoldy`, `update_golb_ai` and
 `update_track_attachment_follow_state` are where a wrong reading cascades, so
 oracle divergences there are checked against their NOTES first.
