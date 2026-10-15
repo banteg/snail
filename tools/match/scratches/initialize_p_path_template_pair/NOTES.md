@@ -1,5 +1,9 @@
 # initialize_p_path_template_pair
 
+## 2026-10-15: 100% byte-exact under msvc6.3
+
+Matching the Hump/HillValley prologue count spelling (`int last_index = curve_segments + 1; segment_count = last_index + 1; segment_count_f = ((float)(last_index + 1));`) and passing `curve_segments + 1` to `initialize_endpoint_pair` keeps `last_index` (`edi = curve_segments + 1`) live across `segment_count = last_index + 1` (`eax = edi + 1`) and lets CSE reuse `edi` for the endpoint helper's `index` (`mov ecx, edi; mov [esp+0x60], ecx`) without coalescing them. Sharing `PathTemplateSample *const &primary_bank = primary_samples` across `initialize_endpoint_pair`, the curve loop, and `compute_terminal_deltas` while keeping `&this->secondary_samples` at CSE slot `0x4f0` (`mod 4 = 0`, cost `0x10007`) reaches **100.00% proof-grade byte-exact** (`679/679` instructions, prefix `679`, `body_byte_exact = true`, `41/41` masked operands ok).
+
 ## 2026-09-25 (later) controls (no source change)
 
 Still 93.44%, 14/13. The prologue needs a late copy of `edi = curve_segments + 1`
