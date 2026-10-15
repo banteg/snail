@@ -1,14 +1,6 @@
 // initialize_hump_path_template_pair @ 0x41d030 (thiscall, ret 0x1c)
 
-#include "attachment_sample.h"
-#include "track_attachment_types.h"
-#include "object_render_types.h"
-#include "sprite.h"
-#include "transform_matrix.h"
 #include "path_helpers.h"
-
-float Sin(float angle);
-float Cos(float angle);
 
 typedef AttachmentSample PathAttachmentSample;
 
