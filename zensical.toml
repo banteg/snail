@@ -31,6 +31,7 @@ nav = [
     { "Port" = [
         { "Port plan" = "port/README.md" },
         { "Divergences" = "port/divergences.md" },
+        { "Original bugs" = "port/original-bugs.md" },
     ] },
 ]
 copyright = """

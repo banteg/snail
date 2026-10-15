@@ -14,6 +14,9 @@ of every guard still matches.
 | `decomp/engine/RMaths/initialize_trigonometry_tables.cpp` | `float angle`, which VC6 keeps in an x87 register at the C runtime's 53-bit precision (RMathInit runs before Direct3D 8 lowers it to 24-bit) | `double angle` | the `Sin`/`Cos` tables must hold the same entries; float angles change more than half of them by a ULP. Same values the original computed |
 | `decomp/game/SubGame/update_subgoldy.cpp` (two lateral-velocity decays), `tools/match/include/x87_store.h` | `velocity.x = (1 - rate * 0.1f) * velocity.x` stored from an x87 register | stored through `x87_store_float` | the x87 register's wide exponent range rounds an underflowing product to 24 bits before the store rounds it to a denormal; wasm rounds once. Same values the original stored |
 
+Fixes for the original's own bugs wrap matched functions in the shell instead;
+see [Original bugs](original-bugs.md).
+
 ## Shell behaviour that differs from the shipped build
 
 | Where | Shipped | Port | Why |

@@ -306,7 +306,8 @@ The gear in the page's corner switches the port's enhancements over the
 original, one by one or all at once (Original, Enhanced). All enhancements
 start enabled in a new browser; saved choices take precedence. Rendering and
 window options live in the host and presenters, while Mobile extras uses the
-content hooks described below.
+content hooks described below. Fixes for the original's own bugs have no
+switch: they are always on and listed in [Original bugs](original-bugs.md).
 
 - **Sharp rendering:** the presenter draws at the canvas's size in device
   pixels instead of 640x480. Viewports scale, while the half-pixel offset stays

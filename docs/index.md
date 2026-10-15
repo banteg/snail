@@ -17,7 +17,7 @@ the original tick by tick; it plays in the browser at
 
 - [Original](original/index.md): verified facts about the shipped files, archive layout, and authored content formats
 - [RE](re/index.md): deeper notes on the executable, runtime systems, path behavior, Binary Ninja workflow, and trace collection
-- [Port](port/README.md): how the recovered source runs on modern platforms, its oracles, and the [divergences](port/divergences.md) it needs
+- [Port](port/README.md): how the recovered source runs on modern platforms, its oracles, the [divergences](port/divergences.md) it needs, and the [original bugs](port/original-bugs.md) it fixes
 
 ## Current Shape
 
