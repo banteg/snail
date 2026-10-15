@@ -18,8 +18,8 @@ source also builds into a port, playable in the browser at
 
 ## Status
 
-- **Matching:** 637 of 662 port-relevant functions are byte-proven against the
-  original; the other 25 are semantically complete partials
+- **Matching:** 646 of 662 port-relevant functions are byte-proven against the
+  original; the other 16 are partials that fuzzy-match at 77–100%
   ([STATUS.md](tools/match/STATUS.md)).
 - **Port (v0.3.0):** the recovered source compiles into a 32-bit wasm
   program (a few `SNAIL_PORT` guards aside, each listed in

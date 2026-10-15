@@ -1,13 +1,6 @@
 // initialize_sbend_path_template_pair @ 0x42df00 (thiscall, ret 0x1c)
 
-#include "attachment_sample.h"
-#include "track_attachment_types.h"
-#include "object_render_types.h"
-#include "sprite.h"
-#include "transform_matrix.h"
 #include "path_helpers.h"
-
-float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 

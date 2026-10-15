@@ -1,14 +1,6 @@
 // initialize_twister2_path_template_pair @ 0x42af30 (thiscall, ret 0x18)
 
-#include "attachment_sample.h"
-#include "track_attachment_types.h"
-#include "object_render_types.h"
-#include "sprite.h"
-#include "transform_matrix.h"
 #include "path_helpers.h"
-
-float Sin(float angle);
-float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 

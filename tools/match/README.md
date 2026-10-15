@@ -18,8 +18,8 @@ one:
 - product IDs 10/11 record ordinary VC6 C/C++ contributions from build
   families 8168, 8447, and 8966; 8966 is the normal SP5 backend/object family,
   not the Processor Pack. Every C++ row (product 11) is build 8168 or 8447;
-  8966 appears only on C rows (product 10), so no Rich row directly backs the
-  msvc6.5 C++ baseline below;
+  8966 appears only on C rows (product 10), which is why the C++ baseline below
+  uses the SP3 backend 8447;
 - product IDs 28/29 record a C++-dominated VC7.0-family build-9178 population,
   while product ID 96 records one VC7.1-family build-4035 contribution;
 - MASM 6.13/6.14, alias-object, resource, old-linker/library, and import-library
@@ -71,15 +71,26 @@ not an official Microsoft Rich-header specification.
 
 ## Recovered source groups
 
-[`translation_units.json`](translation_units.json) records ordered groups of
-canonical scratch bodies with independent native source-object provenance.
-The first two [verified adjacent pairs](adjacent-source-units-20260909.md)
-recover two `SubGame.o` functions whose isolated builds duplicated shared tails.
-Each member keeps its existing source file; the compiler concatenates members
-in manifest order and publishes one physical object under the first member's
-build directory. Exact members must retain their proof-grade matches. Partial
-members may improve while preserving instruction-count distance, prefix, and
-reference evidence; they remain explicitly partial and receive no exact credit.
+[`translation_units.json`](translation_units.json) lists groups of scratches
+that compile as one translation unit. Most are whole units from
+[`decomp/layout.json`](../../decomp/layout.json), one per original object file:
+the [whole-unit compilation report](whole-tu-compilation-20261015.md)
+[registers](whole-tu-compilation-20261015.md#registered) 35 units whose results
+did not change, then [Game, GL and GDX](whole-tu-compilation-20261015.md#game-gl-and-gdx)
+once their declarations agreed, and [Path](whole-tu-compilation-20261015.md#path)
+once its shared helpers became one definition each in
+[`path_helpers.h`](../../decomp/include/path_helpers.h). That makes 39
+whole units with 380 functions. Two
+[adjacent SubGame pairs](adjacent-source-units-20260909.md) stay registered on
+their own; they recover two `SubGame.o` functions whose isolated builds
+duplicated shared tails.
+
+The matcher concatenates a group's member sources in manifest order (address
+order for whole units) and publishes one physical object under the first
+member's build directory. Every member is scored in that context, so source
+that matches only in isolation fails once its unit is registered. Exact members
+must keep their proof-grade matches; partial members stay explicitly partial
+and receive no exact credit.
 
 Source, config, transitive headers, the group manifest, and the selected Wibo
 executable participate in cache invalidation. This includes `WIBO` overrides
@@ -87,32 +98,44 @@ and the launcher's bundled-runner/PATH fallback. Experiment receipts also hash
 the selected runner. `probe` and `mutate` replace only the selected member while keeping
 its peers. Diagnostic exports include `translation-unit.cpp`; mixed listings
 select the actual decorated function symbol. Link consumers reuse the physical
-object and retain separate native-function ownership. This does not imply that
-the entire original translation unit has been reconstructed.
+object and retain separate native-function ownership.
 
-Replay isolated, reversed, and peer-header controls with:
+The remaining units still compile one object per function: G0, RMaths and
+RShell until their declarations agree across files, SubGame until
+`update_cameraman` matches in context, and the `between-*` placeholders because
+their boundaries are not claims about original files. To register a unit, run
+it through [`whole_tu_experiment.py`](whole_tu_experiment.py) and keep it only
+when no function's state, ratio or body bytes change:
+
+```sh
+uv run tools/match/whole_tu_experiment.py dump base.json
+uv run tools/match/whole_tu_experiment.py units <Unit>
+uv run tools/match/whole_tu_experiment.py dump new.json
+uv run tools/match/whole_tu_experiment.py compare base.json new.json
+```
+
+VC6 numbers frontend symbols across the whole translation unit, so an edit to
+one member (even a header include or a repeated prototype) can move another
+member's code; rescore the tree after any change inside a registered unit. A
+function can also compile differently when it is the first definition its
+compiler sees, so an overlay that starts with a dummy definition reproduces
+in-context results. Replay isolated, reversed, and peer-header controls with:
 
 ```sh
 uv run tools/match/probe_translation_unit_context.py --out artifacts/match/unit-controls.json
 ```
 
-Promote a new group only after checking source-object ownership, source order,
-every member's instructions and positional references, body-byte accounting,
-and the full native status for regressions. A context-dependent compiler result
-is an observation, not proof of the compiler's internal mechanism.
+A context-dependent compiler result is an observation, not proof of the
+compiler's internal mechanism.
 
 The [Windows link order](../../analysis/ownership/windows-link-order.md) maps
 functions to their original objects: the game and its engine library were
 linked alphabetically by source file, which also shows where mobile object
 labels have drifted from this build.
 
-The [current Path context controls](path-context-20260922.md) preserve all
-extracted bytes for LoopOut, Turnover, TurnoverDouble, and Worm in isolated,
-native-predecessor, and available 43-member contexts. These are bounded
-negative results; none of those contexts is registered as a recovered group.
-The [current SubGame context control](subgame-context-20260922.md) closes
-declaration conflicts that blocked the 190-member concatenation; all eleven
-remaining partials stay non-exact, and no source group is registered.
+The earlier [Path context controls](path-context-20260922.md) and
+[SubGame context control](subgame-context-20260922.md) predate whole-unit
+registration.
 
 The [heightmap coordinate recovery](heightmap-coordinates-20260922.md) follows
 an assignment through the preserving compiler observer, then improves the
@@ -169,7 +192,7 @@ in the repository.
    ```sh
    mkdir -p tools/match/compilers
    cd tools/match/compilers
-   for v in msvc6.0 msvc6.5 msvc6.5pp msvc6.6; do
+   for v in msvc6.3 msvc6.0 msvc6.5 msvc6.6; do
      curl -sL -o $v.tar.gz https://github.com/OmniBlade/decomp.me/releases/download/msvcwin9x/$v.tar.gz
      mkdir -p $v && tar xzf $v.tar.gz -C $v && rm $v.tar.gz
    done
@@ -185,8 +208,9 @@ in the repository.
    checks it against a pinned SHA-256. It then installs the headers into
    `tools/match/sdk/dx81`.
 
-Most scratches use `msvc6.5`; that bundle is sufficient for the matching
-challenges unless the selected `scratch.conf` specifies another compiler.
+Every scratch compiles with the `msvc6.3` baseline (no `scratch.conf` sets
+`COMPILER`), so that bundle is sufficient for the matching challenges; the
+others serve compiler controls.
 From the repository root, reproduce a compact challenge with:
 
 ```sh
@@ -759,7 +783,7 @@ and is worth less than an honest 60%:
 1. **No inline assembly.** `__asm`, `_asm`, `__declspec(naked)` — rejected
    mechanically by the harness (`validate_scratch_source`).
 2. **No score-driven flag shopping.** Use the project-standard reproduction
-   baseline (`msvc6.5 /O2 /G5 /W3`). An override needs independent native or
+   baseline (`msvc6.3 /O2 /G5 /W3`). An override needs independent native or
    provenance evidence; a better score alone is not evidence of the original
    toolchain.
 3. **No normalizer gaming.** Don't invent extern symbols or other dummy

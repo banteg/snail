@@ -1,14 +1,6 @@
 // initialize_toad_path_template_pair @ 0x42cbf0 (thiscall, ret 0x10)
 
-#include "attachment_sample.h"
-#include "track_attachment_types.h"
-#include "object_render_types.h"
-#include "sprite.h"
-#include "transform_matrix.h"
 #include "path_helpers.h"
-
-float Sin(float angle);
-float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 

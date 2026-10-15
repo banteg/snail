@@ -42,6 +42,13 @@ The matching harness also needs `wibo` and the decomp.me MSVC bundles. Follow
 the setup in [tools/match/README.md](tools/match/README.md); the compiler and
 scratch build outputs are local tooling artifacts and should stay untracked.
 
+A new `git worktree` starts without those untracked inputs. Run
+`tools/link_worktree.sh` inside it to symlink them from the main checkout:
+the reference binaries and mobile builds under `artifacts/`, the compilers, the
+DirectX 8.1 SDK, `wibo` and `objdiff-cli`. Artifact directories that tools
+write to by default (reports, web packs, screenshots) stay local to the
+worktree.
+
 Docs can be previewed locally with:
 
 ```sh

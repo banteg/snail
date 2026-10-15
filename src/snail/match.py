@@ -4621,7 +4621,7 @@ class ScratchConfig:
 
     @property
     def source_path(self) -> Path:
-        return self.directory / self.source
+        return (self.directory / self.source).resolve()
 
 
 def scratch_source_path(directory: Path) -> Path:
@@ -5429,7 +5429,7 @@ def scratch_dependency_sha256(
     """Hash the content-stable input graph for one scratch build."""
 
     root = match_root.resolve()
-    source = config.source_path.resolve()
+    source = config.source_path
     dependencies: list[list[str]] = []
     for path in _scratch_build_dependencies(config, match_root):
         resolved = path.resolve()
@@ -6027,7 +6027,7 @@ def generate_compiler_listing(
         "kind": "snail-compiler-listing",
         "scratch": str(config.directory.resolve()),
         "function": config.function,
-        "source": str(canonical_path.parent / "scratch.cpp"),
+        "source": str(source),
         "source_sha256": source_sha256,
         "compiler": config.compiler,
         "cflags": config.cflags,
