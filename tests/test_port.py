@@ -165,6 +165,32 @@ def test_line_table_maps_trace_offsets_to_source_lines(tmp_path):
 @pytest.mark.skipif(
     shutil.which("node") is None
     or not (REPO_ROOT / "port/zig-out/bin/snail.wasm").exists()
+    or not (REPO_ROOT / "artifacts/bin/SnailMail.dat").exists(),
+    reason="needs node, snail.wasm and SnailMail.dat",
+)
+def test_fix_hazards_spawn_turned_to_the_track(tmp_path):
+    # Without the fix, A1 draws a slug or garbage upright on a tilted cell on
+    # three spawn ticks (docs/port/original-bugs.md).
+    (tmp_path / "SnailMail.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMail.dat")
+    shutil.copy2(REPO_ROOT / "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat", tmp_path / "ScoreA.dat")
+    replay = subprocess.run(
+        [
+            "node", str(REPO_ROOT / "port/shell/run.mjs"), str(REPO_ROOT / "port/zig-out/bin/snail.wasm"), "--trace",
+            "--keys", str(REPO_ROOT / "port/scripts/high_scores.keys"),
+            "--replay", "A1",
+        ],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert "upright_hazards" not in replay.stderr
+    assert "matches the original" in replay.stderr
+
+
+@pytest.mark.skipif(
+    shutil.which("node") is None
+    or not (REPO_ROOT / "port/zig-out/bin/snail.wasm").exists()
     or not (REPO_ROOT / "artifacts/bin/SnailMail.dat").exists()
     or not (REPO_ROOT / "artifacts/bin/SnailMailExtras.dat").exists(),
     reason="needs node, snail.wasm, SnailMail.dat and SnailMailExtras.dat",
@@ -376,6 +402,7 @@ console.log(JSON.stringify(out));
         cwd=tmp_path,
         capture_output=True,
         text=True,
+        check=False,
     )
     assert replay.returncode == 3
     assert "tramp_rings 1" in replay.stderr

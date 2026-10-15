@@ -2,13 +2,14 @@
 // fixed 1/60 s per tick, with scripted input and a presenter that shows
 // nothing. The browser build (web_main.cpp) runs the same session live.
 //
-// Usage: snail.wasm [--ticks N] [--keys SCRIPT] [--warmup N] [--trace] [--replay A3]
+// Usage: snail.wasm [--ticks N] [--keys SCRIPT] [--warmup N] [--trace] [--extras] [--replay A3]
 //        snail.wasm --tape TAPE --tape-out STATES
 //   --ticks   ticks to run (default 600; with --keys, until the script ends)
 //   --keys    input script (shell/input_script.cpp)
 //   --warmup  random draws before construction; the original used
 //             timeGetTime() % 1000, so a run is reproducible only with this
 //   --trace   print front-end state changes and each screen's widgets
+//   --extras  enable opt-in mobile content (shell/extras.h)
 //   --replay  replay row 3 of ScoreA.dat (B: ScoreB.dat) against its recording
 //             (shell/replay_oracle.cpp); pair with scripts/high_scores.keys
 //   --tape    replay a session the original recorded and write the port's
@@ -20,6 +21,7 @@
 #include <unistd.h>
 
 #include "extras.h"
+#include "fixes.h"
 #include "frontend_widget.h"
 #include "game_root.h"
 #include "game_session.h"
@@ -122,6 +124,7 @@ int main(int argc, char** argv)
     int subgame_state = -1;
     int tramp_rings = 0;
     int sway_rings = 0;
+    int upright_hazards = 0;
     unsigned int widgets = 0;
     for (int tick = 0; tick < ticks; ++tick) {
         set_scripted_input(tick);
@@ -158,6 +161,10 @@ int main(int argc, char** argv)
         if (trace && extras_swaying_ring_count() != sway_rings) {
             sway_rings = extras_swaying_ring_count();
             fprintf(stderr, "tick %d: sway_rings %d\n", tick, sway_rings);
+        }
+        if (trace && fixes_upright_hazard_count() != upright_hazards) {
+            upright_hazards = fixes_upright_hazard_count();
+            fprintf(stderr, "tick %d: upright_hazards %d\n", tick, upright_hazards);
         }
         // Once a screen has settled, list its widgets (for writing click scripts).
         if (trace && g_game->fade.state == 0 && widget_set_signature() != widgets) {
