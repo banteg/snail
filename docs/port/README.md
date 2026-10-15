@@ -363,6 +363,10 @@ The Mobile extras switch selects the mobile 3,500-row build limit; classic
 mode retains the PC 3,100-row limit. Port builds reserve 3,600 runtime rows,
 including the tail margin. Matching Windows builds retain the original layout.
 
+The Mobile extras switch selects the mobile 3,500-row build limit; classic
+mode retains the PC 3,100-row limit. Port builds reserve 3,600 runtime rows,
+including the tail margin. Matching Windows builds retain the original layout.
+
 ### Hosting
 
 https://snail.banteg.xyz serves the same page as static files from Cloudflare
