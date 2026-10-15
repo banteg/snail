@@ -1,6 +1,6 @@
 // delete_file_path @ 0x405340 (cdecl)
 
-extern "C" int __cdecl remove(char* path);
+#include <stdio.h>
 
 void __cdecl delete_file_path(char* path)
 {

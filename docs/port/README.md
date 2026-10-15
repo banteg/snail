@@ -157,8 +157,8 @@ tools/match/scratches/   matching configs, NOTES and experiments; SOURCE= points
 Units follow the alphabetical Windows link order in
 `analysis/ownership/windows-link-order.json`. Game objects run from `Border.o`
 to `Voice.o`, followed by the engine library from `BassPlay.o` to
-`Viewport.o`. Note that `RObject` and `RShell` link within the game sequence. The two unnamed runs with name candidates (`G0`, `GDX`) and
-twelve small `between-*` gaps are flagged as such in `layout.json`. Matching keeps working per function: the
+`Viewport.o`, then d3dx8.lib's `d3dxmath.obj`. Note that `RObject` and `RShell` link within the game sequence. Name candidates
+(`G0`, `GDX`, `GetDXVer`, `Joystick`) and functions placed without a mobile label carry their evidence in `layout.json`. Matching keeps working per function: the
 matcher compiles the file `SOURCE=` names, so `decomp/` becomes the single
 source of truth for both matching and the port.
 
@@ -566,7 +566,7 @@ trap; sanitizers and the stack protector off, as the original had neither.
 
 ## Stages
 
-1. **Organise the source.** Done: `decomp/` holds all 785 functions in 58
+1. **Organise the source.** Done: `decomp/` holds all 785 functions in 51
    link-order units, every scratch points at its file with `SOURCE=`, and every
    match is unchanged. Left over: fold the 11 scratch-local compatibility
    types (such as `SubgoldyPathView`) into shared headers; meanwhile

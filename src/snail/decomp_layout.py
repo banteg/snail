@@ -4,14 +4,17 @@ Every recovered function lives in its unit, `decomp/<sequence>/<unit>/`, normall
 `<function>.cpp`; functions the compiler emits from one definition (a global's
 constructor and its registration thunk) share that definition's file.
 Units follow `analysis/ownership/windows-link-order.json`: the game objects were
-linked alphabetically, then the engine library. A unit is either an attested
-object (Border, SubGame, ...), an unnamed run with a name candidate read from the
-binary (G0, GDX), or an unresolved run between two objects. Matcher scratches
+linked alphabetically, then the engine library, then d3dx8.lib. A unit is an
+object attested by mobile labels in link order (Border, SubGame, ...), an object
+or name candidate carrying its own recorded evidence (Png, G0, Joystick, ...), or
+an unresolved run between two objects. Functions placed into an attested object
+without a mobile label carry their evidence as placements. Matcher scratches
 keep their configs and notes and point here with `SOURCE=`.
 """
 
 import json
 import os
+from itertools import pairwise
 from pathlib import Path
 
 from .match import load_scratch_config
@@ -23,37 +26,35 @@ SCRATCHES = Path("tools/match/scratches")
 DECOMP = Path("decomp")
 LAYOUT = DECOMP / "layout.json"
 
-# The engine library follows the game objects in the image.
-ENGINE_LIBRARY_START = 0x449460
-# Unnamed runs whose own strings name their source file (windows-link-order.md).
-BINARY_NAME_CANDIDATES = {
-    0x406BC0: ("G0", "the binary names G0.cpp where ObjectList/TextureList are initialized"),
-    0x4114B0: ("GDX", "create_index_buffer reports DX_INDEXBUFFER_MAX in GDX.h"),
-}
-
 
 def _unit(entry: dict) -> tuple[str, str, str]:
     """Directory name, evidence kind and evidence text of one link-order object."""
-    start = int(entry["start"], 16)
+    if "evidence" in entry:
+        evidence = entry["evidence"]
+        if entry["object"]:
+            return Path(entry["object"]).stem, evidence["kind"], f"{entry['object']}: {evidence['note']}"
+        before, after = entry["between"]
+        return Path(entry["candidate"]).stem, evidence["kind"], (
+            f"unnamed run between {before} and {after}; {evidence['note']}"
+        )
     if entry["object"]:
-        name = entry["object"].removesuffix(".o")
         verified = entry["mobile_verified"]
-        return name, "link-order-object", (
+        return Path(entry["object"]).stem, "link-order-object", (
             f"{entry['object']} in alphabetical link order; "
             f"{verified} of {entry['function_count']} functions carry a consistent mobile label"
         )
-    if start in BINARY_NAME_CANDIDATES:
-        name, why = BINARY_NAME_CANDIDATES[start]
-        before, after = entry["between"]
-        return name, "binary-name-candidate", f"unnamed run between {before} and {after}; {why}"
     before, after = (
-        {"^": "start", "$": "end"}.get(side, side.removesuffix(".o"))
+        {"^": "start", "$": "end"}.get(side, Path(side).stem)
         for side in entry["between"]
     )
     return f"between-{before}-{after}", "unresolved-boundary", (
         f"functions between {entry['between'][0]} and {entry['between'][1]} "
         "with no object name in the binary"
     )
+
+
+def _sequence(sequences: list[dict], start: int) -> dict:
+    return [sequence for sequence in sequences if int(sequence["start"], 16) <= start][-1]
 
 
 def _source_path(root: Path, function: str, directory: Path) -> str:
@@ -77,7 +78,7 @@ def build_layout(root: Path) -> dict:
         name, evidence_kind, evidence = _unit(entry)
         start = int(entry["start"], 16)
         end = int(objects[index + 1]["start"], 16) if index + 1 < len(objects) else None
-        sequence = "engine" if start >= ENGINE_LIBRARY_START else "game"
+        sequence = _sequence(link_order["sequences"], start)["name"]
         directory = DECOMP / sequence / name
         units.append(
             {
@@ -86,6 +87,10 @@ def build_layout(root: Path) -> dict:
                 "object": entry["object"],
                 "layout_evidence": evidence_kind,
                 "evidence": evidence,
+                "placements": [
+                    {key: placement[key] for key in ("functions", "evidence", "note")}
+                    for placement in entry.get("placements", [])
+                ],
                 "range": [f"0x{start:x}", f"0x{end:x}" if end else None],
                 "sources": [
                     {
@@ -118,10 +123,28 @@ def source_reference(root: Path, config: str, path: str) -> str:
     return Path(os.path.relpath(root / path, root / config)).as_posix()
 
 
+def order_problems(link_order: dict) -> list[str]:
+    """Named objects that break their sequence's alphabetical link order."""
+    problems = []
+    for sequence in link_order["sequences"]:
+        if sequence["order"] != "alphabetical":
+            continue
+        names = [
+            entry["object"] or entry.get("candidate")
+            for entry in link_order["objects"]
+            if _sequence(link_order["sequences"], int(entry["start"], 16)) is sequence
+        ]
+        names = [Path(name).stem for name in names if name]
+        for before, after in pairwise(names):
+            if before.casefold() >= after.casefold():
+                problems.append(f"{after} does not sort after {before} in the {sequence['name']} link order")
+    return problems
+
+
 def layout_problems(root: Path) -> list[str]:
     """Differences between the committed tree, its layout and the scratch configs."""
     expected = build_layout(root)
-    problems = []
+    problems = order_problems(json.loads((root / LINK_ORDER).read_text()))
     if (root / LAYOUT).read_text() != layout_text(expected):
         problems.append(f"{LAYOUT} differs from the link-order layout; run snail decomp layout --write")
     listed = set()

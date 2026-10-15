@@ -1,32 +1,35 @@
 {
-  "schema": 1,
+  "schema": 2,
   "target_sha256": "d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5",
-  "method": "Mobile source-object labels kept only where they fit the Windows link order (alphabetical within the game and engine-library sequences, longest consistent run chain); every other function is placed by the anchors around it. See windows-link-order.md.",
-  "objects": [
+  "method": "Mobile source-object labels kept only where they fit the Windows link order (alphabetical within the game and engine-library sequences, longest consistent run chain); every other function is placed by the anchors around it. See windows-link-order.md. Functions without such a label are placed by recorded evidence (placements, or an object's own evidence).",
+  "sequences": [
     {
-      "object": null,
-      "between": [
-        "^",
-        "Border.o"
-      ],
+      "name": "game",
       "start": "0x401000",
-      "last_function": "0x401000",
-      "function_count": 1,
-      "mobile_verified": 0,
-      "mobile_drift": [],
-      "functions": [
-        "initialize_array_with_constructor"
-      ]
+      "order": "alphabetical"
     },
+    {
+      "name": "engine",
+      "start": "0x449460",
+      "order": "alphabetical"
+    },
+    {
+      "name": "d3dx8",
+      "start": "0x44e950",
+      "order": "library"
+    }
+  ],
+  "objects": [
     {
       "object": "Border.o",
       "between": null,
-      "start": "0x401030",
+      "start": "0x401000",
       "last_function": "0x404730",
-      "function_count": 34,
+      "function_count": 35,
       "mobile_verified": 34,
       "mobile_drift": [],
       "functions": [
+        "initialize_array_with_constructor",
         "border_add_text_number",
         "hide_border_init",
         "unhide_border_init",
@@ -61,6 +64,19 @@
         "border_sprite_extend",
         "border_mouse_test",
         "set_border_justify_centre"
+      ],
+      "placements": [
+        {
+          "functions": [
+            "initialize_array_with_constructor"
+          ],
+          "evidence": "comdat-placement",
+          "note": "the compiler-generated `??_H` vector constructor iterator, called from G0 and SubGame; the linker keeps a COMDAT from the earliest object in link order that emits it, and this copy sits before Border.o's first function, so Border.o, the first game object, emits it (an earlier object with no other surviving code would fit too)",
+          "sources": [
+            "0x401000 precedes Border.o's first labelled function at 0x401030",
+            "callers: construct_game_runtime, initialize_runtime_pools_and_path_template_bank, initialize_player_presentation_controller (G0); initialize_parcel_set_bucket_pool, initialize_zero_parcel_bucket_pool (SubGame)"
+          ]
+        }
       ]
     },
     {
@@ -93,52 +109,44 @@
       ]
     },
     {
-      "object": null,
-      "between": [
-        "Completion.o",
-        "DatBuild.o"
-      ],
+      "object": "DatBuild.o",
+      "between": null,
       "start": "0x4050c0",
-      "last_function": "0x4051d0",
-      "function_count": 5,
-      "mobile_verified": 0,
+      "last_function": "0x405370",
+      "function_count": 10,
+      "mobile_verified": 1,
       "mobile_drift": [],
       "functions": [
         "classify_archive_entry_extension",
         "file_exists",
         "get_stream_length_preserve_position",
         "load_file_bytes_allocating",
-        "load_file_bytes_into_optional_buffer"
-      ]
-    },
-    {
-      "object": "DatBuild.o",
-      "between": null,
-      "start": "0x405270",
-      "last_function": "0x405270",
-      "function_count": 1,
-      "mobile_verified": 1,
-      "mobile_drift": [],
-      "functions": [
-        "scramble_archive_bytes_in_place"
-      ]
-    },
-    {
-      "object": null,
-      "between": [
-        "DatBuild.o",
-        "DirectX.o"
-      ],
-      "start": "0x4052a0",
-      "last_function": "0x405370",
-      "function_count": 4,
-      "mobile_verified": 0,
-      "mobile_drift": [],
-      "functions": [
+        "load_file_bytes_into_optional_buffer",
+        "scramble_archive_bytes_in_place",
         "save_file_bytes_with_optional_archive_scramble",
         "delete_file_path",
         "toggle_archive_high_bit_in_place",
         "rebuild_game_archive_if_needed"
+      ],
+      "placements": [
+        {
+          "functions": [
+            "classify_archive_entry_extension",
+            "file_exists",
+            "get_stream_length_preserve_position",
+            "load_file_bytes_allocating",
+            "load_file_bytes_into_optional_buffer",
+            "save_file_bytes_with_optional_archive_scramble",
+            "delete_file_path",
+            "toggle_archive_high_bit_in_place",
+            "rebuild_game_archive_if_needed"
+          ],
+          "evidence": "mobile-source-file",
+          "note": "iOS Source/DatBuild.cpp defines LoadFile(char*, void*, int*), SaveFile(char*, void*, int, bool) and DatBuild(): the Windows load_file_bytes_into_optional_buffer, save_file_bytes_with_optional_archive_scramble and rebuild_game_archive_if_needed; the rest are their file helpers, contiguous with the attested scramble_archive_bytes_in_place",
+          "sources": [
+            "iOS 1.5 iSM Mach-O STABS: SO Source/DatBuild.cpp; FUN LoadFile(char*, void*, int*), SaveFile(char*, void*, int, bool), DatBuild()"
+          ]
+        }
       ]
     },
     {
@@ -375,7 +383,13 @@
         "initialize_sub_loc"
       ],
       "candidate": "G0.o",
-      "note": "binary names G0.cpp as where ObjectList/TextureList are initialized; G0 sorts between Exit and Galaxy"
+      "evidence": {
+        "kind": "binary-name-candidate",
+        "note": "the binary names G0.cpp as where ObjectList/TextureList are initialized; G0 sorts between Exit and Galaxy",
+        "sources": [
+          "string in the image naming G0.cpp beside the ObjectList/TextureList initialization"
+        ]
+      }
     },
     {
       "object": "Galaxy.o",
@@ -467,14 +481,20 @@
         "begin_overlay_render_state"
       ],
       "candidate": "GDX.o",
-      "note": "create_index_buffer reports DX_INDEXBUFFER_MAX from GDX.h; GDX sorts between Game and GL"
+      "evidence": {
+        "kind": "binary-name-candidate",
+        "note": "create_index_buffer reports DX_INDEXBUFFER_MAX from GDX.h; GDX sorts between Game and GL",
+        "sources": [
+          "create_index_buffer error string naming GDX.h"
+        ]
+      }
     },
     {
       "object": "GL.o",
       "between": null,
       "start": "0x411fa0",
-      "last_function": "0x414500",
-      "function_count": 25,
+      "last_function": "0x414650",
+      "function_count": 28,
       "mobile_verified": 14,
       "mobile_drift": [
         {
@@ -511,24 +531,25 @@
         "set_fullscreen_mode",
         "direct3d_renderer_set_fullscreen_mode",
         "restore_texture_ref_stage_states",
-        "bind_texture_ref"
-      ]
-    },
-    {
-      "object": null,
-      "between": [
-        "GL.o",
-        "Golb.o"
-      ],
-      "start": "0x4145c0",
-      "last_function": "0x414650",
-      "function_count": 3,
-      "mobile_verified": 0,
-      "mobile_drift": [],
-      "functions": [
+        "bind_texture_ref",
         "replace_object_group_texture_refs",
         "query_direct3d_device_caps",
         "reset_render_counters"
+      ],
+      "placements": [
+        {
+          "functions": [
+            "replace_object_group_texture_refs",
+            "query_direct3d_device_caps",
+            "reset_render_counters"
+          ],
+          "evidence": "position-and-content",
+          "note": "renderer state between GL.o and Golb.o (a Direct3DRenderer method, the render counters, object texture groups). None sits with its earliest caller (GDX, Game, RObject), so none is an inline copy: each is defined in GL.o or Golb.o, and Golb.o holds only the golb shot and enemy classes",
+          "sources": [
+            "iOS 1.5 iSM Mach-O STABS: SO Source/Golb.cpp defines only cRGolbRocket, cRSubGolb and cREnemyManager",
+            "callers: initialize_d3d8_device (GDX), render_game_frame (Game), replace_object_list_texture_refs (RObject)"
+          ]
+        }
       ]
     },
     {
@@ -768,11 +789,8 @@
       ]
     },
     {
-      "object": null,
-      "between": [
-        "Path.o",
-        "Register.o"
-      ],
+      "object": "Png.o",
+      "between": null,
       "start": "0x42f0a0",
       "last_function": "0x42f0a0",
       "function_count": 1,
@@ -780,7 +798,14 @@
       "mobile_drift": [],
       "functions": [
         "load_png_image"
-      ]
+      ],
+      "evidence": {
+        "kind": "mobile-source-file",
+        "note": "iOS Source/Png.mm defines PngLoadImage(char*, char**, int*, int*, int*); Png sorts between Path and Register",
+        "sources": [
+          "iOS 1.5 iSM Mach-O STABS: SO Source/Png.mm; FUN PngLoadImage(char*, char**, int*, int*, int*)"
+        ]
+      }
     },
     {
       "object": "Register.o",
@@ -840,30 +865,16 @@
       ]
     },
     {
-      "object": null,
-      "between": [
-        "RObject.o",
-        "RShell.o"
-      ],
-      "start": "0x430e20",
-      "last_function": "0x430e30",
-      "function_count": 2,
-      "mobile_verified": 0,
-      "mobile_drift": [],
-      "functions": [
-        "initialize_tracked_allocation_depth_thunk",
-        "initialize_tracked_allocation_depth"
-      ]
-    },
-    {
       "object": "RShell.o",
       "between": null,
-      "start": "0x430e40",
-      "last_function": "0x433040",
-      "function_count": 52,
+      "start": "0x430e20",
+      "last_function": "0x433050",
+      "function_count": 55,
       "mobile_verified": 44,
       "mobile_drift": [],
       "functions": [
+        "initialize_tracked_allocation_depth_thunk",
+        "initialize_tracked_allocation_depth",
         "initialize_game_data_archive",
         "uninitialize_game_data_archive",
         "set_current_directory_with_drive_fallback",
@@ -915,22 +926,33 @@
         "find_registered_sound_sample_id_by_name",
         "xor_decode_buffer_with_index",
         "get_authored_view_width",
-        "get_authored_view_height"
-      ]
-    },
-    {
-      "object": null,
-      "between": [
-        "RShell.o",
-        "SegmentCache.o"
-      ],
-      "start": "0x433050",
-      "last_function": "0x433050",
-      "function_count": 1,
-      "mobile_verified": 0,
-      "mobile_drift": [],
-      "functions": [
+        "get_authored_view_height",
         "launch_alpha72_url"
+      ],
+      "placements": [
+        {
+          "functions": [
+            "initialize_tracked_allocation_depth_thunk",
+            "initialize_tracked_allocation_depth"
+          ],
+          "evidence": "mobile-source-file",
+          "note": "the static initializer of RShellMemory (g_tracked_allocation_stack), zeroing its first word: Android's _GLOBAL__I_RShell.cpp does the same store and iOS defines RShellMemory in Source/RShell.cpp. VC6 emits an object's initializer pair at its head, as in G0, Font, RMaths, RSprite and SubGame",
+          "sources": [
+            "Android libsnailmail.so (armeabi): _GLOBAL__I_RShell.cpp at 0x1c278 stores 0 through GOT 0x943cc = RShellMemory at 0xde7d0",
+            "iOS 1.5 iSM Mach-O STABS: GSYM _RShellMemory under SO Source/RShell.cpp"
+          ]
+        },
+        {
+          "functions": [
+            "launch_alpha72_url"
+          ],
+          "evidence": "position-and-content",
+          "note": "no mobile counterpart. Its only caller, update_completion_screen, sits earlier in Exit.o, so it is defined in RShell.o or SegmentCache.o; it is a Windows shell action (minimize the game window and latch the deactivation before opening a link), which is RShell's platform layer, while SegmentCache.o holds only track render caches. Android's RShell.cpp also ends with RShellGetScreenWidth/Height, the two Windows functions before it",
+          "sources": [
+            "Android libsnailmail.so (armeabi): RShellGetScreenWidth(), RShellGetScreenHeight(), then _GLOBAL__I_RShell.cpp",
+            "caller: update_completion_screen (Exit)"
+          ]
+        }
       ]
     },
     {
@@ -952,15 +974,12 @@
       ]
     },
     {
-      "object": null,
-      "between": [
-        "SegmentCache.o",
-        "Splash.o"
-      ],
+      "object": "Splash.o",
+      "between": null,
       "start": "0x433fc0",
-      "last_function": "0x433fc0",
-      "function_count": 1,
-      "mobile_verified": 0,
+      "last_function": "0x4340f0",
+      "function_count": 4,
+      "mobile_verified": 3,
       "mobile_drift": [
         {
           "name": "bind_subgame_owner",
@@ -968,21 +987,23 @@
         }
       ],
       "functions": [
-        "bind_subgame_owner"
-      ]
-    },
-    {
-      "object": "Splash.o",
-      "between": null,
-      "start": "0x433fd0",
-      "last_function": "0x4340f0",
-      "function_count": 3,
-      "mobile_verified": 3,
-      "mobile_drift": [],
-      "functions": [
+        "bind_subgame_owner",
         "initialize_thanks_for_playing_screen",
         "uninit_thanks_screen",
         "update_thanks_for_playing_screen"
+      ],
+      "placements": [
+        {
+          "functions": [
+            "bind_subgame_owner"
+          ],
+          "evidence": "mobile-source-file",
+          "note": "the identical-code fold of cRGUI::Open and cRSplash::Open; iOS defines cRSplash::Open() in Source/Splash.cpp and the folded copy sits right before Splash.o's labelled functions (the mobile GUI.o label is the other half of the fold)",
+          "sources": [
+            "decorated aliases ?Open@cRGUI@@QAEXXZ and ?Open@cRSplash@@QAEXXZ",
+            "iOS 1.5 iSM Mach-O STABS: SO Source/Splash.cpp; FUN cRSplash::Open(), cRSplash::Init(), cRSplash::AI()"
+          ]
+        }
       ]
     },
     {
@@ -1295,15 +1316,12 @@
       ]
     },
     {
-      "object": null,
-      "between": [
-        "Voice.o",
-        "BassPlay.o"
-      ],
+      "object": "BassPlay.o",
+      "between": null,
       "start": "0x449460",
-      "last_function": "0x449960",
-      "function_count": 8,
-      "mobile_verified": 0,
+      "last_function": "0x449be0",
+      "function_count": 21,
+      "mobile_verified": 5,
       "mobile_drift": [],
       "functions": [
         "initialize_bass_audio_backend",
@@ -1313,37 +1331,12 @@
         "play_music_stream_from_bytes",
         "stop_music_stream",
         "load_registered_sound_sample_from_path",
-        "load_registered_sound_sample_from_bytes"
-      ]
-    },
-    {
-      "object": "BassPlay.o",
-      "between": null,
-      "start": "0x4499a0",
-      "last_function": "0x449a60",
-      "function_count": 5,
-      "mobile_verified": 5,
-      "mobile_drift": [],
-      "functions": [
+        "load_registered_sound_sample_from_bytes",
         "play_registered_sound_sample_scaled",
         "stop_sound_sample_handle",
         "stop_registered_sound_sample",
         "is_registered_sound_sample_playing",
-        "play_registered_sound_sample_default"
-      ]
-    },
-    {
-      "object": null,
-      "between": [
-        "BassPlay.o",
-        "Font.o"
-      ],
-      "start": "0x449a80",
-      "last_function": "0x449c00",
-      "function_count": 9,
-      "mobile_verified": 0,
-      "mobile_drift": [],
-      "functions": [
+        "play_registered_sound_sample_default",
         "play_registered_sound_sample_backend",
         "play_registered_sound_sample_scaled_panned",
         "set_global_sample_volume_config",
@@ -1351,9 +1344,56 @@
         "stop_audio_backend",
         "resume_audio_backend_if_paused",
         "pause_audio_backend_if_running",
-        "set_audio_normalization_scales",
-        "debug_report_stub"
+        "set_audio_normalization_scales"
+      ],
+      "placements": [
+        {
+          "functions": [
+            "initialize_bass_audio_backend",
+            "uninitialize_bass_audio_backend",
+            "ensure_music_stream_from_path",
+            "prepare_music_stream_reload_if_path_changed",
+            "play_music_stream_from_bytes",
+            "stop_music_stream",
+            "load_registered_sound_sample_from_path",
+            "load_registered_sound_sample_from_bytes",
+            "play_registered_sound_sample_backend",
+            "play_registered_sound_sample_scaled_panned",
+            "set_global_sample_volume_config",
+            "set_global_stream_volume_config",
+            "stop_audio_backend",
+            "resume_audio_backend_if_paused",
+            "pause_audio_backend_if_running",
+            "set_audio_normalization_scales"
+          ],
+          "evidence": "owner-class",
+          "note": "AudioBackend methods (the authored cRBass); a class's out-of-line methods sit in its home object, and iOS defines cRBass and gBass in Source/BassPlay.cpp",
+          "sources": [
+            "iOS 1.5 iSM Mach-O STABS: SO Source/BassPlay.cpp; FUN cRBass::PlaySample(int, float), StopSample(int), SamplePlaying(int), PlaySampleLooped(int), StopSampleLooped(int), AI(); GSYM _gBass",
+            "decomp/include/audio_system.h: typedef AudioBackend cRBass"
+          ]
+        }
       ]
+    },
+    {
+      "object": "Console.o",
+      "between": null,
+      "start": "0x449c00",
+      "last_function": "0x449c00",
+      "function_count": 1,
+      "mobile_verified": 0,
+      "mobile_drift": [],
+      "functions": [
+        "debug_report_stub"
+      ],
+      "evidence": {
+        "kind": "mobile-source-file",
+        "note": "iOS Source/Console.cpp defines wprintf(char*, ...), whose release body is this empty varargs stub: 11 of the 16 crosswalk-verified Windows callers map to Android functions that call wprintf (RShellError, RShellWarning, RShellPrintText, cRSubGame::BuildLevel, ...). Console sorts between BassPlay and Font",
+        "sources": [
+          "iOS 1.5 iSM Mach-O STABS: SO Source/Console.cpp; FUN wprintf(char*, ...), startConsoleWin(int, int, int, int, char*)",
+          "Android libsnailmail.so (armeabi): _Z7wprintfPcz called from tQuaternian(tMatrix const&), cRGame::Render(), cRLandscapeManager::Import(char*), RShellError, cRSubGame::UnInit(), RShellWarning, cRSubGoldy::ScoreStatsDisplay(), cRSubGame::PlaceParcelsSurvival(), cRSubGame::BuildLevel(), RShellPrintText, cRSubHover::AI()"
+        ]
+      }
     },
     {
       "object": "Font.o",
@@ -1391,18 +1431,48 @@
         "Keyboard.o"
       ],
       "start": "0x44afc0",
-      "last_function": "0x44b770",
-      "function_count": 6,
+      "last_function": "0x44afc0",
+      "function_count": 1,
       "mobile_verified": 0,
       "mobile_drift": [],
       "functions": [
-        "query_directx_runtime_version",
+        "query_directx_runtime_version"
+      ],
+      "candidate": "GetDXVer.o",
+      "evidence": {
+        "kind": "sdk-sample-candidate",
+        "note": "query_directx_runtime_version is the DirectX SDK sample GetDXVersion() from getdxver.cpp, down to its debug messages; GetDXVer sorts between Font and Joystick",
+        "sources": [
+          "OutputDebugStringA messages: Couldn't LoadLibrary DDraw, Couldn't GetProcAddress DirectDrawCreate, Couldn't create DDraw, Couldn't QI DDraw2, Couldn't LoadLibrary DInput"
+        ]
+      }
+    },
+    {
+      "object": null,
+      "between": [
+        "Font.o",
+        "Keyboard.o"
+      ],
+      "start": "0x44b3c0",
+      "last_function": "0x44b770",
+      "function_count": 5,
+      "mobile_verified": 0,
+      "mobile_drift": [],
+      "functions": [
         "enumerate_input_controllers",
         "append_enumerated_input_controller_callback",
         "configure_input_controller_axis_range_callback",
         "update_joystick_input",
         "release_input_controllers"
-      ]
+      ],
+      "candidate": "Joystick.o",
+      "evidence": {
+        "kind": "sdk-sample-candidate",
+        "note": "the DirectX 8 SDK Joystick sample (joystick.cpp): device enumeration through an EnumJoysticksCallback, an EnumObjectsCallback that sets every axis range to -1000..+1000, a polling update and a release; Joystick sorts between GetDXVer and Keyboard",
+        "sources": [
+          "configure_input_controller_axis_range_callback: DIPROPRANGE lMin -1000, lMax 1000 on each axis"
+        ]
+      }
     },
     {
       "object": "Keyboard.o",
@@ -1612,12 +1682,9 @@
       ]
     },
     {
-      "object": null,
-      "between": [
-        "Viewport.o",
-        "$"
-      ],
-      "start": "0x44fd90",
+      "object": "d3dxmath.obj",
+      "between": null,
+      "start": "0x44e950",
       "last_function": "0x451ad9",
       "function_count": 3,
       "mobile_verified": 0,
@@ -1626,7 +1693,14 @@
         "initialize_translation_matrix",
         "build_perspective_projection_matrix",
         "build_camera_view_matrix"
-      ]
+      ],
+      "evidence": {
+        "kind": "library-member",
+        "note": "d3dx8.lib member obj\\i386\\d3dxmath.obj (D3DXMatrixTranslation, D3DXMatrixPerspectiveFovRH, D3DXMatrixLookAtRH); kept in the tree because the port compiles these portable bodies",
+        "sources": [
+          "analysis/ownership/library-attribution.json: unique-full-body-with-reference-checks"
+        ]
+      }
     }
   ]
 }
