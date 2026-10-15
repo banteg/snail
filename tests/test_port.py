@@ -285,7 +285,7 @@ const instance = await WebAssembly.instantiate(module, wasi.getImportObject());
 wasi.start(instance);
 const dv = new DataView(instance.exports.memory.buffer);
 const out = [];
-for (let i = 0; i < 16; ++i) {{
+for (let i = 0; i < 21; ++i) {{
     const pairPtr = instance.exports.snail_extra_path_pair(i);
     const primObj = dv.getUint32(pairPtr + 0x24, true);
     const secObj = dv.getUint32(pairPtr + 0xa8 + 0x24, true);
@@ -322,13 +322,21 @@ console.log(JSON.stringify(out));
         "SUPERTRAMPLEFT", "TURNOVER2", "TURNOVER3",
         "SHIMMY1", "SHIMMY2", "SHIMMY4", "SHIMMY",
         "INVERT1", "HALFPOLE",
+        None, None, "CAGE2", "TWISTER2A", "TWISTER2B",
     ]
     data_dir = REPO_ROOT / "artifacts/android/asm_extracted/DATA"
     for i, name in enumerate(names):
+        if name is None:  # entry transition meshes have separate topology
+            continue
         prim_smo = parse_smo_unique_verts(data_dir / f"O_{name}.SMO")
         sec_smo = parse_smo_unique_verts(data_dir / f"O_{name}_M.SMO")
         prim_gen = dumped[i]["primary"]
         sec_gen = dumped[i]["secondary"]
+        if name.startswith("TWISTER2"):
+            # Mobile stores each row's two edges; the PC mesh subdivides its
+            # three-cell width. Compare the same geometric boundary points.
+            prim_gen = [v for j, v in enumerate(prim_gen) if j % 4 in (0, 3)]
+            sec_gen = [v for j, v in enumerate(sec_gen) if j % 4 in (0, 3)]
         if name.startswith(("SBEND", "SHIMMY")):
             # Mobile .SMO bakes 1 quad (2 outer-edge vertices) per row with GL_REPEAT v-UVs,
             # whereas PC build_strip_mesh subdivides each flat row into width_cells unit-UV quads

@@ -46,7 +46,7 @@ enum {
     kMobilePathCount = 16,
     kExtraLoopTheLoop1Transition = 16,
     kExtraInvert1Transition = 17,
-    kTotalExtraPathPairs = 18,
+    kTotalExtraPathPairs = 21,
     kHalfPoleExtraIndex = 15,
     kTrampRingSlotCount = 8,
 };
@@ -185,6 +185,69 @@ void build_strip_mesh(Path* path, char* texture_a, char* texture_b, bool halfpol
             }
         }
     }
+}
+
+// Android BuildCage2 (30 nodes) and BuildTwister2A (66 nodes). These replace
+// the PC variants only in the extras bank; original constructors stay intact.
+void build_mobile_shared_path(Path* path, bool cage, bool handedness, char* texture)
+{
+    path->kind = cage ? PATH_TEMPLATE_KIND_CAGE2 : PATH_TEMPLATE_KIND_TWISTER2;
+    path->is_mirrored_x = 0;
+    path->side_exit_mode = 0;
+    path->width_cells = 3;
+    path->width_or_scale = 1.0f;
+    path->segment_count = cage ? 30 : 66;
+    path->segment_count_f = (float)path->segment_count;
+    path->GetNodes();
+    path->has_entry_mesh_transition = 0;
+
+    const int last = path->segment_count - 1;
+    const float start_x = handedness ? -2.5f : 2.5f;
+    for (int row = 0; row <= last; ++row) {
+        PathTemplateSample& p = path->primary_samples[row];
+        PathTemplateSample& s = path->secondary_samples[row];
+        float x, y = 0.0f;
+        if (row == 0 || row == last) {
+            x = cage && row == last ? -start_x : start_x;
+        } else if (cage) {
+            x = Cos((float)(row - 1) * 9.424778f / 28.0f) * start_x;
+        } else {
+            float phase = (float)(row - 1) * 12.566371f / 64.0f;
+            float half_phase = phase * 0.5f;
+            if (!handedness)
+                phase += 3.1415927f;
+            x = (Cos(phase) * 0.5f + 0.5f) * -5.0f + 2.5f;
+            y = Sin(half_phase) * Sin(phase) * 2.5f;
+        }
+        p.center_x = x;
+        p.rotation_scalar_94 = p.rotation_scalar_98 = p.special_scalar = 0.0f;
+        p.lateral_scale = 1.0f;
+        p.transform.Identity();
+        p.transform.position = Vector3(x, y, (float)row);
+        s.transform.Identity();
+        s.transform.position = Vector3(x, y + 0.49000001f, (float)row);
+    }
+    // The first and final samples retain identity orientation on Android.
+    for (int row = 1; row < last - 1; ++row) {
+        for (int side = 0; side < 2; ++side) {
+            PathTemplateSample* bank = side ? path->secondary_samples : path->primary_samples;
+            TransformMatrix& frame = bank[row].transform;
+            frame.basis_up = Vector3(0.0f, 1.0f, 0.0f);
+            frame.basis_forward = bank[row + 1].transform.position - frame.position;
+            frame.basis_forward.Normalize();
+            frame.basis_right.Cross(frame.basis_up, frame.basis_forward);
+            if (cage) {
+                float phase = (float)row * 6.2831855f / 28.0f;
+                frame.RotLocalZ((1.0f - Cos(phase)) * 0.5f * path->primary_samples[row].center_x * 0.39269909f);
+            } else {
+                frame.basis_up.Cross(frame.basis_forward, frame.basis_right);
+                frame.Orthoganalize();
+            }
+        }
+    }
+    compute_path_deltas(path->segment_count, path->primary_samples, path->secondary_samples);
+    build_strip_mesh(path, texture, texture, false);
+    path->CalcLengthZ();
 }
 
 // Lifted from Android cRPath::BuildInvert1 (000416a4).
@@ -691,6 +754,16 @@ void extras_init_paths()
     // 15: HALFPOLE
     build_halfpole(&g_extra_path_pairs[kHalfPoleExtraIndex].primary, 8, slide0, back);
     finish_standard_pair(g_extra_path_pairs[kHalfPoleExtraIndex]);
+
+    // Shared names changed shape in mobile as well: CAGE2, TWISTER2A/B.
+    const int shared_slots[3] = {15, 45, 46};
+    for (int i = 0; i < 3; ++i) {
+        PathPair& pair = g_extra_path_pairs[18 + i];
+        build_mobile_shared_path(&pair.primary, i == 0, i != 2, slide0);
+        finish_standard_pair(pair);
+        g_pc_path_pairs_backup[shared_slots[i]] = pair;
+        g_game->subgame.path_pairs[shared_slots[i]] = pair;
+    }
 
     // TrampRing object and 8 pool instances
     g_tramp_ring_object = g_object_list.Add();
