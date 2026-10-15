@@ -40,12 +40,21 @@ files. Each source entry also records its address and `port_scope` (`core`,
 `boundary`, `replaceable-platform`, `third-party`), which decides what the port
 compiles.
 
-Within a unit every function is still its own file and compile object, so each
-function matches independently. Functions the compiler emits from one
+Every function keeps its own file. Functions the compiler emits from one
 definition (a global's constructor and its registration thunk) share that
-definition's file, and both scratches point at it. Functions that must compile together (the
-groups in `tools/match/translation_units.json`) keep separate files; the
-matcher concatenates them.
+definition's file, and both scratches point at it.
+
+Units listed in `tools/match/translation_units.json` compile as one
+translation unit: the matcher concatenates their files in address order into
+one object, and each member must match in that context. 35 units compile this
+way (see
+[whole-tu-compilation-20261015.md](../tools/match/whole-tu-compilation-20261015.md)),
+and so do two SubGame pairs. The rest still compile one object per function
+until their declarations agree across files (G0, RMaths, RShell, Game, GL, GDX),
+their helpers and in-context matches are reconciled (Path, SubGame), or their
+boundaries are known (`between-*`). Register a unit with
+`uv run tools/match/whole_tu_experiment.py units <Unit>`, and only when scores
+are unchanged.
 
 ## Port guards
 

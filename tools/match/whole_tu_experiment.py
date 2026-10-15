@@ -3,10 +3,10 @@
   uv run tools/match/whole_tu_experiment.py dump OUT.json
       Score every scratch (cached) and write per-function state.
   uv run tools/match/whole_tu_experiment.py units [UNIT ...]
-      Append whole-unit groups from decomp/layout.json to translation_units.json
+      Add whole-unit groups from decomp/layout.json to translation_units.json
       (all units when none are named). Members follow address order; members whose
-      build profile differs from the unit majority, or that already belong to a
-      group, stay out.
+      build profile differs from the unit majority stay out. Existing groups that
+      lie wholly inside the unit are absorbed; members of other groups stay out.
   uv run tools/match/whole_tu_experiment.py rename-helpers decomp/game/Path
       Suffix static helpers whose names collide across files in one unit.
   uv run tools/match/whole_tu_experiment.py compare BASE.json NEW.json
@@ -54,7 +54,6 @@ def dump(out: Path) -> None:
 def units(names: list[str]) -> None:
     layout = json.loads((REPO / "decomp/layout.json").read_text())
     payload = json.loads(TRANSLATION_UNITS.read_text())
-    taken = {member for unit in payload["units"] for member in unit["members"]}
     for unit in layout["units"]:
         if names and unit["name"] not in names:
             continue
@@ -72,14 +71,23 @@ def units(names: list[str]) -> None:
             name = config.directory.name
             if (config.compiler, config.cflags) != majority:
                 print(f"  {unit['name']}: excluded {name} ({config.cflags})")
-            elif name not in taken and name not in members:
+            elif name not in members:
                 members.append(name)
-        if len(members) >= 2:
-            payload["units"].append({
-                "name": "whole_" + re.sub(r"[^a-z0-9]+", "_", unit["name"].lower()),
-                "source_object": f"{unit['name']}.o",
-                "members": members,
-            })
+        # A smaller group inside this unit is absorbed; one reaching outside keeps its members.
+        groups = payload["units"]
+        absorbed = [g for g in groups if set(g["members"]) <= set(members)]
+        kept = [g for g in groups if g not in absorbed]
+        taken = {member for g in kept for member in g["members"]}
+        members = [name for name in members if name not in taken]
+        if len(members) < 2:
+            continue
+        for group in absorbed:
+            print(f"  {unit['name']}: absorbed {group['name']}")
+        payload["units"] = [*kept, {
+            "name": re.sub(r"[^a-z0-9]+", "_", unit["name"].lower()).strip("_"),
+            "source_object": f"{unit['name']}.o",
+            "members": members,
+        }]
     TRANSLATION_UNITS.write_text(json.dumps(payload, indent=2) + "\n")
 
 
@@ -101,8 +109,6 @@ def compare(base_path: Path, new_path: Path) -> None:
     new = json.loads(new_path.read_text())
     groups = json.loads(TRANSLATION_UNITS.read_text())["units"]
     for group in groups:
-        if not group["name"].startswith("whole_"):
-            continue
         members = group["members"]
         errors = [new[f]["error"] for f in members if new[f]["error"]]
         if errors:

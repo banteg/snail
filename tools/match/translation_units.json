@@ -18,11 +18,480 @@
       ]
     },
     {
-      "name": "subtrack_copy_level_loader",
+      "name": "border",
+      "source_object": "Border.o",
+      "members": [
+        "border_add_text_number",
+        "hide_border_init",
+        "unhide_border_init",
+        "draw_frontend_widget",
+        "initialize_frontend_sprite_button",
+        "initialize_frontend_widget",
+        "layout_frontend_widget",
+        "set_frontend_widget_shortcut_key",
+        "stack_widget_below",
+        "unhighlight_border",
+        "highlight_border",
+        "update_frontend_widget_interaction",
+        "allocate_border",
+        "activate_all_borders",
+        "kill_border",
+        "kill_all_borders",
+        "hide_all_borders",
+        "unhide_all_borders",
+        "border_input_text_init",
+        "update_input_ok",
+        "initialize_input_ok",
+        "border_input_text",
+        "reset_tooltip",
+        "update_tooltip",
+        "queue_frontend_widget_flag_after_delay",
+        "update_border_manager",
+        "update_twinkle_manager",
+        "draw_twinkle",
+        "update_twinkle",
+        "initialize_border_stack",
+        "apply_all_border_visibility_mode",
+        "border_sprite_extend",
+        "border_mouse_test",
+        "set_border_justify_centre"
+      ]
+    },
+    {
+      "name": "cheat",
+      "source_object": "Cheat.o",
+      "members": [
+        "initialize_cheat",
+        "update_cheat",
+        "match_cheat_text"
+      ]
+    },
+    {
+      "name": "completion",
+      "source_object": "Completion.o",
+      "members": [
+        "flush_row_event_display",
+        "initialize_completion_screen",
+        "update_row_event_display",
+        "register_parcel_delivery"
+      ]
+    },
+    {
+      "name": "directx",
+      "source_object": "DirectX.o",
+      "members": [
+        "load_x_mesh",
+        "initialize_directx_loader",
+        "load_or_reuse_cached_x_mesh",
+        "load_x_animation_clip"
+      ]
+    },
+    {
+      "name": "exit",
+      "source_object": "Exit.o",
+      "members": [
+        "destroy_completion_screen",
+        "initialize_exit_prompt",
+        "update_completion_screen"
+      ]
+    },
+    {
+      "name": "galaxy",
+      "source_object": "Galaxy.o",
+      "members": [
+        "load_galaxy_layout",
+        "destroy_galaxy",
+        "initialize_galaxy",
+        "update_galaxy",
+        "draw_galaxy_line",
+        "update_galaxy_route_record",
+        "close_galaxy_route",
+        "open_galaxy_route",
+        "galaxy_border_bound"
+      ]
+    },
+    {
+      "name": "golb",
+      "source_object": "Golb.o",
+      "members": [
+        "kill_golb",
+        "update_golb_ai",
+        "create_golb",
+        "spawn_golb_trail_sprite",
+        "spawn_golb_smoke",
+        "spawn_golb_impact_sprite",
+        "initialize_enemy_manager",
+        "search_path_for_golb",
+        "append_subgame_contact_target"
+      ]
+    },
+    {
+      "name": "gui",
+      "source_object": "GUI.o",
+      "members": [
+        "initialize_challenge_setup_screen",
+        "destroy_challenge_setup_screen",
+        "update_challenge_setup_screen"
+      ]
+    },
+    {
+      "name": "help",
+      "source_object": "Help.o",
+      "members": [
+        "initialize_help_screen",
+        "destroy_help_screen",
+        "update_help_screen"
+      ]
+    },
+    {
+      "name": "highscore",
+      "source_object": "HighScore.o",
+      "members": [
+        "initialize_high_score_screen",
+        "destroy_high_score_screen",
+        "update_high_score_screen",
+        "initialize_high_score_tables",
+        "load_high_scores_from_file",
+        "add_arcade_high_score",
+        "add_survival_high_score",
+        "add_time_trial_high_score",
+        "save_high_scores_and_config",
+        "initialize_high_score_entry",
+        "mini_delete_high_score_entry",
+        "exit_high_score_screen"
+      ]
+    },
+    {
+      "name": "intro",
+      "source_object": "Intro.o",
+      "members": [
+        "initialize_new_game_menu",
+        "update_new_game_menu"
+      ]
+    },
+    {
+      "name": "landscape",
+      "source_object": "Landscape.o",
+      "members": [
+        "reset_landscape_manager",
+        "load_landscape_script_by_name",
+        "activate_landscape_entry",
+        "clear_active_landscape_entries",
+        "update_active_landscape_entry"
+      ]
+    },
+    {
+      "name": "loadingbar",
+      "source_object": "LoadingBar.o",
+      "members": [
+        "initialize_loading_screen",
+        "destroy_loading_screen",
+        "update_loading_screen"
+      ]
+    },
+    {
+      "name": "logo",
+      "source_object": "Logo.o",
+      "members": [
+        "open_logo",
+        "initialize_intro_screen",
+        "destroy_intro_screen",
+        "update_intro_screen",
+        "update_intro_logo_renderable"
+      ]
+    },
+    {
+      "name": "mainmenu",
+      "source_object": "MainMenu.o",
+      "members": [
+        "destroy_main_menu",
+        "initialize_main_menu",
+        "update_main_menu"
+      ]
+    },
+    {
+      "name": "objectproc",
+      "source_object": "ObjectProc.o",
+      "members": [
+        "initialize_duplicate_vertices",
+        "clean_duplicate_vertices",
+        "sort_object_faces_by_texture_group",
+        "disable_object_rendering",
+        "initialize_textured_backdrop_quad",
+        "raise_backdrop_quad_edge_pair",
+        "initialize_backdrop_slice_quad",
+        "initialize_backdrop_corner_quad",
+        "sample_smtrack_heightmap",
+        "initialize_backdrop_tile_quad",
+        "initialize_object_distort",
+        "apply_distort_to_object"
+      ]
+    },
+    {
+      "name": "options",
+      "source_object": "Options.o",
+      "members": [
+        "initialize_options_menu",
+        "destroy_options_menu",
+        "update_options_menu",
+        "apply_audio_config_volumes"
+      ]
+    },
+    {
+      "name": "register",
+      "source_object": "Register.o",
+      "members": [
+        "load_config_file",
+        "load_file_bytes_from_path",
+        "save_config_file",
+        "validate_config_tail_stub"
+      ]
+    },
+    {
+      "name": "robject",
+      "source_object": "RObject.o",
+      "members": [
+        "is_bod_after_sprites",
+        "set_bod_object",
+        "initialize_bod_base",
+        "initialize_renderable_bod",
+        "apply_bod_position",
+        "initialize_object_constructor_thunk",
+        "initialize_object",
+        "request_object_vertices",
+        "copy_object_vertices",
+        "request_object_vertices_copy",
+        "request_object_facequad_normals",
+        "request_object_vertex_colours",
+        "initialize_global_temp_colour_thunk",
+        "initialize_global_temp_colour",
+        "request_object_facequads",
+        "request_object_texture_groups",
+        "initialize_object_list",
+        "build_all_objects",
+        "apply_object_toon",
+        "add_object_to_list",
+        "calc_object_bounding_box",
+        "calc_object_facequad_normals",
+        "calc_object_facequad_normals_simple",
+        "calc_object_texture_groups",
+        "advance_frame_sequence",
+        "request_object_edges",
+        "add_object_edge",
+        "calc_object_edges",
+        "rotate_object_facequad_uv_pairs",
+        "request_object_animation",
+        "replace_object_list_texture_refs"
+      ]
+    },
+    {
+      "name": "segmentcache",
+      "source_object": "SegmentCache.o",
+      "members": [
+        "initialize_track_render_cache_manager",
+        "build_track_render_caches",
+        "add_track_cache_vertex",
+        "append_track_cache_object",
+        "update_track_render_cache_rows",
+        "update_active_bod",
+        "remove_track_render_cache_bods"
+      ]
+    },
+    {
+      "name": "splash",
+      "source_object": "Splash.o",
+      "members": [
+        "initialize_thanks_for_playing_screen",
+        "uninit_thanks_screen",
+        "update_thanks_for_playing_screen"
+      ]
+    },
+    {
+      "name": "star",
+      "source_object": "Star.o",
+      "members": [
+        "destroy_star_field",
+        "open_star_field",
+        "initialize_star_field",
+        "hide_star_field",
+        "unhide_star_field",
+        "update_star_field",
+        "update_star_positions"
+      ]
+    },
+    {
+      "name": "subtrack",
       "source_object": "Subtrack.o",
       "members": [
         "copy_segment_definition_to_level_slot",
-        "load_level_definition_file"
+        "load_level_definition_file",
+        "load_builtin_segment_definitions",
+        "load_segment_definitions",
+        "load_level_definitions"
+      ]
+    },
+    {
+      "name": "tips",
+      "source_object": "Tips.o",
+      "members": [
+        "kill_tip_widgets",
+        "initialize_tip",
+        "update_tip",
+        "initialize_tip_manager",
+        "uninit_tips",
+        "enqueue_tip_message",
+        "update_tip_manager"
+      ]
+    },
+    {
+      "name": "tutorial",
+      "source_object": "Tutorial.o",
+      "members": [
+        "initialize_tutorial",
+        "uninit_tutorial",
+        "update_tutorial"
+      ]
+    },
+    {
+      "name": "voice",
+      "source_object": "Voice.o",
+      "members": [
+        "initialize_voice_set",
+        "shuffle_voice_set",
+        "reset_voice_manager",
+        "initialize_voice_manager",
+        "update_voice_manager",
+        "play_voice_manager",
+        "update_voice_set",
+        "play_voice_set",
+        "is_voice_playing"
+      ]
+    },
+    {
+      "name": "bassplay",
+      "source_object": "BassPlay.o",
+      "members": [
+        "play_registered_sound_sample_scaled",
+        "stop_sound_sample_handle",
+        "stop_registered_sound_sample",
+        "is_registered_sound_sample_playing",
+        "play_registered_sound_sample_default"
+      ]
+    },
+    {
+      "name": "font",
+      "source_object": "Font.o",
+      "members": [
+        "initialize_global_font3d_bods_thunk",
+        "initialize_global_font3d_bods",
+        "initialize_global_font_queue_colors_thunk",
+        "initialize_global_font_queue_colors",
+        "initialize_font_wave_state",
+        "update_font_wave_state",
+        "font_slot_index_for_char",
+        "measure_font_text_width",
+        "register_font_texture_sheet",
+        "draw_font_text_instance",
+        "draw_queued_font_quad_instance",
+        "draw_font_text_queue",
+        "queue_font_text_instance",
+        "queue_axis_aligned_textured_quad",
+        "queue_axis_aligned_textured_quad_uv",
+        "queue_textured_quad_corners",
+        "layout_and_queue_wrapped_font_text",
+        "initialize_font3d_objects"
+      ]
+    },
+    {
+      "name": "keyboard",
+      "source_object": "Keyboard.o",
+      "members": [
+        "initialize_keyboard_input",
+        "update_keyboard_input",
+        "is_key_pressed_edge",
+        "is_key_down",
+        "release_keyboard_input"
+      ]
+    },
+    {
+      "name": "mouse",
+      "source_object": "Mouse.o",
+      "members": [
+        "initialize_mouse_authored_scale_from_clip_rect",
+        "update_mouse_authored_scale",
+        "resolve_uncaptured_cursor_sensitivity_scale",
+        "update_mouse",
+        "set_hide_system_cursor_flag",
+        "click_mouse_screen",
+        "convert_mouse_screen_xy",
+        "release_mouse_input",
+        "initialize_mouse_input",
+        "is_mouse_captured",
+        "capture_mouse_cursor",
+        "release_mouse_cursor"
+      ]
+    },
+    {
+      "name": "rsound",
+      "source_object": "RSound.o",
+      "members": [
+        "initialize_sound_bank",
+        "play_sound_effect_at_position",
+        "play_sound_effect",
+        "play_sound_effect_scaled",
+        "play_warning_sample_backend",
+        "stop_warning_sample_handle"
+      ]
+    },
+    {
+      "name": "rsprite",
+      "source_object": "RSprite.o",
+      "members": [
+        "initialize_global_sprite_pool_colors_thunk",
+        "initialize_global_sprite_pool_colors",
+        "initialize_global_sprite_sentinel_color_thunk",
+        "initialize_global_sprite_sentinel_color",
+        "initialize_sprite",
+        "update_sprite",
+        "register_sprite_texture",
+        "initialize_sprite_manager",
+        "kill_sprite",
+        "allocate_sprite",
+        "kill_game_sprites",
+        "build_sprite_tail",
+        "set_sprite_manager_paused",
+        "set_sprite_texture_ref",
+        "get_sprite_texture",
+        "get_sprite_tga"
+      ]
+    },
+    {
+      "name": "rstring",
+      "source_object": "RString.o",
+      "members": [
+        "ascii_upper_if_lowercase",
+        "rstrcpy_checked_ascii",
+        "find_case_insensitive_substring",
+        "advance_to_next_crlf_line",
+        "strings_equal_case_insensitive_path",
+        "parse_next_signed_int"
+      ]
+    },
+    {
+      "name": "rtexture",
+      "source_object": "RTexture.o",
+      "members": [
+        "sample_tga_pixel_rgb",
+        "initialize_texture_list",
+        "get_or_create_texture_ref"
+      ]
+    },
+    {
+      "name": "viewport",
+      "source_object": "Viewport.o",
+      "members": [
+        "attach_render_camera_source",
+        "initialize_render_camera_slot"
       ]
     }
   ]
