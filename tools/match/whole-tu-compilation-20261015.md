@@ -108,3 +108,11 @@ probe's text for its own member, so probes keep working.
 Related fix: `shoot_subgoldy` used `SYMBOL=Shoot`, which is ambiguous once
 SubGame compiles as one object (four classes define `Shoot`). It now names
 `?Shoot@cRSubGoldy@@QAEXPAV1@@Z`; its per-function result is unchanged.
+
+## Registered
+
+Step 1 registers 35 of the 41 unchanged units, 269 functions in all. The six
+`between-*` placeholders stay per-function: the decomp README calls them "not
+claims about the original files", and compiling one as a single object would
+make that claim. Subtrack absorbs its `subtrack_copy_level_loader` pair into a
+five-function unit. No function changed state, ratio, body bytes or error.
