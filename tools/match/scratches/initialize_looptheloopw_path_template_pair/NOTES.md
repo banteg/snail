@@ -1,3 +1,16 @@
+## 2026-10-15: 100% byte-exact under msvc6.3
+
+Result: **100.00% proof-grade byte-exact** (`745/745` instructions, prefix
+`745`, `body_byte_exact = true`, `55/55` masked operands clean) under `msvc6.3`.
+
+- The middle-loop `center_x` store at `+0x359` sums `bank` (`temp 0x55a`) and
+  the induction temporary `sample_index * 168` (`iv-temp 0x8ad`), which are
+  separated by `0x353` slots (`< 0x400`).
+- Spelling the sample-bank and quad-array accesses through explicit byte-offset
+  casts advances `C0` so `bank` wraps across `0x800` into the same
+  `0x800..0xbff` bucket as `iv-temp`, sorting the induction temporary first
+  (`fstp dword ptr [ebx + eax + 0x90]` at `+0x359`).
+
 ## 2026-09-22 interpolation operation ownership
 
 Borrowing the actual primary-bank field within its interpolation operation
