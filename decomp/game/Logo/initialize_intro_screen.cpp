@@ -68,7 +68,7 @@ void cRLogo::Init(char* file_name)
     while (cursor < text_end) {
         int count = 0;
         float width = 0.0f;
-        char* line = cursor;
+        char* glyph = cursor;
         if (*cursor == '*') {
             char image_name[128];
             char path[128];
@@ -142,7 +142,6 @@ void cRLogo::Init(char* file_name)
                 float x = width * 0.5f;
                 x *= 0.80000001f;
                 Vector3 initial_position(0.0f, -4.0f, 0.0f);
-                char* glyph = line;
                 int glyphs_remaining = count;
                 do {
                     add_intro_renderable_to_active_list(
