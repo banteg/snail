@@ -3,8 +3,8 @@ artifacts/
 .pytest_cache/
 __pycache__/
 site/
-tools/match/compilers/
-tools/match/sdk/
+tools/match/compilers
+tools/match/sdk
 tools/match/bin/wibo
 tools/match/bin/wibo-*
 tools/match/bin/objdiff-cli
