@@ -12,53 +12,6 @@ from .archive import write_archive
 ANDROID_ROOT = Path("artifacts/android/asm_extracted")
 OUTPUT = Path("artifacts/bin/SnailMailExtras.dat")
 
-MOBILE_ONLY_SEGMENTS = (
-    "BARRAGE.TXT",
-    "BIG JUMPE.TXT",
-    "DETOUR.TXT",
-    "DETOUR2.TXT",
-    "DETOUR3.TXT",
-    "DUEL CARRIAGEWAYE.TXT",
-    "EASY GAPE.TXT",
-    "HALFPOLE.TXT",
-    "INVERT1.TXT",
-    "JETPACKJUMP.TXT",
-    "LOOP THE LOOP SLUG.TXT",
-    "LOOP THE LOOP1.TXT",
-    "LOOP THE LOOPT4JUMP.TXT",
-    "OUTER LOOP BIG.TXT",
-    "PADDING.TXT",
-    "PARCELTEST2E.TXT",
-    "PARCELTESTE.TXT",
-    "SBEND.TXT",
-    "SBEND1.TXT",
-    "SBEND2.TXT",
-    "SBEND4.TXT",
-    "SENTRY.TXT",
-    "SENTRYE.TXT",
-    "SHIMMY.TXT",
-    "SHIMMY1.TXT",
-    "SHIMMY2.TXT",
-    "SHIMMY4.TXT",
-    "SLUGLINE.TXT",
-    "SLUGTROOP.TXT",
-    "SNAKEE.TXT",
-    "STEPPING STONESE.TXT",
-    "STUMPED.TXT",
-    "STUMPEDHARD.TXT",
-    "SUPERTRAMPE.TXT",
-    "SUPERTRAMPJETPACK.TXT",
-    "SUPERTRAMPLEFT.TXT",
-    "TRAMPOLINEDROP.TXT",
-    "TRAMPOLINEE.TXT",
-    "TURNOVER2.TXT",
-    "TURNOVER3.TXT",
-    "VALLEYJUMP.TXT",
-    "WORMJUMP.TXT",
-    "ZIGZAG JUMP SLUG.TXT",
-)
-
-
 def swap_tga32_rb(raw: bytes) -> bytes:
     """Swap OpenGL ES RGBA 32-bit TGA pixels to PC D3D BGRA layout."""
     width = int.from_bytes(raw[12:14], "little")
@@ -112,16 +65,9 @@ def build_extras_files(android_root: Path) -> dict[str, bytes]:
         p = android_root / rel
         if p.exists():
             files[rel] = swap_tga32_rb(p.read_bytes())
-    for i in range(11):
-        rel = f"LEVELS/ARCADEPRO{i:03d}.TXT"
-        p = android_root / rel
-        if p.exists():
-            files[rel] = p.read_bytes()
-    for seg in MOBILE_ONLY_SEGMENTS:
-        rel = f"SEGMENTS/{seg}"
-        p = android_root / rel
-        if p.exists():
-            files[rel] = p.read_bytes()
+    for folder in ("LEVELS", "SEGMENTS"):
+        for path in sorted((android_root / folder).glob("*.TXT")):
+            files[f"{folder}/{path.name}"] = path.read_bytes()
     for stem in ("SPACEPRO", "SPACEPRO2"):
         txt_p = android_root / f"BACKGROUNDS/{stem}.TXT"
         jpg_p = android_root / f"BACKGROUNDS/{stem}.JPG"

@@ -340,31 +340,26 @@ switch: they are always on and listed in [Original bugs](original-bugs.md).
   converting the Pro backgrounds (`SpacePro`, `SpacePro2`, `StarmapProbg`,
   `SplashPro_A`/`_B`) and `Galaxy/*Pro.tga` overlays to PC TGA conventions, and
   packing `Sprites/FringeColours.tga`, `Objects/TrampRing/`, `Galaxy/_GalaxyPro.txt`,
-  `Levels/ArcadePro000`–`010.txt`, and the 43 mobile-only `Segments/*.txt` files.
+  all 65 mobile level files and all 176 segment definitions, including shared
+  names whose layouts changed. The combined catalog loads before any levels
+  are parsed. Extras off uses the original PC archive and catalog.
   The narrow hooks (`port/wrapped.txt`, `port/shell/extras.cpp`,
-  `port/shell/extras_paths.cpp`, `port/shell/extras_pro.cpp`) delegate directly
-  to the `_recovered` bodies when the option is off. When on, `cRSubTracks::Init`
-  and `cRTrack::Change` support track colours 3–6 (moving Postal routes 21–25
-  and 41–45 onto purple `Track: 3`, and 46–50 onto red `Track: 4`) and
-  `Track: r` across all seven sets; `cRSubGame::StartLevel` samples
-  `Sprites/FringeColours.tga` for `Fringe: random`; `cRPathManager::NameCode`
-  and the lifted ARM path builders (`BuildInvert1`, `BuildHalfPole`/`HalfPolePos`,
-  `BuildShimmy`, `BuildDetour`, `BuildSBend`) supply the 16 mobile path template
-  pairs and entry-transition pairs, remapped into unused level-local `path_pairs`
-  slots; `cRSquidge::StartY` triggers `cRSubTrampRingManager` bounce rings on
-  trampoline tiles; `cRSubGame::AddRing` and `cRSubRing::Init` set the
-  `oscillate_x` flag that Windows computes a phase for but never sets, so weapon
-  rings swing across the track as on Android, faster at higher shooting tiers
-  and not at all at tier 0 (authored rings without
-  `RingSpeed=` and slow authored rings hold still at a random offset, and
-  explode-ramp rings stay centred in the tutorial); and the New Game menu adds
-  **Pro-Challenge**, opening the 10-level **Special Assignment** galaxy
-  (`Limax maximus` and `Ariolimax columbianus`, `GUniverse1` layout) with the
-  mobile power-up speed curve (`cRSubGame::CalcRate`) and separate
-  `ScorePro.dat` / `SnailMailPro.cfg` persistence (**Pro High Scores**).
-  The swinging rings change play on the original levels too, so a replay
-  recorded with extras off parts from its run after the first ring when
-  played back with them on, and the other way round.
+  `port/shell/extras_paths.cpp`, `port/shell/extras_pro.cpp`) select the mobile
+  level data, seven track sets, new path templates, mobile CAGE2/TWISTER2
+  geometry, trampoline effects and moving weapon rings. The New Game menu
+  adds **Pro-Challenge**, opening the ten-level **Special Assignment** galaxy.
+  Mobile acceleration and power-up pacing apply in every game mode while
+  extras is on; extras off delegates to the PC rules.
+
+  Mobile campaign progress and scores use `SnailMailMobile.cfg` and
+  `ScoreMobileA/B/C.dat`. The first mobile launch copies display/audio
+  preferences from the PC config and starts its own campaign progress.
+  Pro keeps `SnailMailPro.cfg` and `ScorePro.dat`. Switching extras off reloads
+  the classic campaign and scores without rewriting them.
+
+The Mobile extras switch selects the mobile 3,500-row build limit; classic
+mode retains the PC 3,100-row limit. Port builds reserve 3,600 runtime rows,
+including the tail margin. Matching Windows builds retain the original layout.
 
 The Mobile extras switch selects the mobile 3,500-row build limit; classic
 mode retains the PC 3,100-row limit. Port builds reserve 3,600 runtime rows,

@@ -14,7 +14,6 @@ initialize_ring_or_special_effect_particles    ../decomp/game/SubGame/initialize
 spawn_slug_hazard                              ../decomp/game/SubGame/spawn_slug_hazard.cpp                            AddSlug
 spawn_track_garbage_hazard                     ../decomp/game/SubGame/spawn_track_garbage_hazard.cpp                   AddGarbage
 start_squidge_y                                ../decomp/game/SubGame/start_squidge_y.cpp                               StartY
-copy_segment_definition_to_level_slot          ../decomp/game/Subtrack/copy_segment_definition_to_level_slot.cpp        ImportSegment
 initialize_new_game_menu                       ../decomp/game/Intro/initialize_new_game_menu.cpp                        Init
 update_new_game_menu                           ../decomp/game/Intro/update_new_game_menu.cpp                            AI
 initialize_galaxy                              ../decomp/game/Galaxy/initialize_galaxy.cpp                              Init
@@ -25,4 +24,7 @@ initialize_high_score_screen                   ../decomp/game/HighScore/initiali
 update_high_score_screen                       ../decomp/game/HighScore/update_high_score_screen.cpp                    AI
 save_high_scores_and_config                    ../decomp/game/HighScore/save_high_scores_and_config.cpp                 MiniSave
 save_config_file                               ../decomp/game/Register/save_config_file.cpp                             save_config_file
+load_segment_definitions                      ../decomp/game/Subtrack/load_segment_definitions.cpp                                       Import
+load_config_file                              ../decomp/game/Register/load_config_file.cpp                                               load_config_file
+write_file_bytes                              ../decomp/game/RShell/write_file_bytes.cpp                                                 write_file_bytes
 draw_sprite_quad                              ../decomp/game/GL/draw_sprite_quad.cpp                                  draw_sprite_quad

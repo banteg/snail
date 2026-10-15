@@ -301,7 +301,8 @@ typedef cRSubGame SubgameRuntime; // compatibility analysis name
 typedef char cRSubGame_must_be_0x1272838[
     (sizeof(cRSubGame) == 0x1272838
         + (SUBGAME_RUNTIME_ROW_CAPACITY - 3200)
-            * (sizeof(cRSubLoc) * SUBGAME_TRACK_LANE_COUNT + sizeof(cRSubRow))) ? 1 : -1];
+            * (sizeof(cRSubLoc) * SUBGAME_TRACK_LANE_COUNT + sizeof(cRSubRow))
+        + sizeof(cRSMTracks) - 0x25cfb4) ? 1 : -1];
 
 inline cRSubGoldy* cRSubGame::embedded_player()
 {
