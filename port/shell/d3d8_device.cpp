@@ -609,6 +609,13 @@ Direct3D8 g_d3d8 = {&g_d3d8_vtable};
 
 }  // namespace
 
+int set_emulated_depth_write(int enabled)
+{
+    int previous = g_device.render_states[D3DRS_ZWRITEENABLE];
+    g_device.render_states[D3DRS_ZWRITEENABLE] = enabled;
+    return previous;
+}
+
 Direct3D8* __stdcall Direct3DCreate8(unsigned int)
 {
     return &g_d3d8;
