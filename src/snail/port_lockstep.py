@@ -10,6 +10,7 @@ wasm32 (the original's 32-bit x86 layout), and addresses come from the
 symbol manifests.
 """
 
+import functools
 import json
 import re
 import subprocess
@@ -104,11 +105,13 @@ SNAPSHOT = {
 }
 
 
-def snapshot_offsets(root: Path) -> dict[str, int]:
-    """Windows capture offsets, using 32-bit pointers and the original header layout.
+@functools.cache
+def snapshot_offsets(root: Path, *, port: bool = False) -> dict[str, int]:
+    """offsetof each snapshot field with 32-bit pointers.
 
-    Do not define SNAIL_PORT: the playable port can enlarge runtime arrays.
-    The Frida script always reads the original Windows process.
+    By default in the original header layout, which the Frida script reads in
+    the Windows process; with `port`, in the layout the port compiles
+    (SNAIL_PORT enlarges runtime arrays), where the port's tape reads its own.
     """
     with tempfile.TemporaryDirectory(prefix="snail-lockstep-") as temp:
         source = Path(temp) / "offsets.cpp"
@@ -119,7 +122,8 @@ def snapshot_offsets(root: Path) -> dict[str, int]:
         program = Path(temp) / "offsets.wasm"
         subprocess.run(
             ["zig", "c++", "-target", "wasm32-wasi", "-std=c++17", "-fms-extensions", "-fdeclspec", "-fno-exceptions",
-             "-fno-rtti", "-Wno-everything", f"-I{(root / INCLUDE).resolve()}", str(source),
+             "-fno-rtti", "-Wno-everything", *(["-DSNAIL_PORT"] if port else []),
+             f"-I{(root / INCLUDE).resolve()}", str(source),
              "-o", str(program)],
             check=True, capture_output=True, text=True,
         )  # fmt: skip
