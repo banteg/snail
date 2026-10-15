@@ -5053,10 +5053,10 @@
       "name": "destroy_cross_vectors_static_result",
       "kind": "function",
       "aliases": [
-        "$E2",
+        "$E5",
         "sub_44cdd0"
       ],
-      "description": "Compiler-generated static-destruction stub registered by Cross for its function-local static tVector result."
+      "description": "Compiler-generated static-destruction stub registered by Cross for its function-local static tVector result; $E5 in the RMaths.o translation unit."
     },
     {
       "address": "0x44d1a0",
@@ -9329,9 +9329,9 @@
         "?$S1@?1??cross_vectors@Vector3@@QAEXPBU2@0@Z@4EA",
         "?$S1@?1??cross_vectors@Vec3@@QAEXABU2@0@Z@4EA",
         "?$S1@?1??cross_vectors@Vector3@@QAEXABU2@0@Z@4EA",
-        "?$S1@?1??Cross@tVector@@QAEXABU2@0@Z@4EA"
+        "?$S4@?1??Cross@tVector@@QAEXABU2@0@Z@4EA"
       ],
-      "description": "Compiler-generated guard byte for the function-local static tVector result in Cross; it shares storage with the synthetic trigonometry init-base reference."
+      "description": "Compiler-generated guard byte for the function-local static tVector result in Cross; it shares storage with the synthetic trigonometry init-base reference. VC6 numbers $S/$E names per translation unit, so the alias is the RMaths.o spelling."
     },
     {
       "address": "0x77ff3c",

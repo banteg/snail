@@ -41,6 +41,24 @@ def test_unit_source_order_and_member_overlay(grouped_scratches):
     assert (second.directory / "scratch.cpp").read_text() == "int second() { return 1; }\n"
 
 
+def test_unit_includes_a_shared_source_once(grouped_scratches):
+    root, (_, second) = grouped_scratches
+    third = root / "scratches" / "third"
+    third.mkdir()
+    (third / "scratch.conf").write_text("FUNCTION=third\nSOURCE=../first/scratch.cpp\n")
+    path = root / "translation_units.json"
+    payload = json.loads(path.read_text())
+    payload["units"][0]["members"] = ["first", "second", "third"]
+    path.write_text(json.dumps(payload))
+    shared = match.load_scratch_config(third)
+    expected = "int first() { return 1; }\n\nint second() { return 1; }\n"
+    assert match.scratch_compilation_source(shared, root) == expected
+    assert match.scratch_compilation_source(second, root) == expected
+    assert match.scratch_compilation_source(shared, root, source_text="int first() { return 9; }\n") == (
+        expected.replace("return 1; }\n\n", "return 9; }\n\n")
+    )
+
+
 def test_unit_probe_uses_candidate_and_preserves_peer(grouped_scratches, monkeypatch):
     root, (_, second) = grouped_scratches
 

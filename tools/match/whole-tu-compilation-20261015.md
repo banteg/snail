@@ -202,3 +202,30 @@ Findings that apply beyond Path:
 - **Copied code reuses its caller's locals.** Invert's written-out deltas
   matched only when they reused the builder's `sample_offset`; Dump and
   Hill/Valley reuse `i`.
+
+## RMaths
+
+RMaths is registered as one 57-function unit, making 40 whole units. A
+repo-wide rescore against the baseline changes no function's state, ratio or
+body bytes. Three things had to agree first:
+
+- **Shared files compile once.** `initialize_global_identity_matrix` (`_$E1`)
+  and its registration thunk (`_$E2`) are both emitted from
+  `initialize_global_identity_matrix.cpp`, and the unit pasted that file twice,
+  defining `g_identity_matrix` twice. `scratch_compilation_source` now includes
+  each recovered file once, at its first member's address, as the port's
+  source list already did.
+- **`j_rand` has C++ linkage.** The thunk at `0x44c920` is one `jmp` to the
+  CRT `rand` body, so the image cannot tell the two linkages apart. Its
+  definition was C++ and RAND and SRAND are C++ (`?RAND@@YAMMPAD@Z`), while
+  both callers declared it `extern "C"`. It is now declared once, C++, in
+  [`rmath_random.h`](../../decomp/include/rmath_random.h); all three stay
+  exact with clean masked operands.
+- **Static-local names are numbered per unit.** VC6 numbers `$S`/`$E` names
+  through a whole translation unit, so in RMaths.o `Cross`'s guard byte is
+  `?$S4@?1??Cross@tVector@@QAEXABU2@0@Z@4EA` and its destructor stub `$E5`
+  (`$S1` and `$E2` in isolation). With only the isolated spellings as aliases,
+  `cross_vectors` fell from match to audit at 100%; the aliases in
+  `gameplay-references.json` now carry the RMaths.o spellings.
+
+G0 and RShell still drift.

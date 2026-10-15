@@ -5087,15 +5087,16 @@ def scratch_compilation_source(
 ) -> str:
     """Compose the actual source, replacing only the selected member in a probe."""
     unit = scratch_translation_unit(config, match_root)
-    members = unit.members if unit else (config.directory,)
-    def member_source(member: Path) -> str:
-        if member.resolve() == config.directory.resolve():
-            if source_text is not None:
-                return source_text
-            return config.source_path.read_text(encoding="utf-8")
-        return scratch_source_path(member).read_text(encoding="utf-8")
-
-    return "\n".join(member_source(member) for member in members)
+    if unit is None:
+        return config.source_path.read_text(encoding="utf-8") if source_text is None else source_text
+    # Members that share one recovered file (a compiler-generated initializer
+    # and its thunk) contribute it once, at the first member's position.
+    selected = config.source_path.resolve()
+    paths = dict.fromkeys(scratch_source_path(member).resolve() for member in unit.members)
+    return "\n".join(
+        source_text if path == selected and source_text is not None else path.read_text(encoding="utf-8")
+        for path in paths
+    )
 
 
 FORBIDDEN_SOURCE_TOKENS = ("__asm", "_asm", "__declspec(naked)")
