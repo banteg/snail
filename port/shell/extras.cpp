@@ -204,6 +204,14 @@ void extras_init_assets()
     g_extra_slide_textures[5] = g_texture_refs.Add((char*)"Objects/World00/Slide5.tga", 0, 0);
     g_extra_track_textures[6] = g_texture_refs.Add((char*)"Objects/World00/Track6.tga", 0, 0);
     g_extra_slide_textures[6] = g_texture_refs.Add((char*)"Objects/World00/Slide6.tga", 0, 0);
+    // The recovered road meshes tile with negative and repeated UVs. Match
+    // the PC track textures instead of using Add's default clamped sampler.
+    for (int i = 4; i < kMobileTrackSetCount; ++i) {
+        g_extra_track_textures[i]->flags |= TEXTURE_REF_WRAP_ADDRESSING;
+        g_extra_slide_textures[i]->flags |= TEXTURE_REF_WRAP_ADDRESSING;
+        g_extra_track_textures[i]->mip_levels = 2;
+        g_extra_slide_textures[i]->mip_levels = 2;
+    }
     extras_init_paths();
     extras_init_pro();
 }
