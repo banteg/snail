@@ -456,8 +456,13 @@ void cRIntro::Init()
         0.0f);
     g_pro_challenge_button->SetBelow(challenge_button);
 
-    back_button->stack_gap = 12.0f;
-    back_button->SetBelow(g_pro_challenge_button);
+    // Keep navigation separate from the five game modes. The PC Help anchor
+    // puts this stack inside the lower-left frame, clear of Pro-Challenge.
+    help_button->layout_anchor_y = 300.0f;
+    help_button->RePosition();
+    back_button->layout_center_x = help_button->layout_center_x;
+    back_button->stack_gap = 16.0f;
+    back_button->SetBelow(help_button);
 
     if (g_runtime_config.new_game_tutorial_started == 0)
         g_pro_challenge_button->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;
