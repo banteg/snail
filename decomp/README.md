@@ -62,8 +62,10 @@ when scores are unchanged.
 The port compiles this tree with `SNAIL_PORT` defined. A guard on it is allowed
 only where a matched VC6 shape relies on x86 ABI leniency (for example returning
 a callee's leftover `eax`), never to change behaviour; every guard is listed in
-[docs/port/divergences.md](../docs/port/divergences.md). Declarations of one
-function must agree across files, as a portable linker checks signatures.
+[docs/port/divergences.md](../docs/port/divergences.md). Larger port changes are
+patches applied to copies of this tree (`port/patches/`), so it stays as VC6
+matches it. Declarations of one function must agree across files, as a portable
+linker checks signatures.
 
 ## Maintenance
 

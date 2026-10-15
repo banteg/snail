@@ -1,0 +1,29 @@
+cRSubGame::AddGarbage reaches its pool through word offsets matched to the Windows
+layout. The port derives them from the layout it compiles, so its larger tables
+(02-mobile-capacity) do not move the pool out from under it.
+
+--- a/decomp/game/SubGame/spawn_track_garbage_hazard.cpp
++++ b/decomp/game/SubGame/spawn_track_garbage_hazard.cpp
+@@ -2,6 +2,8 @@
+ // cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*): allocate one garbage slot,
+ // seed its live body position from the runtime cell, project attachment rows,
+ // link it into both active lists, and allocate the sprite presentation.
++
++#include <stddef.h>
+ 
+ #include "sprite.h"
+ #include "game_root.h"
+@@ -16,9 +18,10 @@
+ 
+ enum {
+     GARBAGE_SLOT_WORD_STRIDE = 49,
+-    GARBAGE_POOL_ACTIVE_HEAD_WORD = 877648,
+-    GARBAGE_SLOT_BASE_WORD = 877649,
+-    GARBAGE_SLOT_NEXT_ACTIVE_WORD = 877681,
++    GARBAGE_POOL_ACTIVE_HEAD_WORD = offsetof(cRSubGame, garbage_hazards.active_head) / sizeof(DWORD),
++    GARBAGE_SLOT_BASE_WORD = offsetof(cRSubGame, garbage_hazards.slots) / sizeof(DWORD),
++    GARBAGE_SLOT_NEXT_ACTIVE_WORD =
++        (offsetof(cRSubGame, garbage_hazards.slots) + offsetof(cRSubGarbage, next_active)) / sizeof(DWORD),
+ };
+ 
+ 

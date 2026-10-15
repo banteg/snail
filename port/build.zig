@@ -8,7 +8,7 @@
 //! Before building, generate the local inputs from the original executable:
 //!
 //!     uv run snail port link && uv run snail port data
-//!     zig build
+//!     zig build    (runs `snail port patch` for port/patches/)
 //!     node shell/run.mjs zig-out/bin/snail.wasm --keys scripts/tutorial.keys
 //!     uv run snail port serve
 //!     zig build native -Doptimize=ReleaseFast && zig-out/bin/snail-native <data dir>
@@ -31,7 +31,6 @@ const shared_shell = [_][]const u8{
     "shell/fixes.cpp",
     "shell/extras_paths.cpp",
     "shell/extras_pro.cpp",
-    "shell/extras_rules.cpp",
     "shell/runtime.cpp",
     "shell/files.cpp",
     "shell/win32.cpp",
@@ -50,8 +49,12 @@ pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
     // Hosted builds drop the DWARF (7 MB of the browser build); `snail port symbolize` needs it.
     const strip = b.option(bool, "strip", "Omit debug information") orelse false;
+    // The recovered sources compile from copies with port/patches/ applied
+    // (`snail port patch`); decomp/ stays untouched.
+    const patch = b.addSystemCommand(&.{ "uv", "run", "--no-sync", "snail", "port", "patch" });
+    patch.has_side_effects = true;
 
-    const headless = program(b, target, optimize, strip, "snail", &.{
+    const headless = program(b, target, optimize, strip, &patch.step, "snail", &.{
         "shell/main.cpp",
         "shell/input_script.cpp",
         "shell/replay_oracle.cpp",
@@ -60,7 +63,7 @@ pub fn build(b: *std.Build) void {
     });
     b.installArtifact(headless);
 
-    const web = program(b, target, optimize, strip, "snail-web", &.{
+    const web = program(b, target, optimize, strip, &patch.step, "snail-web", &.{
         "shell/web_main.cpp",
         "shell/lockstep_tape.cpp",
         "shell/backend_web.cpp",
@@ -111,6 +114,7 @@ fn program(
     target: std.Build.ResolvedTarget,
     optimize: std.builtin.OptimizeMode,
     strip: bool,
+    patch: *std.Build.Step,
     name: []const u8,
     entry_files: []const []const u8,
 ) *std.Build.Step.Compile {
@@ -121,16 +125,16 @@ fn program(
         .link_libc = true,
         .link_libcpp = true,
     });
-    module.addIncludePath(b.path("../tools/match/include"));
+    module.addIncludePath(b.path("generated/patched/tools/match/include"));
     module.addIncludePath(b.path("compat"));
 
-    // Recovered source compiles as-is; the flags and file list are shared with
-    // `snail port` (cflags.txt, sources.txt).
+    // Recovered source compiles as-is, or as patched; the flags and file list
+    // are shared with `snail port` (cflags.txt, sources.txt).
     const cflags = lines(b, @embedFile("cflags.txt"));
-    module.addCSourceFiles(.{
-        .files = lines(b, @embedFile("sources.txt")),
-        .flags = cflags,
-    });
+    var sources: std.ArrayList([]const u8) = .empty;
+    for (lines(b, @embedFile("sources.txt"))) |source|
+        sources.append(b.allocator, compilePath(b, source)) catch @panic("out of memory");
+    module.addCSourceFiles(.{ .files = sources.items, .flags = cflags });
     for (lines(b, @embedFile("wrapped.txt"))) |line| {
         var fields = std.mem.tokenizeAny(u8, line, " \t");
         _ = fields.next().?;
@@ -139,7 +143,7 @@ fn program(
         var file_flags: std.ArrayList([]const u8) = .empty;
         file_flags.appendSlice(b.allocator, cflags) catch @panic("out of memory");
         file_flags.append(b.allocator, b.fmt("-D{s}={s}_recovered", .{ symbol, symbol })) catch @panic("out of memory");
-        module.addCSourceFile(.{ .file = b.path(file), .flags = file_flags.items });
+        module.addCSourceFile(.{ .file = b.path(compilePath(b, file)), .flags = file_flags.items });
     }
     module.addCSourceFiles(.{ .files = &shared_shell, .flags = &shell_flags });
     module.addCSourceFiles(.{ .files = entry_files, .flags = &shell_flags });
@@ -148,10 +152,16 @@ fn program(
     module.addAssemblyFile(b.path("generated/link_aliases.s"));
 
     const exe = b.addExecutable(.{ .name = name, .root_module = module });
+    exe.step.dependOn(patch);
     exe.stack_size = 16 * 1024 * 1024;
     // The game allocates a 19.8 MB root object plus multi-megabyte workspaces.
     exe.max_memory = 1024 * 1024 * 1024;
     return exe;
+}
+
+/// Where a recovered source (relative to port/) compiles from: its copy in generated/patched/.
+fn compilePath(b: *std.Build, source: []const u8) []const u8 {
+    return b.fmt("generated/patched/{s}", .{source["../".len..]});
 }
 
 /// Non-empty, non-comment lines of an embedded list file.

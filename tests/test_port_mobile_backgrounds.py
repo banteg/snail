@@ -24,7 +24,7 @@ ASSETS = REPO_ROOT / "artifacts/bin"
     ),
     reason="needs browser WASM, node, and game archives",
 )
-def test_mobile_skies_use_whole_image_and_flip_correctly(tmp_path):
+def test_mobile_skies_use_whole_image_and_flip_correctly(tmp_path, port_layout_env):
     for name in ("SnailMail.dat", "SnailMailExtras.dat"):
         shutil.copyfile(ASSETS / name, tmp_path / name)
     config = bytearray(196)
@@ -52,6 +52,7 @@ def test_mobile_skies_use_whole_image_and_flip_correctly(tmp_path):
             json.dumps(signatures),
         ],
         cwd=tmp_path,
+        env=port_layout_env,
         capture_output=True,
         text=True,
         check=True,

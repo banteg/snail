@@ -23,7 +23,7 @@ ASSETS = REPO_ROOT / "artifacts/bin"
     ),
     reason="needs browser WASM, node, and game archives",
 )
-def test_mobile_catalog_rules_swing_and_classic_save_isolation(tmp_path):
+def test_mobile_catalog_rules_swing_and_classic_save_isolation(tmp_path, port_layout_env):
     for name in ("SnailMail.dat", "SnailMailExtras.dat"):
         shutil.copyfile(ASSETS / name, tmp_path / name)
     # Put an authored moving ring on a safe platform so input automation
@@ -56,6 +56,7 @@ def test_mobile_catalog_rules_swing_and_classic_save_isolation(tmp_path):
     result = subprocess.run(
         ["node", str(REPO_ROOT / "tests/port_mobile_rates.mjs"), str(WASM)],
         cwd=tmp_path,
+        env=port_layout_env,
         capture_output=True,
         text=True,
         check=True,

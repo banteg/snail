@@ -24,11 +24,7 @@ void cRSMTracks::Import() {
     enumerate_matching_archive_or_fs_entries("Segments", "*.txt", &count,
                                              segment_files[0]);
 
-#ifdef SNAIL_PORT
-    if (count >= SMTRACK_SEGMENT_CAPACITY) {
-#else
     if (count >= 150) {
-#endif
         report_errorf("Too many Segments increase RSMTRACK_SEGMENT_MAX");
         return;
     }

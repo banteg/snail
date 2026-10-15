@@ -1,0 +1,22 @@
+Android's cRSubGoldy::Collision (00077f5c) collects a parcel within 1.73 of the
+snail; Windows within 1.24.
+
+--- a/decomp/game/SubGame/handle_subgoldy_collisions.cpp
++++ b/decomp/game/SubGame/handle_subgoldy_collisions.cpp
+@@ -24,6 +24,7 @@
+ typedef Vector3 Vec3;
+ 
+ int gRMathRand2();
++extern bool g_port_ultimate; // shell/profile.h
+ int sprintf(char* buffer, const char* format, ...);
+ 
+ void cRSubGoldy::Collision()
+@@ -159,7 +160,7 @@
+                     - cached_camera_target_world.z;
+                 probe_rings = parcel_delta;
+                 if (parcel_delta.z < 1.0f
+-                    && probe_rings.Normalize() < 1.24f) {
++                    && probe_rings.Normalize() < (g_port_ultimate ? 1.73f : 1.24f)) {
+                     ScoreAdd(SUBGOLDY_SCORE_PARCEL_COLLECT, 0);
+                     g_voice_manager.Play(
+                         VOICE_SET_PACKAGE, VOICE_PLAY_AFTER_GLOBAL_COOLDOWN, -1);

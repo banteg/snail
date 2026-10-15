@@ -127,6 +127,7 @@ decomp/
 port/
   build.zig              compiles sources.txt with cflags.txt, plus shell/ and generated/
   sources.txt            the recovered files the port compiles (`snail port sources --write`)
+  patches/               diffs against decomp/ and tools/match/include/ (divergences.md#patches)
   replaced.txt           boundary functions the shell reimplements
   portable.txt           platform functions whose recovered bodies are portable C
   compat/                POSIX stand-ins for MSVC CRT headers (direct.h, io.h)
@@ -148,6 +149,7 @@ port/
   generated/             local, never committed (holds the original's data bytes)
     image_data.s         the exe's .rdata and .data, with names and relocations
     link_aliases.s       forwarders from stand-in call names to recovered definitions
+    patched/             the copies of decomp/ and the headers the port compiles, patches applied
 tools/match/scratches/   matching configs, NOTES and experiments; SOURCE= points into decomp/
 ```
 
@@ -175,9 +177,10 @@ Which functions the port compiles:
 
 - **No invented models.** If behaviour is unknown, match the function first.
   The port never carries its own guess at gameplay.
-- **Core code changes only through the matcher.** A change must still match,
-  or sit behind a `SNAIL_PORT` guard with an entry in the divergence ledger
-  ([divergences.md](divergences.md)).
+- **Core code changes only through the matcher.** A change must still match.
+  The port changes what it compiles only in a patch (`port/patches/`) or, for
+  x86 ABI and x87 leniency, behind a `SNAIL_PORT` guard; both are listed in
+  the divergence ledger ([divergences.md](divergences.md)).
 - **Exact `rand`.** Track generation reseeds with `RandSeed(runtime_build_seed)`,
   so the port implements the MSVC `rand` LCG exactly. `gRMathRand2` and the
   sine tables are recovered code and come along unchanged.
@@ -337,11 +340,11 @@ level data, seven track sets, new path templates, mobile CAGE2/TWISTER2
 geometry, trampoline effects and moving weapon rings. The New Game menu
 adds **Pro-Challenge**, opening the ten-level **Special Assignment** galaxy.
 Mobile acceleration and power-up pacing apply in every game mode;
-Original delegates to the PC rules. `port/shell/extras_rules.cpp` adds the
-other Android rules: a new Pro-Challenge game starts with 8 lives instead of 3,
-parcels are collected within 1.73 of the snail instead of 1.24, and
-`Random:` courses (Challenge) lay the four-row Padding segment between each
-pair of random segments. Pro skies use the full
+Original delegates to the PC rules. Patches at the native sites add the
+other Android rules (divergences.md#patches): a new Pro-Challenge game starts
+with 8 lives instead of 3, parcels are collected within 1.73 of the snail
+instead of 1.24, and `Random:` courses (Challenge) lay the four-row Padding
+segment between each pair of random segments. Pro skies use the full
 converted image with normalized UVs, including horizontal flips; PC
 backdrops retain their padded-image UV layout.
 

@@ -17,6 +17,9 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from . import port_patch
+from .port import recovered_sources
+
 SCRIPT = Path("tools/frida/snailmail-lockstep.js")
 FUNCTIONS = Path("analysis/symbols/gameplay-functions.json")
 REFERENCES = Path("analysis/symbols/gameplay-references.json")
@@ -106,31 +109,41 @@ SNAPSHOT = {
 
 
 @functools.cache
-def snapshot_offsets(root: Path, *, port: bool = False) -> dict[str, int]:
-    """offsetof each snapshot field with 32-bit pointers.
+def layout_offsets(root: Path, expressions: tuple[tuple[str, str], ...], *, port: bool = False) -> dict[str, int]:
+    """Evaluate (name, constant expression) pairs over game_root.h for wasm32, with 32-bit pointers.
 
     By default in the original header layout, which the Frida script reads in
-    the Windows process; with `port`, in the layout the port compiles
-    (SNAIL_PORT enlarges runtime arrays), where the port's tape reads its own.
+    the Windows process; with `port`, in the layout the port compiles (its
+    patches enlarge runtime arrays).
     """
-    with tempfile.TemporaryDirectory(prefix="snail-lockstep-") as temp:
+    include = root / INCLUDE
+    if port:
+        port_patch.write(root, recovered_sources(root))
+        include = root / port_patch.PATCHED / INCLUDE
+    with tempfile.TemporaryDirectory(prefix="snail-offsets-") as temp:
         source = Path(temp) / "offsets.cpp"
         lines = ["#include <stddef.h>", "#include <stdio.h>", '#include "game_root.h"', "int main() {"]
-        lines += [f'    printf("%d\\n", (int)offsetof(GameRoot, {path}));' for path, _ in SNAPSHOT.values()]
+        lines += [f'    printf("%d\\n", (int)({expression}));' for _, expression in expressions]
         lines += ["    return 0;", "}"]
         source.write_text("\n".join(lines) + "\n")
         program = Path(temp) / "offsets.wasm"
         subprocess.run(
             ["zig", "c++", "-target", "wasm32-wasi", "-std=c++17", "-fms-extensions", "-fdeclspec", "-fno-exceptions",
              "-fno-rtti", "-Wno-everything", *(["-DSNAIL_PORT"] if port else []),
-             f"-I{(root / INCLUDE).resolve()}", str(source),
+             f"-I{include.resolve()}", str(source),
              "-o", str(program)],
             check=True, capture_output=True, text=True,
         )  # fmt: skip
         output = subprocess.run(
             ["node", str(root / RUNNER), str(program)], check=True, capture_output=True, text=True, cwd=temp
         ).stdout
-    return dict(zip(SNAPSHOT, (int(value) for value in output.split()), strict=True))
+    return dict(zip((name for name, _ in expressions), (int(value) for value in output.split()), strict=True))
+
+
+def snapshot_offsets(root: Path, *, port: bool = False) -> dict[str, int]:
+    """offsetof each snapshot field: Windows for the capture script, the port's own for its tape."""
+    expressions = tuple((key, f"offsetof(GameRoot, {path})") for key, (path, _) in SNAPSHOT.items())
+    return layout_offsets(root, expressions, port=port)
 
 
 def manifest_addresses(root: Path) -> tuple[dict[str, str], dict[str, list]]:

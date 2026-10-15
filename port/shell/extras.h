@@ -14,11 +14,11 @@ struct PathPair;
 void extras_init_paths();
 void extras_map_level_paths(cRSubTracks* level_def);
 void extras_import_padding(cRSubTracks* level_definition);
+struct cRSubSegment;
+cRSubSegment* extras_next_padding();
 void extras_begin_level_build();
-// For --trace: Padding segments in the last level built, and parcels
-// collected beyond the Windows radius.
+// For --trace: Padding segments in the last level built.
 int extras_padding_pick_count();
-int extras_wide_parcel_count();
 void extras_clear_tramp_rings();
 void extras_step_tramp_rings();
 const PathPair* extras_get_mobile_path_pair(int extra_index);

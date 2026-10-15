@@ -1,0 +1,96 @@
+Mobile courses and segments need larger tables than Windows sized: Android's BuildLevel
+(0007e88c) allows 3500 rows, and its catalog holds 133 PC and 43 mobile-only segments.
+The track render cache, which Android replaced with cRWorld, covers 24 rows per entry.
+Every port build gets the larger tables; the row limit follows the profile, and both
+originals only report a track that is too long.
+
+--- a/tools/match/include/track_attachment_types.h
++++ b/tools/match/include/track_attachment_types.h
+@@ -306,7 +306,7 @@
+ enum {
+     PATH_PAIR_COUNT = 63,
+     PATH_COUNT = PATH_PAIR_COUNT * 2,
+-    SUBGAME_RUNTIME_ROW_CAPACITY = 3200,
++    SUBGAME_RUNTIME_ROW_CAPACITY = 3600, // Android's 3500-row limit plus the 100-row tail reserve
+     SUBGAME_RUNTIME_ROW_LIMIT = SUBGAME_RUNTIME_ROW_CAPACITY - 100,
+     SUBGAME_TRACK_LANE_COUNT = 8,
+     SUBLOC_FRINGE_COUNT = 4,
+--- a/tools/match/include/segment_catalog_types.h
++++ b/tools/match/include/segment_catalog_types.h
+@@ -62,7 +62,7 @@
+ // cRSMTracks::Import() and cRSMTracks::OpenLevels() member names, while the
+ // Windows constructor independently proves this larger inline-storage layout.
+ enum {
+-    SMTRACK_SEGMENT_CAPACITY = 150,
++    SMTRACK_SEGMENT_CAPACITY = 200, // 133 PC and 43 mobile-only definitions
+ };
+ 
+ class cRSMTracks {
+--- a/tools/match/include/segment_cache.h
++++ b/tools/match/include/segment_cache.h
+@@ -22,7 +22,7 @@
+ };
+ 
+ enum {
+-    TRACK_RENDER_CACHE_ROW_COUNT = 0x8f,
++    TRACK_RENDER_CACHE_ROW_COUNT = 150, // 24 track rows each, for 3600 rows
+ };
+ 
+ // Windows constructs this exact 143x5 grid through initialize_active_bod and
+@@ -92,6 +92,7 @@
+ };
+ 
+ typedef char SegmentCache_must_be_0xa7f8[
+-    (sizeof(SegmentCache) == 0xa7f8) ? 1 : -1];
++    (sizeof(SegmentCache) == 0xa7f8
++        + (TRACK_RENDER_CACHE_ROW_COUNT - 0x8f) * TRACK_RENDER_CACHE_FAMILY_COUNT * sizeof(TrackRenderCacheSlot)) ? 1 : -1];
+ 
+ #endif
+--- a/tools/match/include/subgame_runtime.h
++++ b/tools/match/include/subgame_runtime.h
+@@ -300,7 +300,8 @@
+     (sizeof(cRSubGame) == 0x1272838
+         + (SUBGAME_RUNTIME_ROW_CAPACITY - 3200)
+             * (sizeof(cRSubLoc) * SUBGAME_TRACK_LANE_COUNT + sizeof(cRSubRow))
+-        + sizeof(cRSMTracks) - 0x25cfb4) ? 1 : -1];
++        + sizeof(cRSMTracks) - 0x25cfb4
++        + sizeof(SegmentCache) - 0xa7f8) ? 1 : -1];
+ 
+ inline cRSubGoldy* cRSubGame::embedded_player()
+ {
+--- a/decomp/game/Subtrack/load_segment_definitions.cpp
++++ b/decomp/game/Subtrack/load_segment_definitions.cpp
+@@ -24,7 +24,7 @@
+     enumerate_matching_archive_or_fs_entries("Segments", "*.txt", &count,
+                                              segment_files[0]);
+ 
+-    if (count >= 150) {
++    if (count >= SMTRACK_SEGMENT_CAPACITY) {
+         report_errorf("Too many Segments increase RSMTRACK_SEGMENT_MAX");
+         return;
+     }
+--- a/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
++++ b/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
+@@ -24,6 +24,7 @@
+ int report_errorf(const char* format, ...);
+ int debug_report_stub(const char* format, ...);
+ void set_object_color(Object* object, tColour color);
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ void cRSubGame::BuildLevel()
+ {
+@@ -119,11 +120,12 @@
+             segment_cursor = 0;
+         }
+         completion_row_start = runtime_row_count - level_definition.last_segment.row_count;
+-        if (runtime_row_count >= 3100) {
++        const int row_limit = g_port_ultimate ? SUBGAME_RUNTIME_ROW_LIMIT : 3100;
++        if (runtime_row_count >= row_limit) {
+             report_errorf(
+                 "Track (%s) too long, Maximum Length %i",
+                 level_definition.level_display_name,
+-                3100);
++                row_limit);
+         }
+     } else if (mode == 3) {
+         SubSegment* first_segment =

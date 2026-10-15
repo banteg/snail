@@ -14,8 +14,28 @@ of every guard still matches.
 | `decomp/engine/RMaths/initialize_trigonometry_tables.cpp` | `float angle`, which VC6 keeps in an x87 register at the C runtime's 53-bit precision (RMathInit runs before Direct3D 8 lowers it to 24-bit) | `double angle` | the `Sin`/`Cos` tables must hold the same entries; float angles change more than half of them by a ULP. Same values the original computed |
 | `decomp/game/SubGame/update_subgoldy.cpp` (two lateral-velocity decays), `tools/match/include/x87_store.h` | `velocity.x = (1 - rate * 0.1f) * velocity.x` stored from an x87 register | stored through `x87_store_float` | the x87 register's wide exponent range rounds an underflowing product to 24 bits before the store rounds it to a denormal; wasm rounds once. Same values the original stored |
 
-Fixes for the original's own bugs wrap matched functions in the shell instead;
-see [Original bugs](original-bugs.md).
+## Patches
+
+Larger changes are diffs against the recovered files in `port/patches/`, applied
+in name order to the copies the port compiles (`port/generated/patched/`;
+`zig build` and `snail port link` refresh them). `decomp/` and
+`tools/match/include/` stay as VC6 matches them. A hunk applies only where its
+exact old text occurs once; a decomp edit that moves a patched site stops the
+build instead of being built around. The Ultimate rules sit at their native
+sites behind `g_port_ultimate` (`port/shell/profile.h`), so Original runs the
+recovered code.
+
+| Patch | Change | Why |
+|---|---|---|
+| `01-layout-offsets` | `cRSubGame::AddGarbage` takes its pool's word offsets from `offsetof` | the matched source spells them as Windows numbers, which the port's larger tables would leave pointing at the salt pool |
+| `02-mobile-capacity` | 3600 runtime rows, 200 catalog segments and 150 track render cache rows; the row limit is 3500 in Ultimate and 3100 in Original | Android's BuildLevel (0007e88c) builds courses up to 3500 rows from 176 segments; both originals only report a longer track |
+| `03-pro-lives` | a new Pro-Challenge game starts with 8 lives | Android's BuildLevel |
+| `04-parcel-radius` | parcels are collected within 1.73, not 1.24, in Ultimate | Android's `cRSubGoldy::Collision` (00077f5c) |
+| `05-challenge-padding` | `Random:` levels lay Padding between each pair of random segments in Ultimate, without drawing RAND for it | Android's `cRSubTracks::Init` (000850d4) and BuildLevel |
+
+Narrow seams wrap a matched function in the shell instead (`port/wrapped.txt`,
+its body renamed `*_recovered`): the mobile content in `port/shell/extras*.cpp`
+and the fixes for the original's own bugs; see [Original bugs](original-bugs.md).
 
 ## Shell behaviour that differs from the shipped build
 

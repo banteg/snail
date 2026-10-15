@@ -1,0 +1,25 @@
+Android's cRSubTracks::Init (000850d4) imports Padding, a four-row empty segment,
+and its BuildLevel (0007e88c) lays it between each pair of segments a Random: level
+picks, without drawing RAND for it. The shell imports it (extras_import_padding).
+
+--- a/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
++++ b/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
+@@ -26,6 +26,7 @@
+ void set_object_color(Object* object, tColour color);
+ extern bool g_port_ultimate; // shell/profile.h
+ bool extras_is_pro_mode(); // shell/extras.h
++SubSegment* extras_next_padding(); // shell/extras.h
+ 
+ void cRSubGame::BuildLevel()
+ {
+@@ -389,7 +390,9 @@
+             active_segment->row_base = build_row;
+         } else {
+             base_subgame_rate = 1.0f;
+-            if (level_definition.random_enabled == 1) {
++            if (SubSegment* padding = extras_next_padding()) {
++                active_segment = padding;
++            } else if (level_definition.random_enabled == 1) {
+                 float picked_value;
+                 if (level_mode == 1) {
+                     picked_value = RAND(
