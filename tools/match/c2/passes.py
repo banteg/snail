@@ -25,40 +25,67 @@ from snail import match as m
 c2 = t.c2
 
 # (call site, target) RVAs in the pass driver; every site passes the function in ecx.
-PASSES = (
-    (0x583C5, 0x336F4),  # local allocator
-    (0x583E9, 0x337EC),  # /G5 memory-operand split
-    (0x583FC, 0x33B7B),
-    (0x5840F, 0x34032),
-    (0x5842F, 0x3404F),
-    (0x58450, 0x04D75),
-    (0x58466, 0x35042),
-    (0x58479, 0x3536C),
-    (0x584A9, 0x35042),
-    (0x584BC, 0x3663C),  # late block mover
-    (0x584CF, 0x04DE1),
-    (0x584D6, 0x04EA7),
-    (0x584DD, 0x36AB0),
-    (0x584F9, 0x36B27),
-    (0x58526, 0x374AA),  # /G5 list scheduler
-    (0x58541, 0x3E113),
-    (0x58554, 0x3E591),
-    (0x5857E, 0x3E945),
-    (0x58591, 0x3EB93),
-    (0x585B1, 0x3EBEA),
-    (0x585C2, 0x3FBDD),
-)
+PASSES_BY_COMPILER = {
+    "msvc6.3": (
+        (0x6859E, 0x319EF),  # local allocator
+        (0x685C2, 0x31AE7),  # /G5 memory-operand split
+        (0x685D5, 0x31E76),
+        (0x685E8, 0x335B0),
+        (0x68608, 0x335CD),
+        (0x68629, 0x09CF0),
+        (0x6863F, 0x3465C),
+        (0x68652, 0x34D29),
+        (0x68682, 0x3465C),
+        (0x68695, 0x39F2D),  # late block mover
+        (0x686A8, 0x09E41),
+        (0x686AF, 0x09F07),
+        (0x686B6, 0x3A3A1),
+        (0x686D2, 0x3A418),
+        (0x686FF, 0x3AD9B),  # /G5 list scheduler
+        (0x6871A, 0x3BDF5),
+        (0x6872D, 0x3C273),
+        (0x68757, 0x3C627),
+        (0x6876A, 0x3C875),
+        (0x6878A, 0x3C8CC),
+        (0x6879B, 0x3D8BF),
+    ),
+    "msvc6.5": (
+        (0x583C5, 0x336F4),  # local allocator
+        (0x583E9, 0x337EC),  # /G5 memory-operand split
+        (0x583FC, 0x33B7B),
+        (0x5840F, 0x34032),
+        (0x5842F, 0x3404F),
+        (0x58450, 0x04D75),
+        (0x58466, 0x35042),
+        (0x58479, 0x3536C),
+        (0x584A9, 0x35042),
+        (0x584BC, 0x3663C),  # late block mover
+        (0x584CF, 0x04DE1),
+        (0x584D6, 0x04EA7),
+        (0x584DD, 0x36AB0),
+        (0x584F9, 0x36B27),
+        (0x58526, 0x374AA),  # /G5 list scheduler
+        (0x58541, 0x3E113),
+        (0x58554, 0x3E591),
+        (0x5857E, 0x3E945),
+        (0x58591, 0x3EB93),
+        (0x585B1, 0x3EBEA),
+        (0x585C2, 0x3FBDD),
+    ),
+}
+PASSES = PASSES_BY_COMPILER[m.DEFAULT_SCRATCH_COMPILER]
 
 
 def run(scratch, source, out):
     work = rot.prepare(scratch, source, out.parent / (out.name + "-input"))
     stock = c2.load_profile
     profile = stock()
+    passes = PASSES_BY_COMPILER[profile["compiler"]]
     hooks = [
-        {"site": site, "target": target, "return": False} for site, target in PASSES
+        {"site": site, "target": target, "return": False} for site, target in passes
     ]
     profile = dict(profile, name=profile["name"] + "-late-passes", hooks=hooks)
-    c2.load_profile = lambda: profile
+    c2.load_profile = lambda *a, **kw: profile
     try:
         _, events = t.trace(work, out)
     finally:
