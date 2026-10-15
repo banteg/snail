@@ -1077,17 +1077,16 @@ def _symbol_matches(symbol_name: str, wanted: str) -> bool:
     return symbol_name.startswith("?") and symbol_name[1:].partition("@")[0] == wanted
 
 
-def extract_object_function(
-    obj: CoffObject,
-    name: str | None = None,
-    *,
-    reference_manifest: ReferenceSymbolManifest | None = None,
-) -> ObjectFunction:
-    """Pull one function's bytes and relocation offsets out of a COFF object.
+def object_function_symbols(obj: CoffObject) -> list[CoffSymbol]:
+    """Function symbols in code order: by section, then by offset within it."""
+    return sorted(
+        (symbol for symbol in obj.symbols if _is_function_symbol(symbol)),
+        key=lambda symbol: (symbol.section_number, symbol.value),
+    )
 
-    The function's extent runs from its symbol value to the next function
-    symbol in the same section (or the section end).
-    """
+
+def find_object_function_symbol(obj: CoffObject, name: str | None = None) -> CoffSymbol:
+    """The one function symbol named ``name`` (any, if unnamed and unique)."""
     candidates = [symbol for symbol in obj.symbols if _is_function_symbol(symbol)]
     if name is not None:
         candidates = [symbol for symbol in candidates if _symbol_matches(symbol.name, name)]
@@ -1105,8 +1104,21 @@ def extract_object_function(
     if len(candidates) > 1:
         names = ", ".join(symbol.name for symbol in candidates)
         raise ValueError(f"ambiguous function symbol, candidates: {names}")
+    return candidates[0]
 
-    target = candidates[0]
+
+def extract_object_function(
+    obj: CoffObject,
+    name: str | None = None,
+    *,
+    reference_manifest: ReferenceSymbolManifest | None = None,
+) -> ObjectFunction:
+    """Pull one function's bytes and relocation offsets out of a COFF object.
+
+    The function's extent runs from its symbol value to the next function
+    symbol in the same section (or the section end).
+    """
+    target = find_object_function_symbol(obj, name)
     section = obj.sections[target.section_number - 1]
     if section.characteristics & IMAGE_SCN_CNT_CODE == 0:
         raise ValueError(f"symbol {target.name!r} is not in a code section")

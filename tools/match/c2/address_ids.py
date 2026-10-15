@@ -46,11 +46,12 @@ def address_ids(function, source_text, displacement=None):
         source.write_text(source_text)
         frozen = rot.prepare(scratch, source, work / "input")
         with contextlib.redirect_stdout(io.StringIO()):
-            _, events, allocations, address_pass = ao.run_observer(frozen, work / "trace")
+            trace, events, allocations, address_pass = ao.run_observer(frozen, work / "trace")
     finally:
         shutil.rmtree(work)
-    c0, _ = ao.cse_origin(allocations)
-    (event,) = [e for e in events if e["target_rva"] == address_pass]
+    function = trace["function_ordinal"]
+    c0, _ = ao.cse_origin(allocations, function)
+    event = ao.t.function_event(events, function, address_pass)
     result["c0"] = hex(c0) if c0 is not None else None
     result["sums"] = [
         {

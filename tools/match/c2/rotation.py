@@ -466,12 +466,21 @@ def report(rows, source_lines):
 
 
 def prepare(scratch, source, work):
-    """Freeze scratch.conf with the canonical or overlay source in a new directory."""
+    """Freeze scratch.conf and the source it compiles in a new directory.
+
+    A translation-unit member freezes its whole unit, with an overlay
+    replacing only the member, so the trace sees the compile the matcher
+    scores.
+    """
     work.mkdir(parents=True)
     (work / "scratch.conf").write_text(
         m.overlay_scratch_conf((scratch / "scratch.conf").read_text())
     )
-    (work / "scratch.cpp").write_bytes((source or m.scratch_source_path(scratch)).read_bytes())
+    text = m.scratch_compilation_source(
+        m.load_scratch_config(scratch),
+        source_text=source.read_text(encoding="utf-8") if source else None,
+    )
+    (work / "scratch.cpp").write_text(text, encoding="utf-8")
     return work
 
 
