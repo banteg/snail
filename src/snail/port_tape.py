@@ -18,7 +18,7 @@ import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from .port_lockstep import SCRIPT
+from .port_lockstep import SCRIPT, snapshot_offsets
 
 WASM = Path("port/zig-out/bin/snail.wasm")
 RUNNER = Path("port/shell/run.mjs")
@@ -82,7 +82,9 @@ def load_session(root: Path, path: Path) -> Session:
         row = json.loads(line)
         kind = row["t"]
         if kind == "startup":
-            fields = [(name, int(offset, 16), kind_) for name, (offset, kind_) in layout["snapshot"].items()]
+            # The capture read these fields at Windows offsets; the port reads its own layout.
+            port = snapshot_offsets(root, port=True)
+            fields = [(name, port[name], kind_) for name, (_, kind_) in layout["snapshot"].items()]
             session = Session(path, row["warmup"], (row["crt_rand_seed"], row["math_random_index"]), fields)
         elif session is None:
             continue
