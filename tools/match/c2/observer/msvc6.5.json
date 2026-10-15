@@ -307,5 +307,20 @@
       297859,
       312124
     ]
+  },
+  "global_allocation": {
+    "global_entry_hook": {"site": 361394, "target": 195416, "return": false},
+    "local_entry_hook": {"site": 361413, "target": 220660, "return": false},
+    "queue_hooks": [
+      {"site": 210439, "target": 204065, "return": false},
+      {"site": 196309, "target": 204065, "return": false},
+      {"site": 136635, "target": 204065, "return": false}
+    ],
+    "choose_hook": {"site": 196191, "target": 208764, "return": true},
+    "costs": 645224,
+    "ranges": 645260
+  },
+  "stack_packing": {
+    "pack_hook": {"site": 212190, "target": 308759, "return": true}
   }
 }
