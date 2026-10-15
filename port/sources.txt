@@ -157,7 +157,6 @@
 ../decomp/game/GL/begin_sprite_depth_render_state.cpp
 ../decomp/game/GL/end_sprite_depth_render_state.cpp
 ../decomp/game/GL/configure_sprite_render_state.cpp
-../decomp/game/GL/draw_sprite_quad.cpp
 ../decomp/game/GL/get_or_append_object_texture_group_vertex.cpp
 ../decomp/game/GL/build_object_texture_group_buffers.cpp
 ../decomp/game/GL/set_object_color.cpp

@@ -25,3 +25,4 @@ initialize_high_score_screen                   ../decomp/game/HighScore/initiali
 update_high_score_screen                       ../decomp/game/HighScore/update_high_score_screen.cpp                    AI
 save_high_scores_and_config                    ../decomp/game/HighScore/save_high_scores_and_config.cpp                 MiniSave
 save_config_file                               ../decomp/game/Register/save_config_file.cpp                             save_config_file
+draw_sprite_quad                              ../decomp/game/GL/draw_sprite_quad.cpp                                  draw_sprite_quad

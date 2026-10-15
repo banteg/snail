@@ -7,4 +7,8 @@
 // pixels already converted to RGBA bytes, rows top first.
 Direct3DTexture8* create_emulated_texture(int width, int height, const unsigned char* rgba);
 
+// Temporarily override depth writes around a recovered draw; returns the
+// previous setting so the following draws retain their authored state.
+int set_emulated_depth_write(int enabled);
+
 #endif
