@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**644/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **225801/294505** bytes (**76.67%**) are proof-grade, and overall fuzzy is **99.55%**.
+**645/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **228265/294505** bytes (**77.51%**) are proof-grade, and overall fuzzy is **99.55%**.
 
 **116/120** platform helpers matched, **120/120** have a scratch, **19889/22833** bytes (**87.11%**) are proof-grade, and overall fuzzy is **97.11%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -12,15 +12,15 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**18** non-exact scratch-backed functions hold **68704 target bytes** without proof-grade credit and **1318 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **85.0%** of that gap; the top 10 hold **99.7%**.
+**17** non-exact scratch-backed functions hold **66240 target bytes** without proof-grade credit and **1318 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **85.0%** of that gap; the top 10 hold **99.7%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **18 / 1318** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **0 functions / 0 gap bytes**; **17 / 1318** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
 Ranked by withheld target extent. Structural similarity masks caller-saved register names and local labels; it is diagnostic and grants no proof credit. Proof blockers come from the current matcher, independently of manual residual labels.
 
-Proof blockers (overlapping extents): encoding: 7 functions / 18448 bytes; instructions: 11 functions / 50256 bytes; references: 1 functions / 2688 bytes.
+Proof blockers (overlapping extents): encoding: 6 functions / 15984 bytes; instructions: 11 functions / 50256 bytes; references: 1 functions / 2688 bytes.
 
 | rank | function | withheld bytes | fuzzy gap | structural | changed insns t/c | blockers | recovery | residual | evidence | current/all | flags |
 |---:|---|---:|---:|---:|---:|---|---|---|---|---:|---|
@@ -35,16 +35,15 @@ Proof blockers (overlapping extents): encoding: 7 functions / 18448 bytes; instr
 | 9 | initialize_looptheloop_path_template_pair | 2640 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/18 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
 | 10 | initialize_loopout_path_template_pair | 2624 | 0 | 100.00% | 0/0 | encoding | unspecified | unspecified | historical-only | 0/28 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 11 | initialize_halfpipe_path_template_pair | 2592 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/28 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 12 | initialize_turnoverdouble_path_template_pair | 2464 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/58 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 13 | initialize_turnover_path_template_pair | 2448 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/58 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 14 | initialize_dip_path_template_pair | 2400 | 4 | 99.85% | 1/1 | instructions | semantic-complete | analysis | historical-only | 0/59 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 15 | register_font_texture_sheet | 1040 | 139 | 92.50% | 21/20 | instructions | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
-| 16 | set_snail_weapon | 944 | 212 | 93.29% | 31/29 | instructions | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
-| 17 | try_enter_track_attachment_from_swept_motion | 800 | 8 | 99.02% | 2/2 | instructions | semantic-complete | analysis | historical-only | 0/13 | historical-only,stale-dependencies |
-| 18 | sample_smtrack_heightmap | 368 | 10 | 97.25% | 3/3 | instructions | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
+| 12 | initialize_turnover_path_template_pair | 2448 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/58 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 13 | initialize_dip_path_template_pair | 2400 | 4 | 99.85% | 1/1 | instructions | semantic-complete | analysis | historical-only | 0/59 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 14 | register_font_texture_sheet | 1040 | 139 | 92.50% | 21/20 | instructions | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
+| 15 | set_snail_weapon | 944 | 212 | 93.29% | 31/29 | instructions | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
+| 16 | try_enter_track_attachment_from_swept_motion | 800 | 8 | 99.02% | 2/2 | instructions | semantic-complete | analysis | historical-only | 0/13 | historical-only,stale-dependencies |
+| 17 | sample_smtrack_heightmap | 368 | 10 | 97.25% | 3/3 | instructions | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
 
 
-## Proof Grade (644)
+## Proof Grade (645)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -272,6 +271,7 @@ Proof blockers (overlapping extents): encoding: 7 functions / 18448 bytes; instr
 | ✅ | initialize_slalomdouble_path_template_pair | 0x425050 | 2544 | 683/683 | 100.00% | 683/683 | 45 ok |  | core |
 | ✅ | initialize_p_path_template_pair | 0x425a40 | 2496 | 679/679 | 100.00% | 679/679 | 41 ok |  | core |
 | ✅ | initialize_start_path_template_pair | 0x426400 | 2224 | 610/610 | 100.00% | 610/610 | 35 ok |  | core |
+| ✅ | initialize_turnoverdouble_path_template_pair | 0x427640 | 2464 | 680/680 | 100.00% | 680/680 | 46 ok |  | core |
 | ✅ | initialize_turnunder_path_template_pair | 0x427fe0 | 2496 | 687/687 | 100.00% | 687/687 | 45 ok |  | core |
 | ✅ | initialize_wibble_path_template_pair | 0x4289a0 | 2224 | 608/608 | 100.00% | 608/608 | 39 ok |  | core |
 | ✅ | initialize_invert_path_template_pair | 0x429250 | 2192 | 600/600 | 100.00% | 600/600 | 35 ok |  | core |
@@ -693,7 +693,7 @@ Proof blockers (overlapping extents): encoding: 7 functions / 18448 bytes; instr
 | ✅ | attach_render_camera_source | 0x44e900 | 32 | 6/6 | 100.00% | 6/6 | - |  | boundary |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 
-## Audit Needed (7)
+## Audit Needed (6)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -701,7 +701,6 @@ Proof blockers (overlapping extents): encoding: 7 functions / 18448 bytes; instr
 | ⚠ | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2736 | 745/745 | 100.00% | 745/745 | 55 ok |  | core |
 | ⚠ | initialize_loopout_path_template_pair | 0x41c5f0 | 2624 | 718/718 | 100.00% | 718/718 | 52 ok |  | core |
 | ⚠ | initialize_turnover_path_template_pair | 0x426cb0 | 2448 | 671/671 | 100.00% | 671/671 | 41 ok |  | core |
-| ⚠ | initialize_turnoverdouble_path_template_pair | 0x427640 | 2464 | 680/680 | 100.00% | 680/680 | 46 ok |  | core |
 | ⚠ | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 707/707 | 100.00% | 707/707 | 55 ok |  | core |
 | ⚠ | initialize_loopbow_path_template_pair | 0x42ba80 | 2944 | 796/796 | 100.00% | 796/796 | 63 ok |  | core |
 

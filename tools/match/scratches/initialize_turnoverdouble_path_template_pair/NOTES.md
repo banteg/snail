@@ -1,3 +1,21 @@
+## 2026-10-15: 100% byte-exact under msvc6.3
+
+Result: **100.00% proof-grade byte-exact** (`680/680` instructions, prefix
+`680`, `body_byte_exact = true`, `46/46` masked operands clean) under `msvc6.3`.
+
+- `C2.DLL` reads the outer function's `.in` stream first (`early phase=0`) and
+  then runs the inliner (`C2+0x1a701`, `early phase=1`), which clones local
+  variables of `static __forceinline` helpers into Pool B after the outer
+  function's locals have already opened the second 32-slot Pool B chunk at
+  `0x1a0..0x1bf`.
+- Inlining the terminal-delta and strip-mesh loops directly in
+  `initialize_turnoverdouble_path_template_pair` (with `row_mod`,
+  `next_row_mod`, and `next_column` bound in the quad loop) while factoring the
+  curve-sample loop into `build_turnoverdouble_curve` places
+  `curve_sample_offset` at `local slot 0x1b9` (`cost 0x13720`), outranking
+  `primary_samples` (`temp slot 0x4dc`, `cost 0x13700`) in `C2+0xf349` and
+  matching `fstp dword ptr [ebx + edi + 0x90]` at `+0x2b1`.
+
 ## 2026-09-25 house-style rewrite test of the low-id hypothesis
 
 Rules: [address-order.md](../../c2/address-order.md). The interpolation
