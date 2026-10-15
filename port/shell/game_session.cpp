@@ -16,6 +16,7 @@
 #include "input_state.h"
 #include "loading_bar.h"
 #include "main_loop_state.h"
+#include "profile.h"
 #include "rmath_random.h"
 #include "rmath_tables.h"
 #include "runtime_config.h"
@@ -39,6 +40,8 @@ void render_game_frame_scene();                          // @ 0x4134c0
 char* save_config_file(char* file_name, void* bytes, int byte_count);  // @ 0x42f540
 int present_backbuffer();                                // @ 0x413520
 unsigned int msvc_rand_seed();                           // shell/runtime.cpp
+
+bool g_port_ultimate = false;
 
 namespace {
 StartupRng g_startup_rng;

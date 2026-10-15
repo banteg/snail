@@ -66,7 +66,7 @@ def test_mobile_catalog_rules_swing_and_classic_save_isolation(tmp_path):
         mode = sample["mode"]
         fraction = min(1, max(0, sample["z"] / sample["end"]))
         # Coefficients from Android CalcRate, with PC values as switch controls.
-        if sample["extras"]:
+        if sample["ultimate"]:
             slope = 0.3 if mode in (1, 3) else 0.2
             base_bonus = 0.0
             power = 0.3 if mode in (1, 4) else 0.4
@@ -125,7 +125,7 @@ def test_each_complete_mobile_pro_course_starts(tmp_path, level):
         "node",
         str(REPO_ROOT / "port/shell/run.mjs"),
         str(REPO_ROOT / "port/zig-out/bin/snail.wasm"),
-        "--extras",
+        "--profile", "ultimate",
         "--trace",
         "--keys",
         str(keys),

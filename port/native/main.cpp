@@ -7,12 +7,13 @@
 //   --tape T --screenshot FILE
 //                           replay T ticks of session.tape in the data directory (a session the original
 //                           recorded, as snail port lockstep writes it) in a hidden window, save the last frame
-//   --original              switch off every enhancement below
+//   --profile P             gameplay profile: ultimate (default; mobile courses and rules, original bugs
+//                           fixed, needs SnailMailExtras.dat) or original (the PC release as shipped).
+//                           --tape defaults to original, the profile its recordings come from
 //   --no-hidpi              render at 640x480 instead of the window's pixel resolution
 //   --no-fullscreen         ignore the game's Fullscreen option
 //   --no-trap-mouse         leave the pointer free (by default a click traps it; Escape or leaving the window frees it)
-// The data directory holds SnailMail.dat (default: the current directory);
-//   --extras                enable opt-in mobile content (track colours 3-6, Fringe: random)
+// The data directory holds SnailMail.dat and SnailMailExtras.dat (default: the current directory);
 // saves land beside it, as with the original.
 
 #include <SDL3/SDL.h>
@@ -124,7 +125,7 @@ int main(int argc, char** argv)
 {
     bool muted = false;
     HostOptions options;
-    bool extras = false;
+    const char* profile = nullptr;
     int warmup = -1;
     const char* root = ".";
     int frames = 0;
@@ -141,10 +142,9 @@ int main(int argc, char** argv)
             screenshot = argv[++i];
         else if (strcmp(argv[i], "--tape") == 0 && i + 1 < argc)
             tape_ticks = atoi(argv[++i]);
-        else if (strcmp(argv[i], "--extras") == 0)
-            extras = true;
-        else if (strcmp(argv[i], "--original") == 0)
-            options = {false, false, false}, extras = false;
+        else if (strcmp(argv[i], "--profile") == 0 && i + 1 < argc
+                 && (strcmp(argv[i + 1], "original") == 0 || strcmp(argv[i + 1], "ultimate") == 0))
+            profile = argv[++i];
         else if (strcmp(argv[i], "--no-hidpi") == 0)
             options.hidpi = false;
         else if (strcmp(argv[i], "--no-fullscreen") == 0)
@@ -154,8 +154,8 @@ int main(int argc, char** argv)
         else if (argv[i][0] != '-')
             root = argv[i];
         else {
-            SDL_Log("usage: snail-native [--mute] [--warmup N] [--frames N | --tape T] [--screenshot FILE] [--extras] "
-                    "[--original] [--no-hidpi] [--no-fullscreen] [--no-trap-mouse] [data directory]");
+            SDL_Log("usage: snail-native [--mute] [--warmup N] [--frames N | --tape T] [--screenshot FILE] "
+                    "[--profile original|ultimate] [--no-hidpi] [--no-fullscreen] [--no-trap-mouse] [data directory]");
             return 2;
         }
     }
@@ -191,7 +191,8 @@ int main(int argc, char** argv)
     wasm_rt_init();
     wasm2c_game_instantiate(&game, &host, &wasi);
     w2c_game_0x5Finitialize(&game);
-    w2c_game_snail_set_extras(&game, extras ? 1 : 0);
+    bool ultimate = profile ? strcmp(profile, "ultimate") == 0 : !tape_ticks;
+    w2c_game_snail_set_profile(&game, ultimate ? 1 : 0);
     if (tape_ticks) {
         if (!w2c_game_snail_tape_open(&game)) {
             SDL_Log("snail: cannot replay session.tape in %s", root);

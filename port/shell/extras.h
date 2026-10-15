@@ -1,10 +1,8 @@
 #ifndef SNAIL_PORT_EXTRAS_H
 #define SNAIL_PORT_EXTRAS_H
 
-// Opt-in mobile content (Issue #28), off by default so the original Windows
-// game remains the default and both oracles (20/20 replays, 10/10 lockstep
-// sessions) match bit for bit.
-extern bool g_port_extras;
+// Mobile content (Issue #28) for the Ultimate profile (profile.h).
+#include "profile.h"
 
 const char* extras_save_path(const char* name);
 bool extras_init_archive();

@@ -12,7 +12,7 @@ export async function openMobileGame(wasm, presenter = {}) {
   wasi.initialize(instance);
   const e = instance.exports;
   presenter.ready?.(e);
-  e.snail_set_extras(1);
+  e.snail_set_profile(1);
   if (!e.snail_start(0)) throw Error('game startup failed');
   const step = (n = 5) => { for (let i=0; i<n; ++i) e.snail_frame(0.4); };
   const click = (x,y) => {

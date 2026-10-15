@@ -2,14 +2,15 @@
 // fixed 1/60 s per tick, with scripted input and a presenter that shows
 // nothing. The browser build (web_main.cpp) runs the same session live.
 //
-// Usage: snail.wasm [--ticks N] [--keys SCRIPT] [--warmup N] [--trace] [--extras] [--replay A3]
+// Usage: snail.wasm [--ticks N] [--keys SCRIPT] [--warmup N] [--trace] [--profile P] [--replay A3]
 //        snail.wasm --tape TAPE --tape-out STATES
 //   --ticks   ticks to run (default 600; with --keys, until the script ends)
 //   --keys    input script (shell/input_script.cpp)
 //   --warmup  random draws before construction; the original used
 //             timeGetTime() % 1000, so a run is reproducible only with this
 //   --trace   print front-end state changes and each screen's widgets
-//   --extras  enable opt-in mobile content (shell/extras.h)
+//   --profile original (default) or ultimate (shell/profile.h); --replay and
+//             --tape recordings come from the original
 //   --replay  replay row 3 of ScoreA.dat (B: ScoreB.dat) against its recording
 //             (shell/replay_oracle.cpp); pair with scripts/high_scores.keys
 //   --tape    replay a session the original recorded and write the port's
@@ -22,6 +23,7 @@
 
 #include "extras.h"
 #include "fixes.h"
+#include "profile.h"
 #include "frontend_widget.h"
 #include "game_root.h"
 #include "game_session.h"
@@ -85,8 +87,9 @@ int main(int argc, char** argv)
             warmup = atoi(argv[++i]);
         else if (strcmp(argv[i], "--trace") == 0)
             trace = true;
-        else if (strcmp(argv[i], "--extras") == 0)
-            g_port_extras = true;
+        else if (strcmp(argv[i], "--profile") == 0 && i + 1 < argc
+                 && (strcmp(argv[i + 1], "original") == 0 || strcmp(argv[i + 1], "ultimate") == 0))
+            g_port_ultimate = strcmp(argv[++i], "ultimate") == 0;
         else if (strcmp(argv[i], "--tape") == 0 && i + 1 < argc)
             tape = argv[++i];
         else if (strcmp(argv[i], "--tape-out") == 0 && i + 1 < argc)
@@ -98,7 +101,7 @@ int main(int argc, char** argv)
             }
         }
         else {
-            fprintf(stderr, "usage: snail [--ticks N] [--keys SCRIPT] [--warmup N] [--trace] [--extras] [--replay A3]\n");
+            fprintf(stderr, "usage: snail [--ticks N] [--keys SCRIPT] [--warmup N] [--trace] [--profile P] [--replay A3]\n");
             return 2;
         }
     }

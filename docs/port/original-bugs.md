@@ -1,9 +1,9 @@
 # Original bugs
 
 The shipped `SnailMail.exe` has a few behaviours that read as genuine bugs once
-the recovered source shows how they arise. The port fixes them **by default**,
-with no switch. The one large switch is [Mobile extras](README.md#enhancements),
-for content backported from the Android release.
+the recovered source shows how they arise. The
+[Ultimate profile](README.md#gameplay-profiles) fixes every one listed here;
+the Original profile keeps them, as the oracles require.
 
 Each fix wraps the matched function (`port/wrapped.txt`) and lives in
 `port/shell/fixes.cpp`. The recovered source in `decomp/` stays as the original
@@ -84,6 +84,6 @@ receipts show 247/247, 180/180 and 259/259 instructions respectively. This
 identifies a bug inherited from the shipped renderer; the visual reproduction
 above was performed in the port, rather than the original Windows executable.
 
-The runtime regression test drives the real browser WASM with both PC content
-and mobile extras, checks all 36 background draws, and verifies that the world
-and foreground draws following them still write depth.
+The runtime regression test drives the real browser WASM in both profiles and
+checks all 36 background draws: they write depth in Original and not in
+Ultimate, and the world draws following them still write depth.

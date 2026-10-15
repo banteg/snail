@@ -3,11 +3,11 @@ import { openMobileGame } from './port_mobile_runtime.mjs';
 const game = await openMobileGame(process.argv[2]);
 const { e, sub } = game;
 const rates = [];
-for (const extras of [0, 1]) {
+for (const ultimate of [0, 1]) {
   for (const mode of [0, 1, 3, 4, 7]) {
     for (const fill of [0.5, 0.1]) {
       for (const hover of [0, 1]) {
-        e.snail_set_extras(extras);
+        e.snail_set_profile(ultimate);
         let memory = game.memory();
         const player = sub + 0x3bb764;
         memory.writeInt32LE(2, sub + 0x3c);
@@ -23,7 +23,7 @@ for (const extras of [0, 1]) {
         e.snail_frame(1 / 60);
         memory = game.memory();
         rates.push({
-          extras, mode, fill, hover,
+          ultimate, mode, fill, hover,
           rate: memory.readFloatLE(sub + 0x38),
           z: memory.readFloatLE(player + 0x70),
           end: memory.readInt32LE(sub + 0x58),

@@ -670,7 +670,7 @@ bool is_halfpole_path(const cRPath* path)
 
 void extras_init_paths()
 {
-    if (!g_port_extras || g_paths_initialized)
+    if (!g_port_ultimate || g_paths_initialized)
         return;
 
     memcpy(g_pc_path_pairs_backup, g_game->subgame.path_pairs, sizeof(g_pc_path_pairs_backup));
@@ -856,7 +856,7 @@ static void remap_segment_paths(SubSegment* seg, int* mapped_slot_for_extra, boo
 
 void extras_map_level_paths(cRSubTracks* level_def)
 {
-    if (!g_port_extras || !g_paths_initialized || level_def != &g_game->subgame.level_definition)
+    if (!g_port_ultimate || !g_paths_initialized || level_def != &g_game->subgame.level_definition)
         return;
 
     memcpy(g_game->subgame.path_pairs, g_pc_path_pairs_backup, sizeof(g_pc_path_pairs_backup));
@@ -889,7 +889,7 @@ void extras_clear_tramp_rings()
 // Android cRSubTrampRingManager::AddRing (0005d5b4).
 void extras_add_tramp_ring(cRSubLoc* cell)
 {
-    if (!g_port_extras || !g_paths_initialized || !cell)
+    if (!g_port_ultimate || !g_paths_initialized || !cell)
         return;
     while (cell->tile_id == SUBLOC_TILE_TRAMPOLINE)
         cell -= 1;
@@ -919,7 +919,7 @@ void extras_add_tramp_ring(cRSubLoc* cell)
 // Android cRSubTrampRing::AI (0005d948).
 void extras_step_tramp_rings()
 {
-    if (!g_port_extras || !g_paths_initialized || !g_game)
+    if (!g_port_ultimate || !g_paths_initialized || !g_game)
         return;
     if (g_game->subgame.subgame_state != 2)
         return;
@@ -948,7 +948,7 @@ void extras_step_tramp_rings()
 int cRPathManager::NameCode(char* name)
 {
     int code = path_name_code_recovered(this, name);
-    if (code != -1 || !g_port_extras)
+    if (code != -1 || !g_port_ultimate)
         return code;
     for (int i = 0; i < kMobilePathCount; ++i) {
         if (Rstrcmp(name, (char*)kMobilePathNames[i]))
@@ -961,7 +961,7 @@ int cRPathManager::NameCode(char* name)
 void cRPath::compute_kind42_attachment_transform(
     float radius, float x, float y, TransformMatrix* transform, float* out_angle)
 {
-    if (!g_port_extras || !is_halfpole_path(this)) {
+    if (!g_port_ultimate || !is_halfpole_path(this)) {
         kind42_transform_recovered(this, radius, x, y, transform, out_angle);
         return;
     }
@@ -979,7 +979,7 @@ void cRPath::compute_kind42_attachment_transform(
 void cRSquidge::StartY(float value)
 {
     squidge_start_y_recovered(this, value);
-    if (!g_port_extras || !g_game)
+    if (!g_port_ultimate || !g_game)
         return;
     cRSubGoldy* player = &g_game->subgame.player;
     if (this == &player->squidge) {

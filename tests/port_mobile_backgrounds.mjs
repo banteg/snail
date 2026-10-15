@@ -29,14 +29,14 @@ for (let slot = 0; slot < 1000; ++slot) {
     if (name.toLowerCase() === `backgrounds/${key}.tga`.toLowerCase()) names[key] = slot;
 }
 const results = [];
-for (const [name, extras, flip] of [
+for (const [name, ultimate, flip] of [
   ['SpacePro', 1, 0], ['SpacePro', 1, 1],
   ['SpacePro2', 1, 0], ['SpacePro2', 1, 1],
   ['SpacePurple', 1, 0], ['SpacePro', 0, 0],
 ]) {
   if (!(name in names) || !(name in ids)) throw Error(`texture not found: ${name}`);
   const backdrop = game.root + 0x4ec10, memory = game.memory();
-  exports.snail_set_extras(extras);
+  exports.snail_set_profile(ultimate);
   memory.writeInt32LE(names[name], backdrop + 0x3c);
   memory[backdrop + 0x38] = 0;
   memory[backdrop + 0x4c] = 0;
@@ -48,7 +48,7 @@ for (const [name, extras, flip] of [
   if (!vertices.length) throw Error(`no draws for ${name}`);
   const xs = vertices.map(v => v.x), us = vertices.map(v => v.u), vs = vertices.map(v => v.v);
   const left = Math.min(...xs), right = Math.max(...xs);
-  results.push({ name, extras, flip, count: vertices.length,
+  results.push({ name, ultimate, flip, count: vertices.length,
     minU: Math.min(...us), maxU: Math.max(...us), minV: Math.min(...vs), maxV: Math.max(...vs),
     leftU: vertices.find(v => v.x === left).u, rightU: vertices.find(v => v.x === right).u });
 }

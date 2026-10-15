@@ -263,7 +263,7 @@ Which functions the port compiles:
   captures. A lockstep session's captured frames can be rendered by the port
   at the same tick: `snail port lockstep <session> --stage DIR` lays out the
   archive, the session's start files and `session.tape`, and `snail-native
-  --original --tape T --screenshot FILE DIR` replays T ticks with the recorded
+  --no-hidpi --tape T --screenshot FILE DIR` replays T ticks with the recorded
   cadence and saves the last frame, where T is the frame row's `after`. The
   first such comparison found the wall2 turrets (the pillar meshes) missing:
   `cRBod::ApplyPos` calls `tVector::operator*` through a view that returns
@@ -300,14 +300,58 @@ hidden or closed. `?reset` clears them, and `?mute` silences the game until
 `?mute=0` (the page remembers either).
 `?warmup=N` fixes the random warmup for a repeatable start.
 
-### Enhancements
+### Gameplay profiles
 
-The gear in the page's corner switches the port's enhancements over the
-original, one by one or all at once (Original, Enhanced). All enhancements
-start enabled in a new browser; saved choices take precedence. Rendering and
-window options live in the host and presenters, while Mobile extras uses the
-content hooks described below. Fixes for the original's own bugs have no
-switch: they are always on and listed in [Original bugs](original-bugs.md).
+The port plays one of two profiles, chosen at startup: the gear menu's
+Gameplay buttons or `?profile=original|ultimate` in the browser (switching
+reloads the page), `--profile original|ultimate` natively and headless. The
+profile decides content, rules and saves together, so PC and mobile never mix
+in one game.
+
+- **Ultimate** (the default in the browser and natively): the latest content,
+  backported from the Android release (#28): all mobile courses and segments,
+  mobile rules and capacities, Pro-Challenge, separate saves, and every fix in
+  [Original bugs](original-bugs.md). It needs `SnailMailExtras.dat` and won't
+  start without it.
+- **Original** (the default headless, since both oracles check it): the 2004 PC
+  release as shipped, its bugs included. Every Ultimate hook
+  (`port/wrapped.txt`) delegates to the recovered function unchanged.
+
+`uv run snail port extras` builds `artifacts/bin/SnailMailExtras.dat`
+from the extracted Android assets: splitting `OBJECTS/WORLD00/SURFACE4`–`6.PNG`
+into PC-layout 24-bit `Track4`–`6.tga` and `Slide4`–`6.tga` textures,
+converting the Pro backgrounds (`SpacePro`, `SpacePro2`, `StarmapProbg`,
+`SplashPro_A`/`_B`) and `Galaxy/*Pro.tga` overlays to PC TGA conventions, and
+packing `Sprites/FringeColours.tga`, `Objects/TrampRing/`, `Galaxy/_GalaxyPro.txt`,
+all 65 mobile level files and all 176 segment definitions, including shared
+names whose layouts changed. The combined catalog loads before any levels
+are parsed. Original uses only the PC archive and catalog.
+
+The narrow hooks (`port/wrapped.txt`, `port/shell/extras.cpp`,
+`port/shell/extras_paths.cpp`, `port/shell/extras_pro.cpp`) select the mobile
+level data, seven track sets, new path templates, mobile CAGE2/TWISTER2
+geometry, trampoline effects and moving weapon rings. The New Game menu
+adds **Pro-Challenge**, opening the ten-level **Special Assignment** galaxy.
+Mobile acceleration and power-up pacing apply in every game mode;
+Original delegates to the PC rules. Pro skies use the full
+converted image with normalized UVs, including horizontal flips; PC
+backdrops retain their padded-image UV layout.
+
+Mobile campaign progress and scores use `SnailMailMobile.cfg` and
+`ScoreMobileA/B/C.dat`. The first mobile launch copies display/audio
+preferences from the PC config and starts its own campaign progress.
+Pro keeps `SnailMailPro.cfg` and `ScorePro.dat`. Switching to Original reloads
+the PC campaign and scores without rewriting them.
+
+Ultimate selects the mobile 3,500-row build limit; Original retains the PC
+3,100-row limit. Port builds reserve 3,600 runtime rows, including the tail
+margin. Matching Windows builds retain the original layout.
+
+### Comfort settings
+
+Independent of the profile, the gear's Comfort options change only how the
+game is shown and controlled. All start enabled in a new browser; saved
+choices take precedence. They live in the host and presenters.
 
 - **Sharp rendering:** the presenter draws at the canvas's size in device
   pixels instead of 640x480. Viewports scale, while the half-pixel offset stays
@@ -332,36 +376,6 @@ switch: they are always on and listed in [Original bugs](original-bugs.md).
   drew the track three times as far (render-time links undone after each
   frame, both oracles matching), but objects still spawn 38 units ahead, and
   the longer view made that pop-in plain.
-- **Mobile extras** (`--extras` natively and headless, `?extras` or the gear menu
-  in the browser, enabled by default there): content backported from the Android
-  release (#28). `uv run snail port extras` builds `artifacts/bin/SnailMailExtras.dat`
-  from the extracted Android assets: splitting `OBJECTS/WORLD00/SURFACE4`–`6.PNG`
-  into PC-layout 24-bit `Track4`–`6.tga` and `Slide4`–`6.tga` textures,
-  converting the Pro backgrounds (`SpacePro`, `SpacePro2`, `StarmapProbg`,
-  `SplashPro_A`/`_B`) and `Galaxy/*Pro.tga` overlays to PC TGA conventions, and
-  packing `Sprites/FringeColours.tga`, `Objects/TrampRing/`, `Galaxy/_GalaxyPro.txt`,
-  all 65 mobile level files and all 176 segment definitions, including shared
-  names whose layouts changed. The combined catalog loads before any levels
-  are parsed. Extras off uses the original PC archive and catalog.
-  The narrow hooks (`port/wrapped.txt`, `port/shell/extras.cpp`,
-  `port/shell/extras_paths.cpp`, `port/shell/extras_pro.cpp`) select the mobile
-  level data, seven track sets, new path templates, mobile CAGE2/TWISTER2
-  geometry, trampoline effects and moving weapon rings. The New Game menu
-  adds **Pro-Challenge**, opening the ten-level **Special Assignment** galaxy.
-  Mobile acceleration and power-up pacing apply in every game mode while
-  extras is on; extras off delegates to the PC rules. Pro skies use the full
-  converted image with normalized UVs, including horizontal flips; PC
-  backdrops retain their padded-image UV layout.
-
-  Mobile campaign progress and scores use `SnailMailMobile.cfg` and
-  `ScoreMobileA/B/C.dat`. The first mobile launch copies display/audio
-  preferences from the PC config and starts its own campaign progress.
-  Pro keeps `SnailMailPro.cfg` and `ScorePro.dat`. Switching extras off reloads
-  the classic campaign and scores without rewriting them.
-
-The Mobile extras switch selects the mobile 3,500-row build limit; classic
-mode retains the PC 3,100-row limit. Port builds reserve 3,600 runtime rows,
-including the tail margin. Matching Windows builds retain the original layout.
 
 ### Hosting
 
@@ -426,7 +440,7 @@ so prior versions retain their original bundle.
 ```
 brew install sdl3 sdl3_mixer wabt
 cd port && zig build native -Doptimize=ReleaseFast
-zig-out/bin/snail-native [--mute] <directory with SnailMail.dat>
+zig-out/bin/snail-native [--mute] <directory with SnailMail.dat and SnailMailExtras.dat>
 ```
 
 Native builds can't compile the game for 64-bit yet (stage 5), so the native
@@ -440,13 +454,15 @@ versions of the same two shaders) and SDL3_mixer. The window scales the
 frames in a hidden window and saves the last one; runs with the same
 `--warmup` give byte-identical frames.
 
-The native host has the same enhancements, on by default: rendering at the
+The native host plays the Ultimate profile by default (`--profile original`
+for the PC release; `--tape` defaults to Original, the profile its recordings
+come from) and has the same comfort settings, on by default: rendering at the
 window's pixel resolution, the game's Fullscreen option making the window
 fullscreen (the window's own controls turn the option off and on), a click
 trapping the pointer (Escape in a window, or leaving it, frees it).
 `--no-hidpi`, `--no-fullscreen` and `--no-trap-mouse` switch them off one by
-one, `--original` all at once; compare screenshots with the original's at
-640x480 with `--original`.
+one; compare screenshots with the original's at 640x480 with
+`--profile original --no-hidpi`.
 
 ## Building the headless port
 

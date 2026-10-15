@@ -1,4 +1,4 @@
-"""Background star streaks must not occlude the world rendered after them."""
+"""Background star streaks occlude the world in the original; Ultimate fixes it."""
 
 import json
 import shutil
@@ -16,8 +16,8 @@ from snail.symbols import REPO_ROOT
     or not (REPO_ROOT / "artifacts/bin/SnailMailExtras.dat").exists(),
     reason="needs node, the browser port build, and both game archives",
 )
-@pytest.mark.parametrize("extras", [False, True])
-def test_starfield_depth_writes_do_not_leak_into_the_world(tmp_path, extras):
+@pytest.mark.parametrize("ultimate", [False, True])
+def test_starfield_depth_writes_leak_only_in_the_original(tmp_path, ultimate):
     probe = tmp_path / "starfield.mjs"
     probe.write_text("""
 import { readFile } from 'node:fs/promises';
@@ -50,7 +50,7 @@ const { exports: e } = await WebAssembly.instantiate(module, { wasi_snapshot_pre
 memory = e.memory;
 wasi.bind(memory);
 e._initialize();
-e.snail_set_extras(Number(process.argv[3]));
+e.snail_set_profile(Number(process.argv[3]));
 if (!e.snail_start(0)) throw new Error('startup failed');
 const step = n => { for (let i = 0; i < n; i++) e.snail_frame(1 / 60); };
 const click = (x,y) => {
@@ -63,12 +63,12 @@ step(1);
 console.log(JSON.stringify({ stars, world, foreground }));
 """)
     result = subprocess.run(
-        ["node", str(probe), str(REPO_ROOT), str(int(extras))],
+        ["node", str(probe), str(REPO_ROOT), str(int(ultimate))],
         capture_output=True, text=True, check=True,
     )
     draws = json.loads(result.stdout.splitlines()[-1])
     assert len(draws["stars"]) == 36
-    assert {d["write"] for d in draws["stars"]} == {0}
+    assert {d["write"] for d in draws["stars"]} == {0 if ultimate else 1}
     assert {d["func"] for d in draws["stars"]} == {4}  # LEQUAL, still depth tested
     assert draws["world"] and draws["foreground"]
     assert {d["write"] for d in draws["world"]} == {1}

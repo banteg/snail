@@ -1,5 +1,5 @@
-# Functions the shell wraps for opt-in mobile content (shell/extras*.cpp, --extras)
-# and fixes for the original's own bugs (shell/fixes.cpp):
+# Functions the shell wraps for the Ultimate profile (shell/profile.h): mobile content
+# (shell/extras*.cpp) and fixes for the original's own bugs (shell/fixes.cpp).
 # manifest name, source path (from port/), and the identifier renamed to *_recovered.
 archive_or_file_exists                         ../decomp/game/RShell/archive_or_file_exists.cpp                         archive_or_file_exists
 load_file_bytes_from_archive_or_fs             ../decomp/game/RShell/load_file_bytes_from_archive_or_fs.cpp             load_file_bytes_from_archive_or_fs

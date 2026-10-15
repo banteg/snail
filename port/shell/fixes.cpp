@@ -1,12 +1,14 @@
 // Fixes for the original's own bugs (fixes.h, docs/port/original-bugs.md).
 // The wrappers listed in port/wrapped.txt run their *_recovered bodies
-// unchanged and correct what the original got wrong around them.
+// unchanged and, in the Ultimate profile, correct what the original got wrong
+// around them.
 
 #include "d3d8_device.h"
 #include "fixes.h"
 #include "game_root.h"
 #include "garbage_hazard_slot.h"
 #include "player.h"
+#include "profile.h"
 #include "slug_hazard_types.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
@@ -49,7 +51,7 @@ void cRSubGame::AddSlug(cRSubLoc* cell, cRSubGoldy* player)
 {
     int slot = first_inactive(slug_hazards.slots);
     subgame_add_slug_recovered(this, cell, player);
-    if (slot >= 0) {
+    if (g_port_ultimate && slot >= 0) {
         cRSlug& slug = slug_hazards.slots[slot];
         slug.sprite->facing_angle = hazard_facing(player, slug.attachment_facing_angle);
     }
@@ -59,7 +61,7 @@ void cRSubGame::AddGarbage(cRSubLoc* cell, cRSubGoldy* player)
 {
     int slot = first_inactive(garbage_hazards.slots);
     subgame_add_garbage_recovered(this, cell, player);
-    if (slot >= 0) {
+    if (g_port_ultimate && slot >= 0) {
         cRSubGarbage& garbage = garbage_hazards.slots[slot];
         garbage.sprite->facing_angle = hazard_facing(player, garbage.attachment_facing_angle);
     }
@@ -74,7 +76,7 @@ int draw_sprite_quad(Vector3* position, cRSprite* sprite)
 {
     bool background_star = sprite->texture_ref == g_sprite_texture_table[32]
         && (sprite->flags & RENDER_SCENE_MASK) == RENDER_SCENE_OVERLAY_1;
-    if (!background_star)
+    if (!g_port_ultimate || !background_star)
         return draw_sprite_quad_recovered(position, sprite);
 
     int previous = set_emulated_depth_write(0);
