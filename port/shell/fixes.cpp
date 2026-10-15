@@ -1,7 +1,8 @@
 // Fixes for the original's own bugs (fixes.h, docs/port/original-bugs.md).
 // The wrappers listed in port/wrapped.txt run their *_recovered bodies
-// unchanged and then correct what the original got wrong.
+// unchanged and correct what the original got wrong around them.
 
+#include "d3d8_device.h"
 #include "fixes.h"
 #include "game_root.h"
 #include "garbage_hazard_slot.h"
@@ -14,6 +15,7 @@ void subgame_add_slug_recovered(cRSubGame* self, cRSubLoc* cell, cRSubGoldy* pla
     __asm__("_ZN9cRSubGame17AddSlug_recoveredEP8cRSubLocP10cRSubGoldy");
 void subgame_add_garbage_recovered(cRSubGame* self, cRSubLoc* cell, cRSubGoldy* player)
     __asm__("_ZN9cRSubGame20AddGarbage_recoveredEP8cRSubLocP10cRSubGoldy");
+int draw_sprite_quad_recovered(Vector3* position, cRSprite* sprite);
 
 namespace {
 
@@ -61,6 +63,24 @@ void cRSubGame::AddGarbage(cRSubLoc* cell, cRSubGoldy* player)
         cRSubGarbage& garbage = garbage_hazards.slots[slot];
         garbage.sprite->facing_angle = hazard_facing(player, garbage.attachment_facing_angle);
     }
+}
+
+// Background streaks cutting holes in the road: cRStarManager::Init is the
+// only producer of StarTail sprites in the background scene. They sit 50 units
+// away, but the world is visible to 52, so writing their depth punches moving
+// holes in the last two units of road when the world pass follows. They must
+// still blend over the sky.
+int draw_sprite_quad(Vector3* position, cRSprite* sprite)
+{
+    bool background_star = sprite->texture_ref == g_sprite_texture_table[32]
+        && (sprite->flags & RENDER_SCENE_MASK) == RENDER_SCENE_OVERLAY_1;
+    if (!background_star)
+        return draw_sprite_quad_recovered(position, sprite);
+
+    int previous = set_emulated_depth_write(0);
+    int result = draw_sprite_quad_recovered(position, sprite);
+    set_emulated_depth_write(previous);
+    return result;
 }
 
 int fixes_upright_hazard_count()

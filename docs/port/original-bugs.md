@@ -6,8 +6,8 @@ with no switch. The one large switch is [Mobile extras](README.md#enhancements),
 for content backported from the Android release.
 
 Each fix wraps the matched function (`port/wrapped.txt`) and lives in
-`port/shell/fixes.cpp` or `port/shell/render_fixes.cpp`. The recovered source in
-`decomp/` stays as the original compiled it. So far every fix changes only what is drawn, so the replay and
+`port/shell/fixes.cpp`. The recovered source in `decomp/` stays as the original
+compiled it. So far every fix changes only what is drawn, so the replay and
 session oracles still match with the fixes in.
 
 ## 1) Slugs and garbage appear upright for a frame
@@ -69,7 +69,7 @@ them. The foreground mailbox is nearer and is unaffected by this fix.
 The comparison replays the same captured scene and moves the captured streaks
 across the horizon to hold the overlap fixed. Only their depth writes differ.
 
-`port/shell/render_fixes.cpp` wraps `draw_sprite_quad` and suppresses depth
+`port/shell/fixes.cpp` wraps `draw_sprite_quad` and suppresses depth
 writes only for StarTail sprites in the background scene. It restores the
 previous setting after each draw. The streaks still blend over the backdrop;
 world geometry and foreground particles retain their depth writes. The fix
