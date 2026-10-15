@@ -65,6 +65,7 @@ def test_mobile_course_capacity_before_condensation(tmp_path, rows, extras, acce
     struct.pack_into("<ii", config, 0xA0, 1, 1)
     config[0xC0] = 1
     (tmp_path / "SnailMail.cfg").write_bytes(config)
+    (tmp_path / "SnailMailMobile.cfg").write_bytes(config)
     (tmp_path / "SnailMailPro.cfg").write_bytes(struct.pack("<ii", 10, 10))
     keys = tmp_path / "pro10.keys"
     menu_y = 383 if extras else 172

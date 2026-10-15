@@ -1,5 +1,5 @@
-// Pro-Challenge galaxy, 43 mobile segments catalog, New Game menu entry,
-// Pro-scoped CalcRate speed curve, and ScorePro.dat / SnailMailPro.cfg persistence.
+// Pro-Challenge galaxy, New Game menu entry, mobile CalcRate rules,
+// and ScorePro.dat / SnailMailPro.cfg persistence.
 
 #include <stdio.h>
 #include <string.h>
@@ -37,8 +37,6 @@ void free_tracked_memory(void* memory);
 void xor_decode_buffer_with_index(void* buffer, int byte_count);
 int write_file_bytes(char* file_name, void* bytes, int byte_count);
 
-void import_segment_recovered(cRSubTracks* self, char* segment_name, cRSubSegment* slot)
-    __asm__("_ZN11cRSubTracks23ImportSegment_recoveredEPcP12cRSubSegment");
 void intro_init_recovered(cRIntro* self)
     __asm__("_ZN7cRIntro14Init_recoveredEv");
 void intro_ai_recovered(cRIntro* self)
@@ -93,7 +91,6 @@ const ProPoint kProRoutePoints[kProRouteSlotCount] = {
     {530.0f, 364.0f},
 };
 
-cRSMTracks g_extra_sm_tracks;
 cRGalaxy g_postal_galaxy_layout;
 cRGalaxy g_pro_galaxy_layout;
 
@@ -334,11 +331,6 @@ void extras_init_pro()
     if (!g_port_extras || g_pro_initialized || !g_game)
         return;
 
-    // Parse the 43 mobile segments in SnailMailExtras.dat into g_extra_sm_tracks.
-    ArchiveIndex* saved_archive = g_archive_index_records;
-    g_archive_index_records = extras_get_archive_index();
-    g_extra_sm_tracks.Import();
-    g_archive_index_records = saved_archive;
     g_pro_initialized = true;
 
     g_normal_level_select_tex = g_sprite_texture_table[150];
@@ -391,42 +383,6 @@ void extras_set_pro_mode(bool active)
     } else if (!g_high_score_pro_view) {
         swap_out_pro_state();
     }
-}
-
-void cRSubTracks::ImportSegment(char* segment_name, cRSubSegment* slot)
-{
-    if (g_port_extras && g_pro_initialized) {
-        cRSMTracks* base_catalog = &g_game->subgame.sm_tracks;
-        bool in_base = false;
-        for (int i = 0; i < base_catalog->count; ++i) {
-            if (Rstrcmp(segment_name, base_catalog->entries[i].filename) == 1) {
-                in_base = true;
-                break;
-            }
-        }
-        if (!in_base) {
-            for (int i = 0; i < g_extra_sm_tracks.count; ++i) {
-                SegmentCatalogEntry& entry = g_extra_sm_tracks.entries[i];
-                if (Rstrcmp(segment_name, entry.filename) == 1) {
-                    for (int grid_row = 0; grid_row < 8; ++grid_row) {
-                        for (int col = 0; col < entry.row_count; ++col)
-                            slot->glyph_rows[grid_row][col] = entry.glyph_columns[col][grid_row];
-                    }
-                    slot->row_count = entry.row_count;
-                    slot->source_name = entry.filename;
-                    slot->angle_radians.bits = 0;
-                    slot->path_index = entry.id;
-                    for (int r = 0; r < entry.row_count; ++r)
-                        slot->rows[r] = entry.rows[r];
-                    slot->message_text[0] = 0;
-                    slot->message_duration.bits = 0;
-                    slot->message_sample_id = -1;
-                    return;
-                }
-            }
-        }
-    }
-    import_segment_recovered(this, segment_name, slot);
 }
 
 // Android cRIntro::Init (000674f8): adds "Pro-Challenge" below Challenge Mode.
@@ -533,24 +489,31 @@ void cRSubTracks::load_frontend_level_by_mode_and_index(int mode, int level_inde
     load_frontend_level_recovered(this, mode, level_index);
 }
 
-// Android cRSubGame::CalcRate (0006daf0): in Pro-Challenge, the power-up speed
-// bonus is 0.4f instead of PC Postal's 0.6f.
+// Android cRSubGame::CalcRate (0006daf0): all modes use mobile pacing
+// while extras is enabled; classic mode delegates without adjustment.
 void cRSubGame::CalcRate()
 {
-    calc_rate_recovered(this);
-    if (!g_port_extras || !g_pro_mode_active)
+    if (!g_port_extras) {
+        calc_rate_recovered(this);
         return;
-    if (subgame_state == 2 && level_mode == 0
-        && player.damage_gauge.state == DAMAGE_GUAGE_STATE_DRAINING) {
-        const float delta_bonus = 0.400000006f - 0.600000024f;
-        if (player.damage_gauge.display_fill >= 0.25 && player.damage_gauge.display_fill <= 0.75) {
-            subgame_rate += delta_bonus;
-        } else {
-            float envelope =
-                (1.0f - Sin(player.damage_gauge.display_fill * 12.566371f + 1.57079637f)) * 0.5f;
-            subgame_rate += envelope * delta_bonus;
-        }
     }
+    if (subgame_state != 2) {
+        subgame_rate = base_rate;
+        return;
+    }
+    float fraction = player.transform.position.z / (float)completion_row_start;
+    if (fraction < 0.0f) fraction = 0.0f;
+    else if (fraction > 1.0f) fraction = 1.0f;
+    subgame_rate = base_rate + fraction * ((level_mode == 1 || level_mode == 3) ? 0.3f : 0.2f);
+    if (player.damage_gauge.state == DAMAGE_GUAGE_STATE_DRAINING) {
+        float bonus = (level_mode == 1 || level_mode == 4) ? 0.3f : 0.4f;
+        float fill = player.damage_gauge.display_fill;
+        if (fill < 0.25f || fill > 0.75f)
+            bonus *= (1.0f - Sin(fill * 12.566371f + 1.57079637f)) * 0.5f;
+        subgame_rate += bonus;
+    }
+    if (player.sub_hover.state == SUB_HOVER_STATE_ACTIVE)
+        subgame_rate += player.sub_hover.warning_intensity_latch * 0.5f;
 }
 
 void cRSplash::Init()
@@ -669,6 +632,7 @@ void cRSubHighScore::MiniSave(unsigned char save_mask)
 
 char* __cdecl save_config_file(char* file_name, void* bytes, int byte_count)
 {
+    file_name = (char*)extras_save_path(file_name);
     if (g_port_extras && g_pro_initialized && g_pro_state_swapped && bytes == &g_runtime_config) {
         if (g_runtime_config.highest_galaxy_route_index >= 1
             && g_runtime_config.highest_galaxy_route_index <= kProMaxRouteIndex) {

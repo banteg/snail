@@ -6,6 +6,7 @@
 // sessions) match bit for bit.
 extern bool g_port_extras;
 
+const char* extras_save_path(const char* name);
 bool extras_init_archive();
 void extras_init_assets();
 const char* extras_track_texture_name(int slot);

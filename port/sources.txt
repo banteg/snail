@@ -263,7 +263,6 @@
 ../decomp/game/Path/initialize_hill_valley_path_template_pair.cpp
 ../decomp/game/Path/initialize_sbend_path_template_pair.cpp
 ../decomp/game/Path/initialize_cage2_path_template_pair.cpp
-../decomp/game/Register/load_config_file.cpp
 ../decomp/game/Register/load_file_bytes_from_path.cpp
 ../decomp/game/Register/validate_config_tail_stub.cpp
 ../decomp/game/RObject/is_bod_after_sprites.cpp
@@ -304,7 +303,6 @@
 ../decomp/game/RShell/find_archive_entry.cpp
 ../decomp/game/RShell/load_file_bytes.cpp
 ../decomp/game/RShell/delete_file_path_with_directory_walk.cpp
-../decomp/game/RShell/write_file_bytes.cpp
 ../decomp/game/RShell/enumerate_matching_archive_or_fs_entries.cpp
 ../decomp/game/RShell/xor_archive_bytes_in_place.cpp
 ../decomp/game/RShell/load_archive_index.cpp
@@ -549,8 +547,8 @@
 ../decomp/game/SubGame/initialize_nuke.cpp
 ../decomp/game/SubGame/update_nuke.cpp
 ../decomp/game/SubGame/recycle_bod_to_free_list.cpp
+../decomp/game/Subtrack/copy_segment_definition_to_level_slot.cpp
 ../decomp/game/Subtrack/load_builtin_segment_definitions.cpp
-../decomp/game/Subtrack/load_segment_definitions.cpp
 ../decomp/game/Subtrack/load_level_definitions.cpp
 ../decomp/game/TimeTrial/format_time_trial_string.cpp
 ../decomp/game/Tips/kill_tip_widgets.cpp

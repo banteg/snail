@@ -12,6 +12,7 @@
 #include "game_root.h"
 #include "landscape_manager.h"
 #include "loading_bar.h"
+#include "runtime_config.h"
 #include "object_render_types.h"
 #include "ring_special_effect_types.h"
 #include "rmath_random.h"
@@ -23,6 +24,9 @@
 #include "track.h"
 
 extern char g_level_file_text_buffer[];
+void sm_tracks_import_recovered(cRSMTracks* self) __asm__("_ZN10cRSMTracks16Import_recoveredEv");
+void* load_config_file_recovered(char* name, void* bytes) __asm__("_Z26load_config_file_recoveredPcPv");
+int write_file_bytes_recovered(char* name, void* bytes, int count) __asm__("_Z26write_file_bytes_recoveredPcPvi");
 
 char archive_or_file_exists_recovered(char* path, char force_filesystem)
     __asm__("_Z32archive_or_file_exists_recoveredPcc");
@@ -145,6 +149,77 @@ int parse_arcade_number(const char* filename)
 
 }  // namespace
 
+// Enumerate the combined segment names before any level is parsed. The asset
+// loader gives mobile definitions precedence for shared names; classic names
+// remain available for PC-only bonus courses and older extras bundles.
+void cRSMTracks::Import()
+{
+    if (!g_port_extras || this != &g_game->subgame.sm_tracks) {
+        sm_tracks_import_recovered(this);
+        return;
+    }
+    ArchiveIndex* saved = g_archive_index_records;
+    ArchiveIndex* merged = (ArchiveIndex*)malloc(sizeof(int) + SMTRACK_SEGMENT_CAPACITY * sizeof(ArchiveEntry));
+    if (!merged) abort();
+    merged->count = 0;
+    ArchiveIndex* indexes[2] = {saved, extras_get_archive_index()};
+    for (int bank = 0; bank < 2; ++bank) {
+        for (int i = 0; i < indexes[bank]->count; ++i) {
+            ArchiveEntry entry = indexes[bank]->entries[i];
+            if (strncasecmp(entry.path, "Segments/", 9) != 0)
+                continue;
+            int slot = 0;
+            while (slot < merged->count && !path_equals_ignore_case(merged->entries[slot].path, entry.path))
+                ++slot;
+            if (slot == merged->count) {
+                if (merged->count >= SMTRACK_SEGMENT_CAPACITY - 1) {
+                    fprintf(stderr, "snail: mobile segment catalog exceeds capacity\n");
+                    abort();
+                }
+                ++merged->count;
+            }
+            merged->entries[slot] = entry;
+        }
+    }
+    g_archive_index_records = merged;
+    sm_tracks_import_recovered(this);
+    g_archive_index_records = saved;
+    free(merged);
+}
+
+const char* extras_save_path(const char* name)
+{
+    if (g_port_extras) {
+        if (path_equals_ignore_case(name, "SnailMail.cfg")) return "SnailMailMobile.cfg";
+        if (path_equals_ignore_case(name, "ScoreA.dat")) return "ScoreMobileA.dat";
+        if (path_equals_ignore_case(name, "ScoreB.dat")) return "ScoreMobileB.dat";
+        if (path_equals_ignore_case(name, "ScoreC.dat")) return "ScoreMobileC.dat";
+    }
+    return name;
+}
+
+void* load_config_file(char* file_name, void* buffer)
+{
+    const char* mapped = extras_save_path(file_name);
+    if (g_port_extras && path_equals_ignore_case(file_name, "SnailMail.cfg")
+        && !archive_or_file_exists_recovered((char*)mapped, 1)) {
+        // Carry display/audio preferences across once, but start the mobile
+        // campaign separately. Do not rewrite the classic save.
+        void* result = load_config_file_recovered(file_name, buffer);
+        if (buffer == &g_runtime_config) {
+            g_runtime_config.highest_galaxy_route_index = 1;
+            g_runtime_config.landscape_backdrop_variant_selector = 1;
+        }
+        return result;
+    }
+    return load_config_file_recovered((char*)mapped, buffer);
+}
+
+int write_file_bytes(char* path, void* bytes, int byte_count)
+{
+    return write_file_bytes_recovered((char*)extras_save_path(path), bytes, byte_count);
+}
+
 bool extras_init_archive()
 {
     if (!g_port_extras)
@@ -233,6 +308,7 @@ const char* extras_track_texture_name(int slot)
 
 char __cdecl archive_or_file_exists(char* path, char force_filesystem)
 {
+    path = (char*)extras_save_path(path);
     if (g_port_extras && force_filesystem == 0 && find_extras_archive_entry(path))
         return 1;
     return archive_or_file_exists_recovered(path, force_filesystem);
@@ -245,6 +321,7 @@ char __cdecl archive_or_file_exists(char* path, int force_filesystem)
 
 char* __cdecl load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out_size)
 {
+    file_name = (char*)extras_save_path(file_name);
     if (g_port_extras) {
         if (const ArchiveEntry* entry = find_extras_archive_entry(file_name)) {
             g_loading_bar.AI();
@@ -274,6 +351,7 @@ char* __cdecl load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, 
 
 char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(char* file_name, char* buffer, int byte_count)
 {
+    file_name = (char*)extras_save_path(file_name);
     if (g_port_extras) {
         if (const ArchiveEntry* entry = find_extras_archive_entry(file_name)) {
             g_loading_bar.AI();
