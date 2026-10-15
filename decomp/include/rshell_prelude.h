@@ -22,10 +22,10 @@
 
 #include <windows.h>
 #include <mmsystem.h>
-#include "../sdk/dx81/d3d8.h"
-#include "../sdk/dx81/d3dx8.h"
+#include "../../tools/match/sdk/dx81/d3d8.h"
+#include "../../tools/match/sdk/dx81/d3dx8.h"
 #define DIRECTINPUT_VERSION 0x0800
-#include "../sdk/dx81/dinput.h"
+#include "../../tools/match/sdk/dx81/dinput.h"
 
 // STAND-IN, not recovered source. After the SDK headers, RShell's own
 // includes still had 12,737..14,784 more frontend ids before RstrASC's

@@ -24,7 +24,7 @@ CFLAGS = Path("port/cflags.txt")
 OBJECTS = Path("port/generated/objects")
 COMPILED_SCOPES = {"core", "boundary"}
 # Relative to port/, as in build.zig.
-INCLUDE_DIRECTORIES = ("generated/patched/tools/match/include", "compat")
+INCLUDE_DIRECTORIES = ("generated/patched/decomp/include", "compat")
 
 
 def _listed(root: Path, path: Path) -> dict[str, str]:

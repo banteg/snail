@@ -1,4 +1,4 @@
-"""Patched copies of the recovered sources for the port; `decomp/` and `tools/match/include/` stay untouched.
+"""Patched copies of the recovered sources for the port; `decomp/` stays untouched.
 
 Each `port/patches/*.patch` is a unified diff against files named by their paths from the repository root. A hunk
 matches by its exact old text, which must occur once; line numbers only say where it was written. A hunk that no
@@ -13,7 +13,7 @@ from pathlib import Path
 
 PATCHES = Path("port/patches")
 PATCHED = Path("port/generated/patched")
-INCLUDE = Path("tools/match/include")
+INCLUDE = Path("decomp/include")
 _HUNK = re.compile(r"@@ -\d+(?:,(\d+))? \+\d+(?:,(\d+))? @@")
 
 Hunks = dict[str, list[tuple[str, str, str]]]

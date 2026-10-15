@@ -27,17 +27,17 @@ def _change_bytes(path: Path, contents: bytes) -> None:
 
 @pytest.fixture
 def stale_scratch(tmp_path: Path) -> tuple[match_module.ScratchConfig, Path]:
-    root = tmp_path / "match"
+    root = tmp_path / "tools" / "match"
     scratch = root / "scratches/foo"
     build = scratch / "build"
     compiler = root / "compilers/msvc6.5/Bin"
     build.mkdir(parents=True)
     compiler.mkdir(parents=True)
-    (root / "include").mkdir()
+    match_module.include_root(root).mkdir(parents=True)
     (root / "cl.sh").write_text("#!/bin/sh\n")
     (compiler / "CL.EXE").write_bytes(b"compiler driver")
     (compiler / "C2.DLL").write_bytes(b"compiler backend")
-    (root / "include/shared.h").write_text("#define VALUE 1\n")
+    (match_module.include_root(root) / "shared.h").write_text("#define VALUE 1\n")
     source = scratch / "scratch.cpp"
     source.write_text('#include "shared.h"\nint foo() { return VALUE; }\n')
     (build / "scratch.cpp").write_bytes(source.read_bytes())
@@ -52,7 +52,7 @@ def stale_scratch(tmp_path: Path) -> tuple[match_module.ScratchConfig, Path]:
     return config, root
 
 
-@pytest.mark.parametrize("dependency", ["scratches/foo/scratch.cpp", "include/shared.h", "compilers/msvc6.5/Bin/C2.DLL"])
+@pytest.mark.parametrize("dependency", ["scratches/foo/scratch.cpp", "../../decomp/include/shared.h", "compilers/msvc6.5/Bin/C2.DLL"])
 def test_preserved_mtime_edits_recompile(
     stale_scratch: tuple[match_module.ScratchConfig, Path],
     monkeypatch: pytest.MonkeyPatch,
@@ -186,7 +186,7 @@ def test_concurrent_compile_rechecks_cache_and_publishes_complete_files(
 
 @pytest.mark.parametrize(
     "changed_dependency",
-    ["scratches/foo/scratch.cpp", "include/shared.h", "compilers/msvc6.5/Bin/C2.DLL"],
+    ["scratches/foo/scratch.cpp", "../../decomp/include/shared.h", "compilers/msvc6.5/Bin/C2.DLL"],
 )
 def test_changed_dependency_rejects_build_without_replacing_previous_publication(
     stale_scratch: tuple[match_module.ScratchConfig, Path],
@@ -525,7 +525,7 @@ def test_status_cache_rejects_edits_after_measurement(
         assert outcome.fields["body_byte_exact"]
         changed = {
             "source": config.directory / "scratch.cpp",
-            "header": root / "include/shared.h",
+            "header": match_module.include_root(root) / "shared.h",
             "image": image_path,
         }[changed_input]
         _change_bytes(changed, changed.read_bytes() + b"changed")

@@ -20,7 +20,7 @@ from sync_galaxy_layout_lifetimes import (
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_HEADER_PATH = REPO_ROOT / "tools/match/include/rstring.h"
+DEFAULT_HEADER_PATH = REPO_ROOT / "decomp/include/rstring.h"
 
 FUNCTION_SYMBOL_UPDATES = (
     ("0x44e5a0", "ascii_upper_if_lowercase"),

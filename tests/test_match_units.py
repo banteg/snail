@@ -12,7 +12,7 @@ from snail import match
 
 @pytest.fixture
 def grouped_scratches(tmp_path):
-    root = tmp_path / "match"
+    root = tmp_path / "tools" / "match"
     for name in ("first", "second"):
         directory = root / "scratches" / name
         directory.mkdir(parents=True)
@@ -115,7 +115,7 @@ def test_runner_override_and_binary_update_recompile_shared_object(grouped_scrat
 
 
 def test_runner_resolution_follows_launcher_precedence(tmp_path, monkeypatch):
-    root = tmp_path / "match"
+    root = tmp_path / "tools" / "match"
     bundled = root / "bin" / "wibo"
     path_runner = tmp_path / "path-bin" / "wibo"
     named_runner = path_runner.with_name("patched-wibo")
@@ -149,8 +149,8 @@ def test_unit_order_is_a_cache_and_compilation_input(grouped_scratches):
 
 def test_peer_headers_are_build_dependencies(grouped_scratches):
     root, (first, second) = grouped_scratches
-    include = root / "include"
-    include.mkdir()
+    include = match.include_root(root)
+    include.mkdir(parents=True)
     (include / "peer.h").write_text("#define PEER 1\n")
     (first.directory / "scratch.cpp").write_text('#include "peer.h"\nint first() { return PEER; }\n')
     dependencies = match._scratch_build_dependencies(second, root)

@@ -33,7 +33,7 @@ from pathlib import Path
 
 import pefile
 
-from . import port
+from . import port, port_patch
 from .wasm_object import SYMBOL_FUNCTION, Signature, read_symbols
 
 IMAGE = Path("artifacts/bin/SnailMail_unwrapped.exe")
@@ -152,7 +152,7 @@ def data_names(root: Path) -> tuple[dict[int, set[str]], dict[str, int]]:
                 if "size" in symbol:
                     size = symbol["size"]
                     sizes[name] = int(size, 16) if isinstance(size, str) else size
-    sources = [*sorted((root / "decomp").rglob("*.cpp")), *sorted((root / "tools/match/include").glob("*.h"))]
+    sources = [*sorted((root / "decomp").rglob("*.cpp")), *sorted((root / port_patch.INCLUDE).glob("*.h"))]
     for path in sources:
         for match in EXTERN_WITH_ADDRESS.finditer(path.read_text(encoding="utf-8", errors="replace")):
             names.setdefault(int(match.group(2), 16), set()).add(match.group(1))

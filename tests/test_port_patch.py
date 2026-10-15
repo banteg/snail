@@ -20,9 +20,8 @@ PATCH = """Doubles the answer.
 def write_tree(root, source):
     (root / "port/patches").mkdir(parents=True)
     (root / "port/patches/01-answer.patch").write_text(PATCH)
-    (root / "tools/match/include").mkdir(parents=True)
-    (root / "tools/match/include/answer.h").write_text("int answer();\n")
-    (root / "decomp").mkdir()
+    (root / "decomp/include").mkdir(parents=True)
+    (root / "decomp/include/answer.h").write_text("int answer();\n")
     (root / "decomp/answer.cpp").write_text(source)
 
 
@@ -32,7 +31,7 @@ def test_patches_apply_to_copies_and_leave_the_source(tmp_path):
     port_patch.write(tmp_path, ["../decomp/answer.cpp"])
     patched = tmp_path / port_patch.PATCHED
     assert (patched / "decomp/answer.cpp").read_text() == "int answer()\n{\n    return 42;\n}\n"
-    assert (patched / "tools/match/include/answer.h").read_text() == "int answer();\n"
+    assert (patched / "decomp/include/answer.h").read_text() == "int answer();\n"
     assert (tmp_path / "decomp/answer.cpp").read_text() == source
     assert port_patch.compile_path("../decomp/answer.cpp") == "generated/patched/decomp/answer.cpp"
     assert port_patch.compile_path("shell/main.cpp") == "shell/main.cpp"

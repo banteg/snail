@@ -1464,7 +1464,7 @@ The primary matcher owners are `cRSubRing` and the embedded
 only.
 
 High-confidence current fields, using the names in
-[`ring_special_effect_types.h`](../../tools/match/include/ring_special_effect_types.h):
+[`ring_special_effect_types.h`](../../decomp/include/ring_special_effect_types.h):
 
 - `+0x68`: inherited `transform.position`
 - `+0x80`: `state` (`SubRingState`)

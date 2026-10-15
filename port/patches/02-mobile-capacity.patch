@@ -4,8 +4,8 @@ The track render cache, which Android replaced with cRWorld, covers 24 rows per 
 Every port build gets the larger tables; the row limit follows the profile, and both
 originals only report a track that is too long.
 
---- a/tools/match/include/track_attachment_types.h
-+++ b/tools/match/include/track_attachment_types.h
+--- a/decomp/include/track_attachment_types.h
++++ b/decomp/include/track_attachment_types.h
 @@ -306,7 +306,7 @@
  enum {
      PATH_PAIR_COUNT = 63,
@@ -15,8 +15,8 @@ originals only report a track that is too long.
      SUBGAME_RUNTIME_ROW_LIMIT = SUBGAME_RUNTIME_ROW_CAPACITY - 100,
      SUBGAME_TRACK_LANE_COUNT = 8,
      SUBLOC_FRINGE_COUNT = 4,
---- a/tools/match/include/segment_catalog_types.h
-+++ b/tools/match/include/segment_catalog_types.h
+--- a/decomp/include/segment_catalog_types.h
++++ b/decomp/include/segment_catalog_types.h
 @@ -62,7 +62,7 @@
  // cRSMTracks::Import() and cRSMTracks::OpenLevels() member names, while the
  // Windows constructor independently proves this larger inline-storage layout.
@@ -26,8 +26,8 @@ originals only report a track that is too long.
  };
  
  class cRSMTracks {
---- a/tools/match/include/segment_cache.h
-+++ b/tools/match/include/segment_cache.h
+--- a/decomp/include/segment_cache.h
++++ b/decomp/include/segment_cache.h
 @@ -22,7 +22,7 @@
  };
  
@@ -46,8 +46,8 @@ originals only report a track that is too long.
 +        + (TRACK_RENDER_CACHE_ROW_COUNT - 0x8f) * TRACK_RENDER_CACHE_FAMILY_COUNT * sizeof(TrackRenderCacheSlot)) ? 1 : -1];
  
  #endif
---- a/tools/match/include/subgame_runtime.h
-+++ b/tools/match/include/subgame_runtime.h
+--- a/decomp/include/subgame_runtime.h
++++ b/decomp/include/subgame_runtime.h
 @@ -300,7 +300,8 @@
      (sizeof(cRSubGame) == 0x1272838
          + (SUBGAME_RUNTIME_ROW_CAPACITY - 3200)

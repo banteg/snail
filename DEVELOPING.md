@@ -61,7 +61,7 @@ zensical serve
    - `analysis/decompile/binja/functions/*.c`
    - `analysis/symbols/gameplay-functions.json`
    - `analysis/symbols/gameplay-references.json`
-   - `tools/match/include/*.h`
+   - `decomp/include/*.h`
    - relevant `docs/re/*.md` and scratch-local `NOTES.md`
 
 3. Create or update the source and its scratch:

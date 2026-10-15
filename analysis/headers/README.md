@@ -213,12 +213,12 @@ so another project's focused GUI tab cannot receive these mutations by
 accident. Pass `--target active` only when following the focused tab is
 intentional.
 
-- `tools/match/include/rtext.h`
+- `decomp/include/rtext.h`
 - `uv run python tools/binja/sync_rtext_types.py`
 - `uv run python tools/ida/sync_rtext_types.py`
   - Replays the contiguous mobile-proven `RShell.o` RText parser family,
     including its void copy/append/token contracts and float32 extractor.
-- `tools/match/include/rstring.h`
+- `decomp/include/rstring.h`
 - `uv run python tools/binja/sync_rstring_types.py`
 - `uv run python tools/ida/sync_rstring_types.py`
   - Replays the adjacent `RString.o` family from `RstrASC` through `Rstrint`.

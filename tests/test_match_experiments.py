@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 
 from snail.cli import main
-from snail.match import load_scratch_config, scratch_dependency_sha256
+from snail.match import include_root, load_scratch_config, scratch_dependency_sha256
 from snail.match_experiments import (
     build_mutation_error_audit,
     mutation_error_evidence_sha256,
@@ -191,13 +191,14 @@ def test_experiment_dependency_receipts_distinguish_history_from_drift(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    scratch = tmp_path / "scratches" / "foo"
-    include = tmp_path / "include"
-    compiler = tmp_path / "compilers" / "msvc6.5" / "Bin" / "CL.EXE"
+    root = tmp_path / "tools" / "match"
+    scratch = root / "scratches" / "foo"
+    include = include_root(root)
+    compiler = root / "compilers" / "msvc6.5" / "Bin" / "CL.EXE"
     scratch.mkdir(parents=True)
-    include.mkdir()
+    include.mkdir(parents=True)
     compiler.parent.mkdir(parents=True)
-    (tmp_path / "cl.sh").write_text("launcher\n", encoding="utf-8")
+    (root / "cl.sh").write_text("launcher\n", encoding="utf-8")
     compiler.write_bytes(b"compiler")
     (scratch / "scratch.conf").write_text(
         "FUNCTION=foo COMPILER=msvc6.5 CFLAGS=/O2\n",
@@ -216,14 +217,14 @@ def test_experiment_dependency_receipts_distinguish_history_from_drift(
 
     dependency_sha = scratch_dependency_sha256(
         load_scratch_config(scratch),
-        tmp_path,
+        root,
     )
     record = _sweep("spec-a", [_result("variant-a", 0)])
     record["dependency_sha256"] = dependency_sha
     log = scratch / "experiments.jsonl"
     _write_jsonl(log, [record])
 
-    payload = summarize_experiments(tmp_path)
+    payload = summarize_experiments(root)
     assert payload["summary"]["dependency_receipts"] == {
         "historical": 0,
         "current": 1,
@@ -233,7 +234,7 @@ def test_experiment_dependency_receipts_distinguish_history_from_drift(
     assert payload["errors"] == []
 
     nested.write_text("const int shared = 2;\n", encoding="utf-8")
-    payload = summarize_experiments(tmp_path)
+    payload = summarize_experiments(root)
     assert payload["summary"]["dependency_receipts"] == {
         "historical": 0,
         "current": 0,
@@ -248,7 +249,7 @@ def test_experiment_dependency_receipts_distinguish_history_from_drift(
                 "match",
                 "experiments",
                 "--match-root",
-                str(tmp_path),
+                str(root),
                 "--check",
                 "--json",
             ]
@@ -260,10 +261,10 @@ def test_experiment_dependency_receipts_distinguish_history_from_drift(
     current_record = _sweep("spec-b", [_result("variant-a", 0)])
     current_record["dependency_sha256"] = scratch_dependency_sha256(
         load_scratch_config(scratch),
-        tmp_path,
+        root,
     )
     _write_jsonl(log, [record, current_record])
-    payload = summarize_experiments(tmp_path)
+    payload = summarize_experiments(root)
     assert payload["summary"]["dependency_receipts"] == {
         "historical": 0,
         "current": 1,
@@ -276,7 +277,7 @@ def test_experiment_dependency_receipts_distinguish_history_from_drift(
     del record["dependency_sha256"]
     del current_record["dependency_sha256"]
     _write_jsonl(log, [record, current_record])
-    payload = summarize_experiments(tmp_path)
+    payload = summarize_experiments(root)
     assert payload["summary"]["dependency_receipts"] == {
         "historical": 2,
         "current": 0,
@@ -289,7 +290,7 @@ def test_experiment_dependency_receipts_distinguish_history_from_drift(
 
     record["dependency_sha256"] = "not-a-digest"
     _write_jsonl(log, [record])
-    payload = summarize_experiments(tmp_path)
+    payload = summarize_experiments(root)
     assert payload["summary"]["dependency_receipts"]["invalid"] == 1
     assert payload["summary"]["errors"] == 1
     assert (
@@ -298,7 +299,7 @@ def test_experiment_dependency_receipts_distinguish_history_from_drift(
                 "match",
                 "experiments",
                 "--match-root",
-                str(tmp_path),
+                str(root),
                 "--check",
                 "--json",
             ]
