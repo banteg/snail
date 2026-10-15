@@ -424,11 +424,6 @@ gh release upload '<tag>' /tmp/snail-port-assets-v2.tar.gz
 Commit the updated manifest with the asset change, using a new attachment name
 so prior versions retain their original bundle.
 
-## Original rendering bugs
-
-The port fixes [background streaks cutting holes in the distant road](starfield-depth.md)
-by default, while retaining the recovered renderer source unchanged.
-
 ## Playing natively (macOS)
 
 ```
