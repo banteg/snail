@@ -13,6 +13,7 @@
 #include "landscape_manager.h"
 #include "loading_bar.h"
 #include "object_render_types.h"
+#include "ring_special_effect_types.h"
 #include "rmath_random.h"
 #include "rstring.h"
 #include "segment_cache.h"
@@ -35,6 +36,10 @@ void subtracks_init_recovered(cRSubTracks* self, char* filename)
     __asm__("_ZN11cRSubTracks14Init_recoveredEPc");
 void subgame_start_level_recovered(cRSubGame* self, int level_index)
     __asm__("_ZN9cRSubGame20StartLevel_recoveredEi");
+void subgame_add_ring_recovered(cRSubGame* self, cRSubLoc* cell, int requested_kind, cRSubGoldy* player, float ring_speed)
+    __asm__("_ZN9cRSubGame17AddRing_recoveredEP8cRSubLociP10cRSubGoldyf");
+void sub_ring_init_recovered(cRSubRing* self, int lives_snapshot)
+    __asm__("_ZN9cRSubRing14Init_recoveredEi");
 
 void* allocate_tracked_memory(int size, char* name);
 void xor_archive_bytes_in_place(int start_offset, char* bytes, int count);
@@ -53,6 +58,7 @@ unsigned char* g_fringe_colours_tga = 0;
 cRTexture* g_extra_track_textures[kMobileTrackSetCount];
 cRTexture* g_extra_slide_textures[kMobileTrackSetCount];
 bool g_random_fringe_pending = false;
+float g_add_ring_speed = 0.0f;
 
 bool path_equals_ignore_case(const char* a, const char* b)
 {
@@ -411,4 +417,68 @@ void cRSubGame::StartLevel(int level_index)
         refresh_built_level_skirt_colours(this);
     }
     g_random_fringe_pending = false;
+}
+
+// The Windows cRSubGame::AddRing gives every ring a phase and a phase step,
+// and cRSubRing::AI swings an active ring across the track as Sin(phase) * 3
+// when oscillate_x is set, but nothing on Windows sets it. Android's AddRing
+// (00073290) sets it for every ring before cRSubRing::Init, with three step
+// changes: kinds 5, 6 and 8 hold still when the segment row gave no RingSpeed=
+// (Windows would divide by zero), kind 7 always holds still, and kind 2 is
+// centred and still in the tutorial (level mode 7).
+void cRSubGame::AddRing(cRSubLoc* cell, int requested_kind, cRSubGoldy* player, float ring_speed)
+{
+    g_add_ring_speed = ring_speed;
+    subgame_add_ring_recovered(this, cell, requested_kind, player, ring_speed);
+}
+
+void cRSubRing::Init(int lives_snapshot)
+{
+    if (g_port_extras) {
+        oscillate_x = 1;
+        switch (kind) {
+        case SUB_RING_KIND_EXPLODE_RAMP:
+            if (g_game->subgame.level_mode == 7) {
+                active_phase = 0.0f;
+                active_phase_step = 0.0f;
+            }
+            break;
+        case SUB_RING_KIND_NORMAL_AUTHORED:
+        case SUB_RING_KIND_EXPLODE_AUTHORED:
+        case SUB_RING_KIND_POWER_UP_AUTHORED:
+            if (g_add_ring_speed == 0.0f)
+                active_phase_step = 0.0f;
+            break;
+        case SUB_RING_KIND_SLOW_AUTHORED:
+            active_phase_step = 0.0f;
+            break;
+        default:
+            break;
+        }
+    }
+    sub_ring_init_recovered(this, lives_snapshot);
+}
+
+__attribute__((export_name("snail_swaying_ring_count")))
+int extras_swaying_ring_count()
+{
+    int swaying = 0;
+    for (int i = 0; i < SUB_RING_POOL_CAPACITY; ++i) {
+        const cRSubRing& ring = g_game->subgame.ring_effects.slots[i];
+        if (ring.state == SUB_RING_STATE_ACTIVE && ring.oscillate_x)
+            ++swaying;
+    }
+    return swaying;
+}
+
+// Lateral x of the first swinging ring, or 0 when none is active.
+__attribute__((export_name("snail_swaying_ring_x")))
+float extras_swaying_ring_x()
+{
+    for (int i = 0; i < SUB_RING_POOL_CAPACITY; ++i) {
+        const cRSubRing& ring = g_game->subgame.ring_effects.slots[i];
+        if (ring.state == SUB_RING_STATE_ACTIVE && ring.oscillate_x)
+            return ring.transform.position.x;
+    }
+    return 0.0f;
 }

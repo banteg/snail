@@ -231,7 +231,7 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
     or not (REPO_ROOT / "artifacts/android/asm_extracted/DATA/O_HALFPOLE.SMO").exists(),
     reason="needs node, snail.wasm, SnailMail.dat, SnailMailExtras.dat and Android .SMO meshes",
 )
-def test_extras_mobile_path_meshes_and_tramp_rings(tmp_path):
+def test_extras_mobile_path_meshes_and_rings(tmp_path):
     import json
     import struct
     from pathlib import Path
@@ -365,11 +365,61 @@ console.log(JSON.stringify(out));
         cwd=tmp_path,
         capture_output=True,
         text=True,
-        check=True,
     )
+    assert replay.returncode == 3
     assert "tick 2294: tramp_rings 1" in replay.stderr
     assert "tick 2340: tramp_rings 0" in replay.stderr
-    assert "matches the original" in replay.stderr
+    # Weapon rings swing across the track as on Android, so the Windows replay
+    # parts from the original after the first ring.
+    assert "tick 2583: sway_rings 1" in replay.stderr
+    assert "first divergence at sample 2014 (tick 2749)" in replay.stderr
+
+    original = subprocess.run(
+        [
+            "node", str(runner), str(wasm), "--trace",
+            "--keys", str(REPO_ROOT / "port/scripts/high_scores.keys"),
+            "--replay", "A4",
+        ],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert "sway_rings" not in original.stderr
+    assert "matches the original" in original.stderr
+
+    # A ring's swing speed scales with the shooting tier, so B1's second ring
+    # (shooting tier above 0) moves while it is on the track.
+    shutil.copy2(REPO_ROOT / "tests/fixtures/replays/ScoreB.windows-2026-04-17.dat", tmp_path / "ScoreB.dat")
+    ring_script = tmp_path / "ring_x.mjs"
+    ring_script.write_text(
+        f"""
+import {{ readFile }} from "node:fs/promises";
+import {{ WASI }} from "node:wasi";
+const wasi = new WASI({{
+    version: "preview1",
+    args: ["snail.wasm", "--extras", "--keys", {json.dumps(str(REPO_ROOT / "port/scripts/high_scores.keys"))},
+           "--replay", "B1", "--ticks", process.argv[2]],
+    env: {{ ...process.env, PWD: process.cwd() }},
+    preopens: {{ "/": "/" }},
+    returnOnExit: true,
+}});
+const bytes = await readFile({json.dumps(str(wasm.resolve()))});
+const instance = await WebAssembly.instantiate(await WebAssembly.compile(bytes), wasi.getImportObject());
+wasi.start(instance);
+console.log(JSON.stringify([instance.exports.snail_swaying_ring_count(), instance.exports.snail_swaying_ring_x()]));
+"""
+    )
+    samples = []
+    for ticks in (1320, 1380):
+        res = subprocess.run(
+            ["node", str(ring_script), str(ticks)], cwd=tmp_path, capture_output=True, text=True, check=True
+        )
+        samples.append(json.loads(res.stdout.splitlines()[-1]))
+    (count_a, x_a), (count_b, x_b) = samples
+    assert count_a == count_b == 1
+    assert abs(x_b - x_a) > 1.0
+    assert abs(x_a) <= 3.0 and abs(x_b) <= 3.0
 
 
 @pytest.mark.skipif(

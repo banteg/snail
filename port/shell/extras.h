@@ -18,6 +18,7 @@ void extras_clear_tramp_rings();
 void extras_step_tramp_rings();
 const PathPair* extras_get_mobile_path_pair(int extra_index);
 int extras_tramp_ring_active_count();
+int extras_swaying_ring_count();
 
 struct ArchiveIndex;
 ArchiveIndex* extras_get_archive_index();

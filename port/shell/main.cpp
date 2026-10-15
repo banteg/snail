@@ -121,6 +121,7 @@ int main(int argc, char** argv)
     int state = -1;
     int subgame_state = -1;
     int tramp_rings = 0;
+    int sway_rings = 0;
     unsigned int widgets = 0;
     for (int tick = 0; tick < ticks; ++tick) {
         set_scripted_input(tick);
@@ -153,6 +154,10 @@ int main(int argc, char** argv)
         if (trace && extras_tramp_ring_active_count() != tramp_rings) {
             tramp_rings = extras_tramp_ring_active_count();
             fprintf(stderr, "tick %d: tramp_rings %d\n", tick, tramp_rings);
+        }
+        if (trace && extras_swaying_ring_count() != sway_rings) {
+            sway_rings = extras_swaying_ring_count();
+            fprintf(stderr, "tick %d: sway_rings %d\n", tick, sway_rings);
         }
         // Once a screen has settled, list its widgets (for writing click scripts).
         if (trace && g_game->fade.state == 0 && widget_set_signature() != widgets) {

@@ -351,11 +351,19 @@ content hooks described below.
   `BuildShimmy`, `BuildDetour`, `BuildSBend`) supply the 16 mobile path template
   pairs and entry-transition pairs, remapped into unused level-local `path_pairs`
   slots; `cRSquidge::StartY` triggers `cRSubTrampRingManager` bounce rings on
-  trampoline tiles; and the New Game menu adds **Pro-Challenge**, opening the
-  10-level **Special Assignment** galaxy (`Limax maximus` and
-  `Ariolimax columbianus`, `GUniverse1` layout) with the mobile power-up speed
-  curve (`cRSubGame::CalcRate`) and separate `ScorePro.dat` / `SnailMailPro.cfg`
-  persistence (**Pro High Scores**).
+  trampoline tiles; `cRSubGame::AddRing` and `cRSubRing::Init` set the
+  `oscillate_x` flag that Windows computes a phase for but never sets, so weapon
+  rings swing across the track as on Android, faster at higher shooting tiers
+  and not at all at tier 0 (authored rings without
+  `RingSpeed=` and slow authored rings hold still at a random offset, and
+  explode-ramp rings stay centred in the tutorial); and the New Game menu adds
+  **Pro-Challenge**, opening the 10-level **Special Assignment** galaxy
+  (`Limax maximus` and `Ariolimax columbianus`, `GUniverse1` layout) with the
+  mobile power-up speed curve (`cRSubGame::CalcRate`) and separate
+  `ScorePro.dat` / `SnailMailPro.cfg` persistence (**Pro High Scores**).
+  The swinging rings change play on the original levels too, so a replay
+  recorded with extras off parts from its run after the first ring when
+  played back with them on, and the other way round.
 
 ### Hosting
 

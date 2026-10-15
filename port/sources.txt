@@ -437,8 +437,6 @@
 ../decomp/game/SubGame/spawn_track_jetpack_pickup.cpp
 ../decomp/game/SubGame/spawn_track_garbage_hazard.cpp
 ../decomp/game/SubGame/spawn_slug_hazard.cpp
-../decomp/game/SubGame/spawn_track_ring_or_special_effect.cpp
-../decomp/game/SubGame/initialize_ring_or_special_effect_particles.cpp
 ../decomp/game/SubGame/emit_ring_star_shower.cpp
 ../decomp/game/SubGame/update_ring_or_special_effect_particle.cpp
 ../decomp/game/SubGame/update_ring_or_special_effect_parent.cpp
