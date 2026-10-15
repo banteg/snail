@@ -85,7 +85,7 @@ three-instruction cold argument continuation.
 
 ## Complete-function transfers
 
-Seven [phase-boundary variants](scratches/initialize_sbend_path_template_pair/vertex-face-phase-boundaries-20260908.json)
+Seven [phase-boundary variants](https://github.com/banteg/snail/blob/c51d7ce23/tools/match/scratches/initialize_sbend_path_template_pair/vertex-face-phase-boundaries-20260908.json)
 test separately inlined vertex/face phases, separate row/column locals, a scoped
 vertex loop, and later face-pointer or counter declarations. Moving only the
 counter declaration retains the baseline metrics. Separating phases/counters

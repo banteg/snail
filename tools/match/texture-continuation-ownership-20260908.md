@@ -95,7 +95,7 @@ branches. These cases do not reproduce the hypothesized late specialization.
 ## Complete-function validation
 
 The 38 complete controls have 33 distinct conservative object-code identities.
-The [mutation specification](scratches/initialize_sbend_path_template_pair/texture-continuation-publication-20260908.json)
+The [mutation specification](https://github.com/banteg/snail/blob/c51d7ce23/tools/match/scratches/initialize_sbend_path_template_pair/texture-continuation-publication-20260908.json)
 tests one representative of each through the ordinary matcher. Source hashes
 connect all 33 recorded results to the diagnostic sources; equal diagnostic
 identities only group controls, and do not award native matching credit.
