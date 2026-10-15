@@ -48,6 +48,7 @@ def test_mobile_catalog_rules_swing_and_classic_save_isolation(tmp_path):
     struct.pack_into("<ii", config, 0xA0, 50, 7)
     config[0xC0] = 1
     (tmp_path / "SnailMail.cfg").write_bytes(config)
+    (tmp_path / "SnailMailMobile.cfg").write_bytes(config)
     score = (
         REPO_ROOT / "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat"
     ).read_bytes()
@@ -88,10 +89,35 @@ def test_mobile_catalog_rules_swing_and_classic_save_isolation(tmp_path):
     assert all(abs(x) <= 3 for x in data["swing"])
     assert (tmp_path / "SnailMail.cfg").read_bytes() == config
     assert (tmp_path / "ScoreA.dat").read_bytes() == score
-    assert struct.unpack_from(
-        "<ii", (tmp_path / "SnailMailMobile.cfg").read_bytes(), 0xA0
-    ) == (1, 1)
     assert (tmp_path / "ScoreMobileA.dat").read_bytes() != score
+
+
+@pytest.mark.skipif(
+    shutil.which("node") is None
+    or not (REPO_ROOT / "port/zig-out/bin/snail.wasm").exists()
+    or not (REPO_ROOT / "artifacts/bin/SnailMail.dat").exists()
+    or not (REPO_ROOT / "artifacts/bin/SnailMailExtras.dat").exists(),
+    reason="needs node, snail.wasm, SnailMail.dat and SnailMailExtras.dat",
+)
+def test_first_ultimate_launch_keeps_preferences_but_not_pc_progress(tmp_path):
+    for name in ("SnailMail.dat", "SnailMailExtras.dat"):
+        (tmp_path / name).symlink_to(REPO_ROOT / "artifacts/bin" / name)
+    config = bytearray(196)
+    struct.pack_into("<ff", config, 0, 0.25, 0.75)
+    struct.pack_into("<ii", config, 0xA0, 50, 7)
+    config[0xC0] = 1
+    (tmp_path / "SnailMail.cfg").write_bytes(config)
+    subprocess.run(
+        ["node", str(REPO_ROOT / "port/shell/run.mjs"), str(REPO_ROOT / "port/zig-out/bin/snail.wasm"),
+         "--profile", "ultimate", "--ticks", "5"],
+        cwd=tmp_path, capture_output=True, text=True, check=True,
+    )  # fmt: skip
+    mobile = (tmp_path / "SnailMailMobile.cfg").read_bytes()
+    assert struct.unpack_from("<ff", mobile, 0) == (0.25, 0.75)
+    # Campaign routes and the tutorial start over in the mobile campaign.
+    assert struct.unpack_from("<ii", mobile, 0xA0) == (1, 1)
+    assert mobile[0xC0] == 0
+    assert (tmp_path / "SnailMail.cfg").read_bytes() == config
 
 
 @pytest.mark.skipif(

@@ -2,7 +2,6 @@
 // the narrow seams listed in port/wrapped.txt; every wrapper delegates to its
 // *_recovered body in the Original profile.
 
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -135,23 +134,11 @@ void refresh_built_level_skirt_colours(cRSubGame* subgame)
         subgame->segment_cache.slots[row][TRACK_RENDER_CACHE_FRINGE].color = *resolved;
 }
 
-int parse_arcade_number(const char* filename)
-{
-    if (strncasecmp(filename, "Arcade", 6) != 0)
-        return -1;
-    if (strncasecmp(filename, "ArcadePro", 9) == 0 || strncasecmp(filename, "ArcadeExtra", 11) == 0)
-        return -1;
-    const char* p = filename + 6;
-    if (!isdigit((unsigned char)p[0]) || !isdigit((unsigned char)p[1]) || !isdigit((unsigned char)p[2]))
-        return -1;
-    return (p[0] - '0') * 100 + (p[1] - '0') * 10 + (p[2] - '0');
-}
-
 }  // namespace
 
-// Enumerate the combined segment names before any level is parsed. The asset
-// loader gives mobile definitions precedence for shared names; classic names
-// remain available for PC-only bonus courses and older extras bundles.
+// Enumerate the combined segment names before any level is parsed. Mobile
+// definitions take precedence for shared names; the mobile set has every PC
+// name, so no PC layout is left in the catalog.
 void cRSMTracks::Import()
 {
     if (!g_port_ultimate || this != &g_game->subgame.sm_tracks) {
@@ -204,11 +191,13 @@ void* load_config_file(char* file_name, void* buffer)
     if (g_port_ultimate && path_equals_ignore_case(file_name, "SnailMail.cfg")
         && !archive_or_file_exists_recovered((char*)mapped, 1)) {
         // Carry display/audio preferences across once, but start the mobile
-        // campaign separately. Do not rewrite the classic save.
+        // campaign, tutorial included, separately. Do not rewrite the classic
+        // save.
         void* result = load_config_file_recovered(file_name, buffer);
         if (buffer == &g_runtime_config) {
             g_runtime_config.highest_galaxy_route_index = 1;
             g_runtime_config.landscape_backdrop_variant_selector = 1;
+            g_runtime_config.new_game_tutorial_started = 0;
         }
         return result;
     }
@@ -430,20 +419,6 @@ void cRSubTracks::Init(char* filename)
             track_texture_set = kRandomTrackSetCode;
     }
 
-    char level_path[256];
-    snprintf(level_path, sizeof(level_path), "Levels/%s", filename);
-    bool from_base_archive = !find_extras_archive_entry(level_path);
-    if (from_base_archive) {
-        int arcade = parse_arcade_number(filename);
-        if ((arcade >= 21 && arcade <= 25) || (arcade >= 41 && arcade <= 45)) {
-            track_texture_set = 3;
-        } else if (arcade >= 46 && arcade <= 50) {
-            track_texture_set = 4;
-            if (arcade == 50)
-                fringe_color.store_color4f(255.0f / 255.0f, 250.0f / 255.0f, 50.0f / 255.0f, 1.0f);
-        }
-    }
-
     bool random_fringe = false;
     cursor = Rstrfind((char*)"Fringe:", g_level_file_text_buffer);
     if (cursor != 0) {
@@ -453,11 +428,10 @@ void cRSubTracks::Init(char* filename)
         if (*cursor == 'r' || *cursor == 'R')
             random_fringe = true;
     }
-    if (from_base_archive && path_equals_ignore_case(filename, "Challenge000.txt"))
-        random_fringe = true;
-
-    if (this == &g_game->subgame.level_definition)
+    if (this == &g_game->subgame.level_definition) {
         g_random_fringe_pending = random_fringe;
+        extras_import_padding(this);
+    }
     extras_map_level_paths(this);
 }
 
@@ -466,9 +440,16 @@ void cRSubTracks::Init(char* filename)
 void cRSubGame::StartLevel(int level_index)
 {
     extras_clear_tramp_rings();
+    extras_begin_level_build();
+    bool new_game = subgame_rebuild_selector == 3;
     subgame_start_level_recovered(this, level_index);
     if (!g_port_ultimate)
         return;
+
+    // Android BuildLevel (0007e88c) starts a new game with 8 lives in the Pro
+    // galaxy and 3, as Windows does, in the postal one.
+    if (new_game && extras_is_pro_mode())
+        player.visible_life_stock = 8;
 
     if (level_definition.track_texture_set == kRandomTrackSetCode) {
         int landscape_index = 0;

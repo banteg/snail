@@ -128,6 +128,9 @@ int main(int argc, char** argv)
     int tramp_rings = 0;
     int sway_rings = 0;
     int upright_hazards = 0;
+    int lives = -1;
+    int padding = 0;
+    int wide_parcels = 0;
     unsigned int widgets = 0;
     for (int tick = 0; tick < ticks; ++tick) {
         set_scripted_input(tick);
@@ -164,6 +167,18 @@ int main(int argc, char** argv)
         if (trace && extras_swaying_ring_count() != sway_rings) {
             sway_rings = extras_swaying_ring_count();
             fprintf(stderr, "tick %d: sway_rings %d\n", tick, sway_rings);
+        }
+        if (trace && g_game->subgame.player.visible_life_stock != lives) {
+            lives = g_game->subgame.player.visible_life_stock;
+            fprintf(stderr, "tick %d: lives %d\n", tick, lives);
+        }
+        if (trace && extras_padding_pick_count() != padding) {
+            padding = extras_padding_pick_count();
+            fprintf(stderr, "tick %d: padding_segments %d\n", tick, padding);
+        }
+        if (trace && extras_wide_parcel_count() != wide_parcels) {
+            wide_parcels = extras_wide_parcel_count();
+            fprintf(stderr, "tick %d: wide_parcels %d\n", tick, wide_parcels);
         }
         if (trace && fixes_upright_hazard_count() != upright_hazards) {
             upright_hazards = fixes_upright_hazard_count();
