@@ -417,3 +417,9 @@ tuples needed for window 9's 81-tuple cut without synthetic local copies. The fu
 **100.00% normalized** (`745/745` instructions, prefix `745/745`, structural `0/0` changed, `55`
 clean positional references) under `msvc6.3`, with only the known `+0x359` interpolation-store SIB
 byte (`[edi+eax+0x90]` vs `[eax+edi+0x90]`) remaining.
+
+`cse_id_window.py` confirms that the `+0x359` SIB swap (`temp 0x55a`, `n=122`, key `0x15680` vs
+`iv-temp 0x8ad`, `n=973`, key `0x12b40`) is byte-exact only under whole-function shifts
+`0:680..732` (moving `0x55a` across the `0x800` wrap to `0x802..0x836`, i.e. `-10` / `+22` 32-id
+chunks), while `0:736..832` flip five delta-loop SIB bytes (`+0x5b8..+0x60a`) and single-slot shifts
+`122:1..40` leave `+0x359` swapped or regress at `>= 17`.
