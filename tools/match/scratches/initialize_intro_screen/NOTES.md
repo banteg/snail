@@ -368,3 +368,11 @@ same source is 88.89%, 523/521.
 shifts stack slots. msvc6.5 also emits an extra parser-argument cleanup.
 
 Evidence: `/private/tmp/claude-501/sm/codex/initialize_intro_screen/RESULTS.md`.
+
+## 2026-10-15: 100% byte-exact under msvc6.3
+
+Tracing `globalregs.py` shows why `file_bytes` (`slot 4`) lost `esi` across the final velocity loop: splitting the line start into two locals (`char* line = cursor;` at line 71 with `priority = 8`, and `char* glyph = line;` at line 145 with `priority = 662`) delayed `esi` allocation on the outer `while` region (`lines 71..145`) until `priority = 8` (`#66`)—after the three `velocity` components (`priority = 28`) had already been popped at `#62..#64` and claimed `ecx, edx, esi`.
+
+Using a single `char* glyph = cursor;` at line 71 gives `glyph` `priority = 650` across `lines 71..173` (`#2`, `esi`), so when `image_donor` claims `edi` at `priority = 68`, `file_bytes` loses its last allowed register and splits immediately into its tail live range (`lines 183..195`) with `priority = 58 > 28`. That tail live range claims `esi` across the velocity loop before `velocity` (`priority = 28`) is popped, leaving only `ecx` for `velocity.y`, keeping `velocity.x` and `velocity.z` on the stack, removing the `mov esi, [esp+0x34]` reload, and reducing `file_bytes`'s stack-spill weight from `4` to `3`—fixing all 26 stack offsets across the function.
+
+Result: **100.00% proof-grade byte-exact** (`521/521` instructions, prefix `521`, `body_byte_exact = true`, `66/66` masked operands ok).

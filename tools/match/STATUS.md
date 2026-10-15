@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**642/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **222361/294505** bytes (**75.50%**) are proof-grade, and overall fuzzy is **99.50%**.
+**643/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **224217/294505** bytes (**76.13%**) are proof-grade, and overall fuzzy is **99.54%**.
 
 **116/120** platform helpers matched, **120/120** have a scratch, **19889/22833** bytes (**87.11%**) are proof-grade, and overall fuzzy is **97.11%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -12,15 +12,15 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**20** non-exact scratch-backed functions hold **72144 target bytes** without proof-grade credit and **1469 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **76.8%** of that gap; the top 10 hold **98.5%**.
+**19** non-exact scratch-backed functions hold **70288 target bytes** without proof-grade credit and **1346 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **83.8%** of that gap; the top 10 hold **99.1%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **20 / 1469** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **0 functions / 0 gap bytes**; **19 / 1346** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
 Ranked by withheld target extent. Structural similarity masks caller-saved register names and local labels; it is diagnostic and grants no proof credit. Proof blockers come from the current matcher, independently of manual residual labels.
 
-Proof blockers (overlapping extents): encoding: 7 functions / 18448 bytes; instructions: 13 functions / 53696 bytes; references: 1 functions / 2688 bytes.
+Proof blockers (overlapping extents): encoding: 7 functions / 18448 bytes; instructions: 12 functions / 51840 bytes; references: 1 functions / 2688 bytes.
 
 | rank | function | withheld bytes | fuzzy gap | structural | changed insns t/c | blockers | recovery | residual | evidence | current/all | flags |
 |---:|---|---:|---:|---:|---:|---|---|---|---|---:|---|
@@ -38,15 +38,14 @@ Proof blockers (overlapping extents): encoding: 7 functions / 18448 bytes; instr
 | 12 | initialize_turnoverdouble_path_template_pair | 2464 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/58 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 13 | initialize_turnover_path_template_pair | 2448 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/58 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 14 | initialize_dip_path_template_pair | 2400 | 4 | 99.85% | 1/1 | instructions | semantic-complete | analysis | historical-only | 0/59 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 15 | initialize_intro_screen | 1856 | 123 | 93.77% | 32/33 | instructions | semantic-complete | analysis | historical-only | 0/13 | repeated-variants,variant-errors,historical-only,stale-dependencies |
-| 16 | border_input_text | 1584 | 20 | 99.44% | 4/1 | instructions | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
-| 17 | register_font_texture_sheet | 1040 | 139 | 92.50% | 21/20 | instructions | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
-| 18 | set_snail_weapon | 944 | 212 | 93.29% | 31/29 | instructions | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
-| 19 | try_enter_track_attachment_from_swept_motion | 800 | 8 | 99.02% | 2/2 | instructions | semantic-complete | analysis | historical-only | 0/13 | historical-only,stale-dependencies |
-| 20 | sample_smtrack_heightmap | 368 | 10 | 97.25% | 3/3 | instructions | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
+| 15 | border_input_text | 1584 | 20 | 99.44% | 4/1 | instructions | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
+| 16 | register_font_texture_sheet | 1040 | 139 | 92.50% | 21/20 | instructions | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
+| 17 | set_snail_weapon | 944 | 212 | 93.29% | 31/29 | instructions | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
+| 18 | try_enter_track_attachment_from_swept_motion | 800 | 8 | 99.02% | 2/2 | instructions | semantic-complete | analysis | historical-only | 0/13 | historical-only,stale-dependencies |
+| 19 | sample_smtrack_heightmap | 368 | 10 | 97.25% | 3/3 | instructions | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
 
 
-## Proof Grade (642)
+## Proof Grade (643)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -232,6 +231,7 @@ Proof blockers (overlapping extents): encoding: 7 functions / 18448 bytes; instr
 | ✅ | destroy_loading_screen | 0x418e50 | 48 | 15/15 | 100.00% | 15/15 | 3 ok |  | core |
 | ✅ | update_loading_screen | 0x418e80 | 656 | 204/204 | 100.00% | 204/204 | 26 ok |  | core |
 | ✅ | open_logo | 0x419110 | 208 | 60/60 | 100.00% | 60/60 | 13 ok |  | core |
+| ✅ | initialize_intro_screen | 0x4191e0 | 1856 | 521/521 | 100.00% | 521/521 | 66 ok |  | core |
 | ✅ | destroy_intro_screen | 0x419920 | 192 | 61/61 | 100.00% | 61/61 | 7 ok |  | core |
 | ✅ | update_intro_screen | 0x4199e0 | 176 | 51/51 | 100.00% | 51/51 | 11 ok |  | core |
 | ✅ | update_intro_logo_renderable | 0x419a90 | 160 | 42/42 | 100.00% | 42/42 | 7 ok |  | core |
@@ -718,11 +718,10 @@ Proof blockers (overlapping extents): encoding: 7 functions / 18448 bytes; instr
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 204/204 | 99.02% | 109/204 | 47 ok |  | core |
 | 🚧 | update_subgoldy | 0x43b120 | 8464 | 2089/2087 | 99.28% | 548/2087 | 315 ok |  | core |
 
-## High Progress (80-94.99%) (4)
+## High Progress (80-94.99%) (3)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
-| 🚧 | initialize_intro_screen | 0x4191e0 | 1856 | 522/521 | 93.38% | 88/521 | 66 ok |  | core |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2768 | 729/736 | 91.88% | 0/736 | 37 ok |  | core |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5056 | 1246/1246 | 91.50% | 232/1246 | 165 ok |  | core |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1040 | 273/274 | 86.65% | 55/274 | 57 ok |  | boundary |
