@@ -158,7 +158,7 @@ static __forceinline void build_strip_mesh(Path *path, char *texture_a, char *te
     }
 }
 
-static __forceinline void compute_terminal_deltas(Path *path)
+static __forceinline void compute_terminal_deltas(Path *path, PathTemplateSample *const &primary_bank)
 {
     int i = 0;
     if (path->segment_count - 1 > 0)
@@ -173,9 +173,9 @@ static __forceinline void compute_terminal_deltas(Path *path)
                     ->transform.position -
                 ((PathTemplateSample *)((char *)path->primary_samples + delta_offset))
                     ->transform.position;
-            ((PathTemplateSample *)((char *)path->primary_samples + delta_offset))
+            ((PathTemplateSample *)((char *)primary_bank + delta_offset))
                 ->delta_length =
-                ((PathTemplateSample *)((char *)path->primary_samples + delta_offset))
+                ((PathTemplateSample *)((char *)primary_bank + delta_offset))
                     ->delta_dir_to_next.Normalize();
 
             ((PathTemplateSample *)((char *)path->secondary_samples + delta_offset))
@@ -204,21 +204,21 @@ static __forceinline void compute_terminal_deltas(Path *path)
     path->secondary_samples[path->segment_count - 1].delta_length = 1.0f;
 }
 
-static __forceinline void initialize_endpoint_pair(Path *path, int index, float center)
+static __forceinline void initialize_endpoint_pair(Path *path, PathTemplateSample *const &primary_bank, int index, float center)
 {
-    path->primary_samples[index].center_x = center;
-    path->primary_samples[index].rotation_scalar_98 = 0.0f;
-    path->primary_samples[index].rotation_scalar_94 = 0.0f;
-    path->primary_samples[index].special_scalar = 0.0f;
-    path->primary_samples[index].lateral_scale = 1.0f;
-    path->primary_samples[index].transform.Identity();
-    path->primary_samples[index].transform.position.x = path->primary_samples[index].center_x;
+    primary_bank[index].center_x = center;
+    primary_bank[index].rotation_scalar_98 = 0.0f;
+    primary_bank[index].rotation_scalar_94 = 0.0f;
+    primary_bank[index].special_scalar = 0.0f;
+    primary_bank[index].lateral_scale = 1.0f;
+    primary_bank[index].transform.Identity();
+    primary_bank[index].transform.position.x = primary_bank[index].center_x;
     float z = (float)index;
-    path->primary_samples[index].transform.position.y = 0.0f;
-    path->primary_samples[index].transform.position.z = z;
+    primary_bank[index].transform.position.y = 0.0f;
+    primary_bank[index].transform.position.z = z;
 
     path->secondary_samples[index].transform.Identity();
-    path->secondary_samples[index].transform.position.x = path->primary_samples[index].center_x;
+    path->secondary_samples[index].transform.position.x = primary_bank[index].center_x;
     path->secondary_samples[index].transform.position.y = 0.49000001f;
     path->secondary_samples[index].transform.position.z = z;
 }
@@ -235,13 +235,12 @@ void cRPath::initialize_p_path_template_pair(int variant, float scale_arg,
     width_cells = width_cells_;
     width_or_scale = 1.0f;
     int last_index = curve_segments + 1;
-    int sample_count = last_index + 1;
-    segment_count = sample_count;
-    segment_count_f = (float)sample_count;
+    segment_count = last_index + 1;
+    segment_count_f = ((float)(last_index + 1));
 
-    float half_distance = (end_x - start_x) * 0.5f;
+    float half_distance = ((end_x - start_x) * 0.5f);
     if (half_distance < 0.0f)
-        scale_arg = -half_distance;
+        scale_arg = (-half_distance);
     else
         scale_arg = half_distance;
 
@@ -262,7 +261,8 @@ void cRPath::initialize_p_path_template_pair(int variant, float scale_arg,
     secondary_samples[0].transform.position.y = 0.49000001f;
     secondary_samples[0].transform.position.z = 0.0f;
 
-    initialize_endpoint_pair(this, sample_count - 1, end_x);
+    PathTemplateSample *const &primary_bank = primary_samples;
+    initialize_endpoint_pair(this, primary_bank, curve_segments + 1, end_x);
 
     int curve_index = 0;
     if (curve_segments > 0)
@@ -275,20 +275,19 @@ void cRPath::initialize_p_path_template_pair(int variant, float scale_arg,
             switch (kind)
             {
             case 0x21:
-                ((PathTemplateSample *)((char *)primary_samples + curve_sample_offset))
+                ((PathTemplateSample *)((char *)primary_bank + curve_sample_offset))
                     ->center_x = Sin(angle + 1.5707964f) * scale_arg - scale_arg + 0.5f;
                 break;
             case 0x22:
-                ((PathTemplateSample *)((char *)primary_samples + curve_sample_offset))
+                ((PathTemplateSample *)((char *)primary_bank + curve_sample_offset))
                     ->center_x = 2.0f - Cos(angle) * scale_arg - scale_arg + 0.5f;
                 break;
             case 0x23:
-                ((PathTemplateSample *)((char *)primary_samples + curve_sample_offset))
+                ((PathTemplateSample *)((char *)primary_bank + curve_sample_offset))
                     ->center_x = (Sin(angle + 1.5707964f) + 1.0f) * scale_arg + 0.5f;
                 break;
             }
 
-            PathTemplateSample *const &primary_bank = primary_samples;
             ((PathTemplateSample *)((char *)primary_bank + curve_sample_offset))
                 ->rotation_scalar_98 = 0.0f;
             ((PathTemplateSample *)((char *)primary_bank + curve_sample_offset))
@@ -399,7 +398,7 @@ void cRPath::initialize_p_path_template_pair(int variant, float scale_arg,
         } while (curve_index < curve_segments);
     }
 
-    compute_terminal_deltas(this);
+    compute_terminal_deltas(this, primary_bank);
 
     build_strip_mesh(this, texture_a, texture_b);
     CalcLengthZ();
