@@ -8,9 +8,6 @@ sys.path.insert(0, str(Path(__file__).parents[1] / "tools/match/c2"))
 
 import trace as c2_trace
 
-import addrorder
-import cse_slot_trace
-
 from snail import match as m
 
 CODE = 0x20  # IMAGE_SCN_CNT_CODE
@@ -73,11 +70,16 @@ def test_function_event_selects_one_function():
         c2_trace.function_event(events, 2, 1)
 
 
-def allocation(klass, ident, hook=addrorder.FIRST_ALLOCATOR_HOOK):
-    return struct.pack("<4I", hook, klass, hook + 100, ident)
+# addrorder and cse_slot_trace read the VC6 backend's C2 profile on import.
 
 
+@pytest.mark.local_artifacts
 def test_cse_origin_is_per_function():
+    import addrorder
+
+    def allocation(klass, ident, hook=addrorder.FIRST_ALLOCATOR_HOOK):
+        return struct.pack("<4I", hook, klass, hook + 100, ident)
+
     entry = struct.pack("<2I", 1000, 0)
     data = (
         allocation(4, 0x10)
@@ -95,7 +97,10 @@ def test_cse_origin_is_per_function():
     assert addrorder.cse_origin(allocations, 1) == (0x500, {0x500: 0, 0x501: 1})
 
 
+@pytest.mark.local_artifacts
 def test_cse_slots_are_per_function():
+    import cse_slot_trace
+
     table = [{"kind": cse_slot_trace.PASS}, {"kind": cse_slot_trace.CSE_ALLOC}]
 
     def record(phase, *words):
