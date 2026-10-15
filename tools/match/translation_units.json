@@ -21,6 +21,7 @@
       "name": "border",
       "source_object": "Border.o",
       "members": [
+        "initialize_array_with_constructor",
         "border_add_text_number",
         "hide_border_init",
         "unhide_border_init",
@@ -74,6 +75,22 @@
         "initialize_completion_screen",
         "update_row_event_display",
         "register_parcel_delivery"
+      ]
+    },
+    {
+      "name": "datbuild",
+      "source_object": "DatBuild.o",
+      "members": [
+        "classify_archive_entry_extension",
+        "file_exists",
+        "get_stream_length_preserve_position",
+        "load_file_bytes_allocating",
+        "load_file_bytes_into_optional_buffer",
+        "scramble_archive_bytes_in_place",
+        "save_file_bytes_with_optional_archive_scramble",
+        "delete_file_path",
+        "toggle_archive_high_bit_in_place",
+        "rebuild_game_archive_if_needed"
       ]
     },
     {
@@ -301,6 +318,7 @@
       "name": "splash",
       "source_object": "Splash.o",
       "members": [
+        "bind_subgame_owner",
         "initialize_thanks_for_playing_screen",
         "uninit_thanks_screen",
         "update_thanks_for_playing_screen"
@@ -371,11 +389,27 @@
       "name": "bassplay",
       "source_object": "BassPlay.o",
       "members": [
+        "initialize_bass_audio_backend",
+        "uninitialize_bass_audio_backend",
+        "ensure_music_stream_from_path",
+        "prepare_music_stream_reload_if_path_changed",
+        "play_music_stream_from_bytes",
+        "stop_music_stream",
+        "load_registered_sound_sample_from_path",
+        "load_registered_sound_sample_from_bytes",
         "play_registered_sound_sample_scaled",
         "stop_sound_sample_handle",
         "stop_registered_sound_sample",
         "is_registered_sound_sample_playing",
-        "play_registered_sound_sample_default"
+        "play_registered_sound_sample_default",
+        "play_registered_sound_sample_backend",
+        "play_registered_sound_sample_scaled_panned",
+        "set_global_sample_volume_config",
+        "set_global_stream_volume_config",
+        "stop_audio_backend",
+        "resume_audio_backend_if_paused",
+        "pause_audio_backend_if_running",
+        "set_audio_normalization_scales"
       ]
     },
     {
@@ -400,6 +434,17 @@
         "queue_textured_quad_corners",
         "layout_and_queue_wrapped_font_text",
         "initialize_font3d_objects"
+      ]
+    },
+    {
+      "name": "joystick",
+      "source_object": "Joystick.o",
+      "members": [
+        "enumerate_input_controllers",
+        "append_enumerated_input_controller_callback",
+        "configure_input_controller_axis_range_callback",
+        "update_joystick_input",
+        "release_input_controllers"
       ]
     },
     {
@@ -579,7 +624,10 @@
         "set_fullscreen_mode",
         "direct3d_renderer_set_fullscreen_mode",
         "restore_texture_ref_stage_states",
-        "bind_texture_ref"
+        "bind_texture_ref",
+        "replace_object_group_texture_refs",
+        "query_direct3d_device_caps",
+        "reset_render_counters"
       ]
     },
     {

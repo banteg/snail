@@ -6,36 +6,32 @@
  "link_order": "analysis/ownership/windows-link-order.json",
  "units": [
   {
-   "name": "between-start-Border",
-   "sequence": "game",
-   "object": null,
-   "layout_evidence": "unresolved-boundary",
-   "evidence": "functions between ^ and Border.o with no object name in the binary",
-   "range": [
-    "0x401000",
-    "0x401030"
-   ],
-   "sources": [
-    {
-     "path": "decomp/game/between-start-Border/initialize_array_with_constructor.cpp",
-     "function": "initialize_array_with_constructor",
-     "address": "0x401000",
-     "port_scope": "core",
-     "config": "tools/match/scratches/initialize_array_with_constructor"
-    }
-   ]
-  },
-  {
    "name": "Border",
    "sequence": "game",
    "object": "Border.o",
    "layout_evidence": "link-order-object",
-   "evidence": "Border.o in alphabetical link order; 34 of 34 functions carry a consistent mobile label",
+   "evidence": "Border.o in alphabetical link order; 34 of 35 functions carry a consistent mobile label",
+   "placements": [
+    {
+     "functions": [
+      "initialize_array_with_constructor"
+     ],
+     "evidence": "comdat-placement",
+     "note": "the compiler-generated `??_H` vector constructor iterator, called from G0 and SubGame; the linker keeps a COMDAT from the earliest object in link order that emits it, and this copy sits before Border.o's first function, so Border.o, the first game object, emits it (an earlier object with no other surviving code would fit too)"
+    }
+   ],
    "range": [
-    "0x401030",
+    "0x401000",
     "0x404740"
    ],
    "sources": [
+    {
+     "path": "decomp/game/Border/initialize_array_with_constructor.cpp",
+     "function": "initialize_array_with_constructor",
+     "address": "0x401000",
+     "port_scope": "core",
+     "config": "tools/match/scratches/initialize_array_with_constructor"
+    },
     {
      "path": "decomp/game/Border/border_add_text_number.cpp",
      "function": "border_add_text_number",
@@ -282,6 +278,7 @@
    "object": "Cheat.o",
    "layout_evidence": "link-order-object",
    "evidence": "Cheat.o in alphabetical link order; 3 of 3 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x404740",
     "0x404830"
@@ -316,6 +313,7 @@
    "object": "Completion.o",
    "layout_evidence": "link-order-object",
    "evidence": "Completion.o in alphabetical link order; 4 of 4 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x404830",
     "0x4050c0"
@@ -352,107 +350,98 @@
    ]
   },
   {
-   "name": "between-Completion-DatBuild",
+   "name": "DatBuild",
    "sequence": "game",
-   "object": null,
-   "layout_evidence": "unresolved-boundary",
-   "evidence": "functions between Completion.o and DatBuild.o with no object name in the binary",
+   "object": "DatBuild.o",
+   "layout_evidence": "link-order-object",
+   "evidence": "DatBuild.o in alphabetical link order; 1 of 10 functions carry a consistent mobile label",
+   "placements": [
+    {
+     "functions": [
+      "classify_archive_entry_extension",
+      "file_exists",
+      "get_stream_length_preserve_position",
+      "load_file_bytes_allocating",
+      "load_file_bytes_into_optional_buffer",
+      "save_file_bytes_with_optional_archive_scramble",
+      "delete_file_path",
+      "toggle_archive_high_bit_in_place",
+      "rebuild_game_archive_if_needed"
+     ],
+     "evidence": "mobile-source-file",
+     "note": "iOS Source/DatBuild.cpp defines LoadFile(char*, void*, int*), SaveFile(char*, void*, int, bool) and DatBuild(): the Windows load_file_bytes_into_optional_buffer, save_file_bytes_with_optional_archive_scramble and rebuild_game_archive_if_needed; the rest are their file helpers, contiguous with the attested scramble_archive_bytes_in_place"
+    }
+   ],
    "range": [
     "0x4050c0",
-    "0x405270"
+    "0x405640"
    ],
    "sources": [
     {
-     "path": "decomp/game/between-Completion-DatBuild/classify_archive_entry_extension.cpp",
+     "path": "decomp/game/DatBuild/classify_archive_entry_extension.cpp",
      "function": "classify_archive_entry_extension",
      "address": "0x4050c0",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/classify_archive_entry_extension"
     },
     {
-     "path": "decomp/game/between-Completion-DatBuild/file_exists.cpp",
+     "path": "decomp/game/DatBuild/file_exists.cpp",
      "function": "file_exists",
      "address": "0x405140",
      "port_scope": "boundary",
      "config": "tools/match/scratches/file_exists"
     },
     {
-     "path": "decomp/game/between-Completion-DatBuild/get_stream_length_preserve_position.cpp",
+     "path": "decomp/game/DatBuild/get_stream_length_preserve_position.cpp",
      "function": "get_stream_length_preserve_position",
      "address": "0x405170",
      "port_scope": "boundary",
      "config": "tools/match/scratches/get_stream_length_preserve_position"
     },
     {
-     "path": "decomp/game/between-Completion-DatBuild/load_file_bytes_allocating.cpp",
+     "path": "decomp/game/DatBuild/load_file_bytes_allocating.cpp",
      "function": "load_file_bytes_allocating",
      "address": "0x4051b0",
      "port_scope": "boundary",
      "config": "tools/match/scratches/load_file_bytes_allocating"
     },
     {
-     "path": "decomp/game/between-Completion-DatBuild/load_file_bytes_into_optional_buffer.cpp",
+     "path": "decomp/game/DatBuild/load_file_bytes_into_optional_buffer.cpp",
      "function": "load_file_bytes_into_optional_buffer",
      "address": "0x4051d0",
      "port_scope": "boundary",
      "config": "tools/match/scratches/load_file_bytes_into_optional_buffer"
-    }
-   ]
-  },
-  {
-   "name": "DatBuild",
-   "sequence": "game",
-   "object": "DatBuild.o",
-   "layout_evidence": "link-order-object",
-   "evidence": "DatBuild.o in alphabetical link order; 1 of 1 functions carry a consistent mobile label",
-   "range": [
-    "0x405270",
-    "0x4052a0"
-   ],
-   "sources": [
+    },
     {
      "path": "decomp/game/DatBuild/scramble_archive_bytes_in_place.cpp",
      "function": "scramble_archive_bytes_in_place",
      "address": "0x405270",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/scramble_archive_bytes_in_place"
-    }
-   ]
-  },
-  {
-   "name": "between-DatBuild-DirectX",
-   "sequence": "game",
-   "object": null,
-   "layout_evidence": "unresolved-boundary",
-   "evidence": "functions between DatBuild.o and DirectX.o with no object name in the binary",
-   "range": [
-    "0x4052a0",
-    "0x405640"
-   ],
-   "sources": [
+    },
     {
-     "path": "decomp/game/between-DatBuild-DirectX/save_file_bytes_with_optional_archive_scramble.cpp",
+     "path": "decomp/game/DatBuild/save_file_bytes_with_optional_archive_scramble.cpp",
      "function": "save_file_bytes_with_optional_archive_scramble",
      "address": "0x4052a0",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/save_file_bytes_with_optional_archive_scramble"
     },
     {
-     "path": "decomp/game/between-DatBuild-DirectX/delete_file_path.cpp",
+     "path": "decomp/game/DatBuild/delete_file_path.cpp",
      "function": "delete_file_path",
      "address": "0x405340",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/delete_file_path"
     },
     {
-     "path": "decomp/game/between-DatBuild-DirectX/toggle_archive_high_bit_in_place.cpp",
+     "path": "decomp/game/DatBuild/toggle_archive_high_bit_in_place.cpp",
      "function": "toggle_archive_high_bit_in_place",
      "address": "0x405350",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/toggle_archive_high_bit_in_place"
     },
     {
-     "path": "decomp/game/between-DatBuild-DirectX/rebuild_game_archive_if_needed.cpp",
+     "path": "decomp/game/DatBuild/rebuild_game_archive_if_needed.cpp",
      "function": "rebuild_game_archive_if_needed",
      "address": "0x405370",
      "port_scope": "replaceable-platform",
@@ -466,6 +455,7 @@
    "object": "DirectX.o",
    "layout_evidence": "link-order-object",
    "evidence": "DirectX.o in alphabetical link order; 4 of 4 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x405640",
     "0x406060"
@@ -507,6 +497,7 @@
    "object": "Exit.o",
    "layout_evidence": "link-order-object",
    "evidence": "Exit.o in alphabetical link order; 3 of 3 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x406060",
     "0x406bc0"
@@ -540,7 +531,8 @@
    "sequence": "game",
    "object": null,
    "layout_evidence": "binary-name-candidate",
-   "evidence": "unnamed run between Exit.o and Galaxy.o; the binary names G0.cpp where ObjectList/TextureList are initialized",
+   "evidence": "unnamed run between Exit.o and Galaxy.o; the binary names G0.cpp as where ObjectList/TextureList are initialized; G0 sorts between Exit and Galaxy",
+   "placements": [],
    "range": [
     "0x406bc0",
     "0x4088e0"
@@ -960,6 +952,7 @@
    "object": "Galaxy.o",
    "layout_evidence": "link-order-object",
    "evidence": "Galaxy.o in alphabetical link order; 9 of 9 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x4088e0",
     "0x40a1b0"
@@ -1036,6 +1029,7 @@
    "object": "Game.o",
    "layout_evidence": "link-order-object",
    "evidence": "Game.o in alphabetical link order; 25 of 31 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x40a1b0",
     "0x4114b0"
@@ -1265,7 +1259,8 @@
    "sequence": "game",
    "object": null,
    "layout_evidence": "binary-name-candidate",
-   "evidence": "unnamed run between Game.o and GL.o; create_index_buffer reports DX_INDEXBUFFER_MAX in GDX.h",
+   "evidence": "unnamed run between Game.o and GL.o; create_index_buffer reports DX_INDEXBUFFER_MAX from GDX.h; GDX sorts between Game and GL",
+   "placements": [],
    "range": [
     "0x4114b0",
     "0x411fa0"
@@ -1376,10 +1371,21 @@
    "sequence": "game",
    "object": "GL.o",
    "layout_evidence": "link-order-object",
-   "evidence": "GL.o in alphabetical link order; 14 of 25 functions carry a consistent mobile label",
+   "evidence": "GL.o in alphabetical link order; 14 of 28 functions carry a consistent mobile label",
+   "placements": [
+    {
+     "functions": [
+      "replace_object_group_texture_refs",
+      "query_direct3d_device_caps",
+      "reset_render_counters"
+     ],
+     "evidence": "position-and-content",
+     "note": "renderer state between GL.o and Golb.o (a Direct3DRenderer method, the render counters, object texture groups). None sits with its earliest caller (GDX, Game, RObject), so none is an inline copy: each is defined in GL.o or Golb.o, and Golb.o holds only the golb shot and enemy classes"
+    }
+   ],
    "range": [
     "0x411fa0",
-    "0x4145c0"
+    "0x414670"
    ],
    "sources": [
     {
@@ -1556,36 +1562,23 @@
      "address": "0x414500",
      "port_scope": "boundary",
      "config": "tools/match/scratches/bind_texture_ref"
-    }
-   ]
-  },
-  {
-   "name": "between-GL-Golb",
-   "sequence": "game",
-   "object": null,
-   "layout_evidence": "unresolved-boundary",
-   "evidence": "functions between GL.o and Golb.o with no object name in the binary",
-   "range": [
-    "0x4145c0",
-    "0x414670"
-   ],
-   "sources": [
+    },
     {
-     "path": "decomp/game/between-GL-Golb/replace_object_group_texture_refs.cpp",
+     "path": "decomp/game/GL/replace_object_group_texture_refs.cpp",
      "function": "replace_object_group_texture_refs",
      "address": "0x4145c0",
      "port_scope": "boundary",
      "config": "tools/match/scratches/replace_object_group_texture_refs"
     },
     {
-     "path": "decomp/game/between-GL-Golb/query_direct3d_device_caps.cpp",
+     "path": "decomp/game/GL/query_direct3d_device_caps.cpp",
      "function": "query_direct3d_device_caps",
      "address": "0x414600",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/query_direct3d_device_caps"
     },
     {
-     "path": "decomp/game/between-GL-Golb/reset_render_counters.cpp",
+     "path": "decomp/game/GL/reset_render_counters.cpp",
      "function": "reset_render_counters",
      "address": "0x414650",
      "port_scope": "boundary",
@@ -1599,6 +1592,7 @@
    "object": "Golb.o",
    "layout_evidence": "link-order-object",
    "evidence": "Golb.o in alphabetical link order; 9 of 9 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x414670",
     "0x415f50"
@@ -1675,6 +1669,7 @@
    "object": "GUI.o",
    "layout_evidence": "link-order-object",
    "evidence": "GUI.o in alphabetical link order; 3 of 3 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x415f50",
     "0x416800"
@@ -1709,6 +1704,7 @@
    "object": "Help.o",
    "layout_evidence": "link-order-object",
    "evidence": "Help.o in alphabetical link order; 3 of 3 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x416800",
     "0x416910"
@@ -1743,6 +1739,7 @@
    "object": "HighScore.o",
    "layout_evidence": "link-order-object",
    "evidence": "HighScore.o in alphabetical link order; 11 of 12 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x416910",
     "0x417bc0"
@@ -1840,6 +1837,7 @@
    "object": "Intro.o",
    "layout_evidence": "link-order-object",
    "evidence": "Intro.o in alphabetical link order; 2 of 2 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x417bc0",
     "0x4182e0"
@@ -1867,6 +1865,7 @@
    "object": "Landscape.o",
    "layout_evidence": "link-order-object",
    "evidence": "Landscape.o in alphabetical link order; 4 of 5 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x4182e0",
     "0x418b50"
@@ -1915,6 +1914,7 @@
    "object": "LoadingBar.o",
    "layout_evidence": "link-order-object",
    "evidence": "LoadingBar.o in alphabetical link order; 3 of 3 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x418b50",
     "0x419110"
@@ -1949,6 +1949,7 @@
    "object": "Logo.o",
    "layout_evidence": "link-order-object",
    "evidence": "Logo.o in alphabetical link order; 5 of 5 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x419110",
     "0x419b30"
@@ -1997,6 +1998,7 @@
    "object": "MainMenu.o",
    "layout_evidence": "link-order-object",
    "evidence": "MainMenu.o in alphabetical link order; 3 of 3 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x419b30",
     "0x419f50"
@@ -2031,6 +2033,7 @@
    "object": "ObjectProc.o",
    "layout_evidence": "link-order-object",
    "evidence": "ObjectProc.o in alphabetical link order; 12 of 12 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x419f50",
     "0x41ace0"
@@ -2128,6 +2131,7 @@
    "object": "Options.o",
    "layout_evidence": "link-order-object",
    "evidence": "Options.o in alphabetical link order; 4 of 4 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x41ace0",
     "0x41b0a0"
@@ -2169,6 +2173,7 @@
    "object": "Path.o",
    "layout_evidence": "link-order-object",
    "evidence": "Path.o in alphabetical link order; 43 of 43 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x41b0a0",
     "0x42f0a0"
@@ -2478,18 +2483,19 @@
    ]
   },
   {
-   "name": "between-Path-Register",
+   "name": "Png",
    "sequence": "game",
-   "object": null,
-   "layout_evidence": "unresolved-boundary",
-   "evidence": "functions between Path.o and Register.o with no object name in the binary",
+   "object": "Png.o",
+   "layout_evidence": "mobile-source-file",
+   "evidence": "Png.o: iOS Source/Png.mm defines PngLoadImage(char*, char**, int*, int*, int*); Png sorts between Path and Register",
+   "placements": [],
    "range": [
     "0x42f0a0",
     "0x42f470"
    ],
    "sources": [
     {
-     "path": "decomp/game/between-Path-Register/load_png_image.cpp",
+     "path": "decomp/game/Png/load_png_image.cpp",
      "function": "load_png_image",
      "address": "0x42f0a0",
      "port_scope": "replaceable-platform",
@@ -2503,6 +2509,7 @@
    "object": "Register.o",
    "layout_evidence": "link-order-object",
    "evidence": "Register.o in alphabetical link order; 4 of 4 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x42f470",
     "0x42f5c0"
@@ -2544,6 +2551,7 @@
    "object": "RObject.o",
    "layout_evidence": "link-order-object",
    "evidence": "RObject.o in alphabetical link order; 27 of 31 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x42f5c0",
     "0x430e20"
@@ -2769,43 +2777,47 @@
    ]
   },
   {
-   "name": "between-RObject-RShell",
+   "name": "RShell",
    "sequence": "game",
-   "object": null,
-   "layout_evidence": "unresolved-boundary",
-   "evidence": "functions between RObject.o and RShell.o with no object name in the binary",
+   "object": "RShell.o",
+   "layout_evidence": "link-order-object",
+   "evidence": "RShell.o in alphabetical link order; 44 of 55 functions carry a consistent mobile label",
+   "placements": [
+    {
+     "functions": [
+      "initialize_tracked_allocation_depth_thunk",
+      "initialize_tracked_allocation_depth"
+     ],
+     "evidence": "mobile-source-file",
+     "note": "the static initializer of RShellMemory (g_tracked_allocation_stack), zeroing its first word: Android's _GLOBAL__I_RShell.cpp does the same store and iOS defines RShellMemory in Source/RShell.cpp. VC6 emits an object's initializer pair at its head, as in G0, Font, RMaths, RSprite and SubGame"
+    },
+    {
+     "functions": [
+      "launch_alpha72_url"
+     ],
+     "evidence": "position-and-content",
+     "note": "no mobile counterpart. Its only caller, update_completion_screen, sits earlier in Exit.o, so it is defined in RShell.o or SegmentCache.o; it is a Windows shell action (minimize the game window and latch the deactivation before opening a link), which is RShell's platform layer, while SegmentCache.o holds only track render caches. Android's RShell.cpp also ends with RShellGetScreenWidth/Height, the two Windows functions before it"
+    }
+   ],
    "range": [
     "0x430e20",
-    "0x430e40"
+    "0x433060"
    ],
    "sources": [
     {
-     "path": "decomp/game/between-RObject-RShell/initialize_tracked_allocation_depth_thunk.cpp",
+     "path": "decomp/game/RShell/initialize_tracked_allocation_depth_thunk.cpp",
      "function": "initialize_tracked_allocation_depth_thunk",
      "address": "0x430e20",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/initialize_tracked_allocation_depth_thunk"
     },
     {
-     "path": "decomp/game/between-RObject-RShell/initialize_tracked_allocation_depth.cpp",
+     "path": "decomp/game/RShell/initialize_tracked_allocation_depth.cpp",
      "function": "initialize_tracked_allocation_depth",
      "address": "0x430e30",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/initialize_tracked_allocation_depth"
-    }
-   ]
-  },
-  {
-   "name": "RShell",
-   "sequence": "game",
-   "object": "RShell.o",
-   "layout_evidence": "link-order-object",
-   "evidence": "RShell.o in alphabetical link order; 44 of 52 functions carry a consistent mobile label",
-   "range": [
-    "0x430e40",
-    "0x433050"
-   ],
-   "sources": [
+    },
     {
      "path": "decomp/game/RShell/initialize_game_data_archive.cpp",
      "function": "initialize_game_data_archive",
@@ -3169,22 +3181,9 @@
      "address": "0x433040",
      "port_scope": "core",
      "config": "tools/match/scratches/get_authored_view_height"
-    }
-   ]
-  },
-  {
-   "name": "between-RShell-SegmentCache",
-   "sequence": "game",
-   "object": null,
-   "layout_evidence": "unresolved-boundary",
-   "evidence": "functions between RShell.o and SegmentCache.o with no object name in the binary",
-   "range": [
-    "0x433050",
-    "0x433060"
-   ],
-   "sources": [
+    },
     {
-     "path": "decomp/game/between-RShell-SegmentCache/launch_alpha72_url.cpp",
+     "path": "decomp/game/RShell/launch_alpha72_url.cpp",
      "function": "launch_alpha72_url",
      "address": "0x433050",
      "port_scope": "replaceable-platform",
@@ -3198,6 +3197,7 @@
    "object": "SegmentCache.o",
    "layout_evidence": "link-order-object",
    "evidence": "SegmentCache.o in alphabetical link order; 0 of 7 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x433060",
     "0x433fc0"
@@ -3255,36 +3255,32 @@
    ]
   },
   {
-   "name": "between-SegmentCache-Splash",
-   "sequence": "game",
-   "object": null,
-   "layout_evidence": "unresolved-boundary",
-   "evidence": "functions between SegmentCache.o and Splash.o with no object name in the binary",
-   "range": [
-    "0x433fc0",
-    "0x433fd0"
-   ],
-   "sources": [
-    {
-     "path": "decomp/game/between-SegmentCache-Splash/bind_subgame_owner.cpp",
-     "function": "bind_subgame_owner",
-     "address": "0x433fc0",
-     "port_scope": "core",
-     "config": "tools/match/scratches/bind_subgame_owner"
-    }
-   ]
-  },
-  {
    "name": "Splash",
    "sequence": "game",
    "object": "Splash.o",
    "layout_evidence": "link-order-object",
-   "evidence": "Splash.o in alphabetical link order; 3 of 3 functions carry a consistent mobile label",
+   "evidence": "Splash.o in alphabetical link order; 3 of 4 functions carry a consistent mobile label",
+   "placements": [
+    {
+     "functions": [
+      "bind_subgame_owner"
+     ],
+     "evidence": "mobile-source-file",
+     "note": "the identical-code fold of cRGUI::Open and cRSplash::Open; iOS defines cRSplash::Open() in Source/Splash.cpp and the folded copy sits right before Splash.o's labelled functions (the mobile GUI.o label is the other half of the fold)"
+    }
+   ],
    "range": [
-    "0x433fd0",
+    "0x433fc0",
     "0x434270"
    ],
    "sources": [
+    {
+     "path": "decomp/game/Splash/bind_subgame_owner.cpp",
+     "function": "bind_subgame_owner",
+     "address": "0x433fc0",
+     "port_scope": "core",
+     "config": "tools/match/scratches/bind_subgame_owner"
+    },
     {
      "path": "decomp/game/Splash/initialize_thanks_for_playing_screen.cpp",
      "function": "initialize_thanks_for_playing_screen",
@@ -3314,6 +3310,7 @@
    "object": "Star.o",
    "layout_evidence": "link-order-object",
    "evidence": "Star.o in alphabetical link order; 7 of 7 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x434270",
     "0x434980"
@@ -3376,6 +3373,7 @@
    "object": "SubGame.o",
    "layout_evidence": "link-order-object",
    "evidence": "SubGame.o in alphabetical link order; 165 of 191 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x434980",
     "0x447300"
@@ -4726,6 +4724,7 @@
    "object": "Subtrack.o",
    "layout_evidence": "link-order-object",
    "evidence": "Subtrack.o in alphabetical link order; 5 of 5 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x447300",
     "0x448960"
@@ -4774,6 +4773,7 @@
    "object": "TimeTrial.o",
    "layout_evidence": "link-order-object",
    "evidence": "TimeTrial.o in alphabetical link order; 1 of 1 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x448960",
     "0x4489e0"
@@ -4794,6 +4794,7 @@
    "object": "Tips.o",
    "layout_evidence": "link-order-object",
    "evidence": "Tips.o in alphabetical link order; 7 of 7 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x4489e0",
     "0x448da0"
@@ -4856,6 +4857,7 @@
    "object": "Tutorial.o",
    "layout_evidence": "link-order-object",
    "evidence": "Tutorial.o in alphabetical link order; 3 of 3 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x448da0",
     "0x448df0"
@@ -4890,6 +4892,7 @@
    "object": "Voice.o",
    "layout_evidence": "link-order-object",
    "evidence": "Voice.o in alphabetical link order; 9 of 9 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x448df0",
     "0x449460"
@@ -4961,85 +4964,96 @@
    ]
   },
   {
-   "name": "between-Voice-BassPlay",
+   "name": "BassPlay",
    "sequence": "engine",
-   "object": null,
-   "layout_evidence": "unresolved-boundary",
-   "evidence": "functions between Voice.o and BassPlay.o with no object name in the binary",
+   "object": "BassPlay.o",
+   "layout_evidence": "link-order-object",
+   "evidence": "BassPlay.o in alphabetical link order; 5 of 21 functions carry a consistent mobile label",
+   "placements": [
+    {
+     "functions": [
+      "initialize_bass_audio_backend",
+      "uninitialize_bass_audio_backend",
+      "ensure_music_stream_from_path",
+      "prepare_music_stream_reload_if_path_changed",
+      "play_music_stream_from_bytes",
+      "stop_music_stream",
+      "load_registered_sound_sample_from_path",
+      "load_registered_sound_sample_from_bytes",
+      "play_registered_sound_sample_backend",
+      "play_registered_sound_sample_scaled_panned",
+      "set_global_sample_volume_config",
+      "set_global_stream_volume_config",
+      "stop_audio_backend",
+      "resume_audio_backend_if_paused",
+      "pause_audio_backend_if_running",
+      "set_audio_normalization_scales"
+     ],
+     "evidence": "owner-class",
+     "note": "AudioBackend methods (the authored cRBass); a class's out-of-line methods sit in its home object, and iOS defines cRBass and gBass in Source/BassPlay.cpp"
+    }
+   ],
    "range": [
     "0x449460",
-    "0x4499a0"
+    "0x449c00"
    ],
    "sources": [
     {
-     "path": "decomp/engine/between-Voice-BassPlay/initialize_bass_audio_backend.cpp",
+     "path": "decomp/engine/BassPlay/initialize_bass_audio_backend.cpp",
      "function": "initialize_bass_audio_backend",
      "address": "0x449460",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/initialize_bass_audio_backend"
     },
     {
-     "path": "decomp/engine/between-Voice-BassPlay/uninitialize_bass_audio_backend.cpp",
+     "path": "decomp/engine/BassPlay/uninitialize_bass_audio_backend.cpp",
      "function": "uninitialize_bass_audio_backend",
      "address": "0x4496d0",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/uninitialize_bass_audio_backend"
     },
     {
-     "path": "decomp/engine/between-Voice-BassPlay/ensure_music_stream_from_path.cpp",
+     "path": "decomp/engine/BassPlay/ensure_music_stream_from_path.cpp",
      "function": "ensure_music_stream_from_path",
      "address": "0x449720",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/ensure_music_stream_from_path"
     },
     {
-     "path": "decomp/engine/between-Voice-BassPlay/prepare_music_stream_reload_if_path_changed.cpp",
+     "path": "decomp/engine/BassPlay/prepare_music_stream_reload_if_path_changed.cpp",
      "function": "prepare_music_stream_reload_if_path_changed",
      "address": "0x4497e0",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/prepare_music_stream_reload_if_path_changed"
     },
     {
-     "path": "decomp/engine/between-Voice-BassPlay/play_music_stream_from_bytes.cpp",
+     "path": "decomp/engine/BassPlay/play_music_stream_from_bytes.cpp",
      "function": "play_music_stream_from_bytes",
      "address": "0x449820",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/play_music_stream_from_bytes"
     },
     {
-     "path": "decomp/engine/between-Voice-BassPlay/stop_music_stream.cpp",
+     "path": "decomp/engine/BassPlay/stop_music_stream.cpp",
      "function": "stop_music_stream",
      "address": "0x4498d0",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/stop_music_stream"
     },
     {
-     "path": "decomp/engine/between-Voice-BassPlay/load_registered_sound_sample_from_path.cpp",
+     "path": "decomp/engine/BassPlay/load_registered_sound_sample_from_path.cpp",
      "function": "load_registered_sound_sample_from_path",
      "address": "0x449920",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/load_registered_sound_sample_from_path"
     },
     {
-     "path": "decomp/engine/between-Voice-BassPlay/load_registered_sound_sample_from_bytes.cpp",
+     "path": "decomp/engine/BassPlay/load_registered_sound_sample_from_bytes.cpp",
      "function": "load_registered_sound_sample_from_bytes",
      "address": "0x449960",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/load_registered_sound_sample_from_bytes"
-    }
-   ]
-  },
-  {
-   "name": "BassPlay",
-   "sequence": "engine",
-   "object": "BassPlay.o",
-   "layout_evidence": "link-order-object",
-   "evidence": "BassPlay.o in alphabetical link order; 5 of 5 functions carry a consistent mobile label",
-   "range": [
-    "0x4499a0",
-    "0x449a80"
-   ],
-   "sources": [
+    },
     {
      "path": "decomp/engine/BassPlay/play_registered_sound_sample_scaled.cpp",
      "function": "play_registered_sound_sample_scaled",
@@ -5074,78 +5088,79 @@
      "address": "0x449a60",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/play_registered_sound_sample_default"
-    }
-   ]
-  },
-  {
-   "name": "between-BassPlay-Font",
-   "sequence": "engine",
-   "object": null,
-   "layout_evidence": "unresolved-boundary",
-   "evidence": "functions between BassPlay.o and Font.o with no object name in the binary",
-   "range": [
-    "0x449a80",
-    "0x449c10"
-   ],
-   "sources": [
+    },
     {
-     "path": "decomp/engine/between-BassPlay-Font/play_registered_sound_sample_backend.cpp",
+     "path": "decomp/engine/BassPlay/play_registered_sound_sample_backend.cpp",
      "function": "play_registered_sound_sample_backend",
      "address": "0x449a80",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/play_registered_sound_sample_backend"
     },
     {
-     "path": "decomp/engine/between-BassPlay-Font/play_registered_sound_sample_scaled_panned.cpp",
+     "path": "decomp/engine/BassPlay/play_registered_sound_sample_scaled_panned.cpp",
      "function": "play_registered_sound_sample_scaled_panned",
      "address": "0x449ae0",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/play_registered_sound_sample_scaled_panned"
     },
     {
-     "path": "decomp/engine/between-BassPlay-Font/set_global_sample_volume_config.cpp",
+     "path": "decomp/engine/BassPlay/set_global_sample_volume_config.cpp",
      "function": "set_global_sample_volume_config",
      "address": "0x449b50",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/set_global_sample_volume_config"
     },
     {
-     "path": "decomp/engine/between-BassPlay-Font/set_global_stream_volume_config.cpp",
+     "path": "decomp/engine/BassPlay/set_global_stream_volume_config.cpp",
      "function": "set_global_stream_volume_config",
      "address": "0x449b70",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/set_global_stream_volume_config"
     },
     {
-     "path": "decomp/engine/between-BassPlay-Font/stop_audio_backend.cpp",
+     "path": "decomp/engine/BassPlay/stop_audio_backend.cpp",
      "function": "stop_audio_backend",
      "address": "0x449b90",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/stop_audio_backend"
     },
     {
-     "path": "decomp/engine/between-BassPlay-Font/resume_audio_backend_if_paused.cpp",
+     "path": "decomp/engine/BassPlay/resume_audio_backend_if_paused.cpp",
      "function": "resume_audio_backend_if_paused",
      "address": "0x449ba0",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/resume_audio_backend_if_paused"
     },
     {
-     "path": "decomp/engine/between-BassPlay-Font/pause_audio_backend_if_running.cpp",
+     "path": "decomp/engine/BassPlay/pause_audio_backend_if_running.cpp",
      "function": "pause_audio_backend_if_running",
      "address": "0x449bc0",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/pause_audio_backend_if_running"
     },
     {
-     "path": "decomp/engine/between-BassPlay-Font/set_audio_normalization_scales.cpp",
+     "path": "decomp/engine/BassPlay/set_audio_normalization_scales.cpp",
      "function": "set_audio_normalization_scales",
      "address": "0x449be0",
      "port_scope": "boundary",
      "config": "tools/match/scratches/set_audio_normalization_scales"
-    },
+    }
+   ]
+  },
+  {
+   "name": "Console",
+   "sequence": "engine",
+   "object": "Console.o",
+   "layout_evidence": "mobile-source-file",
+   "evidence": "Console.o: iOS Source/Console.cpp defines wprintf(char*, ...), whose release body is this empty varargs stub: 11 of the 16 crosswalk-verified Windows callers map to Android functions that call wprintf (RShellError, RShellWarning, RShellPrintText, cRSubGame::BuildLevel, ...). Console sorts between BassPlay and Font",
+   "placements": [],
+   "range": [
+    "0x449c00",
+    "0x449c10"
+   ],
+   "sources": [
     {
-     "path": "decomp/engine/between-BassPlay-Font/debug_report_stub.cpp",
+     "path": "decomp/engine/Console/debug_report_stub.cpp",
      "function": "debug_report_stub",
      "address": "0x449c00",
      "port_scope": "replaceable-platform",
@@ -5159,6 +5174,7 @@
    "object": "Font.o",
    "layout_evidence": "link-order-object",
    "evidence": "Font.o in alphabetical link order; 14 of 18 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x449c10",
     "0x44afc0"
@@ -5293,53 +5309,68 @@
    ]
   },
   {
-   "name": "between-Font-Keyboard",
+   "name": "GetDXVer",
    "sequence": "engine",
    "object": null,
-   "layout_evidence": "unresolved-boundary",
-   "evidence": "functions between Font.o and Keyboard.o with no object name in the binary",
+   "layout_evidence": "sdk-sample-candidate",
+   "evidence": "unnamed run between Font.o and Keyboard.o; query_directx_runtime_version is the DirectX SDK sample GetDXVersion() from getdxver.cpp, down to its debug messages; GetDXVer sorts between Font and Joystick",
+   "placements": [],
    "range": [
     "0x44afc0",
-    "0x44b7d0"
+    "0x44b3c0"
    ],
    "sources": [
     {
-     "path": "decomp/engine/between-Font-Keyboard/query_directx_runtime_version.cpp",
+     "path": "decomp/engine/GetDXVer/query_directx_runtime_version.cpp",
      "function": "query_directx_runtime_version",
      "address": "0x44afc0",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/query_directx_runtime_version"
-    },
+    }
+   ]
+  },
+  {
+   "name": "Joystick",
+   "sequence": "engine",
+   "object": null,
+   "layout_evidence": "sdk-sample-candidate",
+   "evidence": "unnamed run between Font.o and Keyboard.o; the DirectX 8 SDK Joystick sample (joystick.cpp): device enumeration through an EnumJoysticksCallback, an EnumObjectsCallback that sets every axis range to -1000..+1000, a polling update and a release; Joystick sorts between GetDXVer and Keyboard",
+   "placements": [],
+   "range": [
+    "0x44b3c0",
+    "0x44b7d0"
+   ],
+   "sources": [
     {
-     "path": "decomp/engine/between-Font-Keyboard/enumerate_input_controllers.cpp",
+     "path": "decomp/engine/Joystick/enumerate_input_controllers.cpp",
      "function": "enumerate_input_controllers",
      "address": "0x44b3c0",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/enumerate_input_controllers"
     },
     {
-     "path": "decomp/engine/between-Font-Keyboard/append_enumerated_input_controller_callback.cpp",
+     "path": "decomp/engine/Joystick/append_enumerated_input_controller_callback.cpp",
      "function": "append_enumerated_input_controller_callback",
      "address": "0x44b490",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/append_enumerated_input_controller_callback"
     },
     {
-     "path": "decomp/engine/between-Font-Keyboard/configure_input_controller_axis_range_callback.cpp",
+     "path": "decomp/engine/Joystick/configure_input_controller_axis_range_callback.cpp",
      "function": "configure_input_controller_axis_range_callback",
      "address": "0x44b4e0",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/configure_input_controller_axis_range_callback"
     },
     {
-     "path": "decomp/engine/between-Font-Keyboard/update_joystick_input.cpp",
+     "path": "decomp/engine/Joystick/update_joystick_input.cpp",
      "function": "update_joystick_input",
      "address": "0x44b570",
      "port_scope": "replaceable-platform",
      "config": "tools/match/scratches/update_joystick_input"
     },
     {
-     "path": "decomp/engine/between-Font-Keyboard/release_input_controllers.cpp",
+     "path": "decomp/engine/Joystick/release_input_controllers.cpp",
      "function": "release_input_controllers",
      "address": "0x44b770",
      "port_scope": "replaceable-platform",
@@ -5353,6 +5384,7 @@
    "object": "Keyboard.o",
    "layout_evidence": "link-order-object",
    "evidence": "Keyboard.o in alphabetical link order; 5 of 5 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x44b7d0",
     "0x44bbb0"
@@ -5401,6 +5433,7 @@
    "object": "Mouse.o",
    "layout_evidence": "link-order-object",
    "evidence": "Mouse.o in alphabetical link order; 10 of 12 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x44bbb0",
     "0x44c420"
@@ -5498,6 +5531,7 @@
    "object": "ObjectText.o",
    "layout_evidence": "link-order-object",
    "evidence": "ObjectText.o in alphabetical link order; 1 of 1 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x44c420",
     "0x44c870"
@@ -5518,6 +5552,7 @@
    "object": "RMaths.o",
    "layout_evidence": "link-order-object",
    "evidence": "RMaths.o in alphabetical link order; 52 of 57 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x44c870",
     "0x44dcb0"
@@ -5930,6 +5965,7 @@
    "object": "RSound.o",
    "layout_evidence": "link-order-object",
    "evidence": "RSound.o in alphabetical link order; 6 of 6 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x44dcb0",
     "0x44de40"
@@ -5985,6 +6021,7 @@
    "object": "RSprite.o",
    "layout_evidence": "link-order-object",
    "evidence": "RSprite.o in alphabetical link order; 12 of 16 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x44de40",
     "0x44e5a0"
@@ -6110,6 +6147,7 @@
    "object": "RString.o",
    "layout_evidence": "link-order-object",
    "evidence": "RString.o in alphabetical link order; 6 of 6 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x44e5a0",
     "0x44e780"
@@ -6165,6 +6203,7 @@
    "object": "RTexture.o",
    "layout_evidence": "link-order-object",
    "evidence": "RTexture.o in alphabetical link order; 3 of 3 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x44e780",
     "0x44e900"
@@ -6199,9 +6238,10 @@
    "object": "Viewport.o",
    "layout_evidence": "link-order-object",
    "evidence": "Viewport.o in alphabetical link order; 2 of 2 functions carry a consistent mobile label",
+   "placements": [],
    "range": [
     "0x44e900",
-    "0x44fd90"
+    "0x44e950"
    ],
    "sources": [
     {
@@ -6221,32 +6261,33 @@
    ]
   },
   {
-   "name": "between-Viewport-end",
-   "sequence": "engine",
-   "object": null,
-   "layout_evidence": "unresolved-boundary",
-   "evidence": "functions between Viewport.o and $ with no object name in the binary",
+   "name": "d3dxmath",
+   "sequence": "d3dx8",
+   "object": "d3dxmath.obj",
+   "layout_evidence": "library-member",
+   "evidence": "d3dxmath.obj: d3dx8.lib member obj\\i386\\d3dxmath.obj (D3DXMatrixTranslation, D3DXMatrixPerspectiveFovRH, D3DXMatrixLookAtRH); kept in the tree because the port compiles these portable bodies",
+   "placements": [],
    "range": [
-    "0x44fd90",
+    "0x44e950",
     null
    ],
    "sources": [
     {
-     "path": "decomp/engine/between-Viewport-end/initialize_translation_matrix.cpp",
+     "path": "decomp/d3dx8/d3dxmath/initialize_translation_matrix.cpp",
      "function": "initialize_translation_matrix",
      "address": "0x44fd90",
      "port_scope": "third-party",
      "config": "tools/match/scratches/initialize_translation_matrix"
     },
     {
-     "path": "decomp/engine/between-Viewport-end/build_perspective_projection_matrix.cpp",
+     "path": "decomp/d3dx8/d3dxmath/build_perspective_projection_matrix.cpp",
      "function": "build_perspective_projection_matrix",
      "address": "0x450314",
      "port_scope": "third-party",
      "config": "tools/match/scratches/build_perspective_projection_matrix"
     },
     {
-     "path": "decomp/engine/between-Viewport-end/build_camera_view_matrix.cpp",
+     "path": "decomp/d3dx8/d3dxmath/build_camera_view_matrix.cpp",
      "function": "build_camera_view_matrix",
      "address": "0x451ad9",
      "port_scope": "third-party",

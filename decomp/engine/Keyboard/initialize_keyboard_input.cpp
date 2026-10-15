@@ -13,7 +13,7 @@ extern "C" int __stdcall DirectInput8Create(
     void* outer_unknown);
 extern "C" void* memset(void* destination, int value, unsigned int count);
 
-void release_input_controllers();
+int release_input_controllers();
 
 int initialize_keyboard_input(HWND hwnd)
 {
