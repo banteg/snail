@@ -1,18 +1,5 @@
 # Reconstruction notes
 
-## 2026-10-15: 100% byte-exact under msvc6.3
-
-Result: **100.00% proof-grade byte-exact** (`796/796` instructions, prefix
-`796`, `body_byte_exact = true`, `63/63` masked operands clean) under `msvc6.3`.
-
-- In `LoopBow`, the middle-loop `center_x` store at `+0x327` sums `bank` (`temp
-  0x5fd`) and the induction temporary `sample_index * 168` (`iv-temp 0x969`),
-  which are separated by `0x36c` slots (`< 0x400`).
-- Spelling the sample-bank accesses through explicit byte-offset casts advances
-  `C0` so `bank` wraps across `0x800` (`temp 0x81d`, `cost 0x10740`) into the
-  same `0x800..0xbff` bucket as `iv-temp 0xb89` (`cost 0x1e240`), sorting the
-  induction temporary first (`fstp dword ptr [ebx + eax + 0x90]` at `+0x327`).
-
 ## 2026-09-23: interpolation and pivot lifetimes
 
 The live source now reaches **100% normalized agreement, 796/796 instructions,
