@@ -2,12 +2,12 @@
 
 #include "audio_system.h"
 #include "rstring.h"
+#include "rshell.h"
 #include "rtext.h"
 #include "voice_manager.h"
 
 #include <string.h>
 
-char* get_archive_data_base();
 char* load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, int* out_size);
 int register_sound_sample(char* path, int normalization_class);
 int report_errorf(char* format, ...);
@@ -22,7 +22,7 @@ void cRVoiceManager::Init()
     int zero = 0;
     set_tag[0] = (char)zero;
 
-    char* file_text = get_archive_data_base();
+    char* file_text = (char*)get_archive_data_base();
     load_file_bytes_from_archive_or_fs("Voice/_Voice.txt", file_text, (int*)zero);
 
     char* cursor;

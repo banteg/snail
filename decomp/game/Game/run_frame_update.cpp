@@ -4,10 +4,10 @@
 #include "bod_ai_dispatch.h"
 #include "cheat_state.h"
 #include "game_root.h"
+#include "rerror.h"
 #include "sprite.h"
 #include "voice_manager.h"
 
-int report_errorf(const char* format, ...);
 int OSDPrint(
     int texture_id,
     float x,

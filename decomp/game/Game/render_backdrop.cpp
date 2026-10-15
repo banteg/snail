@@ -1,7 +1,6 @@
 // render_backdrop @ 0x411040 (thiscall, ret)
 // Draws the active single-texture backdrop through the 7x7 distortion grid.
 
-#define BACKDROP_RENDER_BACKDROP_RETURNS_VOID
 #include "backdrop.h"
 #include "font_system.h"
 

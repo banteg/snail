@@ -3,11 +3,10 @@
 #include "direct3d_renderer.h"
 #include "sprite.h"
 #include "object_render_types.h"
+#include "rshell.h"
 #include "vector3.h"
 
 void* allocate_tracked_memory(int size, char* name);
-void* get_archive_data_base();
-void* get_archive_data_end();
 extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
 #pragma intrinsic(memcpy)
 

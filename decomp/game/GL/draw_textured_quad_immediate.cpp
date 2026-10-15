@@ -4,6 +4,7 @@
 #include "direct3d_renderer.h"
 #include "object_render_types.h"
 #include "render_pipeline_state.h"
+#include "rerror.h"
 #include "sprite.h"
 #include "vertex_buffer_view.h"
 
@@ -12,7 +13,6 @@ void set_immediate_blend_mode(int blend_mode);
 float Sqrt(float value);
 float Sin(float angle);
 float Cos(float angle);
-int report_errorf(const char* format, ...);
 
 void draw_textured_quad_immediate(
     cRTexture* texture,

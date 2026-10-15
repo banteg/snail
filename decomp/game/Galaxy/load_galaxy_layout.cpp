@@ -3,11 +3,11 @@
 #include <stddef.h>
 
 #include "game_root.h"
+#include "rshell.h"
 #include "rstring.h"
 
 int sprintf(char* buffer, char* format, ...);
 
-char* get_archive_data_base();
 char* load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, void* out_size);
 int report_errorf(char* format, ...);
 
@@ -42,7 +42,7 @@ void cRGalaxy::Open()
 
     char* file_text = load_file_bytes_from_archive_or_fs(
         "Galaxy/_Galaxy.txt",
-        get_archive_data_base(),
+        (char*)get_archive_data_base(),
         (void*)0);
 
     int star_index = 0;

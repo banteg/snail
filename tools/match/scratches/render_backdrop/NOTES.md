@@ -189,3 +189,8 @@ The retained mixed-precision source is a reproducible reconstruction of every
 native instruction and operand, not proof that the original author used these
 exact variable declarations. No compiler option, constant-pool substitution,
 inline assembly, dummy dependency, or reference-audit rule changed.
+
+2026-10-16 (whole Game unit): `render_backdrop` is now `void` in `backdrop.h`
+for every caller and `BACKDROP_RENDER_BACKDROP_RETURNS_VOID` is gone.
+`update_backdrop` stays exact by spelling its draw gate as a single-case
+`switch` and falling off its end after `render_backdrop()`.

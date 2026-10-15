@@ -12,6 +12,7 @@
 #include "galaxy_route_types.h"
 #include "landscape_manager.h"
 #include "object_render_types.h"
+#include "rdebug.h"
 #include "rstring.h"
 #include "runtime_config.h"
 #include "segment_catalog_types.h"
@@ -26,8 +27,6 @@ extern char g_help_script_path[]; // 0x4a3488
 extern char g_menu_background_script_path[]; // 0x4a347c
 extern SubSegmentRaw* g_builtin_segment_definitions[]; // 0x4a63d0
 
-int report_errorf(char* format, ...); // @ 0x431cc0
-int debug_report_stub(char* format, ...); // @ 0x449c00
 void FontInit(); // @ 0x449c70
 void FontMake3D(short font_id); // @ 0x44ae10
 int register_font_texture_sheet_wrapper(

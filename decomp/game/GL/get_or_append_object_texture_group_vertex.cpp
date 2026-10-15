@@ -1,10 +1,9 @@
 // get_or_append_object_texture_group_vertex @ 0x413bb0 (cdecl)
 
+#include "rerror.h"
 #include "sprite.h"
 #include "object_render_types.h"
 #include "vector3.h"
-
-int report_errorf(char* format, ...);
 
 int get_or_append_object_texture_group_vertex(
     Object* object, int vertex_index, float u, float v)

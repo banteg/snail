@@ -1,5 +1,6 @@
 // draw_sprite_quad @ 0x4137f0 (cdecl, ret)
 
+#include "rerror.h"
 #include "sprite.h"
 #include "direct3d_device8_view.h"
 #include "direct3d_renderer.h"
@@ -17,7 +18,6 @@ extern "C" TransformMatrix* __stdcall D3DXMatrixTranslation(
 void bind_texture_ref(cRTexture* texture);
 float Cos(float angle);
 float Sin(float angle);
-int report_errorf(const char* format, ...);
 
 int draw_sprite_quad(Vec3* position, cRSprite* sprite)
 {

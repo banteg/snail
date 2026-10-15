@@ -1,6 +1,7 @@
 // uninitialize_input_devices @ 0x411d80 (cdecl, tail return)
 
-int release_global_direct3d_renderer_resources();
+#include "direct3d_renderer.h"
+
 void release_input_controllers();
 void release_keyboard_input();
 int release_mouse_input();

@@ -116,3 +116,31 @@ Step 1 registers 35 of the 41 unchanged units, 269 functions in all. The six
 claims about the original files", and compiling one as a single object would
 make that claim. Subtrack absorbs its `subtrack_copy_level_loader` pair into a
 five-function unit. No function changed state, ratio, body bytes or error.
+
+## Game, GL and GDX
+
+Step 2 for the three smallest drifting units (70 functions). Each compiles as
+one object after its declarations agree, and no function anywhere in the tree
+changed state, ratio, structural ratio, body bytes or error.
+
+- **Game**: `cRBackdrop::render_backdrop` is `void` in `backdrop.h` for every
+  caller; the `BACKDROP_RENDER_BACKDROP_RESULT` switch is gone.
+  `update_backdrop` tests its draw gate with a single-case
+  `switch (backdrop_render_enabled)`, which is VC6's `dec eax; jne`, then
+  either returns `draw_split_backdrop()` or calls `render_backdrop()` and falls
+  off the end (C4715). It stays exact, so the leftover-`eax` contract needs no
+  `int` prototype. The port returns 0 there (see
+  [divergences.md](../../docs/port/divergences.md)).
+- **GDX**: `release_global_direct3d_renderer_resources` is declared `void` once,
+  in `direct3d_renderer.h`, replacing the two local `int` prototypes; neither
+  caller read the result.
+- **GL**: `get_archive_data_base` and `get_archive_data_end` are declared
+  `void*` once, in a new `rshell.h`. Mobile callers cast
+  `RShellMemoryScratch()` to the view they need, so the `char*` callers in
+  GL, ObjectText, Galaxy, LoadingBar, Voice and DirectX now cast too.
+- **All three**: the second conflict in GL was `debug_report_stub` declared both
+  `(char*)` and `(char*, ...)`; Game and GDX mixed `char*` and `const char*`
+  spellings of it and of `report_errorf`. Every file in the three units now
+  includes `rdebug.h` or `rerror.h` instead.
+
+38 units now compile whole. G0, RMaths and RShell still drift.

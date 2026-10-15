@@ -2,8 +2,7 @@
 
 #include "render_buffer_factories.h"
 #include "direct3d_device8_view.h"
-
-extern int report_errorf(char* format, ...); // @ 0x431cc0
+#include "rerror.h"
 
 ObjectIndexBuffer* IndexBufferFactory::create_index_buffer(int index_count)
 {

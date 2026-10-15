@@ -102,4 +102,6 @@ typedef char Direct3DRenderer_must_be_0xbcc0[
 
 extern Direct3DRenderer g_direct3d_renderer; // data_4f7458
 
+void release_global_direct3d_renderer_resources(); // @ 0x411d70
+
 #endif

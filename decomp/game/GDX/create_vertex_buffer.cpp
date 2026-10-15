@@ -1,10 +1,8 @@
 // VertexBufferFactory::create_vertex_buffer @ 0x4114b0 (thiscall, ret 0x8)
 
 #include "direct3d_device8_view.h"
+#include "rdebug.h"
 #include "render_buffer_factories.h"
-
-extern int report_errorf(char* format, ...); // @ 0x431cc0
-extern int debug_report_stub(char* format, ...); // @ 0x449c00
 
 ObjectRenderBuffers* VertexBufferFactory::create_vertex_buffer(
     int vertex_count, int fvf)

@@ -1,10 +1,10 @@
 // CalcEdges @ 0x4308b0 (thiscall)
 
 #include "object_render_types.h"
+#include "rshell.h"
 
 extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
 
-void* get_archive_data_base();
 
 void cRObject::CalcEdges()
 {
