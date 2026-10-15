@@ -303,9 +303,10 @@ hidden or closed. `?reset` clears them, and `?mute` silences the game until
 ### Enhancements
 
 The gear in the page's corner switches the port's enhancements over the
-original, one by one or all at once (Original, Enhanced); the page remembers
-the choice. They live in the host and the presenters, never in the game's
-logic, so the oracles hold either way.
+original, one by one or all at once (Original, Enhanced). All enhancements
+start enabled in a new browser; saved choices take precedence. Rendering and
+window options live in the host and presenters, while Mobile extras uses the
+content hooks described below.
 
 - **Sharp rendering:** the presenter draws at the canvas's size in device
   pixels instead of 640x480. Viewports scale, while the half-pixel offset stays
@@ -331,7 +332,7 @@ logic, so the oracles hold either way.
   frame, both oracles matching), but objects still spawn 38 units ahead, and
   the longer view made that pop-in plain.
 - **Mobile extras** (`--extras` natively and headless, `?extras` or the gear menu
-  in the browser, off by default): opt-in content backported from the Android
+  in the browser, enabled by default there): content backported from the Android
   release (#28). `uv run snail port extras` builds `artifacts/bin/SnailMailExtras.dat`
   from the extracted Android assets: splitting `OBJECTS/WORLD00/SURFACE4`–`6.PNG`
   into PC-layout 24-bit `Track4`–`6.tga` and `Slide4`–`6.tga` textures,
