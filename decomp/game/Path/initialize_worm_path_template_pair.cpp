@@ -4,16 +4,12 @@
 #include "object_render_types.h"
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
+#include "path_helpers.h"
 
 const float WORM_TAU = 6.2831855f;
 const float WORM_RADIUS = 4.0f;
 const float WORM_UNDERSIDE_SCALE = 0.30000001f;
 const float WORM_UV_ROW_STEP = 0.125f;
-
-inline Vector3 operator*(float scalar, const Vector3& value)
-{
-    return Vector3(scalar * value.x, scalar * value.y, scalar * value.z);
-}
 
 void cRPath::initialize_worm_path_template_pair(char* texture_path)
 {

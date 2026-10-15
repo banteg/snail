@@ -22867,8 +22867,13 @@ def test_slalomdouble_p_path_replay_preserves_clean_owner_lifetimes() -> None:
         assert f"({rejected_index}, 66," not in replay
     assert "int curve_index = 0" in p_scratch
     assert "float angle = (float)curve_index" in p_scratch
-    assert "int face_index;" in p_scratch
-    assert "for (face_index = 0; face_index < 2; ++face_index)" in p_scratch
+    # P's mesh is the shared Path.cpp helper.
+    path_helpers = (
+        Path(__file__).parents[1] / "tools/match/include/path_helpers.h"
+    ).read_text(encoding="utf-8")
+    assert "build_strip_mesh(this, texture_a, texture_b);" in p_scratch
+    assert "int face_index;" in path_helpers
+    assert "for (face_index = 0; face_index < 2; ++face_index)" in path_helpers
     for rendered_owner in (
         "int32_t lead_sample_index = 0",
         "int32_t tail_sample_index = 0x42",

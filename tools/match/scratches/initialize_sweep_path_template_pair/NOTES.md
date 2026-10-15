@@ -545,3 +545,14 @@ confined to the face preheader: the column's zero initialization moves before
 the width guard and the row-UV conversions use the native stack temporary.
 The vertex phase, face bodies, and remainder are unchanged. A recorded reverse
 probe restores 84.66%. The broader common-body candidate is not promoted.
+
+## 2026-10-16 whole-unit Path
+
+The previous source matched only as the first function of its file: after any
+other definition it fell to 99.85%, a /G5 scheduler tie between the secondary
+bank load and the reload of `z` coming out the other way. The
+`initialize_primary_position` helper (its float return) is now written out at
+its three call sites, which is exact in context; `build_strip_mesh` is written
+out too, and `initialize_secondary` stays a helper in this file (Sweep is its
+only user). See
+[whole-tu-compilation-20261015.md](../../whole-tu-compilation-20261015.md#path).

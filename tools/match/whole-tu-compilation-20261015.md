@@ -97,8 +97,8 @@ Move to whole-unit compilation, one unit at a time:
    prototypes, real SDK types, one definition per global, and one spelling for
    each leftover-`eax` contract. Re-score after each unit.
 3. Path: collapse the helper copies into one definition per name or into the
-   callers, then rematch hump and sweep in context. SubGame: rematch
-   `update_cameraman` in context.
+   callers, then rematch hump and sweep in context (done, [below](#path)).
+   SubGame: rematch `update_cameraman` in context.
 4. Make G0 a `/GX` unit.
 
 Probes on a whole unit recompile every member, so iteration on SubGame (187
@@ -144,3 +144,61 @@ changed state, ratio, structural ratio, body bytes or error.
   includes `rdebug.h` or `rerror.h` instead.
 
 38 units now compile whole. G0, RMaths and RShell still drift.
+
+## Path
+
+Path is now registered: one 43-function unit, making 39 whole units. A
+repo-wide rescore against the baseline changes no function's state, ratio or
+body bytes: Hump and Sweep, which the experiment above moved, are exact again
+in context.
+
+The 13 colliding helper names were settled one at a time. Copies with the same
+body became one definition in
+[`path_helpers.h`](include/path_helpers.h), which stands for the top of
+`Path.cpp` (the port compiles one file per function, so it cannot live in a
+member file). Where copies differed, every distinct body was tried as the
+shared one against every caller in context, and the body that kept the most
+callers exact won. Callers that need different code carry it written out, the
+way a builder copied from a sibling would. `operator*(float, const Vector3&)`
+moved to the same header.
+
+| helper | shared by | written out in |
+|---|---|---|
+| `build_strip_mesh` (Hump's body) | Dump, Hill/Valley, Hump, Invert, P, S-bend, Toad, Turnunder, Twister, Twister2, Wibble | Dip, Sweep |
+| `compute_path_deltas` (Invert's) | Invert, S-bend, Toad, Turnunder, Wibble | Hill/Valley, Twister, Twister2 |
+| `compute_terminal_deltas` (Hump's) | Hump, Slalom, SlalomBig, SlalomDouble | Dump, P |
+| `initialize_lead_pair` (SlalomDouble's), `build_extrapolated_strip_mesh`, `reset_primary_sample` | Slalom, SlalomBig, SlalomDouble | |
+| `initialize_curve_sample`, `orient_previous_sample_pair`, `finish_curve_positions` | Twister, Twister2 | |
+| `interpolate_path_center` | LoopTheLoop, LoopTheLoopW | |
+| `initialize_secondary` | Sweep only (kept in its file) | SlalomDouble |
+| `initialize_primary_position` | | Hump, Sweep (two different bodies) |
+
+Three builders still keep a helper of their own, now under its own name:
+`build_start_strip_mesh`, `build_supertramp_strip_mesh` and
+`build_screw_strip_mesh`. Start's and Supertramp's meshes differ from the
+shared one in what they build (one texture and `header_word` 4; a capped last
+row). Screw's builds the same mesh through member references. Writing any of
+them out keeps the mesh code but moves operand order elsewhere in the
+function: Start's secondary-bank receivers, Supertramp's reload order at its
+face-loop head, and Screw's `width_cells` loads. Phantom shifts make Screw
+exact only with the width address's CSE slot at residue 2 or 3 (it is 0), and
+no header order or spelling tried gets there. Whether `Path.cpp` had these as
+helpers is open.
+
+Findings that apply beyond Path:
+
+- **A function compiles differently when it comes first.** Sweep matched only
+  while it was the first definition its compiler saw; any earlier definition,
+  even `void f() {}`, changed its code at a /G5 scheduler tie between the
+  secondary bank load and the reload of `z`, whose chain carried an `FROUND`
+  from its helper's float return. Written out at its three call sites, Sweep is exact in context. An
+  overlay that starts with a dummy definition reproduces in-context results,
+  so [`cse_slot_trace.py`](c2/cse_slot_trace.py) now traces the last function
+  of a multi-function source.
+- **Hump** went exact in context with the split increment
+  (`segment_count = departure_index; segment_count += 7;`) and grouping
+  parentheses in `((float)width_cells * 0.5f) - 4.0f`, the same pair that
+  matched Hill/Valley.
+- **Copied code reuses its caller's locals.** Invert's written-out deltas
+  matched only when they reused the builder's `sample_offset`; Dump and
+  Hill/Valley reuse `i`.
