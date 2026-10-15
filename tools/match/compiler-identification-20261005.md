@@ -80,6 +80,9 @@ The table records the unchanged sources on October 5. On October 14,
 `calc_object_facequad_normals` was recovered to an exact match under msvc6.3
 by restoring component-wise initial edge values; see its
 [scratch notes](scratches/calc_object_facequad_normals/NOTES.md#2026-10-14-sp3-edge-value-recovery).
+On October 15, `initialize_dump_path_template_pair` was also recovered to an
+exact match under msvc6.3; see its
+[scratch notes](scratches/initialize_dump_path_template_pair/NOTES.md#2026-10-15-sp3-terminal-delta-pointer-recovery).
 
 ## Language
 
