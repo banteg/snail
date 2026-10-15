@@ -7,6 +7,70 @@
 
 float Sin(float angle);
 
+static __forceinline void build_halfpipe_middle(
+    Path *path, AttachmentSample* const& primary_bank, float &out_angle)
+{
+    int middle = 0;
+    Vector3 up(0.0f, 1.0f, 0.0f);
+    int middle_offset = 16 * sizeof(AttachmentSample);
+    do
+    {
+        float middle_f = (float)middle;
+        out_angle = middle_f * 0.18479957f;
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))->center_x =
+            (primary_bank[50].center_x - primary_bank[0].center_x) * middle_f *
+                0.029411765f +
+            primary_bank[0].center_x;
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
+            ->rotation_scalar_98 = 0.0f;
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
+            ->rotation_scalar_94 = 0.0f;
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
+            ->special_scalar = 4.0f;
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))->lateral_scale =
+            1.0f;
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
+            ->transform.Identity();
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
+            ->transform.position.x = 0.0f;
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
+            ->transform.position.z = (float)(middle + 16);
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
+            ->transform.position.y = 0.0f;
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
+            ->transform.basis_up = up;
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
+            ->transform.basis_forward =
+            ((AttachmentSample *)((char *)primary_bank + middle_offset))
+                ->transform.position -
+            ((AttachmentSample *)((char *)primary_bank + middle_offset))[-1]
+                .transform.position;
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
+            ->transform.basis_forward.Normalize();
+        ((AttachmentSample *)((char *)primary_bank + middle_offset))
+            ->transform.basis_right.Cross(
+                ((AttachmentSample *)((char *)primary_bank + middle_offset))
+                    ->transform.basis_up,
+                ((AttachmentSample *)((char *)primary_bank + middle_offset))
+                    ->transform.basis_forward);
+
+        ((AttachmentSample *)((char *)path->secondary_samples + middle_offset))->transform =
+            ((AttachmentSample *)((char *)primary_bank + middle_offset))->transform;
+        Vector3 secondary_offset =
+            ((AttachmentSample *)((char *)primary_bank + middle_offset))
+                ->transform.basis_up *
+            0.49000001f;
+        Vector3 *secondary_position =
+            &((AttachmentSample *)((char *)path->secondary_samples + middle_offset))
+                 ->transform.position;
+        secondary_position->x += secondary_offset.x;
+        secondary_position->y += secondary_offset.y;
+        secondary_position->z += secondary_offset.z;
+        ++middle;
+        middle_offset += sizeof(AttachmentSample);
+    } while (middle_offset < 50 * (int)sizeof(AttachmentSample));
+}
+
 void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells_,
                                                     bool side_exit, char *texture_a,
                                                     char *texture_b,
@@ -103,65 +167,7 @@ void cRPath::initialize_halfpipe_path_template_pair(float scale, int width_cells
     } while (tail_offset < 66 * (int)sizeof(AttachmentSample));
 
     float out_angle;
-    int middle = 0;
-    Vector3 up(0.0f, 1.0f, 0.0f);
-    int middle_offset = 16 * sizeof(AttachmentSample);
-    do
-    {
-        float middle_f = (float)middle;
-        out_angle = middle_f * 0.18479957f;
-        ((AttachmentSample *)((char *)primary_bank + middle_offset))->center_x =
-            (primary_bank[50].center_x - primary_bank[0].center_x) * middle_f *
-                0.029411765f +
-            primary_bank[0].center_x;
-        ((AttachmentSample *)((char *)primary_bank + middle_offset))
-            ->rotation_scalar_98 = 0.0f;
-        ((AttachmentSample *)((char *)primary_bank + middle_offset))
-            ->rotation_scalar_94 = 0.0f;
-        ((AttachmentSample *)((char *)primary_bank + middle_offset))
-            ->special_scalar = 4.0f;
-        ((AttachmentSample *)((char *)primary_bank + middle_offset))->lateral_scale =
-            1.0f;
-        ((AttachmentSample *)((char *)primary_bank + middle_offset))
-            ->transform.Identity();
-        ((AttachmentSample *)((char *)primary_bank + middle_offset))
-            ->transform.position.x = 0.0f;
-        ((AttachmentSample *)((char *)primary_bank + middle_offset))
-            ->transform.position.z = (float)(middle + 16);
-        ((AttachmentSample *)((char *)primary_bank + middle_offset))
-            ->transform.position.y = 0.0f;
-        ((AttachmentSample *)((char *)primary_bank + middle_offset))
-            ->transform.basis_up = up;
-        ((AttachmentSample *)((char *)primary_bank + middle_offset))
-            ->transform.basis_forward =
-            ((AttachmentSample *)((char *)primary_bank + middle_offset))
-                ->transform.position -
-            ((AttachmentSample *)((char *)primary_bank + middle_offset))[-1]
-                .transform.position;
-        ((AttachmentSample *)((char *)primary_bank + middle_offset))
-            ->transform.basis_forward.Normalize();
-        ((AttachmentSample *)((char *)primary_bank + middle_offset))
-            ->transform.basis_right.Cross(
-                ((AttachmentSample *)((char *)primary_bank + middle_offset))
-                    ->transform.basis_up,
-                ((AttachmentSample *)((char *)primary_bank + middle_offset))
-                    ->transform.basis_forward);
-
-        ((AttachmentSample *)((char *)secondary_samples + middle_offset))->transform =
-            ((AttachmentSample *)((char *)primary_bank + middle_offset))->transform;
-        Vector3 secondary_offset =
-            ((AttachmentSample *)((char *)primary_bank + middle_offset))
-                ->transform.basis_up *
-            0.49000001f;
-        Vector3 *secondary_position =
-            &((AttachmentSample *)((char *)secondary_samples + middle_offset))
-                 ->transform.position;
-        secondary_position->x += secondary_offset.x;
-        secondary_position->y += secondary_offset.y;
-        secondary_position->z += secondary_offset.z;
-        ++middle;
-        middle_offset += sizeof(AttachmentSample);
-    } while (middle_offset < 50 * (int)sizeof(AttachmentSample));
+    build_halfpipe_middle(this, primary_bank, out_angle);
 
     int sample_index = 0;
     if (segment_count - 1 > 0)

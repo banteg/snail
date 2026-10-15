@@ -1,5 +1,20 @@
 # `initialize_halfpipe_path_template_pair` reconstruction notes
 
+## 2026-10-15: 100% byte-exact under msvc6.3
+
+Result: **100.00% proof-grade byte-exact** (`707/707` instructions, prefix
+`707`, `body_byte_exact = true`, `55/55` masked operands clean) under `msvc6.3`.
+
+- `C2.DLL` reads the outer function's `.in` stream first (`early phase=0`,
+  including the inline delta and mesh loops) and then runs the inliner
+  (`C2+0x1a701`, `early phase=1`), which clones local variables of `static
+  __forceinline` helpers into Pool B after the outer function's locals have
+  already opened the second 32-slot Pool B chunk.
+- Factoring the middle-section loop into `build_halfpipe_middle` places
+  `middle_offset` in the late Pool B chunk (`cost > 0x14700` for `primary_bank`
+  at `temp slot 0x51c`) so `C2+0xf349` sorts `middle_offset` ahead of
+  `primary_bank` (`fstp dword ptr [ebx + eax + 0x90]` at `+0x2f9`).
+
 ## 2026-09-25: normalized match via live primary bank traversal
 
 Halfpipe reaches **100% normalized** (707/707 instructions, prefix 707/707,
