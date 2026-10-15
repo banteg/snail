@@ -1,14 +1,26 @@
 # cRBorder::InputText @ 0x4035b0
 
-## 2026-09-11: shared insertion and Home recovery
+## 2026-10-15: 100% byte-exact under msvc6.3
 
-Current agreement is **98.76265467%**, **443/446 instructions**, prefix **6**,
-with **eight clean references**. Shared terminal insertion publication,
-displaced-character lifetimes and Home insertion through the published cursor
-improve the previous 75.25423729% source. Four local encoded certificates cover
-**1,514/1,581 body bytes**. The opening load width, two hidden SIB differences
-and completion publication remain different; the function is still partial.
+Result: **100.00% proof-grade byte-exact** (`446/446` instructions, prefix
+`446`, `body_byte_exact = true`, `8/8` masked operands clean) under `msvc6.3`.
 
+- Binding `cRInputOK* ok = input_ok_state()` before the `input_flags` check
+  promotes `input_flags` (`[esi+0x70c]`) to a 32-bit CSE temporary in `eax`
+  (`mov eax, dword ptr [esi+0x70c]; test al, 0xc`) while keeping `lea ecx,
+  [esi+0x2a8]` ahead of the branch so `C2+0x3465c` tail-merges `ok->AI()` and
+  `C2+0x36566` eliminates `test eax, eax` + `je`.
+- Declaring `char* buf = text_buffer;` before `int index = 0;` in the numeric
+  filter loop assigns `buf` (`local slot 0x133`, cost `0x12660`) as the CSE
+  holder in `C2+0x10bfe` (`[eax+0x14] != 0`) so `index` (`local slot 0x134`,
+  cost `0x12680`) outranks `buf` in `C2+0xf349`, producing `[ecx+esi+0x2cc]` at
+  both `mov dl, byte ptr [ecx+esi+0x2cc]` and `lea eax, [ecx+esi+0x2cc]`.
+- Ordering `--input_length;` before `widget_flags &=
+  ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;` and the `text_buffer[0] != 0`
+  completion branch gives `input_length` `edi` and `widget_flags` `edx`/`eax` in
+  the local allocator, while `/G5 memory-operand split` (`C2+0x31e76`) and
+  `C2+0x3465c` leave the orphaned `mov cl, byte ptr [esi+0x2cc]` before `or ah,
+  0x40`.
 The [report and complete receipt](../../border-input-insertion-home-owners-20260911.md)
 preserve source controls, reversals, exact byte ranges and references, and a
 **35,568-case native comparison** of complete widget contents and callback order
