@@ -158,11 +158,11 @@ def run_observer(scratch, out):
 
 
 def decode_allocations(data):
-    """Allocated slots in order, each with its class and whether it follows function entry."""
-    rows, pending, entered = [], None, False
-    for phase, value in struct.iter_unpack("<2I", data):
+    """Allocated slots in order, each with its class and the function being compiled."""
+    rows, pending = [], None
+    records = struct.iter_unpack("<2I", data)
+    for function, (phase, value) in t.label_functions(records, lambda r: r[0] == 1000):
         if phase >= 1000:
-            entered = entered or phase == 1000 + 0
             continue
         if phase < 100:
             if pending is not None:
@@ -171,17 +171,19 @@ def decode_allocations(data):
             continue
         if pending is None:
             raise ValueError("Allocator return without entry")
-        rows.append({"id": value, "class": pending, "after_entry": entered})
+        rows.append({"id": value, "class": pending, "function": function})
         pending = None
     if pending is not None:
         raise ValueError("Truncated allocation trace")
     return rows
 
 
-def cse_origin(allocations):
-    """C0 (first CSE slot after function entry) and each CSE slot's creation index."""
+def cse_origin(allocations, function):
+    """C0 (first CSE slot of one function) and each CSE slot's creation index."""
     fresh = [
-        a["id"] for a in allocations if a["after_entry"] and a["class"] == CSE_CLASS
+        a["id"]
+        for a in allocations
+        if a["function"] == function and a["class"] == CSE_CLASS
     ]
     if not fresh:
         return None, {}
@@ -420,8 +422,9 @@ def main():
     out = args.out or Path(tempfile.mkdtemp(prefix="c2addr-")) / "trace"
     work = rot.prepare(scratch, args.source, out.parent / (out.name + "-input"))
     result, events, allocations, address_pass = run_observer(work, out)
-    c0, creation = cse_origin(allocations)
-    (event,) = [e for e in events if e["target_rva"] == address_pass]
+    function = result["function_ordinal"]
+    c0, creation = cse_origin(allocations, function)
+    event = t.function_event(events, function, address_pass)
     config = m.load_scratch_config(work)
     source_text = (work / "scratch.cpp").read_text()
     base = body_line(source_text, config.symbol or config.function)

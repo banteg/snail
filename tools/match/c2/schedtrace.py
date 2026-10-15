@@ -1082,7 +1082,9 @@ def main():
         found, tail = replay(window, tail)
         problems += [f"window {k} {p}" for p in found]
     object_path = m.compile_scratch(config)
-    native_positions(config, object_path, windows, events)
+    native_positions(
+        config, object_path, windows, t.function_events(events, result["function_ordinal"])
+    )
     (out / "schedule.json").write_text(json.dumps(windows, indent=1) + "\n")
     if args.json:
         print(json.dumps(windows, indent=1))
