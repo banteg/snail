@@ -143,7 +143,7 @@ public:
 typedef cRGame GameRoot;
 
 typedef char GameRoot_must_be_0x12e6ff4[
-    (sizeof(cRGame) == 0x12e6ff4) ? 1 : -1];
+    (sizeof(cRGame) == 0x12e6ff4 + sizeof(cRSubGame) - 0x1272838) ? 1 : -1];
 
 // Canonical pointer to the single runtime allocation. The byte-oriented
 // analysis view in game_base.h aliases this same address without weakening

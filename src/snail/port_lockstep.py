@@ -105,7 +105,11 @@ SNAPSHOT = {
 
 
 def snapshot_offsets(root: Path) -> dict[str, int]:
-    """offsetof each snapshot field, compiled from the recovered headers for wasm32."""
+    """Windows capture offsets, using 32-bit pointers and the original header layout.
+
+    Do not define SNAIL_PORT: the playable port can enlarge runtime arrays.
+    The Frida script always reads the original Windows process.
+    """
     with tempfile.TemporaryDirectory(prefix="snail-lockstep-") as temp:
         source = Path(temp) / "offsets.cpp"
         lines = ["#include <stddef.h>", "#include <stdio.h>", '#include "game_root.h"', "int main() {"]
@@ -115,7 +119,7 @@ def snapshot_offsets(root: Path) -> dict[str, int]:
         program = Path(temp) / "offsets.wasm"
         subprocess.run(
             ["zig", "c++", "-target", "wasm32-wasi", "-std=c++17", "-fms-extensions", "-fdeclspec", "-fno-exceptions",
-             "-fno-rtti", "-DSNAIL_PORT", "-Wno-everything", f"-I{(root / INCLUDE).resolve()}", str(source),
+             "-fno-rtti", "-Wno-everything", f"-I{(root / INCLUDE).resolve()}", str(source),
              "-o", str(program)],
             check=True, capture_output=True, text=True,
         )  # fmt: skip

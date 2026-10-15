@@ -306,7 +306,13 @@ typedef char PathPair_must_be_0x150[
 enum {
     PATH_PAIR_COUNT = 63,
     PATH_COUNT = PATH_PAIR_COUNT * 2,
+#ifdef SNAIL_PORT
+    // Mobile courses use a 3500-row limit plus the same 100-row tail reserve.
+    SUBGAME_RUNTIME_ROW_CAPACITY = 3600,
+#else
     SUBGAME_RUNTIME_ROW_CAPACITY = 3200,
+#endif
+    SUBGAME_RUNTIME_ROW_LIMIT = SUBGAME_RUNTIME_ROW_CAPACITY - 100,
     SUBGAME_TRACK_LANE_COUNT = 8,
     SUBLOC_FRINGE_COUNT = 4,
 };
