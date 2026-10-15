@@ -4,8 +4,6 @@
 
 #include "rmath_random.h"
 
-extern "C" int __cdecl j_rand(); // jmp thunk @ 0x44c920 to CRT rand
-
 float __cdecl SRAND(float upper_bound, char* tag)
 {
     (void)tag;

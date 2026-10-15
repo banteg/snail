@@ -13,6 +13,10 @@ float __cdecl ACos(float value);
 float __cdecl ATan(float y, float x);
 float __cdecl Sqrt(float value);
 
+// Game-code thunk @ 0x44c920 that tail-jumps to the CRT rand body; RAND and
+// SRAND call it, while gRMathRand2Init calls rand directly.
+int __cdecl j_rand();
+
 // Windows retains the debug tag in its RAND/SRAND caller ABI even though the
 // release-build bodies do not read it.
 float __cdecl RAND(float upper_bound, char* tag);
