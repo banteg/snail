@@ -26097,8 +26097,8 @@ def test_c_r_path_primary_ownership_stays_aligned() -> None:
     matcher_header = (
         repo_root / "decomp/include/track_attachment_types.h"
     ).read_text(encoding="utf-8")
-    matcher_skeleton = (
-        repo_root / "decomp/include/path_template_skeleton.h"
+    path_builder = (
+        repo_root / "decomp/game/Path/initialize_dump_path_template_pair.cpp"
     ).read_text(encoding="utf-8")
     mirror_scratch = (
         scratch_source_path(repo_root / "tools/match/scratches/mirror_path")
@@ -26119,7 +26119,7 @@ def test_c_r_path_primary_ownership_stays_aligned() -> None:
     assert "struct Path : public BodBase {" not in matcher_header
     assert "cRPath primary;" in matcher_header
     assert "cRPath secondary;" in matcher_header
-    assert "void cRPath::PATH_FUNCTION" in matcher_skeleton
+    assert "void cRPath::initialize_dump_path_template_pair(" in path_builder
     assert "void cRPath::Mirror(cRPath* source)" in mirror_scratch
 
     assert "typedef struct cRPath {" in analysis_header
