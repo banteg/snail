@@ -179,6 +179,21 @@ uv run tools/match/c2/cse_id_window.py <scratch> --out <new-dir> --chunks
 uv run tools/match/c2/sib_operand_trace.py <scratch> --out <new-dir> [--lines A-B]
 ```
 
+## Translation units
+
+A member of a unit in `tools/match/translation_units.json` is traced in its
+whole unit, as the matcher compiles it: the frozen `<out>-input/scratch.cpp`
+holds every member in order, with `--source` replacing only the traced one.
+Source line numbers in reports refer to that frozen file. C2 compiles the
+unit's functions in order and emits each one as it goes, so `trace.py` names
+the n-th function entry after the n-th function symbol in the object and
+records the scratch's function as `function_ordinal` in `snail-receipt.json`.
+If the object does not resolve that function, it falls back to the last one.
+`addrorder.py`, `address_ids.py`, `sib_operand_trace.py`, `cse_slot_trace.py`,
+`cse_id_window.py`, `passes.py` and `schedtrace.py` select that function's
+snapshots and side-stream records. `rotation.py` and `globalregs.py` still
+expect one allocating function.
+
 ## Crimson's tracers and compiler notes
 
 The sibling Crimson project keeps the generic C2 notes in

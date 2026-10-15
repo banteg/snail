@@ -96,18 +96,16 @@ def expand(items: list[str]) -> list[str]:
     return specs
 
 
-def chunk_report(table: list[dict], records: list[tuple]) -> None:
+def chunk_report(table: list[dict], records: list[tuple], function: int) -> None:
     name = function_names(m.DEFAULT_SCRATCH_COMPILER)
-    top, pending, entered = -1, [], False
-    openers = []
-    for rec in records:
+    top, pending, chunks, c0 = -1, [], [], None
+    for ordinal, rec in ao.t.label_functions(records, lambda r: r[0] == 1000):
         phase = rec[0]
         if phase >= 1000:
-            entered = entered or phase == 1000
             continue
         kind = table[phase % 100]["kind"]
-        if kind == cst.CSE_ALLOC and phase >= 100 and entered:
-            print(f"C0 {rec[9]:#x}: {rec[9] // 32} chunks before the first CSE slot")
+        if kind == cst.CSE_ALLOC and phase >= 100 and ordinal == function:
+            c0 = rec[9]
             break
         if kind != cst.SYMBOL_ALLOC:
             continue
@@ -115,15 +113,20 @@ def chunk_report(table: list[dict], records: list[tuple]) -> None:
             pending = [r for r in rec[29:39] if r]
             continue
         ident = rec[9]
+        if ident == 0:
+            # The symbol pools restart for each function, as its IL is read.
+            top, chunks = -1, []
         if ident > top:
             top = ident
             if ident % 32 == 0:
                 frames = [name(r) for r in pending]
-                opener = next((f for f in frames if f not in WRAPPERS), "?")
-                openers.append(opener)
-                print(f"  chunk {ident:#6x}  {opener:28} {' '.join(frames[:6])}")
+                chunks.append((ident, next((f for f in frames if f not in WRAPPERS), "?"), frames))
+    for ident, opener, frames in chunks:
+        print(f"  chunk {ident:#6x}  {opener:28} {' '.join(frames[:6])}")
+    if c0 is not None:
+        print(f"C0 {c0:#x}: {c0 // 32} chunks before the first CSE slot")
     tally: dict[str, int] = {}
-    for opener in openers:
+    for _, opener, _ in chunks:
         tally[opener] = tally.get(opener, 0) + 1
     print("  openers: " + ", ".join(f"{k} {v}" for k, v in sorted(tally.items(), key=lambda kv: -kv[1])))
 
@@ -179,11 +182,12 @@ def main() -> None:
         cst.RECORDER = cst.RECORDER.replace(CHAIN_ANCHOR, CHAIN_ANCHOR + CHAIN_CAPTURE)
     work = cst.rot.prepare(scratch, args.source, args.out.parent / (args.out.name + "-input"))
     result, _, table, records, _ = cst.run_observer(work, args.out)
-    slots = cst.decode(table, records)
+    function = result["function_ordinal"]
+    slots = cst.decode(table, records, function)
     print(f"metrics: {result['metrics']}")
     print(f"C0 (first CSE slot): {slots[0]['id']:#x}, {len(slots)} CSE slots")
     if args.chunks:
-        chunk_report(table, records)
+        chunk_report(table, records, function)
     specs = expand(args.specs)
     if not specs:
         return

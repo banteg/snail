@@ -20,9 +20,8 @@ these slots moved by M?" without touching the source (the preserving trace itsel
 
     uv run tools/match/c2/cse_slot_trace.py <scratch> --out <new-dir> [--source overlay.cpp]
 
-With several functions in the source, the last one is traced. A first function in a file compiles
-differently from the same function later in a translation unit, so an overlay that starts with any
-other definition (`void f() {}` is enough) reproduces whole-unit results without the whole unit.
+A translation-unit member is traced in its whole unit (an overlay replaces only that member), and of
+the functions in a traced compile the one the scratch names is listed.
 
 See [cse-ids.md](cse-ids.md).
 """
@@ -230,15 +229,12 @@ def run_phantom(out: Path, phantom: list[tuple[int, int]]) -> Path:
     return work / "replay.obj"
 
 
-def decode(table: list[dict], records: list[tuple]) -> list[dict]:
-    """Pool-E slots in creation order, with the owner-pass context that was current."""
-    slots, pending, context, entered = [], None, None, False
-    for rec in records:
+def decode(table: list[dict], records: list[tuple], function: int) -> list[dict]:
+    """Pool-E slots of one function in creation order, with the owner-pass context that was current."""
+    slots, pending, context = [], None, None
+    for ordinal, rec in ao.t.label_functions(records, lambda r: r[0] == 1000):
         phase = rec[0]
         if phase >= 1000:
-            if phase == 1000:
-                # A new function: keep only the last one's slots.
-                entered, slots = True, []
             continue
         index = phase % 100
         kind = table[index]["kind"]
@@ -259,9 +255,10 @@ def decode(table: list[dict], records: list[tuple]) -> list[dict]:
                     keys.append({"kind": okind, "value": value, "id": ident, "class": klass, "mem_base": mbase})
             pending = {"op": rec[9], "type": rec[10] & 0xFFFF, "keys": keys, "chain": [r for r in rec[29:] if r]}
             continue
-        slots.append(pending | {"id": rec[9], "context": context, "after_entry": entered})
+        if ordinal == function:
+            slots.append(pending | {"id": rec[9], "context": context})
         pending = None
-    return [s for s in slots if s["after_entry"]]
+    return slots
 
 
 def referenced_ids(event: dict) -> set[int]:
@@ -307,8 +304,9 @@ def main() -> None:
         scratch = m.DEFAULT_MATCH_ROOT / "scratches" / args.scratch
     work = rot.prepare(scratch, args.source, args.out.parent / (args.out.name + "-input"))
     result, events, table, records, address_pass = run_observer(work, args.out)
-    slots = decode(table, records)
-    event = [e for e in events if e["target_rva"] == address_pass][-1]
+    function = result["function_ordinal"]
+    slots = decode(table, records, function)
+    event = ao.t.function_event(events, function, address_pass)
     live = referenced_ids(event)
     print(f"metrics: {result['metrics']}")
     c0 = slots[0]["id"] if slots else None

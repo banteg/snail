@@ -50,8 +50,57 @@ def trace(scratch, out, *, passes_only=False, early_addresses=False):
         for p in [Path(m.__file__), m.DEFAULT_MATCH_ROOT / "cl.sh"]
     }
     result["early_addresses"] = early_addresses
+    obj = m.parse_coff_object((out / result["object_paths"][0]).read_bytes())
+    result["function_ordinal"] = target_function(
+        obj, config.symbol or config.function, events[-1]["function_ordinal"] + 1
+    )
     (out / "snail-receipt.json").write_text(json.dumps(result, indent=2) + "\n")
     return result, events
+
+
+def target_function(obj, name, count):
+    """Ordinal of the function `name` among the `count` functions C2 entered.
+
+    C2 compiles a source's functions in order and emits each one as it goes,
+    so the n-th function entry is the n-th function symbol in code order. A
+    name the object does not resolve falls back to the last function.
+    """
+    functions = m.object_function_symbols(obj)
+    if len(functions) == count:
+        try:
+            return functions.index(m.find_object_function_symbol(obj, name))
+        except ValueError:
+            pass
+    if count > 1:
+        print(
+            f"warning: {name!r} is not one of the {count} traced functions; using the last",
+            file=sys.stderr,
+        )
+    return count - 1
+
+
+def function_events(events, ordinal):
+    """The snapshots of function `ordinal`, in hook order."""
+    return [e for e in events if e["function_ordinal"] == ordinal]
+
+
+def function_event(events, ordinal, target_rva):
+    """The one snapshot of function `ordinal` at the hook into `target_rva`."""
+    (event,) = [
+        e for e in function_events(events, ordinal) if e["target_rva"] == target_rva
+    ]
+    return event
+
+
+def label_functions(records, is_entry):
+    """Pair each side-stream record with the ordinal of the function it falls in.
+
+    Records before the first function entry get -1.
+    """
+    ordinal = -1
+    for record in records:
+        ordinal += bool(is_entry(record))
+        yield ordinal, record
 
 
 def main():
