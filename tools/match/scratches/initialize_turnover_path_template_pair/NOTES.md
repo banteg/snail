@@ -1,3 +1,20 @@
+## 2026-10-15: 100% byte-exact under msvc6.3
+
+Result: **100.00% proof-grade byte-exact** (`671/671` instructions, prefix
+`671`, `body_byte_exact = true`, `41/41` masked operands clean) under `msvc6.3`.
+
+- `C2.DLL` reads the outer function's `.in` stream first (`early phase=0`) and
+  then runs the inliner (`C2+0x1a701`, `early phase=1`), which clones local
+  variables of `static __forceinline` helpers into Pool B after the outer
+  function's locals have filled the second 32-slot Pool B chunk (`0x1a0..0x1bf`)
+  and opened the third Pool B chunk (`>= 0x280`, `cost >= 0x15000`).
+- Inlining the terminal-delta and strip-mesh loops directly into
+  `initialize_turnover_path_template_pair` (with quad-loop intermediates bound)
+  while factoring the curve-sample loop into `build_turnover_curve` places
+  `curve_sample_offset` in the third Pool B chunk (`cost > 0x14c40` for
+  `curve_samples` at `temp slot 0x531`), matching `fstp dword ptr [ebx + eax +
+  0x90]` at `+0x28b`.
+
 ## 2026-09-22 current source-context control
 
 Canonical, renamed isolated, native-predecessor, and available 43-member
