@@ -187,6 +187,37 @@ def test_original_profile_keeps_upright_hazard_spawns(tmp_path):
     )
     assert replay.stderr.count("upright_hazards 1") == 3
     assert "matches the original" in replay.stderr
+    # No Ultimate rule reaches the Original profile.
+    assert "wide_parcels" not in replay.stderr
+    assert "padding_segments" not in replay.stderr
+
+
+@pytest.mark.skipif(
+    shutil.which("node") is None
+    or not (REPO_ROOT / "port/zig-out/bin/snail.wasm").exists()
+    or not (REPO_ROOT / "artifacts/bin/SnailMail.dat").exists()
+    or not (REPO_ROOT / "artifacts/bin/SnailMailExtras.dat").exists(),
+    reason="needs node, snail.wasm, SnailMail.dat and SnailMailExtras.dat",
+)
+def test_ultimate_collects_parcels_within_the_mobile_radius(tmp_path):
+    # A1's recorded input drives the mobile course (it diverges from the
+    # Windows recording, as intended); Android collects parcels within 1.73,
+    # Windows within 1.24.
+    for name in ("SnailMail.dat", "SnailMailExtras.dat"):
+        (tmp_path / name).symlink_to(REPO_ROOT / "artifacts/bin" / name)
+    shutil.copy2(REPO_ROOT / "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat", tmp_path / "ScoreMobileA.dat")
+    replay = subprocess.run(
+        [
+            "node", str(REPO_ROOT / "port/shell/run.mjs"), str(REPO_ROOT / "port/zig-out/bin/snail.wasm"),
+            "--profile", "ultimate", "--trace", "--keys", str(REPO_ROOT / "port/scripts/high_scores.keys"),
+            "--replay", "A1",
+        ],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert "tick 1064: wide_parcels 1" in replay.stderr
 
 
 @pytest.mark.skipif(
@@ -249,7 +280,11 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
         text=True,
         check=True,
     )
-    assert 'level "Challenge 0" track_set 6 (Objects/World00/Track6.tga) fringe (0.000, 0.910, 0.910)' in challenge.stderr
+    # Android lays Padding between each pair of random segments and skips
+    # their RAND draws, so the random fringe that follows differs from a
+    # build without it.
+    assert 'level "Challenge 0" track_set 6 (Objects/World00/Track6.tga) fringe (0.910, 0.094, 1.000)' in challenge.stderr
+    assert "padding_segments 35" in challenge.stderr
 
 
 @pytest.mark.skipif(
@@ -527,6 +562,7 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
     assert '"Pro-Challenge"' in pro1.stderr
     assert '"Special Assignment"' in pro1.stderr
     assert '"Limax maximus"' in pro1.stderr
+    assert "lives 8" in pro1.stderr  # a new Pro game, as on Android
     assert 'level "Pros Only" track_set 5 (Objects/World00/Track5.tga) fringe (0.871, 1.000, 0.039)' in pro1.stderr
     # save_game() runs at the end of pro1 while g_pro_state_swapped == true inside "Pros Only"
     assert struct.unpack("<ii", (tmp_path / "SnailMailPro.cfg").read_bytes()) == (1, 1)

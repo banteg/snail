@@ -31,6 +31,7 @@ const shared_shell = [_][]const u8{
     "shell/fixes.cpp",
     "shell/extras_paths.cpp",
     "shell/extras_pro.cpp",
+    "shell/extras_rules.cpp",
     "shell/runtime.cpp",
     "shell/files.cpp",
     "shell/win32.cpp",

@@ -3,14 +3,18 @@
 from __future__ import annotations
 
 import io
+import re
 from pathlib import Path
 
 from PIL import Image
 
-from .archive import write_archive
+from .archive import parse_archive_index, read_archive_entry, write_archive
 
 ANDROID_ROOT = Path("artifacts/android/asm_extracted")
 OUTPUT = Path("artifacts/bin/SnailMailExtras.dat")
+PC_ARCHIVE = Path("artifacts/bin/SnailMail.dat")
+TUTORIAL = "LEVELS/TUTORIAL.TXT"
+VOICED_MESSAGE = re.compile(r'Sample="([^"]+)" Message="([^"]*)"')
 
 def swap_tga32_rb(raw: bytes) -> bytes:
     """Swap OpenGL ES RGBA 32-bit TGA pixels to PC D3D BGRA layout."""
@@ -42,7 +46,21 @@ def split_surface_strip(strip_bytes: bytes) -> tuple[bytes, bytes]:
     return tga_rgb24(track), tga_rgb24(slide)
 
 
-def build_extras_files(android_root: Path) -> dict[str, bytes]:
+def tutorial_with_pc_messages(mobile: bytes, pc: bytes) -> bytes:
+    """The mobile tutorial course, each line showing the PC text for the voice clip it plays.
+
+    The port plays the PC voice clips, which tell the player to steer with the mouse
+    and hold its button to shoot; the mobile text says tilt and touch.
+    """
+    pc_messages = dict(VOICED_MESSAGE.findall(pc.decode("latin-1")))
+
+    def pc_message(match: re.Match[str]) -> str:
+        return f'Sample="{match[1]}" Message="{pc_messages.get(match[1], match[2])}"'
+
+    return VOICED_MESSAGE.sub(pc_message, mobile.decode("latin-1")).encode("latin-1")
+
+
+def build_extras_files(android_root: Path, pc_archive: Path) -> dict[str, bytes]:
     """Mobile-only assets converted to PC archive conventions."""
     files: dict[str, bytes] = {}
     for index in (4, 5, 6):
@@ -68,6 +86,9 @@ def build_extras_files(android_root: Path) -> dict[str, bytes]:
     for folder in ("LEVELS", "SEGMENTS"):
         for path in sorted((android_root / folder).glob("*.TXT")):
             files[f"{folder}/{path.name}"] = path.read_bytes()
+    pc_index = parse_archive_index(pc_archive)
+    pc_tutorial = read_archive_entry(pc_archive, pc_index.entry_by_path(TUTORIAL))
+    files[TUTORIAL] = tutorial_with_pc_messages(files[TUTORIAL], pc_tutorial)
     for stem in ("SPACEPRO", "SPACEPRO2"):
         txt_p = android_root / f"BACKGROUNDS/{stem}.TXT"
         jpg_p = android_root / f"BACKGROUNDS/{stem}.JPG"
@@ -100,6 +121,6 @@ def build_extras_files(android_root: Path) -> dict[str, bytes]:
 def generate(root: Path, *, out: Path | None = None, android_root: Path | None = None) -> Path:
     target = out or (root / OUTPUT)
     source = android_root or (root / ANDROID_ROOT)
-    files = build_extras_files(source)
+    files = build_extras_files(source, root / PC_ARCHIVE)
     write_archive(target, files)
     return target

@@ -325,7 +325,11 @@ converting the Pro backgrounds (`SpacePro`, `SpacePro2`, `StarmapProbg`,
 packing `Sprites/FringeColours.tga`, `Objects/TrampRing/`, `Galaxy/_GalaxyPro.txt`,
 all 65 mobile level files and all 176 segment definitions, including shared
 names whose layouts changed. The combined catalog loads before any levels
-are parsed. Original uses only the PC archive and catalog.
+are parsed. Original uses only the PC archive and catalog. The mobile
+tutorial course keeps its own speed, segments and timing, but each line shows
+the PC text for the voice clip it plays: the port plays the PC clips, which
+say to steer with the mouse and hold its button to shoot, where the mobile
+text says tilt and touch.
 
 The narrow hooks (`port/wrapped.txt`, `port/shell/extras.cpp`,
 `port/shell/extras_paths.cpp`, `port/shell/extras_pro.cpp`) select the mobile
@@ -333,7 +337,11 @@ level data, seven track sets, new path templates, mobile CAGE2/TWISTER2
 geometry, trampoline effects and moving weapon rings. The New Game menu
 adds **Pro-Challenge**, opening the ten-level **Special Assignment** galaxy.
 Mobile acceleration and power-up pacing apply in every game mode;
-Original delegates to the PC rules. Pro skies use the full
+Original delegates to the PC rules. `port/shell/extras_rules.cpp` adds the
+other Android rules: a new Pro-Challenge game starts with 8 lives instead of 3,
+parcels are collected within 1.73 of the snail instead of 1.24, and
+`Random:` courses (Challenge) lay the four-row Padding segment between each
+pair of random segments. Pro skies use the full
 converted image with normalized UVs, including horizontal flips; PC
 backdrops retain their padded-image UV layout.
 
@@ -342,6 +350,14 @@ Mobile campaign progress and scores use `SnailMailMobile.cfg` and
 preferences from the PC config and starts its own campaign progress.
 Pro keeps `SnailMailPro.cfg` and `ScorePro.dat`. Switching to Original reloads
 the PC campaign and scores without rewriting them.
+
+Android differences Ultimate leaves out: tilt and touch steering; the
+camera's wider field of view (120 where the PC has 110), which likely suits
+the phones' 3:2 screens; the slug-hit
+timer and firework variant; the Fluctuosa Pro unlock, resuming a Pro game,
+slug voice lines and the ramp and invulnerability sounds. Shared path meshes
+other than CAGE2, TWISTER2 and SBEND are not yet checked against the Android
+`.smo` meshes.
 
 Ultimate selects the mobile 3,500-row build limit; Original retains the PC
 3,100-row limit. Port builds reserve 3,600 runtime rows, including the tail
