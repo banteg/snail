@@ -1,6 +1,6 @@
 # cRPathFollowGoldy::Traverse @ 0x420cb0
 
-Current recovery: semantic-complete; source shape remains open.
+Current recovery: exact under msvc6.3 (`726/726` insns, `100.00%`, `body_byte_exact = true`, 65/65 references ok).
 
 Android and iOS `Path.o` independently export the exact authored method
 `cRPathFollowGoldy::Traverse(float, tVector&, tVector*)`, with one body on
@@ -221,3 +221,11 @@ neither: all eight pointer/member combinations of the three stores score
 85.81-97.66% (the current all-pointer form is best), because the change moves
 the frame layout. The `output` borrow is shared with the later
 `*output = result` path, so a fix likely needs that whole region reshaped.
+
+## 2026-10-15: 100% byte-exact under msvc6.3
+
+Removing the synthetic `Vec3* output = &output_position` borrow, `AttachmentSample* secondary` local, `float local_x` local, and `goto terminal_path` recovers a **100.00% proof-grade byte-exact** match (`726/726` instructions, prefix `726`, `body_byte_exact = true`, `65/65` masked operands ok):
+
+- Writing `output_position` directly everywhere (`output_position.x = transform.position.x; output_position.y = y; output_position.z = z;`, `output_position = result;`, `out_position = output_position;`) lets CSE allocate `this + 0x2c` (`esi`) for `output_position.x` and the two struct copies while keeping member alias `@fb8` on `[esi]` instead of pointer indirection `@c3`, removing the false store-store edge after `vertical_offset = motion->y + vertical_offset;`.
+- Ordering `p_delta_length = &secondary_samples[sample_index].delta_length;` before `int index = sample_index;` at entry (and reusing `sample_index` at the loop tail) puts `&this->template_record` at CSE slot `0x440` (`mod 4 = 0`) and `&this->sample_index` at `0x446` (`mod 4 = 2`), so `sample_index * 0xa8` ranks above `template_record->secondary_samples` in window 31 just as in `traverse_path_follow_golb`.
+- Scaling `transform.basis_right *= lateral_scale;` in both branches and writing `Vec3 right_offset = transform.basis_right * (input_x - center_x);` (along with `Vec3 forward_offset = terminal[-1].transform.basis_forward * carry;` and parenthesizing the `delta_b` difference) aligns all x87 operand orders and all five SIB bytes (`+0x635`, `+0x63c`, `+0x70c`, `+0x903`, `+0x959`).
