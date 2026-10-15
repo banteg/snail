@@ -49,52 +49,52 @@ void cRPath::initialize_loopbow_path_template_pair(
     do {
         float fi = (float)i;
         float center_progress = fi * 0.14285715f;
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (i) * sizeof(AttachmentSample))))).center_x =
+        primary_samples[i].center_x =
             (float)width_cells * 0.5f - 4.0f
             - center_progress * center_offset;
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (i) * sizeof(AttachmentSample))))).rotation_scalar_98 = 0.0f;
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (i) * sizeof(AttachmentSample))))).rotation_scalar_94 = 0.0f;
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (i) * sizeof(AttachmentSample))))).special_scalar = 0.0f;
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (i) * sizeof(AttachmentSample))))).lateral_scale = 1.0f;
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (i) * sizeof(AttachmentSample))))).transform.Identity();
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (i) * sizeof(AttachmentSample))))).transform.position.x = (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (i) * sizeof(AttachmentSample))))).center_x;
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (i) * sizeof(AttachmentSample))))).transform.position.y = 0.0f;
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (i) * sizeof(AttachmentSample))))).transform.position.z = fi;
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (i) * sizeof(AttachmentSample))))).delta_length = 1.0f;
+        primary_samples[i].rotation_scalar_98 = 0.0f;
+        primary_samples[i].rotation_scalar_94 = 0.0f;
+        primary_samples[i].special_scalar = 0.0f;
+        primary_samples[i].lateral_scale = 1.0f;
+        primary_samples[i].transform.Identity();
+        primary_samples[i].transform.position.x = primary_samples[i].center_x;
+        primary_samples[i].transform.position.y = 0.0f;
+        primary_samples[i].transform.position.z = fi;
+        primary_samples[i].delta_length = 1.0f;
 
-        (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (i) * sizeof(AttachmentSample))))).transform.Identity();
-        (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (i) * sizeof(AttachmentSample))))).transform.position.x = (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (i) * sizeof(AttachmentSample))))).center_x;
-        (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (i) * sizeof(AttachmentSample))))).transform.position.y = 0.49000001f;
-        (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (i) * sizeof(AttachmentSample))))).transform.position.z = fi;
-        (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (i) * sizeof(AttachmentSample))))).delta_length = 1.0f;
+        secondary_samples[i].transform.Identity();
+        secondary_samples[i].transform.position.x = primary_samples[i].center_x;
+        secondary_samples[i].transform.position.y = 0.49000001f;
+        secondary_samples[i].transform.position.z = fi;
+        secondary_samples[i].delta_length = 1.0f;
         ++i;
     } while (i < 7);
 
     i = 0;
     int sample_index = curve_segment_count + 7;
     do {
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).center_x =
+        primary_samples[sample_index].center_x =
             (1.0f - (float)i * 0.16666667f) * center_offset
             + (4.0f - (float)width_cells * 0.5f);
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).rotation_scalar_98 = 0.0f;
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).rotation_scalar_94 = 0.0f;
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).special_scalar = 0.0f;
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).lateral_scale = 1.0f;
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.Identity();
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.x =
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).center_x;
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.y = 0.0f;
+        primary_samples[sample_index].rotation_scalar_98 = 0.0f;
+        primary_samples[sample_index].rotation_scalar_94 = 0.0f;
+        primary_samples[sample_index].special_scalar = 0.0f;
+        primary_samples[sample_index].lateral_scale = 1.0f;
+        primary_samples[sample_index].transform.Identity();
+        primary_samples[sample_index].transform.position.x =
+            primary_samples[sample_index].center_x;
+        primary_samples[sample_index].transform.position.y = 0.0f;
         float z = (float)(i + 7);
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.z = z;
-        (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).delta_length = 1.0f;
+        primary_samples[sample_index].transform.position.z = z;
+        primary_samples[sample_index].delta_length = 1.0f;
 
-        (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.Identity();
+        secondary_samples[sample_index].transform.Identity();
         ++i;
-        (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.x =
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).center_x;
-        (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.y = 0.49000001f;
-        (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.z = z;
-        (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).delta_length = 1.0f;
+        secondary_samples[sample_index].transform.position.x =
+            primary_samples[sample_index].center_x;
+        secondary_samples[sample_index].transform.position.y = 0.49000001f;
+        secondary_samples[sample_index].transform.position.z = z;
+        secondary_samples[sample_index].delta_length = 1.0f;
         ++sample_index;
     } while (i < 7);
 
@@ -118,53 +118,53 @@ void cRPath::initialize_loopbow_path_template_pair(
                 + bank[0].center_x;
 
             float half_angle = angle * 0.5f;
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).center_x =
+            primary_samples[sample_index].center_x =
                 Sin(half_angle + 4.712389f) * center_offset
-                + (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).center_x;
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).rotation_scalar_98 = 0.0f;
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).rotation_scalar_94 = 0.0f;
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).special_scalar = 0.0f;
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).lateral_scale = 1.0f;
+                + primary_samples[sample_index].center_x;
+            primary_samples[sample_index].rotation_scalar_98 = 0.0f;
+            primary_samples[sample_index].rotation_scalar_94 = 0.0f;
+            primary_samples[sample_index].special_scalar = 0.0f;
+            primary_samples[sample_index].lateral_scale = 1.0f;
 
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.Identity();
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.x =
-                (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).center_x;
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.z =
+            primary_samples[sample_index].transform.Identity();
+            primary_samples[sample_index].transform.position.x =
+                primary_samples[sample_index].center_x;
+            primary_samples[sample_index].transform.position.z =
                 Sin(angle) * curve_scale + 7.0f;
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.y =
+            primary_samples[sample_index].transform.position.y =
                 curve_scale - Cos(angle) * curve_scale;
 
-            (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.Identity();
-            (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.x =
-                (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).center_x;
-            (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.z =
+            secondary_samples[sample_index].transform.Identity();
+            secondary_samples[sample_index].transform.position.x =
+                primary_samples[sample_index].center_x;
+            secondary_samples[sample_index].transform.position.z =
                 Sin(angle) * secondary_radius + 7.0f;
-            (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.y =
+            secondary_samples[sample_index].transform.position.y =
                 curve_scale - Cos(angle) * secondary_radius;
 
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.basis_right = primary_right;
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.basis_up.x = 0.0f;
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.basis_up.y =
+            primary_samples[sample_index].transform.basis_right = primary_right;
+            primary_samples[sample_index].transform.basis_up.x = 0.0f;
+            primary_samples[sample_index].transform.basis_up.y =
                 curve_scale
-                - (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.y;
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.basis_up.z =
-                7.0f - (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.z;
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.basis_up.Normalize();
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.basis_forward.Cross(
-                (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.basis_right,
-                (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.basis_up);
+                - primary_samples[sample_index].transform.position.y;
+            primary_samples[sample_index].transform.basis_up.z =
+                7.0f - primary_samples[sample_index].transform.position.z;
+            primary_samples[sample_index].transform.basis_up.Normalize();
+            primary_samples[sample_index].transform.basis_forward.Cross(
+                primary_samples[sample_index].transform.basis_right,
+                primary_samples[sample_index].transform.basis_up);
 
-            (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.basis_right = secondary_right;
-            (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.basis_up.x = 0.0f;
-            (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.basis_up.y =
+            secondary_samples[sample_index].transform.basis_right = secondary_right;
+            secondary_samples[sample_index].transform.basis_up.x = 0.0f;
+            secondary_samples[sample_index].transform.basis_up.y =
                 curve_scale
-                - (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.y;
-            (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.basis_up.z =
-                7.0f - (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.z;
-            (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.basis_up.Normalize();
-            (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.basis_forward.Cross(
-                (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.basis_right,
-                (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.basis_up);
+                - secondary_samples[sample_index].transform.position.y;
+            secondary_samples[sample_index].transform.basis_up.z =
+                7.0f - secondary_samples[sample_index].transform.position.z;
+            secondary_samples[sample_index].transform.basis_up.Normalize();
+            secondary_samples[sample_index].transform.basis_forward.Cross(
+                secondary_samples[sample_index].transform.basis_right,
+                secondary_samples[sample_index].transform.basis_up);
 
             TransformMatrix rotation;
             rotation.Identity();
@@ -172,22 +172,22 @@ void cRPath::initialize_loopbow_path_template_pair(
             rotation.RotLocalY(
                 Sin(half_angle) * half_sine * 0.52359879f);
 
-            float primary_z_pivot = (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.z;
+            float primary_z_pivot = primary_samples[sample_index].transform.position.z;
             primary_z_pivot -= 7.0f;
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.z = primary_z_pivot;
-            (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.z -= 7.0f;
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.Multiply(rotation);
-            (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.Multiply(rotation);
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.z += 7.0f;
-            (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position.z += 7.0f;
+            primary_samples[sample_index].transform.position.z = primary_z_pivot;
+            secondary_samples[sample_index].transform.position.z -= 7.0f;
+            primary_samples[sample_index].transform.Multiply(rotation);
+            secondary_samples[sample_index].transform.Multiply(rotation);
+            primary_samples[sample_index].transform.position.z += 7.0f;
+            secondary_samples[sample_index].transform.position.z += 7.0f;
 
-            (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform =
-                (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform;
+            secondary_samples[sample_index].transform =
+                primary_samples[sample_index].transform;
 
             Vector3 secondary_offset =
-                (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.basis_up * 0.49000001f;
+                primary_samples[sample_index].transform.basis_up * 0.49000001f;
             Vector3* secondary_position =
-                &(*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (sample_index) * sizeof(AttachmentSample))))).transform.position;
+                &secondary_samples[sample_index].transform.position;
             secondary_position->x += secondary_offset.x;
             secondary_position->y += secondary_offset.y;
             secondary_position->z += secondary_offset.z;
@@ -199,27 +199,27 @@ void cRPath::initialize_loopbow_path_template_pair(
     i = 0;
     if (segment_count - 1 > 0) {
         do {
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (i) * sizeof(AttachmentSample))))).delta_dir_to_next =
-                (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (i + 1) * sizeof(AttachmentSample))))).transform.position
-                - (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (i) * sizeof(AttachmentSample))))).transform.position;
-            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (i) * sizeof(AttachmentSample))))).delta_length =
-                (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (i) * sizeof(AttachmentSample))))).delta_dir_to_next.Normalize();
+            primary_samples[i].delta_dir_to_next =
+                primary_samples[i + 1].transform.position
+                - primary_samples[i].transform.position;
+            primary_samples[i].delta_length =
+                primary_samples[i].delta_dir_to_next.Normalize();
 
-            (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (i) * sizeof(AttachmentSample))))).delta_dir_to_next =
-                (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (i + 1) * sizeof(AttachmentSample))))).transform.position
-                - (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (i) * sizeof(AttachmentSample))))).transform.position;
-            (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (i) * sizeof(AttachmentSample))))).delta_length =
-                (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (i) * sizeof(AttachmentSample))))).delta_dir_to_next.Normalize();
+            secondary_samples[i].delta_dir_to_next =
+                secondary_samples[i + 1].transform.position
+                - secondary_samples[i].transform.position;
+            secondary_samples[i].delta_length =
+                secondary_samples[i].delta_dir_to_next.Normalize();
             ++i;
         } while (i < segment_count - 1);
     }
 
-    (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (segment_count - 1) * sizeof(AttachmentSample))))).delta_dir_to_next =
+    primary_samples[segment_count - 1].delta_dir_to_next =
         Vector3(0.0f, 0.0f, 1.0f);
-    (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (segment_count - 1) * sizeof(AttachmentSample))))).delta_length = 1.0f;
-    (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (segment_count - 1) * sizeof(AttachmentSample))))).delta_dir_to_next =
+    primary_samples[segment_count - 1].delta_length = 1.0f;
+    secondary_samples[segment_count - 1].delta_dir_to_next =
         Vector3(0.0f, 0.0f, 1.0f);
-    (*((AttachmentSample *)((char *)((unsigned int)secondary_samples + (segment_count - 1) * sizeof(AttachmentSample))))).delta_length = 1.0f;
+    secondary_samples[segment_count - 1].delta_length = 1.0f;
 
     strip_mesh->RequestVertices(
         (segment_count + 1) * (width_cells + 1));
@@ -243,9 +243,9 @@ void cRPath::initialize_loopbow_path_template_pair(
                     {
                         double lateral = (float)i - (float)width_cells * 0.5f;
                         Vector3 lateral_offset =
-                            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (cell_index) * sizeof(AttachmentSample))))).transform.basis_right * lateral;
+                            primary_samples[cell_index].transform.basis_right * lateral;
                         Vector3 point =
-                            lateral_offset + (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (cell_index) * sizeof(AttachmentSample))))).transform.position;
+                            lateral_offset + primary_samples[cell_index].transform.position;
                         int vertex_index = i + cell_index * (width_cells + 1);
                         vertices[vertex_index] = point;
                     }
@@ -253,9 +253,9 @@ void cRPath::initialize_loopbow_path_template_pair(
                     {
                         double lateral = (float)i - (float)width_cells * 0.5f;
                         Vector3 lateral_offset =
-                            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (cell_index - 1) * sizeof(AttachmentSample))))).transform.basis_right * lateral;
+                            primary_samples[cell_index - 1].transform.basis_right * lateral;
                         Vector3 endpoint =
-                            (*((AttachmentSample *)((char *)((unsigned int)primary_samples + (cell_index - 1) * sizeof(AttachmentSample))))).transform.position +
+                            primary_samples[cell_index - 1].transform.position +
                             Vector3(0.0f, 0.0f, 1.0f);
                         Vector3 point = endpoint + lateral_offset;
                         int vertex_index = i + cell_index * (width_cells + 1);

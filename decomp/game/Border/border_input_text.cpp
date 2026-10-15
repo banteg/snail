@@ -14,11 +14,7 @@ void cRBorder::InputText()
     char key = read_repeating_text_input_key_code();
 
     if ((input_flags & 0x0c) != 0) {
-        cRInputOK* ok = input_ok_state();
-        if (input_flags)
-            ok->AI();
-        else
-            ok->AI();
+        input_ok_state()->AI();
         if ((input_ok_state()->ok_widget->widget_flags
                 & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED)
             != 0)
@@ -246,14 +242,13 @@ finish_insertion:
     ++input_length;
 input_postprocess:
     if ((input_flags & 2) != 0) {
-        char* buf = text_buffer;
         int index = 0;
-        char ch = buf[0];
+        char ch = text_buffer[0];
         while (ch != 0) {
-            if (buf[index] != ' ' && index != input_cursor)
+            if (text_buffer[index] != ' ' && index != input_cursor)
                 break;
             if (index != input_cursor) {
-                char* remove = &buf[index];
+                char* remove = &text_buffer[index];
                 while (*remove != 0) {
                     *remove = remove[1];
                     ++remove;
@@ -286,12 +281,16 @@ finish_input:
         *remove = remove[1];
         ++remove;
     }
-    --input_length;
-    widget_flags &= ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
-    if (text_buffer[0] != 0)
-        widget_flags |= FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;
-    else
-        widget_flags |= FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;
+    unsigned int original_flags = widget_flags;
+    unsigned int cleared_flags =
+        original_flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
+    int remaining_length = input_length - 1;
+    unsigned int closing_flags =
+        original_flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
+    closing_flags |= FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;
+    widget_flags = cleared_flags;
+    input_length = remaining_length;
+    widget_flags = closing_flags;
     RePosition();
     if ((input_flags & 0x0c) != 0)
         g_game->border_manager
