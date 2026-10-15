@@ -510,6 +510,7 @@
 ../decomp/game/SubGame/initialize_invincible_shell.cpp
 ../decomp/game/SubGame/start_invincible_shell.cpp
 ../decomp/game/SubGame/update_invincible_shell.cpp
+../decomp/game/SubGame/handle_subgoldy_collisions.cpp
 ../decomp/game/SubGame/kill_subgoldy.cpp
 ../decomp/game/SubGame/set_snail_jetpack.cpp
 ../decomp/game/SubGame/set_snail_weapon.cpp
@@ -669,6 +670,7 @@
 ../decomp/engine/RMaths/set_color_white.cpp
 ../decomp/engine/RMaths/set_color_black.cpp
 ../decomp/engine/RMaths/random_signed_float_below.cpp
+../decomp/engine/RMaths/random_float_below.cpp
 ../decomp/engine/RSound/initialize_sound_bank.cpp
 ../decomp/engine/RSound/play_sound_effect_at_position.cpp
 ../decomp/engine/RSound/play_sound_effect.cpp

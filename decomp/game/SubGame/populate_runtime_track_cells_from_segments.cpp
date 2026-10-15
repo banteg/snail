@@ -2,10 +2,6 @@
 // Structure-first scratch for the runtime grid builder setup and clear pass.
 
 #include <stddef.h>
-#ifdef SNAIL_PORT
-#include <stdlib.h>
-extern bool g_port_ultimate;
-#endif
 
 extern "C" void* memset(void* destination, int value, unsigned int count);
 #pragma intrinsic(memset)
@@ -123,24 +119,12 @@ void cRSubGame::BuildLevel()
             segment_cursor = 0;
         }
         completion_row_start = runtime_row_count - level_definition.last_segment.row_count;
-#ifdef SNAIL_PORT
-        const int row_limit = g_port_ultimate ? SUBGAME_RUNTIME_ROW_LIMIT : 3100;
-        if (runtime_row_count >= row_limit) {
-            report_errorf(
-                "Track (%s) too long, Maximum Length %i",
-                level_definition.level_display_name,
-                row_limit);
-            // Reporting alone would let the following writes overrun the pools.
-            abort();
-        }
-#else
         if (runtime_row_count >= 3100) {
             report_errorf(
                 "Track (%s) too long, Maximum Length %i",
                 level_definition.level_display_name,
                 3100);
         }
-#endif
     } else if (mode == 3) {
         SubSegment* first_segment =
             &level_definition.first_segment;

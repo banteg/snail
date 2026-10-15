@@ -29,5 +29,3 @@ load_config_file                              ../decomp/game/Register/load_confi
 write_file_bytes                              ../decomp/game/RShell/write_file_bytes.cpp                                                 write_file_bytes
 render_backdrop                               ../decomp/game/Game/render_backdrop.cpp                                                       render_backdrop
 draw_sprite_quad                              ../decomp/game/GL/draw_sprite_quad.cpp                                  draw_sprite_quad
-handle_subgoldy_collisions                     ../decomp/game/SubGame/handle_subgoldy_collisions.cpp                    Collision
-random_float_below                             ../decomp/engine/RMaths/random_float_below.cpp                           RAND

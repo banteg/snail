@@ -130,7 +130,7 @@ int main(int argc, char** argv)
     int upright_hazards = 0;
     int lives = -1;
     int padding = 0;
-    int wide_parcels = 0;
+    int parcels = 0;
     unsigned int widgets = 0;
     for (int tick = 0; tick < ticks; ++tick) {
         set_scripted_input(tick);
@@ -176,9 +176,9 @@ int main(int argc, char** argv)
             padding = extras_padding_pick_count();
             fprintf(stderr, "tick %d: padding_segments %d\n", tick, padding);
         }
-        if (trace && extras_wide_parcel_count() != wide_parcels) {
-            wide_parcels = extras_wide_parcel_count();
-            fprintf(stderr, "tick %d: wide_parcels %d\n", tick, wide_parcels);
+        if (trace && g_game->subgame.player.parcels_collected != parcels) {
+            parcels = g_game->subgame.player.parcels_collected;
+            fprintf(stderr, "tick %d: parcels %d\n", tick, parcels);
         }
         if (trace && fixes_upright_hazard_count() != upright_hazards) {
             upright_hazards = fixes_upright_hazard_count();

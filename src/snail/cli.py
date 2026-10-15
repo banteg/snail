@@ -638,6 +638,11 @@ def build_parser() -> argparse.ArgumentParser:
         "link",
         help="Compile the port's sources and generate forwarders for stand-in call names (port/generated/).",
     )
+    port_subparsers.add_parser(
+        "patch",
+        help="Copy the recovered sources the port compiles to port/generated/patched/, applying port/patches/ "
+        "(zig build runs this).",
+    )
     port_extras_parser = port_subparsers.add_parser(
         "extras",
         help="Build artifacts/bin/SnailMailExtras.dat from the extracted Android release assets.",
@@ -1798,6 +1803,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             for offset in args.offsets:
                 row = table.lookup(int(offset, 16))
                 print(f"{offset} {row.path}:{row.line}" if row else f"{offset} ?")
+            return 0
+        if args.port_command == "patch":
+            from . import port, port_patch
+
+            port_patch.write(REPO_ROOT, port.recovered_sources(REPO_ROOT))
             return 0
         if args.port_command == "link":
             from . import port_link

@@ -188,7 +188,6 @@ def test_original_profile_keeps_upright_hazard_spawns(tmp_path):
     assert replay.stderr.count("upright_hazards 1") == 3
     assert "matches the original" in replay.stderr
     # No Ultimate rule reaches the Original profile.
-    assert "wide_parcels" not in replay.stderr
     assert "padding_segments" not in replay.stderr
 
 
@@ -217,7 +216,8 @@ def test_ultimate_collects_parcels_within_the_mobile_radius(tmp_path):
         text=True,
         check=False,
     )
-    assert "tick 1064: wide_parcels 1" in replay.stderr
+    # 1.24 to 1.73 from the snail on tick 1064: only the mobile radius takes it.
+    assert "tick 1064: parcels 3" in replay.stderr
 
 
 @pytest.mark.skipif(

@@ -19,7 +19,7 @@ EXTRAS = REPO_ROOT / "artifacts/bin/SnailMailExtras.dat"
     shutil.which("node") is None or not all(p.exists() for p in (WASM, BASE, EXTRAS)),
     reason="needs node, snail.wasm, and both game archives",
 )
-@pytest.mark.parametrize("rows,ultimate,accepted", [(3231, True, True), (3500, True, False), (3231, False, False)])
+@pytest.mark.parametrize("rows,ultimate,accepted", [(3231, True, True), (3499, True, True), (3500, True, False), (3231, False, False)])
 def test_mobile_course_capacity_before_condensation(tmp_path, rows, ultimate, accepted):
     index = parse_archive_index(EXTRAS)
     files = {entry.path.upper(): read_archive_entry(EXTRAS, entry) for entry in index.entries}
@@ -90,11 +90,9 @@ def test_mobile_course_capacity_before_condensation(tmp_path, rows, ultimate, ac
         [*args, "--ticks", "1050"], cwd=tmp_path,
         capture_output=True, text=True, check=False,
     )
-    if accepted:
-        assert process.returncode == 0, process.stderr
-        assert 'level "Eximius Ferreus"' in process.stderr
-        assert "too long" not in process.stderr
-    else:
-        assert process.returncode != 0
-        limit = 3500 if ultimate else 3100
-        assert f"Track (Eximius Ferreus) too long, Maximum Length {limit}" in process.stderr
+    # Both originals only report a track that is too long, and build it.
+    assert process.returncode == 0, process.stderr
+    assert 'level "Eximius Ferreus"' in process.stderr
+    limit = 3500 if ultimate else 3100
+    report = f"Track (Eximius Ferreus) too long, Maximum Length {limit}"
+    assert (report not in process.stderr) == accepted, process.stderr

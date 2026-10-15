@@ -1,4 +1,4 @@
-import { openMobileGame } from './port_mobile_runtime.mjs';
+import { LAYOUT, openMobileGame } from './port_mobile_runtime.mjs';
 
 const game = await openMobileGame(process.argv[2]);
 const { e, sub } = game;
@@ -9,7 +9,7 @@ for (const ultimate of [0, 1]) {
       for (const hover of [0, 1]) {
         e.snail_set_profile(ultimate);
         let memory = game.memory();
-        const player = sub + 0x3bb764;
+        const player = sub + LAYOUT.player;
         memory.writeInt32LE(2, sub + 0x3c);
         memory.writeInt32LE(mode, sub + 0x40);
         memory.writeFloatLE(1, sub + 0x30);
@@ -37,12 +37,11 @@ for (const ultimate of [0, 1]) {
   }
 }
 const memory = game.memory();
-// Windows field offsets plus the port's extra 400 cell/row records.
-const catalog = sub + 0x10014cc + 400 * (8 * 84 + 244);
+const catalog = sub + LAYOUT.sm_tracks;
 const count = memory.readInt32LE(catalog);
 const segments = {};
 for (let i = 0; i < count; ++i) {
-  const entry = catalog + 4 + i * 0x4088;
+  const entry = catalog + 4 + i * LAYOUT.segment_entry;
   const name = memory.toString('utf8', entry + 0x40, memory.indexOf(0, entry + 0x40)).toUpperCase();
   if (['CAGE2.TXT', 'FINISH.TXT', 'TWISTER2.TXT'].includes(name))
     segments[name] = memory.readInt32LE(entry + 0x84);
@@ -52,7 +51,7 @@ e.snail_save();
 const swingGame = await openMobileGame(process.argv[2]);
 const swing = [];
 for (let frame = 0; frame < 600; ++frame) {
-  const player = swingGame.sub + 0x3bb764;
+  const player = swingGame.sub + LAYOUT.player;
   const memory = swingGame.memory();
   memory.writeInt32LE(2, player + 0x308);
   memory.writeInt32LE(2, player + 0x3c4);

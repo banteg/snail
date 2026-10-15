@@ -62,12 +62,7 @@ typedef char SegmentCatalogEntry_must_be_0x4088[
 // cRSMTracks::Import() and cRSMTracks::OpenLevels() member names, while the
 // Windows constructor independently proves this larger inline-storage layout.
 enum {
-#ifdef SNAIL_PORT
-    // 133 shared definitions and 43 added mobile segments.
-    SMTRACK_SEGMENT_CAPACITY = 200,
-#else
     SMTRACK_SEGMENT_CAPACITY = 150,
-#endif
 };
 
 class cRSMTracks {

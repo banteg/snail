@@ -63,6 +63,14 @@ cRTexture* g_extra_slide_textures[kMobileTrackSetCount];
 bool g_random_fringe_pending = false;
 float g_add_ring_speed = 0.0f;
 
+// Android cRSubTracks::Init (000850d4) imports Padding, a four-row empty
+// segment, beside every level's segments; BuildLevel lays it between each pair
+// of segments a Random: level picks (port/patches/04-challenge-padding.patch).
+// Its slot here is the first unused one, after the level's own.
+SubSegment* g_padding_segment = 0;
+bool g_padding_turn = false;
+int g_padding_picks = 0;
+
 bool path_equals_ignore_case(const char* a, const char* b)
 {
     while (*a && *b) {
@@ -135,6 +143,39 @@ void refresh_built_level_skirt_colours(cRSubGame* subgame)
 }
 
 }  // namespace
+
+void extras_import_padding(cRSubTracks* level_definition)
+{
+    g_padding_segment = 0;
+    int slot = level_definition->segment_count;
+    if (!g_port_ultimate || level_definition->random_enabled != 1
+        || slot >= (int)(sizeof(level_definition->segment_slots) / sizeof(SubSegment)))
+        return;
+    g_padding_segment = &level_definition->segment_slots[slot];
+    level_definition->ImportSegment((char*)"padding.txt", g_padding_segment);
+}
+
+SubSegment* extras_next_padding()
+{
+    if (!g_padding_segment)
+        return 0;
+    g_padding_turn = !g_padding_turn;
+    if (g_padding_turn)
+        return 0;
+    ++g_padding_picks;
+    return g_padding_segment;
+}
+
+void extras_begin_level_build()
+{
+    g_padding_turn = false;
+    g_padding_picks = 0;
+}
+
+int extras_padding_pick_count()
+{
+    return g_padding_picks;
+}
 
 // Enumerate the combined segment names before any level is parsed. Mobile
 // definitions take precedence for shared names; the mobile set has every PC

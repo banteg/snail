@@ -1,4 +1,4 @@
-import { openMobileGame } from './port_mobile_runtime.mjs';
+import { LAYOUT, openMobileGame } from './port_mobile_runtime.mjs';
 
 const expected = JSON.parse(process.argv[3]);
 let exports, recording = false, textureId, vertices;
@@ -35,7 +35,7 @@ for (const [name, ultimate, flip] of [
   ['SpacePurple', 1, 0], ['SpacePro', 0, 0],
 ]) {
   if (!(name in names) || !(name in ids)) throw Error(`texture not found: ${name}`);
-  const backdrop = game.root + 0x4ec10, memory = game.memory();
+  const backdrop = game.root + LAYOUT.backdrop, memory = game.memory();
   exports.snail_set_profile(ultimate);
   memory.writeInt32LE(names[name], backdrop + 0x3c);
   memory[backdrop + 0x38] = 0;

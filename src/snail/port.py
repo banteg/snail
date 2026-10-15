@@ -13,6 +13,8 @@ import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+from . import port_patch
+
 LAYOUT = Path("decomp/layout.json")
 REPLACED = Path("port/replaced.txt")
 WRAPPED = Path("port/wrapped.txt")
@@ -22,7 +24,7 @@ CFLAGS = Path("port/cflags.txt")
 OBJECTS = Path("port/generated/objects")
 COMPILED_SCOPES = {"core", "boundary"}
 # Relative to port/, as in build.zig.
-INCLUDE_DIRECTORIES = ("../tools/match/include", "compat")
+INCLUDE_DIRECTORIES = ("generated/patched/tools/match/include", "compat")
 
 
 def _listed(root: Path, path: Path) -> dict[str, str]:
@@ -75,6 +77,11 @@ def source_list(root: Path) -> list[str]:
     return paths
 
 
+def recovered_sources(root: Path) -> list[str]:
+    """Every recovered source the port compiles, wrapped ones included, relative to port/."""
+    return [*source_list(root), *(source for source, _ in wrapped_list(root).values())]
+
+
 def sources_text(root: Path) -> str:
     return "\n".join(source_list(root)) + "\n"
 
@@ -93,15 +100,17 @@ def object_path(root: Path, source: str) -> Path:
 
 
 def compile_objects(root: Path, sources: list[str], *, jobs: int = 10) -> dict[str, str]:
-    """Compile sources (relative to port/) to wasm32 objects; return compiler errors."""
+    """Compile sources (relative to port/) to wasm32 objects, patched as the build patches them; return compiler errors."""
+    port_patch.write(root, [source for source in sources if source.startswith("../")])
     (root / OBJECTS).mkdir(parents=True, exist_ok=True)
     flags = compile_flags(root)
     wrapped_defines = {src: f"-D{sym}={sym}_recovered" for src, sym in wrapped_list(root).values()}
 
     def build(source: str) -> tuple[str, str]:
         extra = [wrapped_defines[source]] if source in wrapped_defines else []
+        command = ["zig", "c++", "-target", "wasm32-wasi", "-c", *flags, *extra, port_patch.compile_path(source)]
         completed = subprocess.run(
-            ["zig", "c++", "-target", "wasm32-wasi", "-c", *flags, *extra, source, "-o", str(object_path(root, source))],
+            [*command, "-o", str(object_path(root, source))],
             cwd=root / "port",
             capture_output=True,
             text=True,
