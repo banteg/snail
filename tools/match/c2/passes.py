@@ -4,9 +4,12 @@ Hooks each post-allocation pass called by the pass driver (`C2+0x57fc2`)
 through the preserving observer and prints, for the selected C2 line labels
 (source line minus the function's definition line), the opcode/label sequence
 entering each pass, and marks the pass that reordered it. The /G5 list
-scheduler is `C2+0x374aa` (see scheduler.md).
+scheduler is `C2+0x374aa` (see scheduler.md). `--registers` also prints each
+node's operands, `[dst<-src]`, with allocated registers by name and other
+operands as `k<kind>`, so the pass that first gives a temporary its register
+is visible.
 
-    uv run tools/match/c2/passes.py update_subgame 12 15 [--source overlay.cpp] [--out DIR]
+    uv run tools/match/c2/passes.py update_subgame 12 15 [--source overlay.cpp] [--out DIR] [--registers]
 """
 
 import argparse
@@ -93,6 +96,15 @@ def run(scratch, source, out):
     return t.function_events(events, result["function_ordinal"])
 
 
+def operands(node, base):
+    def name(operand):
+        return rot.assigned_register(operand, base) or f"k{operand['kind']}"
+
+    destinations = ",".join(name(operand) for operand in node["dst"])
+    sources = ",".join(name(operand) for operand in node["src"])
+    return f"[{destinations}<-{sources}]"
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("scratch")
@@ -100,6 +112,7 @@ def main():
     parser.add_argument("last", type=int, help="last C2 line label")
     parser.add_argument("--source", type=Path)
     parser.add_argument("--out", type=Path)
+    parser.add_argument("--registers", action="store_true", help="print operand registers")
     args = parser.parse_args()
     scratch = Path(args.scratch)
     if not scratch.is_dir():
@@ -111,6 +124,7 @@ def main():
     for event in events:
         order = [
             f"{node['op']}:{node['line']}"
+            + (operands(node, event["c2_base"]) if args.registers else "")
             for node in event["nodes"]
             if args.first <= node["line"] <= args.last
         ]

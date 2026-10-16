@@ -165,8 +165,29 @@ with 1034/1034 instructions. The only structural difference left is the
 scheduling of case 3's `pause_fade` load, which is not a register issue.
 
 Still open: how the global pass picks its register (`0x107223d5` and
-`0x1072200a` compute per-block available sets). The /G5 split cursor
-`0x107ac2dc` also affects matching and is not traced here.
+`0x1072200a` compute per-block available sets).
+
+## /G5 memory-operand split (msvc6.3)
+
+The split pass (`C2+0x31ae7` in msvc6.3) gives a register to nodes whose
+opcode has the split flag (`[0x107a049c + 4*op] & 0x400`). Its chooser
+`C2+0x32fbc` has its own cursor (`0x107ac2dc`) into the same order list:
+
+- the pass walks each block backwards, from its last node to its first, and
+  resets the cursor to `[0x107ac2e0] - 1` (7) at every block, so a block's
+  first pick tries eax first;
+- a pick tries the entries after the cursor, wrapping at `[0x107ac2e0]`,
+  and takes the first register that has descriptor flag `0x10` and is not in
+  the live set. The cursor moves to it;
+- if the walk returns to the cursor, a second lap from eax drops the flag
+  test; if that fails too, it takes the first free order entry.
+
+[`splittrace.py`](splittrace.py) hooks both call sites and re-derives every
+pick from this rule (4,152 picks in the SubGame unit). Because the walk is
+backwards and resets per block, a split pick depends only on the nodes after
+it in the same block. A register that a load already has when it enters the
+split pass comes from the local allocator, not from this cursor: `passes.py
+--registers` shows the pass where each temporary first gets its register.
 
 ## Mover copies take no slot (crimson-88, 2026-09-26)
 

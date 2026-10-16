@@ -154,111 +154,25 @@ void cRSubGame::BuildLevel()
     player.follow_state.flag_3c = 0;
 
     enum {
-        TRACK_MIRROR_FLAG_OFFSET =
-            offsetof(cRSubGame, track_mirror_enabled),
-        LEVEL_SEGMENT_SLOTS_BASE =
-            offsetof(cRSubGame, level_definition)
-            + offsetof(SubTracks, segment_slots),
-        LEVEL_FIRST_SEGMENT_BASE =
-            offsetof(cRSubGame, level_definition)
-            + offsetof(SubTracks, first_segment),
-        LEVEL_LAST_SEGMENT_BASE =
-            offsetof(cRSubGame, level_definition)
-            + offsetof(SubTracks, last_segment),
-        SCRATCH_SEGMENT_SLOTS_BASE =
-            offsetof(cRSubGame, level_definition_scratch)
-            + offsetof(SubTracks, segment_slots),
-        RUNTIME_CELLS_BASE = offsetof(cRSubGame, runtime_cells),
-        RUNTIME_ROWS_BASE = offsetof(cRSubGame, runtime_rows),
         RUNTIME_LANE_COUNT =
             sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]),
-        CELL_BOD_BASE = RUNTIME_CELLS_BASE,
-        CELL_LIST_FLAGS =
-            RUNTIME_CELLS_BASE + offsetof(ContactTargetObject, list_flags),
-        CELL_POSITION_Y =
-            RUNTIME_CELLS_BASE + offsetof(BodBase, position)
-            + offsetof(Vector3, y),
-        CELL_RENDER_ARG_1C =
-            RUNTIME_CELLS_BASE + offsetof(BodBase, render_arg_1c),
-        CELL_RENDER_ARG_20 =
-            RUNTIME_CELLS_BASE + offsetof(BodBase, render_arg_20),
-        CELL_COLOR_INDEX_BIAS =
-            (RUNTIME_CELLS_BASE + offsetof(BodBase, color)) / sizeof(cRSubLoc),
-        CELL_TILE_ID = RUNTIME_CELLS_BASE + offsetof(cRSubLoc, tile_id),
-        PREVIOUS_ROW_CELL_TILE_ID =
-            CELL_TILE_ID - RUNTIME_LANE_COUNT * sizeof(cRSubLoc),
-        CELL_FRINGE_FRONT =
-            RUNTIME_CELLS_BASE + offsetof(cRSubLoc, fringe_front),
-        CELL_FRINGE_RIGHT =
-            RUNTIME_CELLS_BASE + offsetof(cRSubLoc, fringe_right),
-        CELL_FRINGE_LEFT =
-            RUNTIME_CELLS_BASE + offsetof(cRSubLoc, fringe_left),
-        CELL_FRINGE_BACK =
-            RUNTIME_CELLS_BASE + offsetof(cRSubLoc, fringe_back),
         CELL_FRINGE_COUNT =
             sizeof(((cRSubLoc*)0)->fringes) / sizeof(((cRSubLoc*)0)->fringes[0]),
         PATH_PAIRS_BASE = offsetof(cRSubGame, path_pairs),
         PATH_36_PRIMARY_SAMPLES =
             PATH_PAIRS_BASE + 36 * sizeof(PathPair)
             + offsetof(PathPair, primary) + offsetof(Path, primary_samples),
-        SEGMENT_GLYPH_ROWS_BASE = offsetof(SubSegment, glyph_rows),
-        SEGMENT_GLYPH_ROW_STRIDE =
-            sizeof(((SubSegment*)0)->glyph_rows[0]),
         SEGMENT_AUTHORED_ROWS_BASE = offsetof(SubSegment, rows),
-        SEGMENT_ANGLE_RADIANS = offsetof(SubSegment, angle_radians),
-        AUTHORED_ROW_PARCEL_SET_ID =
-            offsetof(AuthoredSegmentRow, parcel_set_id),
         AUTHORED_ROW_LOCAL_X =
             offsetof(AuthoredSegmentRow, local_position) + offsetof(Vector3, x),
-        AUTHORED_ROW_LOCAL_Y =
-            offsetof(AuthoredSegmentRow, local_position) + offsetof(Vector3, y),
-        AUTHORED_ROW_LOCAL_Z =
-            offsetof(AuthoredSegmentRow, local_position) + offsetof(Vector3, z),
         AUTHORED_ROW_OBJECT_ID = offsetof(AuthoredSegmentRow, object_id),
         AUTHORED_ROW_OBJECT_POSITION_X =
             offsetof(AuthoredSegmentRow, object_position) + offsetof(Vector3, x),
-        AUTHORED_ROW_OBJECT_POSITION_Y =
-            offsetof(AuthoredSegmentRow, object_position) + offsetof(Vector3, y),
-        AUTHORED_ROW_OBJECT_POSITION_Z =
-            offsetof(AuthoredSegmentRow, object_position) + offsetof(Vector3, z),
         AUTHORED_ROW_OBJECT_VELOCITY_X =
             offsetof(AuthoredSegmentRow, object_velocity) + offsetof(Vector3, x),
-        AUTHORED_ROW_OBJECT_VELOCITY_Y =
-            offsetof(AuthoredSegmentRow, object_velocity) + offsetof(Vector3, y),
-        AUTHORED_ROW_OBJECT_VELOCITY_Z =
-            offsetof(AuthoredSegmentRow, object_velocity) + offsetof(Vector3, z),
         AUTHORED_ROW_PATH_TEMPLATE_INDEX =
             offsetof(AuthoredSegmentRow, path_template_index),
         AUTHORED_ROW_RING_SPEED = offsetof(AuthoredSegmentRow, ring_speed),
-        ROW_MODEL_TRANSFORM =
-            offsetof(SubRow, row_model) + offsetof(RenderableBod, transform),
-        ROW_MODEL_POSITION_X =
-            ROW_MODEL_TRANSFORM + offsetof(TransformMatrix, position)
-            + offsetof(Vector3, x),
-        ROW_MODEL_POSITION_Y =
-            ROW_MODEL_TRANSFORM + offsetof(TransformMatrix, position)
-            + offsetof(Vector3, y),
-        ROW_MODEL_POSITION_Z =
-            ROW_MODEL_TRANSFORM + offsetof(TransformMatrix, position)
-            + offsetof(Vector3, z),
-        ROW_MODEL_VELOCITY_X =
-            offsetof(SubRow, row_model) + offsetof(RowModel, velocity)
-            + offsetof(Vector3, x),
-        ROW_MODEL_VELOCITY_Y =
-            offsetof(SubRow, row_model) + offsetof(RowModel, velocity)
-            + offsetof(Vector3, y),
-        ROW_MODEL_VELOCITY_Z =
-            offsetof(SubRow, row_model) + offsetof(RowModel, velocity)
-            + offsetof(Vector3, z),
-        ROW_PROJECTION_X =
-            offsetof(SubRow, parcel_spawn_position) + offsetof(Vector3, x),
-        ROW_PROJECTION_Y =
-            offsetof(SubRow, parcel_spawn_position) + offsetof(Vector3, y),
-        ROW_PROJECTION_Z =
-            offsetof(SubRow, parcel_spawn_position) + offsetof(Vector3, z),
-        ROW_ATTACHMENT_LIST_FLAGS =
-            offsetof(SubRow, attachment_body)
-            + offsetof(ContactTargetObject, list_flags),
         ROW_ATTACHMENT_POSITION_X =
             offsetof(SubRow, attachment_body) + offsetof(BodBase, position)
             + offsetof(Vector3, x),
@@ -268,8 +182,6 @@ void cRSubGame::BuildLevel()
         ROW_ATTACHMENT_POSITION_Z =
             offsetof(SubRow, attachment_body) + offsetof(BodBase, position)
             + offsetof(Vector3, z),
-        ROW_ATTACHMENT_COLOR =
-            offsetof(SubRow, attachment_body) + offsetof(BodBase, color),
         ROW_CURSOR_BASE =
             (int)(offsetof(SubRow, parcel_spawn_position) + offsetof(Vector3, y)),
         ROW_CURSOR_TO_FLAGS =
@@ -456,22 +368,19 @@ void cRSubGame::BuildLevel()
                 }
             }
 
-            if (base[TRACK_MIRROR_FLAG_OFFSET])
-                *(int*)(base + sizeof(SubRow) * build_row + RUNTIME_ROWS_BASE) |=
-                    SUBROW_FLAG_MIRRORED;
+            if (track_mirror_enabled)
+                runtime_rows[build_row].flags |= SUBROW_FLAG_MIRRORED;
 
             char* authored_row_owner =
                 (char*)active_segment + sizeof(AuthoredSegmentRow) * segment_row;
             if ((active_segment->rows[segment_row].flags
                     & AUTHORED_SEGMENT_ROW_FLAG_NO_FALL)
                 != 0)
-                *(int*)(base + sizeof(SubRow) * build_row + RUNTIME_ROWS_BASE) |=
-                    SUBROW_FLAG_NO_FALL;
+                runtime_rows[build_row].flags |= SUBROW_FLAG_NO_FALL;
             if ((active_segment->rows[segment_row].flags
                     & AUTHORED_SEGMENT_ROW_FLAG_JETPACK_OFF)
                 != 0)
-                *(int*)(base + sizeof(SubRow) * build_row + RUNTIME_ROWS_BASE) |=
-                    SUBROW_FLAG_JETPACK_OFF;
+                runtime_rows[build_row].flags |= SUBROW_FLAG_JETPACK_OFF;
 
             runtime_rows[build_row].source_segment =
                 active_segment;
@@ -491,7 +400,7 @@ void cRSubGame::BuildLevel()
                     *(Vector3*)(
                         authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE
                         + AUTHORED_ROW_OBJECT_POSITION_X);
-                *(float*)((char*)&runtime_rows[build_row] + ROW_MODEL_POSITION_Z) +=
+                runtime_rows[build_row].row_model.transform.position.z +=
                     (float)build_row;
 
                 if ((active_segment->rows[segment_row].flags
@@ -504,12 +413,9 @@ void cRSubGame::BuildLevel()
                             authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE
                             + AUTHORED_ROW_OBJECT_VELOCITY_X);
                 } else {
-                    *(int*)((char*)&runtime_rows[build_row] + ROW_MODEL_VELOCITY_X) =
-                        0;
-                    *(int*)((char*)&runtime_rows[build_row] + ROW_MODEL_VELOCITY_Y) =
-                        0;
-                    *(int*)((char*)&runtime_rows[build_row] + ROW_MODEL_VELOCITY_Z) =
-                        0;
+                    runtime_rows[build_row].row_model.velocity.x = 0;
+                    runtime_rows[build_row].row_model.velocity.y = 0;
+                    runtime_rows[build_row].row_model.velocity.z = 0;
                 }
             }
 
@@ -566,23 +472,20 @@ void cRSubGame::BuildLevel()
                     + AUTHORED_ROW_RING_SPEED);
             char attachment_entry_installed = 0;
             int lane = 0;
-            *(int*)((char*)&runtime_rows[build_row]
-                + offsetof(SubRow, ring_speed)) = authored_ring_speed_bits;
+            *(int*)&runtime_rows[build_row].ring_speed = authored_ring_speed_bits;
             for (; lane < RUNTIME_LANE_COUNT; ++lane) {
                 int authored_lane;
-                if (base[TRACK_MIRROR_FLAG_OFFSET])
+                if (track_mirror_enabled)
                     authored_lane = RUNTIME_LANE_COUNT - 1 - lane;
                 else
                     authored_lane = lane;
 
-                char* cell =
-                    base + sizeof(cRSubLoc) * (lane + build_row * RUNTIME_LANE_COUNT);
                 unsigned int* cell_word = &runtime_cells[build_row][lane].lane_and_flags;
                 *cell_word &= 0xffffffe0;
                 *cell_word ^= lane & SUBLOC_LANE_INDEX_MASK;
 
                 Fringe** subobject_slot =
-                    (Fringe**)(cell + CELL_FRINGE_FRONT);
+                    runtime_cells[build_row][lane].fringes;
                 subobject_slot[0] = 0;
                 subobject_slot[1] = 0;
                 subobject_slot[2] = 0;
@@ -590,255 +493,219 @@ void cRSubGame::BuildLevel()
 
                 char edge_row = build_row < first_block_row_count || build_row >= completion_row_start;
 
-                // initialize_sub_loc proves this is the shared cRBod base prefix;
-                // keep the raw cursor so the large VC6 switch retains its shape.
-                ((BodBase*)(cell + CELL_BOD_BASE))->SetObject(0);
+                // initialize_sub_loc proves this is the shared cRBod base prefix.
+                runtime_cells[build_row][lane].SetObject(0);
 
-                char* glyph_ptr = (char*)active_segment
-                    + authored_lane * SEGMENT_GLYPH_ROW_STRIDE + segment_row
-                    + SEGMENT_GLYPH_ROWS_BASE;
                 char normalized = LevelConvert(
-                    *glyph_ptr, build_row, edge_row);
-                int* glyph_list_flags = (int*)(cell + CELL_LIST_FLAGS);
-                int* glyph_render_arg_1c =
-                    (int*)(cell + CELL_RENDER_ARG_1C);
-                int* glyph_render_arg_20 =
-                    (int*)(cell + CELL_RENDER_ARG_20);
+                    active_segment->glyph_rows[authored_lane][segment_row],
+                    build_row,
+                    edge_row);
                 switch (normalized) {
                 case ' ':
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_EMPTY;
-                    *glyph_list_flags &= 0xffffffdf;
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_EMPTY;
+                    runtime_cells[build_row][lane].list_flags &= 0xffffffdf;
                     break;
                 case 'R':
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_RING_MARKER;
-                    *glyph_list_flags &= 0xffffffdf;
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_RING_MARKER;
+                    runtime_cells[build_row][lane].list_flags &= 0xffffffdf;
                     break;
                 case '#':
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_FLOOR_HASH_MARKER;
-                    *glyph_list_flags &= 0xffffffdf;
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_FLOOR_HASH_MARKER;
+                    runtime_cells[build_row][lane].list_flags &= 0xffffffdf;
                     break;
                 case '@':
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_EMPTY;
-                    *glyph_list_flags &= 0xffffffdf;
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_EMPTY;
+                    runtime_cells[build_row][lane].list_flags &= 0xffffffdf;
                     SwitchMirror();
                     break;
                 case 'G':
-                    ((BodBase*)(cell + CELL_BOD_BASE))
-                        ->SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_GLYPH_G;
-                    *glyph_list_flags |= 0x20;
+                    runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_GLYPH_G;
+                    runtime_cells[build_row][lane].list_flags |= 0x20;
                     break;
                 case '_':
-                    ((BodBase*)(cell + CELL_BOD_BASE))
-                        ->SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_SLIDE_UNDERSCORE;
-                    *glyph_list_flags |= 0x20;
+                    runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_SLIDE_UNDERSCORE;
+                    runtime_cells[build_row][lane].list_flags |= 0x20;
                     break;
                 case '$':
-                    ((BodBase*)(cell + CELL_BOD_BASE))
-                        ->SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_HEALTH_PICKUP;
-                    *glyph_list_flags |= 0x20;
+                    runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_HEALTH_PICKUP;
+                    runtime_cells[build_row][lane].list_flags |= 0x20;
                     break;
                 case 'o':
-                    ((BodBase*)(cell + CELL_BOD_BASE))
-                        ->SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_SLIDE_O;
-                    *glyph_list_flags |= 0x20;
+                    runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_SLIDE_O;
+                    runtime_cells[build_row][lane].list_flags |= 0x20;
                     break;
                 case 'M':
-                    ((BodBase*)(cell + CELL_BOD_BASE))
-                        ->SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_SLUG_HAZARD;
-                    *glyph_list_flags |= 0x20;
+                    runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_SLUG_HAZARD;
+                    runtime_cells[build_row][lane].list_flags |= 0x20;
                     break;
                 case 'F':
-                    ((BodBase*)(cell + CELL_BOD_BASE))
-                        ->SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_SLIDE_F;
-                    *glyph_list_flags |= 0x20;
+                    runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_SLIDE_F;
+                    runtime_cells[build_row][lane].list_flags |= 0x20;
                     break;
                 case '.':
-                    ((BodBase*)(cell + CELL_BOD_BASE))
-                        ->SetObject(ROOT_BOD_OBJECT(floor_slices.storage[0]));
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_FLOOR_DOT;
-                    *glyph_list_flags |= 0x20;
+                    runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(floor_slices.storage[0]));
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_FLOOR_DOT;
+                    runtime_cells[build_row][lane].list_flags |= 0x20;
                     break;
                 case 's':
-                    ((BodBase*)(cell + CELL_BOD_BASE))
-                        ->SetObject(ROOT_BOD_OBJECT(floor_slices.storage[0]));
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_GARBAGE_HAZARD;
-                    *glyph_list_flags |= 0x20;
+                    runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(floor_slices.storage[0]));
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_GARBAGE_HAZARD;
+                    runtime_cells[build_row][lane].list_flags |= 0x20;
                     break;
                 case '&':
-                    ((BodBase*)(cell + CELL_BOD_BASE))
-                        ->SetObject(ROOT_BOD_OBJECT(floor_slices.storage[0]));
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_SALT_HAZARD;
-                    *glyph_list_flags |= 0x20;
+                    runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(floor_slices.storage[0]));
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_SALT_HAZARD;
+                    runtime_cells[build_row][lane].list_flags |= 0x20;
                     break;
                 case ',':
-                    ((BodBase*)(cell + CELL_BOD_BASE))
-                        ->SetObject(ROOT_BOD_OBJECT(universe_hole));
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_UNIVERSE_HOLE;
-                    *glyph_list_flags |= 0x20;
+                    runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(universe_hole));
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_UNIVERSE_HOLE;
+                    runtime_cells[build_row][lane].list_flags |= 0x20;
                     break;
                 case '+':
-                    ((BodBase*)(cell + CELL_BOD_BASE))
-                        ->SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_SPEEDUP_PICKUP;
-                    *glyph_list_flags |= 0x20;
+                    runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_SPEEDUP_PICKUP;
+                    runtime_cells[build_row][lane].list_flags |= 0x20;
                     break;
                 case 'J':
-                    ((BodBase*)(cell + CELL_BOD_BASE))
-                        ->SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_JETPACK_PICKUP;
-                    *glyph_list_flags |= 0x20;
+                    runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_JETPACK_PICKUP;
+                    runtime_cells[build_row][lane].list_flags |= 0x20;
                     break;
                 case '-':
-                    ((BodBase*)(cell + CELL_BOD_BASE))
-                        ->SetObject(ROOT_BOD_OBJECT(floor_slices.storage[0]));
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_FLOOR_DASH;
-                    *glyph_list_flags |= 0x20;
+                    runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(floor_slices.storage[0]));
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_FLOOR_DASH;
+                    runtime_cells[build_row][lane].list_flags |= 0x20;
                     break;
                 case '=':
                 case '|':
-                    ((BodBase*)(cell + CELL_BOD_BASE))
-                        ->SetObject(ROOT_BOD_OBJECT(pillars[0]));
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_WALL2;
-                    *glyph_list_flags |= 0x20;
+                    runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(pillars[0]));
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_WALL2;
+                    runtime_cells[build_row][lane].list_flags |= 0x20;
                     break;
                 case '(':
                     ++trampoline_counter;
-                    *glyph_list_flags &= 0xffffffdf;
+                    runtime_cells[build_row][lane].list_flags &= 0xffffffdf;
                     if (trampoline_counter == 15) {
                         trampoline_counter = 0;
                     } else if (trampoline_counter == 8) {
-                        ((BodBase*)(cell + CELL_BOD_BASE))
-                            ->SetObject(ROOT_BOD_OBJECT(trampoline));
-                        *glyph_list_flags |= 0x20;
-                        ((tColour*)(
-                            base + sizeof(cRSubLoc)
-                                * (lane + build_row * RUNTIME_LANE_COUNT
-                                   + CELL_COLOR_INDEX_BIAS)))
-                            ->store_color4f(1.0f, 1.0f, 1.0f, 0.99900001f);
+                        runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(trampoline));
+                        runtime_cells[build_row][lane].list_flags |= 0x20;
+                        runtime_cells[build_row][lane].color.store_color4f(1.0f, 1.0f, 1.0f, 0.99900001f);
                     } else {
-                        *glyph_list_flags &= 0xffffffdf;
+                        runtime_cells[build_row][lane].list_flags &= 0xffffffdf;
                     }
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_TRAMPOLINE;
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_TRAMPOLINE;
                     break;
                 case '>':
                     if (build_row > 0
-                        && *(unsigned char*)(cell + PREVIOUS_ROW_CELL_TILE_ID)
+                        && runtime_cells[build_row - 1][lane].tile_id
                             == SUBLOC_TILE_RAMP_GREATER) {
-                        ((BodBase*)(cell + CELL_BOD_BASE))
-                            ->SetObject(ROOT_BOD_OBJECT(ramp_edges[1]));
-                        *glyph_render_arg_1c = 0;
-                        *glyph_render_arg_20 = 0;
-                        *(unsigned char*)(cell + CELL_TILE_ID) =
+                        runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(ramp_edges[1]));
+                        runtime_cells[build_row][lane].render_arg_1c = 0;
+                        runtime_cells[build_row][lane].render_arg_20 = 0;
+                        runtime_cells[build_row][lane].tile_id =
                             SUBLOC_TILE_RAMP_GREATER_RAISED;
-                        *glyph_list_flags |= 0x20;
-                        *(unsigned char*)(cell + PREVIOUS_ROW_CELL_TILE_ID) =
+                        runtime_cells[build_row][lane].list_flags |= 0x20;
+                        runtime_cells[build_row - 1][lane].tile_id =
                             SUBLOC_TILE_RAMP_GREATER_BACKPATCH;
                     } else {
-                        ((BodBase*)(cell + CELL_BOD_BASE))
-                            ->SetObject(ROOT_BOD_OBJECT(ramp_edges[1]));
-                        *glyph_render_arg_1c = 0;
-                        *glyph_render_arg_20 = 0;
-                        *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_RAMP_GREATER;
-                        *glyph_list_flags |= 0x20;
+                        runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(ramp_edges[1]));
+                        runtime_cells[build_row][lane].render_arg_1c = 0;
+                        runtime_cells[build_row][lane].render_arg_20 = 0;
+                        runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_RAMP_GREATER;
+                        runtime_cells[build_row][lane].list_flags |= 0x20;
                     }
                     break;
                 case '}':
                     if (build_row > 0
-                        && *(unsigned char*)(cell + PREVIOUS_ROW_CELL_TILE_ID)
+                        && runtime_cells[build_row - 1][lane].tile_id
                             == SUBLOC_TILE_RAMP_GREATER) {
-                        ((BodBase*)(cell + CELL_BOD_BASE))
-                            ->SetObject(ROOT_BOD_OBJECT(ramp_edges[2]));
-                        *glyph_render_arg_1c = 0;
-                        *glyph_render_arg_20 = 0;
-                        *(unsigned char*)(cell + CELL_TILE_ID) =
+                        runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(ramp_edges[2]));
+                        runtime_cells[build_row][lane].render_arg_1c = 0;
+                        runtime_cells[build_row][lane].render_arg_20 = 0;
+                        runtime_cells[build_row][lane].tile_id =
                             SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED;
-                        *glyph_list_flags |= 0x20;
-                        *(unsigned char*)(cell + PREVIOUS_ROW_CELL_TILE_ID) =
+                        runtime_cells[build_row][lane].list_flags |= 0x20;
+                        runtime_cells[build_row - 1][lane].tile_id =
                             SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH;
                     } else {
-                        ((BodBase*)(cell + CELL_BOD_BASE))
-                            ->SetObject(ROOT_BOD_OBJECT(ramp_edges[2]));
-                        *glyph_render_arg_1c = 0;
-                        *glyph_render_arg_20 = 0;
-                        *(unsigned char*)(cell + CELL_TILE_ID) =
+                        runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(ramp_edges[2]));
+                        runtime_cells[build_row][lane].render_arg_1c = 0;
+                        runtime_cells[build_row][lane].render_arg_20 = 0;
+                        runtime_cells[build_row][lane].tile_id =
                             SUBLOC_TILE_RAMP_RIGHT_BRACE;
-                        *glyph_list_flags |= 0x20;
+                        runtime_cells[build_row][lane].list_flags |= 0x20;
                     }
                     break;
                 case '{':
                     if (build_row > 0
-                        && *(unsigned char*)(cell + PREVIOUS_ROW_CELL_TILE_ID)
+                        && runtime_cells[build_row - 1][lane].tile_id
                             == SUBLOC_TILE_RAMP_GREATER) {
-                        ((BodBase*)(cell + CELL_BOD_BASE))
-                            ->SetObject(ROOT_BOD_OBJECT(ramp_edges[0]));
-                        *glyph_render_arg_1c = 0;
-                        *glyph_render_arg_20 = 0;
-                        *(unsigned char*)(cell + CELL_TILE_ID) =
+                        runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(ramp_edges[0]));
+                        runtime_cells[build_row][lane].render_arg_1c = 0;
+                        runtime_cells[build_row][lane].render_arg_20 = 0;
+                        runtime_cells[build_row][lane].tile_id =
                             SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED;
-                        *glyph_list_flags |= 0x20;
-                        *(unsigned char*)(cell + PREVIOUS_ROW_CELL_TILE_ID) =
+                        runtime_cells[build_row][lane].list_flags |= 0x20;
+                        runtime_cells[build_row - 1][lane].tile_id =
                             SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH;
                     } else {
-                        ((BodBase*)(cell + CELL_BOD_BASE))
-                            ->SetObject(ROOT_BOD_OBJECT(ramp_edges[0]));
-                        *glyph_render_arg_1c = 0;
-                        *glyph_render_arg_20 = 0;
-                        *(unsigned char*)(cell + CELL_TILE_ID) =
+                        runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(ramp_edges[0]));
+                        runtime_cells[build_row][lane].render_arg_1c = 0;
+                        runtime_cells[build_row][lane].render_arg_20 = 0;
+                        runtime_cells[build_row][lane].tile_id =
                             SUBLOC_TILE_RAMP_LEFT_BRACE;
-                        *glyph_list_flags |= 0x20;
+                        runtime_cells[build_row][lane].list_flags |= 0x20;
                     }
                     break;
                 case '<':
-                    ((BodBase*)(cell + CELL_BOD_BASE))
-                        ->SetObject(ROOT_BOD_OBJECT(ramp_edges[1]));
-                    *glyph_render_arg_1c = 0;
-                    *glyph_render_arg_20 = 0;
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_RAMP_LESS;
-                    *glyph_list_flags |= 0x20;
+                    runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(ramp_edges[1]));
+                    runtime_cells[build_row][lane].render_arg_1c = 0;
+                    runtime_cells[build_row][lane].render_arg_20 = 0;
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_RAMP_LESS;
+                    runtime_cells[build_row][lane].list_flags |= 0x20;
                     break;
                 case '[':
-                    ((BodBase*)(cell + CELL_BOD_BASE))
-                        ->SetObject(ROOT_BOD_OBJECT(ramp_edges[0]));
-                    *glyph_render_arg_1c = 0;
-                    *glyph_render_arg_20 = 0;
-                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_RAMP_LEFT_BRACKET;
-                    *glyph_list_flags |= 0x20;
+                    runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(ramp_edges[0]));
+                    runtime_cells[build_row][lane].render_arg_1c = 0;
+                    runtime_cells[build_row][lane].render_arg_20 = 0;
+                    runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_RAMP_LEFT_BRACKET;
+                    runtime_cells[build_row][lane].list_flags |= 0x20;
                     break;
                 case 'P':
                 case 'p': {
-                    cRSubLoc* runtime_cell = (cRSubLoc*)(cell + CELL_BOD_BASE);
+                    cRSubLoc* runtime_cell = &runtime_cells[build_row][lane];
                     if (normalized == 'P')
-                        *(unsigned char*)(cell + CELL_TILE_ID) =
+                        runtime_cells[build_row][lane].tile_id =
                             SUBLOC_TILE_PATH_ENTRY_UPPERCASE;
                     else if (normalized == 'p')
-                        *(unsigned char*)(cell + CELL_TILE_ID) =
+                        runtime_cells[build_row][lane].tile_id =
                             SUBLOC_TILE_PATH_ENTRY_LOWERCASE;
 
-                    if (base[TRACK_MIRROR_FLAG_OFFSET])
+                    if (track_mirror_enabled)
                         runtime_cells[build_row][lane].attachment_template_record =
                             &path_pairs[runtime_rows[build_row].attachment_template_index].secondary;
                     else
                         runtime_cells[build_row][lane].attachment_template_record =
                             &path_pairs[runtime_rows[build_row].attachment_template_index].primary;
 
-                    *glyph_list_flags &= 0xffffffdf;
+                    runtime_cells[build_row][lane].list_flags &= 0xffffffdf;
                     if (attachment_entry_installed == 0) {
                         attachment_entry_installed = 1;
-                        ((BodBase*)(cell + CELL_BOD_BASE))->SetObject(
+                        runtime_cells[build_row][lane].SetObject(
                             runtime_cells[build_row][lane].attachment_template_record->object);
-                        *glyph_list_flags |= 0x20;
+                        runtime_cells[build_row][lane].list_flags |= 0x20;
                         runtime_rows[build_row].attachment_body.SetObject(
                             runtime_cells[build_row][lane].attachment_template_record
                                 ->fringe_mesh_bod.object);
-                        *(int*)(
-                            (char*)&runtime_rows[build_row]
-                            + ROW_ATTACHMENT_LIST_FLAGS) |= 0x20;
+                        runtime_rows[build_row].attachment_body.list_flags |= 0x20;
                         runtime_rows[build_row].installed_heading_delta =
                             active_segment->angle_radians.value;
 
@@ -870,19 +737,14 @@ void cRSubGame::BuildLevel()
                                 & ~SUBROW_FLAG_PARCEL_Z_IS_LOCAL)
                             | SUBROW_FLAG_PARCEL_CANDIDATE;
                         runtime_rows[build_row].parcel_set_id = 0;
-                        *(float*)(
-                            (char*)&runtime_rows[build_row] + ROW_PROJECTION_X) =
+                        runtime_rows[build_row].parcel_spawn_position.x =
                             (float)lane - 4.0f + 0.5f;
-                        *(int*)(
-                            (char*)&runtime_rows[build_row] + ROW_PROJECTION_Y) =
-                            *(int*)(cell + CELL_POSITION_Y);
-                        *(float*)(
-                            (char*)&runtime_rows[build_row] + ROW_PROJECTION_Z) =
+                        runtime_rows[build_row].parcel_spawn_position.y =
+                            runtime_cells[build_row][lane].position.y;
+                        runtime_rows[build_row].parcel_spawn_position.z =
                             (float)build_row + 0.5f;
-                        if (base[TRACK_MIRROR_FLAG_OFFSET])
-                            *(float*)(
-                                (char*)&runtime_rows[build_row]
-                                + ROW_PROJECTION_X) *= -1.0f;
+                        if (track_mirror_enabled)
+                            runtime_rows[build_row].parcel_spawn_position.x *= -1.0f;
                     }
                 case '1':
                 case '2':
@@ -895,20 +757,19 @@ void cRSubGame::BuildLevel()
                 case '9':
                     if ((runtime_rows[build_row].flags & SUBROW_ATTACHMENT_MASK)
                         == 0) {
-                        ((BodBase*)(cell + CELL_BOD_BASE))
-                            ->SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
-                        *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_SLIDE_UNDERSCORE;
-                        *glyph_list_flags |= 0x20;
+                        runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
+                        runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_SLIDE_UNDERSCORE;
+                        runtime_cells[build_row][lane].list_flags |= 0x20;
                     } else {
-                        *glyph_list_flags &= 0xffffffdf;
-                        *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_EMPTY;
+                        runtime_cells[build_row][lane].list_flags &= 0xffffffdf;
+                        runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_EMPTY;
                     }
                     break;
                 default:
                     debug_report_stub(
                         "TrackError:%c in Segment %s\n",
                         LevelConvert(
-                            *glyph_ptr, build_row, 1),
+                            active_segment->glyph_rows[authored_lane][segment_row], build_row, 1),
                         active_segment->source_name);
                     break;
                 }
@@ -927,7 +788,7 @@ void cRSubGame::BuildLevel()
                     (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_X) =
                     0;
 
-                unsigned char tile = *(unsigned char*)(cell + CELL_TILE_ID);
+                unsigned char tile = runtime_cells[build_row][lane].tile_id;
                 float row_anchor_z;
                 if (tile == SUBLOC_TILE_PATH_ENTRY_LOWERCASE
                     || tile == SUBLOC_TILE_PATH_ENTRY_UPPERCASE) {
@@ -946,21 +807,17 @@ void cRSubGame::BuildLevel()
                         tColour skirt_color;
                         tColour* resolved_color =
                             g_game->subgame.GetSkirtColour(&skirt_color);
-                        *(tColour*)(
-                            (char*)&runtime_rows[build_row]
-                            + ROW_ATTACHMENT_COLOR) = *resolved_color;
+                        runtime_rows[build_row].attachment_body.color = *resolved_color;
                         set_object_color(
                             runtime_rows[build_row].attachment_body.object,
                             *resolved_color);
                     } else {
-                        *(int*)(
-                            (char*)&runtime_rows[build_row]
-                            + ROW_ATTACHMENT_LIST_FLAGS) &= 0xffffffdf;
+                        runtime_rows[build_row].attachment_body.list_flags &= 0xffffffdf;
                     }
                 } else {
                     runtime_cells[build_row][lane].position.x = (float)lane - 4.0f + 0.5f;
                     runtime_cells[build_row][lane].position.y = 0.0f;
-                    tile = *(unsigned char*)(cell + CELL_TILE_ID);
+                    tile = runtime_cells[build_row][lane].tile_id;
                     if (tile == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
                         || tile == SUBLOC_TILE_RAMP_GREATER_RAISED
                         || tile == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED)
@@ -974,10 +831,10 @@ void cRSubGame::BuildLevel()
                         *(char**)(base + PATH_36_PRIMARY_SAMPLES)
                         + ATTACHMENT_SAMPLE_POSITION_Y);
 
-                if (*(unsigned char*)(cell + CELL_TILE_ID) == SUBLOC_TILE_UNIVERSE_HOLE)
+                if (runtime_cells[build_row][lane].tile_id == SUBLOC_TILE_UNIVERSE_HOLE)
                     runtime_cells[build_row][lane].position.y -= 0.029999999f;
 
-                tile = *(unsigned char*)(cell + CELL_TILE_ID);
+                tile = runtime_cells[build_row][lane].tile_id;
                 if (tile == SUBLOC_TILE_FLOOR_DOT
                     || tile == SUBLOC_TILE_FLOOR_DASH
                     || tile == SUBLOC_TILE_FLOOR_VARIANT_14
@@ -999,10 +856,10 @@ void cRSubGame::BuildLevel()
                         (float)(build_row % 8) * 0.125f;
                 }
 
-                if (*(unsigned char*)(cell + CELL_TILE_ID) == SUBLOC_TILE_WIDE_VARIANT_1F)
+                if (runtime_cells[build_row][lane].tile_id == SUBLOC_TILE_WIDE_VARIANT_1F)
                     runtime_cells[build_row][lane].position.x *= 1.10000002f;
 
-                if (*(unsigned char*)(cell + CELL_TILE_ID) == SUBLOC_TILE_TRAMPOLINE) {
+                if (runtime_cells[build_row][lane].tile_id == SUBLOC_TILE_TRAMPOLINE) {
                     if (level_mode != 3
                         || (runtime_flags & SUBGAME_RUNTIME_FLAG_ALLOW_FALLING) != 0)
                         runtime_cells[build_row][lane].position.y = -3.0f;
