@@ -150,6 +150,22 @@ constructs take or skip a slot are in
 uv run tools/match/c2/rotation.py update_subgame --source overlay.cpp
 ```
 
+## Inline budget and alias class count
+
+[`inline_budget.py`](inline_budget.py) ports Crimson's inline budget tracer
+to both backends and to translation units. C2 starts a running total at the
+caller's own size estimate and inlines a callee of size `s` only while that
+total is at most 35000 (and `s <= 0x28` or `s` fits the remaining
+`clamp(2*size, 1000, 35000)` budget). Every expansion adds `s` to the total;
+`__forceinline` expansions add nothing. A refused inline method stays a call,
+and its out-of-line COMDAT copy follows the caller in the object. The tool
+lists each expansion and refusal with its physical line, and also prints C2's
+alias class count (classes from 0x400 collapse to class 1).
+
+```sh
+uv run tools/match/c2/inline_budget.py initialize_game_assets_and_world [--source overlay.cpp] [--all]
+```
+
 ## Global allocation: callee-saved register choice
 
 [`globalregs.py`](globalregs.py) traces C2's global allocator. For each live
