@@ -215,6 +215,10 @@ written (`0x1072795a`). The byte part gets its own candidate index
 to a memory store at block end (`0x1072eb81` → `0x107318e5`). So every
 `flag = 0/1` scores as `mov [mem], const` and saves 1 for that constant.
 SetJetPack shows the same demotion, balanced at 1 − 1 = 0 for both values.
+No byte-exact function depends on this rule: dropping those stores from
+SetJetPack and activate_landscape_entry leaves both objects unchanged, and
+set_snail_weapon's closest source matches native only as if they did not
+count (see its NOTES).
  The colouring loop sends every range with benefit ≤ 0 to
 `handle_unprofitable_live_range` (`0x10732001`):
 - **Forced.** `force_best_preference` (`0x10732152`) applies when
@@ -251,8 +255,10 @@ and records `constant` and `candidate_index` in `global.json`.
 - **Distinct variables that hold the same constant.** A second variable
   assigned the same literal adds a store (`authored_width`).
 - **Branch structure into a join.** It orders the hoisted loads.
-  update_frontend_widget_interaction fixed its `edi`/`ebp` load order by
-  ending the pointer-inside block with `goto update_after_input`.
+  update_frontend_widget_interaction fixed its `edi`/`ebp` load order under
+  msvc6.5 by ending the pointer-inside block with `goto update_after_input`.
+  Under msvc6.3 the goto-free iOS nesting (nested `else` blocks) gives the
+  same order.
 
 ## Diagnostic
 

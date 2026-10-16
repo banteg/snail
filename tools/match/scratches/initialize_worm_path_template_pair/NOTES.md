@@ -589,3 +589,49 @@ entrance and exit loops at lines 40 and 66) shifts `secondary_bank` to `local 0x
 key `0x00018007 > 0x00016c00`), restoring the native bank-first `mov ecx, [esi+0x5c]; add ecx, edi`
 receiver and recovering **91.88%** (`729/736` instructions, structural `28/21` changed, `96.52%`,
 `37` clean references) under `msvc6.3`.
+
+## 2026-10-16: msvc6.3 whole-TU retest
+
+Baseline under msvc6.3 in the 43-function Path unit: 91.88%, 729/736,
+structural 96.52% (29/22), frame 0x68 against 0x80.
+
+**The face pass reuses both vertex counters: 29/22 → 21/14** (92.97%,
+structural 97.61%, 729/736; no other Path member changes). Native homes the
+face row in `sample_index`'s slot (`[0x10]`) and the face column in
+`mesh_column`'s slot (`[0x18]`). The source now reuses both counters in the
+same roles as the vertex pass: row = `sample_index`, column = `mesh_column`.
+Reusing only one regresses (row only: 41/34; a fresh row: 44/37), which is
+why the 2026-09-25 retest rejected it. All face-loop slot differences are
+gone. What remains is the vertex block and the frame (`sub`/`add esp`, two
+`texture_path` offsets).
+
+**The missing B and C copies are still unrecovered.** Native has four
+12-byte objects at `0x4207e8`: A = `pos + t`, B a field copy of A (x kept in
+st(0), y/z copied with integer moves, then read back), C = `B + up`, and D
+a field copy of C that is block-copied to `vertices[k]`. We keep only A
+and D.
+
+- A msvc6.3 port of `il_stage_trace` (globopt preset, sites mapped with
+  `map_rvas`, 24/24) shows the 6.3 frontend lowers `Vector3 v = expr;` as
+  return temp → compiler temp → `v` (three block copies; 6.5 emits one).
+  cse1 still rewrites every field read through the chain to the operator's
+  `result`, and dce1 deletes the copies. So named, unnamed,
+  single-expression, right-to-left, operand-order, cast, chained,
+  declare-then-assign and vertex-pointer spellings are all byte-identical.
+- The copy-source finder (6.3 `C2+0x70c7`) is masked-identical to 6.5's
+  (`C2+0x9b5a`). For stack locals a copy's availability dies only on an
+  overlapping write; the per-alias-class kill sets hold only copies made
+  through a pointer. So B's y/z lanes survive only through an overlapping
+  in-place write (`+=` makes a block copy whose dead x-lane `mov` is still
+  emitted: 54/53), a pointer-reached B, or a copy of another type. None
+  reads naturally here.
+- `Vector3(&vertex.x)` or `Vector3(vertex.x, vertex.y, vertex.z)` reproduces
+  D (and C) exactly (frame 0x74) but costs points while B is absent (22/19).
+
+Excluded: a user copy constructor (the Path unit drops from 40 to 7 exact
+members); a by-value `lhs` (frame 0x80 only by copying `position`, 37/40);
+in-place and constructor-return operators; a copy budget (20–400 extra
+copies never produce B); the inline budget (20 expansions, no refusals,
+0xf2 alias classes). The stack packer would append B and C as weight-4
+12-byte slots after A with no density re-sort, so the frame residual is
+exactly B + C.
