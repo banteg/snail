@@ -1,5 +1,32 @@
 # cRBorder::InputText @ 0x4035b0
 
+## 2026-10-16: msvc6.3 whole-TU retest, two-flag OK-placement test
+
+**98.76% -> 98.99%**, 443/446 instructions, prefix **6 -> 423**, eight clean
+references, compiled inside the Border translation unit.
+
+- **Opening load width (fixed).** `(input_flags & 4) != 0 || (input_flags & 8) != 0`
+  compiles to native's `mov eax, dword [esi+0x70c]; test al, 0xc`. The single
+  mask `(input_flags & 0x0c) != 0` narrows to `mov al, byte [...]`. C2 still
+  merges the two bit tests into one `test al, 0xc`, but keeps the dword load
+  (not traced). The spelling is plausible source: `cRInputOK::AI` tests the same two bits
+  separately (4 places OK to the right, 8 to the left). The teardown test
+  compiles to native's `test byte [esi+0x70c], 0xc` with either spelling, so
+  both sites now use the two-flag form. Neutral: a named `mode` copy, an
+  `int ok_mode = input_flags & 0x0c` local, `if (input_flags & 0x0c)`;
+  `(int)(input_flags & 0x0c) > 0` regresses to 98.54%.
+- **Completion staging (simplified, byte-identical).** The three staged
+  temporaries become mobile's shape: `flags = widget_flags; widget_flags =
+  flags & ~ACTIVE; --input_length; widget_flags = (flags & ~ACTIVE) | COMPLETE`.
+  The normalized listing is identical to the staged form. Compound `&=`/`|=`
+  forms and a single `flags & ~ACTIVE` local both change the prologue
+  allocation (`mov esi, ecx` at 2) and regress to 92.33% and 93.23% (440 instructions).
+- **Still open.** Native keeps the first `widget_flags` store and a dead
+  `mov cl, byte [esi+0x2cc]` (`text_buffer[0]`) between the stores. Ours
+  eliminates the first store. A `char` read between the stores is what would
+  block that elimination (it may alias), but no source construct that reads
+  `text_buffer[0]` and discards it reads as authored code. Not added.
+
 ## 2026-09-11: shared insertion and Home recovery
 
 Current agreement is **98.76265467%**, **443/446 instructions**, prefix **6**,
