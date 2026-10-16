@@ -172,3 +172,45 @@ Mechanism (the constant-candidate section of
 
 A bounded Codex consult (gpt-6-astra, about 40-60 probes) found no defensible improvement. Its evidence and probe ledger are in `/private/tmp/claude-501/sm/codex/update_frontend_widget_interaction/RESULTS.md`.
 Key finding: eight x87 multiplies still have their operands reversed, and the more-button clamp has one extra instruction. Publishing the clamp directly changes constant priority (1.0f takes ebx and 0 takes ebp), which causes widespread differences. Removing the two slider-child pointer locals is byte-neutral.
+
+## 2026-10-16: msvc6.3 whole-TU retest
+
+The baseline is unchanged: 95.44% normalized, 648/647 instructions, prefix
+180, structural 96.99%, 19/20 changed. The edi/ebp constant loads at +127
+already match, so the hoisting lead is closed. Two residuals remain, and
+neither has an authentic source fix.
+
+- **Hover-colour x87 order, 16 changed instructions.** `addrorder` under the
+  TU reproduces the 2026-09-25 costs exactly. `hot.c` is an uncse'd
+  `this+disp` expression (0x10203c0–0x1020458); `t` is the CSE'd address
+  leaf `[temp 0x473]` (0x1c007). An expression always sorts above a leaf,
+  and no id shift raises a temp leaf above 0x1c007. `schedtrace.py` finds no
+  window that differs from native, and `rotation.py` agrees everywhere.
+  `(double)t * hot` and `hot * t` are byte-neutral; a `1.0 - t` double
+  literal regresses to 37/40.
+- **More-button clamp, 3 instructions vs 4.** Native publishes the value
+  (`fst [0x17c]; fcomp 0.9 … mov [0x17c], ebp`). This is a global-allocator
+  queue race between `1.0f` (candidate 14) and DISABLED `0x8000`
+  (candidate 11), with only ebx free for either.
+  - Canonical: `0x8000` (−167) is coloured before `1.0f` (−170). Its ebx
+    uses are later turned back into immediates, so ebx never appears;
+    `1.0f` splits into ebp pieces, as in native.
+  - Published `slider_value = 1.0f`: `1.0f` rises to −167 (benefit 4) and
+    `0x8000` drops to −168. `1.0f` takes ebx for the whole function and 0
+    splits into ebp: 80.62%, 41/47.
+  - At a full tie the later range (id 14) wins, so native needs `1.0f`
+    strictly below `0x8000`.
+  - Diagnostic only: changing the text-effect `1.0f` to `2.0f` gives −170
+    against −167, and the published clamp then matches exactly (17/17).
+  - About 20 code-neutral or near-neutral respellings combined with the
+    published clamp all stay at or below 41/47: the child-pointer locals,
+    `flags` vs `widget_flags` tests, tail test polarity and locals, store
+    order, compare spelling, and if/else structure.
+- **Structure: the gotos are gone.** Under msvc6.3 the
+  `goto update_after_input` lever is no longer needed. Nesting the
+  hidden/disabled tests in the teardown `else`, the rest in the disabled
+  `else`, and the outside path in the pointer `else` compiles to the same
+  instructions with no label. This is the iOS nesting
+  (`if (!(f & 0x400)) { if (f & 0x1000) return; if (!(f & 0x8000)) {…} else {…} } else {teardown}`),
+  and the canonical source now uses it. Converting only the pointer test to
+  if/else still regresses (20/21, prefix 127).

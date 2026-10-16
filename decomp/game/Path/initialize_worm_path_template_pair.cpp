@@ -232,48 +232,48 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
         } while (sample_index <= segment_count);
     }
 
-    mesh_column = 0;
+    sample_index = 0;
     if (segment_count > 0) {
         do {
-            int column = 0;
+            mesh_column = 0;
             if (width_cells > 0) {
-                float row_v = (float)mesh_column * WORM_UV_ROW_STEP;
-                float next_row_v = (float)(mesh_column + 1) * WORM_UV_ROW_STEP;
+                float row_v = (float)sample_index * WORM_UV_ROW_STEP;
+                float next_row_v = (float)(sample_index + 1) * WORM_UV_ROW_STEP;
                 do {
-                    int next_column = column + 1;
-                    column_as_float = (float)column;
+                    int next_column = mesh_column + 1;
+                    column_as_float = (float)mesh_column;
                     float next_column_f = (float)next_column;
                     int side = 0;
                     do {
-                        int face_offset = side + 2 * (mesh_column * width_cells + column);
+                        int face_offset = side + 2 * (sample_index * width_cells + mesh_column);
                         facequads[face_offset].header_word = 0;
                         if (side == 0) {
                             facequads[face_offset].vertex_0 =
-                                (unsigned short)(mesh_column * width_cells + column);
+                                (unsigned short)(sample_index * width_cells + mesh_column);
                             facequads[face_offset].vertex_1 =
-                                (unsigned short)(mesh_column * width_cells + next_column % width_cells);
+                                (unsigned short)(sample_index * width_cells + next_column % width_cells);
                             facequads[face_offset].vertex_2 =
-                                (unsigned short)((mesh_column + 1) * width_cells + next_column % width_cells);
+                                (unsigned short)((sample_index + 1) * width_cells + next_column % width_cells);
                             facequads[face_offset].vertex_3 =
-                                (unsigned short)((mesh_column + 1) * width_cells + column);
+                                (unsigned short)((sample_index + 1) * width_cells + mesh_column);
                         } else {
                             facequads[face_offset].vertex_0 =
-                                (unsigned short)(mesh_column * width_cells + next_column % width_cells);
+                                (unsigned short)(sample_index * width_cells + next_column % width_cells);
                             facequads[face_offset].vertex_1 =
-                                (unsigned short)(mesh_column * width_cells + column);
+                                (unsigned short)(sample_index * width_cells + mesh_column);
                             facequads[face_offset].vertex_2 =
-                                (unsigned short)((mesh_column + 1) * width_cells + column);
+                                (unsigned short)((sample_index + 1) * width_cells + mesh_column);
                             facequads[face_offset].vertex_3 =
-                                (unsigned short)((mesh_column + 1) * width_cells + next_column % width_cells);
+                                (unsigned short)((sample_index + 1) * width_cells + next_column % width_cells);
                         }
 
                         if (side == 0) {
-                            if (((column ^ mesh_column) & 1) == 0)
+                            if (((mesh_column ^ sample_index) & 1) == 0)
                                 facequads[face_offset].texture_ref = g_texture_refs.Add(texture_path, 0, 0);
                             else
                                 facequads[face_offset].texture_ref = g_texture_refs.Add(texture_path, 0, 0);
                         } else {
-                            if (((column ^ mesh_column) & 1) == 0)
+                            if (((mesh_column ^ sample_index) & 1) == 0)
                                 facequads[face_offset].texture_ref = g_texture_refs.Add(texture_path, 0, 0);
                             else
                                 facequads[face_offset].texture_ref = g_texture_refs.Add(texture_path, 0, 0);
@@ -305,12 +305,12 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
                         ++side;
                     } while (side < 2);
 
-                    ++column;
-                } while (column < width_cells);
+                    ++mesh_column;
+                } while (mesh_column < width_cells);
             }
 
-            ++mesh_column;
-        } while (mesh_column < segment_count);
+            ++sample_index;
+        } while (sample_index < segment_count);
     }
 
     CalcLengthZ();

@@ -239,3 +239,51 @@ are not kept.
   flags, conditional expressions, and show/idle wrappers.
 
 The retained source is unchanged.
+
+## 2026-10-16: msvc6.3 whole-TU retest
+
+No source change. The earlier experiments were rerun under msvc6.3 with
+SubGame compiled as one translation unit (191 functions).
+
+- **Canonical:** 77.51% normalized, 247/249, prefix 14; structural 93.29%,
+  31/29 changed. Constants 0 and 1 have benefits 5 and 3 (ebx only, +800 on
+  ebx). The extra unit on constant 1 comes from the tail-duplicated
+  `selected_state = 1` store.
+- **Uniform-channel lead:** traces exactly as on msvc6.5. Constants 0 = 5
+  and 1 = 2, ebx +700; the channel-0 case pointers take ebp and `target1`
+  takes ebx. Its code differs from native only in that swap and the later
+  `push ebp` (41/38 changed in code; the matcher reports 48.47% because the
+  byte lookup table is read as code without the pad). Every other constant
+  range is at −1.
+- **Interventions** (initial queue, SubGame ordinal 161, diagnostic only):
+
+  | Intervention | Result |
+  |---|---|
+  | lead, constants 0 and 1 → −1 | **byte-exact** |
+  | lead, constants 0 and 1 → 0 | **byte-exact** |
+  | lead, either one alone | lead |
+  | lead, `target1` priority → 40 | 98.80%; only mapping case 4's copy direction differs (`mov edi,1; mov ebp,edi`) |
+  | canonical, constants 0 and 1 → −1 | 79.12% |
+
+  So the constants' benefit, not the colouring order, separates the lead
+  from native.
+- **Source retest, negative (about 35 variants):** flag type
+  `bool`/`int`/`char`/`unsigned char`/`!= 0` and `true`/`false`;
+  channel-scoped and three separate flags; the zero store before the
+  reverse call; `any_channel_changed` at the declaration, after the switch,
+  or Android's `else changed = false`; if/else reverse or target dispatch;
+  cmp_bitand (−1/−1 but setne/and, 257/248); direct or per-channel
+  `selected_state`; five declaration orders; `default: break`; `Weapon&`
+  borrow positions; canonical with the uniform tail (93.08%, 31/31). All
+  neutral or worse; the register-flag forms still add setne.
+- **Rule check:** no byte-exact function needs demoted bool stores to
+  count. Setting SetJetPack's constants 0 and 1 to −1, or taking
+  `flip`'s demoted stores off in activate_landscape_entry (0: 2→0, 1: 2→1),
+  leaves both objects unchanged. set_snail_weapon is the only function
+  where the "Demoted stores count" rule decides anything: native agrees
+  with the lead as though the flag's nine demoted `= 0/1` stores did not
+  count (5−6 = −1, 2−3 = −1).
+- **Open.** Either some source form keeps the immediate byte stores without
+  marking the container partially written, or the original backend did not
+  count demoted dead-def stores. Neither is shown. The canonical source
+  stays (best score); the lead is one allocator input away from exact.
