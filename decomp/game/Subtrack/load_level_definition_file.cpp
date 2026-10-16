@@ -7,6 +7,7 @@
 #include "sub_tracks.h"
 #include "segment_catalog_types.h"
 #include "game_root.h"
+#include "rshell.h"
 
 extern char* g_current_level_definition_name; // data_74ec74
 extern char g_level_file_text_buffer[]; // data_74ec78
@@ -16,8 +17,6 @@ extern char g_level_file_text_buffer[]; // data_74ec78
 int sprintf(char* buffer, const char* format, ...);
 int report_errorf(char* format, ...);
 int report_warningf(char* format, ...);
-void* load_file_bytes_from_archive_or_fs(
-    char* path, void* out_buffer, int* out_size);
 int find_registered_sound_sample_id_by_name(char* sample_name); // @ 0x432fc0
 
 struct LevelDefinitionParseBuffers {

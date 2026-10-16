@@ -8,9 +8,6 @@
 char archive_or_file_exists(char* path, char force_filesystem); // @ 0x430fd0
 char* load_file_bytes(char* file_name, int* out_size); // @ 0x431520
 char is_archive_index_loaded(); // @ 0x431a80
-char* load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out_size);
-char* load_file_bytes_fixed_size_from_archive_or_fs(char* path, char* out_buffer,
-    int byte_count);
 int report_warningf(char* format, ...); // @ 0x431d10
 
 extern "C" int __stdcall D3DXCreateTextureFromFileInMemoryEx(Direct3DDevice8* device,

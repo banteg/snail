@@ -1,6 +1,6 @@
 // load_file_bytes @ 0x431520 (cdecl)
 
-void* load_file_bytes_from_archive_or_fs(char* file_name, void* buffer, int* out_size);
+#include "rshell.h"
 
 void* load_file_bytes(char* file_name, int* out_size)
 {

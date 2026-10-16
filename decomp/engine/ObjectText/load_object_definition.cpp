@@ -5,7 +5,6 @@
 #include "rtext.h"
 #include "sprite.h"
 
-char* load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out_size);
 int sprintf(char* buffer, char* format, ...);
 
 void load_object_definition(char* path, Object* object)

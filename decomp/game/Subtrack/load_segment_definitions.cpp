@@ -4,13 +4,13 @@
 #include "rstring.h"
 #include "rtext.h"
 #include "segment_catalog_types.h"
+#include "rshell.h"
 
 int sprintf(char* buffer, char* format, ...);
 int report_errorf(char* format, ...);
 void enumerate_matching_archive_or_fs_entries(char* directory, char* pattern,
                                               int* out_count,
                                               char* out_names); // @ 0x431740
-int load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, void* out_size);
 
 void cRSMTracks::Import() {
     char path_name[64];
@@ -34,7 +34,7 @@ void cRSMTracks::Import() {
         // The authored call passes the text buffer as an unused fourth vararg;
         // the same source bug survives in the symbol-rich iOS build.
         sprintf(file_path, "Segments/%s", segment_files[segment_index], file_buffer);
-        load_file_bytes_from_archive_or_fs(file_path, file_buffer, (void*)0);
+        load_file_bytes_from_archive_or_fs(file_path, file_buffer, 0);
 
         char* id_cursor = Rstrfind("ID:", file_buffer);
         if (id_cursor == 0) {

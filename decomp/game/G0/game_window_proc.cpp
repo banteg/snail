@@ -4,6 +4,7 @@
 #include "display_mode_state.h"
 #include "main_loop_state.h"
 #include "mouse_input_state.h"
+#include "rdebug.h"
 #include "win32_window_state.h"
 
 extern "C" __declspec(dllimport) void __stdcall PostQuitMessage(int exit_code);
@@ -11,7 +12,6 @@ extern "C" __declspec(dllimport) LRESULT __stdcall DefWindowProcA(
     HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 extern "C" __declspec(dllimport) unsigned int __stdcall timeGetTime();
 
-extern int debug_report_stub(char* format, ...); // @ 0x449c00
 extern int handle_game_window_activate();        // @ 0x4072f0
 extern char handle_game_window_deactivate();     // @ 0x407440
 extern int restore_desktop_display_mode();       // @ 0x407860

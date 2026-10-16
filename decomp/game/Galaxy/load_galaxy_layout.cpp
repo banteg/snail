@@ -8,9 +8,7 @@
 
 int sprintf(char* buffer, char* format, ...);
 
-char* load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, void* out_size);
 int report_errorf(char* format, ...);
-
 
 void cRGalaxy::Open()
 {
@@ -43,7 +41,7 @@ void cRGalaxy::Open()
     char* file_text = load_file_bytes_from_archive_or_fs(
         "Galaxy/_Galaxy.txt",
         (char*)get_archive_data_base(),
-        (void*)0);
+        0);
 
     int star_index = 0;
     for (int galaxy_index = 0;
