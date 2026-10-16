@@ -204,7 +204,13 @@ def observer(profile, stock_source):
 def run_observer(scratch, out):
     stock_profile, stock_source = c2.load_profile, c2.observer_source
     profile = use_backend(m.load_scratch_config(scratch).compiler)
-    hooks = [GLOBAL_ENTRY_HOOK, LOCAL_ENTRY_HOOK, *QUEUE_HOOKS, CHOOSE_HOOK, rot.FUNCTION_ENTRY_HOOK]
+    hooks = [
+        GLOBAL_ENTRY_HOOK,
+        LOCAL_ENTRY_HOOK,
+        *QUEUE_HOOKS,
+        CHOOSE_HOOK,
+        rot.FUNCTION_ENTRY_HOOK,
+    ]
     profile = dict(profile, name=profile["name"] + "-global", hooks=hooks)
     c2.load_profile = lambda: profile
     c2.observer_source = lambda p: observer(p, stock_source)
