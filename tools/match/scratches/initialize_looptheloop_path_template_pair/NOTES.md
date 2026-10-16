@@ -1,5 +1,22 @@
 # `initialize_looptheloop_path_template_pair` starter
 
+## 2026-10-16 whole-TU recheck: not closable with honest source
+
+The last byte is still `+0x316`. Bank temp `0x576` (key `0x15d80`) sorts
+ahead of the curve iv-temp `0x894` (`0x12500`). Native needs the endpoint
+below the bank and the bank below the iv. That takes the iv 149 ids lower,
+which flips five delta-loop bytes, or 227 or more `number_assignment` ids
+higher. The SP5-era spellings were re-tested under msvc6.3 and none fixes it.
+
+A HalfPipe/Turnover-style `__forceinline` byte cursor reaches 721/721
+instructions at 99.31% (99.86% with the cursor set before the guard). Two
+things still block it:
+- the cursor is Pool-B local `0x1fb`, below the bank `0x557`;
+- its `mov edi, 0x498` is scheduled ahead of the hoisted preheader stores,
+  where native's strength-reduction init comes last.
+
+No source change. See the [2026-10-16 report](../../path-loop-builders-sib-20261016.md).
+
 ## 2026-09-25 sibling mesh-helper control
 
 A `build_strip_mesh` helper from hump, dump, sweep, toad, wibble, invert or

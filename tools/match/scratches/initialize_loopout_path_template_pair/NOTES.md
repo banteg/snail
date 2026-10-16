@@ -1,3 +1,16 @@
+## 2026-10-16 whole-TU recheck: not closable with honest source
+
+The last byte is still `+0x2e7`, the endpoint load. Native needs the
+endpoint below the bank and the bank below the iv. With the current kinds no
+bank cost can do that, because endpoint temp `0x5bb` (`0x6ec0`) already
+hashes above iv-temp `0x943` (`0x50c0`).
+
+A named `departure_offset` local for the endpoint is propagated back into a
+CSE temp (`0x5db`, C0 `0x560`, 99.72%). A late-chunk bank local would need an
+id of `0x377` or more, but the second Pool-B chunk opens at `0x2a0`.
+
+No source change. See the [2026-10-16 report](../../path-loop-builders-sib-20261016.md).
+
 ## 2026-09-25 sibling mesh-helper control
 
 Replacing the inline vertex/face loops with a `build_strip_mesh` helper
