@@ -1,3 +1,13 @@
+## 2026-10-16 whole-TU recheck: not closable with honest source
+
+The last byte is still `+0x359`. Bank temp `0x55a` (`0x15680`) sorts ahead
+of iv-temp `0x8ad` (`0x12b40`). Native's curve preheader ends in
+`mov edi, 0x498` after the hoisted endpoint and constant stores. That is the
+strength-reduction init, so a source byte cursor (the HalfPipe/Turnover fix)
+cannot reproduce it. LoopTheLoop's cursor overlay confirms that schedule.
+
+No source change. See the [2026-10-16 report](../../path-loop-builders-sib-20261016.md).
+
 ## 2026-09-22 interpolation operation ownership
 
 Borrowing the actual primary-bank field within its interpolation operation

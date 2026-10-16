@@ -1,5 +1,16 @@
 # Reconstruction notes
 
+## 2026-10-16 whole-TU recheck: not closable with honest source
+
+The last byte is still `+0x327`. Bank temp `0x5fd` (`0x17f40`) sorts ahead
+of iv-temp `0x969` (`0x15a40`). The curve preheader ends in
+`mov ebx, 0x498` after the hoisted endpoint and constant stores. That is the
+strength-reduction init, so a source byte cursor cannot reproduce it (see
+LoopTheLoop's overlay). Closing the byte needs the iv-temp created about 149
+ids later (`0x169` → past `0x1fd` mod `0x400`), with no code change.
+
+No source change. See the [2026-10-16 report](../../path-loop-builders-sib-20261016.md).
+
 ## 2026-09-23: interpolation and pivot lifetimes
 
 The live source now reaches **100% normalized agreement, 796/796 instructions,
