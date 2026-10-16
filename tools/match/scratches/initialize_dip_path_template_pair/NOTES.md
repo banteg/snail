@@ -1,3 +1,21 @@
+## 2026-10-16: msvc6.3 whole-TU retest
+
+Unchanged at **99.85%**, 655/655, prefix 100. `globalregs.py` on the live
+source in the Path TU shows constant 0's second-level piece (#23) at priority **148**
+with allowed {ebp}. It gets ebp, and the loop index gets ebx (native's allocation).
+The only difference is still the phase-zero store source (ebp vs native's ebx = `i`).
+
+- `curve_phase_index = i`, `= i = 0`, `i = curve_phase_index`, `int i = 0,
+  curve_phase_index = 0`, a late `= i` assignment, and `i = curve_phase_index = 0`
+  all constant-propagate to the same object.
+- Moving the initial `curve_phase_index = i` inside the guard copy-coalesces the
+  phase into `i` (647 instructions, 86.18%). Constant 0's pieces fall to priority 85/108
+  and take ebx. Dropping the phase variable (single index) gives 85.71%, also 647: native
+  keeps the separate `[esp+0x14]` phase home, so the variable is authored.
+- The phase is assigned from `i` at the latch and stored from ebx before the loop.
+  So native's pre-loop store is a copy from `i` that was not constant-propagated. No
+  tested spelling blocks that propagation.
+
 ## 2026-09-25 controls (no source change)
 
 Still 99.54%, 3/3 structural. Neither residual moved:

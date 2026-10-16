@@ -1,5 +1,16 @@
 # Near match — 99.02% score, 204/204 instructions on standard flags
 
+## 2026-10-16: msvc6.3 whole-TU retest of the vector signature
+
+The lead was the authored `(tVector position, tVector sweep, cRSubLoc*)` signature,
+matching the adjacent `cRPath::SearchPos` and the `SubgoldyPathView` caller view in
+`update_subgoldy.cpp`. With a header shadow, compiled in the Path TU:
+`position + sweep`, `sweep + position`, a fused `position + sweep - hit_origin`
+and a parenthesized fused form all give **98.04%**, 204/204, prefix 111. That matches
+the 2026-09-25 result: X loads sweep first as native does, but Y/Z flip. The scalar
+signature (99.02%) stays. `addrorder.py --nodes` on the 43-function Path unit exceeds
+the observer's 60 s replay timeout, so this retest has no new slot listing.
+
 ## 2026-09-25: vector-value signature retest on the current body
 
 This used a local header shadow with `(Vector3 position, Vector3 sweep, cRSubLoc* cell)` and

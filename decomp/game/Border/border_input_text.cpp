@@ -13,7 +13,7 @@ void cRBorder::InputText()
     char final_character;
     char key = read_repeating_text_input_key_code();
 
-    if ((input_flags & 0x0c) != 0) {
+    if ((input_flags & 4) != 0 || (input_flags & 8) != 0) {
         input_ok_state()->AI();
         if ((input_ok_state()->ok_widget->widget_flags
                 & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED)
@@ -281,18 +281,13 @@ finish_input:
         *remove = remove[1];
         ++remove;
     }
-    unsigned int original_flags = widget_flags;
-    unsigned int cleared_flags =
-        original_flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
-    int remaining_length = input_length - 1;
-    unsigned int closing_flags =
-        original_flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
-    closing_flags |= FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;
-    widget_flags = cleared_flags;
-    input_length = remaining_length;
-    widget_flags = closing_flags;
+    unsigned int flags = widget_flags;
+    widget_flags = flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
+    --input_length;
+    widget_flags = (flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE)
+        | FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;
     RePosition();
-    if ((input_flags & 0x0c) != 0)
+    if ((input_flags & 4) != 0 || (input_flags & 8) != 0)
         g_game->border_manager
             .kill_border(input_ok_state()->ok_widget);
 }

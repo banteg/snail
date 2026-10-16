@@ -19,6 +19,28 @@ deflection-product operand order. Their source shape is still unresolved.
 The persistent collision-side carrier previously tested is behaviorally wrong
 and is not retained.
 
+## 2026-10-16: msvc6.3 whole-TU retest
+
+Unchanged at **99.50%**, 695/694, prefix 417, 71 clean references (Golb TU).
+
+- **Active-state gate.** Android and iOS both spell the garbage gate as
+  `if (state == 1)`. That form gives native's `cmp dword [esi+0x84], 0x1` and the native
+  **694/694** count; `for`, `while`-with-`if` and `continue` spellings are identical.
+  It still scores 93.24%. `globalregs.py` shows why. Constant 1 gains the compare and
+  the `test ah, 1` masks in the garbage loop as register uses. Its piece (#11, priority
+  −18) then takes ebx at the loop head, which pushes constant 2's pieces (#61/#92)
+  into ecx. Native keeps constant 2 in ebx from `kind == 2` through the burst
+  `state`/`collision_side` stores and reloads `mov ebx, 1` locally. The
+  switch's `dec` hides the compare's constant 1 use, so the switch keeps
+  native's allocation but loses the instruction. A ternary `collision_side` also reaches
+  694/694 but reallocates differently (93.53%); `dz < 3 && dz > -3` regresses.
+- **Deflection Z product.** `-(s * p.z)`, `-(p.z * s)`, `-s * p.z`,
+  `p.z * -s`, `-p.z * s`, and moving `delta.y = 0` all compile
+  byte-identically, because negation and commutation are normalized before the
+  operand sort. Writing into `velocity` directly regresses (90.17%, 688 instructions). Per
+  [x87-order.md](../../c2/x87-order.md), `probe.z` (address-taken local, nonzero displacement)
+  costs above the `deflect_speed` leaf. Native's order needs the opposite.
+
 ## 2026-09-05 borrowed slug slots and vector subtraction
 
 The hazard scan now derives a typed `cRSlug*` from the owned slot bank and its

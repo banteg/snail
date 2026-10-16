@@ -188,3 +188,41 @@ inlined `&slot` is optimized away, and an out-of-line helper regresses to
 
 A bounded Codex consult (gpt-6-astra, about 40-60 probes) found no defensible improvement. Its evidence and probe ledger are in `/private/tmp/claude-501/sm/codex/register_font_texture_sheet/RESULTS.md`.
 Key finding: the global allocator gives the glyph-slot range edx, where native spills it and keeps the font index in edx. The other residuals are stack homes, conversion scheduling, the page-zero store and reload placement.
+
+## 2026-10-16: msvc6.3 whole-TU retest
+
+Under msvc6.3 inside the whole Font unit the canonical source is unchanged at
+86.65% normalized, 273/274 instructions, prefix 55, structural 92.50%
+(21/20). `rotation.py` agrees with native at every pinned allocation, so the
+whole residual comes from the global allocator.
+
+`globalregs.py` names the cause. `slot`'s web (tie 149, benefit 16,
+priority 3) is split, and its glyph-block piece (benefit 4 at loop weight 2:
+the address read, `++slot` and the compare, less the entry load and the exit
+store) is coloured edx at priority 20. That edx was holding the cached
+`g_registered_font_count` load. Native keeps that load live through the block:
+its non-error path jumps straight to the latch (`jne L226`), past the reload,
+and the loop exit relies on edx. The candidate has to reload at the latch
+join (`jne L21d`). The other hunks sit downstream of that choice (the
+x/run/slot stack homes, the width zero-extension in ebp, the
+`texture_page = 0` store from ebp, the error call's reload order), but the
+interventions below do not recover them all, and the immediate `slot = 0`
+store stays unexplained.
+
+Observer interventions (diagnostic only; the object changes):
+
+| Intervention inside FontLoad | Structural |
+| --- | --- |
+| none | 92.50%, 21/20 |
+| slot piece benefit −1, or priority 1 | 89.78%, 28/28: the tail is native's (slot through eax, one `jne` target, ebp store), but edx is now free and takes the width zero-extensions, so the block schedule moves away |
+| whole slot web benefit −1 | unchanged (it was split anyway) |
+| range 32 (cls 7, edx) priority 1000 | 91.77%, 23/22 |
+
+So native needs two things together: slot out of edx in the block, and the
+global's load still live in edx across it. Retested source controls under
+the TU: all six orders of the `x`/`run_width`/`slot` declarations are
+byte-identical, and so is `if (++slot == FONT_GLYPH_CAPACITY)`. These regress:
+`slot` at function top (22/21), `font_index` inside the glyph block (31/27),
+direct `g_registered_font_count` indexing (42/48), a `FontSheet*` borrow
+(92/85), resetting `run_width` after the page store (22/21) or before
+`++slot` (68/65). No source change is retained.
