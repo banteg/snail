@@ -2105,7 +2105,8 @@ def test_mobile_tvector_methods_recover_authored_surface() -> None:
     zero_source = (
         scratch_source_path(repo_root / "tools/match/scratches/zero_vector3")
     ).read_text(encoding="utf-8")
-    assert "int tVector::zero_vector3()" in zero_source
+    assert "tVector::zero_vector3 is defined inline in vector3.h" in zero_source
+    assert "    void zero_vector3()\n    {\n" in vector_header
     assert entries["zero_vector3"]["status"] == "unverified"
 
 

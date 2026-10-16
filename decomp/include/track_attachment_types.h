@@ -1,5 +1,5 @@
 // Authored cRPath records and attachment-follow runtime views. Windows stores
-// 126 exact 0xa8-byte owners as 63 primary/secondary pairs; Android and iOS
+// 126 exact 0xa8-byte owners as cRSubGame::paths[63][2]; Android and iOS
 // preserve the cRPath methods and cRPathFollowGoldy traversal vocabulary.
 #ifndef TRACK_ATTACHMENT_TYPES_H
 #define TRACK_ATTACHMENT_TYPES_H
@@ -294,14 +294,6 @@ typedef char cRPath_must_be_0xa8[
 // symbols establish cRPath as the authored identity; Windows establishes the
 // complete layout and ABI.
 typedef cRPath Path;
-
-struct PathPair {
-    cRPath primary;   // +0x00
-    cRPath secondary; // +0xa8, X-mirrored or explicitly built peer
-};
-
-typedef char PathPair_must_be_0x150[
-    (sizeof(PathPair) == 0x150) ? 1 : -1];
 
 enum {
     PATH_PAIR_COUNT = 63,

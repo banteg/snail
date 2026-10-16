@@ -44,7 +44,15 @@ struct tVector {
         return *this;
     }
 
-    int zero_vector3(); // @ 0x410710, thiscall
+    // Plain inline: initialize_game_assets_and_world inlines it at 243 of
+    // its 248 sites and runs out of inline budget for the last five, which
+    // call the out-of-line copy @ 0x410710 that Game.o emits.
+    void zero_vector3()
+    {
+        z = 0.0f;
+        y = 0.0f;
+        x = 0.0f;
+    }
     static double __stdcall Dot(
         const tVector& lhs, const tVector& rhs); // @ 0x44cb50
     float Normalize(); // @ 0x44cca0

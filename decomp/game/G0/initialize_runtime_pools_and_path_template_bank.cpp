@@ -170,7 +170,7 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
         --row_count;
     } while (row_count);
 
-    Path* path_template = &path_pairs[0].primary;
+    Path* path_template = &paths[0][0];
     int path_template_count = PATH_COUNT;
     do {
         path_template->initialize_path_template_record_pair();

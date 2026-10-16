@@ -1,5 +1,48 @@
 # initialize_game_assets_and_world @ 0x40acf0
 
+## 2026-10-16: path bank, animation slots and inline helpers
+
+Still **99.56%** (13/13, structural 99.76%). The inline pattern now matches
+native: `inline_budget.py` reports own size 24,142, 260 expansions, final total
+35,002 and **5 refused calls**. Those are the four pair-60 zeros and the
+barrier zero, which are exactly native's out-of-line `zero_vector3` calls.
+Alias classes stay at 0x417.
+
+Caller and compiler evidence settles the header questions the inline-budget
+section below left open:
+
+- **The path bank is `cRPath paths[63][2]`.** The native cRSubGame
+  constructor (`initialize_runtime_pools_and_path_template_bank`) builds 126
+  cRPath records in one loop with stride 0xa8. A standalone msvc6.3 compile
+  shows how each layout compiles:
+  - an array of pair structs gives a 63-step loop with two constructor calls;
+  - `cRPath[63][2]` and `cRPath[126]` both give one 126-step loop.
+
+  BuildLevel's `index * 0x150 + 0xa8` comes out the same for `[i][1]` and
+  `[2*i+1]`, so the rows keep the pairing. The constructor's debug print also
+  calls this member "cRPath". The 2D form saves 1,230 in own size, the same as
+  the flat array.
+- **The animation slots are plain `RenderableBod` (cRBodPos) arrays.** Native
+  constructs each weapon's five slots with
+  `vector constructor iterator(slots, 0x80, 5, cRBodPos::cRBodPos @0x42f650)`.
+  With a one-member wrapper struct, VC6 passes a generated `W::W` thunk
+  instead. cRAnimManager's `+0x44` bank pointer is therefore a
+  `RenderableBod*`, like `target_model` at `+0x40`. Dropping the `.body`
+  level saves 158.
+- **Helpers are plain inline.** `link_root_bod` and `BodNode::add_bod_after`
+  (the authored cLinkedList methods) are no longer `__forceinline`.
+  `tVector::zero_vector3` is a plain inline `void` method in vector3.h. Its
+  out-of-line copy @0x410710 is the COMDAT Game.o emits for the refused calls
+  (`?zero_vector3@tVector@@QAEXXZ`, still 100%), and all 248 sites call it.
+
+The pieces only fit together. 2D paths with the inline method refuse no
+calls (80.41%). Adding the plain-inline helpers refuses 9 (80.50%). Dropping
+the slot wrapper then brings it to native's 5.
+
+Remaining: the pair-2 store pair, and the weapon-1 cleanup rotation residue.
+The five `for` cleanup loops (the Android `Init3` shape) cost 195 in own size,
+which refuses 10 zero sites and scores 99.34%. They are not adopted.
+
 ## 2026-09-21 complete pool and overlay controls
 
 Canonical source remains 84.02662230%, 5,407/5,411 instructions, prefix 53,

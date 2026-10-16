@@ -106,7 +106,7 @@ public:
     TransformMatrix cached_cutscene_matrix; // +0xc0
     cRSubGoldy* owner_player;                   // +0x100, non-owning backlink to containing cRSubGoldy
     cRAnimManager anim_manager;             // +0x104
-    PresentationAnimationSlot cutscene_animation_slots[10]; // +0x14c, owned slots
+    RenderableBod cutscene_animation_slots[10]; // +0x14c, owned slots
     // Authored order: left blaster/laser, right blaster/laser, top
     // blaster/rocket launcher. Each channel owns its five animation slots.
     cRWeapon weapon_channels[3]; // +0x64c, authored cRWeapon owners

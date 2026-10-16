@@ -46,7 +46,8 @@ def run(arguments, directory, *, check=True):
         cwd=directory,
         capture_output=True,
         text=True,
-        timeout=60,
+        # Whole-unit traces with per-pass node snapshots take several minutes.
+        timeout=1800,
         check=False,
     )
     if check and result.returncode:

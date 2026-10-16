@@ -1,5 +1,71 @@
 # populate_runtime_track_cells_from_segments
 
+## 2026-10-16: typed cell and row accesses; the lane-word load register
+
+**91.66%** (1,246/1,246, structural 99.49%). The typed source alone is
+byte-identical to the previous one at 91.50%. The same commit's header
+changes (`cRPath paths[63][2]`, plain-inline helpers, the plain
+`RenderableBod` slot arrays; see initialize_game_assets_and_world) shift
+TU-wide ids. With them, both `/G5` ties at windows 32 and 168 take native's
+order.
+
+**Source.** The main loop now addresses each cell as
+`runtime_cells[build_row][lane]` instead of through the `char* cell` cursor.
+That covers the tile id, the previous row's tile id, `SetObject`, the list
+flags, render arguments, colour, fringe slots, the entry template pointer and
+position Y. It also:
+- reads the glyph as `active_segment->glyph_rows[authored_lane][segment_row]`;
+- tests `track_mirror_enabled` directly;
+- names the row members: flags, row-model position Z and velocity, projection
+  X/Z, attachment list flags and colour.
+
+The `cell`, `glyph_ptr`, `glyph_list_flags` and render-argument locals are
+gone, along with 41 of the 72 offset enumerators. Mobile `BuildLevel` indexes
+`mLoc[row][lane]` the same way.
+
+**Conversions not adopted.** Converting only some of the cell accesses moves
+TU-wide ties and scores 84.9–89.1%. The full set is byte-identical. Each of
+the following still changes code:
+- `path_pairs[36].primary.primary_samples->transform.position.y`, the
+  attachment-position zero stores as `attachment_body.position.x = 0`, or
+  the authored-row reads as `active_segment->rows[segment_row].object_id` and
+  so on: 84.59%. `this` and `active_segment` are both spilled with weight 15.
+  Each of these conversions drops `active_segment` to weight 13, so the stack
+  packer (size, then weight) swaps their slots (`[esp+0x18]` and
+  `[esp+0x1c]`), and every later reload follows.
+- The clear loop as `runtime_rows[row].flags = 0` and so on: 84.11%. VC6's
+  strength reduction bases the row cursor at `installed_heading_delta`
+  (+0xac) instead of native's `parcel_spawn_position.y` (+0x94).
+- The fringe-payload `memset` as `runtime_cells[row][lane].fringes`, without
+  the payload cursor: 91.42%. With the clear loop's cell body typed as well:
+  89.05%. Both reproduce native's clear-loop code exactly. They swap the
+  `mov [esp+0x2c], edx` / `lea edi` pair at the loop head, and the cell body
+  also moves the extra-rows CSE.
+
+**Window 37.** More `this` field records do not come from typed cells.
+Indexed accesses such as `runtime_cells[build_row][lane].tile_id` or
+`runtime_rows[build_row].flags` get no field record. `schedtrace.py --fields`
+shows them as bare `@c3` accesses. Only constant-offset `this` members make
+records, and after `base_subgame_rate = 1.0f` the main loop reaches almost no
+member the setup has not already touched. With every conversion above, the
+`this` class still has 27 records, and f102/f109 keep bits 1 and 8.
+
+**Lane-word load (`mov ecx, [esi+eax*4+0x3bfb08]`).** Traced with
+`passes.py --registers` and the new `splittrace.py`:
+- The global allocator colours the index chain: `lea ecx, [edx+edi*8]`
+  (lane + 8 * row), then `lea eax, [ecx*8]; sub eax, ecx`. Only
+  `lea t, [eax+eax*2]` (#73) and the load (#74) are rotation temporaries.
+- #73 enters at cursor 2, skips edx (lane) and takes eax, so the load takes
+  ecx. The load already has ecx when it enters the /G5 memory-operand split
+  pass, so the split cursor does not pick it.
+- With the load in ecx, the scheduler breaks the displacement edge from
+  `lea esi, [esi+eax*4]` and folds the address. For native's eax, the load
+  needs one rotation pick fewer before it, or ecx unavailable at that point,
+  while #76 (the glyph row) still enters at cursor 2.
+- Writing the four fringe zero stores before the lane word frees ecx early.
+  `xor ecx, ecx` then hoists as in native and the fold disappears, but the
+  stores keep source order (91.66%). Native stores the lane word first.
+
 ## 2026-10-16: msvc6.3 whole-TU retest
 
 Measured inside the SubGame unit: **91.50%**, structural 99.34% (9/9),

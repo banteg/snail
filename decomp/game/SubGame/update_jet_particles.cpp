@@ -16,7 +16,7 @@ void cRSubHover::Jets()
 
     if (game->embedded_player()->presentation.jetpack_channel.anim_manager.active_animation
         != game->embedded_player()->presentation.jetpack_channel.animation_slots[0]
-               .body.object->animation) {
+               .object->animation) {
         return;
     }
 

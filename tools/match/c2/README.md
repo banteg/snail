@@ -150,6 +150,16 @@ constructs take or skip a slot are in
 uv run tools/match/c2/rotation.py update_subgame --source overlay.cpp
 ```
 
+[`splittrace.py`](splittrace.py) does the same for the /G5 memory-operand
+split pass, which has its own cursor (msvc6.3 only). `passes.py --registers`
+prints every node's operand registers entering each late pass, which shows
+which pass gave a temporary its register.
+
+```sh
+uv run tools/match/c2/splittrace.py populate_runtime_track_cells_from_segments
+uv run tools/match/c2/passes.py populate_runtime_track_cells_from_segments 543 545 --registers
+```
+
 ## Inline budget and alias class count
 
 [`inline_budget.py`](inline_budget.py) ports Crimson's inline budget tracer
