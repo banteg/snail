@@ -3,6 +3,7 @@
 #include "audio_system.h"
 #include "main_loop_state.h"
 #include "mouse_input_state.h"
+#include "rdebug.h"
 #include "runtime_config.h"
 #include "win32_window_state.h"
 
@@ -11,7 +12,6 @@ extern "C" __declspec(dllimport) BOOL __stdcall ShowWindow(HWND window, int comm
 extern "C" __declspec(dllimport) BOOL __stdcall SetForegroundWindow(HWND window);
 extern "C" __declspec(dllimport) HWND __stdcall SetFocus(HWND window);
 
-int debug_report_stub(char* format); // @ 0x449c00, stripped in release
 void set_fullscreen_mode(char enabled);
 
 int handle_game_window_activate()

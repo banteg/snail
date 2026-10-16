@@ -1,9 +1,9 @@
 /* load_archive_index @ 0x4319c0 (cdecl, C mode) */
 
 #include "archive_index.h"
+#include "rshell.h"
 
 char archive_or_file_exists(char* path, char force_filesystem);
-char* load_file_bytes_fixed_size_from_archive_or_fs(char* path, char* out_buffer, unsigned int byte_count);
 void xor_archive_bytes_in_place(int start_offset, char* bytes, int count);
 void* allocate_tracked_memory(int size, char* name);
 

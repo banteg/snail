@@ -21,7 +21,6 @@ extern "C" int __stdcall D3DXCreateTextureFromFileA(
     Direct3DDevice8* device, char* path, Direct3DTexture8** texture);
 
 char is_archive_index_loaded(); // @ 0x431a80
-char* load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out_size);
 int report_errorf(char* format, ...);
 int begin_overlay_render_state();
 

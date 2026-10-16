@@ -2,13 +2,6 @@
 
 #include "archive_index.h"
 
-static __inline unsigned char fold_archive_request(char value)
-{
-    if (value >= 'a' && value <= 'z')
-        return value - ('a' - 'A');
-    return value;
-}
-
 ArchiveEntry* find_archive_entry(char* path)
 {
     ArchiveIndex* index = g_archive_index_records;

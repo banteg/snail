@@ -7,6 +7,11 @@
 // read_repeating_text_input_key_code (RShellInkeyInput) is byte-exact only
 // when RstrASC's number puts its hash in the wrapping window.
 //
+// RShell compiles as one translation unit, and its first member includes this
+// header, so it stands where RShell.cpp's header block stood: before every
+// function. RstrASC is first declared when enumerate_matching_archive_or_fs_entries
+// includes rstring.h; the twelve members before it are counted for real.
+//
 // The includes below are the real Microsoft DirectX 8.1 SDK headers, fetched
 // by tools/match/fetch_dx81_sdk.sh. Each is justified by the binary:
 // - Direct3DCreate8(0xdc): 220 is D3D_SDK_VERSION for DirectX 8.1;
@@ -28,13 +33,14 @@
 #include "../../tools/match/sdk/dx81/dinput.h"
 
 // STAND-IN, not recovered source. After the SDK headers, RShell's own
-// includes still had 12,737..14,784 more frontend ids before RstrASC's
-// first declaration. Presumably these are RShell.h plus the engine and game
-// headers it pulls in; strings name RShell.h, GDX.h, font.h and RSprite.h.
-// The enum below holds their place with 13,763 ids: 1 for the enum type and
-// 1 per enumerator. Replace it with recovered headers as they are
-// identified, counting them with crimson's per-kind id table
-// (scripts/c2/fe_id_probe.py, note frontend-ids.md). Pad any shortfall.
+// headers still need about 11,900..13,950 more frontend ids before the unit's
+// first function for RstrASC to land in its window. Presumably these are
+// RShell.h plus the engine and game headers it pulls in; strings name
+// RShell.h, GDX.h, font.h and RSprite.h. The enum below holds their place
+// with 12,901 ids, near the middle: 1 for the enum type and 1 per enumerator.
+// Replace it with recovered headers as they are identified, counting them
+// with crimson's per-kind id table (scripts/c2/fe_id_probe.py, note
+// frontend-ids.md). Pad any shortfall.
 #define RSHELL_STANDIN_10(p) \
     p##0, p##1, p##2, p##3, p##4, p##5, p##6, p##7, p##8, p##9
 #define RSHELL_STANDIN_100(p)                                          \
@@ -51,7 +57,7 @@
     RSHELL_STANDIN_100(p##8), RSHELL_STANDIN_100(p##9)
 
 enum RShellProjectHeaderStandIn {
-    // 13 * 1000
+    // 12 * 1000
     RSHELL_STANDIN_1000(rshell_standin_a),
     RSHELL_STANDIN_1000(rshell_standin_b),
     RSHELL_STANDIN_1000(rshell_standin_c),
@@ -64,24 +70,16 @@ enum RShellProjectHeaderStandIn {
     RSHELL_STANDIN_1000(rshell_standin_j),
     RSHELL_STANDIN_1000(rshell_standin_k),
     RSHELL_STANDIN_1000(rshell_standin_l),
-    RSHELL_STANDIN_1000(rshell_standin_m),
-    // + 7 * 100
-    RSHELL_STANDIN_100(rshell_standin_n0),
-    RSHELL_STANDIN_100(rshell_standin_n1),
-    RSHELL_STANDIN_100(rshell_standin_n2),
-    RSHELL_STANDIN_100(rshell_standin_n3),
-    RSHELL_STANDIN_100(rshell_standin_n4),
-    RSHELL_STANDIN_100(rshell_standin_n5),
-    RSHELL_STANDIN_100(rshell_standin_n6),
-    // + 6 * 10 + 2 = 13,762
-    RSHELL_STANDIN_10(rshell_standin_o0),
-    RSHELL_STANDIN_10(rshell_standin_o1),
-    RSHELL_STANDIN_10(rshell_standin_o2),
-    RSHELL_STANDIN_10(rshell_standin_o3),
-    RSHELL_STANDIN_10(rshell_standin_o4),
-    RSHELL_STANDIN_10(rshell_standin_o5),
-    rshell_standin_p0,
-    rshell_standin_p1
+    // + 9 * 100 = 12,900
+    RSHELL_STANDIN_100(rshell_standin_m0),
+    RSHELL_STANDIN_100(rshell_standin_m1),
+    RSHELL_STANDIN_100(rshell_standin_m2),
+    RSHELL_STANDIN_100(rshell_standin_m3),
+    RSHELL_STANDIN_100(rshell_standin_m4),
+    RSHELL_STANDIN_100(rshell_standin_m5),
+    RSHELL_STANDIN_100(rshell_standin_m6),
+    RSHELL_STANDIN_100(rshell_standin_m7),
+    RSHELL_STANDIN_100(rshell_standin_m8)
 };
 
 #endif  // SNAIL_PORT

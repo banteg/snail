@@ -197,8 +197,8 @@ in the repository.
      mkdir -p $v && tar xzf $v.tar.gz -C $v && rm $v.tar.gz
    done
    ```
-3. DirectX 8.1 SDK headers (gitignored, needs `7z`). Only scratches that
-   include `rshell_prelude.h` need them:
+3. DirectX 8.1 SDK headers (gitignored, needs `7z`). Only the RShell unit,
+   whose first member includes `rshell_prelude.h`, needs them:
 
    ```sh
    tools/match/fetch_dx81_sdk.sh

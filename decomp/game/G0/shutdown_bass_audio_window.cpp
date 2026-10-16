@@ -7,7 +7,7 @@ extern "C" __declspec(dllimport) BOOL __stdcall DestroyWindow(HWND hwnd);
 extern "C" __declspec(dllimport) BOOL __stdcall UnregisterClassA(
     char* class_name, HINSTANCE instance);
 
-int abort_startup_with_3d_error(); // @ 0x4088a0
+void abort_startup_with_3d_error(); // @ 0x4088a0
 
 int shutdown_bass_audio_window()
 {
@@ -20,7 +20,11 @@ int shutdown_bass_audio_window()
     }
 
     int result = UnregisterClassA("BASS", g_application_instance);
-    if (result == 0)
-        return abort_startup_with_3d_error();
-    return result;
+    if (result != 0)
+        return result;
+    abort_startup_with_3d_error();
+#ifdef SNAIL_PORT
+    return 0;
+#endif
+    // Falls off the end (C4715): VC6 returns whatever eax holds.
 }

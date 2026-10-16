@@ -10,7 +10,6 @@
 #include "sprite.h"
 
 char is_archive_index_loaded(); // @ 0x431a80
-char* load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out_size);
 void* allocate_tracked_memory(int size, char* name); // @ 0x431b60
 void free_tracked_memory(void* pointer); // @ 0x431bf0 / RShellMemoryFree(void*)
 int report_errorf(char* format, ...); // @ 0x431cc0

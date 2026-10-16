@@ -5,7 +5,7 @@
 #include "runtime_config.h"
 #include "win32_window_state.h"
 
-extern "C" __declspec(dllimport) void __stdcall ShowWindow(HWND window, int command);
+extern "C" __declspec(dllimport) BOOL __stdcall ShowWindow(HWND window, int command);
 
 char handle_game_window_deactivate()
 {

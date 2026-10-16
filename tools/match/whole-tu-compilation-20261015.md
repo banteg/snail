@@ -228,10 +228,56 @@ body bytes. Three things had to agree first:
   `cross_vectors` fell from match to audit at 100%; the aliases in
   `gameplay-references.json` now carry the RMaths.o spellings.
 
+## G0 and RShell
+
+G0 (58 functions) and RShell (55) are registered, making 44 whole units. A
+repo-wide rescore against the baseline changes no function's state, ratio,
+structural ratio, byte-exactness or error.
+
+- **G0 is a `/GX` unit.** Every G0 scratch now sets `/O2 /G5 /W3 /GX`, the
+  flags `construct_game_runtime` already needed; no member's result moves.
+- **`debug_report_stub` has C++ linkage.** G0 declared it five ways (`(char*)`,
+  `(char*, int)`, `(char*, ...)`, and three function-pointer casts that only
+  existed to pass two ints through the `(char*, int)` prototype). Every G0 file
+  now includes `rdebug.h`. Its `extern "C"` was wrong: under `/GX` (`/EHsc`),
+  VC6 treats an `extern "C"` callee as nothrow, which drops the unwind-state
+  reset (`mov [esp+0x10], -1`) that native `construct_game_runtime` keeps after
+  its last `new` (99.81% with it). `rdebug.h` now declares it C++, as the
+  SubGame, Landscape and BassPlay callers already did; no other unit is `/GX`,
+  so no other result moves. The port's `extern "C"` shim is gone.
+- **One spelling for each G0 helper.** `ShowWindow` returns `BOOL` everywhere,
+  and `noop_runtime_ai` is `void` (its one free caller ignored the `int`).
+  `shutdown_bass_audio_window` returned `abort_startup_with_3d_error()`'s
+  leftover `eax` through an `int` prototype; with the `void` prototype it
+  returns early on success and falls off the end after the abort (C4715), and
+  stays exact. `if (result == 0) abort(); return result;` scores 76.19%. The
+  port returns 0 there (see [divergences.md](../../docs/port/divergences.md)).
+- **RShell uses the SDK headers.** `set_current_directory_with_drive_fallback`
+  includes `<direct.h>`, and `initialize_game_data_archive` takes a `RECT` from
+  `<windows.h>` for `GetClipCursor`.
+- **`fold_archive_request` lives once,** in `archive_index.h`, instead of in
+  four files.
+- **`load_file_bytes_*_from_archive_or_fs` have one prototype each,** in
+  `rshell.h`: `(char*, char*, int*)` and `(char*, char*, int)`, as defined.
+  Callers in RShell, Galaxy, Voice, LoadingBar, GL, Subtrack, DirectX and
+  ObjectText include it; Galaxy and Subtrack passed `(void*)0` and now pass
+  `0`, and the port's three overload shims for the drifting spellings are gone.
+- **The RShell prelude moved to the top of the unit.** In the TU, `RstrASC` is
+  first declared by the 13th member, so `rshell_prelude.h`, included by
+  `read_repeating_text_input_key_code` (the 42nd), no longer preceded it and that
+  function fell to 99.09%. The unit's first member now includes the prelude,
+  where RShell.cpp's header block stood. The real members before `RstrASC`
+  supply about 835 ids, so the stand-in window is now about 11,900..13,950 ids
+  and the stand-in is recentred to 12,901. It cannot go yet; what it still
+  holds the place of is in that scratch's
+  [NOTES.md](scratches/read_repeating_text_input_key_code/NOTES.md). Because
+  the prelude is part of the unit, STATUS now lists every RShell member as
+  depending on stand-in context.
+
 ## SubGame
 
 SubGame is registered as one 191-function unit, absorbing its two pairs
-(`subgame_falling_shoot`, `subgame_parcel_frontend_level`) and making 41 whole
+(`subgame_falling_shoot`, `subgame_parcel_frontend_level`) and making 45 whole
 units. A repo-wide rescore against the baseline moves one function, the
 `populate_runtime_track_cells_from_segments` partial (below); every other
 function keeps its state, ratio and body bytes, and all 188 SubGame matches
@@ -253,9 +299,3 @@ hold.
   scores as k grows (91.66% at k = 1, 8-13, 20, 21, 24, 26, 28), the signature
   of a residue of the symbol-id base C0 ([cse-ids.md](c2/cse-ids.md)). Neither
   score is closer to native in any structural sense; the function stays wip.
-
-G0's `construct_game_runtime` still declares the fixed `(char*, int)` view,
-one of the overloads in G0's conflict list above; the msvc6.3 finding applies
-there too.
-
-G0 and RShell still drift.

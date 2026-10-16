@@ -5,13 +5,12 @@
 #include "bod_types.h"
 #include "border_manager.h"
 #include "game_root.h"
+#include "rdebug.h"
 #include "viewport.h"
 #include "runtime_slot.h"
 #include "sprite.h"
 
 void* operator new(size_t size);
-
-int debug_report_stub(char* format, int value); // @ 0x449c00, stripped in release
 
 extern int g_sub_loc_count;       // data_4dfadc
 extern int g_loc_mirror_count;    // data_4dfae0
@@ -188,15 +187,15 @@ int construct_game_runtime()
     cRGame* game = (cRGame*)new GameRootAllocation;
 
     g_game = game;
-    ((int (__cdecl *)(char*, int, int))debug_report_stub)(
+    debug_report_stub(
         "BodCount=%i  Memory=%i\n",
         g_bod_base_init_count,
         g_bod_base_init_count * 0x38);
-    ((int (__cdecl *)(char*, int, int))debug_report_stub)(
+    debug_report_stub(
         "LocCount=%i Memory=%i\n",
         g_sub_loc_count,
         g_sub_loc_count * sizeof(cRSubLoc));
-    return ((int (__cdecl *)(char*, int, int))debug_report_stub)(
+    return debug_report_stub(
         "LocMirrorCount=%i Memory=%i\n",
         g_loc_mirror_count,
         g_loc_mirror_count * 0x15c);

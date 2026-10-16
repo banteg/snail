@@ -1,8 +1,9 @@
 // initialize_game_data_archive @ 0x430e40 (cdecl)
 
+#include <windows.h>
+
 #include "archive_index.h"
 #include "input_controller_state.h"
-#include "rect.h"
 #include "text_input_repeat_state.h"
 #include "tracked_allocation_stack.h"
 
@@ -10,11 +11,10 @@ extern int g_tracked_allocation_total_bytes; // data_5108b4
 char load_archive_index(char* path);
 void reset_registered_sound_sample_count();
 void* allocate_tracked_memory(int size, char* name);
-extern "C" __declspec(dllimport) int __stdcall GetClipCursor(Rect* rect);
 
 char initialize_game_data_archive()
 {
-    Rect clip_rect;
+    RECT clip_rect;
     int zero = 0;
 
     g_archive_startup_flag = (unsigned char)zero;

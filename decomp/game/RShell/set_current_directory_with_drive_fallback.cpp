@@ -1,15 +1,8 @@
 // set_current_directory_with_drive_fallback @ 0x430f30 (cdecl)
 
-extern char g_blank_text[];
+#include <direct.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-int __cdecl chdir(char* path);
-char* __cdecl getcwd(char* buffer, int size);
-#ifdef __cplusplus
-}
-#endif
+extern char g_blank_text[];
 
 int report_messagef(char* format, ...);
 

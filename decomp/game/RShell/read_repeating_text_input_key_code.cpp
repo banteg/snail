@@ -1,6 +1,5 @@
 // read_repeating_text_input_key_code @ 0x4327e0 (cdecl)
 
-#include "rshell_prelude.h"
 #include "rstring.h"
 #include "text_input_repeat_state.h"
 

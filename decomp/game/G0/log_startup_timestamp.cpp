@@ -3,7 +3,7 @@
 #include <sys/timeb.h>
 #include <time.h>
 
-int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
+#include "rdebug.h"
 
 int log_startup_timestamp()
 {
