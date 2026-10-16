@@ -1855,3 +1855,105 @@ Open:
   0.04% (confounded with the expanded stores), −12 degrades.
 - Native's actual spelling of the 4–5 missing ranges, and a code-neutral way
   to get them without a budget compensation.
+
+## 2026-10-16 msvc6.3 whole-TU retest: `zero_vector3` is an inline method refused by the inline budget
+
+Unchanged source. Measured at bf85fe783 under msvc6.3 in the whole Game
+translation unit: 99.56%, 5,411/5,411, prefix 3,567, structural 13/13,
+1,881 clean references. The residual is the same as before: the pair-2
+entry-strip stores (4) and the weapon-1 cleanup cursor rotation (9).
+Two current-baseline probes are recorded in `experiments.jsonl`.
+
+New tool: `tools/match/c2/inline_budget.py` (see `tools/match/c2/README.md`).
+It lists every inline expansion and refusal and prints the alias class count.
+The baseline has own size 25,287 and final total 25,584, with nothing refused
+and 0x417 alias classes. `zero_position`, `link_root_bod` and `add_bod_after`
+are `__forceinline`, and forceinline expansions spend nothing.
+
+**Mechanism.** C2 inlines a callee only while the running total (the caller's
+own size plus every expansion so far) is at most 35000. Native's pattern is
+an ordinary inline `tVector` method refused at that cap:
+
+- the out-of-line copy at 0x410710 directly follows this function in Game.o,
+  where VC6 emits a refused inline's COMDAT copy;
+- native calls it only at the last five sites in IL order (pair 60 four
+  times, then the barrier);
+- every earlier site has the same z, y, x stores inline.
+
+Spelling all 248 sites as one inline method reproduces this shape: VC6
+refuses exactly a tail of sites. The method body sets the callee size:
+
+| Inline body | Size | Refused (native 5) |
+|---|---|---|
+| `int zero_vector3() { z = 0; y = 0; x = 0; return 0; }` | 40 | 18 |
+| `void zero_vector3() { z = 0.0f; y = 0.0f; x = 0.0f; }` | 38 | 6 |
+| `void zero_vector3() { x = y = z = 0.0f; }` (same integer z, y, x stores) | 34 | 0 |
+
+Native inlines 243 sites, so its own size plus the counted expansions before
+the zero sites (`tMatrix()` 64 with four `tVector()` 20, `add_bod` 153, 297 in
+total) must lie in `(35000 - 243s, 35000 - 242s]`:
+
+- s = 38: (25766, 25804]. Ours is 25,827, 23–61 too large.
+- s = 40: (25280, 25320].
+- s = 34: (26738, 26772].
+
+**Size model (measured, all codegen-neutral unless noted).**
+
+- About 2 units per member level or constant index. `path->position` instead
+  of `subgame.path_pairs[N].primary.position` saves 8 per site.
+- The `PresentationAnimationSlot` `.body` wrapper costs 158 across the
+  function.
+- A flat `cRPath paths[126]` instead of `PathPair path_pairs[63]` saves 1,230.
+- An indexed do-while cleanup loop costs about 58 more than a pointer cursor.
+  An indexed `for` costs 2 less than the indexed do-while.
+- Plain `inline` instead of `__forceinline` costs 465 for `link_root_bod`
+  (155 × 3) and 864 for `add_bod_after` (108 × 8). The authored
+  `cLinkedList` methods were almost certainly plain inline.
+- `(char*)` casts on literals are free.
+
+**Cleanup loops.** All five channel cleanup loops written as
+`for (animation_index = 0; animation_index < N; ++animation_index)`,
+indexing `slots[animation_index].body.object->` per statement, remove the
+weapon-1 rotation residue completely once the zero sites are an inline
+method. Android `cRGame::Init3` has the same shape: a counter from 0, reset
+per loop, with jetpack's two iterations unrolled. With the `void` method this
+scores 99.28%. Only the zero-call placement (11 refused) and the pair-2 stores
+remain. It adds 200 to the size.
+
+**Alias classes.** Each additional inlined zero site costs one class before
+the Golb code. Forcing exactly native's five refusals with the `void` method
+and the `for` loops (30 primary zeros spelled `path->position`) gives 0x41f
+classes and the degraded state, with `0x200` held in a register (79.18%). So
+at native's refusal point our source carries at least five more classes than
+native before `_golb_shot`. Removing named locals is not monotone:
+`inactive_node` gives −2, but `track_bod_list` gives +11 and the
+floor/warning/slide slice pointers +16.
+
+| Variant (msvc6.3, whole Game TU) | Own size | Refused | Classes | Match |
+|---|---|---|---|---|
+| baseline | 25,287 | 0 | 0x417 | 99.56% |
+| baseline + five `for` loops (probe) | 25,487 | 0 | 0x41f | 80.67% |
+| baseline + `for` cutscene/jetpack (probe) | 25,283 | 0 | 0x417 | 99.28% |
+| inline `int` method | 25,530 | 18 | – | 72.31% |
+| inline `void` method | 25,530 | 6 | 0x417 | 99.14% |
+| `void` + five `for` loops | 25,730 | 11 | 0x417 | 99.28% |
+| `void` + pointer cutscene cursor | 25,476 | 5 | – | 96.60% (frame +4) |
+| `void` + five `for` + 30 `path->position` zeros | 25,490 | 5 | 0x41f | 79.18% |
+| `void` + five `for`, no `.body` wrapper | 25,572 | 7 | 0x419 | 80.59% |
+| `void` + five `for`, flat `paths[126]` | 24,500 | 0 | 0x42d | 80.41% |
+| chained method, all inlined | 25,530 | 0 | 0x41d | 80.41% |
+| chained + plain `add_bod_after` + one weapon `for` loop | 25,594 | 5 | – | 80.67% |
+
+**Not adopted.** Closing this function needs a joint fit of three things:
+
+- the running total inside a 38-unit window at pair 61;
+- no more than about 0x41a classes before the Golb shot;
+- the pair-2 field records (unchanged by the inline method).
+
+The size gap is dominated by header nesting (path pairs, the slot wrapper,
+the BOD catalog) and by whether helpers are inline. Every one of these
+changes many other Game and SubGame members, and none is pinned by evidence
+yet. Next: find layout evidence for the path-pair bank and the animation-slot
+type (a native or mobile function that indexes them flat), then refit with
+`inline_budget.py`. Keep `__forceinline` out of any retained answer: it hides
+the budget that native's own refusals expose.
