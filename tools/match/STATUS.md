@@ -12,9 +12,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**16** non-exact scratch-backed functions hold **62784 target bytes** without proof-grade credit and **1316 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **83.5%** of that gap; the top 10 hold **99.1%**.
+**16** non-exact scratch-backed functions hold **62784 target bytes** without proof-grade credit and **1312 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **83.7%** of that gap; the top 10 hold **99.1%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **16 / 1316** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **0 functions / 0 gap bytes**; **16 / 1312** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -35,7 +35,7 @@ Proof blockers (overlapping extents): encoding: 4 functions / 10944 bytes; instr
 | 9 | initialize_looptheloop_path_template_pair | 2640 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/18 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
 | 10 | initialize_loopout_path_template_pair | 2624 | 0 | 100.00% | 0/0 | encoding | unspecified | unspecified | historical-only | 0/28 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 11 | initialize_dip_path_template_pair | 2400 | 4 | 99.85% | 1/1 | instructions | semantic-complete | analysis | historical-only | 0/59 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 12 | border_input_text | 1584 | 20 | 99.44% | 4/1 | instructions | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
+| 12 | border_input_text | 1584 | 16 | 99.66% | 3/0 | instructions | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
 | 13 | register_font_texture_sheet | 1040 | 139 | 92.50% | 21/20 | instructions | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
 | 14 | set_snail_weapon | 944 | 212 | 93.29% | 31/29 | instructions | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
 | 15 | try_enter_track_attachment_from_swept_motion | 800 | 8 | 99.02% | 2/2 | instructions | semantic-complete | analysis | historical-only | 0/13 | historical-only,stale-dependencies |
@@ -707,7 +707,7 @@ Proof blockers (overlapping extents): encoding: 4 functions / 10944 bytes; instr
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
 | 🚧 | update_frontend_widget_interaction | 0x402820 | 2688 | 648/647 | 95.44% | 180/647 | 1 unaudited, 96 ok |  | core |
-| 🚧 | border_input_text | 0x4035b0 | 1584 | 443/446 | 98.76% | 6/446 | 8 ok |  | core |
+| 🚧 | border_input_text | 0x4035b0 | 1584 | 443/446 | 98.99% | 423/446 | 8 ok |  | core |
 | 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23072 | 5411/5411 | 99.56% | 3567/5411 | 1881 ok |  | core |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 695/694 | 99.50% | 417/694 | 71 ok |  | core |
 | 🚧 | sample_smtrack_heightmap | 0x41a360 | 368 | 109/109 | 97.25% | 67/109 | 13 ok |  | core |
