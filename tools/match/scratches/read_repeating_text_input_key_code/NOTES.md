@@ -415,3 +415,40 @@ the stand-in stays. What it holds the place of is unchanged: RShell's own
 headers after the DirectX 8.1 SDK (RShell.h, GDX.h, font.h, RSprite.h and what
 they include). Removing it needs those headers, counted with the method above;
 the target is now the 11,900..13,950 window, measured from the top of the unit.
+
+## 2026-10-16: recovered headers replace part of the stand-in
+
+The prelude now ends with RShell.cpp's recovered header block: every header
+RShell's members include (`direct.h`, `io.h`, `stdarg.h`, `stdio.h`,
+`archive_index.h`, `audio_system.h`, `authored_view_state.h`, `font_system.h`
+with `sprite.h`, `input_controller_state.h`, `loading_bar.h`,
+`main_loop_state.h`, `rdebug.h`, `rshell.h`, `rtext.h`,
+`text_input_repeat_state.h`, `tracked_allocation_stack.h`), hoisted as one
+block after the stand-in. `rstring.h` stays with
+`enumerate_matching_archive_or_fs_entries`: `RstrASC` must follow the stand-in.
+
+- Before `RstrASC` the block supplies **1,381** ids that the stand-in held
+  (headers first included by members after the 13th, plus header-file
+  records), so the stand-in shrinks from 12,901 to **11,564** ids
+  (1 + 11,563 enumerators).
+- The matcher puts the window at **10,541..12,588** stand-in ids (exact at
+  10,541 and 12,588, 99.09% at 10,540 and 12,589): 2,048 wide, the
+  one-variable window. 11,564 is its middle.
+- Every one of the 785 scored functions keeps its state and ratio
+  (`whole_tu_experiment.py compare`).
+
+The stand-in stays below the header block: with it after the headers instead,
+`RstrASC` keeps the same id, but the members' header declarations take ids
+about 11.5k lower than they had when this unit was verified.
+
+**What the corpus can give.** Measured with crimson's `fe_id_probe.py` after
+the SDK headers (base id 0xc594), every header in `decomp/include` that
+compiles beside the SDK consumes **8,326** ids together (`game_root.h` alone
+6,258, `subgame_runtime.h` 5,493 with overlap; `direct_input_view.h`,
+`input_polling.h` and `win32_window_state.h` restate SDK types and clash).
+Even including all of them would leave about 3,200 ids of stand-in, and most
+are game headers RShell.cpp has no reason to include. `direct3d_renderer.h`
+(GDX, 806 ids) is left out: no RShell member uses it. The rest of the gap is
+what the recovered headers lack of the originals (RShell.h, GDX.h, font.h,
+RSprite.h and what they pull in): uncalled prototypes, methods and inline
+bodies, which cost ids but leave no trace in the code.
