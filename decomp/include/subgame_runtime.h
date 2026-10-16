@@ -259,10 +259,13 @@ public:
     cRTimeTrial time_trial; // +0xff25e0, exact authored cRTimeTrial owner
     cRPathManager path_manager; // +0xff2910, empty authored owner
     char unknown_ff2911[0xff2914 - 0xff2911];
-    // Startup constructs 126 authored cRPath records here as 63 adjacent
-    // primary/secondary pairs; public `Path=` indices occupy 0..50 and
-    // transition-only auxiliary pairs occupy 51..62.
-    PathPair path_pairs[PATH_PAIR_COUNT]; // +0xff2914, ends +0xff7bc4
+    // The constructor builds all 126 cRPath records in one flat loop, which
+    // VC6 emits for a two-dimensional cRPath array (an array of pair structs
+    // gets a 63-step loop with two constructor calls). Column 0 is the
+    // primary path and column 1 its X-mirrored or explicitly built peer.
+    // Public `Path=` indices occupy rows 0..50 and transition-only auxiliary
+    // pairs occupy rows 51..62.
+    cRPath paths[PATH_PAIR_COUNT][2]; // +0xff2914, ends +0xff7bc4
     cRBarrier barrier; // +0xff7bc4, embedded tutorial barrier actor
     // Exact cRLandscapeManager owner: ten active render entries followed by
     // the script count and 128 parsed 0x124-byte records.

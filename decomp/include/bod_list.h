@@ -10,7 +10,7 @@
 struct BodNode : public ContactTargetObject {
     // Inlined cLinkedList<cRBod>::AddAfter used by the subgame group heads
     // and their live members.
-    __forceinline void add_bod_after(BodNode* previous)
+    void add_bod_after(BodNode* previous)
     {
         if ((list_flags & BOD_FLAG_LINKED) != 0) {
             report_errorf("List ADDafter");

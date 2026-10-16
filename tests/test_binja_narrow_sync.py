@@ -12879,11 +12879,8 @@ def test_presentation_animation_object_cursor_survives_every_replay_lane() -> No
         assert "it owns neither the slot nor the Object" in header
 
     assert "PresentationAnimationObjectStrideCursor" not in matcher_weapon
-    assert "PresentationAnimationSlot animation_slots[5];" in matcher_weapon
-    assert (
-        "PresentationAnimationSlot cutscene_animation_slots[10];"
-        in matcher_player
-    )
+    assert "RenderableBod animation_slots[5];" in matcher_weapon
+    assert "RenderableBod cutscene_animation_slots[10];" in matcher_player
     assert "Weapon jetpack_channel;" in matcher_player
 
     cursor_names = (
@@ -26117,8 +26114,10 @@ def test_c_r_path_primary_ownership_stays_aligned() -> None:
     assert "typedef cRPath Path;" in matcher_header
     assert "cRPath_must_be_0xa8" in matcher_header
     assert "struct Path : public BodBase {" not in matcher_header
-    assert "cRPath primary;" in matcher_header
-    assert "cRPath secondary;" in matcher_header
+    assert "struct PathPair" not in matcher_header
+    assert "cRPath paths[PATH_PAIR_COUNT][2];" in (
+        repo_root / "decomp/include/subgame_runtime.h"
+    ).read_text(encoding="utf-8")
     assert "void cRPath::initialize_dump_path_template_pair(" in path_builder
     assert "void cRPath::Mirror(cRPath* source)" in mirror_scratch
 

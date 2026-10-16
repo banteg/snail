@@ -191,7 +191,7 @@ Two `update_subgoldy` corrections from the latest static audit:
     - `+0x14`: `queued_animations[10]`
     - `+0x3c`: `queue_count`
     - `+0x40`: borrowed `RenderableBod* target_model` backlink
-    - `+0x44`: borrowed `PresentationAnimationSlot* animation_slots`
+    - `+0x44`: borrowed `RenderableBod* animation_slots`
   - `+0x14c`: ten owned 0x80-byte cutscene animation donor slots
   - `+0x64c`: `weapon_channels[3]`, three consecutive exact `0x3dc`-byte
     authored `cRWeapon` owners at `+0x64c/+0xa28/+0xe04`
@@ -575,7 +575,7 @@ The shared 0x48-byte `cRAnimManager` layout is exact:
 - `+0x10`: completion latch
 - `+0x14`: ten queued animation ids; `+0x3c` is their live count
 - `+0x40`: borrowed target `RenderableBod*`
-- `+0x44`: borrowed first `PresentationAnimationSlot*`
+- `+0x44`: borrowed first `RenderableBod*`
 - `Snail +0x104` and `Weapon +0x108` own the manager; their exact slot banks
   begin immediately after it at `+0x14c` and `+0x150`
 - `RenderableBod +0x78` is the reverse borrowed manager link used by render

@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**646/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **231721/294505** bytes (**78.68%**) are proof-grade, and overall fuzzy is **99.54%**.
+**646/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **231721/294505** bytes (**78.68%**) are proof-grade, and overall fuzzy is **99.55%**.
 
 **116/120** platform helpers matched, **120/120** have a scratch, **19889/22833** bytes (**87.11%**) are proof-grade, and overall fuzzy is **97.11%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -12,9 +12,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**16** non-exact scratch-backed functions hold **62784 target bytes** without proof-grade credit and **1346 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **83.8%** of that gap; the top 10 hold **99.1%**.
+**16** non-exact scratch-backed functions hold **62784 target bytes** without proof-grade credit and **1338 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **83.7%** of that gap; the top 10 hold **99.1%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **16 / 1346** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **0 functions / 0 gap bytes**; **16 / 1338** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -26,7 +26,7 @@ Proof blockers (overlapping extents): encoding: 4 functions / 10944 bytes; instr
 |---:|---|---:|---:|---:|---:|---|---|---|---|---:|---|
 | 1 | initialize_game_assets_and_world | 23072 | 102 | 99.76% | 13/13 | instructions | semantic-complete | analysis,references | historical-only | 0/23 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 2 | update_subgoldy | 8464 | 61 | 99.28% | 14/16 | instructions | semantic-complete | analysis | historical-only | 0/16 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 3 | populate_runtime_track_cells_from_segments | 5056 | 430 | 99.34% | 9/9 | instructions | semantic-complete | analysis | historical-only | 0/150 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 3 | populate_runtime_track_cells_from_segments | 5056 | 422 | 99.49% | 7/7 | instructions | semantic-complete | analysis | historical-only | 0/150 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 4 | initialize_loopbow_path_template_pair | 2944 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/21 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 5 | initialize_worm_path_template_pair | 2768 | 225 | 96.52% | 29/22 | instructions | semantic-complete | analysis | historical-only | 0/14 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 6 | initialize_looptheloopw_path_template_pair | 2736 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/19 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
@@ -720,7 +720,7 @@ Proof blockers (overlapping extents): encoding: 4 functions / 10944 bytes; instr
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2768 | 729/736 | 91.88% | 0/736 | 37 ok |  | core |
-| 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5056 | 1246/1246 | 91.50% | 232/1246 | 165 ok |  | core |
+| 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5056 | 1246/1246 | 91.66% | 232/1246 | 165 ok |  | core |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1040 | 273/274 | 86.65% | 55/274 | 57 ok |  | boundary |
 
 ## Mid Progress (50-79.99%) (1)

@@ -37,9 +37,21 @@ void squidge_start_y_recovered(cRSquidge* self, float value)
     __asm__("_ZN9cRSquidge16StartY_recoveredEf");
 void set_object_color(Object* object, tColour color);
 
+// The shell keeps its extra paths as primary/secondary pairs, laid out like
+// one row of cRSubGame::paths.
+struct PathPair {
+    cRPath primary;
+    cRPath secondary;
+};
+
 namespace {
 
 typedef AttachmentSample PathTemplateSample;
+
+PathPair& subgame_path_pair(int slot)
+{
+    return *reinterpret_cast<PathPair*>(g_game->subgame.paths[slot]);
+}
 
 enum {
     kMobilePathBaseCode = 100,
@@ -659,7 +671,7 @@ bool is_halfpole_path(const cRPath* path)
         || path == &g_extra_path_pairs[kHalfPoleExtraIndex].secondary)
         return true;
     if (g_halfpole_active_slot >= 0 && g_halfpole_active_slot < PATH_PAIR_COUNT && g_game) {
-        const PathPair& mapped = g_game->subgame.path_pairs[g_halfpole_active_slot];
+        const PathPair& mapped = subgame_path_pair(g_halfpole_active_slot);
         if (path == &mapped.primary || path == &mapped.secondary)
             return true;
     }
@@ -673,7 +685,7 @@ void extras_init_paths()
     if (!g_port_ultimate || g_paths_initialized)
         return;
 
-    memcpy(g_pc_path_pairs_backup, g_game->subgame.path_pairs, sizeof(g_pc_path_pairs_backup));
+    memcpy(g_pc_path_pairs_backup, g_game->subgame.paths, sizeof(g_pc_path_pairs_backup));
     int start_object_index = g_object_list.count;
 
     for (int i = 0; i < kTotalExtraPathPairs; ++i) {
@@ -708,7 +720,7 @@ void extras_init_paths()
     g_pc_path_pairs_backup[14].primary.SetObject(g_object_list.Add());
     build_sbend(&g_pc_path_pairs_backup[14].primary, 8, 8.0f, true, track0, track0);
     finish_standard_pair(g_pc_path_pairs_backup[14]);
-    g_game->subgame.path_pairs[14] = g_pc_path_pairs_backup[14];
+    subgame_path_pair(14) = g_pc_path_pairs_backup[14];
 
     // 4..6: DETOUR2, DETOUR3, DETOUR
     const int detour_widths[3] = {2, 3, 4};
@@ -762,7 +774,7 @@ void extras_init_paths()
         build_mobile_shared_path(&pair.primary, i == 0, i != 2, slide0);
         finish_standard_pair(pair);
         g_pc_path_pairs_backup[shared_slots[i]] = pair;
-        g_game->subgame.path_pairs[shared_slots[i]] = pair;
+        subgame_path_pair(shared_slots[i]) = pair;
     }
 
     // TrampRing object and 8 pool instances
@@ -844,7 +856,7 @@ static void remap_segment_paths(SubSegment* seg, int* mapped_slot_for_extra, boo
             if (chosen >= 0) {
                 slot_used[chosen] = true;
                 mapped_slot_for_extra[extra_idx] = chosen;
-                g_game->subgame.path_pairs[chosen] = g_extra_path_pairs[extra_idx];
+                subgame_path_pair(chosen) = g_extra_path_pairs[extra_idx];
                 if (extra_idx == kHalfPoleExtraIndex)
                     g_halfpole_active_slot = chosen;
             }
@@ -859,7 +871,7 @@ void extras_map_level_paths(cRSubTracks* level_def)
     if (!g_port_ultimate || !g_paths_initialized || level_def != &g_game->subgame.level_definition)
         return;
 
-    memcpy(g_game->subgame.path_pairs, g_pc_path_pairs_backup, sizeof(g_pc_path_pairs_backup));
+    memcpy(g_game->subgame.paths, g_pc_path_pairs_backup, sizeof(g_pc_path_pairs_backup));
     g_halfpole_active_slot = -1;
 
     int mapped_slot_for_extra[kMobilePathCount];

@@ -71,7 +71,7 @@ void cRAnimManager::AI()
         } else {
             target_model->list_flags |= 0x20u;
             Object** slot_object =
-                &animation_slots[queued_animations[0]].body.object;
+                &animation_slots[queued_animations[0]].object;
             ObjectAnimation* animation = (*slot_object)->animation;
             progress = 0.0f;
             active_animation = animation;

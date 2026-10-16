@@ -522,9 +522,9 @@
       "name": "zero_vector3",
       "kind": "function",
       "aliases": [
-        "?zero_vector3@tVector@@QAEHXZ"
+        "?zero_vector3@tVector@@QAEXXZ"
       ],
-      "description": "Exact tVector-owned zeroing helper; the authored method name remains unverified."
+      "description": "Out-of-line copy of the plain inline tVector zeroing method, emitted for the five calls initialize_game_assets_and_world cannot inline; the authored method name remains unverified."
     },
     {
       "address": "0x410720",

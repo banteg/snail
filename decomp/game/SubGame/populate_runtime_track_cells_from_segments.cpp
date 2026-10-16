@@ -158,10 +158,10 @@ void cRSubGame::BuildLevel()
             sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]),
         CELL_FRINGE_COUNT =
             sizeof(((cRSubLoc*)0)->fringes) / sizeof(((cRSubLoc*)0)->fringes[0]),
-        PATH_PAIRS_BASE = offsetof(cRSubGame, path_pairs),
+        PATHS_BASE = offsetof(cRSubGame, paths),
         PATH_36_PRIMARY_SAMPLES =
-            PATH_PAIRS_BASE + 36 * sizeof(PathPair)
-            + offsetof(PathPair, primary) + offsetof(Path, primary_samples),
+            PATHS_BASE + 36 * sizeof(paths[0])
+            + offsetof(Path, primary_samples),
         SEGMENT_AUTHORED_ROWS_BASE = offsetof(SubSegment, rows),
         AUTHORED_ROW_LOCAL_X =
             offsetof(AuthoredSegmentRow, local_position) + offsetof(Vector3, x),
@@ -691,10 +691,10 @@ void cRSubGame::BuildLevel()
 
                     if (track_mirror_enabled)
                         runtime_cells[build_row][lane].attachment_template_record =
-                            &path_pairs[runtime_rows[build_row].attachment_template_index].secondary;
+                            &paths[runtime_rows[build_row].attachment_template_index][1];
                     else
                         runtime_cells[build_row][lane].attachment_template_record =
-                            &path_pairs[runtime_rows[build_row].attachment_template_index].primary;
+                            &paths[runtime_rows[build_row].attachment_template_index][0];
 
                     runtime_cells[build_row][lane].list_flags &= 0xffffffdf;
                     if (attachment_entry_installed == 0) {

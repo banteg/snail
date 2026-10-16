@@ -6,8 +6,6 @@
 #include "bod_fwd.h"
 #include "object_animation_types.h"
 
-struct PresentationAnimationSlot;
-
 enum {
     ANIM_MANAGER_QUEUE_CAPACITY = 10,
     ANIM_MANAGER_HIDE_ANIMATION_ID = -1,
@@ -27,7 +25,7 @@ public:
     int queued_animations[ANIM_MANAGER_QUEUE_CAPACITY]; // +0x14
     int queue_count;       // +0x3c
     RenderableBod* target_model; // +0x40, borrowed Snail/channel renderable owner
-    PresentationAnimationSlot* animation_slots; // +0x44, borrowed inline slot bank
+    RenderableBod* animation_slots; // +0x44, borrowed inline slot bank
 };
 
 typedef cRAnimManager AnimManager;

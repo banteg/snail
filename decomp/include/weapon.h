@@ -5,13 +5,6 @@
 #include "bod_types.h"
 #include "vector3.h"
 
-struct PresentationAnimationSlot {
-    RenderableBod body; // +0x00; body.object owns the animated Object link at +0x24
-};
-
-typedef char PresentationAnimationSlot_must_be_0x80[
-    (sizeof(PresentationAnimationSlot) == 0x80) ? 1 : -1];
-
 // Authored cRWeapon. Snail owns three weapon instances and one additional
 // instance for the jetpack presentation channel.
 class cRWeapon : public RenderableBod {
@@ -28,7 +21,7 @@ public:
     char unknown_080[0x104 - 0x80];
     int selected_state; // +0x104
     cRAnimManager anim_manager; // +0x108
-    PresentationAnimationSlot animation_slots[5]; // +0x150, owned renderable slots
+    RenderableBod animation_slots[5]; // +0x150, owned renderable slots
     Vector3 release_step; // +0x3d0, additive offset when release flag is active
 };
 

@@ -2,8 +2,12 @@
 
 ## 2026-10-16: typed cell and row accesses; the lane-word load register
 
-Still **91.50%** (1,246/1,246, structural 99.34%, prefix 232). The object
-code is identical to the previous source.
+**91.66%** (1,246/1,246, structural 99.49%). The typed source alone is
+byte-identical to the previous one at 91.50%. The same commit's header
+changes (`cRPath paths[63][2]`, plain-inline helpers, the plain
+`RenderableBod` slot arrays; see initialize_game_assets_and_world) shift
+TU-wide ids. With them, both `/G5` ties at windows 32 and 168 take native's
+order.
 
 **Source.** The main loop now addresses each cell as
 `runtime_cells[build_row][lane]` instead of through the `char* cell` cursor.
