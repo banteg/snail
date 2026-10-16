@@ -1,5 +1,56 @@
 # populate_runtime_track_cells_from_segments
 
+## 2026-10-16: msvc6.3 whole-TU retest
+
+Measured inside the SubGame unit: **91.50%**, structural 99.34% (9/9),
+1,246/1,246 instructions, prefix 232, 165 clean references. No source change
+is retained.
+
+**The `[esi+0x3bfb08]` lead is not a rotation problem.** `rotation.py` (now
+TU-aware) finds no cursor shift anywhere in the function. The local selector's
+picks for the lane-word statements (#73–#75) are all removed later. The
+difference is the address form:
+- Native computes the cell cursor first (`lea esi,[esi+eax*4]`) and then
+  loads `[esi+0x3bfb08]` into the free eax. The `and al,0xe0` is just the
+  short eax encoding of `& 0xffffffe0`.
+- Ours folds the load as `mov ecx,[esi+eax*4+0x3bfb08]` before the `lea`,
+  while eax is still live, so it takes ecx.
+- These spellings all fold identically: lane word through `cell`, a typed
+  `cRSubLoc*` view of `cell`, one-statement `(w & ~0x1f) ^ (lane & 7)`, an
+  explicit temporary, `lane & 7` hoisted, `|=`, and computing the fringe slot
+  pointer first.
+- A named `cRSubLoc* loc` without converting the switch's `cell` accesses
+  drops to 86.02%.
+
+**Bitfield probes.** Both mobile builds write this lane field as a byte RMW,
+`b & 0xe0 | lane & 7`, which hints at bitfields. With a local bitfield view
+over `lane_and_flags`:
+- `lane : 5 = lane` or `lane : 3 = lane` leaves the load unfused and
+  native-shaped, reaching 98.72% normalized and 99.49% structural (7/7).
+  VC6's insert is then `((v ^ old) & m) ^ old`, and native's early
+  `and edx,7` goes missing.
+- `lane : 5 = lane & 7` folds again and emits `or`. A 3+2 split emits two
+  inserts (`and al,0xe7`, then the generic insert).
+- Native's `(old & 0xffffffe0) ^ (lane & 7)` is not VC6's bitfield code, so a
+  bitfield is not the Windows spelling. It was not adopted, and the higher
+  score is a lead only. What folds the plain RMW's load but not the bitfield's
+  is still untraced. It is decided before the post-allocation passes
+  (`passes.py` shows the same node order from the local allocator onward).
+
+**Scheduling residuals** (`schedtrace.py`):
+- Window 32 (`mov ebp,[this]` / `mov edi,[build_row]` reloads) and window 168
+  (`mov ebp,ecx` / `mov edi,eax` at the loop back edge) emit global-register
+  reloads and copies in the opposite IL order.
+- Window 37: native stores `[ebp+0x48]` (@f102) before loading
+  `[ebp+0x1b013c]` (@f109), so native has a memory edge that ours lacks. In
+  ours the `this` class (0x67) has only 27 field records, and f102/f109 hold
+  distinct bits 1 and 8. To share bit 31, native needs 30 or more later
+  `this`-based field records. The source reaches most of cRSubGame through
+  `char*` cursors (`cell`, `cell_flags`, `row_cursor`), and those form other
+  classes (for example 0x70). The original probably named more members
+  directly. This fits the PR #80 observation that populate's score depends on
+  surrounding context.
+
 ## 2026-09-11: entry anchor, guarded loop and typed segment recovery
 
 The current source is **86.13245518%**, **1,243/1,246 instructions**, prefix

@@ -115,6 +115,11 @@ static void glob_observe(unsigned long index, unsigned long phase, unsigned long
 {
     unsigned char *base = (unsigned char *)targets[index] - offsets_copy[index];
     unsigned long rec[13], q;
+    if (index == ENTRY_INDEX) {
+        rec[0] = 6;
+        glob_write(rec, 4);
+        return;
+    }
     if (index == GLOBAL_INDEX || index == LOCAL_INDEX) {
         glob_function = registers[6];
         glob_operands(index == GLOBAL_INDEX ? 0 : 1, (unsigned long *)registers[6], base);
@@ -144,7 +149,8 @@ static void glob_observe(unsigned long index, unsigned long phase, unsigned long
 }
 """
 
-# Record kinds: 1 queued, 2 chooser entry, 3 chooser result, 4 neighbour, 5 operand.
+# Record kinds: 1 queued, 2 chooser entry, 3 chooser result, 4 neighbour, 5 operand,
+# 6 function entry (splits a translation unit's records by function).
 REGISTERS = rot.REGISTERS
 
 
@@ -162,6 +168,7 @@ def observer(profile, stock_source):
         "CHOOSE_INDEX": choose,
         "GLOBAL_INDEX": hooks.index(GLOBAL_ENTRY_HOOK),
         "LOCAL_INDEX": hooks.index(LOCAL_ENTRY_HOOK),
+        "ENTRY_INDEX": hooks.index(rot.FUNCTION_ENTRY_HOOK),
     }
     offsets = ",".join(str(h["target"]) for h in hooks)
     header = "".join(f"#define {k} {v}\n" for k, v in defines.items())
@@ -197,7 +204,13 @@ def observer(profile, stock_source):
 def run_observer(scratch, out):
     stock_profile, stock_source = c2.load_profile, c2.observer_source
     profile = use_backend(m.load_scratch_config(scratch).compiler)
-    hooks = [GLOBAL_ENTRY_HOOK, LOCAL_ENTRY_HOOK, *QUEUE_HOOKS, CHOOSE_HOOK]
+    hooks = [
+        GLOBAL_ENTRY_HOOK,
+        LOCAL_ENTRY_HOOK,
+        *QUEUE_HOOKS,
+        CHOOSE_HOOK,
+        rot.FUNCTION_ENTRY_HOOK,
+    ]
     profile = dict(profile, name=profile["name"] + "-global", hooks=hooks)
     c2.load_profile = lambda: profile
     c2.observer_source = lambda p: observer(p, stock_source)
@@ -221,9 +234,14 @@ def s32(value):
 
 
 def decode(data):
-    rows, at = [], 0
+    """Allocator records, each tagged with the ordinal of the function C2 was compiling."""
+    rows, at, ordinal = [], 0, -1
     while at < len(data):
         (kind,) = struct.unpack_from("<I", data, at)
+        if kind == 6:
+            at += 4
+            ordinal += 1
+            continue
         if kind in (1, 2, 4):
             w = struct.unpack_from(f"<{RANGE_WORDS}I", data, at)
             at += RANGE_WORDS * 4
@@ -287,7 +305,8 @@ def decode(data):
             )
         else:
             raise ValueError(f"Unknown global record {kind}")
-    return rows
+        rows[-1]["ordinal"] = ordinal
+    return rows, ordinal + 1
 
 
 REGISTER_TOKEN = re.compile(r"\b(?:e?[abcd]x|[abcd][lh]|e?[sd]i|e?bp)\b")
@@ -458,18 +477,17 @@ def main():
         conf = work / "scratch.conf"
         text = re.sub(r"^COMPILER=.*\n", "", conf.read_text(), flags=re.MULTILINE)
         conf.write_text(text.rstrip("\n") + "\nCOMPILER=msvc6.5\n")
-    rows = decode(run_observer(work, out))
-    functions = list(
-        dict.fromkeys(row["function"] for row in rows if "function" in row)
-    )
-    if len(functions) != 1:
-        raise ValueError(f"Expected one allocating function, saw {len(functions)}")
+    rows, count = decode(run_observer(work, out))
+    config = m.load_scratch_config(work)
+    object_path = m.compile_scratch(config)
+    # A translation unit allocates every member; keep the traced one.
+    obj = m.parse_coff_object(Path(object_path).read_bytes())
+    ordinal = t.target_function(obj, config.symbol or config.function, count)
+    rows = [row for row in rows if row["ordinal"] == ordinal]
     lines_of, _ = symbol_uses(rows, "global")
     _, final_regs = symbol_uses(rows, "local")
-    config = m.load_scratch_config(work)
     source_text = (work / "scratch.cpp").read_text()
     first_line = rot.definition_line(source_text, config.symbol or config.function)
-    object_path = m.compile_scratch(config)
     metrics = c2.replay.function_metrics(config, object_path)
     natives = native_map(config, work, object_path, first_line)
     chosen, rest = ranges(rows)

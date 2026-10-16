@@ -14,7 +14,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 **16** non-exact scratch-backed functions hold **62784 target bytes** without proof-grade credit and **1346 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **83.8%** of that gap; the top 10 hold **99.1%**.
 
-Current-baseline experiments cover **1 functions / 102 gap bytes**; **15 / 1244** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **0 functions / 0 gap bytes**; **16 / 1346** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -24,7 +24,7 @@ Proof blockers (overlapping extents): encoding: 4 functions / 10944 bytes; instr
 
 | rank | function | withheld bytes | fuzzy gap | structural | changed insns t/c | blockers | recovery | residual | evidence | current/all | flags |
 |---:|---|---:|---:|---:|---:|---|---|---|---|---:|---|
-| 1 | initialize_game_assets_and_world | 23072 | 102 | 99.76% | 13/13 | instructions | semantic-complete | analysis,references | current-active | 2/23 | repeated-variants,metric-tradeoffs,variant-errors,stale-dependencies |
+| 1 | initialize_game_assets_and_world | 23072 | 102 | 99.76% | 13/13 | instructions | semantic-complete | analysis,references | historical-only | 0/23 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 2 | update_subgoldy | 8464 | 61 | 99.28% | 14/16 | instructions | semantic-complete | analysis | historical-only | 0/16 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 3 | populate_runtime_track_cells_from_segments | 5056 | 430 | 99.34% | 9/9 | instructions | semantic-complete | analysis | historical-only | 0/150 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 4 | initialize_loopbow_path_template_pair | 2944 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/21 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |

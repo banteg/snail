@@ -152,10 +152,13 @@ def observer(profile, stock_source):
         + RECORDER
         + "static void __cdecl observe(",
     )
+    # Each function entry writes a one-word marker, so a translation unit's
+    # selector records can be split by function.
     source = source.replace(
         anchors[1],
         anchors[1]
-        + "    if (phase % 100 == ROTATION_HOOK) { rotation_observe(phase, registers); return; }\n",
+        + "    if (phase % 100 == ROTATION_HOOK) { rotation_observe(phase, registers); return; }\n"
+        + "    if (phase == 0) { unsigned long marker = 3; rotation_write(&marker, 4); }\n",
     )
     source = source.replace(
         anchors[2],
@@ -182,16 +185,23 @@ def run_observer(scratch, out):
 
 
 def decode(data):
-    rows, at, pending = [], 0, None
+    """Selector records, each tagged with the ordinal of the function C2 was compiling."""
+    rows, at, pending, ordinal = [], 0, None, -1
     while at < len(data):
         (kind,) = struct.unpack_from("<I", data, at)
-        if kind == 1:
+        if kind == 3:
+            if pending is not None:
+                raise ValueError("Function entry inside a selector call")
+            at += 4
+            ordinal += 1
+        elif kind == 1:
             if pending is not None:
                 raise ValueError("Selector entry without return")
             w = struct.unpack_from(f"<{ENTRY_WORDS}I", data, at)
             at += ENTRY_WORDS * 4
             base = w[13]
             pending = {
+                "ordinal": ordinal,
                 "function": w[1],
                 "node": w[2],
                 "opcode": w[3] & 0xFFFF,
@@ -269,9 +279,9 @@ def attach_final(rows, events):
     final = {}
     for event in events:
         if event["phase"] == 1:  # FINAL_HOOK entry, one per function
-            final[event["function_address"]] = event
+            final[event["function_ordinal"]] = event
     for row in rows:
-        event = final.get(row["function"])
+        event = final.get(row["ordinal"])
         if event is None:
             row["final"] = "unobserved"
             continue
@@ -501,13 +511,11 @@ def main():
     out = args.out or Path(tempfile.mkdtemp(prefix="c2rot-")) / "trace"
     work = prepare(scratch, args.source, out.parent / (out.name + "-input"))
     result, events, data = run_observer(work, out)
-    rows = decode(data)
-    functions = list(dict.fromkeys(row["function"] for row in rows))
-    if not functions:
+    # A translation unit allocates every member; keep the traced one.
+    rows = [row for row in decode(data) if row["ordinal"] == result["function_ordinal"]]
+    if not rows:
         print(f"trace: {out}  no temporary reached the rotation selector")
         return
-    if len(functions) != 1:
-        raise ValueError(f"Expected one allocating function, saw {len(functions)}")
     for row in rows:
         row["path"], predicted, cursor = predict(row)
         # The spill heuristics after the first-free scan are not modelled.
