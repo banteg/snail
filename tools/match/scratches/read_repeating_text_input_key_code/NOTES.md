@@ -391,3 +391,27 @@ add 1 per header file; macros are free. Reconstruct RShell.h, GDX.h, font.h,
 RSprite.h and related headers, count them, and pad any shortfall with
 enumerators (exactly 1 each), keeping the stand-in near the middle of the
 window.
+
+## 2026-10-16: RShell compiles as one translation unit
+
+RShell.o is now one 55-function unit, so the real members before `RstrASC`
+count toward its id. The prelude moved with it:
+
+- In address order, `rstring.h` (and with it `RstrASC`) is first included by
+  `enumerate_matching_archive_or_fs_entries`, the 13th member, so a prelude
+  left in this file came 29 members too late and the match fell to 99.09%.
+- `initialize_tracked_allocation_depth_thunk`, the unit's first member, now
+  includes `rshell_prelude.h`, standing where RShell.cpp's header block stood.
+  This file no longer includes it.
+- With the prelude at the top of the unit, the stand-in window (ids including
+  the enum type) is about **11,900..13,950**: exact at 11,925 and 13,950, 99.09%
+  at 11,900 and 13,975. The twelve members ahead of `enumerate_matching_*` and
+  its own declarations before `rstring.h` supply the ~835 ids by which it moved
+  down from 12,737..14,784.
+- The stand-in is recentred to 12,901 ids (1 + 12,900 enumerators).
+
+**Still missing.** The real members cover only about 835 of the ~12.9k ids, so
+the stand-in stays. What it holds the place of is unchanged: RShell's own
+headers after the DirectX 8.1 SDK (RShell.h, GDX.h, font.h, RSprite.h and what
+they include). Removing it needs those headers, counted with the method above;
+the target is now the 11,900..13,950 window, measured from the top of the unit.

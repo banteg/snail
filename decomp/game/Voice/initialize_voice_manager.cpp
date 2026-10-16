@@ -8,7 +8,6 @@
 
 #include <string.h>
 
-char* load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, int* out_size);
 int register_sound_sample(char* path, int normalization_class);
 int report_errorf(char* format, ...);
 

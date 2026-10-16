@@ -55,6 +55,14 @@ typedef char SerializedArchiveEntry_must_be_0x0c[
 typedef char DirectoryEntryName_must_be_0x80[
     (sizeof(DirectoryEntryName) == 0x80) ? 1 : -1];
 
+// Archive paths are stored upper case; requests fold to match.
+static __inline unsigned char fold_archive_request(char value)
+{
+    if (value >= 'a' && value <= 'z')
+        return value - ('a' - 'A');
+    return value;
+}
+
 extern char* g_music_memory_buffer; // data_53c7e8 / iOS RShellMusicMemoryBuffer
 extern void* g_archive_data_base;   // data_53c7ec / iOS RShellScratch
 extern FILE* g_archive_file; // data_53c7f0 / iOS gDatFP

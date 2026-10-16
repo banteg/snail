@@ -8,7 +8,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 **3** third-party functions (**568** curated-extent bytes) remain visible for context and are excluded from both progress totals.
 
-**1** scratches depend on placeholder context headers (marked `STAND-IN`) rather than recovered source: `read_repeating_text_input_key_code` (rshell_prelude.h). Their compiled bytes are real; the surrounding translation unit is approximated.
+**55** scratches depend on placeholder context headers (marked `STAND-IN`) rather than recovered source: `initialize_tracked_allocation_depth_thunk` (rshell_prelude.h), `initialize_tracked_allocation_depth` (rshell_prelude.h), `initialize_game_data_archive` (rshell_prelude.h), `uninitialize_game_data_archive` (rshell_prelude.h), `set_current_directory_with_drive_fallback` (rshell_prelude.h), `archive_or_file_exists` (rshell_prelude.h), `load_file_bytes_fixed_size_from_archive_or_fs` (rshell_prelude.h), `find_archive_entry` (rshell_prelude.h), `load_file_bytes_from_archive_or_fs` (rshell_prelude.h), `load_file_bytes` (rshell_prelude.h), `delete_file_path_with_directory_walk` (rshell_prelude.h), `write_file_bytes` (rshell_prelude.h), `enumerate_matching_archive_or_fs_entries` (rshell_prelude.h), `xor_archive_bytes_in_place` (rshell_prelude.h), `load_archive_index` (rshell_prelude.h), `is_archive_index_loaded` (rshell_prelude.h), `get_archive_data_base` (rshell_prelude.h), `get_archive_data_end` (rshell_prelude.h), `get_tracked_allocation_size` (rshell_prelude.h), `push_tracked_allocation` (rshell_prelude.h), `pop_tracked_allocation` (rshell_prelude.h), `allocate_tracked_memory` (rshell_prelude.h), `free_tracked_memory` (rshell_prelude.h), `free_tracked_allocations_to_mark` (rshell_prelude.h), `set_tracked_allocation_mark` (rshell_prelude.h), `report_errorf` (rshell_prelude.h), `report_warningf` (rshell_prelude.h), `report_messagef` (rshell_prelude.h), `copy_c_string` (rshell_prelude.h), `strings_equal_case_insensitive` (rshell_prelude.h), `skip_to_next_line` (rshell_prelude.h), `append_c_string` (rshell_prelude.h), `parse_next_space_delimited_token` (rshell_prelude.h), `parse_next_int32` (rshell_prelude.h), `parse_next_float32` (rshell_prelude.h), `set_input_controller_slot0_button_axes` (rshell_prelude.h), `update_input_controller_slot_button_axes` (rshell_prelude.h), `copy_active_input_controller_state` (rshell_prelude.h), `update_input_controller_pointer_region` (rshell_prelude.h), `set_input_controller_pointer_authored_xy` (rshell_prelude.h), `read_pressed_text_input_key_code` (rshell_prelude.h), `read_repeating_text_input_key_code` (rshell_prelude.h), `register_font_texture_sheet_wrapper` (rshell_prelude.h), `reset_registered_sound_sample_count` (rshell_prelude.h), `cache_music_file` (rshell_prelude.h), `play_registered_warning_sample` (rshell_prelude.h), `stop_registered_warning_sample` (rshell_prelude.h), `play_sound_effect_backend` (rshell_prelude.h), `play_voice_backend` (rshell_prelude.h), `register_sound_sample` (rshell_prelude.h), `find_registered_sound_sample_id_by_name` (rshell_prelude.h), `xor_decode_buffer_with_index` (rshell_prelude.h), `get_authored_view_width` (rshell_prelude.h), `get_authored_view_height` (rshell_prelude.h), `launch_alpha72_url` (rshell_prelude.h). Their compiled bytes are real; the surrounding translation unit is approximated.
 
 ## Residual frontier
 
@@ -97,46 +97,46 @@ Proof blockers (overlapping extents): encoding: 4 functions / 10944 bytes; instr
 | ✅ | destroy_completion_screen | 0x406060 | 112 | 25/25 | 100.00% | 25/25 | 9 ok |  | core |
 | ✅ | initialize_exit_prompt | 0x4060d0 | 1808 | 442/442 | 100.00% | 442/442 | 109 ok |  | core |
 | ✅ | update_completion_screen | 0x4067e0 | 992 | 208/208 | 100.00% | 208/208 | 69 ok |  | core |
-| ✅ | initialize_global_noop_renderable_bods_thunk | 0x406bc0 | 16 | 1/1 | 100.00% | 1/1 | 1 ok |  | core |
-| ✅ | initialize_global_noop_renderable_bods | 0x406bd0 | 64 | 10/10 | 100.00% | 10/10 | 9 ok |  | core |
-| ✅ | initialize_default_runtime_config_thunk | 0x406c10 | 16 | 1/1 | 100.00% | 1/1 | 1 ok |  | core |
-| ✅ | initialize_default_runtime_config | 0x406c20 | 240 | 36/36 | 100.00% | 36/36 | 32 ok |  | core |
-| ✅ | initialize_global_trivial_object_thunk | 0x406d10 | 16 | 1/1 | 100.00% | 1/1 | 1 ok |  | core |
-| ✅ | initialize_global_trivial_object | 0x406d20 | 16 | 2/2 | 100.00% | 2/2 | 2 ok |  | core |
-| ✅ | initialize_main_loop_display_state | 0x406d70 | 48 | 8/8 | 100.00% | 8/8 | 7 ok |  | boundary |
-| ✅ | initialize_main_loop_timing_state | 0x406da0 | 32 | 4/4 | 100.00% | 4/4 | 3 ok |  | core |
-| ✅ | consume_mouse_wheel_delta | 0x4077f0 | 32 | 4/4 | 100.00% | 4/4 | 2 ok |  | boundary |
-| ✅ | read_left_mouse_button_state | 0x407810 | 32 | 4/4 | 100.00% | 4/4 | 2 ok |  | boundary |
-| ✅ | read_right_mouse_button_state | 0x407830 | 32 | 4/4 | 100.00% | 4/4 | 2 ok |  | boundary |
-| ✅ | noop_runtime_ai | 0x407b50 | 16 | 1/1 | 100.00% | 1/1 | - |  | core |
+| ✅ | initialize_global_noop_renderable_bods_thunk | 0x406bc0 | 16 | 1/1 | 100.00% | 1/1 | 1 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_global_noop_renderable_bods | 0x406bd0 | 64 | 10/10 | 100.00% | 10/10 | 9 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_default_runtime_config_thunk | 0x406c10 | 16 | 1/1 | 100.00% | 1/1 | 1 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_default_runtime_config | 0x406c20 | 240 | 36/36 | 100.00% | 36/36 | 32 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_global_trivial_object_thunk | 0x406d10 | 16 | 1/1 | 100.00% | 1/1 | 1 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_global_trivial_object | 0x406d20 | 16 | 2/2 | 100.00% | 2/2 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_main_loop_display_state | 0x406d70 | 48 | 8/8 | 100.00% | 8/8 | 7 ok | msvc6.3 /O2 /G5 /W3 /GX | boundary |
+| ✅ | initialize_main_loop_timing_state | 0x406da0 | 32 | 4/4 | 100.00% | 4/4 | 3 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | consume_mouse_wheel_delta | 0x4077f0 | 32 | 4/4 | 100.00% | 4/4 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | boundary |
+| ✅ | read_left_mouse_button_state | 0x407810 | 32 | 4/4 | 100.00% | 4/4 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | boundary |
+| ✅ | read_right_mouse_button_state | 0x407830 | 32 | 4/4 | 100.00% | 4/4 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | boundary |
+| ✅ | noop_runtime_ai | 0x407b50 | 16 | 1/1 | 100.00% | 1/1 | - | msvc6.3 /O2 /G5 /W3 /GX | core |
 | ✅ | construct_game_runtime | 0x407b60 | 1184 | 268/268 | 100.00% | 268/268 | 120 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
-| ✅ | initialize_game_player | 0x408000 | 64 | 17/17 | 100.00% | 17/17 | 6 ok |  | core |
-| ✅ | initialize_noop_renderable_bod | 0x408040 | 32 | 7/7 | 100.00% | 7/7 | 2 ok |  | core |
-| ✅ | initialize_runtime_pools_and_path_template_bank | 0x408060 | 944 | 227/227 | 100.00% | 227/227 | 72 ok |  | core |
-| ✅ | initialize_border_record | 0x408410 | 96 | 21/21 | 100.00% | 21/21 | 9 ok |  | core |
-| ✅ | initialize_cached_x_mesh_slot | 0x408470 | 32 | 7/7 | 100.00% | 7/7 | 2 ok |  | core |
-| ✅ | initialize_intro_logo_renderable | 0x408490 | 32 | 7/7 | 100.00% | 7/7 | 2 ok |  | core |
-| ✅ | initialize_track_speedup_runtime | 0x4084b0 | 32 | 7/7 | 100.00% | 7/7 | 2 ok |  | core |
-| ✅ | initialize_track_jetpack_pickup_runtime | 0x4084d0 | 64 | 17/17 | 100.00% | 17/17 | 6 ok |  | core |
-| ✅ | initialize_track_health_pickup_runtime | 0x408510 | 32 | 7/7 | 100.00% | 7/7 | 2 ok |  | core |
-| ✅ | initialize_slug_hazard_runtime | 0x408530 | 32 | 7/7 | 100.00% | 7/7 | 2 ok |  | core |
-| ✅ | initialize_garbage_hazard | 0x408550 | 32 | 7/7 | 100.00% | 7/7 | 2 ok |  | core |
-| ✅ | initialize_track_ring_or_special_effect_runtime | 0x408570 | 32 | 7/7 | 100.00% | 7/7 | 2 ok |  | core |
-| ✅ | initialize_track_row_runtime | 0x408590 | 48 | 13/13 | 100.00% | 13/13 | 3 ok |  | core |
-| ✅ | initialize_path_template_record_pair | 0x4085c0 | 32 | 9/9 | 100.00% | 9/9 | 3 ok |  | core |
-| ✅ | initialize_active_bod | 0x4085e0 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  | core |
-| ✅ | noop_runtime_slot_constructor | 0x408600 | 16 | 2/2 | 100.00% | 2/2 | - |  | core |
-| ✅ | initialize_sub_lazer_runtime | 0x408610 | 32 | 7/7 | 100.00% | 7/7 | 2 ok |  | core |
-| ✅ | initialize_salt_hazard_runtime | 0x408630 | 32 | 7/7 | 100.00% | 7/7 | 2 ok |  | core |
-| ✅ | initialize_fringe_object | 0x408650 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  | core |
-| ✅ | initialize_click_start_controller_runtime | 0x408670 | 32 | 7/7 | 100.00% | 7/7 | 2 ok |  | core |
-| ✅ | initialize_golb_shot | 0x408690 | 64 | 17/17 | 100.00% | 17/17 | 6 ok |  | core |
-| ✅ | initialize_player_presentation_controller | 0x4086d0 | 336 | 79/79 | 100.00% | 79/79 | 27 ok |  | core |
-| ✅ | initialize_active_landscape_entry | 0x408820 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  | core |
-| ✅ | initialize_landscape_script_record | 0x408840 | 32 | 7/7 | 100.00% | 7/7 | 1 ok |  | core |
-| ✅ | initialize_track_parcel_runtime | 0x408860 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  | core |
-| ✅ | initialize_galaxy_route_name_record | 0x408880 | 32 | 7/7 | 100.00% | 7/7 | 1 ok |  | core |
-| ✅ | initialize_sub_loc | 0x4088c0 | 32 | 10/10 | 100.00% | 10/10 | 4 ok |  | core |
+| ✅ | initialize_game_player | 0x408000 | 64 | 17/17 | 100.00% | 17/17 | 6 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_noop_renderable_bod | 0x408040 | 32 | 7/7 | 100.00% | 7/7 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_runtime_pools_and_path_template_bank | 0x408060 | 944 | 227/227 | 100.00% | 227/227 | 72 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_border_record | 0x408410 | 96 | 21/21 | 100.00% | 21/21 | 9 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_cached_x_mesh_slot | 0x408470 | 32 | 7/7 | 100.00% | 7/7 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_intro_logo_renderable | 0x408490 | 32 | 7/7 | 100.00% | 7/7 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_track_speedup_runtime | 0x4084b0 | 32 | 7/7 | 100.00% | 7/7 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_track_jetpack_pickup_runtime | 0x4084d0 | 64 | 17/17 | 100.00% | 17/17 | 6 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_track_health_pickup_runtime | 0x408510 | 32 | 7/7 | 100.00% | 7/7 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_slug_hazard_runtime | 0x408530 | 32 | 7/7 | 100.00% | 7/7 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_garbage_hazard | 0x408550 | 32 | 7/7 | 100.00% | 7/7 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_track_ring_or_special_effect_runtime | 0x408570 | 32 | 7/7 | 100.00% | 7/7 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_track_row_runtime | 0x408590 | 48 | 13/13 | 100.00% | 13/13 | 3 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_path_template_record_pair | 0x4085c0 | 32 | 9/9 | 100.00% | 9/9 | 3 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_active_bod | 0x4085e0 | 18 | 7/7 | 100.00% | 7/7 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | noop_runtime_slot_constructor | 0x408600 | 16 | 2/2 | 100.00% | 2/2 | - | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_sub_lazer_runtime | 0x408610 | 32 | 7/7 | 100.00% | 7/7 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_salt_hazard_runtime | 0x408630 | 32 | 7/7 | 100.00% | 7/7 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_fringe_object | 0x408650 | 18 | 7/7 | 100.00% | 7/7 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_click_start_controller_runtime | 0x408670 | 32 | 7/7 | 100.00% | 7/7 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_golb_shot | 0x408690 | 64 | 17/17 | 100.00% | 17/17 | 6 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_player_presentation_controller | 0x4086d0 | 336 | 79/79 | 100.00% | 79/79 | 27 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_active_landscape_entry | 0x408820 | 18 | 7/7 | 100.00% | 7/7 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_landscape_script_record | 0x408840 | 32 | 7/7 | 100.00% | 7/7 | 1 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_track_parcel_runtime | 0x408860 | 18 | 7/7 | 100.00% | 7/7 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_galaxy_route_name_record | 0x408880 | 32 | 7/7 | 100.00% | 7/7 | 1 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
+| ✅ | initialize_sub_loc | 0x4088c0 | 32 | 10/10 | 100.00% | 10/10 | 4 ok | msvc6.3 /O2 /G5 /W3 /GX | core |
 | ✅ | load_galaxy_layout | 0x4088e0 | 816 | 233/233 | 100.00% | 233/233 | 42 ok |  | core |
 | ✅ | destroy_galaxy | 0x408c10 | 224 | 49/49 | 100.00% | 49/49 | 18 ok |  | core |
 | ✅ | initialize_galaxy | 0x408cf0 | 1536 | 338/338 | 100.00% | 338/338 | 74 ok |  | core |
@@ -739,24 +739,24 @@ Proof blockers (overlapping extents): encoding: 4 functions / 10944 bytes; instr
 | 🖥 | delete_file_path | 0x405340 | 16 | 5/5 | 100.00% | 5/5 | 1 ok |  | replaceable-platform |
 | 🖥 | toggle_archive_high_bit_in_place | 0x405350 | 32 | 11/11 | 100.00% | 11/11 | - |  | replaceable-platform |
 | 🖥 | rebuild_game_archive_if_needed | 0x405370 | 720 | 220/232 | 25.22% | 5/232 | 2 unaudited, 22 ok |  | replaceable-platform |
-| 🖥 | log_startup_timestamp | 0x406d30 | 64 | 19/19 | 100.00% | 19/19 | 4 ok |  | replaceable-platform |
-| 🖥 | game_startup_and_main_loop | 0x406dc0 | 1328 | 325/325 | 100.00% | 325/325 | 163 ok |  | replaceable-platform |
-| 🖥 | handle_game_window_activate | 0x4072f0 | 192 | 44/44 | 100.00% | 44/44 | 26 ok |  | replaceable-platform |
-| 🖥 | show_and_focus_game_window | 0x4073b0 | 144 | 33/33 | 100.00% | 33/33 | 19 ok |  | replaceable-platform |
-| 🖥 | handle_game_window_deactivate | 0x407440 | 80 | 18/18 | 100.00% | 18/18 | 9 ok |  | replaceable-platform |
-| 🖥 | minimize_game_window | 0x407490 | 32 | 10/10 | 100.00% | 10/10 | 4 ok |  | replaceable-platform |
-| 🖥 | game_window_proc | 0x4074b0 | 832 | 142/142 | 100.00% | 142/142 | 39 ok |  | replaceable-platform |
-| 🖥 | snapshot_current_display_mode | 0x407850 | 16 | 5/5 | 100.00% | 5/5 | 2 ok |  | replaceable-platform |
-| 🖥 | restore_desktop_display_mode | 0x407860 | 32 | 6/6 | 100.00% | 6/6 | 2 ok |  | replaceable-platform |
-| 🖥 | probe_display_mode_count | 0x407880 | 48 | 17/17 | 100.00% | 17/17 | 1 ok |  | replaceable-platform |
-| 🖥 | read_current_display_resolution | 0x4078b0 | 96 | 22/22 | 100.00% | 22/22 | 1 ok |  | replaceable-platform |
-| 🖥 | clear_display_mode_state | 0x407910 | 14 | 3/3 | 100.00% | 3/3 | - |  | replaceable-platform |
-| 🖥 | reset_display_mode_probe_count | 0x407920 | 9 | 2/2 | 100.00% | 2/2 | - |  | replaceable-platform |
-| 🖥 | read_next_display_mode_view_sample | 0x407930 | 167 | 55/55 | 100.00% | 55/55 | - |  | replaceable-platform |
-| 🖥 | bass_audio_window_proc | 0x4079e0 | 48 | 16/16 | 100.00% | 16/16 | 2 ok |  | replaceable-platform |
-| 🖥 | initialize_audio_subsystem | 0x407a10 | 240 | 73/73 | 100.00% | 73/73 | 23 ok |  | replaceable-platform |
-| 🖥 | shutdown_bass_audio_window | 0x407b00 | 80 | 19/19 | 100.00% | 19/19 | 10 ok |  | replaceable-platform |
-| 🖥 | abort_startup_with_3d_error | 0x4088a0 | 32 | 7/7 | 100.00% | 7/7 | 4 ok |  | replaceable-platform |
+| 🖥 | log_startup_timestamp | 0x406d30 | 64 | 19/19 | 100.00% | 19/19 | 4 ok | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
+| 🖥 | game_startup_and_main_loop | 0x406dc0 | 1328 | 325/325 | 100.00% | 325/325 | 163 ok | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
+| 🖥 | handle_game_window_activate | 0x4072f0 | 192 | 44/44 | 100.00% | 44/44 | 26 ok | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
+| 🖥 | show_and_focus_game_window | 0x4073b0 | 144 | 33/33 | 100.00% | 33/33 | 19 ok | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
+| 🖥 | handle_game_window_deactivate | 0x407440 | 80 | 18/18 | 100.00% | 18/18 | 9 ok | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
+| 🖥 | minimize_game_window | 0x407490 | 32 | 10/10 | 100.00% | 10/10 | 4 ok | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
+| 🖥 | game_window_proc | 0x4074b0 | 832 | 142/142 | 100.00% | 142/142 | 39 ok | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
+| 🖥 | snapshot_current_display_mode | 0x407850 | 16 | 5/5 | 100.00% | 5/5 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
+| 🖥 | restore_desktop_display_mode | 0x407860 | 32 | 6/6 | 100.00% | 6/6 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
+| 🖥 | probe_display_mode_count | 0x407880 | 48 | 17/17 | 100.00% | 17/17 | 1 ok | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
+| 🖥 | read_current_display_resolution | 0x4078b0 | 96 | 22/22 | 100.00% | 22/22 | 1 ok | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
+| 🖥 | clear_display_mode_state | 0x407910 | 14 | 3/3 | 100.00% | 3/3 | - | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
+| 🖥 | reset_display_mode_probe_count | 0x407920 | 9 | 2/2 | 100.00% | 2/2 | - | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
+| 🖥 | read_next_display_mode_view_sample | 0x407930 | 167 | 55/55 | 100.00% | 55/55 | - | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
+| 🖥 | bass_audio_window_proc | 0x4079e0 | 48 | 16/16 | 100.00% | 16/16 | 2 ok | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
+| 🖥 | initialize_audio_subsystem | 0x407a10 | 240 | 73/73 | 100.00% | 73/73 | 23 ok | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
+| 🖥 | shutdown_bass_audio_window | 0x407b00 | 80 | 19/19 | 100.00% | 19/19 | 10 ok | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
+| 🖥 | abort_startup_with_3d_error | 0x4088a0 | 32 | 7/7 | 100.00% | 7/7 | 4 ok | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
 | 🖥 | create_vertex_buffer | 0x4114b0 | 288 | 101/101 | 100.00% | 101/101 | 11 ok |  | replaceable-platform |
 | 🖥 | create_index_buffer | 0x4115d0 | 96 | 36/36 | 100.00% | 36/36 | 5 ok |  | replaceable-platform |
 | 🖥 | initialize_direct3d_renderer_defaults | 0x411630 | 192 | 38/38 | 100.00% | 38/38 | 15 ok |  | replaceable-platform |

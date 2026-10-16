@@ -58,17 +58,7 @@ int sprintf_cxx(char* buffer, const char* format, ...)
 
 // The shipped build compiled debug output away (debug_report_stub @ 0x44b7c0
 // is empty). The port prints it, which changes no game state. Some sources
-// declare it with C linkage, others as C++ overloads.
-int debug_report_stub_c(char* format, ...) __asm__("debug_report_stub");
-int debug_report_stub_c(char* format, ...)
-{
-    va_list args;
-    va_start(args, format);
-    int written = vfprintf(stderr, format, args);
-    va_end(args);
-    return written;
-}
-
+// still declare their own C++ overloads.
 int debug_report_stub(char* format, ...)
 {
     va_list args;

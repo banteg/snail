@@ -3,19 +3,13 @@
 #include <direct.h>
 
 #include "archive_index.h"
+#include "rshell.h"
 #include "loading_bar.h"
 
 int get_stream_length_preserve_position(FILE* file);
 void* allocate_tracked_memory(int size, char* name);
 void xor_archive_bytes_in_place(int start_offset, char* bytes, int count);
 int report_messagef(char* format, ...);
-
-static inline unsigned char fold_archive_request(char value)
-{
-    if (value >= 'a' && value <= 'z')
-        return value - ('a' - 'A');
-    return value;
-}
 
 char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(
     char* file_name, char* buffer, int byte_count)

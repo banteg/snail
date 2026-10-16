@@ -369,16 +369,6 @@ char* __cdecl load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, 
     return load_file_bytes_from_archive_or_fs_recovered(file_name, buffer, out_size);
 }
 
-char* __cdecl load_file_bytes_from_archive_or_fs(char* file_name, void* buffer, int* out_size)
-{
-    return load_file_bytes_from_archive_or_fs(file_name, (char*)buffer, out_size);
-}
-
-char* __cdecl load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, void* out_size)
-{
-    return load_file_bytes_from_archive_or_fs(file_name, buffer, (int*)out_size);
-}
-
 char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(char* file_name, char* buffer, int byte_count)
 {
     file_name = (char*)extras_save_path(file_name);
@@ -395,11 +385,6 @@ char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(char* file_name, cha
         }
     }
     return load_file_bytes_fixed_size_from_archive_or_fs_recovered(file_name, buffer, byte_count);
-}
-
-char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(char* file_name, char* buffer, unsigned int byte_count)
-{
-    return load_file_bytes_fixed_size_from_archive_or_fs(file_name, buffer, (int)byte_count);
 }
 
 // Android cRTrack::Change (0003f330): supports Track: 0-6 and 8 (random 0-6).

@@ -2,8 +2,8 @@
 
 #include "audio_system.h"
 #include "archive_index.h"
+#include "rshell.h"
 
-char* load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, int* out_size);
 int report_errorf(char* format, ...);
 
 char cache_music_file(char* path, int unused, char* unused_default_path)
