@@ -13,6 +13,21 @@ averages RGB, optionally cubes the value, and writes scaled vertex heights for
 - residual: pixel-pointer base encoding; no semantic gap known
 - live caller: `cRFace::AI`
 
+## 2026-10-16: msvc6.3 whole-TU retest
+
+Unchanged at **97.25%**, prefix 67, 13 clean references (ObjectProc TU). The
+pointer-origin split reproduces under msvc6.3 in the unit:
+
+- Payload origin (`image->pixels + i`, `&image->pixels[i]`, `(u8*)image + 18 + i`,
+  `+ (i + 18)`, `sizeof - 2`, `pixel += i`, swapped multiply, `bytes_per_pixel`
+  local): 97.25%, `lea eax, [ecx+esi+0x12]`.
+- Header origin (`(TgaImageView*)((u8*)image + i)->pixels[k]`, `(u8*)image + i` with
+  `[0x12..0x14]`, the pointer and index at function scope, all six channel read orders):
+  88.99%, destructive `add ecx, esi`. Index form `image->pixels[i + k]`: 90.32%, 108 instructions.
+
+Native's `lea eax, [ecx+esi]` with header displacements in the loads is still
+not produced.
+
 ## 2026-09-22 coordinate and average ownership
 
 The [replayable recovery](../../heightmap-coordinates-20260922.md) supersedes
