@@ -78,3 +78,15 @@ A separate control using `rdebug.h` and direct varargs calls emits 74/67
 instructions at 92.20%, with the same 16 references. That rewrite is not
 retained; the fixed call views remain compatibility reconstruction. See the
 [source-context controls](../../subgame-context-20260922.md).
+
+## 2026-10-16 one varargs declaration in the whole unit
+
+SubGame compiles as one translation unit now, and the plain shape is exact in
+it: `int debug_report_stub(char* format, ...)` and eight direct calls, the last
+one `debug_report_stub("\n")`, give 67/67 instructions with the native
+`add esp, 0x3c` and 16 clean references. The fixed `(char*, int)` declaration
+and the one-argument function-pointer cast are gone. In the unit that overload
+also captured `update_cameraman`'s `(double)` report argument and converted it
+through `_ftol`. The 2026-09-22 varargs control (74/67) was an msvc6.5
+result: probing this source with `--compiler msvc6.5` still gives 92.20% at
+74/67, while msvc6.3 coalesces the cleanup on its own.

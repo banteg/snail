@@ -1699,3 +1699,15 @@ Traced on the `91.50%` (`1246/1246`, structural `99.34%`, `9/9` changed) baselin
   `cursor = 1` (`ecx`), so `#74` (`[esi+0x3bfb08]` load) takes `ecx`. Reproducing native requires
   either `cursor = 0/2` at `#74` or `ecx` excluded across `#74` while still leaving `cursor = 2` at
   `#76` (`L598`).
+
+## 2026-10-16 whole SubGame unit
+
+In the whole SubGame unit the partial scores 91.50% (1246/1246, prefix 232)
+against 91.66% compiled alone. Two `/G5` ties flip: the `[esp+0x1c]`/`[esp+0x14]`
+reloads at the first row loop head and the `[ebp+0x48]` store against the
+`[ebp+0x1b013c]` load. Compiling the unit's first k members before this body
+alternates the score between 91.50% and 91.66% as k grows (k = 1, 8-13, 20, 21,
+24, 26 and 28 give 91.66%), so it follows a residue of TU-wide state (the C0
+symbol-id base, [cse-ids.md](../../c2/cse-ids.md)), not this source. The
+standalone 91.66% was the same accident. Declaring `debug_report_stub` with
+`char*` like the rest of the unit is neutral.

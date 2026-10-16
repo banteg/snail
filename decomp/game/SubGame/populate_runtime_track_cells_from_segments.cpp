@@ -22,7 +22,7 @@ extern "C" void* memset(void* destination, int value, unsigned int count);
 
 void RandSeed(int seed);
 int report_errorf(const char* format, ...);
-int debug_report_stub(const char* format, ...);
+int debug_report_stub(char* format, ...);
 void set_object_color(Object* object, tColour color);
 
 void cRSubGame::BuildLevel()
