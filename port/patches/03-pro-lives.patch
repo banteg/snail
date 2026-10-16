@@ -4,7 +4,7 @@ and 3, as Windows does, in the postal one.
 --- a/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
 +++ b/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
 @@ -25,6 +25,7 @@
- int debug_report_stub(const char* format, ...);
+ int debug_report_stub(char* format, ...);
  void set_object_color(Object* object, tColour color);
  extern bool g_port_ultimate; // shell/profile.h
 +bool extras_is_pro_mode(); // shell/extras.h

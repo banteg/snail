@@ -228,4 +228,34 @@ body bytes. Three things had to agree first:
   `cross_vectors` fell from match to audit at 100%; the aliases in
   `gameplay-references.json` now carry the RMaths.o spellings.
 
+## SubGame
+
+SubGame is registered as one 191-function unit, absorbing its two pairs
+(`subgame_falling_shoot`, `subgame_parcel_frontend_level`) and making 41 whole
+units. A repo-wide rescore against the baseline moves one function, the
+`populate_runtime_track_cells_from_segments` partial (below); every other
+function keeps its state, ratio and body bytes, and all 188 SubGame matches
+hold.
+
+- **One `debug_report_stub` across the unit.** `update_cameraman` fell to
+  98.14% because `display_score_stats.cpp`, earlier in the unit, declared a
+  fixed `debug_report_stub(char*, int)` overload for its seven integer
+  reports. The worm FOV report's `(double)envelope` then resolved to that
+  overload (double to int beats the ellipsis) and went through `_ftol`.
+  `display_score_stats` was given that view on 2026-09-22 because the varargs
+  shape measured 74/67, but that was msvc6.5: under msvc6.3 eight direct
+  varargs calls already coalesce into the native `add esp, 0x3c`, so it is
+  exact as plain source and the fixed view and its function-pointer cast are
+  gone. `update_cameraman` is exact again with no change of its own.
+- **The populate partial follows C0, not its source.** It scores 91.50% in the
+  unit against 91.66% alone, from two `/G5` ties at its row loop head.
+  Compiling only the first k members before it alternates between the two
+  scores as k grows (91.66% at k = 1, 8-13, 20, 21, 24, 26, 28), the signature
+  of a residue of the symbol-id base C0 ([cse-ids.md](c2/cse-ids.md)). Neither
+  score is closer to native in any structural sense; the function stays wip.
+
+G0's `construct_game_runtime` still declares the fixed `(char*, int)` view,
+one of the overloads in G0's conflict list above; the msvc6.3 finding applies
+there too.
+
 G0 and RShell still drift.

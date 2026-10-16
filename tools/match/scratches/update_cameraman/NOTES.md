@@ -41,3 +41,14 @@ layout, borrowed owners, all call ABIs, and normalization stay unchanged.
 The recorded expression, threshold, and ramp-input probes distinguish the
 accepted grouped expression/direct initial read from neutral or degrading
 local alternatives. No register directive or artificial dependency is used.
+
+## 2026-10-16 whole SubGame unit
+
+SubGame now compiles as one translation unit, and the body stays exact
+there (322/322, 76 clean references) without a source change here. In the
+first whole-unit compile it fell to 98.14%: `display_score_stats.cpp`, earlier
+in the unit, declared a fixed `debug_report_stub(char*, int)` overload, and
+`(double)envelope` resolved to it over the varargs declaration, so the worm FOV
+report went through `_ftol` and pushed an `int`. With one varargs declaration
+across the unit (`display_score_stats` is exact that way in context) the call
+pushes the `double` again.
