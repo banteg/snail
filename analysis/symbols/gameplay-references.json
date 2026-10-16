@@ -8488,9 +8488,10 @@
       "kind": "global",
       "aliases": [
         "flt_643190",
-        "data_643190"
+        "data_643190",
+        "?GhostZ@?1??AI@cRSubGoldy@@QAEXXZ@4MA"
       ],
-      "description": "Level-mode 4 SubGoldy ghost z accumulator used before updating the cached ghost sprites."
+      "description": "Level-mode 4 SubGoldy ghost z accumulator used before updating the cached ghost sprites. Mobile symbols name it as the function-local static cRSubGoldy::AI()::GhostZ."
     },
     {
       "address": "0x643194",
@@ -8498,9 +8499,10 @@
       "kind": "global",
       "aliases": [
         "unk_643194",
-        "data_643194"
+        "data_643194",
+        "?GoldyZ@?1??AI@cRSubGoldy@@QAEXXZ@4MA"
       ],
-      "description": "Replay z-delta accumulator updated while recording and decoding subgoldy replay samples."
+      "description": "Replay z-delta accumulator updated while recording and decoding subgoldy replay samples. Mobile symbols name it as the function-local static cRSubGoldy::AI()::GoldyZ."
     },
     {
       "address": "0x643198",

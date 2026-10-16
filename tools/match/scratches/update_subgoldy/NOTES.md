@@ -1,5 +1,60 @@
 # update_subgoldy @ 0x43b120
 
+## 2026-10-16: msvc6.3 whole-TU retest
+
+Measured inside the 191-function SubGame unit under msvc6.3: **99.28%**
+normalized and structural, 2,089/2,087 instructions, prefix 548, 315 clean
+references. The four residual groups are the same as in the 2026-09-25
+entries, and every recorded control was retested in this context.
+
+**Source change.** The iOS symbol table and the Android body both name the two
+replay accumulators as function-local statics, `cRSubGoldy::AI()::GoldyZ` and
+`cRSubGoldy::AI()::GhostZ`. The Android body shows GoldyZ as the recording
+accumulator and GhostZ as the ghost accumulator. The `extern float
+g_replay_accum_z` / `g_subgoldy_ghost_z` declarations are now `static float
+GoldyZ; static float GhostZ;` in `AI()`. The object is unchanged in either
+declaration order. The mangled names (`?GoldyZ@?1??AI@cRSubGoldy@@QAEXXZ@4MA`,
+`?GhostZ@…`) are aliases of 0x643194 and 0x643190 in
+`analysis/symbols/gameplay-references.json`, so the reference audit stays clean.
+
+**Ghost-z block (+0x1c2c..0x1c62).** `rotation.py` now traces a TU member.
+Its only cursor shifts (+0 → +2 → +1 → +0, allocations #199–#206) are inside
+this block, where `records[cursor]` is laid out before `records[0]`. They
+follow from that layout, not from a separate rotation cause.
+- The backward-`goto` form gives the native block order: structural 99.55%,
+  8/11 changes, with 2,090 instructions. Unlike the 6.5-era measurement, the
+  clamps no longer regress. The only extra residuals are a `mov T, ebp`
+  order (target instruction 1819) and a trailing alignment `nop`. Still not adopted: a jump
+  back into the `then` arm is not plausible source.
+- The duplicated-arm `else if` chain is still not cross-jumped: 2,095
+  instructions, 96.99%.
+- Android emits the same layout through a `goto` into the shared
+  `records[0]` arm. Its compiler merges tails too, so this does not show what
+  the source looked like.
+
+**Completion clamps.** These were retested in both clamps: no `speed` local
+(`fcom [vel]`, 98.97%), `double`/`const`/`register` speed, speed declared
+before `window`, `!(<)` compares, an `if/else if` clamp (98.92%), a ternary,
+and five inline helpers (by-value, `const float&`, `cRSubGame*`, `float*` and
+a lo/hi ternary; 90.27–94.39%). None beats the current source. A by-value
+helper copies `velocity.z` into `[esp+0x10]` through eax. Neither mobile build
+keeps a speed accessor (iOS lists only out-of-line `tVector` methods), so the
+`Speed()` control stays unadopted.
+
+**Case-2 sum.** `addrorder.py --nodes` gives the same slots in the whole TU:
+p_velocity 0x1d, p_position 8. The compound, `*p_position += velocity`,
+operand-swap and initialized-`p_position` controls give the results recorded
+above. Moving `p_velocity`'s first reference earlier is neutral or much worse
+(87.4%).
+
+**Camera copy.** `schedtrace.py` shows the native-absent edge: store
+`[ecx+4]@f13a` → load `[edx+8]@c3`. The destination is a 12-byte field
+record of the `this` class (0xcd, 76 records). The source loads, through the
+`p_position` copy in edx, are the bare class c3, which conflicts with every
+field. Initializing `p_position` once at its declaration leaves the loads
+bare. Native needs the source read as a field record or a non-intersecting
+class.
+
 ## 2026-09-25 x87 operand order of case 2 `p_position->x + p_velocity->x`
 
 Rule: [x87-order.md](../../c2/x87-order.md). VC6 loads the first-sorted

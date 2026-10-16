@@ -38,9 +38,6 @@ float MathType16to32(short value, float scale);
 short MathType32to16(float value, float scale);
 float resolve_uncaptured_cursor_sensitivity_scale(float scale);
 
-extern float g_subgoldy_ghost_z;          // flt_643190
-extern float g_replay_accum_z;            // unk_643194
-
 enum {
     TIME_TRIAL_RECORD_BANK_FROM_SUBGAME =
         offsetof(cRSubGame, sub_high_score)
@@ -82,6 +79,10 @@ struct SubgoldyFloorSamplerCallView {
 
 void cRSubGoldy::AI()
 {
+    // Mobile symbols name both accumulators as function-local statics:
+    // cRSubGoldy::AI()::GoldyZ (0x643194) and cRSubGoldy::AI()::GhostZ (0x643190).
+    static float GoldyZ;
+    static float GhostZ;
     cRSubGame* current_game = game;
     if (current_game->subgame_pause_gate) {
         if (g_game->players[0].frontend_state != 9) {
@@ -224,7 +225,7 @@ steering_stored:
                 ->current_high_score_record
                 .run_records[game->replay_update_cursor]
                 .delta_z = MathType32to16(transform.position.z, 32.0f);
-            g_replay_accum_z = MathType16to32(
+            GoldyZ = MathType16to32(
                 game
                     ->current_high_score_record
                     .run_records[game->replay_update_cursor]
@@ -235,15 +236,15 @@ steering_stored:
                 ->current_high_score_record
                 .run_records[game->replay_update_cursor]
                 .delta_z =
-                MathType32to16(transform.position.z - g_replay_accum_z, 32.0f);
-            g_replay_accum_z =
+                MathType32to16(transform.position.z - GoldyZ, 32.0f);
+            GoldyZ =
                 MathType16to32(
                     game
                         ->current_high_score_record
                         .run_records[game->replay_update_cursor]
                         .delta_z,
                     32.0f)
-                + g_replay_accum_z;
+                + GoldyZ;
         }
         cRSubGame* fire_game = game;
         if (fire_game->track_state_latch) {
@@ -926,14 +927,14 @@ steering_stored:
                               (unsigned short)TIME_TRIAL_RECORD_AT(record_block)
                                   ->run_records[cursor].delta_z,
                               32.0f)
-                        + g_subgoldy_ghost_z;
-            g_subgoldy_ghost_z = ghost_z;
+                        + GhostZ;
+            GhostZ = ghost_z;
             if (game->selected_level_record_active)
-                g_subgoldy_ghost_z = transform.position.z;
+                GhostZ = transform.position.z;
             float ghost_horizon = transform.position.z + 20.0f;
             float clamped_ghost_z;
-            if (g_subgoldy_ghost_z < ghost_horizon)
-                clamped_ghost_z = g_subgoldy_ghost_z;
+            if (GhostZ < ghost_horizon)
+                clamped_ghost_z = GhostZ;
             else
                 clamped_ghost_z = ghost_horizon;
             GhostDraw(clamped_ghost_z);

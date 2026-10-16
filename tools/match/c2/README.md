@@ -190,9 +190,9 @@ the n-th function entry after the n-th function symbol in the object and
 records the scratch's function as `function_ordinal` in `snail-receipt.json`.
 If the object does not resolve that function, it falls back to the last one.
 `addrorder.py`, `address_ids.py`, `sib_operand_trace.py`, `cse_slot_trace.py`,
-`cse_id_window.py`, `passes.py` and `schedtrace.py` select that function's
-snapshots and side-stream records. `rotation.py` and `globalregs.py` still
-expect one allocating function.
+`cse_id_window.py`, `passes.py`, `schedtrace.py`, `rotation.py` and
+`globalregs.py` select that function's snapshots and side-stream records;
+the last two write a marker at each function entry into their side stream.
 
 ## Crimson's tracers and compiler notes
 
