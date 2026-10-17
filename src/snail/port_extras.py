@@ -70,7 +70,7 @@ def build_extras_files(android_root: Path, pc_archive: Path) -> dict[str, bytes]
         files[f"OBJECTS/WORLD00/SLIDE{index}.TGA"] = slide_tga
     fringe_path = android_root / "SPRITES/FRINGECOLOURS.TGA"
     files["SPRITES/FRINGECOLOURS.TGA"] = fringe_path.read_bytes()
-    for rel in ("OBJECTS/TRAMPRING/_OBJECT.TXT", "GALAXY/_GALAXYPRO.TXT"):
+    for rel in ("OBJECTS/TRAMPRING/_OBJECT.TXT", "GALAXY/_GALAXYPRO.TXT", "INTRO/CREDITS.TXT", "X/_ANIMATION.TXT"):
         p = android_root / rel
         if p.exists():
             files[rel] = p.read_bytes()

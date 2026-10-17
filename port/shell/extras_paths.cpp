@@ -14,7 +14,6 @@
 #include "path_manager.h"
 #include "rstring.h"
 #include "segment_catalog_types.h"
-#include "squidge.h"
 #include "sub_loc_tile_ids.h"
 #include "sub_tracks.h"
 #include "subgame_runtime.h"
@@ -33,8 +32,6 @@ int path_name_code_recovered(cRPathManager* self, char* name)
 void kind42_transform_recovered(
     cRPath* self, float radius, float x, float y, TransformMatrix* transform, float* out_angle)
     __asm__("_ZN6cRPath45compute_kind42_attachment_transform_recoveredEfffP7tMatrixPf");
-void squidge_start_y_recovered(cRSquidge* self, float value)
-    __asm__("_ZN9cRSquidge16StartY_recoveredEf");
 void set_object_color(Object* object, tColour color);
 
 // The shell keeps its extra paths as primary/secondary pairs, laid out like
@@ -101,6 +98,16 @@ void zero_vec(tVector& v)
     v.x = 0.0f;
     v.y = 0.0f;
     v.z = 0.0f;
+}
+
+// Android cRPath::GetNodes (0004e910) starts every primary sample at lateral_scale 1
+// and special_scalar 0; BuildShimmy and BuildDetour rely on it. The PC GetNodes
+// leaves both at the zero its allocator fills in, and its builders set lateral_scale.
+void get_mobile_nodes(Path* path)
+{
+    path->GetNodes();
+    for (int i = 0; i < path->segment_count; ++i)
+        path->primary_samples[i].lateral_scale = 1.0f;
 }
 
 void compute_path_deltas(int count, PathTemplateSample* primary, PathTemplateSample* secondary)
@@ -210,7 +217,7 @@ void build_mobile_shared_path(Path* path, bool cage, bool handedness, char* text
     path->width_or_scale = 1.0f;
     path->segment_count = cage ? 30 : 66;
     path->segment_count_f = (float)path->segment_count;
-    path->GetNodes();
+    get_mobile_nodes(path);
     path->has_entry_mesh_transition = 0;
 
     const int last = path->segment_count - 1;
@@ -262,7 +269,7 @@ void build_mobile_shared_path(Path* path, bool cage, bool handedness, char* text
     path->CalcLengthZ();
 }
 
-// Lifted from Android cRPath::BuildInvert1 (000416a4).
+// Lifted from Android cRPath::BuildInvert1 (000516a4).
 void build_invert1(Path* path, int width_cells_, char* texture_a, char* texture_b)
 {
     path->kind = PATH_TEMPLATE_KIND_INVERT;
@@ -272,7 +279,7 @@ void build_invert1(Path* path, int width_cells_, char* texture_a, char* texture_
     path->width_or_scale = 1.0f;
     path->segment_count = 34;
     path->segment_count_f = 34.0f;
-    path->GetNodes();
+    get_mobile_nodes(path);
     path->has_entry_mesh_transition = 1;
 
     float cx = (float)path->width_cells * 0.5f - 4.0f;
@@ -335,7 +342,7 @@ void build_invert1(Path* path, int width_cells_, char* texture_a, char* texture_
     path->CalcLengthZ();
 }
 
-// Lifted from Android cRPath::BuildHalfPole (00040c78).
+// Lifted from Android cRPath::BuildHalfPole (00050c78).
 void build_halfpole(Path* path, int width_cells_, char* texture_a, char* texture_b)
 {
     path->kind = PATH_TEMPLATE_KIND_NONLINEAR_42;
@@ -345,7 +352,7 @@ void build_halfpole(Path* path, int width_cells_, char* texture_a, char* texture
     path->width_or_scale = 1.0f;
     path->segment_count = 52;
     path->segment_count_f = 52.0f;
-    path->GetNodes();
+    get_mobile_nodes(path);
     path->has_entry_mesh_transition = 0;
 
     PathTemplateSample* p = path->primary_samples;
@@ -414,7 +421,7 @@ void build_halfpole(Path* path, int width_cells_, char* texture_a, char* texture
     path->CalcLengthZ();
 }
 
-// Lifted from Android cRPath::BuildShimmy (00041f8c).
+// Lifted from Android cRPath::BuildShimmy (00051f8c).
 void build_shimmy(Path* path, int width_cells_, char* texture_a, char* texture_b)
 {
     path->kind = PATH_TEMPLATE_KIND_WIBBLE;
@@ -424,7 +431,7 @@ void build_shimmy(Path* path, int width_cells_, char* texture_a, char* texture_b
     path->width_or_scale = 1.0f;
     path->segment_count = 32;
     path->segment_count_f = 32.0f;
-    path->GetNodes();
+    get_mobile_nodes(path);
     path->has_entry_mesh_transition = 0;
 
     float cx0 = (path->width_cells == 1) ? -0.5f : 0.0f;
@@ -491,7 +498,7 @@ void build_shimmy(Path* path, int width_cells_, char* texture_a, char* texture_b
     path->CalcLengthZ();
 }
 
-// Lifted from Android cRPath::BuildDetour (00044e7c).
+// Lifted from Android cRPath::BuildDetour (00054e7c).
 void build_detour(Path* path, int width_cells_, char* texture_a, char* texture_b)
 {
     path->kind = PATH_TEMPLATE_KIND_SNAKE;
@@ -501,7 +508,7 @@ void build_detour(Path* path, int width_cells_, char* texture_a, char* texture_b
     path->width_or_scale = 1.0f;
     path->segment_count = 46;
     path->segment_count_f = 46.0f;
-    path->GetNodes();
+    get_mobile_nodes(path);
     path->has_entry_mesh_transition = 0;
 
     float cx0 = (float)path->width_cells * 0.5f - 4.0f;
@@ -567,10 +574,12 @@ void build_detour(Path* path, int width_cells_, char* texture_a, char* texture_b
     path->CalcLengthZ();
 }
 
-// Android cRPath::BuildSBend (0004ee74).
+// Android cRPath::BuildSBend (0004ee74). Android gives S-bends their own kind, which
+// the camera lifts linearly (port/patches/12-path-camera.patch); the PC S-bend
+// shares the hills' kind and bump.
 void build_sbend(Path* path, int width_cells_, float height, bool centered, char* texture_a, char* texture_b)
 {
-    path->kind = PATH_TEMPLATE_KIND_FAMILY_10;
+    path->kind = PATH_TEMPLATE_KIND_MOBILE_SBEND;
     path->is_mirrored_x = 0;
     path->side_exit_mode = 0;
     path->width_cells = width_cells_;
@@ -579,7 +588,7 @@ void build_sbend(Path* path, int width_cells_, float height, bool centered, char
     path->segment_count = steps + 1;
     path->segment_count_f = (float)(steps + 1);
     float x_bias = (width_cells_ == 1) ? 0.5f : 0.0f;
-    path->GetNodes();
+    get_mobile_nodes(path);
     path->has_entry_mesh_transition = 0;
 
     PathTemplateSample* p = path->primary_samples;
@@ -780,7 +789,7 @@ void extras_init_paths()
     // TrampRing object and 8 pool instances
     g_tramp_ring_object = g_object_list.Add();
     load_object_definition((char*)"Objects/TrampRing", g_tramp_ring_object);
-    g_tramp_ring_object->blend_mode = 5;
+    g_tramp_ring_object->blend_mode = 1; // alpha blended, as Android's cRGame::Init3 (0003f6d8) sets it
     g_tramp_ring_object->flags |= OBJECT_FLAG_DISABLE_CULLING | OBJECT_FLAG_REFRESH_TINT_EACH_DRAW;
     if (g_tramp_ring_object->facequads && g_tramp_ring_object->facequads[0].texture_ref)
         g_tramp_ring_object->facequads[0].texture_ref->flags |= 0x400;
@@ -898,17 +907,19 @@ void extras_clear_tramp_rings()
     }
 }
 
-// Android cRSubTrampRingManager::AddRing (0005d5b4).
+// Android cRSubTrampRingManager::AddRing (0006d5b4), from the trampoline bounce in
+// cRSubGoldy::AI (port/patches/13-trampoline-ring.patch).
 void extras_add_tramp_ring(cRSubLoc* cell)
 {
-    if (!g_port_ultimate || !g_paths_initialized || !cell)
+    if (!g_port_ultimate || !g_paths_initialized)
         return;
     while (cell->tile_id == SUBLOC_TILE_TRAMPOLINE)
         cell -= 1;
     cRSubLoc* scan = cell + 1;
     while (scan->tile_id == SUBLOC_TILE_TRAMPOLINE)
         scan -= SUBGAME_TRACK_LANE_COUNT;
-    cRSubLoc* center = scan + 3 * SUBGAME_TRACK_LANE_COUNT;
+    // Android reads +0x718: three rows on and one lane in, the trampoline's middle cell.
+    cRSubLoc* center = scan + 3 * SUBGAME_TRACK_LANE_COUNT + 1;
 
     for (int i = 0; i < kTrampRingSlotCount; ++i) {
         SubTrampRing& ring = g_tramp_rings[i];
@@ -928,7 +939,7 @@ void extras_add_tramp_ring(cRSubLoc* cell)
     }
 }
 
-// Android cRSubTrampRing::AI (0005d948).
+// Android cRSubTrampRing::AI (0006d948).
 void extras_step_tramp_rings()
 {
     if (!g_port_ultimate || !g_paths_initialized || !g_game)
@@ -969,7 +980,7 @@ int cRPathManager::NameCode(char* name)
     return -1;
 }
 
-// Android cRPath::HalfPolePos (0003c5f0) when `this` is the HALFPOLE path pair.
+// Android cRPath::HalfPolePos (0004c5f0) when `this` is the HALFPOLE path pair.
 void cRPath::compute_kind42_attachment_transform(
     float radius, float x, float y, TransformMatrix* transform, float* out_angle)
 {
@@ -986,22 +997,6 @@ void cRPath::compute_kind42_attachment_transform(
     float r = radius + y;
     transform->position.x = Sin(*out_angle) * r;
     transform->position.y = -(radius - Cos(*out_angle) * r);
-}
-
-void cRSquidge::StartY(float value)
-{
-    squidge_start_y_recovered(this, value);
-    if (!g_port_ultimate || !g_game)
-        return;
-    cRSubGoldy* player = &g_game->subgame.player;
-    if (this == &player->squidge) {
-        cRSubLoc* cell = g_game->subgame.LocFromPos(&player->transform.position);
-        if (cell && cell->tile_id == SUBLOC_TILE_TRAMPOLINE
-            && cell->position.y + 0.49000001f > player->transform.position.y
-            && cell->position.y - 0.49000001f < player->transform.position.y) {
-            extras_add_tramp_ring(cell);
-        }
-    }
 }
 
 __attribute__((export_name("snail_extra_path_pair")))
@@ -1021,4 +1016,14 @@ int extras_tramp_ring_active_count()
             ++active;
     }
     return active;
+}
+
+// Lateral x of the first active bounce ring, or 0 when none is active.
+float extras_tramp_ring_x()
+{
+    for (int i = 0; i < kTrampRingSlotCount; ++i) {
+        if (g_tramp_rings[i].state != 0)
+            return g_tramp_rings[i].transform.position.x;
+    }
+    return 0.0f;
 }

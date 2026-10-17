@@ -1,6 +1,7 @@
 """Port build inputs: source selection, generated data and link forwarders."""
 
 import json
+import re
 import shutil
 import subprocess
 
@@ -294,7 +295,7 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
 
     (tmp_path / "postal46.keys").write_text(
         "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 170\n820 click 3\n"
-        "900 mouse 480 300\n920 click 3\n1000 mouse 320 300\n"
+        "900 mouse 210 300\n920 click 3\n1000 mouse 320 300\n"
     )
     postal = subprocess.run(
         ["node", str(runner), str(wasm), "--profile", "ultimate", "--trace", "--keys", str(tmp_path / "postal46.keys")],
@@ -303,6 +304,8 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
         text=True,
         check=True,
     )
+    # Android's route card leads with the level numeral and stays on screen.
+    assert 'at (50, 127) size 320 x 31 flags 0x20400003 "XLVI: Pomacea cuprina aurea"' in postal.stderr
     # Padding before each of its 27 listed segments, as Android lays it.
     assert 'level "70 Gph!" track_set 4 (Objects/World00/Track4.tga)' in postal.stderr
     assert "rows 2127 segments 54" in postal.stderr
@@ -310,7 +313,7 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
     (tmp_path / "SnailMail.cfg").write_bytes(cfg)
     (tmp_path / "SnailMailMobile.cfg").write_bytes(cfg)
     (tmp_path / "challenge.keys").write_text(
-        "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 310\n820 click 3\n"
+        "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 383\n820 click 3\n"
         "900 mouse 320 320\n920 click 3\n1000 mouse 320 300\n"
     )
     challenge = subprocess.run(
@@ -322,10 +325,29 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
     )
     # Android lays Padding between each pair of random segments and skips
     # their RAND draws, so the random fringe that follows differs from a
-    # build without it. Challenge (Mode:Challenge) lists its 49 segments
+    # build without it. Track: r trades the level's SpaceRed for a random PC
+    # space backdrop. Challenge (Mode:Challenge) lists its 49 segments
     # without Padding before each.
-    assert 'level "Challenge 0" track_set 6 (Objects/World00/Track6.tga) fringe (0.910, 0.094, 1.000) rows 2024 segments 49' in challenge.stderr
+    assert (
+        'level "Challenge 0" track_set 6 (Objects/World00/Track6.tga) fringe (0.910, 0.094, 1.000)'
+        " rows 2024 segments 49 backdrop Backgrounds/SpaceBlueswhorl.tga" in challenge.stderr
+    )
     assert "padding_segments 35" in challenge.stderr
+
+    # Original reads Track: r as 5: a random PC track set and space backdrop,
+    # and the fringe the level gives.
+    original = subprocess.run(
+        ["node", str(runner), str(wasm), "--profile", "original", "--warmup", "1", "--trace", "--keys", str(tmp_path / "challenge.keys")],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert re.search(
+        r'level "Challenge 0" track_set 0 \(Objects/World00/Track0\.tga\) fringe \(0\.000, 1\.000, 0\.996\)'
+        r" rows \d+ segments \d+ backdrop Backgrounds/SpacePurple\.tga",
+        original.stderr,
+    )
 
 
 @pytest.mark.skipif(
@@ -615,7 +637,7 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
 
     (tmp_path / "pro1.keys").write_text(
         "600 escape\n700 mouse 345 112\n720 click 3\n"
-        "800 mouse 345 383\n820 click 3\n"
+        "800 mouse 345 240\n820 click 3\n"
         "900 mouse 289 287\n920 click 3\n"
     )
     pro1 = subprocess.run(
@@ -626,8 +648,10 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
         check=True,
     )
     assert '"Pro-Challenge"' in pro1.stderr
-    assert '"Special Assignment"' in pro1.stderr
-    assert '"Limax maximus"' in pro1.stderr
+    # Android keeps the postal map's title on the Pro map.
+    assert '"Intergalactic Delivery Route"' in pro1.stderr
+    assert "Special Assignment" not in pro1.stderr
+    assert '"I: Limax maximus"' in pro1.stderr
     assert "lives 8" in pro1.stderr  # a new Pro game, as on Android
     assert 'level "Pros Only" track_set 5 (Objects/World00/Track5.tga) fringe (0.871, 1.000, 0.039) rows 2054 segments 50' in pro1.stderr
     # save_game() runs at the end of pro1 while g_pro_state_swapped == true inside "Pros Only"
@@ -638,7 +662,7 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
     (tmp_path / "SnailMailPro.cfg").write_bytes(struct.pack("<ii", 10, 10))
     (tmp_path / "pro10.keys").write_text(
         "600 escape\n700 mouse 345 112\n720 click 3\n"
-        "800 mouse 345 383\n820 click 3\n"
+        "800 mouse 345 240\n820 click 3\n"
         "900 mouse 248 414\n920 click 3\n"
     )
     pro10 = subprocess.run(
@@ -648,7 +672,7 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
         text=True,
         check=True,
     )
-    assert '"Ariolimax columbianus"' in pro10.stderr
+    assert '"X: Ariolimax columbianus"' in pro10.stderr
     # The longest mobile course: 44 listed segments, each after a Padding.
     assert 'level "Eximius Ferreus" track_set 6 (Objects/World00/Track6.tga) fringe (1.000, 0.980, 0.196) rows 3407 segments 88' in pro10.stderr
     assert struct.unpack("<ii", (tmp_path / "SnailMailPro.cfg").read_bytes()) == (10, 10)

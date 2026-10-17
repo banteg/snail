@@ -10,7 +10,6 @@
 #include "extras.h"
 #include "font_system.h"
 #include "game_root.h"
-#include "landscape_manager.h"
 #include "loading_bar.h"
 #include "runtime_config.h"
 #include "object_render_types.h"
@@ -60,7 +59,6 @@ unsigned char* g_fringe_colours_tga = 0;
 
 cRTexture* g_extra_track_textures[kMobileTrackSetCount];
 cRTexture* g_extra_slide_textures[kMobileTrackSetCount];
-bool g_random_fringe_pending = false;
 float g_add_ring_speed = 0.0f;
 
 // Android cRSubTracks::Init (000850d4) imports Padding, four rows of plain
@@ -338,6 +336,26 @@ const char* extras_track_texture_name(int slot)
     return "?";
 }
 
+// Android cRGalaxy::BoxOn (00058d80) titles a route card with the level's
+// numeral from gRomanNumbers ("", I .. LI; port/patches/17-route-numerals.patch).
+const char* extras_roman_numeral(int value)
+{
+    static const struct {
+        int value;
+        const char* digits;
+    } kNumerals[] = {
+        {1000, "M"}, {900, "CM"}, {500, "D"}, {400, "CD"}, {100, "C"}, {90, "XC"}, {50, "L"},
+        {40, "XL"}, {10, "X"}, {9, "IX"}, {5, "V"}, {4, "IV"}, {1, "I"},
+    };
+    static char numeral[16];
+    numeral[0] = 0;
+    for (int i = 0; i < (int)(sizeof(kNumerals) / sizeof(kNumerals[0])); ++i) {
+        for (; value >= kNumerals[i].value; value -= kNumerals[i].value)
+            strcat(numeral, kNumerals[i].digits);
+    }
+    return numeral;
+}
+
 char __cdecl archive_or_file_exists(char* path, char force_filesystem)
 {
     path = (char*)extras_save_path(path);
@@ -422,9 +440,9 @@ void cRTrack::Change(int texture_set)
     }
 }
 
-// Android cRSubTracks::Init(char*) (000850d4): Track: 0-6, Track: r -> 8,
-// Fringe: random, the mobile postal level colour assignments, and Padding
-// before every listed segment outside Challenge.
+// Android cRSubTracks::Init(char*) (000850d4) reads Track: 0-6 as track sets
+// 0-6 and Track: r as 8; Windows reads 0-3, and r as 5.
+// It also lays Padding before every listed segment outside Challenge.
 void cRSubTracks::Init(char* filename)
 {
     subtracks_init_recovered(this, filename);
@@ -458,63 +476,27 @@ void cRSubTracks::Init(char* filename)
             track_texture_set = kRandomTrackSetCode;
     }
 
-    bool random_fringe = false;
-    cursor = Rstrfind((char*)"Fringe:", g_level_file_text_buffer);
-    if (cursor != 0) {
-        cursor = Rstrfind((char*)":", cursor) + 1;
-        while (*cursor == ' ' || *cursor == '\t')
-            ++cursor;
-        if (*cursor == 'r' || *cursor == 'R')
-            random_fringe = true;
-    }
-    if (this == &g_game->subgame.level_definition) {
-        g_random_fringe_pending = random_fringe;
+    if (this == &g_game->subgame.level_definition)
         extras_import_padding(this);
-    }
     extras_map_level_paths(this);
 }
 
-// Android cRSubGame::StartLevel (000817ac): when Track: r (8) or Fringe: random
-// is active, pick the random background, backdrop flip, and random fringe colour.
+// Each level starts with no trampoline rings and lays its Padding afresh.
 void cRSubGame::StartLevel(int level_index)
 {
     extras_clear_tramp_rings();
     extras_begin_level_build();
-    bool new_game = subgame_rebuild_selector == 3;
     subgame_start_level_recovered(this, level_index);
-    if (!g_port_ultimate)
-        return;
+}
 
-    // Android BuildLevel (0007e88c) starts a new game with 8 lives in the Pro
-    // galaxy and 3, as Windows does, in the postal one.
-    if (new_game && extras_is_pro_mode())
-        player.visible_life_stock = 8;
-
-    if (level_definition.track_texture_set == kRandomTrackSetCode) {
-        int landscape_index = 0;
-        switch ((unsigned int)RAND(4.0f, 0)) {
-        case 0:
-            landscape_index = g_game->subgame.landscape_manager.Import((char*)"SpaceBluesWhorl.txt");
-            break;
-        case 1:
-            landscape_index = g_game->subgame.landscape_manager.Import((char*)"SpaceGreenWarp.txt");
-            break;
-        case 2:
-            landscape_index = g_game->subgame.landscape_manager.Import((char*)"SpacePurple.txt");
-            break;
-        case 3:
-            landscape_index = g_game->subgame.landscape_manager.Import((char*)"SpaceRed.txt");
-            break;
-        }
-        landscape_manager.Init(landscape_index);
-        g_game->backdrop.pending_flip = (RAND(1.0f, 0) > 0.5f) ? 1 : 0;
-        sample_skirt_colour_random(&level_definition.fringe_color, RAND(1.0f, 0));
-        refresh_built_level_skirt_colours(this);
-    } else if (g_random_fringe_pending) {
-        sample_skirt_colour_random(&level_definition.fringe_color, RAND(1.0f, 0));
-        refresh_built_level_skirt_colours(this);
-    }
-    g_random_fringe_pending = false;
+// Android's StartLevel (000817ac) gives a Track: r level a random fringe
+// colour after its random backdrop and flip
+// (port/patches/06-random-track-code.patch). The rows GenerateLevel has
+// built take it too.
+void extras_skirt_colour_random(cRSubGame* subgame, float t)
+{
+    sample_skirt_colour_random(&subgame->level_definition.fringe_color, t);
+    refresh_built_level_skirt_colours(subgame);
 }
 
 // The Windows cRSubGame::AddRing gives every ring a phase and a phase step,

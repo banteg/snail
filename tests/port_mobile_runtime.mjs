@@ -23,7 +23,7 @@ export async function openMobileGame(wasm, presenter = {}) {
     e.snail_button(0,1);e.snail_frame(1/60);e.snail_button(0,0);step();
   };
   step(25);e.snail_key(1,1);e.snail_frame(1/60);e.snail_key(1,0);step();
-  click(345,112);click(345,383);click(289,287);step();click(320,300);step(1);
+  click(345,112);click(345,240);click(289,287);step();click(320,300);step(1);
   let m=Buffer.from(e.memory.buffer), root;
   const needle=Buffer.from('Pros Only\0');
   // Its 25 listed segments, each after a Padding, as Android lays them.

@@ -1,0 +1,76 @@
+Android's cRPathFollowGoldy::Traverse (0004d70c) applies a path's heading only when
+one is installed (0004ddb4), so a path without one keeps its own roll and a turnover
+rolls the camera; its side exit (0004ddfc) has no hover guard, so the snail leaves a
+path sideways with the jetpack on. Its cRCameraman::AI (00071248) lifts the camera
+linearly to 0.55 along BuildSBend's own kind, 0x12 (000717e8), where the hills get
+the bump, and off a lift path it eases the lift out by 0.98 a tick (000713c0)
+instead of dropping it. The shell's S-bends (extras_paths.cpp) carry that kind.
+
+--- a/decomp/include/track_attachment_types.h
++++ b/decomp/include/track_attachment_types.h
+@@ -28,6 +28,7 @@
+     PATH_TEMPLATE_KIND_CAGE2 = 0x0f,
+     PATH_TEMPLATE_KIND_FAMILY_10 = 0x10,
+     PATH_TEMPLATE_KIND_FAMILY_11 = 0x11,
++    PATH_TEMPLATE_KIND_MOBILE_SBEND = 0x12, // Android's BuildSBend kind; no Windows builder sets it
+     PATH_TEMPLATE_KIND_DIP = 0x14,
+     PATH_TEMPLATE_KIND_SCREW = 0x15,
+     PATH_TEMPLATE_KIND_SLALOM = 0x16,
+--- a/decomp/game/Path/update_track_attachment_follow_state.cpp
++++ b/decomp/game/Path/update_track_attachment_follow_state.cpp
+@@ -8,6 +8,8 @@
+ 
+ typedef Vector3 Vec3;
+ 
++extern bool g_port_ultimate; // shell/profile.h
++
+ int cRPathFollowGoldy::Traverse(
+     float path_factor,
+     Vec3& out_position,
+@@ -252,12 +254,13 @@
+         }
+ 
+         float segment_alpha = progress / orient_template->secondary_samples[orient_index].delta_length;
+-        orientation_b =
+-            (segment_alpha + (float)(int)orient_index)
+-            * orient_template->installed_heading_delta
+-            / (float)(int)orient_template->segment_count;
++        if (!g_port_ultimate || orient_template->installed_heading_delta != 0.0f)
++            orientation_b =
++                (segment_alpha + (float)(int)orient_index)
++                * orient_template->installed_heading_delta
++                / (float)(int)orient_template->segment_count;
+ 
+-        if (player->sub_hover.state != SUB_HOVER_STATE_ACTIVE) {
++        if (g_port_ultimate || player->sub_hover.state != SUB_HOVER_STATE_ACTIVE) {
+             float abs_lateral = input_x - center_x;
+             if (abs_lateral < 0.0f)
+                 abs_lateral = -abs_lateral;
+--- a/decomp/game/SubGame/update_cameraman.cpp
++++ b/decomp/game/SubGame/update_cameraman.cpp
+@@ -10,6 +10,7 @@
+ #include "track_attachment.h"
+ 
+ extern char g_worm_fov_report_format[];
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ void cRCameraman::AI()
+ {
+@@ -66,6 +67,17 @@
+         else if (phase > 1.0f)
+             phase = 1.0f;
+         attachment_lift_envelope = (0.5f - Cos(phase * 6.2831855f) * 0.5f) * 0.34999999f;
++    } else if (g_port_ultimate && lift_player->follow_state.active == 1
++               && lift_player->follow_state.template_record->kind == PATH_TEMPLATE_KIND_MOBILE_SBEND) {
++        float phase = (lift_player->transform.position.z - lift_player->follow_state.source_cell->position.z)
++            / lift_player->follow_state.template_record->segment_count_f;
++        if (phase < 0.0f)
++            phase = 0.0f;
++        else if (phase > 1.0f)
++            phase = 1.0f;
++        attachment_lift_envelope = phase * 0.55f;
++    } else if (g_port_ultimate && lift_player->cutscene_pitch_cycle <= 0.0f) {
++        attachment_lift_envelope = attachment_lift_envelope * 0.98f;
+     } else {
+         attachment_lift_envelope = 0.0f;
+     }

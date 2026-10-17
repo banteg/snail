@@ -33,6 +33,11 @@ recovered code.
 | `03-pro-lives` | a new Pro-Challenge game starts with 8 lives | Android's BuildLevel |
 | `04-parcel-radius` | parcels are collected within 1.73, not 1.24, in Ultimate | Android's `cRSubGoldy::Collision` (00077f5c) |
 | `05-challenge-padding` | `Random:` levels lay Padding between each pair of random segments in Ultimate, without drawing RAND for it | Android's `cRSubTracks::Init` (000850d4) and BuildLevel |
+| `06-random-track-code` | in Ultimate only `Track: r` (code 8) picks a random space backdrop and flip, then a random fringe colour; Pro 1-5 (`Track: 5`) keep their SpacePro sky | Android's `cRSubTracks::Init` (000850d4) and `cRSubGame::StartLevel` (000817ac); Windows reads `Track: r` as 5, which Android uses as a track set |
+| `12-path-camera` | in Ultimate a path without a heading keeps its own roll, so a turnover rolls the camera; the snail can leave a path sideways while the jetpack is on; S-bends lift the camera linearly, to 0.55 of the snail's height at the top; off a lift path the lift eases out by 0.98 a tick instead of dropping to 0 | Android's `cRPathFollowGoldy::Traverse` (0004d70c) and `cRCameraman::AI` (00071248); the shell's S-bends carry the kind Android's `BuildSBend` (0004ee74) gives them |
+| `13-trampoline-ring` | the Ultimate trampoline ring starts from the bounce itself, so the no-fall clamp and path entries add none | Android's `cRSubGoldy::AI` (0007ac54) adds a ring only there |
+| `17-route-numerals` | in Ultimate a route card's title leads with the level's Roman numeral, and a card that would start left of 40 is anchored at 50 | Android's `cRGalaxy::BoxOn` (00058d80) |
+| `18-frontend-texts` | in Ultimate the main menu's first entry reads Play and Postal reads Postal Adventure; after the Pro galaxy the thanks-for-playing screen shows Android's three Pro texts | Android's `cRMainMenu::Init` (000697d4), `cRIntro::Init` (000674f8), `cRSplash::Init` (0006aba4) and `cRSplash::AI` (0006a900) |
 
 Narrow seams wrap a matched function in the shell instead (`port/wrapped.txt`,
 its body renamed `*_recovered`): the mobile content in `port/shell/extras*.cpp`
