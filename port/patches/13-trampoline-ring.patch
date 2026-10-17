@@ -4,15 +4,11 @@ and nowhere else; the no-fall clamp and a path entry squash the snail without on
 
 --- a/decomp/game/SubGame/update_subgoldy.cpp
 +++ b/decomp/game/SubGame/update_subgoldy.cpp
-@@ -75,6 +75,8 @@
- // voice id at +0x204 (0xa874); the flat 0xa874 read is
- // level_segment_count.
- 
+@@ -78,2 +78,4 @@
 +void extras_add_tramp_ring(cRSubLoc* cell); // shell/extras.h
 +
  void cRSubGoldy::AI()
  {
-     // Mobile symbols name both accumulators as function-local statics:
 @@ -638,6 +640,7 @@
                  && trampoline_cell->position.y - 0.49000001f < transform.position.y) {
                  squidge.StartY(velocity.y);
