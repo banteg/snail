@@ -124,7 +124,7 @@ def test_galaxy_maps_and_endings(tmp_path, port_layout_env, profile, galaxy):
     menu_y, first_galaxy = (240, "Limax maximus") if galaxy == "pro" else (170, "Pomacea cuprina")
     result = subprocess.run(
         [
-            "node", str(REPO_ROOT / "tests/port_frontend.mjs"), str(WEB_WASM), str(int(profile == "ultimate")),
+            "node", str(REPO_ROOT / "tests/port_frontend_content.mjs"), str(WEB_WASM), str(int(profile == "ultimate")),
             str(menu_y), first_galaxy, json.dumps(_galaxy_sprite_hashes()),
         ],
         cwd=tmp_path, env=port_layout_env, capture_output=True, text=True, check=True,

@@ -400,6 +400,15 @@ Patches also carry Android's rules on the track and at the finish:
 - skipping the delivery tally keeps the level bonus's extra life, a PC bug
   Android fixed ([Original bugs](original-bugs.md)).
 
+The front end follows Android's rules too. The typed cheats NEWTON (no score
+records) and AUTUMN (no falling) do nothing. A last high-score name of
+"Fluctuosa", in any case, opens all 50 postal and all 10 Pro routes. Ending a
+Challenge or Time Trial run from the pause menu records no score. High Scores
+cycles Postal, Challenge and Pro and reopens on the table last shown, also
+after a Pro name entry and a restart; Challenge replays fade out before they
+start. A Time Trial finish shows the continue prompt and, on a new best time
+for the route, a blinking "NEW FASTEST TIME!" with the Perfect jingle.
+
 Mobile campaign progress and scores use `SnailMailMobile.cfg` and
 `ScoreMobileA/B/C.dat`. The first mobile launch copies the volumes and display
 settings (fullscreen, render flags, display mode) from the PC config. The rest,
@@ -416,10 +425,12 @@ without rewriting them.
 Android differences Ultimate leaves out: tilt and touch steering; the camera's
 wider field of view (120 where the PC has 110), which likely suits the phones'
 3:2 screens; the slug hit's vibration and its render-only flattening of
-Android's track mesh (`cRWorld`) during the death cut-scene; the Fluctuosa Pro
-unlock, resuming a postal or Pro game and the ramp and invulnerability sounds;
-the OpenFeint logo that replaced the main menu's Exit button; the layout for
-the phones' 480x320 screens. Shared path meshes other than CAGE2, TWISTER2 and
+Android's track mesh (`cRWorld`) during the death cut-scene; resuming a postal
+or Pro game, which Android saves when such a run is ended from the pause menu
+(Ultimate records its score, as the PC does); the Options screen's version
+label, in full for Fluctuosa; the ramp and invulnerability sounds; the
+OpenFeint logo that replaced the main menu's Exit button; the layout for the
+phones' 480x320 screens. Shared path meshes other than CAGE2, TWISTER2 and
 SBEND are not yet checked against the Android `.smo` meshes. The slug voice
 lines play in both profiles: the PC's `cRSlugVoiceManager` has Android's
 constants, call sites and clips.

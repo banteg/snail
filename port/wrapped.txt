@@ -23,9 +23,12 @@ j_rand                                         ../decomp/engine/RMaths/j_rand.cp
 set_math_random_seed                           ../decomp/engine/RMaths/set_math_random_seed.cpp                         RandSeed
 initialize_thanks_for_playing_screen           ../decomp/game/Splash/initialize_thanks_for_playing_screen.cpp           Init
 initialize_high_score_screen                   ../decomp/game/HighScore/initialize_high_score_screen.cpp                Init
+destroy_high_score_screen                      ../decomp/game/HighScore/destroy_high_score_screen.cpp                   UnInit
 update_high_score_screen                       ../decomp/game/HighScore/update_high_score_screen.cpp                    AI
+mini_delete_high_score_entry                   ../decomp/game/HighScore/mini_delete_high_score_entry.cpp                MiniDelete
 save_high_scores_and_config                    ../decomp/game/HighScore/save_high_scores_and_config.cpp                 MiniSave
 save_config_file                               ../decomp/game/Register/save_config_file.cpp                             save_config_file
+update_cheat                                   ../decomp/game/Cheat/update_cheat.cpp                                    AI
 load_segment_definitions                      ../decomp/game/Subtrack/load_segment_definitions.cpp                                       Import
 load_config_file                              ../decomp/game/Register/load_config_file.cpp                                               load_config_file
 write_file_bytes                              ../decomp/game/RShell/write_file_bytes.cpp                                                 write_file_bytes

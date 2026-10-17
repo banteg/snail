@@ -1,7 +1,7 @@
 // Fixes for the original's own bugs (fixes.h, docs/port/original-bugs.md).
 // The wrappers listed in port/wrapped.txt run their *_recovered bodies
-// unchanged and, in the Ultimate profile, correct what the original got wrong
-// around them.
+// unchanged in the Original profile; in the Ultimate profile they correct what
+// the original got wrong.
 
 #include "d3d8_device.h"
 #include "fixes.h"
@@ -18,6 +18,8 @@ void subgame_add_slug_recovered(cRSubGame* self, cRSubLoc* cell, cRSubGoldy* pla
 void subgame_add_garbage_recovered(cRSubGame* self, cRSubLoc* cell, cRSubGoldy* player)
     __asm__("_ZN9cRSubGame20AddGarbage_recoveredEP8cRSubLocP10cRSubGoldy");
 int draw_sprite_quad_recovered(Vector3* position, cRSprite* sprite);
+void sub_high_score_mini_delete_recovered(cRSubHighScore* self, int rank)
+    __asm__("_ZN14cRSubHighScore20MiniDelete_recoveredEi");
 
 namespace {
 
@@ -83,6 +85,23 @@ int draw_sprite_quad(Vector3* position, cRSprite* sprite)
     int result = draw_sprite_quad_recovered(position, sprite);
     set_emulated_depth_write(previous);
     return result;
+}
+
+// Cancelling a new high-score name: MiniDelete (byte-matched) closes the
+// cancelled row by shifting the rows below it up, but always reads them from
+// survival_records, so cancelling a Postal name, or a Pro one while the Pro
+// table sits in postal_records, fills that table with Challenge rows.
+// Android's RemoveHighScore (00065270) shifts within the entry's own bank.
+void cRSubHighScore::MiniDelete(int rank)
+{
+    if (!g_port_ultimate) {
+        sub_high_score_mini_delete_recovered(this, rank);
+        return;
+    }
+    for (int row = rank; row < SUB_HIGH_SCORE_TOP_TEN_COUNT; ++row) {
+        active_record_bank[row] = active_record_bank[row + 1];
+        active_record_bank[row].route_or_rank_index = row;
+    }
 }
 
 int fixes_upright_hazard_count()
