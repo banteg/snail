@@ -11,6 +11,8 @@ from PIL import Image
 from .archive import parse_archive_index, read_archive_entry, write_archive
 
 ANDROID_ROOT = Path("artifacts/android/asm_extracted")
+# The APK's loose assets, beside the asm.mp3 archive that asm_extracted unpacks.
+APK_ASSETS = Path("artifacts/android/unpacked/com.sandlotgames.snailmail.1/assets")
 OUTPUT = Path("artifacts/bin/SnailMailExtras.dat")
 PC_ARCHIVE = Path("artifacts/bin/SnailMail.dat")
 TUTORIAL = "LEVELS/TUTORIAL.TXT"
@@ -60,7 +62,7 @@ def tutorial_with_pc_messages(mobile: bytes, pc: bytes) -> bytes:
     return VOICED_MESSAGE.sub(pc_message, mobile.decode("latin-1")).encode("latin-1")
 
 
-def build_extras_files(android_root: Path, pc_archive: Path) -> dict[str, bytes]:
+def build_extras_files(android_root: Path, pc_archive: Path, apk_assets: Path) -> dict[str, bytes]:
     """Mobile-only assets converted to PC archive conventions."""
     files: dict[str, bytes] = {}
     for index in (4, 5, 6):
@@ -115,12 +117,16 @@ def build_extras_files(android_root: Path, pc_archive: Path) -> dict[str, bytes]
         canvas.paste(scaled, (0, 0))
         files["BACKGROUNDS/SPLASHPRO_A.TGA"] = tga_rgb24(canvas.crop((0, 0, 512, 512)))
         files["BACKGROUNDS/SPLASHPRO_B.TGA"] = tga_rgb24(canvas.crop((512, 0, 640, 512)))
+    # Android's ramp sound (gSFXBank 42), a mono Vorbis file like the PC SFX2 ones.
+    files["SFX2/UPRAMP.OGG"] = (apk_assets / "upramp.ogg").read_bytes()
     return files
 
 
-def generate(root: Path, *, out: Path | None = None, android_root: Path | None = None) -> Path:
+def generate(
+    root: Path, *, out: Path | None = None, android_root: Path | None = None, apk_assets: Path | None = None
+) -> Path:
     target = out or (root / OUTPUT)
     source = android_root or (root / ANDROID_ROOT)
-    files = build_extras_files(source, root / PC_ARCHIVE)
+    files = build_extras_files(source, root / PC_ARCHIVE, apk_assets or (root / APK_ASSETS))
     write_archive(target, files)
     return target

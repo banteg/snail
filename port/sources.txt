@@ -659,7 +659,6 @@
 ../decomp/engine/RMaths/set_color_black.cpp
 ../decomp/engine/RMaths/random_signed_float_below.cpp
 ../decomp/engine/RMaths/random_float_below.cpp
-../decomp/engine/RSound/initialize_sound_bank.cpp
 ../decomp/engine/RSound/play_sound_effect_at_position.cpp
 ../decomp/engine/RSound/play_sound_effect.cpp
 ../decomp/engine/RSound/play_sound_effect_scaled.cpp

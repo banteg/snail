@@ -123,6 +123,10 @@ PORT_LAYOUT = (
     ("solution_active", "offsetof(cRSubSolution, active)"),
     ("solution_score", "offsetof(cRSubSolution, score)"),
     ("solution_seconds", "offsetof(cRSubSolution, total_seconds)"),
+    ("player_vy", "offsetof(cRSubGoldy, velocity.y)"),
+    ("follow_active", "offsetof(cRSubGoldy, follow_state.active)"),
+    ("gauge_fill", "offsetof(cRSubGoldy, damage_gauge.fill)"),
+    ("shooting_tier", "offsetof(cRSubGoldy, shooting_tier)"),
 )
 
 

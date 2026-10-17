@@ -10,6 +10,8 @@ void extras_init_assets();
 const char* extras_track_texture_name(int slot);
 const char* extras_sprite_texture_name(int slot);
 const char* extras_roman_numeral(int value);
+// Android's upramp sample, registered after the PC sound bank in Ultimate.
+int extras_upramp_sample();
 
 struct cRSubTracks;
 struct PathPair;

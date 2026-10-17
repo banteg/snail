@@ -1,0 +1,60 @@
+Android's gSFXBank (0009bacc) adds upramp, a sample Windows lacks, at 42; the
+port appends it to the PC bank (shell/extras.cpp). Android's cRSubGoldy::AI
+(0007ac54) plays it on the raised and plain ramp tiles once the snail is more
+than 1.0 past the z of the last ramp that played it, which +0x448 keeps and
+nothing resets, and cRPathFollowGoldy::Traverse (0004d70c) plays it at the
+SuperTramp launch, before the voice line.
+
+--- a/decomp/game/SubGame/update_subgoldy.cpp
++++ b/decomp/game/SubGame/update_subgoldy.cpp
+@@ -38,3 +38,10 @@
+ 
++extern bool g_port_ultimate; // shell/profile.h
++int extras_upramp_sample(); // shell/extras.h
++// Android's cRSubGoldy keeps the z of the last ramp that played upramp at
++// +0x448. Nothing resets it, so it carries over between lives, levels and
++// games.
++float g_upramp_z;
++
+ enum {
+     TIME_TRIAL_RECORD_BANK_FROM_SUBGAME =
+@@ -586,3 +593,7 @@
+                         == SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH) {
+                     velocity.y = game->subgame_rate * 0.30000001f;
++                    if (g_port_ultimate && transform.position.z > g_upramp_z + 1.0f) {
++                        g_sound_effect_manager.Play(extras_upramp_sample());
++                        g_upramp_z = transform.position.z;
++                    }
+                 } else if (game->LocFromPos(p_position)->tile_id
+@@ -601,4 +612,8 @@
+                     if (surface_reaction_timer == 0.0f)
+                         surface_reaction_timer = surface_reaction_step;
+                     velocity.y = game->subgame_rate * 0.2f;
++                    if (g_port_ultimate && transform.position.z > g_upramp_z + 1.0f) {
++                        g_sound_effect_manager.Play(extras_upramp_sample());
++                        g_upramp_z = transform.position.z;
++                    }
+                     if (!slug_fall_active) {
+--- a/decomp/game/Path/update_track_attachment_follow_state.cpp
++++ b/decomp/game/Path/update_track_attachment_follow_state.cpp
+@@ -1,9 +1,13 @@
+ // cRPathFollowGoldy::Traverse @ 0x420cb0 (thiscall, ret 0xc)
++#include "audio_system.h"
+ #include "game_root.h"
+ #include "player.h"
+ #include "track_attachment_types.h"
+ #include "transform_matrix.h"
+ #include "voice_manager.h"
+ #include "vector3.h"
+ 
+ typedef Vector3 Vec3;
++
++extern bool g_port_ultimate; // shell/profile.h
++int extras_upramp_sample(); // shell/extras.h
+@@ -99,4 +103,6 @@
+                     g_game->subgame.subgame_rate * 0.013888888f;
+                 player->cutscene_pitch_cycle = player->cutscene_pitch_cycle_step;
++                if (g_port_ultimate)
++                    g_sound_effect_manager.Play(extras_upramp_sample());
+                 g_voice_manager.Play(
+                     VOICE_SET_SUPERTRAMP, VOICE_PLAY_IF_IDLE, -1);

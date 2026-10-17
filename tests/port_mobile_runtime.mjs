@@ -5,9 +5,8 @@ import { WASI } from 'node:wasi';
 // Field offsets in the port's layout, from the test (tests/conftest.py).
 export const LAYOUT = JSON.parse(process.env.SNAIL_LAYOUT);
 
-// Opens Pro 1 ("Pros Only"), found by its name and its 25 segments; a test
-// that rewrites the course passes its own segment count.
-export async function openMobileGame(wasm, presenter = {}, segments = 50) {
+// Start the reactor in a profile (1 Ultimate, 0 Original).
+export async function startGame(wasm, presenter = {}, ultimate = 1) {
   const wasi = new WASI({version: 'preview1', args: [], env: {...process.env, PWD: process.cwd()}, preopens: {'/': process.cwd()}});
   const module = await WebAssembly.compile(await readFile(wasm));
   const imports = wasi.getImportObject();
@@ -17,8 +16,15 @@ export async function openMobileGame(wasm, presenter = {}, segments = 50) {
   wasi.initialize(instance);
   const e = instance.exports;
   presenter.ready?.(e);
-  e.snail_set_profile(1);
+  e.snail_set_profile(ultimate);
   if (!e.snail_start(0)) throw Error('game startup failed');
+  return e;
+}
+
+// Opens Pro 1 ("Pros Only"), found by its name and its 25 segments; a test
+// that rewrites the course passes its own segment count.
+export async function openMobileGame(wasm, presenter = {}, segments = 50) {
+  const e = await startGame(wasm, presenter);
   const step = (n = 5) => { for (let i=0; i<n; ++i) e.snail_frame(0.4); };
   const click = (x,y) => {
     e.snail_pointer(x,y);e.snail_frame(1/60);

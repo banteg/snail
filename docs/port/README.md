@@ -335,8 +335,9 @@ packing `Sprites/FringeColours.tga`, `Objects/TrampRing/`, `Galaxy/_GalaxyPro.tx
 `Intro/Credits.txt` (the mobile staff and a 45 s crawl instead of 35 s),
 `X/_Animation.txt` (the falling snail swings between its two poses every
 second instead of curling once over six), all 65 mobile level files and all
-176 segment definitions, including shared names whose layouts changed. The
-combined catalog loads before any levels are parsed. Original uses only the
+176 segment definitions, including shared names whose layouts changed, and
+the ramp sound `upramp.ogg` from the APK's loose assets as `sfx2/UpRamp.ogg`.
+The combined catalog loads before any levels are parsed. Original uses only the
 PC archive and catalog. The mobile
 tutorial course keeps its own speed, segments and timing, but each line shows
 the PC text for the voice clip it plays: the port plays the PC clips, which
@@ -376,7 +377,14 @@ of the snail instead of 38, and the finish banner, the salt fade-in and
 shots reach 48 rows ahead instead of 46. Near the finish line the window's
 trailing edge keeps following the snail instead of stopping 30 rows before
 the line, and rows are scanned up to 40 past it instead of 20. A WALL2 cell
-stops a shot only between heights -1 and 7. Pro skies use the full
+stops a shot only between heights -1 and 7. Ultimate also plays Android's
+sound cues: the damage warning plays postalloop every 72 ticks, where the
+PC restarts it at each 26-tick blink, and lets the last one run out instead
+of cutting it off; invincibility starts silently; and the mobile ramp sound,
+appended to the PC sound bank, plays on ramps and at the SuperTramp launch. A
+ramp plays it only once the snail is more than a row past the last ramp that
+did. Android never resets that mark, so after a long level the next level's
+ramps stay silent until the snail passes it; the port keeps that. Pro skies use the full
 converted image with normalized UVs, including horizontal flips; PC
 backdrops retain their padded-image UV layout.
 
@@ -422,17 +430,16 @@ every replay launch (`cRHighScore::AI`), so it replays Pro records on the
 postal courses. Switching to Original reloads the PC campaign and scores
 without rewriting them.
 
-Android differences Ultimate leaves out: tilt and touch steering; the
-camera's wider field of view (120 where the PC has 110), which likely suits
-the phones' 3:2 screens; the slug hit's vibration and its render-only
-flattening of Android's track mesh (`cRWorld`) during the death cut-scene;
-resuming a postal or Pro game, which Android saves when such a run is ended
-from the pause menu (Ultimate records its score, as the PC does); the Options
-screen's version label, in full for Fluctuosa; slug voice lines and the ramp
-and invulnerability sounds; the OpenFeint logo that replaced the main menu's
-Exit button; the layout for the phones' 480x320 screens. Shared path meshes
-other than CAGE2, TWISTER2 and SBEND are not yet checked against the Android
-`.smo` meshes.
+Android differences Ultimate leaves out: tilt and touch steering; the camera's
+wider field of view (120 where the PC has 110), which likely suits the phones'
+3:2 screens; the slug hit's vibration and its render-only flattening of
+Android's track mesh (`cRWorld`) during the death cut-scene; resuming a postal
+or Pro game, which Android saves when such a run is ended from the pause menu
+(Ultimate records its score, as the PC does); the Options screen's version
+label, in full for Fluctuosa; slug voice lines; the OpenFeint logo that
+replaced the main menu's Exit button; the layout for the phones' 480x320
+screens. Shared path meshes other than CAGE2, TWISTER2 and SBEND are not yet
+checked against the Android `.smo` meshes.
 
 Ultimate selects the mobile 3,500-row build limit; Original retains the PC
 3,100-row limit. Port builds reserve 3,600 runtime rows, including the tail
