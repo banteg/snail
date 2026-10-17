@@ -96,7 +96,6 @@ PORT_LAYOUT = (
     ("finish_banner_flags", "offsetof(cRSubGame, banners.slots[1].list_flags)"),
     ("player_z", "offsetof(cRSubGoldy, transform.position.z)"),
     ("active_window_min_z", "offsetof(cRSubGoldy, active_window_min_z)"),
-    ("frontend_state", "offsetof(cRGame, players[0].frontend_state)"),
     ("saved_frontend_state", "offsetof(cRGame, players[0].saved_frontend_state)"),
     ("high_score", "offsetof(cRGame, high_score)"),
     ("replay_row_widgets", "offsetof(cRHighScore, replay_row_widgets)"),
