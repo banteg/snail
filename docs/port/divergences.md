@@ -33,6 +33,8 @@ recovered code.
 | `03-pro-lives` | a new Pro-Challenge game starts with 8 lives | Android's BuildLevel |
 | `04-parcel-radius` | parcels are collected within 1.73, not 1.24, in Ultimate | Android's `cRSubGoldy::Collision` (00077f5c) |
 | `05-challenge-padding` | `Random:` levels lay Padding between each pair of random segments in Ultimate, without drawing RAND for it | Android's `cRSubTracks::Init` (000850d4) and BuildLevel |
+| `20-sound-cues` | in Ultimate, the damage warning plays postalloop every 72 ticks on a timer of its own, not at each 26-tick blink, and lets the last one finish; invincibility starts silently | Android's `cRWarning::Start` (0006ecb0), `AI` (000704f4) and `StopSample` (0006d3f4), and `cRInvincible::Start` (0006d1fc) |
+| `21-upramp-sound` | in Ultimate, the mobile `upramp` sample plays on raised and plain ramps, once the snail is more than a row past the last ramp that played it, and at the SuperTramp launch; the `cRSound::Init` wrapper (`port/shell/extras.cpp`) registers it after the PC bank, so every PC sound id stays put | Android's `gSFXBank` (0009bacc), which inserts it at 42, `cRSubGoldy::AI` (0007ac54) and `cRPathFollowGoldy::Traverse` (0004d70c) |
 
 Narrow seams wrap a matched function in the shell instead (`port/wrapped.txt`,
 its body renamed `*_recovered`): the mobile content in `port/shell/extras*.cpp`

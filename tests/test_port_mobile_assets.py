@@ -5,10 +5,11 @@ import re
 import pytest
 
 from snail.archive import parse_archive_index, read_archive_entry
-from snail.port_extras import build_extras_files
+from snail.port_extras import APK_ASSETS, build_extras_files
 from snail.symbols import REPO_ROOT
 
 ANDROID = REPO_ROOT / "artifacts/android/asm_extracted"
+APK = REPO_ROOT / APK_ASSETS
 PC_ARCHIVE = REPO_ROOT / "artifacts/bin/SnailMail.dat"
 
 
@@ -17,7 +18,7 @@ PC_ARCHIVE = REPO_ROOT / "artifacts/bin/SnailMail.dat"
     reason="needs extracted mobile assets and SnailMail.dat",
 )
 def test_all_mobile_levels_and_segments_are_preserved():
-    files = build_extras_files(ANDROID, PC_ARCHIVE)
+    files = build_extras_files(ANDROID, PC_ARCHIVE, APK)
     for directory in ("LEVELS", "SEGMENTS"):
         for path in (ANDROID / directory).glob("*.TXT"):
             if f"{directory}/{path.name}" != "LEVELS/TUTORIAL.TXT":
@@ -51,6 +52,7 @@ def test_deployable_extras_include_mobile_shared_dependencies():
         "LEVELS/ARCADE001.TXT",
         "LEVELS/ARCADE050.TXT",
         "LEVELS/TUTORIAL.TXT",
+        "SFX2/UPRAMP.OGG",
     ):
         assert read_archive_entry(archive, index.entry_by_path(name))
 
@@ -60,7 +62,7 @@ def test_deployable_extras_include_mobile_shared_dependencies():
     reason="needs extracted mobile assets and SnailMail.dat",
 )
 def test_mobile_tutorial_course_shows_the_pc_text_for_its_voice_clips():
-    tutorial = build_extras_files(ANDROID, PC_ARCHIVE)["LEVELS/TUTORIAL.TXT"].decode("latin-1")
+    tutorial = build_extras_files(ANDROID, PC_ARCHIVE, APK)["LEVELS/TUTORIAL.TXT"].decode("latin-1")
     mobile = (ANDROID / "LEVELS/TUTORIAL.TXT").read_bytes().decode("latin-1")
     # The mobile course: its speed and segment order stay.
     assert re.findall(r"^(Speed:.*|Tutorial \d+\.txt Duration=[\d.]+)", tutorial, re.MULTILINE) == re.findall(
@@ -71,3 +73,16 @@ def test_mobile_tutorial_course_shows_the_pc_text_for_its_voice_clips():
     assert 'Message="Asteroids slow me down.> Hold the Mouse Button> to shoot ]"' in tutorial
     assert "Tilt" not in tutorial.replace("MessageB", "")
     assert "Touch anywhere" not in tutorial
+
+
+@pytest.mark.skipif(
+    not (APK / "upramp.ogg").exists() or not PC_ARCHIVE.exists(),
+    reason="needs the unpacked APK assets and SnailMail.dat",
+)
+def test_extras_add_the_mobile_ramp_sound_beside_the_pc_ones():
+    files = build_extras_files(ANDROID, PC_ARCHIVE, APK)
+    assert files["SFX2/UPRAMP.OGG"] == (APK / "upramp.ogg").read_bytes()
+    # The PC archive has no ramp sound, so Ultimate replaces none of its sounds.
+    pc_sounds = [entry.path for entry in parse_archive_index(PC_ARCHIVE).entries if entry.path.startswith("SFX2/")]
+    assert pc_sounds and "SFX2/UPRAMP.OGG" not in pc_sounds
+    assert [name for name in files if name.startswith("SFX2/")] == ["SFX2/UPRAMP.OGG"]
