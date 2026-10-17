@@ -2,6 +2,7 @@
 
 #include "audio_system.h"
 #include "display_mode_state.h"
+#include "g0.h"
 #include "main_loop_state.h"
 #include "mouse_input_state.h"
 #include "rdebug.h"
@@ -11,10 +12,6 @@ extern "C" __declspec(dllimport) void __stdcall PostQuitMessage(int exit_code);
 extern "C" __declspec(dllimport) LRESULT __stdcall DefWindowProcA(
     HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 extern "C" __declspec(dllimport) unsigned int __stdcall timeGetTime();
-
-extern int handle_game_window_activate();        // @ 0x4072f0
-extern char handle_game_window_deactivate();     // @ 0x407440
-extern int restore_desktop_display_mode();       // @ 0x407860
 
 LRESULT __stdcall game_window_proc(
     HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam)

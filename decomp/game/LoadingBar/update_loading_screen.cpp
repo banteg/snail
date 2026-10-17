@@ -1,12 +1,11 @@
 // update_loading_screen @ 0x418e80 (thiscall)
 
 #include "direct3d_device8_view.h"
+#include "gl.h"
 #include "loading_bar.h"
 #include "loading_vertex.h"
 #include "object_render_types.h"
 #include "runtime_config.h"
-
-int present_backbuffer(); // @ 0x413520
 
 void cRLoadingBar::AI()
 {

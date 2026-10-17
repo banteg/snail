@@ -6,8 +6,7 @@
 #include "game_root.h"
 #include "object_render_types.h"
 #include "segment_cache.h"
-
-void* allocate_tracked_memory(int size, char* name);
+#include "tracked_allocation_stack.h"
 
 struct TrackRenderCacheSlotCursor {
     char manager_prefix[offsetof(SegmentCache, slots)];

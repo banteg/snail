@@ -1,11 +1,11 @@
 // load_object_definition @ 0x44c420 (cdecl)
 
+#include <stdio.h>
+
 #include "object_render_types.h"
 #include "rshell.h"
 #include "rtext.h"
 #include "sprite.h"
-
-int sprintf(char* buffer, char* format, ...);
 
 void load_object_definition(char* path, Object* object)
 {

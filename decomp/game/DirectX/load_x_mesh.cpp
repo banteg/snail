@@ -8,12 +8,7 @@
 #include "rstring.h"
 #include "rtext.h"
 #include "sprite.h"
-
-char is_archive_index_loaded(); // @ 0x431a80
-void* allocate_tracked_memory(int size, char* name); // @ 0x431b60
-void free_tracked_memory(void* pointer); // @ 0x431bf0 / RShellMemoryFree(void*)
-int report_errorf(char* format, ...); // @ 0x431cc0
-int report_warningf(char* format, ...); // @ 0x431d10
+#include "tracked_allocation_stack.h"
 
 void cRDirectX::Load(char* mesh_path, Object* object, int options_flags)
 {

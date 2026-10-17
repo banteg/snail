@@ -2,8 +2,7 @@
 // Seeds the backdrop distortion grid from the script Distort scalar.
 
 #include "backdrop.h"
-
-int gRMathRand2(); // @ 0x44c900
+#include "rmath_random.h"
 
 void cRBackdrop::SetDistort(float distort)
 {

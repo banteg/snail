@@ -34,7 +34,5 @@ typedef cRIntro NewGameMenu;
 typedef char Intro_must_be_0x48[(sizeof(cRIntro) == 0x48) ? 1 : -1];
 
 
-char read_pressed_text_input_key_code(); // @ 0x432440
-int gRMathRand2(); // @ 0x44c900
 
 #endif

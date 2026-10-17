@@ -3,8 +3,6 @@
 #include "object_render_types.h"
 #include "segment_cache.h"
 
-int report_errorf(const char* format, ...);
-
 int SegmentCache::add_track_cache_vertex(
     Object* source,
     Vector3* position,

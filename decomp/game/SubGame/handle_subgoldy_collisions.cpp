@@ -5,8 +5,11 @@
 // The invincibility capability gates salt, garbage knockback, and slug hits.
 // Shared idiom: delta z pre-gate < threshold, then the owned Normalize distance.
 
+#include <stdio.h>
+
 #include "damage_guage.h"
 #include "garbage_hazard_slot.h"
+#include "rmath_random.h"
 #include "sub_hover.h"
 #include "player.h"
 #include "ring_special_effect_types.h"
@@ -22,9 +25,6 @@
 #include "voice_manager.h"
 
 typedef Vector3 Vec3;
-
-int gRMathRand2();
-int sprintf(char* buffer, const char* format, ...);
 
 void cRSubGoldy::Collision()
 {

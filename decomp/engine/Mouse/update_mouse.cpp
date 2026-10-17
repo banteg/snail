@@ -1,6 +1,7 @@
 // update_mouse @ 0x44bc50 (cdecl)
 
 #include "direct_input_view.h"
+#include "g0.h"
 #include "game_root.h"
 #include "input_controller_state.h"
 #include "input_polling.h"
@@ -14,11 +15,6 @@ extern "C" __declspec(dllimport) int __stdcall GetWindowRect(HWND hwnd, Rect* re
 extern "C" __declspec(dllimport) int __stdcall GetClientRect(HWND hwnd, Rect* rect);
 extern "C" __declspec(dllimport) int __stdcall ClipCursor(Rect* rect);
 extern "C" __declspec(dllimport) int __stdcall SetCursor(int cursor);
-
-
-int consume_mouse_wheel_delta(int slot); // @ 0x4077f0
-unsigned char read_left_mouse_button_state(int slot); // @ 0x407810
-unsigned char read_right_mouse_button_state(int slot); // @ 0x407830
 
 int update_mouse(HWND hwnd)
 {

@@ -4,6 +4,7 @@
 #include "border_manager.h"
 #include "game_root.h"
 #include "landscape_manager.h"
+#include "rshell.h"
 
 extern char g_main_menu_music_path[]; // 0x4a2128
 extern char g_menu_background_script_path[]; // 0x4a347c
@@ -13,8 +14,6 @@ extern char g_new_game_text[]; // 0x4a3b74
 extern char g_high_scores_text[]; // 0x4a3b68
 extern char g_options_text[]; // 0x4a3b60
 extern char g_credits_text[]; // 0x4a3b58
-
-char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 
 void cRMainMenu::Init()
 {

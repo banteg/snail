@@ -1,15 +1,13 @@
 // initialize_voice_manager @ 0x448ee0 (thiscall, ret)
 
 #include "audio_system.h"
+#include "rerror.h"
 #include "rstring.h"
 #include "rshell.h"
 #include "rtext.h"
 #include "voice_manager.h"
 
 #include <string.h>
-
-int register_sound_sample(char* path, int normalization_class);
-int report_errorf(char* format, ...);
 
 extern char g_tutorial_text[]; // 0x4a38e4
 

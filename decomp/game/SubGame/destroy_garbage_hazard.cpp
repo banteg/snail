@@ -6,9 +6,6 @@
 #include "garbage_hazard_slot.h"
 #include "game_root.h"
 
-
-int report_errorf(char* format, ...);
-
 cRSubGarbage* cRSubGarbage::Kill()
 {
     state = SUB_GARBAGE_STATE_INACTIVE;

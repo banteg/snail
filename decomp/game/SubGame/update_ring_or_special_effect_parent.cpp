@@ -4,12 +4,9 @@
 #include "game_root.h"
 #include "player.h"
 #include "ring_special_effect_types.h"
+#include "rmath_random.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
-
-
-int report_errorf(const char* format, ...);
-float Sin(float radians);
 
 void cRSubRing::AI()
 {

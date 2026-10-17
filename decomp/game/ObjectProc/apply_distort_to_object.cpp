@@ -1,8 +1,7 @@
 // cRDistort::Build(cRObject*) @ 0x41aa50 (thiscall)
 
 #include "object_render_types.h"
-
-float Sin(float angle); // @ 0x44c9d0
+#include "rmath_random.h"
 
 #define ABS_FLOAT(value) ((value) < 0.0f ? -(value) : (value))
 #define MAX_FLOAT(lhs, rhs) ((lhs) < (rhs) ? (rhs) : (lhs))

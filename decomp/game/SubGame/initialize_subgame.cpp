@@ -1,6 +1,7 @@
 // initialize_subgame @ 0x4374b0 (thiscall)
 
 #include <stddef.h>
+#include <string.h>
 
 #include "backdrop.h"
 #include "border_manager.h"
@@ -9,6 +10,7 @@
 #include "game_root.h"
 #include "galaxy_route_types.h"
 #include "landscape_manager.h"
+#include "rshell.h"
 #include "rstring.h"
 #include "runtime_config.h"
 #include "segment_catalog_types.h"
@@ -18,8 +20,6 @@
 #include "transform_matrix.h"
 #include "subgame_runtime.h"
 
-extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
-extern "C" void* memset(void* destination, int value, unsigned int count);
 #pragma intrinsic(memcpy)
 #pragma intrinsic(memset)
 
@@ -27,10 +27,6 @@ extern char g_main_menu_music_path[]; // 0x4a2128
 extern char g_menu_background_script_path[]; // 0x4a347c
 extern char g_blank_text[]; // 0x4dfb08
 extern SubSegmentRaw* g_builtin_segment_definitions[]; // 0x4a63d0
-
-char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
-char* save_config_file(char* file_name, void* bytes, int byte_count); // @ 0x42f540
-int report_errorf(char* format, ...); // @ 0x431cc0
 
 void cRSubGame::Init()
 {

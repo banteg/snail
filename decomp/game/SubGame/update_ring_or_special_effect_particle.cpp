@@ -3,10 +3,8 @@
 
 #include "player.h"
 #include "ring_special_effect_types.h"
+#include "rmath_random.h"
 #include "sprite.h"
-
-float Sin(float radians);
-float Cos(float radians);
 
 void cRSubRingStar::AI()
 {

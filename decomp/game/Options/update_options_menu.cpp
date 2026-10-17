@@ -2,14 +2,13 @@
 
 #include "audio_system.h"
 #include "game_root.h"
+#include "gl.h"
 #include "options.h"
 #include "rstring.h"
 #include "runtime_config.h"
 
 extern char g_fullscreen_on_text[]; // 0x4a3d5c
 extern char g_fullscreen_off_text[]; // 0x4a3d4c
-
-void set_fullscreen_mode(char enabled);
 
 void cROptions::AI()
 {

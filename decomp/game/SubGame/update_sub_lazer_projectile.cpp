@@ -4,6 +4,7 @@
 // bounds-checks, and runs the two attachment containment probes before Kill.
 
 #include "game_root.h"
+#include "rdebug.h"
 #include "vector3.h"
 #include "sub_lazer_types.h"
 #include "subgame_runtime.h"
@@ -11,8 +12,6 @@
 
 extern char g_lazer_path2_kill_format[]; // data_4a4f40
 extern char g_lazer_path_kill_format[]; // data_4a4f54
-int debug_report_stub(char* format, ...); // @ 0x449c00, stripped to xor eax/ret in release
-int report_errorf(char* format, ...);
 
 void cRSubLazer::AI()
 {

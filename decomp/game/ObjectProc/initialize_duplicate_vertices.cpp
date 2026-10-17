@@ -1,8 +1,8 @@
 // cRDuplicateVertices::Init(int) @ 0x419f50 (thiscall, ret 0x4)
 
 #include "duplicate_vertices.h"
+#include "tracked_allocation_stack.h"
 
-void* allocate_tracked_memory(int size, char* label);
 extern char g_duplicate_vertices_alloc_label[]; // "Duplicate vertices"
 
 void* cRDuplicateVertices::Init(int count)

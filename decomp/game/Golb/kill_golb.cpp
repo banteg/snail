@@ -4,9 +4,6 @@
 #include "game_root.h"
 #include "golb.h"
 
-int report_errorf(char* format, ...);
-
-
 void cRSubGolb::Kill()
 {
     BodList* list = &g_game->active_bod_list;

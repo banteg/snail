@@ -1,5 +1,8 @@
 // build_subgame_level @ 0x437eb0 (thiscall, ret 0x4)
 
+#include <stdio.h>
+
+#include "rshell.h"
 #include "sub_solution.h"
 #include "bod_list.h"
 #include "damage_guage.h"
@@ -22,10 +25,6 @@
 
 extern char g_blank_text[];
 
-int gRMathRand2();
-char cache_music_file(char* path, int unused, char* unused_default_path);
-int report_errorf(char* format, ...);
-int sprintf(char* buffer, char* format, ...);
 void set_input_controller_pointer_authored_xy(int controller, float x, float y);
 
 void cRSubGame::StartLevel(int level_index)

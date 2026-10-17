@@ -60,9 +60,7 @@ originals only report a track that is too long.
  {
 --- a/decomp/game/Subtrack/load_segment_definitions.cpp
 +++ b/decomp/game/Subtrack/load_segment_definitions.cpp
-@@ -24,7 +24,7 @@
-     enumerate_matching_archive_or_fs_entries("Segments", "*.txt", &count,
-                                              segment_files[0]);
+@@ -21,5 +21,5 @@
  
 -    if (count >= 150) {
 +    if (count >= SMTRACK_SEGMENT_CAPACITY) {
@@ -71,12 +69,9 @@ originals only report a track that is too long.
      }
 --- a/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
 +++ b/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
-@@ -24,6 +24,7 @@
- int report_errorf(const char* format, ...);
- int debug_report_stub(char* format, ...);
- void set_object_color(Object* object, tColour color);
+@@ -24,2 +24,4 @@
 +extern bool g_port_ultimate; // shell/profile.h
- 
++
  void cRSubGame::BuildLevel()
  {
 @@ -119,11 +120,12 @@

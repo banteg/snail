@@ -1,10 +1,9 @@
 // ensure_music_stream_from_path @ 0x449720 (thiscall, ret 0x8)
 
 #include "audio_system.h"
+#include "rerror.h"
 #include "rstring.h"
 #include <string.h>
-
-int report_errorf(char* format, ...);
 
 int AudioBackend::ensure_music_stream_from_path(char* path, char play_mode)
 {

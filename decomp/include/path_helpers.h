@@ -8,11 +8,9 @@
 #include "attachment_sample.h"
 #include "track_attachment_types.h"
 #include "object_render_types.h"
+#include "rmath_random.h"
 #include "sprite.h"
 #include "transform_matrix.h"
-
-float Sin(float angle);
-float Cos(float angle);
 
 inline Vector3 operator*(float scale, const Vector3& vector)
 {

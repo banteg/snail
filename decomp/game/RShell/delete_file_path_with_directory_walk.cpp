@@ -3,8 +3,8 @@
 #include <direct.h>
 #include <stdio.h>
 
-int report_messagef(char* format, ...);
-int set_current_directory_with_drive_fallback(char* path);
+#include "rerror.h"
+#include "rshell.h"
 
 int __cdecl delete_file_path_with_directory_walk(char* path)
 {

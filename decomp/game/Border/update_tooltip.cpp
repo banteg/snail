@@ -3,8 +3,6 @@
 #include "frontend_widget.h"
 #include "game_root.h"
 
-int report_errorf(char* format, ...);
-
 void cRToolTip::AI()
 {
     tColour color;

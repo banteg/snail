@@ -1,8 +1,7 @@
 // calc_subgame_rate @ 0x4404d0 (thiscall, ret)
 
+#include "rmath_random.h"
 #include "subgame_runtime.h"
-
-float Sin(float angle);
 
 void cRSubGame::CalcRate()
 {

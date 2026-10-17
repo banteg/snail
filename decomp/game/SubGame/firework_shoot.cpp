@@ -5,9 +5,6 @@
 #include "runtime_config.h"
 #include "sprite.h"
 
-
-int gRMathRand2();
-
 // Signed random in [-scale, scale).
 #define SIGNED_RANDOM(scale) \
     (((float)gRMathRand2() - 16384.0f) * 0.0000610351562f * (scale))

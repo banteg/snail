@@ -1,8 +1,7 @@
 // hit_slug_hazard @ 0x43f620 (thiscall, ret 0x4)
 
+#include "rmath_random.h"
 #include "slug_hazard_types.h"
-
-int gRMathRand2();
 
 void cRSlug::Hit(int damage)
 {

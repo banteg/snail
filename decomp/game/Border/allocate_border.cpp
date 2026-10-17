@@ -3,9 +3,6 @@
 #include "border_manager.h"
 #include "game_root.h"
 
-
-int report_errorf(char* format, ...);
-
 cRBorder* cRBorderManager::GetBorder()
 {
     for (int i = 0; i < BORDER_RECORD_COUNT; ++i) {

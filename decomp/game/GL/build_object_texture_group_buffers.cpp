@@ -1,13 +1,14 @@
 // build_object_texture_group_buffers @ 0x413d50 (cdecl)
 
+#include <string.h>
+
 #include "direct3d_renderer.h"
 #include "sprite.h"
 #include "object_render_types.h"
 #include "rshell.h"
+#include "tracked_allocation_stack.h"
 #include "vector3.h"
 
-void* allocate_tracked_memory(int size, char* name);
-extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
 #pragma intrinsic(memcpy)
 
 void build_object_texture_group_buffers(Object* object)

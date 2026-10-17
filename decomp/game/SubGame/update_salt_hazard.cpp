@@ -5,8 +5,6 @@
 #include "sprite.h"
 #include "subgame_runtime.h"
 
-int report_errorf(char* format, ...);
-
 void cRSalt::AI()
 {
     if (owner_game->subgame_pause_gate)

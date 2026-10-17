@@ -5,8 +5,6 @@
 #include "object_render_types.h"
 #include "track_attachment_types.h"
 
-int report_errorf(char* format, ...);
-
 void cRRowModel::AI()
 {
     Vector3* position = &transform.position;

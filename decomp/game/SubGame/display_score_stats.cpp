@@ -1,7 +1,6 @@
 // display_score_stats @ 0x4403c0 (thiscall)
 #include "player.h"
-
-int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
+#include "rdebug.h"
 
 void cRSubGoldy::ScoreStatsDisplay()
 {

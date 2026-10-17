@@ -1,8 +1,7 @@
 // kill_sprite @ 0x44e200 (thiscall)
 
+#include "rerror.h"
 #include "sprite.h"
-
-int report_errorf(char* format, ...);
 
 void cRSprite::Kill()
 {

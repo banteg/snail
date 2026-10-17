@@ -6,11 +6,9 @@
 
 #include "game_root.h"
 #include "player.h"
+#include "rmath_random.h"
 #include "subgame_runtime.h"
 #include "track_jetpack_pickup.h"
-
-int report_errorf(char* format, ...);
-float Sin(float radians);
 
 void cRJetPack::AI()
 {

@@ -4,8 +4,6 @@
 #include "subgame_runtime.h"
 #include "segment_cache.h"
 
-int report_errorf(char* format, ...);
-
 #define ACTIVATE_CACHE_SLOT(slot, active_list)                                      \
     if (((slot)->list_flags & live_mask) != 0) {                                   \
         report_errorf("List ADDafter");                                            \

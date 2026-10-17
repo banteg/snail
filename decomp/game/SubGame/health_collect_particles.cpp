@@ -1,13 +1,10 @@
 // health_collect_particles @ 0x43a010 (thiscall, ret 0x4)
 
 #include "player.h"
+#include "rmath_random.h"
 #include "runtime_config.h"
 #include "sprite.h"
 #include "track_health_pickup.h"
-
-
-float Sin(float radians);
-float Cos(float radians);
 
 void cRSubGoldy::HealthCollect(cRSubHealth* pickup)
 {

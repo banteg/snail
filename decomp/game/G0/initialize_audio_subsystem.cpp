@@ -1,6 +1,7 @@
 // initialize_audio_subsystem @ 0x407a10 (cdecl)
 
 #include "audio_system.h"
+#include "g0.h"
 #include "runtime_config.h"
 #include "win32_window_state.h"
 
@@ -14,7 +15,6 @@ extern LRESULT __stdcall bass_audio_window_proc(
     HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 
 void abort_startup_with_3d_error(); // @ 0x4088a0
-int shutdown_bass_audio_window(); // cleanup after CreateWindowEx failure
 
 extern char g_blank_text[];              // data_4dfb08
 

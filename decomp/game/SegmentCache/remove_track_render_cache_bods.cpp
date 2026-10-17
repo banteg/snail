@@ -3,8 +3,6 @@
 #include "segment_cache.h"
 #include "game_root.h"
 
-int report_errorf(char* format, ...);
-
 void SegmentCache::remove_track_render_cache_bods()
 {
     for (int row = 0; row < TRACK_RENDER_CACHE_ROW_COUNT; ++row) {

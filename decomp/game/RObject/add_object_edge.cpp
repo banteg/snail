@@ -1,8 +1,8 @@
 // AddEdge @ 0x4305a0 (thiscall)
 
-#include "object_render_types.h"
+#include <string.h>
 
-extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
+#include "object_render_types.h"
 
 void cRObject::AddEdge(int vertex_a, int vertex_b, int normal_index)
 {

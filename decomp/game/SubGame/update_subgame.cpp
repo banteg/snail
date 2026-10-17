@@ -4,7 +4,9 @@
 
 #include "bod_list.h"
 #include "bod_ai_dispatch.h"
+#include "font_system.h"
 #include "fringe_object.h"
+#include "rshell.h"
 #include "sub_solution.h"
 #include "new_game_menu.h"
 #include "player.h"
@@ -24,23 +26,6 @@
 #include "track_parcel_runtime.h"
 #include "segment_cache.h"
 #include "vector3.h"
-
-
-int OSDPrintUV(
-    int texture_id,
-    float x,
-    float y,
-    float width,
-    float height,
-    int flags,
-    tColour* color,
-    float u0,
-    float v0,
-    float u1,
-    float v1,
-    int blend_mode,
-    float rotation);
-int report_errorf(char* format, ...);
 
 void cRSubGame::AI()
 {

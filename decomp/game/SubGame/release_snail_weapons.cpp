@@ -3,8 +3,6 @@
 #include "player.h"
 #include "rmath_random.h"
 
-int gRMathRand2();
-
 // Signed random in [-1, 1).
 #define SIGNED_UNIT_RANDOM() (((float)gRMathRand2() - 16384.0f) * 0.000061035156f)
 // Random in [0.5, 1.5).

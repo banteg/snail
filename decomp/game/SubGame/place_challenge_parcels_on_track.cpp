@@ -1,12 +1,11 @@
 // place_challenge_parcels_on_track @ 0x444240 (thiscall, ret)
 
+#include "rdebug.h"
 #include "track_attachment.h"
 #include "transform_matrix.h"
 #include "parcel_bucket.h"
 #include "rmath_random.h"
 #include "subgame_runtime.h"
-
-int debug_report_stub(char* format, ...);
 
 void cRSubGame::PlaceParcelsSurvival()
 {

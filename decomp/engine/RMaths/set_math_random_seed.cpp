@@ -1,6 +1,6 @@
 // RandSeed @ 0x44c970 (cdecl)
 
-extern "C" void __cdecl srand(unsigned int seed);
+#include <stdlib.h>
 
 void __cdecl RandSeed(int seed)
 {

@@ -1,8 +1,7 @@
 // play_voice_set @ 0x449390 (thiscall, ret 0x4)
 
+#include "rshell.h"
 #include "voice_manager.h"
-
-void play_voice_backend(int sample_id, float volume, float pitch, float pan);
 
 bool cRVoiceSet::Play(int sample_override)
 {

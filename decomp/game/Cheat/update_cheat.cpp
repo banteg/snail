@@ -1,6 +1,7 @@
 // update_cheat @ 0x404750 (thiscall, ret)
 
 #include "cheat_state.h"
+#include "rshell.h"
 
 void cRCheat::AI()
 {

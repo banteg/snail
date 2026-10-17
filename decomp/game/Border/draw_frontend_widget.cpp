@@ -4,23 +4,8 @@
 #include "font_system.h"
 #include "frontend_widget.h"
 #include "game_root.h"
+#include "rmath_random.h"
 #include "runtime_config.h"
-
-
-int OSDPrintUV(
-    int texture_id,
-    float x,
-    float y,
-    float base_width,
-    float base_height,
-    int flags,
-    tColour* color,
-    float u0,
-    float v0,
-    float u1,
-    float v1,
-    int blend_mode,
-    float rotation);
 
 void cRBorder::Draw()
 {

@@ -8,11 +8,15 @@
 #include "cameraman.h"
 #include "cheat_state.h"
 #include "directx_loader.h"
+#include "font_system.h"
 #include "game_root.h"
 #include "galaxy_route_types.h"
+#include "gl.h"
 #include "landscape_manager.h"
+#include "object_proc.h"
 #include "object_render_types.h"
 #include "rdebug.h"
+#include "rshell.h"
 #include "rstring.h"
 #include "runtime_config.h"
 #include "segment_catalog_types.h"
@@ -27,25 +31,6 @@ extern char g_help_script_path[]; // 0x4a3488
 extern char g_menu_background_script_path[]; // 0x4a347c
 extern SubSegmentRaw* g_builtin_segment_definitions[]; // 0x4a63d0
 
-void FontInit(); // @ 0x449c70
-void FontMake3D(short font_id); // @ 0x44ae10
-int register_font_texture_sheet_wrapper(
-    char* font_path,
-    int shadow_offset_pixels,
-    float width_scale,
-    float height_scale); // @ 0x432d20
-void ObjectProcTileFloorFast(Object* object, char* texture_path, float x_offset); // @ 0x41a1c0
-void ObjectProcTileFast(Object* object, char* texture_path, float x_offset); // @ 0x41a0b0
-void ObjectProcTileFastRamp(int edge_pair, Object* object); // @ 0x41a170
-void ObjectProcTileFloorCornerFast(int corner, Object* object, char* texture_path); // @ 0x41a290
-void ObjectProcFringe(
-    Object* object,
-    int edge_selector,
-    int orientation,
-    int row_selector,
-    int column_selector,
-    char* texture_path); // @ 0x41a4d0
-void set_object_color(Object* object, tColour color); // @ 0x4141d0
 void set_input_controller_pointer_authored_xy(
     int controller,
     float authored_x,

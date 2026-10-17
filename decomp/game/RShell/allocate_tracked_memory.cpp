@@ -1,10 +1,10 @@
 // allocate_tracked_memory @ 0x431b60 (cdecl)
 
+#include <stdlib.h>
+#include <string.h>
+
 #include "tracked_allocation_stack.h"
 #include "rdebug.h"
-
-extern "C" void* malloc(unsigned int size);
-extern "C" void* memset(void* destination, int value, unsigned int count);
 
 void* allocate_tracked_memory(int size, char* name)
 {

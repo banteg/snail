@@ -1,9 +1,9 @@
 // report_messagef @ 0x431d60 (cdecl)
 
 #include <stdarg.h>
+#include <stdio.h>
 
-int vsprintf(char* buffer, char* format, va_list args);
-int debug_report_stub(char* format, ...);
+#include "rdebug.h"
 
 int report_messagef(char* format, ...)
 {

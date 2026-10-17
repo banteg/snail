@@ -1,8 +1,7 @@
 // load_registered_sound_sample_from_path @ 0x449920 (thiscall, ret 0xc)
 
 #include "audio_system.h"
-
-int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
+#include "rdebug.h"
 
 int AudioBackend::load_registered_sound_sample_from_path(
     char* path, int sample_id, int normalization_class)

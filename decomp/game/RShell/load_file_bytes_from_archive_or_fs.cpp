@@ -3,13 +3,11 @@
 #include <direct.h>
 
 #include "archive_index.h"
+#include "datbuild.h"
+#include "rerror.h"
 #include "rshell.h"
 #include "loading_bar.h"
-
-int get_stream_length_preserve_position(FILE* file);
-void* allocate_tracked_memory(int size, char* name);
-void xor_archive_bytes_in_place(int start_offset, char* bytes, int count);
-int report_messagef(char* format, ...);
+#include "tracked_allocation_stack.h"
 
 char* __cdecl load_file_bytes_from_archive_or_fs(
     char* file_name, char* buffer, int* out_size)

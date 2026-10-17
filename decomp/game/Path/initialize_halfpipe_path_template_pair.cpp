@@ -1,11 +1,10 @@
 // initialize_halfpipe_path_template_pair @ 0x429b20 (thiscall, ret 0x18)
 
 #include "object_render_types.h"
+#include "rmath_random.h"
 #include "sprite.h"
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
-
-float Sin(float angle);
 
 static __forceinline void build_halfpipe_middle(
     Path *path, AttachmentSample* const& primary_bank, float &out_angle)

@@ -1,9 +1,7 @@
 // update_display_mode_view_state @ 0x412940 (thiscall)
 
 #include "display_mode_state.h"
-
-float get_authored_view_width();  // @ 0x433030
-float get_authored_view_height(); // @ 0x433040
+#include "rshell.h"
 
 char DisplayModeState::update_display_mode_view_state()
 {

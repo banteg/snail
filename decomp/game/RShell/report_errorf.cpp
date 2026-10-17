@@ -1,9 +1,8 @@
 // report_errorf @ 0x431cc0 (cdecl)
 
 #include <stdarg.h>
+#include <stdio.h>
 #include "rdebug.h"
-
-int vsprintf(char* buffer, char* format, va_list args);
 
 int report_errorf(char* format, ...)
 {

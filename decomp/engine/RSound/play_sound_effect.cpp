@@ -1,8 +1,7 @@
 // cRSound::Play(int) @ 0x44dde0 (thiscall, ret 4)
 
+#include "rshell.h"
 #include "sound_effect_manager.h"
-
-void play_sound_effect_backend(int sample_id, float gain, float pitch, float pan);
 
 void cRSound::Play(int sample_id)
 {

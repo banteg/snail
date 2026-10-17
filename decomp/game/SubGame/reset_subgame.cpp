@@ -1,11 +1,12 @@
 // reset_subgame @ 0x437b10 (thiscall, ret)
 
+#include <string.h>
+
 #include "subgame_runtime.h"
 #include "game_time.h"
 
 typedef unsigned int DWORD;
 
-extern "C" void* memcpy(void* dest, const void* src, unsigned int count);
 #pragma intrinsic(memcpy)
 
 void cRSubGame::ReSet()

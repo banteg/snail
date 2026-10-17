@@ -1,8 +1,7 @@
 // initialize_object_list @ 0x42f990 (thiscall, ret 0x4)
 
 #include "object_render_types.h"
-
-void* allocate_tracked_memory(int size, char* name);
+#include "tracked_allocation_stack.h"
 
 void cRObjects::Init(int object_capacity)
 {

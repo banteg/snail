@@ -4,10 +4,7 @@ picks, without drawing RAND for it. The shell imports it (extras_import_padding)
 
 --- a/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
 +++ b/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
-@@ -26,6 +26,7 @@
- void set_object_color(Object* object, tColour color);
- extern bool g_port_ultimate; // shell/profile.h
- bool extras_is_pro_mode(); // shell/extras.h
+@@ -25,3 +25,4 @@
 +SubSegment* extras_next_padding(); // shell/extras.h
  
  void cRSubGame::BuildLevel()

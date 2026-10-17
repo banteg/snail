@@ -1,6 +1,6 @@
 // ATan @ 0x44ca10 (cdecl)
 
-extern "C" double __cdecl atan(double value);
+#include <math.h>
 
 float ATan(float y, float x)
 {

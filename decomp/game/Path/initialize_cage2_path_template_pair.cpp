@@ -1,11 +1,10 @@
 // initialize_cage2_path_template_pair @ 0x42e720 (thiscall, ret 0x10)
 
 #include "object_render_types.h"
+#include "rmath_random.h"
 #include "sprite.h"
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
-
-float Cos(float angle);
 
 void cRPath::initialize_cage2_path_template_pair(int width_cells_, char *texture_a,
                                                  char *texture_b,

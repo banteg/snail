@@ -6,6 +6,7 @@
 #include "bod_ai_dispatch.h"
 #include "game_root.h"
 #include "golb.h"
+#include "rmath_random.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
 #include "vapour.h"
@@ -14,9 +15,6 @@
 typedef unsigned int DWORD;
 
 typedef Vector3 Vec3;
-
-int report_errorf(char* format, ...);
-int gRMathRand2();
 
 void cRSubGolb::Create(cRSubGoldy* player_, int spawn_selector, int shot_slot_index)
 {

@@ -4,11 +4,11 @@
 // subgame_rate * 0.3. No game-base reads: everything hangs off `this`.
 #include "cameraman.h"
 #include "player.h"
+#include "rdebug.h"
+#include "rmath_random.h"
 #include "subgame_runtime.h"
 #include "track_attachment.h"
 
-float Cos(float angle);
-int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 extern char g_worm_fov_report_format[];
 
 void cRCameraman::AI()

@@ -1,16 +1,12 @@
 // load_segment_definitions @ 0x448160 (thiscall)
 
+#include <stdio.h>
+
 #include "game_root.h"
 #include "rstring.h"
 #include "rtext.h"
 #include "segment_catalog_types.h"
 #include "rshell.h"
-
-int sprintf(char* buffer, char* format, ...);
-int report_errorf(char* format, ...);
-void enumerate_matching_archive_or_fs_entries(char* directory, char* pattern,
-                                              int* out_count,
-                                              char* out_names); // @ 0x431740
 
 void cRSMTracks::Import() {
     char path_name[64];
@@ -21,8 +17,7 @@ void cRSMTracks::Import() {
     char segment_files[512][0x80];
 
     count = 0;
-    enumerate_matching_archive_or_fs_entries("Segments", "*.txt", &count,
-                                             segment_files[0]);
+    enumerate_matching_archive_or_fs_entries("Segments", "*.txt", &count, segment_files);
 
     if (count >= 150) {
         report_errorf("Too many Segments increase RSMTRACK_SEGMENT_MAX");

@@ -1,8 +1,7 @@
 // add_object_to_list @ 0x42fad0 (thiscall)
 
 #include "object_render_types.h"
-
-int report_errorf(char* format, ...);
+#include "rerror.h"
 
 cRObject* cRObjects::Add()
 {

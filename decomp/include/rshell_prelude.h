@@ -22,7 +22,8 @@
 #ifndef RSHELL_PRELUDE_H
 #define RSHELL_PRELUDE_H
 
-// The prelude only steers VC6's symbol numbering; the port needs none of it.
+// The SDK block and the stand-in only steer VC6's symbol numbering; the port
+// needs neither.
 #ifndef SNAIL_PORT
 
 #include <windows.h>
@@ -32,13 +33,14 @@
 #define DIRECTINPUT_VERSION 0x0800
 #include "../../tools/match/sdk/dx81/dinput.h"
 
-// STAND-IN, not recovered source. Between the SDK headers and the recovered
-// headers below, RstrASC needs 10,541..12,588 more frontend ids to land in its
-// window (measured with the matcher); the enum holds 11,564, the middle: 1 for
-// its type and 1 per enumerator. It holds the place of the unrecovered part of
+// STAND-IN, not recovered source. Between the SDK headers and RstrASC, VC6
+// must number 11,922..13,969 frontend ids for RstrASC to land in its window
+// (measured with the matcher). The recovered headers below supply 1,441 of
+// them, so the enum holds 11,504, the middle of what remains: 1 for its type
+// and 1 per enumerator. It holds the place of the unrecovered part of
 // RShell.cpp's header block. Strings name RShell.h, GDX.h, font.h and
 // RSprite.h, and the headers in decomp/include are partial views of them:
-// together (those that compile beside the SDK) they consume only about 8,300
+// together (those that compile beside the SDK) they consume only about 8,500
 // ids, so the gap cannot be closed from recovered headers yet. Count
 // replacements with crimson's per-kind id table (scripts/c2/fe_id_probe.py,
 // note frontend-ids.md) and shrink the enum by what they consume.
@@ -76,40 +78,39 @@ enum RShellProjectHeaderStandIn {
     RSHELL_STANDIN_100(rshell_standin_m2),
     RSHELL_STANDIN_100(rshell_standin_m3),
     RSHELL_STANDIN_100(rshell_standin_m4),
-    // + 6 * 10 + 3 = 11,563
-    RSHELL_STANDIN_10(rshell_standin_n0),
-    RSHELL_STANDIN_10(rshell_standin_n1),
-    RSHELL_STANDIN_10(rshell_standin_n2),
-    RSHELL_STANDIN_10(rshell_standin_n3),
-    RSHELL_STANDIN_10(rshell_standin_n4),
-    RSHELL_STANDIN_10(rshell_standin_n5),
+    // + 3 = 11,503
     rshell_standin_o0,
     rshell_standin_o1,
     rshell_standin_o2
 };
 
+#endif  // SNAIL_PORT
+
 // The recovered part of RShell.cpp's header block: every header RShell's
 // members include, hoisted here as one block. Before RstrASC they supply
-// 1,381 ids that the stand-in used to hold. rstring.h stays with
+// 1,441 ids that the stand-in used to hold. rstring.h stays with
 // enumerate_matching_archive_or_fs_entries, since RstrASC must follow the
 // stand-in.
 #include <direct.h>
 #include <io.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "archive_index.h"
 #include "audio_system.h"
 #include "authored_view_state.h"
+#include "datbuild.h"
 #include "font_system.h"
+#include "g0.h"
 #include "input_controller_state.h"
 #include "loading_bar.h"
 #include "main_loop_state.h"
 #include "rdebug.h"
+#include "rerror.h"
 #include "rshell.h"
 #include "rtext.h"
 #include "text_input_repeat_state.h"
 #include "tracked_allocation_stack.h"
-
-#endif  // SNAIL_PORT
 
 #endif

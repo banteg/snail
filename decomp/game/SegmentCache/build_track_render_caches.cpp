@@ -5,12 +5,10 @@
 
 #include "fringe_object.h"
 #include "object_render_types.h"
+#include "rdebug.h"
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 #include "segment_cache.h"
-
-int report_errorf(const char* format, ...);
-int debug_report_stub(const char* format, ...);
 
 void SegmentCache::build_track_render_caches(tColour skirt_color)
 {

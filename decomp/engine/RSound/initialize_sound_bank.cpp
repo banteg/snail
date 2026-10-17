@@ -1,8 +1,7 @@
 // cRSound::Init @ 0x44dcb0 (thiscall, ret 0x4)
 
+#include "rshell.h"
 #include "sound_effect_manager.h"
-
-int register_sound_sample(char* path, int normalization_class);
 
 void cRSound::Init(cRSoundBank* entries)
 {

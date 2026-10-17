@@ -78,7 +78,6 @@ extern float g_font_wave_phase_a;         // data_7772e8
 extern float g_font_wave_phase_b;         // data_7772ec
 extern float g_font_wave_step_b;          // data_7772f4
 extern float g_font_wave_step_a;          // data_777b28
-int report_errorf(const char* format, ...);
 void FontInit(); // @ 0x449c70
 void FontAI(); // @ 0x449ca0
 int FontASCIIRemap(char value); // @ 0x449d20
@@ -104,8 +103,6 @@ void FontType(
     char measure_only,
     char pulse_alpha); // @ 0x44abe0
 void FontMake3D(short font_id); // @ 0x44ae10
-float Sin(float angle); // @ 0x44c9d0
-float Cos(float angle); // @ 0x44c980
 void draw_textured_quad_immediate(
     cRTexture* texture,
     float x0, float y0,

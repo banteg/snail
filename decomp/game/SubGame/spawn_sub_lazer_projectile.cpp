@@ -4,8 +4,6 @@
 #include "subgame_runtime.h"
 #include "transform_matrix.h"
 
-int report_errorf(char* format, ...);
-
 void cRSubLazer::Shoot(const Vector3* origin, const Vector3* direction)
 {
     state = SUB_LAZER_STATE_ACTIVE;

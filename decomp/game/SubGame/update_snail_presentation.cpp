@@ -2,9 +2,7 @@
 
 #include "game_root.h"
 #include "player.h"
-
-
-float Sin(float angle);
+#include "rmath_random.h"
 
 void cRSnail::AIGoldy()
 {

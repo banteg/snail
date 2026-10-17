@@ -1,8 +1,7 @@
 // uninitialize_game_data_archive @ 0x430ef0 (cdecl)
 
 #include "archive_index.h"
-
-void free_tracked_memory(void* pointer);
+#include "tracked_allocation_stack.h"
 
 int uninitialize_game_data_archive()
 {

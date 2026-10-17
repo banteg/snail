@@ -1,8 +1,7 @@
 // initialize_voice_set @ 0x448df0 (thiscall, ret 0x4)
 
+#include "tracked_allocation_stack.h"
 #include "voice_manager.h"
-
-void* allocate_tracked_memory(int size, char* label);
 
 void cRVoiceSet::Init(int count)
 {

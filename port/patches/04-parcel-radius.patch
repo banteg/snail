@@ -3,13 +3,9 @@ snail; Windows within 1.24.
 
 --- a/decomp/game/SubGame/handle_subgoldy_collisions.cpp
 +++ b/decomp/game/SubGame/handle_subgoldy_collisions.cpp
-@@ -24,6 +24,7 @@
- typedef Vector3 Vec3;
- 
- int gRMathRand2();
+@@ -29,1 +29,3 @@
 +extern bool g_port_ultimate; // shell/profile.h
- int sprintf(char* buffer, const char* format, ...);
- 
++
  void cRSubGoldy::Collision()
 @@ -159,7 +160,7 @@
                      - cached_camera_target_world.z;

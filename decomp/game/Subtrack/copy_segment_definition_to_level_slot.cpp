@@ -5,8 +5,6 @@
 
 extern char* g_current_level_definition_name; // data_74ec74
 
-int report_errorf(char* format, ...);
-
 void cRSubTracks::ImportSegment(
     char* segment_name,
     cRSubSegment* slot)

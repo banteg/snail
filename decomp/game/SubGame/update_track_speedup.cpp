@@ -6,9 +6,6 @@
 #include "subgame_runtime.h"
 #include "track_speedup.h"
 
-
-int report_errorf(char* format, ...);
-
 void cRSubSpeedUp::AI()
 {
     int zero = 0;

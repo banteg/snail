@@ -3,7 +3,7 @@
 #include <direct.h>
 #include <stdio.h>
 
-void scramble_archive_bytes_in_place(void* buffer, int size);
+#include "datbuild.h"
 
 int __cdecl save_file_bytes_with_optional_archive_scramble(char* file_name, void* bytes, int byte_count, char should_scramble)
 {

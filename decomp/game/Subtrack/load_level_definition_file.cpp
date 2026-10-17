@@ -1,5 +1,7 @@
 // cRSubTracks::Init(char*) @ 0x447480 (thiscall, ret 0x4)
 
+#include <stdio.h>
+
 #include "sprite.h"
 #include "landscape_manager.h"
 #include "rstring.h"
@@ -13,11 +15,6 @@ extern char* g_current_level_definition_name; // data_74ec74
 extern char g_level_file_text_buffer[]; // data_74ec78
 
 #define LEVEL_FILE_BUFFER g_level_file_text_buffer
-
-int sprintf(char* buffer, const char* format, ...);
-int report_errorf(char* format, ...);
-int report_warningf(char* format, ...);
-int find_registered_sound_sample_id_by_name(char* sample_name); // @ 0x432fc0
 
 struct LevelDefinitionParseBuffers {
     char level_path[512];

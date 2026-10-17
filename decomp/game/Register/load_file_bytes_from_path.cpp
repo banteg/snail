@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int get_stream_length_preserve_position(FILE* file);
+#include "datbuild.h"
 
 char* __cdecl load_file_bytes_from_path(char* file_name, char* buffer, int* out_size, int byte_count)
 {

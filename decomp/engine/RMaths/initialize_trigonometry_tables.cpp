@@ -1,9 +1,9 @@
 // RMathInit @ 0x44c930 (cdecl)
 
+#include <math.h>
+
 #include "rmath_random.h"
 
-extern "C" double __cdecl cos(double value);
-extern "C" double __cdecl sin(double value);
 #include "rmath_tables.h"
 
 void RMathInit()

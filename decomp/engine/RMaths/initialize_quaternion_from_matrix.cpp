@@ -3,9 +3,8 @@
 
 #include "quaternion.h"
 #include "rdebug.h"
+#include "rmath_random.h"
 #include "transform_matrix.h"
-
-float Sqrt(float value);
 
 tQuaternian::tQuaternian(const tMatrix& matrix)
 {

@@ -7,8 +7,6 @@
 
 extern char g_blank_text[]; // data_4dfb08
 
-int report_errorf(char* format, ...);
-
 void cRBorder::Init(
     int flags,
     char* text,

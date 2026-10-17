@@ -1,9 +1,8 @@
 // build_sprite_tail @ 0x44e410 (thiscall)
 
+#include "rmath_random.h"
 #include "sprite.h"
 #include "transform_matrix.h"
-
-float ATan(float y, float x);
 
 void cRSprite::BuildTail(tMatrix* matrix)
 {

@@ -3,20 +3,11 @@
 #include "audio_system.h"
 #include "bod_ai_dispatch.h"
 #include "cheat_state.h"
+#include "font_system.h"
 #include "game_root.h"
 #include "rerror.h"
 #include "sprite.h"
 #include "voice_manager.h"
-
-int OSDPrint(
-    int texture_id,
-    float x,
-    float y,
-    float width,
-    float height,
-    int flags,
-    tColour* tint,
-    int blend_mode);
 
 int cRGame::AI()
 {

@@ -2,9 +2,7 @@
 
 #include "axis.h"
 #include "quaternion.h"
-
-float Sin(float angle);
-float Cos(float angle);
+#include "rmath_random.h"
 
 void tQuaternian::operator=(const tAxis& axis)
 {

@@ -1,7 +1,6 @@
 // build_perspective_projection_matrix @ 0x450314 (stdcall)
 
-extern "C" double __cdecl cos(double value);
-extern "C" double __cdecl sin(double value);
+#include <math.h>
 
 float* __stdcall build_perspective_projection_matrix(
     float* matrix,

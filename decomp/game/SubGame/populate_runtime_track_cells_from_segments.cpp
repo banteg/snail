@@ -2,10 +2,11 @@
 // Structure-first scratch for the runtime grid builder setup and clear pass.
 
 #include <stddef.h>
+#include <string.h>
 
-extern "C" void* memset(void* destination, int value, unsigned int count);
 #pragma intrinsic(memset)
 
+#include "rdebug.h"
 #include "sprite.h"
 #include "fringe_object.h"
 #include "game_root.h"
@@ -17,12 +18,8 @@ extern "C" void* memset(void* destination, int value, unsigned int count);
 #include "track_attachment_types.h"
 #include "track.h"
 
-
 #define ROOT_BOD_OBJECT(slot) (g_game->root_bod_catalog.slot.object)
 
-void RandSeed(int seed);
-int report_errorf(const char* format, ...);
-int debug_report_stub(char* format, ...);
 void set_object_color(Object* object, tColour color);
 
 void cRSubGame::BuildLevel()

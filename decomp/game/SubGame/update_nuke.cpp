@@ -1,9 +1,7 @@
 // cRNuke::AI @ 0x4471e0 (thiscall)
 
 #include "nuke.h"
-
-float Sin(float radians);
-float Cos(float radians);
+#include "rmath_random.h"
 
 void cRNuke::AI()
 {

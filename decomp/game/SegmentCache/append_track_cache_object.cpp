@@ -3,8 +3,6 @@
 #include "object_render_types.h"
 #include "segment_cache.h"
 
-int report_errorf(const char* format, ...);
-
 void SegmentCache::append_track_cache_object(
     int row_index,
     Object* source,

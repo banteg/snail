@@ -1,6 +1,7 @@
 // FontType @ 0x44abe0 (cdecl)
 
 #include "font_system.h"
+#include "rmath_random.h"
 
 void FontType(
     char* text,

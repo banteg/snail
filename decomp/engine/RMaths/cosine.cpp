@@ -1,6 +1,6 @@
 // Cos @ 0x44c980 (cdecl)
 
-extern "C" double __cdecl cos(double value);
+#include <math.h>
 
 #include "rmath_tables.h"
 

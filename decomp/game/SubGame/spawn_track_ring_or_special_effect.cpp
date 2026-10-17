@@ -10,9 +10,6 @@
 #include "transform_matrix.h"
 #include <stddef.h>
 
-
-int report_errorf(const char* format, ...);
-
 struct SubRingSlotCursor {
     char subgame_prefix[offsetof(cRSubGame, ring_effects)];
     SubRing ring;

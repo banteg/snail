@@ -1,8 +1,7 @@
 // update_twinkle @ 0x404080 (thiscall, void)
 
 #include "frontend_widget.h"
-
-int gRMathRand2();
+#include "rmath_random.h"
 
 void cRTwinkle::AI()
 {

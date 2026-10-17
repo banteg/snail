@@ -3,8 +3,12 @@
 #include "authored_view_state.h"
 #include "frontend_fade.h"
 #include "font_system.h"
+#include "g0.h"
 #include "game_root.h"
+#include "gdx.h"
+#include "gl.h"
 #include "input_polling.h"
+#include "rshell.h"
 #include "sub_high_score.h"
 #include "display_mode_state.h"
 #include "loading_bar.h"
@@ -12,6 +16,7 @@
 #include "runtime_config.h"
 #include "rmath_random.h"
 #include "audio_system.h"
+#include "tracked_allocation_stack.h"
 #include "win32_window_state.h"
 
 extern "C" __declspec(dllimport) HWND __stdcall FindWindowExA(
@@ -24,38 +29,12 @@ extern "C" __declspec(dllimport) unsigned int __stdcall timeGetTime();
 extern "C" __declspec(dllimport) HWND __stdcall GetActiveWindow();
 extern "C" __declspec(dllimport) BOOL __stdcall ClipCursor(void* rect);
 
-
 int query_directx_runtime_version(); // @ 0x44afc0
-char validate_config_tail_stub(char* config_tail); // @ 0x42f5b0
 void abort_startup_with_3d_error(); // @ 0x4088a0
 int rebuild_game_archive_if_needed(); // @ 0x405370
-void* load_config_file(char* file_name, void* buffer); // @ 0x42f470
-char initialize_game_data_archive(); // @ 0x430e40
-int snapshot_current_display_mode(); // @ 0x407850
-void initialize_mouse_authored_scale_from_clip_rect(); // @ 0x44bbb0
-int probe_display_mode_count(); // @ 0x407880
-int* read_current_display_resolution(int* width, int* height); // @ 0x4078b0
-int log_startup_timestamp(); // @ 0x406d30
-char initialize_audio_subsystem(); // @ 0x407a10
-int initialize_game_window_and_input_wrapper(char* window_name); // @ 0x4119c0
 void noop_runtime_ai(); // @ 0x407b50
-void set_fullscreen_mode(char enabled); // @ 0x414260
-void initialize_main_loop_display_state(); // @ 0x406d70
-int construct_game_runtime(); // @ 0x407b60
-void set_tracked_allocation_mark(); // @ 0x431cb0
-void load_registered_texture_refs(int debug_fallback); // @ 0x412a00
-int show_and_focus_game_window(); // @ 0x4073b0
-void minimize_game_window(); // @ 0x407490
 int render_game_frame_scene(); // @ 0x4134c0
-int present_backbuffer(); // @ 0x413520
-int shutdown_bass_audio_window(); // @ 0x407b00
-void free_tracked_allocations_to_mark(); // @ 0x431c70
 void scalar_delete(void* pointer); // @ 0x48ba34
-char* save_config_file(char* file_name, void* bytes, int byte_count); // @ 0x42f540
-int uninitialize_game_data_archive(); // @ 0x430ef0
-int uninitialize_input_devices(); // @ 0x411d80
-int restore_desktop_display_mode(); // @ 0x407860
-int gRMathRand2(); // @ 0x44c900
 
 int __stdcall game_startup_and_main_loop(
     HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nShowCmd)

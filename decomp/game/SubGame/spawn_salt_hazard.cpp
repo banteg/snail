@@ -1,10 +1,8 @@
 // spawn_salt_hazard @ 0x441560 (thiscall, ret 0x4)
 #include "game_root.h"
+#include "rmath_random.h"
 #include "salt_hazard_types.h"
 #include "transform_matrix.h"
-
-int gRMathRand2();
-int report_errorf(char* format, ...);
 
 void cRSaltManager::Add(tVector& position)
 {
