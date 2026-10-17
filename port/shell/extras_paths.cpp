@@ -789,7 +789,7 @@ void extras_init_paths()
     // TrampRing object and 8 pool instances
     g_tramp_ring_object = g_object_list.Add();
     load_object_definition((char*)"Objects/TrampRing", g_tramp_ring_object);
-    g_tramp_ring_object->blend_mode = 5;
+    g_tramp_ring_object->blend_mode = 1; // alpha blended, as Android's cRGame::Init3 (0003f6d8) sets it
     g_tramp_ring_object->flags |= OBJECT_FLAG_DISABLE_CULLING | OBJECT_FLAG_REFRESH_TINT_EACH_DRAW;
     if (g_tramp_ring_object->facequads && g_tramp_ring_object->facequads[0].texture_ref)
         g_tramp_ring_object->facequads[0].texture_ref->flags |= 0x400;
@@ -918,7 +918,8 @@ void extras_add_tramp_ring(cRSubLoc* cell)
     cRSubLoc* scan = cell + 1;
     while (scan->tile_id == SUBLOC_TILE_TRAMPOLINE)
         scan -= SUBGAME_TRACK_LANE_COUNT;
-    cRSubLoc* center = scan + 3 * SUBGAME_TRACK_LANE_COUNT;
+    // Android reads +0x718: three rows on and one lane in, the trampoline's middle cell.
+    cRSubLoc* center = scan + 3 * SUBGAME_TRACK_LANE_COUNT + 1;
 
     for (int i = 0; i < kTrampRingSlotCount; ++i) {
         SubTrampRing& ring = g_tramp_rings[i];
@@ -1015,4 +1016,14 @@ int extras_tramp_ring_active_count()
             ++active;
     }
     return active;
+}
+
+// Lateral x of the first active bounce ring, or 0 when none is active.
+float extras_tramp_ring_x()
+{
+    for (int i = 0; i < kTrampRingSlotCount; ++i) {
+        if (g_tramp_rings[i].state != 0)
+            return g_tramp_rings[i].transform.position.x;
+    }
+    return 0.0f;
 }

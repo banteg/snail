@@ -68,7 +68,7 @@ def test_mobile_course_capacity_before_condensation(tmp_path, rows, ultimate, ac
     (tmp_path / "SnailMailMobile.cfg").write_bytes(config)
     (tmp_path / "SnailMailPro.cfg").write_bytes(struct.pack("<ii", 10, 10))
     keys = tmp_path / "pro10.keys"
-    menu_y = 383 if ultimate else 172
+    menu_y = 240 if ultimate else 172
     menu = (
         "600 escape\n700 mouse 345 112\n720 click 3\n"
         f"800 mouse 345 {menu_y}\n820 click 3\n"

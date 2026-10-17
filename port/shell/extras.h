@@ -9,6 +9,7 @@ bool extras_init_archive();
 void extras_init_assets();
 const char* extras_track_texture_name(int slot);
 const char* extras_sprite_texture_name(int slot);
+const char* extras_roman_numeral(int value);
 
 struct cRSubTracks;
 struct PathPair;
@@ -28,6 +29,7 @@ void extras_clear_tramp_rings();
 void extras_step_tramp_rings();
 const PathPair* extras_get_mobile_path_pair(int extra_index);
 int extras_tramp_ring_active_count();
+float extras_tramp_ring_x();
 int extras_swaying_ring_count();
 
 struct ArchiveIndex;
