@@ -336,6 +336,26 @@ const char* extras_track_texture_name(int slot)
     return "?";
 }
 
+// Android cRGalaxy::BoxOn (00058d80) titles a route card with the level's
+// numeral from gRomanNumbers ("", I .. LI; port/patches/17-route-numerals.patch).
+const char* extras_roman_numeral(int value)
+{
+    static const struct {
+        int value;
+        const char* digits;
+    } kNumerals[] = {
+        {1000, "M"}, {900, "CM"}, {500, "D"}, {400, "CD"}, {100, "C"}, {90, "XC"}, {50, "L"},
+        {40, "XL"}, {10, "X"}, {9, "IX"}, {5, "V"}, {4, "IV"}, {1, "I"},
+    };
+    static char numeral[16];
+    numeral[0] = 0;
+    for (int i = 0; i < (int)(sizeof(kNumerals) / sizeof(kNumerals[0])); ++i) {
+        for (; value >= kNumerals[i].value; value -= kNumerals[i].value)
+            strcat(numeral, kNumerals[i].digits);
+    }
+    return numeral;
+}
+
 char __cdecl archive_or_file_exists(char* path, char force_filesystem)
 {
     path = (char*)extras_save_path(path);

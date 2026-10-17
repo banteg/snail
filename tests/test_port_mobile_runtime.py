@@ -145,7 +145,7 @@ def test_each_complete_mobile_pro_course_starts(tmp_path, level):
     (tmp_path / "SnailMailPro.cfg").write_bytes(struct.pack("<ii", 10, level))
     keys = tmp_path / "start.keys"
     menu = (
-        "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 383\n820 click 3\n"
+        "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 240\n820 click 3\n"
     )
     keys.write_text(menu)
     args = [
