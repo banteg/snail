@@ -338,16 +338,19 @@ text says tilt and touch.
 The narrow hooks (`port/wrapped.txt`, `port/shell/extras.cpp`,
 `port/shell/extras_paths.cpp`, `port/shell/extras_pro.cpp`) select the mobile
 level data, seven track sets, new path templates, mobile CAGE2/TWISTER2
-geometry, trampoline effects and moving weapon rings. The New Game menu
-adds **Pro-Challenge**, opening the ten-level **Special Assignment** galaxy.
-Mobile acceleration and power-up pacing apply in every game mode;
+geometry, trampoline effects and moving weapon rings. As on Android, every
+course but Challenge (postal, Time Trial, Pro and the tutorial) lays the
+four-row Padding segment before each segment its level lists, so
+ArcadePro010, the longest, builds 3,407 rows rather than 3,231. The New Game
+menu adds **Pro-Challenge**, opening the ten-level **Special Assignment**
+galaxy. Mobile acceleration and power-up pacing apply in every game mode;
 Original delegates to the PC rules. Patches at the native sites add the
 other Android rules (divergences.md#patches): a new Pro-Challenge game starts
 with 8 lives instead of 3, parcels are collected within 1.73 of the snail
-instead of 1.24, and `Random:` courses (Challenge) lay the four-row Padding
-segment between each pair of random segments. Pro skies use the full
-converted image with normalized UVs, including horizontal flips; PC
-backdrops retain their padded-image UV layout.
+instead of 1.24, and `Random:` courses (Challenge) lay Padding between each
+pair of random segments. Pro skies use the full converted image with
+normalized UVs, including horizontal flips; PC backdrops retain their
+padded-image UV layout.
 
 Mobile campaign progress and scores use `SnailMailMobile.cfg` and
 `ScoreMobileA/B/C.dat`. The first mobile launch copies display/audio

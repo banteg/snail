@@ -37,6 +37,9 @@ recovered code.
 Narrow seams wrap a matched function in the shell instead (`port/wrapped.txt`,
 its body renamed `*_recovered`): the mobile content in `port/shell/extras*.cpp`
 and the fixes for the original's own bugs; see [Original bugs](original-bugs.md).
+Among them, the Ultimate `cRSubTracks::Init` lays Padding before every listed
+segment of a level that is not `Mode:Challenge`, as Android's Init (000850d4)
+does; the mobile level files stay as Android ships them.
 
 ## Shell behaviour that differs from the shipped build
 
