@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "archive_index.h"
+#include "cheat_state.h"
 #include "extras.h"
 #include "font_system.h"
 #include "game_root.h"
@@ -45,6 +46,7 @@ void subgame_add_ring_recovered(cRSubGame* self, cRSubLoc* cell, int requested_k
     __asm__("_ZN9cRSubGame17AddRing_recoveredEP8cRSubLociP10cRSubGoldyf");
 void sub_ring_init_recovered(cRSubRing* self, int lives_snapshot)
     __asm__("_ZN9cRSubRing14Init_recoveredEi");
+void cheat_ai_recovered(cRCheat* self) __asm__("_ZN7cRCheat12AI_recoveredEv");
 
 void* allocate_tracked_memory(int size, char* name);
 void xor_archive_bytes_in_place(int start_offset, char* bytes, int count);
@@ -537,6 +539,16 @@ void cRSubRing::Init(int lives_snapshot)
         }
     }
     sub_ring_init_recovered(this, lives_snapshot);
+}
+
+// Android cRCheat::AI (00060af8) still rolls the typed letters but never calls
+// MatchText, so NEWTON (no score records) and AUTUMN (no falling) set no flag;
+// Init and AI are the only writers of the flags.
+void cRCheat::AI()
+{
+    cheat_ai_recovered(this);
+    if (g_port_ultimate)
+        flags = 0;
 }
 
 __attribute__((export_name("snail_swaying_ring_count")))

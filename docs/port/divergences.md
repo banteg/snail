@@ -33,10 +33,15 @@ recovered code.
 | `03-pro-lives` | a new Pro-Challenge game starts with 8 lives | Android's BuildLevel |
 | `04-parcel-radius` | parcels are collected within 1.73, not 1.24, in Ultimate | Android's `cRSubGoldy::Collision` (00077f5c) |
 | `05-challenge-padding` | `Random:` levels lay Padding between each pair of random segments in Ultimate, without drawing RAND for it | Android's `cRSubTracks::Init` (000850d4) and BuildLevel |
+| `15-pause-quit-scores` | ending a Challenge or Time Trial run from the pause menu skips `cRSubGame::Complete` in Ultimate, so the run records no score | Android's `cRExit::AI` (00062568) |
+| `16-time-trial-completion` | a Time Trial finish opens the completion panel in Ultimate: the continue prompt, and on a new best time a blinking "NEW FASTEST TIME!" and the Perfect jingle | Android's `cRCutScene::AI` (00072a5c), `cRCompletion::Init` (0006102c) and `cRCompletion::AI` (00060c0c) |
 
 Narrow seams wrap a matched function in the shell instead (`port/wrapped.txt`,
-its body renamed `*_recovered`): the mobile content in `port/shell/extras*.cpp`
-and the fixes for the original's own bugs; see [Original bugs](original-bugs.md).
+its body renamed `*_recovered`): the mobile content and rules in
+`port/shell/extras*.cpp`, among them the typed cheats (`cRCheat::AI`), the
+Fluctuosa unlock (`cRGalaxy::Init`) and the High Scores banks
+(`cRHighScore::Init`, `UnInit` and `AI`), and the fixes for the original's own
+bugs; see [Original bugs](original-bugs.md).
 
 ## Shell behaviour that differs from the shipped build
 

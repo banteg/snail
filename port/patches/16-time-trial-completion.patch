@@ -1,0 +1,135 @@
+Android's cRCutScene::AI (00072a5c) also opens the completion panel at a Time
+Trial finish. Its cRCompletion::Init (0006102c) flags a run faster than the
+route's best time, or the route's first, and starts at the summary with the
+title hidden; cRCompletion::AI (00060c0c) keeps the title and the delivered
+count hidden, shows the continue prompt, and on a new record blinks "NEW
+FASTEST TIME!" (0x83390) and plays the Perfect jingle (Android sound 0x32,
+r2 0x50dd4, the id its Challenge bonus plays where Windows plays 0x31). The PC
+panel's parcel icon, which Android has not got, stays hidden too.
+cRSubGame::UnInit (0007a4c0) closes the panel in mode 4 as well. Android keeps
+the bonus_score of the last postal or Challenge finish, and UnInit adds it to
+the time trial's score; here it is 0.
+
+--- a/decomp/game/SubGame/update_cutscene.cpp
++++ b/decomp/game/SubGame/update_cutscene.cpp
+@@ -10,6 +10,7 @@
+ #include "rmath_random.h"
+ #include "voice_manager.h"
+ 
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ enum {
+     LEVEL_PARCEL_COUNT_FROM_GAME_ROOT =
+@@ -187,6 +188,8 @@
+                 player->parcels_collected, perfect_delivery);
+         } else if (game->subgame.level_mode == 1) {
+             game->subgame.completion.Init(player->parcels_collected, 1);
++        } else if (g_port_ultimate && game->subgame.level_mode == 4) {
++            game->subgame.completion.Init(0, 0);
+         }
+         g_sound_effect_manager.Play(46);
+         // fall through
+--- a/decomp/game/Completion/initialize_completion_screen.cpp
++++ b/decomp/game/Completion/initialize_completion_screen.cpp
+@@ -4,6 +4,7 @@
+ #include "game_root.h"
+ #include <string.h>
+ 
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ void cRCompletion::Init(
+     int new_delivered_count,
+@@ -43,6 +44,12 @@
+         else
+             bonus_score = g_completion_bonus_difficulty_table[difficulty_index]
+                 + g_completion_bonus_speed_table[speed_source];
++    } else if (g_port_ultimate && mode == 4) {
++        float best = g_game->subgame.sub_high_score
++                         .time_trial_route_records[g_game->subgame.level_mode_arg].total_seconds;
++        new_perfect_delivery =
++            g_game->subgame.player.stopwatch.total_seconds < best || best == 0.0f;
++        bonus_score = 0;
+     }
+ 
+     int bonus = bonus_score;
+@@ -97,6 +104,12 @@
+             tColour().Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
+         bonus_summary_widget->AddTextNumber(bonus_score);
+         strcat(bonus_summary_widget->text_buffer, " Bonus Points");
++    } else if (g_port_ultimate && mode == 4) {
++        bonus_summary_widget->Init(
++            FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
++                | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
++            "NEW FASTEST TIME!", 20, 0.0f, 302.0f,
++            tColour().Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
+     }
+     bonus_summary_widget->HideInit();
+     bonus_progress = 0.0f;
+@@ -125,4 +138,10 @@
+     fast_forward_enabled = 1;
+     delivered_count_progress_step =
+         1.0f / (3.4000001f / (float)(delivered_count + 1) * 60.0f);
++    if (g_port_ultimate && mode == 4) {
++        continue_state = COMPLETION_STATE_SUMMARY_PENDING;
++        title_widget->HideInit();
++        delivered_count_widget->HideInit();
++        bonus_icon_widget->HideInit();
++    }
+ }
+--- a/decomp/game/Completion/update_row_event_display.cpp
++++ b/decomp/game/Completion/update_row_event_display.cpp
+@@ -9,6 +9,7 @@
+ #include "track_parcel_runtime.h"
+ #include "vector3.h"
+ 
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ typedef Vector3 Vec3;
+ 
+@@ -30,9 +31,15 @@
+     }
+ 
+     FrontendWidget* delivered_count_widget = controller->delivered_count_widget;
+-    delivered_count_widget->UnHideInit();
+-    controller->title_widget->UnHideInit();
+-    controller->bonus_icon_widget->UnHideInit();
++    if (g_port_ultimate && g_game->subgame.level_mode == 4) {
++        delivered_count_widget->HideInit();
++        controller->title_widget->HideInit();
++        controller->bonus_icon_widget->HideInit();
++    } else {
++        delivered_count_widget->UnHideInit();
++        controller->title_widget->UnHideInit();
++        controller->bonus_icon_widget->UnHideInit();
++    }
+     controller->continue_widget->UnHideInit();
+ 
+     switch (controller->state) {
+@@ -96,6 +103,8 @@
+                     g_sound_effect_manager.Play(0x31);
+                 }
+             }
++            if (g_port_ultimate && g_game->subgame.level_mode == 4)
++                g_sound_effect_manager.Play(0x31);
+         }
+         /* fall through */
+     }
+--- a/decomp/game/SubGame/destroy_subgame.cpp
++++ b/decomp/game/SubGame/destroy_subgame.cpp
+@@ -9,6 +9,7 @@
+ #include "warning.h"
+ 
+ typedef unsigned int DWORD;
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ #define REMOVE_BOD_NODE_FROM_NEXT_LINK(next_link_expr, linked_flag_expr) \
+     do {                                                          \
+@@ -79,7 +80,7 @@
+     DWORD linked_flag = BOD_FLAG_LINKED;
+     if (subgame_state != 1) {
+         DWORD level_mode = this->level_mode;
+-        if (level_mode == 0 || level_mode == 1)
++        if (level_mode == 0 || level_mode == 1 || (g_port_ultimate && level_mode == 4))
+             completion.UnInit();
+ 
+         BodNode** sub_lazer_next = &sub_lazers.slots[0].list_next;
