@@ -436,10 +436,11 @@ wider field of view (120 where the PC has 110), which likely suits the phones'
 Android's track mesh (`cRWorld`) during the death cut-scene; resuming a postal
 or Pro game, which Android saves when such a run is ended from the pause menu
 (Ultimate records its score, as the PC does); the Options screen's version
-label, in full for Fluctuosa; slug voice lines; the OpenFeint logo that
-replaced the main menu's Exit button; the layout for the phones' 480x320
-screens. Shared path meshes other than CAGE2, TWISTER2 and SBEND are not yet
-checked against the Android `.smo` meshes.
+label, in full for Fluctuosa; the OpenFeint logo that replaced the main menu's
+Exit button; the layout for the phones' 480x320 screens. Shared path meshes
+other than CAGE2, TWISTER2 and SBEND are not yet checked against the Android
+`.smo` meshes. The slug voice lines play in both profiles: the PC's
+`cRSlugVoiceManager` has Android's constants, call sites and clips.
 
 Ultimate selects the mobile 3,500-row build limit; Original retains the PC
 3,100-row limit. Port builds reserve 3,600 runtime rows, including the tail

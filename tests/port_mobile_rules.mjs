@@ -40,8 +40,8 @@ for (let frame = 0; frame < 20000 && !report.after; ++frame) {
   e.snail_frame(1 / 60);
   if (i32(player + LAYOUT.row_event) !== message) {
     message = i32(player + LAYOUT.row_event);
-    // Padding slots and the rings segment raise row events too; keep those
-    // whose segment carries a message.
+    // Segments without a message (the rings, any Padding) raise row events
+    // too; keep those whose segment carries one.
     const slot = sub + LAYOUT.level_definition + LAYOUT.segment_slots + (message - 1) * LAYOUT.segment_slot;
     if (message > 0 && game.memory().readUInt8(slot + LAYOUT.segment_message) !== 0) report.messages.push(state());
   }
