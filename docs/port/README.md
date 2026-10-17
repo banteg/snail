@@ -303,8 +303,7 @@ Which functions the port compiles:
   `BuildLevel` passed to `RandSeed`, and every `RAND`/`SRAND` draw up to the
   end of `cRSubGame::StartLevel`, counted by tag. `--segments` lists each
   laid piece's rows and mirror flag; `--seed` replaces the seed, so a build
-  can be compared with the port's for the same seed. The comparisons so far
-  ran against the ten open profile PRs merged together:
+  can be compared with the port's for the same seed. Comparisons so far:
   - the tutorial, and route I in Time Trial and postal, match Android row
     for row and draw for draw;
   - Challenge 0 showed that Android lays a random course's finish in pieces
