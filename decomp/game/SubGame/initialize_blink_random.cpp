@@ -1,8 +1,7 @@
 // initialize_blink_random @ 0x4408c0 (thiscall, ret)
 
+#include "rmath_random.h"
 #include "subgame_runtime.h"
-
-int gRMathRand2();
 
 void cRSubGame::BlinkRandInit()
 {

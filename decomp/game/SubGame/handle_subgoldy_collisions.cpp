@@ -7,6 +7,7 @@
 
 #include "damage_guage.h"
 #include "garbage_hazard_slot.h"
+#include "rmath_random.h"
 #include "sub_hover.h"
 #include "player.h"
 #include "ring_special_effect_types.h"
@@ -23,7 +24,6 @@
 
 typedef Vector3 Vec3;
 
-int gRMathRand2();
 int sprintf(char* buffer, const char* format, ...);
 
 void cRSubGoldy::Collision()

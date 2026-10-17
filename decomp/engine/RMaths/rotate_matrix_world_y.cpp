@@ -1,9 +1,7 @@
 // rotate_matrix_world_y @ 0x44cec0 (thiscall)
 
+#include "rmath_random.h"
 #include "transform_matrix.h"
-
-float Cos(float angle);
-float Sin(float angle);
 
 void tMatrix::RotLocalY(float angle)
 {

@@ -1,9 +1,7 @@
 // rotate_matrix_world_z @ 0x44cf50 (thiscall)
 
+#include "rmath_random.h"
 #include "transform_matrix.h"
-
-float Cos(float angle);
-float Sin(float angle);
 
 void tMatrix::RotLocalZ(float angle)
 {

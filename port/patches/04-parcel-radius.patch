@@ -3,10 +3,7 @@ snail; Windows within 1.24.
 
 --- a/decomp/game/SubGame/handle_subgoldy_collisions.cpp
 +++ b/decomp/game/SubGame/handle_subgoldy_collisions.cpp
-@@ -24,6 +24,7 @@
- typedef Vector3 Vec3;
- 
- int gRMathRand2();
+@@ -27,3 +27,4 @@
 +extern bool g_port_ultimate; // shell/profile.h
  int sprintf(char* buffer, const char* format, ...);
  

@@ -53,7 +53,6 @@ char* save_config_file(char* file_name, void* bytes, int byte_count); // @ 0x42f
 int uninitialize_game_data_archive(); // @ 0x430ef0
 int uninitialize_input_devices(); // @ 0x411d80
 int restore_desktop_display_mode(); // @ 0x407860
-int gRMathRand2(); // @ 0x44c900
 
 int __stdcall game_startup_and_main_loop(
     HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nShowCmd)

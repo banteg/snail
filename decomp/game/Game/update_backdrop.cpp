@@ -1,9 +1,7 @@
 // update_backdrop @ 0x4112f0
 
 #include "backdrop.h"
-
-float Sin(float radians); // @ 0x44c9d0
-float Cos(float radians); // @ 0x44c980
+#include "rmath_random.h"
 
 int cRBackdrop::update_backdrop()
 {

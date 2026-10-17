@@ -3,14 +3,12 @@
 
 #include "game_root.h"
 #include "rdebug.h"
+#include "rmath_random.h"
 #include "sub_hover.h"
 #include "player.h"
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 #include "vector3.h"
-
-float Cos(float angle);
-float Sin(float angle);
 
 void cRSubHover::AI()
 {

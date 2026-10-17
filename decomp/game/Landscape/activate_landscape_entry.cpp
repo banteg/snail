@@ -5,9 +5,8 @@
 #include "backdrop.h"
 #include "border_manager.h"
 #include "game_root.h"
+#include "rmath_random.h"
 #include "runtime_config.h"
-
-int gRMathRand2(); // @ 0x44c900
 
 void cRLandscapeManager::Init(int script_index)
 {

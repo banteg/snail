@@ -11,8 +11,6 @@
 #include "subgame_runtime.h"
 #include "voice_manager.h"
 
-int gRMathRand2();
-
 void cRSlug::AI()
 {
     if (owner_game->subgame_pause_gate != 0)

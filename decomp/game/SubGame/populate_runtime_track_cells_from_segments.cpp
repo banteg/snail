@@ -20,7 +20,6 @@ extern "C" void* memset(void* destination, int value, unsigned int count);
 
 #define ROOT_BOD_OBJECT(slot) (g_game->root_bod_catalog.slot.object)
 
-void RandSeed(int seed);
 void set_object_color(Object* object, tColour color);
 
 void cRSubGame::BuildLevel()

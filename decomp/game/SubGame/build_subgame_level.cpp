@@ -22,7 +22,6 @@
 
 extern char g_blank_text[];
 
-int gRMathRand2();
 char cache_music_file(char* path, int unused, char* unused_default_path);
 int sprintf(char* buffer, char* format, ...);
 void set_input_controller_pointer_authored_xy(int controller, float x, float y);

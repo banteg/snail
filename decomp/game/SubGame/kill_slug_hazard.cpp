@@ -1,10 +1,9 @@
 // kill_slug_hazard @ 0x43f8b0 (thiscall, ret)
 
+#include "rmath_random.h"
 #include "slug_hazard_types.h"
 #include "player.h"
 #include "subgame_runtime.h"
-
-int gRMathRand2();
 
 void cRSlug::Kill()
 {

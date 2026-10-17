@@ -7,6 +7,7 @@
 #include "font_system.h"
 #include "game_root.h"
 #include "player.h"
+#include "rmath_random.h"
 #include "voice_manager.h"
 
 

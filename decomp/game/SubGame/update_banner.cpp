@@ -2,8 +2,7 @@
 // Updates start/banner visibility and its vertical bob offset.
 
 #include "banner.h"
-
-float Sin(float angle); // @ 0x44c9d0
+#include "rmath_random.h"
 
 void cRBanner::AI()
 {

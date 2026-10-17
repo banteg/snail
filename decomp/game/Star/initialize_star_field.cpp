@@ -1,9 +1,7 @@
 // cRStarManager::Init @ 0x434310 (thiscall)
 
 #include "game_root.h"
-
-
-int gRMathRand2(); // @ 0x44c900
+#include "rmath_random.h"
 
 inline Vector3 operator/(const Vector3& vector, float scale)
 {

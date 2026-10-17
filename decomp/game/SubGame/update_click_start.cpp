@@ -4,9 +4,8 @@
 #include "audio_system.h"
 #include "game_root.h"
 #include "input_state.h"
+#include "rmath_random.h"
 
-
-void RandSeed(int seed);
 void set_input_controller_pointer_authored_xy(int slot, float authored_x, float authored_y);
 
 void cRClickStart::AI()

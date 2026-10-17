@@ -1,14 +1,12 @@
 // initialize_loopbow_path_template_pair @ 0x42ba80 (thiscall, ret 0x18)
 
 #include "attachment_sample.h"
+#include "rmath_random.h"
 #include "track_attachment_types.h"
 #include "object_render_types.h"
 #include "sprite.h"
 #include "transform_matrix.h"
 #include "vector3.h"
-
-float Sin(float angle);
-float Cos(float angle);
 
 // The native caller ignores the incidental EAX state left by this finalizer.
 void __fastcall calc_path_length_z(Path* path);

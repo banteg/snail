@@ -1,12 +1,11 @@
 // update_jet_particles / cRSubHover::Jets @ 0x43a690 (fastcall-shaped)
 
+#include "rmath_random.h"
 #include "sub_hover.h"
 #include "object_render_types.h"
 #include "player.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
-
-int gRMathRand2();
 
 void cRSubHover::Jets()
 {

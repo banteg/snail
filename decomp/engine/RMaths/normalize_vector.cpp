@@ -1,8 +1,7 @@
 // normalize_vector @ 0x44cca0 — tVector::Normalize()
 
+#include "rmath_random.h"
 #include "vector3.h"
-
-float Sqrt(float value);
 
 float tVector::Normalize()
 {

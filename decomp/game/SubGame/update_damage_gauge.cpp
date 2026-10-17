@@ -3,13 +3,12 @@
 
 #include "damage_guage.h"
 #include "game_root.h"
+#include "rmath_random.h"
 #include "sprite.h"
 #include "snail_skin.h"
 #include "voice_manager.h"
 #include "warning.h"
 
-
-float Sin(float angle);
 int OSDPrintUV(
     int texture_id,
     float x,

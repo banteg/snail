@@ -4,6 +4,7 @@
 #include "font_system.h"
 #include "frontend_widget.h"
 #include "game_root.h"
+#include "rmath_random.h"
 #include "runtime_config.h"
 
 

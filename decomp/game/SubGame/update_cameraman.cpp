@@ -5,10 +5,10 @@
 #include "cameraman.h"
 #include "player.h"
 #include "rdebug.h"
+#include "rmath_random.h"
 #include "subgame_runtime.h"
 #include "track_attachment.h"
 
-float Cos(float angle);
 extern char g_worm_fov_report_format[];
 
 void cRCameraman::AI()

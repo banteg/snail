@@ -1,6 +1,7 @@
 // FontPrintReal @ 0x44a360 (cdecl)
 
 #include "font_system.h"
+#include "rmath_random.h"
 
 void FontPrintReal(cFontPrintBuffer* entry)
 {

@@ -1,10 +1,9 @@
 // explode_slug_hazard @ 0x43f680 (thiscall, ret)
 
+#include "rmath_random.h"
 #include "slug_hazard_types.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
-
-int gRMathRand2();
 
 void cRSlug::Explode()
 {

@@ -6,13 +6,12 @@
 #include "game_root.h"
 #include "bod_flags.h"
 #include "player.h"
+#include "rmath_random.h"
 #include "slug_hazard_types.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
-
-int gRMathRand2();
 
 void cRSubGame::AddSlug(cRSubLoc* cell, cRSubGoldy* owner_player)
 {

@@ -1,8 +1,7 @@
 // shuffle_voice_set @ 0x448e60 (thiscall, ret)
 
+#include "rmath_random.h"
 #include "voice_manager.h"
-
-int gRMathRand2();
 
 void cRVoiceSet::Shuffle()
 {

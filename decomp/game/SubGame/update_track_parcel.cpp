@@ -1,10 +1,8 @@
 // update_track_parcel @ 0x4431d0 (thiscall, ret)
 
+#include "rmath_random.h"
 #include "subgame_runtime.h"
 #include "track_parcel_runtime.h"
-
-float Sin(float radians);
-int gRMathRand2();
 
 void cRParcel::AI()
 {

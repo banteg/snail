@@ -8,6 +8,7 @@
 // slow commentary, collisions, anim managers, movement flags/emitters,
 // and the replay cursor / times-up tail.
 
+#include "rmath_random.h"
 #include "x87_store.h"
 #include <stddef.h>
 
@@ -34,8 +35,6 @@
 #include "track_parcel_runtime.h"
 #include "voice_manager.h"
 
-float MathType16to32(short value, float scale);
-short MathType32to16(float value, float scale);
 float resolve_uncaptured_cursor_sensitivity_scale(float scale);
 
 enum {

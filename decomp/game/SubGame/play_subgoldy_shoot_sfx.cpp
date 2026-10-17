@@ -3,9 +3,7 @@
 #include "audio_system.h"
 #include "game_root.h"
 #include "player.h"
-
-
-int gRMathRand2();
+#include "rmath_random.h"
 
 void cRSubGoldy::PlayShootSfx()
 {
