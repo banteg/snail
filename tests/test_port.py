@@ -199,7 +199,7 @@ def test_original_profile_keeps_upright_hazard_spawns(tmp_path):
     reason="needs node, snail.wasm, SnailMail.dat and SnailMailExtras.dat",
 )
 def test_ultimate_collects_parcels_within_the_mobile_radius(tmp_path):
-    # A1's recorded input drives the mobile course (it diverges from the
+    # A9's recorded input drives the mobile course (it diverges from the
     # Windows recording, as intended); Android collects parcels within 1.73,
     # Windows within 1.24.
     for name in ("SnailMail.dat", "SnailMailExtras.dat"):
@@ -209,15 +209,15 @@ def test_ultimate_collects_parcels_within_the_mobile_radius(tmp_path):
         [
             "node", str(REPO_ROOT / "port/shell/run.mjs"), str(REPO_ROOT / "port/zig-out/bin/snail.wasm"),
             "--profile", "ultimate", "--trace", "--keys", str(REPO_ROOT / "port/scripts/high_scores.keys"),
-            "--replay", "A1",
+            "--replay", "A9",
         ],
         cwd=tmp_path,
         capture_output=True,
         text=True,
         check=False,
     )
-    # 1.24 to 1.73 from the snail on tick 1064: only the mobile radius takes it.
-    assert "tick 1064: parcels 3" in replay.stderr
+    # 1.24 to 1.73 from the snail on tick 1061: only the mobile radius takes it.
+    assert "tick 1061: parcels 1" in replay.stderr
 
 
 @pytest.mark.skipif(
@@ -282,9 +282,10 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
     )
     # Android lays Padding between each pair of random segments and skips
     # their RAND draws, so the random fringe that follows differs from a
-    # build without it.
-    assert 'level "Challenge 0" track_set 6 (Objects/World00/Track6.tga) fringe (0.910, 0.094, 1.000)' in challenge.stderr
-    assert "padding_segments 35" in challenge.stderr
+    # build without it. The track set, segment picks and fringe all come from
+    # Android's RandTable.bin stream.
+    assert 'level "Challenge 0" track_set 4 (Objects/World00/Track4.tga) fringe (1.000, 1.000, 1.000)' in challenge.stderr
+    assert "padding_segments 32" in challenge.stderr
 
 
 @pytest.mark.skipif(
@@ -433,7 +434,7 @@ console.log(JSON.stringify(out));
         [
             "node", str(runner), str(wasm), "--profile", "ultimate", "--trace",
             "--keys", str(REPO_ROOT / "port/scripts/high_scores.keys"),
-            "--replay", "A4",
+            "--replay", "A9",
         ],
         cwd=tmp_path,
         capture_output=True,
@@ -441,18 +442,53 @@ console.log(JSON.stringify(out));
         check=False,
     )
     assert replay.returncode == 3
-    assert "tramp_rings 1" in replay.stderr
-    assert "tramp_rings 0" in replay.stderr
-    # A Windows replay is intentionally different under mobile pacing and
-    # level data. Both ring effects must still run; classic playback stays exact.
-    assert "tick 2583: sway_rings 1" in replay.stderr
+    # A Windows replay is intentionally different under mobile pacing, level
+    # data and Android's RAND. Swinging rings must still run; classic
+    # playback stays exact.
+    assert "tick 1303: sway_rings 1" in replay.stderr
     assert "first divergence at sample" in replay.stderr
+
+    # Android's RAND lays out each recorded seed's course differently from
+    # Windows, and no Windows replay reaches a trampoline on it. Tramponus
+    # (route 27) opens with Parcel Test, so a Parcel Test that drops the snail
+    # onto a row of trampolines bounces it there.
+    tramp = tmp_path / "tramp"
+    tramp.mkdir()
+    (tramp / "SnailMail.dat").symlink_to(REPO_ROOT / "artifacts/bin/SnailMail.dat")
+    extras = REPO_ROOT / "artifacts/bin/SnailMailExtras.dat"
+    files = {entry.path: read_archive_entry(extras, entry) for entry in parse_archive_index(extras).entries}
+    rows = ["@________@"] * 20 + ["@        @ NoFall"] * 9 + ["@((((((((@ NoFall"] * 5 + ["@________@"] * 40
+    files["SEGMENTS/PARCELTEST.TXT"] = (
+        "ID:0\r\nName:'Parcel Test'\r\nData:\r\n@@@@@@@@@@\r\n" + "".join(row + "\r\n" for row in rows) + "@@@@@@@@@@\r\n"
+    ).encode()
+    write_archive(tramp / "SnailMailExtras.dat", files)
+    cfg = bytearray(196)
+    struct.pack_into("<ff", cfg, 0, 1.0, 1.0)
+    cfg[0x60:0x69] = b"Fluctuosa"
+    struct.pack_into("<ifi", cfg, 0x40, 50, 0.5, 50)
+    struct.pack_into("<ii", cfg, 0xA0, 50, 27)
+    cfg[0xC0] = 1
+    (tramp / "SnailMailMobile.cfg").write_bytes(cfg)
+    (tramp / "tramponus.keys").write_text(
+        "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 170\n820 click 3\n"
+        "900 mouse 414 420\n920 click 3\n1000 mouse 320 300\n1100 click 3\n1400 mouse 320 300\n"
+    )
+    bounce = subprocess.run(
+        ["node", str(runner), str(wasm), "--profile", "ultimate", "--trace", "--keys", str(tramp / "tramponus.keys")],
+        cwd=tramp,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert 'level "Tramponus"' in bounce.stderr
+    assert "tramp_rings 1" in bounce.stderr
+    assert "tramp_rings 0" in bounce.stderr
 
     original = subprocess.run(
         [
             "node", str(runner), str(wasm), "--trace",
             "--keys", str(REPO_ROOT / "port/scripts/high_scores.keys"),
-            "--replay", "A4",
+            "--replay", "A9",
         ],
         cwd=tmp_path,
         capture_output=True,

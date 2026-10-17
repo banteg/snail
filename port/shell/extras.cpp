@@ -16,6 +16,7 @@
 #include "object_render_types.h"
 #include "ring_special_effect_types.h"
 #include "rmath_random.h"
+#include "rmath_tables.h"
 #include "rstring.h"
 #include "segment_cache.h"
 #include "sub_tracks.h"
@@ -45,6 +46,8 @@ void subgame_add_ring_recovered(cRSubGame* self, cRSubLoc* cell, int requested_k
     __asm__("_ZN9cRSubGame17AddRing_recoveredEP8cRSubLociP10cRSubGoldyf");
 void sub_ring_init_recovered(cRSubRing* self, int lives_snapshot)
     __asm__("_ZN9cRSubRing14Init_recoveredEi");
+int j_rand_recovered();
+void RandSeed_recovered(int seed);
 
 void* allocate_tracked_memory(int size, char* name);
 void xor_archive_bytes_in_place(int start_offset, char* bytes, int count);
@@ -70,6 +73,10 @@ float g_add_ring_speed = 0.0f;
 SubSegment* g_padding_segment = 0;
 bool g_padding_turn = false;
 int g_padding_picks = 0;
+
+// Android's gRMathRandIndex, which j_rand and RandSeed below keep; Android's
+// gRMathRand2Init zeroes it.
+unsigned short g_rand_table_index = 0;
 
 bool path_equals_ignore_case(const char* a, const char* b)
 {
@@ -380,6 +387,34 @@ char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(char* file_name, cha
         }
     }
     return load_file_bytes_fixed_size_from_archive_or_fs_recovered(file_name, buffer, byte_count);
+}
+
+// Android's RAND and SRAND do not draw from the C runtime. Their Rand()
+// (000267f0) steps gRMathRandIndex through RandTable.bin and returns the
+// entry's low 15 bits, and RandSeed (00029588) sets the index to
+// seed % 8191; its srand48 call feeds nothing the game draws. gRMathRand2
+// reads the same table with its own index. RandTable.bin holds the first
+// 8191 MSVC rand() values from seed 1, all 15-bit, and so does
+// g_math_random_table: gRMathRand2Init fills it from rand()'s initial seed,
+// since start_game runs RMathInit before anything else draws. Exported for
+// tests.
+__attribute__((export_name("snail_rand")))
+int __cdecl j_rand()
+{
+    if (!g_port_ultimate)
+        return j_rand_recovered();
+    g_rand_table_index = (unsigned short)(g_rand_table_index + 1) % RMATH_RANDOM_TABLE_COUNT;
+    return g_math_random_table[g_rand_table_index];
+}
+
+__attribute__((export_name("snail_rand_seed")))
+void __cdecl RandSeed(int seed)
+{
+    if (!g_port_ultimate) {
+        RandSeed_recovered(seed);
+        return;
+    }
+    g_rand_table_index = (unsigned short)(seed % RMATH_RANDOM_TABLE_COUNT);
 }
 
 // Android cRTrack::Change (0003f330): supports Track: 0-6 and 8 (random 0-6).

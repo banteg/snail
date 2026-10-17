@@ -37,6 +37,9 @@ recovered code.
 Narrow seams wrap a matched function in the shell instead (`port/wrapped.txt`,
 its body renamed `*_recovered`): the mobile content in `port/shell/extras*.cpp`
 and the fixes for the original's own bugs; see [Original bugs](original-bugs.md).
+Among them, `j_rand` and `RandSeed` give Ultimate's `RAND` and `SRAND`
+Android's generator, an index stepped through `RandTable.bin` (`Rand()`
+000267f0, `RandSeed` 00029588), in place of the C runtime's `rand`.
 
 ## Shell behaviour that differs from the shipped build
 
