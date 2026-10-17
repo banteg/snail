@@ -43,14 +43,19 @@ recovered code.
 | `09-completion-rules` | in Ultimate `cRCompletion::UnInit` pays a skipped tally's bonus, and any difference from the tally's total, through `ScoreAdd`; the replay cursor and sample count hold while the summary waits for a click | Android's `cRCompletion::UnInit` (00061740), which fixes an [original bug](original-bugs.md), and `cRSubGoldy::AI` |
 | `10-slug-and-row-capacity` | 16 slug slots; `AddSlug` fills 16 in Ultimate and 8 in Original. `RowFromPos` clamps at row 3599, not 3199, in Ultimate | Android's `cRSubGame` constructor (00025a68), `AddSlug` (0007953c) and every loop over the pool hold 16 slugs; its `RowFromPos` (0006c008) clamps at the last of its 3600 rows |
 | `11-track-window` | in Ultimate, rows are scanned to the window's trailing edge plus 48, not 46, and to 40 rows past the finish line, not 20; the trailing edge follows the snail to 30 rows past the line instead of stopping 30 rows before it, and starts at -3, not -19; the finish banner, the salt fade-in and shots reach 48 rows ahead, not 46; a WALL2 cell stops a shot only between heights -1 and 7 | Android's `cRSubGame::AI` (00082214), `cRSubGoldy::AI` (0007ac54) and `Init` (00079da8), `cRBanner::AI` (0006da24), `cRSalt::AI` (00072318) and `cRSubGolb::AI` (000635d4) |
+| `15-pause-quit-scores` | ending a Challenge or Time Trial run from the pause menu skips `cRSubGame::Complete` in Ultimate, so the run records no score | Android's `cRExit::AI` (00062568) |
+| `16-time-trial-completion` | a Time Trial finish opens the completion panel in Ultimate: the continue prompt, and on a new best time a blinking "NEW FASTEST TIME!" and the Perfect jingle | Android's `cRCutScene::AI` (00072a5c), `cRCompletion::Init` (0006102c) and `cRCompletion::AI` (00060c0c) |
 
 Narrow seams wrap a matched function in the shell instead (`port/wrapped.txt`,
-its body renamed `*_recovered`): the mobile content in `port/shell/extras*.cpp`
-and the fixes that act around a function; see [Original bugs](original-bugs.md).
-Among them, the Ultimate `cRSubTracks::Init` lays Padding before every listed
+its body renamed `*_recovered`): the mobile content and rules in
+`port/shell/extras*.cpp`, among them the typed cheats (`cRCheat::AI`), the
+Fluctuosa unlock (`cRGalaxy::Init`) and the High Scores banks
+(`cRHighScore::Init`, `UnInit` and `AI`), and the fixes that act around a
+function; see [Original bugs](original-bugs.md).
+The Ultimate `cRSubTracks::Init` lays Padding before every listed
 segment of a level that is not `Mode:Challenge`, as Android's Init (000850d4)
-does; the mobile level files stay as Android ships them.
-Among them, `j_rand` and `RandSeed` give Ultimate's `RAND` and `SRAND`
+does; the mobile level files stay as Android ships them. `j_rand` and
+`RandSeed` give Ultimate's `RAND` and `SRAND`
 Android's generator, an index stepped through `RandTable.bin` (`Rand()`
 000267f0, `RandSeed` 00029588), in place of the C runtime's `rand`.
 

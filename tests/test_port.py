@@ -654,8 +654,9 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
     assert '"I: Limax maximus"' in pro1.stderr
     assert "lives 8" in pro1.stderr  # a new Pro game, as on Android
     assert 'level "Pros Only" track_set 5 (Objects/World00/Track5.tga) fringe (0.871, 1.000, 0.039) rows 2054 segments 50' in pro1.stderr
-    # save_game() runs at the end of pro1 while g_pro_state_swapped == true inside "Pros Only"
-    assert struct.unpack("<ii", (tmp_path / "SnailMailPro.cfg").read_bytes()) == (1, 1)
+    # save_game() runs at the end of pro1 while g_pro_state_swapped == true inside "Pros Only";
+    # the last high-score name, Fluctuosa, opens every Pro route, as on Android.
+    assert struct.unpack("<ii", (tmp_path / "SnailMailPro.cfg").read_bytes()) == (10, 1)
     assert struct.unpack_from("<ii", (tmp_path / "SnailMail.cfg").read_bytes(), 0xA0) == (50, 7)
     assert (tmp_path / "ScoreA.dat").read_bytes() == score_a_orig
     assert (tmp_path / "ScorePro.dat").read_bytes() == score_pro_orig

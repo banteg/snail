@@ -6,11 +6,12 @@ the recovered source shows how they arise. The
 the Original profile keeps them, as the oracles require.
 
 A fix that acts around a function wraps it (`port/wrapped.txt`) and lives in
-`port/shell/fixes.cpp`; one that acts inside it patches the function's copy at
-the site (`port/patches/`). The recovered source in `decomp/` stays as the
-original compiled it. Some fixes change only what is drawn, the tally fix (3)
-changes lives; the replay and session oracles play Original, so they match
-either way.
+`port/shell/fixes.cpp` or `port/shell/extras*.cpp`; one that acts inside it
+patches the function's copy at the site (`port/patches/`). The recovered source
+in `decomp/` stays as the original compiled it. The first two fixes change only
+what is drawn, the tally fix (3) changes lives, and the name fix (4) acts only
+when a new high-score name is cancelled; the replay and session oracles play
+Original, so they match either way.
 
 ## 1) Slugs and garbage appear upright for a frame
 
@@ -128,3 +129,40 @@ Port behaviour:
   probe course without parcels in both profiles, once watching the tally and
   once skipping it with three parcels owed. Both profiles end on the same
   score; only Ultimate gains the life.
+
+## 4) Cancelling a new name fills the table with Challenge scores
+
+Native behaviour:
+
+- A run that makes the Postal table (`cRSubHighScore::AddArcade`, `0x4176a0`)
+  or the Challenge table (`AddSurvival`, `0x417780`) is inserted at its rank,
+  and the rows below it shift down into the table's spare eleventh row. The
+  High Scores screen then asks for a name.
+- Its Cancel button (`cRHighScore::AI`, `update_high_score_screen`, `0x417260`)
+  calls `cRSubHighScore::MiniDelete` (`mini_delete_high_score_entry`,
+  `0x417af0`) to close the gap again: for each row from the cancelled rank to
+  the ninth, `active_record_bank[row] = survival_records[row + 1]`. The source
+  is a fixed offset from the table owner (`lea ebx, [eax + edx + 0x17c108]`,
+  `survival_records[1]`), whichever table is on screen.
+
+Why it's a bug:
+
+- Cancelling a Challenge name shifts the Challenge table back as intended,
+  only because source and destination are the same table there.
+- Cancelling a Postal name overwrites the cancelled row and every row below
+  it with the Challenge rows one rank further down, names, scores and replays
+  included, and the next save writes them to `ScoreA.dat`. The port enters a
+  Pro name on the Postal bank with the Pro table swapped in, so without the fix
+  they would reach `ScorePro.dat`.
+- Android's `cRSubHighScore::RemoveHighScore` (`00065270`), which its Cancel
+  calls with the entry's bank and rank, deletes the cancelled entry and shifts
+  the rows below it up within that bank (Postal, Challenge or Pro); iOS's
+  `cRHighScore::AI` (`0003f000`) does the same inline.
+
+Port behaviour:
+
+- `MiniDelete` shifts the rows below the cancelled one up within the table on
+  screen, which restores that table as it was before the insert.
+- `tests/test_port_frontend_rules.py` cancels a Postal name in each profile
+  and a Pro name in Ultimate: Original fills the Postal rows with Challenge
+  scores, Ultimate restores both tables.
