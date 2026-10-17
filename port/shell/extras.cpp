@@ -61,10 +61,12 @@ cRTexture* g_extra_track_textures[kMobileTrackSetCount];
 cRTexture* g_extra_slide_textures[kMobileTrackSetCount];
 float g_add_ring_speed = 0.0f;
 
-// Android cRSubTracks::Init (000850d4) imports Padding, a four-row empty
-// segment, beside every level's segments; BuildLevel lays it between each pair
-// of segments a Random: level picks (port/patches/05-challenge-padding.patch).
-// Its slot here is the first unused one, after the level's own.
+// Android cRSubTracks::Init (000850d4) imports Padding, four rows of plain
+// track, before every listed segment of a level that is not Mode:Challenge
+// (cRSubTracks::Init below), and once more beside every level's segments;
+// BuildLevel lays that copy between each pair of segments a Random: level
+// picks (port/patches/05-challenge-padding.patch). Its slot here is the first
+// unused one, after the level's own.
 SubSegment* g_padding_segment = 0;
 bool g_padding_turn = false;
 int g_padding_picks = 0;
@@ -440,11 +442,27 @@ void cRTrack::Change(int texture_set)
 
 // Android cRSubTracks::Init(char*) (000850d4) reads Track: 0-6 as track sets
 // 0-6 and Track: r as 8; Windows reads 0-3, and r as 5.
+// It also lays Padding before every listed segment outside Challenge.
 void cRSubTracks::Init(char* filename)
 {
     subtracks_init_recovered(this, filename);
     if (!g_port_ultimate)
         return;
+
+    // Mode: is Arcade (0, also when absent), Challenge (1) or Tutourial (2, a
+    // spelling no level uses). In mode 0 Android imports Padding before each
+    // listed segment, so the slots run Padding, S0, Padding, S1, ...; every
+    // shipped level but Challenge000 is mode 0, the tutorial included. The
+    // longest, ArcadePro010, lists 44 segments, so its 88 slots fit.
+    if (Rstrfind((char*)"Mode:Arcade", g_level_file_text_buffer)
+        || (!Rstrfind((char*)"Mode:Challenge", g_level_file_text_buffer)
+            && !Rstrfind((char*)"Mode:Tutourial", g_level_file_text_buffer))) {
+        for (int i = segment_count - 1; i >= 0; --i) {
+            segment_slots[2 * i + 1] = segment_slots[i];
+            ImportSegment((char*)"Padding.txt", &segment_slots[2 * i]);
+        }
+        segment_count *= 2;
+    }
 
     char* cursor = Rstrfind((char*)"Track:", g_level_file_text_buffer);
     if (cursor != 0) {
