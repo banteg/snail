@@ -231,16 +231,19 @@ void* load_config_file(char* file_name, void* buffer)
     const char* mapped = extras_save_path(file_name);
     if (g_port_ultimate && path_equals_ignore_case(file_name, "SnailMail.cfg")
         && !archive_or_file_exists_recovered((char*)mapped, 1)) {
-        // Carry display/audio preferences across once, but start the mobile
-        // campaign, tutorial included, separately. Do not rewrite the classic
-        // save.
-        void* result = load_config_file_recovered(file_name, buffer);
-        if (buffer == &g_runtime_config) {
-            g_runtime_config.highest_galaxy_route_index = 1;
-            g_runtime_config.landscape_backdrop_variant_selector = 1;
-            g_runtime_config.new_game_tutorial_started = 0;
-        }
-        return result;
+        // Carry display/audio preferences across once. Everything else, the
+        // campaign and tutorial included, keeps the defaults, which Android's
+        // gConfig shares. Do not rewrite the classic save.
+        RuntimeConfig* config = (RuntimeConfig*)buffer;
+        RuntimeConfig pc = *config;
+        if (!load_config_file_recovered(file_name, &pc))
+            return 0;
+        config->sample_volume = pc.sample_volume;
+        config->stream_volume = pc.stream_volume;
+        config->fullscreen_enabled = pc.fullscreen_enabled;
+        config->render_flags = pc.render_flags;
+        config->display_mode_index = pc.display_mode_index;
+        return buffer;
     }
     return load_config_file_recovered((char*)mapped, buffer);
 }

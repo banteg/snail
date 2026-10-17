@@ -32,5 +32,5 @@ export async function openMobileGame(wasm, presenter = {}) {
         && m.readInt32LE(candidate+LAYOUT.subgame+LAYOUT.level_definition)===25) root=candidate;
   }
   if(!root) throw Error('Pro 1 did not enter gameplay');
-  return {e, root, sub:root+LAYOUT.subgame, memory:()=>Buffer.from(e.memory.buffer)};
+  return {e, root, sub:root+LAYOUT.subgame, memory:()=>Buffer.from(e.memory.buffer), step, click};
 }

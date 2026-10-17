@@ -199,7 +199,6 @@
 ../decomp/game/Logo/update_intro_screen.cpp
 ../decomp/game/Logo/update_intro_logo_renderable.cpp
 ../decomp/game/MainMenu/destroy_main_menu.cpp
-../decomp/game/MainMenu/initialize_main_menu.cpp
 ../decomp/game/MainMenu/update_main_menu.cpp
 ../decomp/game/ObjectProc/initialize_duplicate_vertices.cpp
 ../decomp/game/ObjectProc/clean_duplicate_vertices.cpp
