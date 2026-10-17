@@ -621,6 +621,26 @@ def build_parser() -> argparse.ArgumentParser:
         "--write", action="store_true", help="Regenerate decomp/layout.json from link order."
     )
 
+    android_parser = subparsers.add_parser(
+        "android", help="Run the Android release's libsnailmail.so headless (an oracle for the Ultimate profile)."
+    )
+    android_subparsers = android_parser.add_subparsers(dest="android_command", required=True)
+    android_trace_parser = android_subparsers.add_parser(
+        "trace",
+        help="Boot the game, press widgets by their text, and print each level build and the sounds played.",
+    )
+    android_trace_parser.add_argument(
+        "--press", action="append", default=[], metavar="TEXT", help="Widget to press, in order (e.g. Play, Tutorial)."
+    )
+    android_trace_parser.add_argument("--seed", type=int, help="Replace the seed BuildLevel passes to RandSeed.")
+    android_trace_parser.add_argument("--tutorial-done", action="store_true", help="Open every New Game mode.")
+    android_trace_parser.add_argument(
+        "--sliders", help="Challenge difficulty, speed and third slider, as in the PC config (e.g. 50,0.5,50)."
+    )
+    android_trace_parser.add_argument("--ticks", type=int, default=0, help="Ticks to play after the level is built.")
+    android_trace_parser.add_argument("--segments", action="store_true", help="List each laid segment's rows.")
+    android_trace_parser.add_argument("--sandbox", type=Path, help="Directory for the game's saves (default: temporary).")
+
     port_parser = subparsers.add_parser(
         "port", help="Inputs for the modern port build (port/)."
     )
@@ -1730,6 +1750,27 @@ def main(argv: Sequence[str] | None = None) -> int:
         if not problems:
             print("decomp/ layout matches link order and every scratch SOURCE.")
         return 1 if problems else 0
+
+    if args.command == "android":
+        import tempfile
+
+        from . import android_game
+
+        sliders = None
+        if args.sliders:
+            difficulty, speed, third = args.sliders.split(",")
+            sliders = (int(difficulty), float(speed), int(third))
+        with tempfile.TemporaryDirectory() as temporary:
+            game = android_game.play(
+                args.sandbox or Path(temporary),
+                args.press,
+                ticks=args.ticks,
+                seed=args.seed,
+                tutorial_done=args.tutorial_done,
+                sliders=sliders,
+            )
+            print("\n".join(android_game.trace_lines(game, segments=args.segments)))
+        return 0
 
     if args.command == "port":
         from . import port, port_data
