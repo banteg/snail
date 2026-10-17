@@ -24,7 +24,7 @@ function startRun(mode) {
 // Pause > End Game > Yes, with the run scoring `score`; returns the front-end
 // state it settles in.
 function quitRun(score) {
-  memory().writeInt32LE(score, game.sub + LAYOUT.total_score);
+  memory().writeInt32LE(score, game.sub + LAYOUT.sub_total_score);
   game.key(ESCAPE);
   game.press('End Game');
   game.press('Yes');
@@ -59,7 +59,7 @@ const scenarios = {
     game.mainMenu();
     newGame(arg);
     // Pro-Challenge has swapped its own table into postal_records.
-    game.seed(LAYOUT.postal_records, [30000, 20000, 10000, ...Array(8).fill(null)]);
+    game.seed(LAYOUT.hs_postal_records, [30000, 20000, 10000, ...Array(8).fill(null)]);
     game.seed(LAYOUT.survival_records, [...Array(10).keys()].map(row => 9000 - 100 * row).concat([null]));
     game.press('Deliver');
     game.press('Click to Start');
@@ -70,7 +70,7 @@ const scenarios = {
     game.press(arg);
     game.find('Deliver');
     game.e.snail_save();
-    return {state, postal: game.scores(LAYOUT.postal_records)};
+    return {state, postal: game.scores(LAYOUT.hs_postal_records)};
   },
 
   // Entering the `arg` galaxy, then saving.
@@ -113,7 +113,7 @@ const scenarios = {
     m.writeFloatLE(Number(arg), record + LAYOUT.solution_seconds);
     m.writeInt32LE(50000, game.sub + LAYOUT.bonus_score);
     // The finish line, just ahead.
-    m.writeInt32LE(Math.ceil(m.readFloatLE(game.sub + LAYOUT.player_z)) + 1, game.sub + LAYOUT.completion_row_start);
+    m.writeInt32LE(Math.ceil(m.readFloatLE(game.sub + LAYOUT.sub_player_z)) + 1, game.sub + LAYOUT.completion_row_start);
     const shown = new Set();
     game.until(() => {
       for (const widget of game.widgets()) shown.add(widget.text);

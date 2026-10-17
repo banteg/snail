@@ -41,6 +41,8 @@ void intro_init_recovered(cRIntro* self)
     __asm__("_ZN7cRIntro14Init_recoveredEv");
 void intro_ai_recovered(cRIntro* self)
     __asm__("_ZN7cRIntro12AI_recoveredEv");
+void main_menu_init_recovered(cRMainMenu* self)
+    __asm__("_ZN10cRMainMenu14Init_recoveredEv");
 void galaxy_init_recovered(cRGalaxy* self)
     __asm__("_ZN8cRGalaxy14Init_recoveredEv");
 void load_frontend_level_recovered(cRSubTracks* self, int mode, int level_index)
@@ -74,12 +76,6 @@ enum {
 struct ProPoint {
     float x;
     float y;
-};
-
-// Android GUniverse1 (0x8c1c0 in libsnailmail.so).
-const ProPoint kProGalaxyGroupPoints[kProGalaxyCount] = {
-    {249.0f, 190.0f},
-    {588.0f, 350.0f},
 };
 
 const ProPoint kProRoutePoints[kProRouteSlotCount] = {
@@ -270,6 +266,8 @@ void build_pro_galaxy_layout()
     if (!file_text)
         return;
 
+    // StarmapProbg has both Pro galaxies painted in, and Android's cRGalaxy::Render
+    // (000593e0) draws no galaxy sprites, so the PC Galaxy000-009 sprites stay off screen.
     for (int g = 0; g < 10; ++g) {
         g_pro_galaxy_layout.route_names[g].map_x = -1000.0f;
         g_pro_galaxy_layout.route_names[g].map_y = -1000.0f;
@@ -300,11 +298,6 @@ void build_pro_galaxy_layout()
         int star_count = Rstrint(&cursor);
         g_pro_galaxy_layout.route_names[galaxy_index].star_count = star_count;
         g_pro_galaxy_layout.route_names[galaxy_index].color.store_color4f(1.0f, 1.0f, 1.0f, 0.800000012f);
-        g_pro_galaxy_layout.route_names[galaxy_index].map_x =
-            scale_galaxy_x(kProGalaxyGroupPoints[galaxy_index].x);
-        g_pro_galaxy_layout.route_names[galaxy_index].map_y =
-            scale_galaxy_y(kProGalaxyGroupPoints[galaxy_index].y);
-        g_pro_galaxy_layout.route_names[galaxy_index].map_z_bits = 0;
 
         for (int s = 0; s < star_count && g_pro_galaxy_layout.record_count < kProRouteSlotCount; ++s) {
             int slot = g_pro_galaxy_layout.record_count;
@@ -398,7 +391,8 @@ void extras_set_pro_mode(bool active)
     }
 }
 
-// Android cRIntro::Init (000674f8): adds "Pro-Challenge" below Challenge Mode.
+// Android cRIntro::Init (000674f8): adds "Pro-Challenge" between Postal
+// Adventure and Time Trial.
 void cRIntro::Init()
 {
     if (g_port_ultimate && g_pro_initialized) {
@@ -423,10 +417,12 @@ void cRIntro::Init()
         color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    g_pro_challenge_button->SetBelow(challenge_button);
+    g_pro_challenge_button->SetBelow(postal_button);
+    time_trial_button->SetBelow(g_pro_challenge_button);
+    challenge_button->SetBelow(time_trial_button);
 
     // Keep navigation separate from the five game modes. The PC Help anchor
-    // puts this stack inside the lower-left frame, clear of Pro-Challenge.
+    // puts this stack inside the lower-left frame, clear of Challenge Mode.
     help_button->layout_anchor_y = 300.0f;
     help_button->RePosition();
     back_button->layout_center_x = help_button->layout_center_x;
@@ -435,6 +431,19 @@ void cRIntro::Init()
 
     if (g_runtime_config.new_game_tutorial_started == 0)
         g_pro_challenge_button->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;
+}
+
+// The Pro credits, when the run sets no high score, and Back from High Scores
+// after a Pro replay lead here. Android keeps Pro progress and scores in their
+// own slots (cRHighScore::Init 00066010 shows them as bank 3), so the main menu
+// starts without them.
+void cRMainMenu::Init()
+{
+    if (g_port_ultimate && g_pro_initialized) {
+        g_high_score_pro_view = false;
+        extras_set_pro_mode(false);
+    }
+    main_menu_init_recovered(this);
 }
 
 // Android cRIntro::AI (00067ab8): dispatches Pro-Challenge into Pro galaxy mode.
@@ -494,20 +503,13 @@ void cRGalaxy::Init()
 
     int landscape_index = g_game->subgame.landscape_manager.Import((char*)"StarMapPro.txt");
     g_game->backdrop.Change(&g_game->subgame.landscape_manager.scripts[landscape_index], 0);
-
-    if (route_title_widget) {
-        Rstrcpy(route_title_widget->text_buffer, (char*)"Special Assignment");
-        route_title_widget->RePosition();
-    }
 }
 
+// Android's cRSubTracks::Load (00074888) only reads the course; the galaxy pick
+// records the selection (cRSubGame::AI 00082214), and a replay never does.
 void cRSubTracks::load_frontend_level_by_mode_and_index(int mode, int level_index)
 {
     if (g_port_ultimate && g_pro_mode_active && mode == 0) {
-        if (level_index >= 1 && level_index <= g_pro_highest_route_index) {
-            g_pro_selected_route_index = level_index;
-            save_pro_progress_file();
-        }
         char path[128];
         sprintf(path, "ArcadePro%03i.txt", level_index);
         Init(path);
@@ -583,8 +585,9 @@ void cRHighScore::Init(int mode_, int rank)
         return;
     }
 
-    if (!g_pro_mode_active)
-        swap_out_pro_state();
+    // High Scores opens from the main menu or after a replay, never during a
+    // game, so the Postal and Challenge views run without Pro state.
+    extras_set_pro_mode(false);
     high_score_init_recovered(this, mode_, rank);
     if (mode_ == 1 && bank_toggle_button) {
         Rstrcpy(bank_toggle_button->text_buffer, (char*)"Pro Scores");
@@ -646,8 +649,9 @@ void cRHighScore::AI()
     bool back = back_button
         && (back_button->widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0;
 
-    // If launching a replay from the Pro High Scores view, enable g_pro_mode_active
-    // so load_frontend_level_by_mode_and_index loads ArcadePro%03i.txt.
+    // A replay from the Pro view plays on the Pro courses (ArcadePro%03i.txt).
+    // Android's cRHighScore::AI (00066e60) clears its Pro flag on every replay
+    // launch, so it replays Pro records on the postal courses.
     bool was_pro_view = g_high_score_pro_view;
     high_score_ai_recovered(this);
     if (back) {

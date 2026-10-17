@@ -33,15 +33,31 @@ recovered code.
 | `03-pro-lives` | a new Pro-Challenge game starts with 8 lives | Android's BuildLevel |
 | `04-parcel-radius` | parcels are collected within 1.73, not 1.24, in Ultimate | Android's `cRSubGoldy::Collision` (00077f5c) |
 | `05-challenge-padding` | `Random:` levels lay Padding between each pair of random segments in Ultimate, without drawing RAND for it | Android's `cRSubTracks::Init` (000850d4) and BuildLevel |
+| `06-random-track-code` | in Ultimate only `Track: r` (code 8) picks a random space backdrop and flip, then a random fringe colour; Pro 1-5 (`Track: 5`) keep their SpacePro sky | Android's `cRSubTracks::Init` (000850d4) and `cRSubGame::StartLevel` (000817ac); Windows reads `Track: r` as 5, which Android uses as a track set |
+| `07-track-rules` | in Ultimate a health pickup scores 250, filed under the bonus kind; the ring counter stops at 8, not 10; a default ramp ring turns slow only on its first roll (above 0.93), with no second roll and no Time Trial rule; a wall turret fires when RAND(100) is below 4 + (1 - `salt_frequency`) * -3.5, not 4 | Android's `cRSubGoldy::Collision` (00077f5c, `ScoreAdd` kind 6 at 00070ed0), `cRSubGame::AI` (00082214), `cRSubGame::AddRing` (00073290) and `cRSubLoc::AI` (00077760); the Windows player keeps six score buckets |
+| `08-segment-messages` | in Ultimate a segment's message is read from the row 10 ahead of the snail, and `cRTipManager::UnInitTips` clears the tips still showing before it | Android's `cRSubGoldy::AI` (0007ac54) |
+| `09-completion-rules` | in Ultimate `cRCompletion::UnInit` pays a skipped tally's bonus, and any difference from the tally's total, through `ScoreAdd`; the replay cursor and sample count hold while the summary waits for a click | Android's `cRCompletion::UnInit` (00061740), which fixes an [original bug](original-bugs.md), and `cRSubGoldy::AI` |
+| `10-slug-and-row-capacity` | 16 slug slots; `AddSlug` fills 16 in Ultimate and 8 in Original. `RowFromPos` clamps at row 3599, not 3199, in Ultimate | Android's `cRSubGame` constructor (00025a68), `AddSlug` (0007953c) and every loop over the pool hold 16 slugs; its `RowFromPos` (0006c008) clamps at the last of its 3600 rows |
+| `11-track-window` | in Ultimate, rows are scanned to the window's trailing edge plus 48, not 46, and to 40 rows past the finish line, not 20; the trailing edge follows the snail to 30 rows past the line instead of stopping 30 rows before it, and starts at -3, not -19; the finish banner, the salt fade-in and shots reach 48 rows ahead, not 46; a WALL2 cell stops a shot only between heights -1 and 7 | Android's `cRSubGame::AI` (00082214), `cRSubGoldy::AI` (0007ac54) and `Init` (00079da8), `cRBanner::AI` (0006da24), `cRSalt::AI` (00072318) and `cRSubGolb::AI` (000635d4) |
+| `12-path-camera` | in Ultimate a path without a heading keeps its own roll, so a turnover rolls the camera; the snail can leave a path sideways while the jetpack is on; S-bends lift the camera linearly, to 0.55 of the snail's height at the top; off a lift path the lift eases out by 0.98 a tick instead of dropping to 0 | Android's `cRPathFollowGoldy::Traverse` (0004d70c) and `cRCameraman::AI` (00071248); the shell's S-bends carry the kind Android's `BuildSBend` (0004ee74) gives them |
+| `13-trampoline-ring` | the Ultimate trampoline ring starts from the bounce itself, so the no-fall clamp and path entries add none | Android's `cRSubGoldy::AI` (0007ac54) adds a ring only there |
 | `15-pause-quit-scores` | ending a Challenge or Time Trial run from the pause menu skips `cRSubGame::Complete` in Ultimate, so the run records no score | Android's `cRExit::AI` (00062568) |
 | `16-time-trial-completion` | a Time Trial finish opens the completion panel in Ultimate: the continue prompt, and on a new best time a blinking "NEW FASTEST TIME!" and the Perfect jingle | Android's `cRCutScene::AI` (00072a5c), `cRCompletion::Init` (0006102c) and `cRCompletion::AI` (00060c0c) |
+| `17-route-numerals` | in Ultimate a route card's title leads with the level's Roman numeral, and a card that would start left of 40 is anchored at 50 | Android's `cRGalaxy::BoxOn` (00058d80) |
+| `18-frontend-texts` | in Ultimate the main menu's first entry reads Play and Postal reads Postal Adventure; after the Pro galaxy the thanks-for-playing screen shows Android's three Pro texts | Android's `cRMainMenu::Init` (000697d4), `cRIntro::Init` (000674f8), `cRSplash::Init` (0006aba4) and `cRSplash::AI` (0006a900) |
 
 Narrow seams wrap a matched function in the shell instead (`port/wrapped.txt`,
 its body renamed `*_recovered`): the mobile content and rules in
 `port/shell/extras*.cpp`, among them the typed cheats (`cRCheat::AI`), the
 Fluctuosa unlock (`cRGalaxy::Init`) and the High Scores banks
-(`cRHighScore::Init`, `UnInit` and `AI`), and the fixes for the original's own
-bugs; see [Original bugs](original-bugs.md).
+(`cRHighScore::Init`, `UnInit` and `AI`), and the fixes that act around a
+function; see [Original bugs](original-bugs.md).
+The Ultimate `cRSubTracks::Init` lays Padding before every listed
+segment of a level that is not `Mode:Challenge`, as Android's Init (000850d4)
+does; the mobile level files stay as Android ships them. `j_rand` and
+`RandSeed` give Ultimate's `RAND` and `SRAND`
+Android's generator, an index stepped through `RandTable.bin` (`Rand()`
+000267f0, `RandSeed` 00029588), in place of the C runtime's `rand`.
 
 ## Shell behaviour that differs from the shipped build
 

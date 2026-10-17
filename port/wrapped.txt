@@ -13,12 +13,14 @@ spawn_track_ring_or_special_effect             ../decomp/game/SubGame/spawn_trac
 initialize_ring_or_special_effect_particles    ../decomp/game/SubGame/initialize_ring_or_special_effect_particles.cpp  Init
 spawn_slug_hazard                              ../decomp/game/SubGame/spawn_slug_hazard.cpp                            AddSlug
 spawn_track_garbage_hazard                     ../decomp/game/SubGame/spawn_track_garbage_hazard.cpp                   AddGarbage
-start_squidge_y                                ../decomp/game/SubGame/start_squidge_y.cpp                               StartY
+initialize_main_menu                           ../decomp/game/MainMenu/initialize_main_menu.cpp                         Init
 initialize_new_game_menu                       ../decomp/game/Intro/initialize_new_game_menu.cpp                        Init
 update_new_game_menu                           ../decomp/game/Intro/update_new_game_menu.cpp                            AI
 initialize_galaxy                              ../decomp/game/Galaxy/initialize_galaxy.cpp                              Init
 load_frontend_level_by_mode_and_index          ../decomp/game/SubGame/load_frontend_level_by_mode_and_index.cpp         load_frontend_level_by_mode_and_index
 calc_subgame_rate                              ../decomp/game/SubGame/calc_subgame_rate.cpp                             CalcRate
+j_rand                                         ../decomp/engine/RMaths/j_rand.cpp                                       j_rand
+set_math_random_seed                           ../decomp/engine/RMaths/set_math_random_seed.cpp                         RandSeed
 initialize_thanks_for_playing_screen           ../decomp/game/Splash/initialize_thanks_for_playing_screen.cpp           Init
 initialize_high_score_screen                   ../decomp/game/HighScore/initialize_high_score_screen.cpp                Init
 destroy_high_score_screen                      ../decomp/game/HighScore/destroy_high_score_screen.cpp                   UnInit

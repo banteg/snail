@@ -36,11 +36,16 @@ export async function openGame(wasm, ultimate, playerName) {
       root = candidate;
   }
   if (!root) throw Error('game root not found');
-  return new Game(e, memory, root);
+  return new Game(e, memory, root, ultimate);
 }
 
+// Ultimate names two front-end entries as Android does
+// (port/patches/18-frontend-texts.patch); scenarios use the PC names.
+const ULTIMATE_LABELS = {'New Game': 'Play', 'Postal Mode': 'Postal Adventure'};
+
 class Game {
-  constructor(e, memory, root) {
+  constructor(e, memory, root, ultimate) {
+    this.labels = ultimate ? ULTIMATE_LABELS : {};
     this.e = e;
     this.memory = memory;
     this.root = root;
@@ -72,7 +77,7 @@ class Game {
     const result = [];
     for (let i = 0; i < LAYOUT.border_count; ++i) {
       const border = this.root + LAYOUT.borders + i * LAYOUT.border_size;
-      const flags = m.readUInt32LE(border + LAYOUT.widget_flags);
+      const flags = m.readUInt32LE(border + LAYOUT.border_widget_flags);
       if (!flags || (flags & (HIDDEN | KILL_PENDING | TEARDOWN_ACTIVE))) continue;
       const text = border + LAYOUT.text_buffer;
       result.push({
@@ -88,6 +93,7 @@ class Game {
   // Waits until a widget whose text starts with `text` shows on a settled
   // screen (no fade running), as the headless --trace lists them.
   find(text, ticks = 600) {
+    text = this.labels[text] ?? text;
     return this.until(() => this.memory().readInt32LE(this.root + LAYOUT.fade_state) === 0
       && this.widgets().find(w => w.text.startsWith(text)), ticks);
   }
@@ -115,7 +121,7 @@ class Game {
     this.find('New Game');
   }
 
-  // A row of a high-score bank (LAYOUT.postal_records, survival_records or
+  // A row of a high-score bank (LAYOUT.hs_postal_records, survival_records or
   // time_trial_records).
   record(bank, row) {
     return this.sub + LAYOUT.sub_high_score + bank + row * LAYOUT.solution_size;
