@@ -6,8 +6,6 @@
 #include "sub_lazer_types.h"
 #include "game_root.h"
 
-int report_errorf(char* format, ...);
-
 void cRSubLazer::Kill()
 {
     BodList* anchor = &g_game->active_bod_list;

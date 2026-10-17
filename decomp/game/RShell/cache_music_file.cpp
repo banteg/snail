@@ -2,9 +2,8 @@
 
 #include "audio_system.h"
 #include "archive_index.h"
+#include "rerror.h"
 #include "rshell.h"
-
-int report_errorf(char* format, ...);
 
 char cache_music_file(char* path, int unused, char* unused_default_path)
 {

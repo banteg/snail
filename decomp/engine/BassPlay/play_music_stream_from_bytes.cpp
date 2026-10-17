@@ -1,10 +1,9 @@
 // play_music_stream_from_bytes @ 0x449820 (thiscall, ret 0x10)
 
 #include "audio_system.h"
+#include "rerror.h"
 #include "rstring.h"
 #include <string.h>
-
-int report_errorf(char* format, ...);
 
 int AudioBackend::play_music_stream_from_bytes(
     char* path, char* bytes, int byte_count, char play_mode)

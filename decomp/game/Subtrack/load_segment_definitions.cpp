@@ -7,7 +7,6 @@
 #include "rshell.h"
 
 int sprintf(char* buffer, char* format, ...);
-int report_errorf(char* format, ...);
 void enumerate_matching_archive_or_fs_entries(char* directory, char* pattern,
                                               int* out_count,
                                               char* out_names); // @ 0x431740

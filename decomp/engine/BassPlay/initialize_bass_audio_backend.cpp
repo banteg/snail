@@ -1,11 +1,11 @@
 // initialize_bass_audio_backend @ 0x449460 (thiscall, ret 0x4)
 
 #include "audio_system.h"
+#include "rerror.h"
+#include "tracked_allocation_stack.h"
 
 extern char* load_file_bytes(char* file_name, int* out_size);
 extern int write_file_bytes(char* file_name, char* bytes, int byte_count);
-extern void free_tracked_memory(void* ptr);
-extern int report_errorf(char* format, ...);
 
 extern "C" __declspec(dllimport) void* __stdcall LoadLibraryA(char* library_name);
 extern "C" __declspec(dllimport) void* __stdcall GetProcAddress(void* module, char* name);

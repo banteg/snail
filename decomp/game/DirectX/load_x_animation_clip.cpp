@@ -8,15 +8,14 @@
 #include "object_animation_types.h"
 #include "rstring.h"
 #include "rtext.h"
+#include "tracked_allocation_stack.h"
 
-void* allocate_tracked_memory(int size, char* name); // @ 0x431b60
 char is_archive_index_loaded(); // @ 0x431a80
 void enumerate_matching_archive_or_fs_entries(
     char* directory,
     char* pattern,
     int* out_count,
     DirectoryEntryName* out_names); // @ 0x431740
-int report_errorf(char* format, ...); // @ 0x431cc0
 
 extern DirectoryEntryName g_animation_directory[128]; // data_4b2f50
 

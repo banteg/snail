@@ -2,10 +2,9 @@
 
 #include "audio_system.h"
 #include "archive_index.h"
+#include "rerror.h"
 #include "rstring.h"
 #include "rshell.h"
-
-int report_errorf(char* format, ...);
 
 int register_sound_sample(char* path, int normalization_class)
 {

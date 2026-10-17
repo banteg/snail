@@ -4,7 +4,6 @@
 #include "transform_matrix.h"
 
 int gRMathRand2();
-int report_errorf(char* format, ...);
 
 void cRSaltManager::Add(tVector& position)
 {

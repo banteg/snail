@@ -4,9 +4,6 @@
 #include "game_root.h"
 #include "landscape_manager.h"
 
-
-int report_errorf(char* format, ...);
-
 void cRLandscapeManager::UnInit()
 {
     ActiveLandscapeEntry* entry = active_entries;

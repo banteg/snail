@@ -1,13 +1,11 @@
 // CalcFaceQuadNormals @ 0x42fcb0 (thiscall)
 
 #include "object_render_types.h"
+#include "rerror.h"
+#include "tracked_allocation_stack.h"
 #include "vector3.h"
 
 extern "C" void* memset(void* destination, int value, unsigned int count);
-
-void* allocate_tracked_memory(int size, char* name);
-void free_tracked_memory(void* pointer);
-int report_errorf(char* format, ...);
 
 #define ACCUM_VERTEX_NORMAL(index_value, normal_value) \
     vertex_normals[(index_value)] += (normal_value)

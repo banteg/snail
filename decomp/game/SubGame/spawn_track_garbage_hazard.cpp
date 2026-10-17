@@ -21,10 +21,7 @@ enum {
     GARBAGE_SLOT_NEXT_ACTIVE_WORD = 877681,
 };
 
-
 int gRMathRand2();
-int report_warningf(char* format, ...);
-int report_errorf(char* format, ...);
 
 void cRSubGame::AddGarbage(cRSubLoc* cell, cRSubGoldy* player)
 {

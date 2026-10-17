@@ -4,9 +4,9 @@
 #include "sprite.h"
 #include "object_render_types.h"
 #include "rshell.h"
+#include "tracked_allocation_stack.h"
 #include "vector3.h"
 
-void* allocate_tracked_memory(int size, char* name);
 extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
 #pragma intrinsic(memcpy)
 

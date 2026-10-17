@@ -2,10 +2,10 @@
 
 #include "archive_index.h"
 #include "rshell.h"
+#include "tracked_allocation_stack.h"
 
 char archive_or_file_exists(char* path, char force_filesystem);
 void xor_archive_bytes_in_place(int start_offset, char* bytes, int count);
-void* allocate_tracked_memory(int size, char* name);
 
 char __cdecl load_archive_index(char* path)
 {

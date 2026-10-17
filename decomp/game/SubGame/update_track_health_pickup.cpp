@@ -6,8 +6,6 @@
 #include "subgame_runtime.h"
 #include "track_health_pickup.h"
 
-
-int report_errorf(char* format, ...);
 float Sin(float radians);
 
 void cRSubHealth::AI()

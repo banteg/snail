@@ -1,8 +1,8 @@
 // AudioBackend::uninitialize_bass_audio_backend @ 0x4496d0
 
 #include "audio_system.h"
+#include "rerror.h"
 
-extern int __cdecl report_errorf(char* format, ...);
 extern int __cdecl delete_file_path_with_directory_walk(char* path);
 extern "C" __declspec(dllimport) int __stdcall FreeLibrary(void* module);
 

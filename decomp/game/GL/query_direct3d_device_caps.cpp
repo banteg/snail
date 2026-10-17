@@ -1,8 +1,7 @@
 // Direct3DRenderer::query_direct3d_device_caps @ 0x414600
 
 #include "direct3d_renderer.h"
-
-extern int debug_report_stub(char* format, int value); // @ 0x449c00
+#include "rdebug.h"
 
 void Direct3DRenderer::query_direct3d_device_caps()
 {

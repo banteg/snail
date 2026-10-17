@@ -12690,7 +12690,7 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
     sub_lazer_update = (
         scratch_source_path(repo_root / "tools/match/scratches/update_sub_lazer_projectile")
     ).read_text(encoding="utf-8")
-    assert "int debug_report_stub(char* format, ...);" in sub_lazer_update
+    assert '#include "rdebug.h"' in sub_lazer_update
     assert "&flight_lifetime_progress" in sub_lazer_update
     assert "&flight_lifetime_step" in sub_lazer_update
     sub_lazer_spawn = (

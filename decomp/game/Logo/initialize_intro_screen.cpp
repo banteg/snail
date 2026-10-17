@@ -15,6 +15,7 @@
 #include "runtime_config.h"
 #include "sprite.h"
 #include "star_manager.h"
+#include "tracked_allocation_stack.h"
 #include "transform_matrix.h"
 
 extern cRTextures g_texture_refs; // data_4b7790
@@ -23,8 +24,6 @@ extern char g_blank_text[]; // data_4dfb08
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 char* load_file_bytes(char* file_name, int* out_size);
 int sprintf(char* buffer, const char* format, ...);
-void free_tracked_memory(void* ptr);
-int report_errorf(char* format, ...);
 
 static __forceinline void add_intro_renderable_to_active_list(LogoLetter* bod)
 {

@@ -22,7 +22,8 @@
 #ifndef RSHELL_PRELUDE_H
 #define RSHELL_PRELUDE_H
 
-// The prelude only steers VC6's symbol numbering; the port needs none of it.
+// The SDK block and the stand-in only steer VC6's symbol numbering; the port
+// needs neither.
 #ifndef SNAIL_PORT
 
 #include <windows.h>
@@ -88,6 +89,8 @@ enum RShellProjectHeaderStandIn {
     rshell_standin_o2
 };
 
+#endif  // SNAIL_PORT
+
 // The recovered part of RShell.cpp's header block: every header RShell's
 // members include, hoisted here as one block. Before RstrASC they supply
 // 1,381 ids that the stand-in used to hold. rstring.h stays with
@@ -109,7 +112,5 @@ enum RShellProjectHeaderStandIn {
 #include "rtext.h"
 #include "text_input_repeat_state.h"
 #include "tracked_allocation_stack.h"
-
-#endif  // SNAIL_PORT
 
 #endif

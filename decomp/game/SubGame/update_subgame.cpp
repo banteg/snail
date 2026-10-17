@@ -25,7 +25,6 @@
 #include "segment_cache.h"
 #include "vector3.h"
 
-
 int OSDPrintUV(
     int texture_id,
     float x,
@@ -40,7 +39,6 @@ int OSDPrintUV(
     float v1,
     int blend_mode,
     float rotation);
-int report_errorf(char* format, ...);
 
 void cRSubGame::AI()
 {

@@ -1,10 +1,9 @@
 // match_cheat_text @ 0x4047d0 (thiscall, ret)
 
 #include "cheat_state.h"
+#include "rerror.h"
 
 #include <string.h>
-
-int report_errorf(char* format, ...);
 
 bool cRCheat::MatchText(char* text)
 {

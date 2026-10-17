@@ -11,9 +11,7 @@
 #include "subgame_runtime.h"
 #include "voice_manager.h"
 
-
 int gRMathRand2();
-int report_errorf(char* format, ...);
 
 void cRSlug::AI()
 {

@@ -4,9 +4,6 @@
 #include "game_root.h"
 #include "segment_cache.h"
 
-int report_errorf(char* format, ...);
-
-
 void TrackRenderCacheSlot::update_active_bod()
 {
     if (cache_row_base + 24.0f

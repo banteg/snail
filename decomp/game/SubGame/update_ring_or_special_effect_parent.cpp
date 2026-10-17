@@ -7,8 +7,6 @@
 #include "sprite.h"
 #include "subgame_runtime.h"
 
-
-int report_errorf(const char* format, ...);
 float Sin(float radians);
 
 void cRSubRing::AI()

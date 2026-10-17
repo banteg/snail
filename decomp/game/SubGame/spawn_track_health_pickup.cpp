@@ -7,9 +7,6 @@
 #include "track_attachment_types.h"
 #include "track_health_pickup.h"
 
-
-int report_errorf(char* format, ...);
-
 void cRSubGame::AddHealth(cRSubLoc* cell, cRSubGoldy* player)
 {
     int slot_index = 0;

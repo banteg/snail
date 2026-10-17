@@ -5,9 +5,6 @@
 #include "game_root.h"
 #include "subgame_runtime.h"
 
-int report_errorf(char* format, ...);
-
-
 void cRFringe::AI()
 {
     tColour color;

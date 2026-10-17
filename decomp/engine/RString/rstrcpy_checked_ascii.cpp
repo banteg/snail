@@ -1,8 +1,7 @@
 // Rstrcpy @ 0x44e5b0 (cdecl)
 
+#include "rerror.h"
 #include "rstring.h"
-
-int report_errorf(char* format, ...);
 
 void __cdecl Rstrcpy(char* destination, const char* source)
 {

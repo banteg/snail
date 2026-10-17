@@ -4,14 +4,11 @@
 #include "bod_list.h"
 #include "border_manager.h"
 #include "game_root.h"
+#include "rdebug.h"
 #include "subgame_runtime.h"
 #include "warning.h"
 
 typedef unsigned int DWORD;
-
-
-int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
-int report_errorf(char* format, ...);
 
 #define REMOVE_BOD_NODE_FROM_NEXT_LINK(next_link_expr, linked_flag_expr) \
     do {                                                          \

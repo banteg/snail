@@ -11,16 +11,12 @@
 
 typedef unsigned int DWORD;
 
-
-int report_errorf(char* format, ...);
-
 #define REMOVE_BOD_NODE_FROM_NEXT_LINK(next_link_expr)            \
     do {                                                         \
         BodNode** next_link = (next_link_expr);                  \
         BodList* list = &g_game->active_bod_list;                 \
         list->remove_bod(BOD_NODE_FROM_NEXT_LINK(next_link));    \
     } while (0)
-
 
 static inline cRSubLoc* remove_row_cells(cRSubLoc* cell, int count)
 {

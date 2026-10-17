@@ -2,8 +2,6 @@
 
 #include "tip_manager.h"
 
-int report_errorf(char* format, ...);
-
 cRTip* cRTipManager::TipNew(
     cRTipData* definition,
     int hide_disable_button)

@@ -3,6 +3,7 @@
 #include "direct3d_device8_view.h"
 #include "direct3d_renderer.h"
 #include "loading_bar.h"
+#include "rerror.h"
 #include "runtime_config.h"
 #include "loading_vertex.h"
 #include "object_render_types.h"
@@ -21,7 +22,6 @@ extern "C" int __stdcall D3DXCreateTextureFromFileA(
     Direct3DDevice8* device, char* path, Direct3DTexture8** texture);
 
 char is_archive_index_loaded(); // @ 0x431a80
-int report_errorf(char* format, ...);
 int begin_overlay_render_state();
 
 void cRLoadingBar::Init()

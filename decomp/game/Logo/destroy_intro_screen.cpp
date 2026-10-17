@@ -4,9 +4,6 @@
 #include "intro_screen_runtime.h"
 #include "runtime_config.h"
 
-
-int report_errorf(char* format, ...);
-
 void cRLogo::UnInit()
 {
     g_runtime_config.render_flags = saved_render_flags;

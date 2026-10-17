@@ -30,7 +30,6 @@ extern SubSegmentRaw* g_builtin_segment_definitions[]; // 0x4a63d0
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 char* save_config_file(char* file_name, void* bytes, int byte_count); // @ 0x42f540
-int report_errorf(char* format, ...); // @ 0x431cc0
 
 void cRSubGame::Init()
 {

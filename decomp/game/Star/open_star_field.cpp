@@ -2,8 +2,7 @@
 
 #include "star_manager.h"
 #include "runtime_config.h"
-
-void* allocate_tracked_memory(int size, char* name);
+#include "tracked_allocation_stack.h"
 
 void cRStarManager::Open(int star_count)
 {

@@ -4,9 +4,8 @@
 
 #include "object_animation_types.h"
 #include "object_render_types.h"
+#include "tracked_allocation_stack.h"
 
-void* allocate_tracked_memory(int size, char* name); // @ 0x431b60
-int report_errorf(char* format, ...); // @ 0x431cc0
 extern "C" double __cdecl floor(double value);
 
 void cRObject::RequestAnim(

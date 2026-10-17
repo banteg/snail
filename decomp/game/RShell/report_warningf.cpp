@@ -2,8 +2,9 @@
 
 #include <stdarg.h>
 
+#include "rdebug.h"
+
 int vsprintf(char* buffer, char* format, va_list args);
-int debug_report_stub(char* format, ...);
 
 int report_warningf(char* format, ...)
 {

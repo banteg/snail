@@ -7,10 +7,6 @@
 #include "track_attachment_types.h"
 #include "track_jetpack_pickup.h"
 
-
-
-int report_errorf(char* format, ...);
-
 void cRSubGame::AddJetPack(cRSubLoc* cell, cRSubGoldy* player)
 {
     int slot_index = 0;

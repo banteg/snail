@@ -1,6 +1,7 @@
 // build_track_fringe_objects @ 0x434be0 (thiscall, void)
 // Structure-first scratch for directional runtime fringe object emission.
 
+#include "rdebug.h"
 #include "track_attachment_types.h"
 #include "fringe_object.h"
 #include "game_root.h"
@@ -8,12 +9,10 @@
 #include "subgame_runtime.h"
 #include "track_fringe_bod_catalog.h"
 
-
 #define FRINGE_BOD(direction, family, edge_a, edge_b) \
     (g_game->root_bod_catalog.fringe_catalog \
             .entries[family][direction][edge_a][edge_b].object)
 
-int debug_report_stub(char* format, ...);
 extern char g_used_fringe_bods_format[]; // "Used %i fringe bods\n"
 
 void cRSubGame::FringeEdgeTrack()

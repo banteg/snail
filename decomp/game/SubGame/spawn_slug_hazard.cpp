@@ -12,9 +12,7 @@
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
 
-
 int gRMathRand2();
-int report_errorf(char* format, ...);
 
 void cRSubGame::AddSlug(cRSubLoc* cell, cRSubGoldy* owner_player)
 {

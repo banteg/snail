@@ -1,8 +1,7 @@
 // register_sprite_texture @ 0x44e0f0 (cRSpriteManager thiscall, ret 0xc)
 
+#include "rerror.h"
 #include "sprite.h"
-
-int report_errorf(const char* format, ...);
 
 void cRSpriteManager::Load(char* texture_path, int texture_id, int flags)
 {

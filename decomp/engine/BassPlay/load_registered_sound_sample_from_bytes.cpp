@@ -1,8 +1,7 @@
 // load_registered_sound_sample_from_bytes @ 0x449960 (thiscall, ret 0x10)
 
 #include "audio_system.h"
-
-int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
+#include "rdebug.h"
 
 void AudioBackend::load_registered_sound_sample_from_bytes(
     char* bytes, int byte_count, int sample_id, int normalization_class)

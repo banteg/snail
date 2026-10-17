@@ -12,6 +12,7 @@
 #include "runtime_config.h"
 #include "rmath_random.h"
 #include "audio_system.h"
+#include "tracked_allocation_stack.h"
 #include "win32_window_state.h"
 
 extern "C" __declspec(dllimport) HWND __stdcall FindWindowExA(
@@ -23,7 +24,6 @@ extern "C" __declspec(dllimport) int __stdcall DispatchMessageA(WindowMessage* m
 extern "C" __declspec(dllimport) unsigned int __stdcall timeGetTime();
 extern "C" __declspec(dllimport) HWND __stdcall GetActiveWindow();
 extern "C" __declspec(dllimport) BOOL __stdcall ClipCursor(void* rect);
-
 
 int query_directx_runtime_version(); // @ 0x44afc0
 char validate_config_tail_stub(char* config_tail); // @ 0x42f5b0
@@ -42,14 +42,12 @@ void noop_runtime_ai(); // @ 0x407b50
 void set_fullscreen_mode(char enabled); // @ 0x414260
 void initialize_main_loop_display_state(); // @ 0x406d70
 int construct_game_runtime(); // @ 0x407b60
-void set_tracked_allocation_mark(); // @ 0x431cb0
 void load_registered_texture_refs(int debug_fallback); // @ 0x412a00
 int show_and_focus_game_window(); // @ 0x4073b0
 void minimize_game_window(); // @ 0x407490
 int render_game_frame_scene(); // @ 0x4134c0
 int present_backbuffer(); // @ 0x413520
 int shutdown_bass_audio_window(); // @ 0x407b00
-void free_tracked_allocations_to_mark(); // @ 0x431c70
 void scalar_delete(void* pointer); // @ 0x48ba34
 char* save_config_file(char* file_name, void* bytes, int byte_count); // @ 0x42f540
 int uninitialize_game_data_archive(); // @ 0x430ef0

@@ -8,8 +8,6 @@
 
 int sprintf(char* buffer, char* format, ...);
 
-int report_errorf(char* format, ...);
-
 void cRGalaxy::Open()
 {
     float* first_point_cursor = &g_galaxy_route_points[0].y;

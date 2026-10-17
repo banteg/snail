@@ -1,9 +1,9 @@
 // archive_or_file_exists @ 0x430fd0 (cdecl)
 
 #include "archive_index.h"
+#include "rerror.h"
 
 ArchiveEntry* find_archive_entry(char* path);
-int report_warningf(char* format, ...);
 
 char __cdecl archive_or_file_exists(char* path, char force_filesystem)
 {

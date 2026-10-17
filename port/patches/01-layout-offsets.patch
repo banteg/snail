@@ -13,7 +13,7 @@ layout. The port derives them from the layout it compiles, so its larger tables
  
  #include "sprite.h"
  #include "game_root.h"
-@@ -16,9 +18,10 @@
+@@ -16,8 +16,9 @@
  
  enum {
      GARBAGE_SLOT_WORD_STRIDE = 49,
@@ -25,5 +25,4 @@ layout. The port derives them from the layout it compiles, so its larger tables
 +    GARBAGE_SLOT_NEXT_ACTIVE_WORD =
 +        (offsetof(cRSubGame, garbage_hazards.slots) + offsetof(cRSubGarbage, next_active)) / sizeof(DWORD),
  };
- 
  

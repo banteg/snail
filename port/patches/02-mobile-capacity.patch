@@ -71,12 +71,9 @@ originals only report a track that is too long.
      }
 --- a/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
 +++ b/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
-@@ -24,6 +24,7 @@
- int report_errorf(const char* format, ...);
- int debug_report_stub(char* format, ...);
- void set_object_color(Object* object, tColour color);
+@@ -24,2 +24,4 @@
 +extern bool g_port_ultimate; // shell/profile.h
- 
++
  void cRSubGame::BuildLevel()
  {
 @@ -119,11 +120,12 @@

@@ -2,8 +2,6 @@
 
 #include "track_parcel_runtime.h"
 
-int report_errorf(char* format, ...);
-
 cRParcel* cRParcelManager::New()
 {
     int index = 0;

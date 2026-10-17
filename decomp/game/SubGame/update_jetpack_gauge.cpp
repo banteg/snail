@@ -2,16 +2,15 @@
 // Jetpack countdown/warning controller used by update_subgoldy.
 
 #include "game_root.h"
+#include "rdebug.h"
 #include "sub_hover.h"
 #include "player.h"
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 #include "vector3.h"
 
-
 float Cos(float angle);
 float Sin(float angle);
-int debug_report_stub(char* format, ...);
 
 void cRSubHover::AI()
 {

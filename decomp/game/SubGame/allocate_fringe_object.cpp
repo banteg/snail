@@ -2,8 +2,6 @@
 
 // allocate_fringe_object @ 0x4470a0 (thiscall, ret)
 
-int report_errorf(char* format, ...);
-
 cRFringe* cRFringeManager::GetFringe()
 {
     if (count == 7000) {

@@ -2,8 +2,8 @@
 
 #include "rdebug.h"
 #include "texture_registry.h"
+#include "tracked_allocation_stack.h"
 
-void* allocate_tracked_memory(int size, char* name); // @ 0x431b60
 void load_registered_texture_ref(
     int texture_index, int unused_legacy_mode); // @ 0x412a70; mobile G0TextureLoad
 

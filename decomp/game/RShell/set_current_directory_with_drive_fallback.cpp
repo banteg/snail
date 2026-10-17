@@ -2,9 +2,9 @@
 
 #include <direct.h>
 
-extern char g_blank_text[];
+#include "rerror.h"
 
-int report_messagef(char* format, ...);
+extern char g_blank_text[];
 
 int __cdecl set_current_directory_with_drive_fallback(char* path)
 {

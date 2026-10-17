@@ -1,9 +1,8 @@
 // initialize_vapour @ 0x442500 (thiscall, ret 0x8)
 
 #include "object_render_types.h"
+#include "tracked_allocation_stack.h"
 #include "vapour.h"
-
-void* allocate_tracked_memory(int size, char* name);
 
 void cRVapour::Init(cRObject*, float new_half_width)
 {
