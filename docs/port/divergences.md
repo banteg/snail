@@ -33,10 +33,13 @@ recovered code.
 | `03-pro-lives` | a new Pro-Challenge game starts with 8 lives | Android's BuildLevel |
 | `04-parcel-radius` | parcels are collected within 1.73, not 1.24, in Ultimate | Android's `cRSubGoldy::Collision` (00077f5c) |
 | `05-challenge-padding` | `Random:` levels lay Padding between each pair of random segments in Ultimate, without drawing RAND for it | Android's `cRSubTracks::Init` (000850d4) and BuildLevel |
+| `07-track-rules` | in Ultimate a health pickup scores 250, filed under the bonus kind; the ring counter stops at 8, not 10; a default ramp ring turns slow only on its first roll (above 0.93), with no second roll and no Time Trial rule; a wall turret fires when RAND(100) is below 4 + (1 - `salt_frequency`) * -3.5, not 4 | Android's `cRSubGoldy::Collision` (00077f5c, `ScoreAdd` kind 6 at 00070ed0), `cRSubGame::AI` (00082214), `cRSubGame::AddRing` (00073290) and `cRSubLoc::AI` (00077760); the Windows player keeps six score buckets |
+| `08-segment-messages` | in Ultimate a segment's message is read from the row 10 ahead of the snail, and `cRTipManager::UnInitTips` clears the tips still showing before it | Android's `cRSubGoldy::AI` (0007ac54) |
+| `09-completion-rules` | in Ultimate `cRCompletion::UnInit` pays a skipped tally's bonus, and any difference from the tally's total, through `ScoreAdd`; the replay cursor and sample count hold while the summary waits for a click | Android's `cRCompletion::UnInit` (00061740), which fixes an [original bug](original-bugs.md), and `cRSubGoldy::AI` |
 
 Narrow seams wrap a matched function in the shell instead (`port/wrapped.txt`,
 its body renamed `*_recovered`): the mobile content in `port/shell/extras*.cpp`
-and the fixes for the original's own bugs; see [Original bugs](original-bugs.md).
+and the fixes that act around a function; see [Original bugs](original-bugs.md).
 
 ## Shell behaviour that differs from the shipped build
 

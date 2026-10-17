@@ -1,0 +1,66 @@
+Android's cRCompletion::UnInit (00061740) pays what a skipped delivery tally has
+left through ScoreAdd, so the level bonus still meets the 50,000-point extra life
+check. Windows passes the bonus as the score kind, worth nothing, then sets the
+total directly (docs/port/original-bugs.md). Android's cRSubGoldy::AI (0007ac54)
+holds the replay cursor and sample count while the summary waits for a click, so
+an idle summary never reaches Time's Up.
+
+--- a/decomp/game/Completion/flush_row_event_display.cpp
++++ b/decomp/game/Completion/flush_row_event_display.cpp
+@@ -3,6 +3,7 @@
+ #include "completion.h"
+ #include "game_root.h"
+ 
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ void cRCompletion::UnInit()
+ {
+@@ -14,7 +15,10 @@
+             }
+ 
+             if (bonus_enabled != 0) {
+-                g_game->subgame.player.ScoreAdd(bonus_score, 0);
++                if (g_port_ultimate)
++                    g_game->subgame.player.ScoreAdd(SUBGOLDY_SCORE_BONUS, bonus_score);
++                else
++                    g_game->subgame.player.ScoreAdd(bonus_score, 0);
+             }
+         }
+ 
+@@ -26,8 +30,13 @@
+         g_game->border_manager.kill_border(bonus_summary_widget);
+         g_game->border_manager.kill_border(continue_widget);
+ 
+-        if (g_game->subgame.player.total_score != display_token)
+-            g_game->subgame.player.total_score = display_token;
++        if (g_game->subgame.player.total_score != display_token) {
++            if (g_port_ultimate)
++                g_game->subgame.player.ScoreAdd(
++                    SUBGOLDY_SCORE_BONUS, display_token - g_game->subgame.player.total_score);
++            else
++                g_game->subgame.player.total_score = display_token;
++        }
+ 
+     }
+     state = COMPLETION_STATE_INACTIVE;
+--- a/decomp/game/SubGame/update_subgoldy.cpp
++++ b/decomp/game/SubGame/update_subgoldy.cpp
+@@ -1058,11 +1058,13 @@
+     }
+ 
+     game->completion.AI();
+-    cRSubGame* tick_game = game;
+-    tick_game->current_high_score_record.replay_sample_count =
+-        tick_game->current_high_score_record.replay_sample_count + 1;
+-    cRSubGame* cursor_game = game;
+-    cursor_game->replay_update_cursor = cursor_game->replay_update_cursor + 1;
++    if (!g_port_ultimate || game->completion.state != COMPLETION_STATE_SUMMARY_ACTIVE) {
++        cRSubGame* tick_game = game;
++        tick_game->current_high_score_record.replay_sample_count =
++            tick_game->current_high_score_record.replay_sample_count + 1;
++        cRSubGame* cursor_game = game;
++        cursor_game->replay_update_cursor = cursor_game->replay_update_cursor + 1;
++    }
+     cRSubGame* times_game = game;
+     if (times_game->replay_update_cursor == 21000)
+         times_game->times_up.Init();
