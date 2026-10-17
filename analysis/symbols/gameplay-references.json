@@ -30,6 +30,15 @@
       "description": "Frontend sprite-button flag word passed to cRBorder::Init by initialize_warning."
     },
     {
+      "address": "0x401000",
+      "name": "initialize_array_with_constructor",
+      "kind": "function",
+      "aliases": [
+        "??_H@YGXPAXIHP6EX0@Z@Z"
+      ],
+      "description": "VC6 `vector constructor iterator` (`??_H`), linked from Border.o's COMDAT copy as the image's first function. Compiler-generated array construction, such as the ParcelBucket candidate arrays, calls it with the element constructor."
+    },
+    {
       "address": "0x401030",
       "name": "border_add_text_number",
       "kind": "function",
@@ -373,7 +382,8 @@
         "ParcelCandidate_noop_runtime_slot_constructor",
         "RuntimeSlot_noop_runtime_slot_constructor",
         "cRCameraman_noop_runtime_slot_constructor",
-        "cRPathFollowGoldy_noop_runtime_slot_constructor"
+        "cRPathFollowGoldy_noop_runtime_slot_constructor",
+        "??0ParcelCandidate@@QAE@XZ"
       ],
       "description": "No-op thiscall constructor callback (`mov eax, ecx; ret`) shared by POD-like runtime slot arrays, parcel buckets, and opaque Snail presentation-channel subobjects. The body proves trivial construction only; it does not establish an iostream owner."
     },
@@ -2279,6 +2289,54 @@
       "description": "Compiler-emitted state switch jump table used by update_completion_screen."
     },
     {
+      "address": "0x406bc0",
+      "name": "initialize_global_noop_renderable_bods_thunk",
+      "kind": "function_alias",
+      "aliases": [],
+      "size": "0x5",
+      "description": "VC6 local CRT registration thunk emitted for the authored StartupNoopRenderableBods g_startup_noop_renderable_bods global."
+    },
+    {
+      "address": "0x406bd0",
+      "name": "initialize_global_noop_renderable_bods",
+      "kind": "function_alias",
+      "aliases": [],
+      "size": "0x3d",
+      "description": "VC6 local dynamic initializer emitted for the authored StartupNoopRenderableBods g_startup_noop_renderable_bods global."
+    },
+    {
+      "address": "0x406c10",
+      "name": "initialize_default_runtime_config_thunk",
+      "kind": "function_alias",
+      "aliases": [],
+      "size": "0x5",
+      "description": "VC6 local CRT registration thunk emitted for the authored RuntimeConfig g_runtime_config global."
+    },
+    {
+      "address": "0x406c20",
+      "name": "initialize_default_runtime_config",
+      "kind": "function_alias",
+      "aliases": [],
+      "size": "0xe7",
+      "description": "VC6 local dynamic initializer emitted for the authored RuntimeConfig g_runtime_config global."
+    },
+    {
+      "address": "0x406d10",
+      "name": "initialize_global_trivial_object_thunk",
+      "kind": "function_alias",
+      "aliases": [],
+      "size": "0x5",
+      "description": "VC6 local CRT registration thunk emitted for the authored StartupTrivialObject g_startup_trivial_object global."
+    },
+    {
+      "address": "0x406d20",
+      "name": "initialize_global_trivial_object",
+      "kind": "function_alias",
+      "aliases": [],
+      "size": "0xa",
+      "description": "VC6 local dynamic initializer emitted for the authored StartupTrivialObject g_startup_trivial_object global."
+    },
+    {
       "address": "0x4076ac",
       "name": "game_window_proc_low_message_jump_table",
       "kind": "jump_table",
@@ -3057,6 +3115,22 @@
         "sub_430a70"
       ],
       "description": "Exact cRObject::RequestAnim(int, cRBodPos*, float, int) animation builder retained under the same authored owner, name, and parameter types by Android and iOS."
+    },
+    {
+      "address": "0x430e20",
+      "name": "initialize_tracked_allocation_depth_thunk",
+      "kind": "function_alias",
+      "aliases": [],
+      "size": "0x5",
+      "description": "VC6 local CRT registration thunk emitted for the authored TrackedAllocationStack g_tracked_allocation_stack global."
+    },
+    {
+      "address": "0x430e30",
+      "name": "initialize_tracked_allocation_depth",
+      "kind": "function_alias",
+      "aliases": [],
+      "size": "0xb",
+      "description": "VC6 local dynamic initializer emitted for the authored TrackedAllocationStack g_tracked_allocation_stack global."
     },
     {
       "address": "0x431da0",
@@ -4126,6 +4200,38 @@
       "description": "Exact Windows cRSubGame::AddParcel(tVector*, cRSubGoldy*) entry."
     },
     {
+      "address": "0x443860",
+      "name": "initialize_parcel_set_bucket_pool_thunk",
+      "kind": "function_alias",
+      "aliases": [],
+      "size": "0x5",
+      "description": "VC6 local CRT registration thunk emitted for the authored ParcelBucket g_parcel_set_buckets[PARCEL_BUCKET_CAPACITY] global."
+    },
+    {
+      "address": "0x443870",
+      "name": "initialize_parcel_set_bucket_pool",
+      "kind": "function_alias",
+      "aliases": [],
+      "size": "0x27",
+      "description": "VC6 local dynamic initializer emitted for the authored ParcelBucket g_parcel_set_buckets[PARCEL_BUCKET_CAPACITY] global."
+    },
+    {
+      "address": "0x4438a0",
+      "name": "initialize_zero_parcel_bucket_pool_thunk",
+      "kind": "function_alias",
+      "aliases": [],
+      "size": "0x5",
+      "description": "VC6 local CRT registration thunk emitted for the authored ParcelBucket g_zero_parcel_buckets[PARCEL_BUCKET_CAPACITY] global."
+    },
+    {
+      "address": "0x4438b0",
+      "name": "initialize_zero_parcel_bucket_pool",
+      "kind": "function_alias",
+      "aliases": [],
+      "size": "0x27",
+      "description": "VC6 local dynamic initializer emitted for the authored ParcelBucket g_zero_parcel_buckets[PARCEL_BUCKET_CAPACITY] global."
+    },
+    {
       "address": "0x444240",
       "name": "place_challenge_parcels_on_track",
       "kind": "function",
@@ -4708,6 +4814,22 @@
       "description": "Release-stripped debug/report helper stub used by score, fringe, salt, and loading callsites."
     },
     {
+      "address": "0x449c10",
+      "name": "initialize_global_font3d_bods_thunk",
+      "kind": "function_alias",
+      "aliases": [],
+      "size": "0x5",
+      "description": "VC6 local CRT registration thunk emitted for the authored BodBase g_font3d_bods[FONT_GLYPH_CAPACITY] global."
+    },
+    {
+      "address": "0x449c20",
+      "name": "initialize_global_font3d_bods",
+      "kind": "function_alias",
+      "aliases": [],
+      "size": "0x1c",
+      "description": "VC6 local dynamic initializer emitted for the authored BodBase g_font3d_bods[FONT_GLYPH_CAPACITY] global."
+    },
+    {
       "address": "0x449c70",
       "name": "initialize_font_wave_state",
       "kind": "function",
@@ -5228,7 +5350,8 @@
         "sub_44db50",
         "StartupTrivialObject_noop_this_constructor",
         "tColourSmall_noop_this_constructor",
-        "tColour_noop_this_constructor"
+        "tColour_noop_this_constructor",
+        "??0StartupTrivialObject@@QAE@XZ"
       ],
       "description": "Three-byte generic identity thunk (`eax = ecx; ret`) shared by folded trivial default constructors; its cross-tool ABI is `void* __thiscall(void* self)` rather than any one aliased owner type."
     },

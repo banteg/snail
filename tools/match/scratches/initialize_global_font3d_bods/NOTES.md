@@ -33,3 +33,14 @@ CRT thunk at `0x449c10`.
 Windows remains authoritative for its 128-entry count and 0x38-byte BodBase
 stride. Android uses its own 44-byte cRBod stride, so no mobile layout is
 transferred. The exact Windows 11/11 body and 1/1 thunk are unchanged.
+
+## 2026-10-17 compiler-generated pair
+
+The thunk and body are VC6's dynamic-initializer pair for the global definition
+`BodBase g_font3d_bods[FONT_GLYPH_CAPACITY]`, which replaces the hand-written
+wrapper and initializer function. Both scratches compile the one source file,
+the body as `_$E1` and the thunk as `_$E2` in the whole Font TU (VC6 numbers
+each initialized declaration's pair in steps of three). Here the existing
+out-of-line `cRBod::cRBod()` runs once per element in VC6's inline array loop.
+Both functions stay exact, with every masked operand resolved through the
+`function_alias` reference entries.
