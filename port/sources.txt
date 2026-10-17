@@ -51,11 +51,8 @@
 ../decomp/game/Exit/destroy_completion_screen.cpp
 ../decomp/game/Exit/initialize_exit_prompt.cpp
 ../decomp/game/Exit/update_completion_screen.cpp
-../decomp/game/G0/initialize_global_noop_renderable_bods_thunk.cpp
 ../decomp/game/G0/initialize_global_noop_renderable_bods.cpp
-../decomp/game/G0/initialize_default_runtime_config_thunk.cpp
 ../decomp/game/G0/initialize_default_runtime_config.cpp
-../decomp/game/G0/initialize_global_trivial_object_thunk.cpp
 ../decomp/game/G0/initialize_global_trivial_object.cpp
 ../decomp/game/G0/initialize_main_loop_display_state.cpp
 ../decomp/game/G0/initialize_main_loop_timing_state.cpp
@@ -294,7 +291,6 @@
 ../decomp/game/RObject/rotate_object_facequad_uv_pairs.cpp
 ../decomp/game/RObject/request_object_animation.cpp
 ../decomp/game/RObject/replace_object_list_texture_refs.cpp
-../decomp/game/RShell/initialize_tracked_allocation_depth_thunk.cpp
 ../decomp/game/RShell/initialize_tracked_allocation_depth.cpp
 ../decomp/game/RShell/uninitialize_game_data_archive.cpp
 ../decomp/game/RShell/set_current_directory_with_drive_fallback.cpp
@@ -493,9 +489,7 @@
 ../decomp/game/SubGame/allocate_track_parcel_slot.cpp
 ../decomp/game/SubGame/update_track_parcel.cpp
 ../decomp/game/SubGame/spawn_track_parcel.cpp
-../decomp/game/SubGame/initialize_parcel_set_bucket_pool_thunk.cpp
 ../decomp/game/SubGame/initialize_parcel_set_bucket_pool.cpp
-../decomp/game/SubGame/initialize_zero_parcel_bucket_pool_thunk.cpp
 ../decomp/game/SubGame/initialize_zero_parcel_bucket_pool.cpp
 ../decomp/game/SubGame/place_parcels_on_track.cpp
 ../decomp/game/SubGame/place_challenge_parcels_on_track.cpp
@@ -587,7 +581,6 @@
 ../decomp/engine/BassPlay/resume_audio_backend_if_paused.cpp
 ../decomp/engine/BassPlay/pause_audio_backend_if_running.cpp
 ../decomp/engine/BassPlay/set_audio_normalization_scales.cpp
-../decomp/engine/Font/initialize_global_font3d_bods_thunk.cpp
 ../decomp/engine/Font/initialize_global_font3d_bods.cpp
 ../decomp/engine/Font/initialize_global_font_queue_colors_thunk.cpp
 ../decomp/engine/Font/initialize_global_font_queue_colors.cpp

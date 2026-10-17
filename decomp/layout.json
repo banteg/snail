@@ -539,7 +539,7 @@
    ],
    "sources": [
     {
-     "path": "decomp/game/G0/initialize_global_noop_renderable_bods_thunk.cpp",
+     "path": "decomp/game/G0/initialize_global_noop_renderable_bods.cpp",
      "function": "initialize_global_noop_renderable_bods_thunk",
      "address": "0x406bc0",
      "port_scope": "core",
@@ -553,7 +553,7 @@
      "config": "tools/match/scratches/initialize_global_noop_renderable_bods"
     },
     {
-     "path": "decomp/game/G0/initialize_default_runtime_config_thunk.cpp",
+     "path": "decomp/game/G0/initialize_default_runtime_config.cpp",
      "function": "initialize_default_runtime_config_thunk",
      "address": "0x406c10",
      "port_scope": "core",
@@ -567,7 +567,7 @@
      "config": "tools/match/scratches/initialize_default_runtime_config"
     },
     {
-     "path": "decomp/game/G0/initialize_global_trivial_object_thunk.cpp",
+     "path": "decomp/game/G0/initialize_global_trivial_object.cpp",
      "function": "initialize_global_trivial_object_thunk",
      "address": "0x406d10",
      "port_scope": "core",
@@ -2805,7 +2805,7 @@
    ],
    "sources": [
     {
-     "path": "decomp/game/RShell/initialize_tracked_allocation_depth_thunk.cpp",
+     "path": "decomp/game/RShell/initialize_tracked_allocation_depth.cpp",
      "function": "initialize_tracked_allocation_depth_thunk",
      "address": "0x430e20",
      "port_scope": "replaceable-platform",
@@ -4360,7 +4360,7 @@
      "config": "tools/match/scratches/spawn_track_parcel"
     },
     {
-     "path": "decomp/game/SubGame/initialize_parcel_set_bucket_pool_thunk.cpp",
+     "path": "decomp/game/SubGame/initialize_parcel_set_bucket_pool.cpp",
      "function": "initialize_parcel_set_bucket_pool_thunk",
      "address": "0x443860",
      "port_scope": "core",
@@ -4374,7 +4374,7 @@
      "config": "tools/match/scratches/initialize_parcel_set_bucket_pool"
     },
     {
-     "path": "decomp/game/SubGame/initialize_zero_parcel_bucket_pool_thunk.cpp",
+     "path": "decomp/game/SubGame/initialize_zero_parcel_bucket_pool.cpp",
      "function": "initialize_zero_parcel_bucket_pool_thunk",
      "address": "0x4438a0",
      "port_scope": "core",
@@ -5181,7 +5181,7 @@
    ],
    "sources": [
     {
-     "path": "decomp/engine/Font/initialize_global_font3d_bods_thunk.cpp",
+     "path": "decomp/engine/Font/initialize_global_font3d_bods.cpp",
      "function": "initialize_global_font3d_bods_thunk",
      "address": "0x449c10",
      "port_scope": "core",

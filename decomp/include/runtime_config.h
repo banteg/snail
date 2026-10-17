@@ -19,6 +19,8 @@ enum RuntimeRenderFlagBit {
 };
 
 struct RuntimeConfig {
+    RuntimeConfig(); // defaults before the SnailMail.cfg overlay
+
     float sample_volume;                         // +0x00
     float stream_volume;                         // +0x04
     char fullscreen_enabled;                     // +0x08

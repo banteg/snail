@@ -821,7 +821,8 @@
       "description": "No-op thiscall constructor callback (`mov eax, ecx; ret`) shared by POD-like runtime slot arrays, parcel buckets, and opaque Snail presentation-channel subobjects. Two direct calls in the exact cRSubGame constructor additionally pass the complete `cRSubGoldy::cameraman` and `cRSubGoldy::follow_state` owners; Android/iOS preserve those classes as cRCameraman and cRPathFollowGoldy. The body proves trivial construction only; it does not establish an iostream owner.",
       "aliases": [
         "cRCameraman_ctor",
-        "cRPathFollowGoldy_ctor"
+        "cRPathFollowGoldy_ctor",
+        "ParcelCandidate_ParcelCandidate"
       ]
     },
     {
@@ -5907,6 +5908,9 @@
     {
       "address": "0x44db50",
       "name": "noop_this_constructor",
+      "aliases": [
+        "StartupTrivialObject_StartupTrivialObject"
+      ],
       "description": "Exact three-byte identity body shared by compiler-folded trivial default constructors. Windows callsites establish the exact tAxis and tQuaternian aliases; Android independently retains trivial tColour and tColourSmall constructors. The folded address therefore establishes several real aliases but no unique owner."
     },
     {

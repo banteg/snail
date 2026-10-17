@@ -4635,12 +4635,16 @@ def scratch_source_path(directory: Path) -> Path:
 
 
 def iter_scratch_sources(match_root: Path = DEFAULT_MATCH_ROOT) -> list[Path]:
-    """Every scratch's recovered source, in scratch-name order."""
-    return [
+    """Every scratch's recovered source, in scratch-name order.
+
+    A file shared by several scratches (a global's compiler-generated
+    initializer and its thunk) is listed once.
+    """
+    return list(dict.fromkeys(
         source
         for directory in sorted(match_root.glob("scratches/*/"))
         if (source := scratch_source_path(directory)).exists()
-    ]
+    ))
 
 
 def overlay_scratch_conf(config_text: str) -> str:
