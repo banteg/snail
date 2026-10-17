@@ -1,0 +1,19 @@
+Android's BuildLevel (0007e88c) ends each piece of the course at the length of the
+segment it picked, also past completion_row_start, where it lays the Finish
+segment's rows in place of the pick. A Random: course (Challenge) therefore lays
+its finish in pieces as long as the picks and their Padding, each from the
+Finish segment's first row, and each piece draws its pick (Segdif) and its
+SwitchMirror. Windows ends the piece at the Finish segment's own length and lays
+it whole. Courses that list their segments pick the Finish segment itself, so
+both lay it whole.
+
+--- a/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
++++ b/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
+@@ -327,5 +327,6 @@
+         int segment_row = 0;
++        int picked_rows = active_segment->row_count;
+         while (build_row < runtime_row_count) {
+-            if (segment_row >= active_segment->row_count)
++            if (segment_row >= (g_port_ultimate ? picked_rows : active_segment->row_count))
+                 break;
+             if (level_mode != 2 && build_row >= completion_row_start) {

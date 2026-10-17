@@ -282,9 +282,10 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
     )
     # Android lays Padding between each pair of random segments and skips
     # their RAND draws, so the random fringe that follows differs from a
-    # build without it.
-    assert 'level "Challenge 0" track_set 6 (Objects/World00/Track6.tga) fringe (0.910, 0.094, 1.000)' in challenge.stderr
-    assert "padding_segments 35" in challenge.stderr
+    # build without it. Its finish comes in pieces as long as the picks past
+    # the finish line, three of them with Padding, which draws their picks too.
+    assert 'level "Challenge 0" track_set 6 (Objects/World00/Track6.tga) fringe (0.992, 0.894, 1.000)' in challenge.stderr
+    assert "padding_segments 38" in challenge.stderr
 
 
 @pytest.mark.skipif(

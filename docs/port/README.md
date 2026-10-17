@@ -345,7 +345,9 @@ Original delegates to the PC rules. Patches at the native sites add the
 other Android rules (divergences.md#patches): a new Pro-Challenge game starts
 with 8 lives instead of 3, parcels are collected within 1.73 of the snail
 instead of 1.24, and `Random:` courses (Challenge) lay the four-row Padding
-segment between each pair of random segments. Pro skies use the full
+segment between each pair of random segments and lay their finish in pieces
+as long as the random picks that carry on past the finish line, drawing those
+picks and mirror flips as Android does. Pro skies use the full
 converted image with normalized UVs, including horizontal flips; PC
 backdrops retain their padded-image UV layout.
 
