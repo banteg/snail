@@ -34,6 +34,9 @@ recovered code.
 | `04-parcel-radius` | parcels are collected within 1.73, not 1.24, in Ultimate | Android's `cRSubGoldy::Collision` (00077f5c) |
 | `05-challenge-padding` | `Random:` levels lay Padding between each pair of random segments in Ultimate, without drawing RAND for it | Android's `cRSubTracks::Init` (000850d4) and BuildLevel |
 | `06-random-track-code` | in Ultimate only `Track: r` (code 8) picks a random space backdrop and flip, then a random fringe colour; Pro 1-5 (`Track: 5`) keep their SpacePro sky | Android's `cRSubTracks::Init` (000850d4) and `cRSubGame::StartLevel` (000817ac); Windows reads `Track: r` as 5, which Android uses as a track set |
+| `07-track-rules` | in Ultimate a health pickup scores 250, filed under the bonus kind; the ring counter stops at 8, not 10; a default ramp ring turns slow only on its first roll (above 0.93), with no second roll and no Time Trial rule; a wall turret fires when RAND(100) is below 4 + (1 - `salt_frequency`) * -3.5, not 4 | Android's `cRSubGoldy::Collision` (00077f5c, `ScoreAdd` kind 6 at 00070ed0), `cRSubGame::AI` (00082214), `cRSubGame::AddRing` (00073290) and `cRSubLoc::AI` (00077760); the Windows player keeps six score buckets |
+| `08-segment-messages` | in Ultimate a segment's message is read from the row 10 ahead of the snail, and `cRTipManager::UnInitTips` clears the tips still showing before it | Android's `cRSubGoldy::AI` (0007ac54) |
+| `09-completion-rules` | in Ultimate `cRCompletion::UnInit` pays a skipped tally's bonus, and any difference from the tally's total, through `ScoreAdd`; the replay cursor and sample count hold while the summary waits for a click | Android's `cRCompletion::UnInit` (00061740), which fixes an [original bug](original-bugs.md), and `cRSubGoldy::AI` |
 | `12-path-camera` | in Ultimate a path without a heading keeps its own roll, so a turnover rolls the camera; the snail can leave a path sideways while the jetpack is on; S-bends lift the camera linearly, to 0.55 of the snail's height at the top; off a lift path the lift eases out by 0.98 a tick instead of dropping to 0 | Android's `cRPathFollowGoldy::Traverse` (0004d70c) and `cRCameraman::AI` (00071248); the shell's S-bends carry the kind Android's `BuildSBend` (0004ee74) gives them |
 | `13-trampoline-ring` | the Ultimate trampoline ring starts from the bounce itself, so the no-fall clamp and path entries add none | Android's `cRSubGoldy::AI` (0007ac54) adds a ring only there |
 | `17-route-numerals` | in Ultimate a route card's title leads with the level's Roman numeral, and a card that would start left of 40 is anchored at 50 | Android's `cRGalaxy::BoxOn` (00058d80) |
@@ -41,7 +44,7 @@ recovered code.
 
 Narrow seams wrap a matched function in the shell instead (`port/wrapped.txt`,
 its body renamed `*_recovered`): the mobile content in `port/shell/extras*.cpp`
-and the fixes for the original's own bugs; see [Original bugs](original-bugs.md).
+and the fixes that act around a function; see [Original bugs](original-bugs.md).
 Among them, the Ultimate `cRSubTracks::Init` lays Padding before every listed
 segment of a level that is not `Mode:Challenge`, as Android's Init (000850d4)
 does; the mobile level files stay as Android ships them.
