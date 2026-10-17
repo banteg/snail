@@ -497,7 +497,7 @@ console.log(JSON.stringify(out));
         [
             "node", str(runner), str(wasm), "--trace",
             "--keys", str(REPO_ROOT / "port/scripts/high_scores.keys"),
-            "--replay", "A4",
+            "--replay", "A9",
         ],
         cwd=tmp_path,
         capture_output=True,

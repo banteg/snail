@@ -183,8 +183,13 @@ Which functions the port compiles:
   x86 ABI and x87 leniency, behind a `SNAIL_PORT` guard; both are listed in
   the divergence ledger ([divergences.md](divergences.md)).
 - **Exact `rand`.** Track generation reseeds with `RandSeed(runtime_build_seed)`,
-  so the port implements the MSVC `rand` LCG exactly. `gRMathRand2` and the
-  sine tables are recovered code and come along unchanged.
+  so the port implements the MSVC `rand` LCG exactly, and Original's `RAND`
+  and `SRAND` draw from it. In Ultimate they draw from Android's
+  `RandTable.bin` instead, through an index that `RandSeed` sets to
+  `seed % 8191`. That file holds the LCG's first 8191 values from seed 1,
+  which `RMathInit` copies into `g_math_random_table` before anything else
+  draws. `gRMathRand2` and the sine tables are recovered code and come along
+  unchanged.
 - **Float sums in the binary's order.** VC6 reassociates float additions; clang
   evaluates the source exactly. When a matched function's float sum is
   written in another order than the object computes it, rewrite it in the
@@ -361,7 +366,10 @@ track set) keep their SpacePro sky. A path without a heading keeps
 its own roll, so turnovers roll the camera, and the snail can leave a path
 sideways while the jetpack is on. S-bends lift the camera linearly, to 0.55 of
 the snail's height at the top, and off a lift path the lift eases out by 0.98 a
-tick instead of dropping to 0. Pro skies use the full
+tick instead of dropping to 0. The shell's `j_rand` and
+`RandSeed` make `RAND` and `SRAND` step Android's index through
+`RandTable.bin`, so a seed draws what it draws on Android, the fixed seed 0
+of Time Trial and the tutorial included. Pro skies use the full
 converted image with normalized UVs, including horizontal flips; PC
 backdrops retain their padded-image UV layout.
 
