@@ -295,7 +295,7 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
     or not (REPO_ROOT / "artifacts/android/asm_extracted/DATA/O_HALFPOLE.SMO").exists(),
     reason="needs node, snail.wasm, SnailMail.dat, SnailMailExtras.dat and Android .SMO meshes",
 )
-def test_extras_mobile_path_meshes_and_rings(tmp_path):
+def test_extras_mobile_path_meshes_and_rings(tmp_path, probe_course):
     import json
     import struct
     from pathlib import Path
@@ -441,12 +441,19 @@ console.log(JSON.stringify(out));
         check=False,
     )
     assert replay.returncode == 3
-    assert "tramp_rings 1" in replay.stderr
-    assert "tramp_rings 0" in replay.stderr
     # A Windows replay is intentionally different under mobile pacing and
-    # level data. Both ring effects must still run; classic playback stays exact.
-    assert "tick 2583: sway_rings 1" in replay.stderr
+    # level data; classic playback stays exact.
     assert "first divergence at sample" in replay.stderr
+    # Both ring effects run: the snail drops onto a trampoline, which throws up
+    # its ring, and a moving weapon ring sways.
+    rings = probe_course(
+        ["@________@"] * 20 + ["@        @ NoFall"] * 9 + ["@   (((  @ NoFall"] * 5 + ["@        @"] * 18
+        + ["@________@"] * 10 + ["@___R____@ Ring=Normal RingSpeed=0.5"],
+        ultimate=True, start=True,
+    )  # fmt: skip
+    assert "tramp_rings 1" in rings
+    assert "tramp_rings 0" in rings
+    assert "sway_rings 1" in rings
 
     original = subprocess.run(
         [

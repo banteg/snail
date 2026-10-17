@@ -33,6 +33,8 @@ recovered code.
 | `03-pro-lives` | a new Pro-Challenge game starts with 8 lives | Android's BuildLevel |
 | `04-parcel-radius` | parcels are collected within 1.73, not 1.24, in Ultimate | Android's `cRSubGoldy::Collision` (00077f5c) |
 | `05-challenge-padding` | `Random:` levels lay Padding between each pair of random segments in Ultimate, without drawing RAND for it | Android's `cRSubTracks::Init` (000850d4) and BuildLevel |
+| `10-slug-and-row-capacity` | 16 slug slots; `AddSlug` fills 16 in Ultimate and 8 in Original. `RowFromPos` clamps at row 3599, not 3199, in Ultimate | Android's `cRSubGame` constructor (00025a68), `AddSlug` (0007953c) and every loop over the pool hold 16 slugs; its `RowFromPos` (0006c008) clamps at the last of its 3600 rows |
+| `11-track-window` | in Ultimate, rows are scanned to the window's trailing edge plus 48, not 46, and to 40 rows past the finish line, not 20; the trailing edge follows the snail to 30 rows past the line instead of stopping 30 rows before it, and starts at -3, not -19; the finish banner, the salt fade-in and shots reach 48 rows ahead, not 46; a WALL2 cell stops a shot only between heights -1 and 7 | Android's `cRSubGame::AI` (00082214), `cRSubGoldy::AI` (0007ac54) and `Init` (00079da8), `cRBanner::AI` (0006da24), `cRSalt::AI` (00072318) and `cRSubGolb::AI` (000635d4) |
 
 Narrow seams wrap a matched function in the shell instead (`port/wrapped.txt`,
 its body renamed `*_recovered`): the mobile content in `port/shell/extras*.cpp`

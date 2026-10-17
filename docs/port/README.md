@@ -344,8 +344,15 @@ Mobile acceleration and power-up pacing apply in every game mode;
 Original delegates to the PC rules. Patches at the native sites add the
 other Android rules (divergences.md#patches): a new Pro-Challenge game starts
 with 8 lives instead of 3, parcels are collected within 1.73 of the snail
-instead of 1.24, and `Random:` courses (Challenge) lay the four-row Padding
-segment between each pair of random segments. Pro skies use the full
+instead of 1.24, `Random:` courses (Challenge) lay the four-row Padding
+segment between each pair of random segments, and 16 slugs can be alive at
+once instead of 8, which the mobile Barrage and SlugLine formations need. The
+active track window reaches two rows further: objects spawn 40 rows ahead
+of the snail instead of 38, and the finish banner, the salt fade-in and
+shots reach 48 rows ahead instead of 46. Near the finish line the window's
+trailing edge keeps following the snail instead of stopping 30 rows before
+the line, and rows are scanned up to 40 past it instead of 20. A WALL2 cell
+stops a shot only between heights -1 and 7. Pro skies use the full
 converted image with normalized UVs, including horizontal flips; PC
 backdrops retain their padded-image UV layout.
 
@@ -365,7 +372,8 @@ other than CAGE2, TWISTER2 and SBEND are not yet checked against the Android
 
 Ultimate selects the mobile 3,500-row build limit; Original retains the PC
 3,100-row limit. Port builds reserve 3,600 runtime rows, including the tail
-margin. Matching Windows builds retain the original layout.
+margin, and 16 slug slots, of which Original fills the PC's 8. Matching
+Windows builds retain the original layout.
 
 ### Comfort settings
 
@@ -394,8 +402,8 @@ choices take precedence. They live in the host and presenters.
   fullscreen.
 - **See further ahead** is shelved on the `shelf/draw-distance` branch: it
   drew the track three times as far (render-time links undone after each
-  frame, both oracles matching), but objects still spawn 38 units ahead, and
-  the longer view made that pop-in plain.
+  frame, both oracles matching), but objects still spawn 38 units ahead (40
+  in Ultimate), and the longer view made that pop-in plain.
 
 ### Hosting
 
