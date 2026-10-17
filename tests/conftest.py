@@ -50,6 +50,11 @@ PORT_LAYOUT = (
     ("hover_active", "SUB_HOVER_STATE_ACTIVE"),
     ("mobile_sbend", "PATH_TEMPLATE_KIND_MOBILE_SBEND"),
     ("trampoline", "SUBLOC_TILE_TRAMPOLINE"),
+    ("frontend_state", "offsetof(cRGame, players[0].frontend_state)"),
+    ("galaxy_name", "offsetof(cRGame, subgame.galaxy.route_names[0].name)"),
+    ("splash_message", "offsetof(cRGame, subgame.splash.message_widget)"),
+    ("splash_state", "offsetof(cRGame, subgame.splash.message_state)"),
+    ("border_text", "offsetof(cRBorder, text_buffer)"),
 )
 
 

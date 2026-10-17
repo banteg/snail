@@ -162,7 +162,10 @@ int main(int argc, char** argv)
         }
         if (trace && extras_tramp_ring_active_count() != tramp_rings) {
             tramp_rings = extras_tramp_ring_active_count();
-            fprintf(stderr, "tick %d: tramp_rings %d\n", tick, tramp_rings);
+            if (tramp_rings)
+                fprintf(stderr, "tick %d: tramp_rings %d, first at x %.2f\n", tick, tramp_rings, extras_tramp_ring_x());
+            else
+                fprintf(stderr, "tick %d: tramp_rings 0\n", tick);
         }
         if (trace && extras_swaying_ring_count() != sway_rings) {
             sway_rings = extras_swaying_ring_count();
