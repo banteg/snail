@@ -49,6 +49,9 @@ Segment entry lines inside `Segments Begin:` can be:
 
 - the repo parser normalizes `Slug`, `Garbage`, and `garbage` into one `garbage` field
 - `Random:` and `Length:` feed the runtime track builder
+- the PC game never reads `Mode:`; Android's loader lays Padding before every
+  listed segment unless it says `Mode:Challenge` (see
+  [Gameplay profiles](../port/README.md#gameplay-profiles))
 - `Track:` selects the active track texture set
 - `Garbage:` and `Salt:` become runtime scalars used by later entity-spawn logic
 - deeper runtime-field notes now live under [RE](../re/index.md)

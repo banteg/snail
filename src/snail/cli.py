@@ -669,6 +669,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     port_extras_parser.add_argument("--out", type=Path)
     port_extras_parser.add_argument("--android-root", type=Path)
+    port_extras_parser.add_argument("--apk-assets", type=Path)
     port_serve_parser = port_subparsers.add_parser(
         "serve", help="Serve the browser build (port/web/, snail-web.wasm, SnailMail.dat) on localhost."
     )
@@ -1863,7 +1864,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.port_command == "extras":
             from . import port_extras
 
-            out = port_extras.generate(REPO_ROOT, out=args.out, android_root=args.android_root)
+            out = port_extras.generate(
+                REPO_ROOT, out=args.out, android_root=args.android_root, apk_assets=args.apk_assets
+            )
             print(f"{out}: {out.stat().st_size:,} bytes")
             return 0
         report = port_data.generate(REPO_ROOT)

@@ -68,6 +68,16 @@ void print_widgets()
     }
 }
 
+int live_slug_count()
+{
+    int live = 0;
+    for (const cRSlug& slug : g_game->subgame.slug_hazards.slots) {
+        if (slug.state != SUB_SLUG_STATE_INACTIVE)
+            ++live;
+    }
+    return live;
+}
+
 }  // namespace
 
 int main(int argc, char** argv)
@@ -128,6 +138,7 @@ int main(int argc, char** argv)
     int tramp_rings = 0;
     int sway_rings = 0;
     int upright_hazards = 0;
+    int slugs = 0;
     int lives = -1;
     int padding = 0;
     int parcels = 0;
@@ -153,16 +164,31 @@ int main(int argc, char** argv)
             subgame_state = g_game->subgame.subgame_state;
             if (subgame_state == 2) {
                 const tColour& f = g_game->subgame.level_definition.fringe_color;
-                fprintf(stderr, "tick %d: level \"%s\" track_set %d (%s) fringe (%.3f, %.3f, %.3f)\n",
+                fprintf(stderr, "tick %d: level \"%s\" track_set %d (%s) fringe (%.3f, %.3f, %.3f) rows %d segments %d backdrop %s\n",
                     tick, g_game->subgame.level_definition.level_display_name,
                     g_game->track.current_texture_set,
                     extras_track_texture_name(g_game->track.current_texture_set),
-                    f.r, f.g, f.b);
+                    f.r, f.g, f.b, g_game->subgame.runtime_row_count,
+                    g_game->subgame.level_definition.segment_count,
+                    extras_sprite_texture_name(g_game->backdrop.pending_primary_texture_id));
+                // Pieces BuildLevel laid from the finish line on (port/patches/22-challenge-finish.patch).
+                const cRSubGame& sub = g_game->subgame;
+                int pieces = 0;
+                for (int row = sub.completion_row_start; row < sub.runtime_row_count; ++row) {
+                    if (row == sub.completion_row_start
+                        || sub.runtime_rows[row].row_event_id != sub.runtime_rows[row - 1].row_event_id)
+                        ++pieces;
+                }
+                fprintf(stderr, "tick %d: finish rows %d pieces %d\n",
+                    tick, sub.runtime_row_count - sub.completion_row_start, pieces);
             }
         }
         if (trace && extras_tramp_ring_active_count() != tramp_rings) {
             tramp_rings = extras_tramp_ring_active_count();
-            fprintf(stderr, "tick %d: tramp_rings %d\n", tick, tramp_rings);
+            if (tramp_rings)
+                fprintf(stderr, "tick %d: tramp_rings %d, first at x %.2f\n", tick, tramp_rings, extras_tramp_ring_x());
+            else
+                fprintf(stderr, "tick %d: tramp_rings 0\n", tick);
         }
         if (trace && extras_swaying_ring_count() != sway_rings) {
             sway_rings = extras_swaying_ring_count();
@@ -183,6 +209,10 @@ int main(int argc, char** argv)
         if (trace && fixes_upright_hazard_count() != upright_hazards) {
             upright_hazards = fixes_upright_hazard_count();
             fprintf(stderr, "tick %d: upright_hazards %d\n", tick, upright_hazards);
+        }
+        if (trace && live_slug_count() != slugs) {
+            slugs = live_slug_count();
+            fprintf(stderr, "tick %d: slugs %d\n", tick, slugs);
         }
         // Once a screen has settled, list its widgets (for writing click scripts).
         if (trace && g_game->fade.state == 0 && widget_set_signature() != widgets) {

@@ -7,17 +7,19 @@
 #include <string.h>
 
 #include "archive_index.h"
+#include "cheat_state.h"
 #include "extras.h"
 #include "font_system.h"
 #include "game_root.h"
-#include "landscape_manager.h"
 #include "loading_bar.h"
 #include "runtime_config.h"
 #include "object_render_types.h"
 #include "ring_special_effect_types.h"
 #include "rmath_random.h"
+#include "rmath_tables.h"
 #include "rstring.h"
 #include "segment_cache.h"
+#include "sound_effect_manager.h"
 #include "sub_tracks.h"
 #include "subgame_runtime.h"
 #include "texture_registry.h"
@@ -45,6 +47,11 @@ void subgame_add_ring_recovered(cRSubGame* self, cRSubLoc* cell, int requested_k
     __asm__("_ZN9cRSubGame17AddRing_recoveredEP8cRSubLociP10cRSubGoldyf");
 void sub_ring_init_recovered(cRSubRing* self, int lives_snapshot)
     __asm__("_ZN9cRSubRing14Init_recoveredEi");
+int j_rand_recovered();
+void RandSeed_recovered(int seed);
+void cheat_ai_recovered(cRCheat* self) __asm__("_ZN7cRCheat12AI_recoveredEv");
+void sound_init_recovered(cRSound* self, cRSoundBank* entries)
+    __asm__("_ZN7cRSound14Init_recoveredEP11cRSoundBank");
 
 void* allocate_tracked_memory(int size, char* name);
 void xor_archive_bytes_in_place(int start_offset, char* bytes, int count);
@@ -60,16 +67,29 @@ unsigned char* g_fringe_colours_tga = 0;
 
 cRTexture* g_extra_track_textures[kMobileTrackSetCount];
 cRTexture* g_extra_slide_textures[kMobileTrackSetCount];
-bool g_random_fringe_pending = false;
 float g_add_ring_speed = 0.0f;
 
-// Android cRSubTracks::Init (000850d4) imports Padding, a four-row empty
-// segment, beside every level's segments; BuildLevel lays it between each pair
-// of segments a Random: level picks (port/patches/04-challenge-padding.patch).
-// Its slot here is the first unused one, after the level's own.
+// Android cRSubTracks::Init (000850d4) imports Padding, four rows of plain
+// track, before every listed segment of a level that is not Mode:Challenge
+// (cRSubTracks::Init below), and once more beside every level's segments;
+// BuildLevel lays that copy between each pair of segments a Random: level
+// picks (port/patches/05-challenge-padding.patch). Its slot here is the first
+// unused one, after the level's own.
 SubSegment* g_padding_segment = 0;
 bool g_padding_turn = false;
 int g_padding_picks = 0;
+
+// Android's gRMathRandIndex, which j_rand and RandSeed below keep; Android's
+// gRMathRand2Init zeroes it.
+unsigned short g_rand_table_index = 0;
+
+// Android's gSFXBank (0009bacc) has one sample the PC bank lacks, upramp, and
+// inserts it at 42, moving every later id up by one. Ultimate registers it
+// after the PC bank, so each id the recovered code plays keeps its PC sample.
+cRSoundBank g_mobile_sound_bank[] = {
+    {(char*)"sfx2/UpRamp.ogg", 0, 1},
+    {(char*)"", 0, 0},
+};
 
 bool path_equals_ignore_case(const char* a, const char* b)
 {
@@ -231,16 +251,19 @@ void* load_config_file(char* file_name, void* buffer)
     const char* mapped = extras_save_path(file_name);
     if (g_port_ultimate && path_equals_ignore_case(file_name, "SnailMail.cfg")
         && !archive_or_file_exists_recovered((char*)mapped, 1)) {
-        // Carry display/audio preferences across once, but start the mobile
-        // campaign, tutorial included, separately. Do not rewrite the classic
-        // save.
-        void* result = load_config_file_recovered(file_name, buffer);
-        if (buffer == &g_runtime_config) {
-            g_runtime_config.highest_galaxy_route_index = 1;
-            g_runtime_config.landscape_backdrop_variant_selector = 1;
-            g_runtime_config.new_game_tutorial_started = 0;
-        }
-        return result;
+        // Carry display/audio preferences across once. Everything else, the
+        // campaign and tutorial included, keeps the defaults, which Android's
+        // gConfig shares. Do not rewrite the classic save.
+        RuntimeConfig* config = (RuntimeConfig*)buffer;
+        RuntimeConfig pc = *config;
+        if (!load_config_file_recovered(file_name, &pc))
+            return 0;
+        config->sample_volume = pc.sample_volume;
+        config->stream_volume = pc.stream_volume;
+        config->fullscreen_enabled = pc.fullscreen_enabled;
+        config->render_flags = pc.render_flags;
+        config->display_mode_index = pc.display_mode_index;
+        return buffer;
     }
     return load_config_file_recovered((char*)mapped, buffer);
 }
@@ -336,6 +359,38 @@ const char* extras_track_texture_name(int slot)
     return "?";
 }
 
+// Android cRGalaxy::BoxOn (00058d80) titles a route card with the level's
+// numeral from gRomanNumbers ("", I .. LI; port/patches/17-route-numerals.patch).
+const char* extras_roman_numeral(int value)
+{
+    static const struct {
+        int value;
+        const char* digits;
+    } kNumerals[] = {
+        {1000, "M"}, {900, "CM"}, {500, "D"}, {400, "CD"}, {100, "C"}, {90, "XC"}, {50, "L"},
+        {40, "XL"}, {10, "X"}, {9, "IX"}, {5, "V"}, {4, "IV"}, {1, "I"},
+    };
+    static char numeral[16];
+    numeral[0] = 0;
+    for (int i = 0; i < (int)(sizeof(kNumerals) / sizeof(kNumerals[0])); ++i) {
+        for (; value >= kNumerals[i].value; value -= kNumerals[i].value)
+            strcat(numeral, kNumerals[i].digits);
+    }
+    return numeral;
+}
+
+void cRSound::Init(cRSoundBank* entries)
+{
+    sound_init_recovered(this, entries);
+    if (g_port_ultimate)
+        sound_init_recovered(this, g_mobile_sound_bank);
+}
+
+int extras_upramp_sample()
+{
+    return g_mobile_sound_bank[0].sample_id;
+}
+
 char __cdecl archive_or_file_exists(char* path, char force_filesystem)
 {
     path = (char*)extras_save_path(path);
@@ -382,6 +437,34 @@ char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(char* file_name, cha
     return load_file_bytes_fixed_size_from_archive_or_fs_recovered(file_name, buffer, byte_count);
 }
 
+// Android's RAND and SRAND do not draw from the C runtime. Their Rand()
+// (000267f0) steps gRMathRandIndex through RandTable.bin and returns the
+// entry's low 15 bits, and RandSeed (00029588) sets the index to
+// seed % 8191; its srand48 call feeds nothing the game draws. gRMathRand2
+// reads the same table with its own index. RandTable.bin holds the first
+// 8191 MSVC rand() values from seed 1, all 15-bit, and so does
+// g_math_random_table: gRMathRand2Init fills it from rand()'s initial seed,
+// since start_game runs RMathInit before anything else draws. Exported for
+// tests.
+__attribute__((export_name("snail_rand")))
+int __cdecl j_rand()
+{
+    if (!g_port_ultimate)
+        return j_rand_recovered();
+    g_rand_table_index = (unsigned short)(g_rand_table_index + 1) % RMATH_RANDOM_TABLE_COUNT;
+    return g_math_random_table[g_rand_table_index];
+}
+
+__attribute__((export_name("snail_rand_seed")))
+void __cdecl RandSeed(int seed)
+{
+    if (!g_port_ultimate) {
+        RandSeed_recovered(seed);
+        return;
+    }
+    g_rand_table_index = (unsigned short)(seed % RMATH_RANDOM_TABLE_COUNT);
+}
+
 // Android cRTrack::Change (0003f330): supports Track: 0-6 and 8 (random 0-6).
 void cRTrack::Change(int texture_set)
 {
@@ -420,13 +503,29 @@ void cRTrack::Change(int texture_set)
     }
 }
 
-// Android cRSubTracks::Init(char*) (000850d4): Track: 0-6, Track: r -> 8,
-// Fringe: random, and the mobile postal level colour assignments.
+// Android cRSubTracks::Init(char*) (000850d4) reads Track: 0-6 as track sets
+// 0-6 and Track: r as 8; Windows reads 0-3, and r as 5.
+// It also lays Padding before every listed segment outside Challenge.
 void cRSubTracks::Init(char* filename)
 {
     subtracks_init_recovered(this, filename);
     if (!g_port_ultimate)
         return;
+
+    // Mode: is Arcade (0, also when absent), Challenge (1) or Tutourial (2, a
+    // spelling no level uses). In mode 0 Android imports Padding before each
+    // listed segment, so the slots run Padding, S0, Padding, S1, ...; every
+    // shipped level but Challenge000 is mode 0, the tutorial included. The
+    // longest, ArcadePro010, lists 44 segments, so its 88 slots fit.
+    if (Rstrfind((char*)"Mode:Arcade", g_level_file_text_buffer)
+        || (!Rstrfind((char*)"Mode:Challenge", g_level_file_text_buffer)
+            && !Rstrfind((char*)"Mode:Tutourial", g_level_file_text_buffer))) {
+        for (int i = segment_count - 1; i >= 0; --i) {
+            segment_slots[2 * i + 1] = segment_slots[i];
+            ImportSegment((char*)"Padding.txt", &segment_slots[2 * i]);
+        }
+        segment_count *= 2;
+    }
 
     char* cursor = Rstrfind((char*)"Track:", g_level_file_text_buffer);
     if (cursor != 0) {
@@ -440,63 +539,27 @@ void cRSubTracks::Init(char* filename)
             track_texture_set = kRandomTrackSetCode;
     }
 
-    bool random_fringe = false;
-    cursor = Rstrfind((char*)"Fringe:", g_level_file_text_buffer);
-    if (cursor != 0) {
-        cursor = Rstrfind((char*)":", cursor) + 1;
-        while (*cursor == ' ' || *cursor == '\t')
-            ++cursor;
-        if (*cursor == 'r' || *cursor == 'R')
-            random_fringe = true;
-    }
-    if (this == &g_game->subgame.level_definition) {
-        g_random_fringe_pending = random_fringe;
+    if (this == &g_game->subgame.level_definition)
         extras_import_padding(this);
-    }
     extras_map_level_paths(this);
 }
 
-// Android cRSubGame::StartLevel (000817ac): when Track: r (8) or Fringe: random
-// is active, pick the random background, backdrop flip, and random fringe colour.
+// Each level starts with no trampoline rings and lays its Padding afresh.
 void cRSubGame::StartLevel(int level_index)
 {
     extras_clear_tramp_rings();
     extras_begin_level_build();
-    bool new_game = subgame_rebuild_selector == 3;
     subgame_start_level_recovered(this, level_index);
-    if (!g_port_ultimate)
-        return;
+}
 
-    // Android BuildLevel (0007e88c) starts a new game with 8 lives in the Pro
-    // galaxy and 3, as Windows does, in the postal one.
-    if (new_game && extras_is_pro_mode())
-        player.visible_life_stock = 8;
-
-    if (level_definition.track_texture_set == kRandomTrackSetCode) {
-        int landscape_index = 0;
-        switch ((unsigned int)RAND(4.0f, 0)) {
-        case 0:
-            landscape_index = g_game->subgame.landscape_manager.Import((char*)"SpaceBluesWhorl.txt");
-            break;
-        case 1:
-            landscape_index = g_game->subgame.landscape_manager.Import((char*)"SpaceGreenWarp.txt");
-            break;
-        case 2:
-            landscape_index = g_game->subgame.landscape_manager.Import((char*)"SpacePurple.txt");
-            break;
-        case 3:
-            landscape_index = g_game->subgame.landscape_manager.Import((char*)"SpaceRed.txt");
-            break;
-        }
-        landscape_manager.Init(landscape_index);
-        g_game->backdrop.pending_flip = (RAND(1.0f, 0) > 0.5f) ? 1 : 0;
-        sample_skirt_colour_random(&level_definition.fringe_color, RAND(1.0f, 0));
-        refresh_built_level_skirt_colours(this);
-    } else if (g_random_fringe_pending) {
-        sample_skirt_colour_random(&level_definition.fringe_color, RAND(1.0f, 0));
-        refresh_built_level_skirt_colours(this);
-    }
-    g_random_fringe_pending = false;
+// Android's StartLevel (000817ac) gives a Track: r level a random fringe
+// colour after its random backdrop and flip
+// (port/patches/06-random-track-code.patch). The rows GenerateLevel has
+// built take it too.
+void extras_skirt_colour_random(cRSubGame* subgame, float t)
+{
+    sample_skirt_colour_random(&subgame->level_definition.fringe_color, t);
+    refresh_built_level_skirt_colours(subgame);
 }
 
 // The Windows cRSubGame::AddRing gives every ring a phase and a phase step,
@@ -537,6 +600,16 @@ void cRSubRing::Init(int lives_snapshot)
         }
     }
     sub_ring_init_recovered(this, lives_snapshot);
+}
+
+// Android cRCheat::AI (00060af8) still rolls the typed letters but never calls
+// MatchText, so NEWTON (no score records) and AUTUMN (no falling) set no flag;
+// Init and AI are the only writers of the flags.
+void cRCheat::AI()
+{
+    cheat_ai_recovered(this);
+    if (g_port_ultimate)
+        flags = 0;
 }
 
 __attribute__((export_name("snail_swaying_ring_count")))

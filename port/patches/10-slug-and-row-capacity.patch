@@ -1,0 +1,63 @@
+Android's cRSubGame holds 16 slugs where Windows holds 8: its constructor (00025a68)
+builds them from +0x33a8 to +0x41a8, and AddSlug (0007953c), ReSet (0006c328),
+RemoveBods (00076ba0), cRSubGoldy::Collision (00077f5c) and cRSubGolb::AI (000635d4)
+walk all 16. Mobile segments fill them: Barrage has 16 slugs within 40 rows, SlugLine 9
+in three. Every port build reserves 16; AddSlug fills 16 in Ultimate and 8 in Original.
+Ultimate's RowFromPos clamps at 3599, the last of the rows 02-mobile-capacity reserves,
+as Android's (0006c008) does; Original clamps at 3199, as Windows does.
+
+--- a/decomp/include/slug_hazard_types.h
++++ b/decomp/include/slug_hazard_types.h
+@@ -28,3 +28,3 @@
+ enum {
+-    SUB_SLUG_SLOT_CAPACITY = 8,
++    SUB_SLUG_SLOT_CAPACITY = 16, // Android's cRSubGame holds 16
+ };
+@@ -87,2 +87,3 @@
+ typedef char SlugPool_must_be_0x760[
+-    (sizeof(SlugPool) == 0x760) ? 1 : -1];
++    (sizeof(SlugPool) == 0x760
++        + (SUB_SLUG_SLOT_CAPACITY - 8) * sizeof(cRSlug)) ? 1 : -1];
+--- a/decomp/include/subgame_runtime.h
++++ b/decomp/include/subgame_runtime.h
+@@ -306,2 +306,3 @@
+         + sizeof(cRSMTracks) - 0x25cfb4
+-        + sizeof(SegmentCache) - 0xa7f8) ? 1 : -1];
++        + sizeof(SegmentCache) - 0xa7f8
++        + sizeof(SlugPool) - 0x760) ? 1 : -1];
+--- a/decomp/game/SubGame/spawn_slug_hazard.cpp
++++ b/decomp/game/SubGame/spawn_slug_hazard.cpp
+@@ -16,11 +16,14 @@
++extern bool g_port_ultimate; // shell/profile.h
++
+ void cRSubGame::AddSlug(cRSubLoc* cell, cRSubGoldy* owner_player)
+ {
++    const int slot_limit = g_port_ultimate ? SUB_SLUG_SLOT_CAPACITY : 8;
+     int slot_index = 0;
+     cRSlug* scan = slug_hazards.slots;
+-    while (slot_index < SUB_SLUG_SLOT_CAPACITY
++    while (slot_index < slot_limit
+         && scan->state != SUB_SLUG_STATE_INACTIVE) {
+         ++slot_index;
+         ++scan;
+-        if (slot_index >= SUB_SLUG_SLOT_CAPACITY)
++        if (slot_index >= slot_limit)
+             return;
+     }
+--- a/decomp/game/SubGame/get_track_runtime_cell_at_world_z.cpp
++++ b/decomp/game/SubGame/get_track_runtime_cell_at_world_z.cpp
+@@ -6,9 +6,12 @@
++extern bool g_port_ultimate; // shell/profile.h
++
+ cRSubRow* cRSubGame::RowFromPos(Vector3* position)
+ {
+     int row = (int)position->z;
++    const int last_row = g_port_ultimate ? SUBGAME_RUNTIME_ROW_CAPACITY - 1 : 3199;
+ 
+     if (row < 0) {
+         row = 0;
+-    } else if (row > 3199) {
+-        row = 3199;
++    } else if (row > last_row) {
++        row = last_row;
+     }

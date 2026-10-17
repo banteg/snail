@@ -5,19 +5,22 @@ import re
 import pytest
 
 from snail.archive import parse_archive_index, read_archive_entry
-from snail.port_extras import build_extras_files
+from snail.port_extras import APK_ASSETS, build_extras_files
 from snail.symbols import REPO_ROOT
 
 ANDROID = REPO_ROOT / "artifacts/android/asm_extracted"
+APK = REPO_ROOT / APK_ASSETS
 PC_ARCHIVE = REPO_ROOT / "artifacts/bin/SnailMail.dat"
 
 
 @pytest.mark.skipif(
-    not (ANDROID / "LEVELS/ARCADEPRO010.TXT").exists() or not PC_ARCHIVE.exists(),
-    reason="needs extracted mobile assets and SnailMail.dat",
+    not (ANDROID / "LEVELS/ARCADEPRO010.TXT").exists()
+    or not (APK / "upramp.ogg").exists()
+    or not PC_ARCHIVE.exists(),
+    reason="needs extracted mobile assets, the unpacked APK assets and SnailMail.dat",
 )
 def test_all_mobile_levels_and_segments_are_preserved():
-    files = build_extras_files(ANDROID, PC_ARCHIVE)
+    files = build_extras_files(ANDROID, PC_ARCHIVE, APK)
     for directory in ("LEVELS", "SEGMENTS"):
         for path in (ANDROID / directory).glob("*.TXT"):
             if f"{directory}/{path.name}" != "LEVELS/TUTORIAL.TXT":
@@ -51,16 +54,21 @@ def test_deployable_extras_include_mobile_shared_dependencies():
         "LEVELS/ARCADE001.TXT",
         "LEVELS/ARCADE050.TXT",
         "LEVELS/TUTORIAL.TXT",
+        "INTRO/CREDITS.TXT",
+        "X/_ANIMATION.TXT",
+        "SFX2/UPRAMP.OGG",
     ):
         assert read_archive_entry(archive, index.entry_by_path(name))
 
 
 @pytest.mark.skipif(
-    not (ANDROID / "LEVELS/TUTORIAL.TXT").exists() or not PC_ARCHIVE.exists(),
-    reason="needs extracted mobile assets and SnailMail.dat",
+    not (ANDROID / "LEVELS/TUTORIAL.TXT").exists()
+    or not (APK / "upramp.ogg").exists()
+    or not PC_ARCHIVE.exists(),
+    reason="needs extracted mobile assets, the unpacked APK assets and SnailMail.dat",
 )
 def test_mobile_tutorial_course_shows_the_pc_text_for_its_voice_clips():
-    tutorial = build_extras_files(ANDROID, PC_ARCHIVE)["LEVELS/TUTORIAL.TXT"].decode("latin-1")
+    tutorial = build_extras_files(ANDROID, PC_ARCHIVE, APK)["LEVELS/TUTORIAL.TXT"].decode("latin-1")
     mobile = (ANDROID / "LEVELS/TUTORIAL.TXT").read_bytes().decode("latin-1")
     # The mobile course: its speed and segment order stay.
     assert re.findall(r"^(Speed:.*|Tutorial \d+\.txt Duration=[\d.]+)", tutorial, re.MULTILINE) == re.findall(
@@ -71,3 +79,51 @@ def test_mobile_tutorial_course_shows_the_pc_text_for_its_voice_clips():
     assert 'Message="Asteroids slow me down.> Hold the Mouse Button> to shoot ]"' in tutorial
     assert "Tilt" not in tutorial.replace("MessageB", "")
     assert "Touch anywhere" not in tutorial
+
+
+@pytest.mark.skipif(
+    not (ANDROID / "X/_ANIMATION.TXT").exists() or not PC_ARCHIVE.exists(),
+    reason="needs extracted mobile assets and SnailMail.dat",
+)
+def test_mobile_credits_and_fall_animation_replace_the_pc_scripts():
+    files = build_extras_files(ANDROID, PC_ARCHIVE, APK)
+    pc_index = parse_archive_index(PC_ARCHIVE)
+
+    def pc_file(name):
+        return read_archive_entry(PC_ARCHIVE, pc_index.entry_by_path(name))
+
+    # cRLogo::Init reads both crawls the same way; Android's lists the mobile
+    # staff and runs for 45 s.
+    assert files["INTRO/CREDITS.TXT"] == (ANDROID / "INTRO/CREDITS.TXT").read_bytes()
+    assert b"Duration:35" in pc_file("Intro/Credits.txt")
+    assert b"Duration:45" in files["INTRO/CREDITS.TXT"]
+
+    # cRDirectX::LoadAnim reads only Duration and Mode. Only the fall differs:
+    # Android ping-pongs it every second, as its baked O_TURBO-FALL-000.SMO does.
+    def clips(script):
+        return {
+            name: (re.findall(rb"Duration:(\S+)", block), re.findall(rb"mode:(\S+)", block.lower()))
+            for name, block in re.findall(rb"Anim:(\S+)(.*?)AnimEnd:", script, re.DOTALL)
+        }
+
+    pc = clips(pc_file("X/_Animation.txt"))
+    mobile = clips(files["X/_ANIMATION.TXT"])
+    assert pc.keys() == mobile.keys()
+    assert {name for name in pc if pc[name] != mobile[name]} == {b"turbo-fall-000.x"}
+    assert pc[b"turbo-fall-000.x"] == ([b"6"], [b"once"])
+    assert mobile[b"turbo-fall-000.x"] == ([b"1"], [b"pingpong"])
+
+
+@pytest.mark.skipif(
+    not (ANDROID / "LEVELS/ARCADEPRO010.TXT").exists()
+    or not (APK / "upramp.ogg").exists()
+    or not PC_ARCHIVE.exists(),
+    reason="needs extracted mobile assets, the unpacked APK assets and SnailMail.dat",
+)
+def test_extras_add_the_mobile_ramp_sound_beside_the_pc_ones():
+    files = build_extras_files(ANDROID, PC_ARCHIVE, APK)
+    assert files["SFX2/UPRAMP.OGG"] == (APK / "upramp.ogg").read_bytes()
+    # The PC archive has no ramp sound, so Ultimate replaces none of its sounds.
+    pc_sounds = [entry.path for entry in parse_archive_index(PC_ARCHIVE).entries if entry.path.startswith("SFX2/")]
+    assert pc_sounds and "SFX2/UPRAMP.OGG" not in pc_sounds
+    assert [name for name in files if name.startswith("SFX2/")] == ["SFX2/UPRAMP.OGG"]

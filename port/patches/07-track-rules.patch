@@ -1,0 +1,92 @@
+Android's rules for what the snail meets on the track. Its cRSubGoldy::Collision
+(00077f5c) scores a health pickup as ScoreAdd kind 6, worth 250 (00070ed0);
+Windows scores none, and the port files the 250 under the bonus kind, as the
+Windows player keeps six score buckets. Collision and cRSubGame::AI (00082214)
+cap the ring counter at 8 where Windows caps it at 10: below the cap a normal
+ring plays the power-up voice and a default ramp ring keeps the next one close.
+cRSubGame::AddRing (00073290) turns a default ramp ring slow on a single roll
+above 0.93; Windows rolls RT2 for every ring the first roll leaves alone, and in
+Time Trial turns half of those slow. cRSubLoc::AI (00077760) fires a wall turret when
+RAND(100) falls below 4 + (1 - salt_frequency) * -3.5, following the level's
+Salt: setting; Windows below 4.
+
+--- a/decomp/game/SubGame/handle_subgoldy_collisions.cpp
++++ b/decomp/game/SubGame/handle_subgoldy_collisions.cpp
+@@ -206,6 +206,8 @@
+                         TRACK_PICKUP_STATE_TEARDOWN_PENDING;
+                     HealthCollect(&game->health_pickups[ii]);
+                     damage_gauge.Take(-0.5f, 0);
++                    if (g_port_ultimate)
++                        ScoreAdd(SUBGOLDY_SCORE_BONUS, 250);
+                 }
+             }
+         }
+@@ -284,7 +286,7 @@
+                     if (effect_kind == SUB_RING_KIND_NORMAL_DEFAULT
+                         || effect_kind == SUB_RING_KIND_NORMAL_AUTHORED) {
+                         int current_lives = lives;
+-                        if (current_lives < 10) {
++                        if (current_lives < (g_port_ultimate ? 8 : 10)) {
+                             if ((ladder_game->runtime_flags
+                                     & SUBGAME_RUNTIME_FLAG_RING_LIFE_REWARD)
+                                     != 0
+--- a/decomp/game/SubGame/update_subgame.cpp
++++ b/decomp/game/SubGame/update_subgame.cpp
+@@ -26,6 +26,8 @@
+ #include "track_parcel_runtime.h"
+ #include "segment_cache.h"
+ #include "vector3.h"
++
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ void cRSubGame::AI()
+ {
+@@ -465,7 +467,7 @@
+                                     AddRing(
+                                         &runtime_cells[cell_index][attachment_count], SUB_RING_KIND_NORMAL_DEFAULT,
+                                         &player, 0.0f);
+-                                    if (player.lives < 10)
++                                    if (player.lives < (g_port_ultimate ? 8 : 10))
+                                         player.last_ring_spawn_z =
+                                             runtime_cells[cell_index][attachment_count].position.z;
+                                     else
+--- a/decomp/game/SubGame/spawn_track_ring_or_special_effect.cpp
++++ b/decomp/game/SubGame/spawn_track_ring_or_special_effect.cpp
+@@ -10,6 +10,8 @@
+ #include "transform_matrix.h"
+ #include <stddef.h>
+ 
++extern bool g_port_ultimate; // shell/profile.h
++
+ struct SubRingSlotCursor {
+     char subgame_prefix[offsetof(cRSubGame, ring_effects)];
+     SubRing ring;
+@@ -44,7 +46,7 @@
+         slot_cursor->ring.owner_player = player;
+         if (requested_kind == SUB_RING_KIND_NORMAL_DEFAULT) {
+             if (RAND(1.0f, "RT") > 0.930000007f ||
+-                (RAND(1.0f, "RT2") > 0.5f
++                (!g_port_ultimate && RAND(1.0f, "RT2") > 0.5f
+                     && level_mode == requested_kind)) {
+                 requested_kind = SUB_RING_KIND_SLOW_DEFAULT;
+             }
+--- a/decomp/game/SubGame/update_sub_loc.cpp
++++ b/decomp/game/SubGame/update_sub_loc.cpp
+@@ -8,6 +8,7 @@
+ #include "track_attachment_types.h"
+ #include "vector3.h"
+ 
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ 
+ void cRSubLoc::AI()
+@@ -20,7 +21,8 @@
+         if ((float)g_game->subgame.first_block_row_count
+             >= g_game->subgame.embedded_player()->transform.position.z)
+             goto cull_check;
+-        if (RAND(100.0f, "W") < 4.0f) {
++        if (RAND(100.0f, "W")
++            < (g_port_ultimate ? (1.0f - g_game->subgame.salt_frequency) * -3.5f + 4.0f : 4.0f)) {
+             Vector3 spawn = position + Vector3(0.0f, 8.0f, 0.0f);
+             unsigned int merged_run_width =
+                 (lane_and_flags >> SUBLOC_MERGED_RUN_WIDTH_SHIFT)
