@@ -2,6 +2,7 @@
 
 import json
 import math
+import re
 import shutil
 import struct
 import subprocess
@@ -105,7 +106,11 @@ def test_first_ultimate_launch_keeps_preferences_but_not_pc_progress(tmp_path):
         (tmp_path / name).symlink_to(REPO_ROOT / "artifacts/bin" / name)
     config = bytearray(196)
     struct.pack_into("<ff", config, 0, 0.25, 0.75)
-    struct.pack_into("<ii", config, 0xA0, 50, 7)
+    struct.pack_into("<I", config, 0x1C, 0x1FE)
+    struct.pack_into("<i", config, 0x34, 0)
+    struct.pack_into("<ifi", config, 0x40, 90, 0.3, 10)
+    config[0x60:0x69] = b"Fluctuosa"
+    struct.pack_into("<iii", config, 0xA0, 50, 7, 1)
     config[0xC0] = 1
     (tmp_path / "SnailMail.cfg").write_bytes(config)
     subprocess.run(
@@ -114,9 +119,16 @@ def test_first_ultimate_launch_keeps_preferences_but_not_pc_progress(tmp_path):
         cwd=tmp_path, capture_output=True, text=True, check=True,
     )  # fmt: skip
     mobile = (tmp_path / "SnailMailMobile.cfg").read_bytes()
+    # Volumes and display settings carry over.
     assert struct.unpack_from("<ff", mobile, 0) == (0.25, 0.75)
-    # Campaign routes and the tutorial start over in the mobile campaign.
-    assert struct.unpack_from("<ii", mobile, 0xA0) == (1, 1)
+    assert mobile[0x08] == 0
+    assert struct.unpack_from("<I", mobile, 0x1C) == (0x1FE,)
+    assert struct.unpack_from("<i", mobile, 0x34) == (0,)
+    # Challenge settings, the high-score name and tab, the campaign routes and
+    # the tutorial start from the defaults, as on Android.
+    assert struct.unpack_from("<ifi", mobile, 0x40) == (40, pytest.approx(0.3), 40)
+    assert mobile[0x60] == 0
+    assert struct.unpack_from("<iii", mobile, 0xA0) == (1, 1, 0)
     assert mobile[0xC0] == 0
     assert (tmp_path / "SnailMail.cfg").read_bytes() == config
 
@@ -188,3 +200,61 @@ def test_each_complete_mobile_pro_course_starts(tmp_path, level):
     assert f'level "{name}"' in result.stderr
     for error in ("too long", "Cannot find segment", "Unknown path"):
         assert error not in result.stderr
+
+
+@pytest.mark.skipif(
+    shutil.which("node") is None
+    or not WASM.exists()
+    or not all(
+        (ASSETS / name).exists() for name in ("SnailMail.dat", "SnailMailExtras.dat")
+    ),
+    reason="needs browser WASM, node, and game archives",
+)
+def test_pro_state_ends_with_its_game_or_replay(tmp_path, port_layout_env):
+    def scramble(data: bytes) -> bytearray:
+        return bytearray(b ^ (i & 0xFF) for i, b in enumerate(data))
+
+    def level_name(path: str) -> str:
+        archive = ASSETS / "SnailMailExtras.dat"
+        entry = parse_archive_index(archive).entry_by_path(path)
+        return re.search(rb"Name:'([^']+)'", read_archive_entry(archive, entry))[1].decode()
+
+    for name in ("SnailMail.dat", "SnailMailExtras.dat"):
+        shutil.copyfile(ASSETS / name, tmp_path / name)
+    config = bytearray(196)
+    struct.pack_into("<ff", config, 0, 1.0, 1.0)
+    struct.pack_into("<ii", config, 0xA0, 50, 7)
+    config[0xC0] = 1
+    (tmp_path / "SnailMailMobile.cfg").write_bytes(config)
+    (tmp_path / "SnailMailPro.cfg").write_bytes(struct.pack("<ii", 10, 1))
+    # The top postal record and a Pro record named ProChamp both replay level 3.
+    scores = scramble(
+        (REPO_ROOT / "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat").read_bytes()
+    )
+    struct.pack_into("<i", scores, 0x2C, 3)
+    (tmp_path / "ScoreMobileA.dat").write_bytes(scramble(scores))
+    pro = scores[: struct.unpack_from("<I", scores, 0)[0]]
+    pro[0x5C : 0x5C + 20] = b"ProChamp".ljust(20, b"\x00")
+    (tmp_path / "ScorePro.dat").write_bytes(scramble(pro))
+    result = subprocess.run(
+        ["node", str(REPO_ROOT / "tests/port_pro_state.mjs"), str(WASM)],
+        cwd=tmp_path,
+        env=port_layout_env,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    report = json.loads(result.stdout.splitlines()[-1])
+    # Leaving Pro, by its credits or Back, puts the postal records back under
+    # the Postal title.
+    assert report["afterCredits"] == "banteg"
+    assert report["proView"] == "ProChamp"
+    assert report["afterProReplay"] == "ProChamp"
+    assert report["afterBack"] == "banteg"
+    assert report["postalView"] == "banteg"
+    # A Pro record replays on its Pro course, a postal one on the postal
+    # course, and neither moves the Pro galaxy's saved selection.
+    assert report["proReplay"] == level_name("LEVELS/ARCADEPRO003.TXT")
+    assert report["postalReplay"] == level_name("LEVELS/ARCADE003.TXT")
+    assert report["proProgressDuringReplay"] == [10, 1]
+    assert report["proProgress"] == [10, 1]

@@ -350,18 +350,25 @@ converted image with normalized UVs, including horizontal flips; PC
 backdrops retain their padded-image UV layout.
 
 Mobile campaign progress and scores use `SnailMailMobile.cfg` and
-`ScoreMobileA/B/C.dat`. The first mobile launch copies display/audio
-preferences from the PC config and starts its own campaign progress.
-Pro keeps `SnailMailPro.cfg` and `ScorePro.dat`. Switching to Original reloads
-the PC campaign and scores without rewriting them.
+`ScoreMobileA/B/C.dat`. The first mobile launch copies the volumes and display
+settings (fullscreen, render flags, display mode) from the PC config. The rest,
+from campaign progress and the tutorial to the Challenge sliders and the
+high-score name, starts at the defaults, which Android's match.
+Pro keeps `SnailMailPro.cfg` and `ScorePro.dat`. The Pro galaxy, progress and
+scores stand in for the postal ones only during a Pro game and a replay from
+the Pro High Scores, so the main menu and the Postal table always show postal
+records. A Pro record replays on its Pro course; Android clears its Pro flag on
+every replay launch (`cRHighScore::AI`), so it replays Pro records on the
+postal courses. Switching to Original reloads the PC campaign and scores
+without rewriting them.
 
 Android differences Ultimate leaves out: tilt and touch steering; the
 camera's wider field of view (120 where the PC has 110), which likely suits
-the phones' 3:2 screens; the slug-hit
-timer and firework variant; the Fluctuosa Pro unlock, resuming a Pro game,
-slug voice lines and the ramp and invulnerability sounds. Shared path meshes
-other than CAGE2, TWISTER2 and SBEND are not yet checked against the Android
-`.smo` meshes.
+the phones' 3:2 screens; the slug hit's vibration and its render-only
+flattening of Android's track mesh (`cRWorld`) during the death cut-scene; the
+Fluctuosa Pro unlock, resuming a Pro game, slug voice lines and the ramp and
+invulnerability sounds. Shared path meshes other than CAGE2, TWISTER2 and SBEND
+are not yet checked against the Android `.smo` meshes.
 
 Ultimate selects the mobile 3,500-row build limit; Original retains the PC
 3,100-row limit. Port builds reserve 3,600 runtime rows, including the tail
