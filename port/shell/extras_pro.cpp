@@ -73,12 +73,6 @@ struct ProPoint {
     float y;
 };
 
-// Android GUniverse1 (0x8c1c0 in libsnailmail.so).
-const ProPoint kProGalaxyGroupPoints[kProGalaxyCount] = {
-    {249.0f, 190.0f},
-    {588.0f, 350.0f},
-};
-
 const ProPoint kProRoutePoints[kProRouteSlotCount] = {
     {120.0f, 500.0f},
     {139.0f, 258.0f},
@@ -259,6 +253,8 @@ void build_pro_galaxy_layout()
     if (!file_text)
         return;
 
+    // StarmapProbg has both Pro galaxies painted in, and Android's cRGalaxy::Render
+    // (000593e0) draws no galaxy sprites, so the PC Galaxy000-009 sprites stay off screen.
     for (int g = 0; g < 10; ++g) {
         g_pro_galaxy_layout.route_names[g].map_x = -1000.0f;
         g_pro_galaxy_layout.route_names[g].map_y = -1000.0f;
@@ -289,11 +285,6 @@ void build_pro_galaxy_layout()
         int star_count = Rstrint(&cursor);
         g_pro_galaxy_layout.route_names[galaxy_index].star_count = star_count;
         g_pro_galaxy_layout.route_names[galaxy_index].color.store_color4f(1.0f, 1.0f, 1.0f, 0.800000012f);
-        g_pro_galaxy_layout.route_names[galaxy_index].map_x =
-            scale_galaxy_x(kProGalaxyGroupPoints[galaxy_index].x);
-        g_pro_galaxy_layout.route_names[galaxy_index].map_y =
-            scale_galaxy_y(kProGalaxyGroupPoints[galaxy_index].y);
-        g_pro_galaxy_layout.route_names[galaxy_index].map_z_bits = 0;
 
         for (int s = 0; s < star_count && g_pro_galaxy_layout.record_count < kProRouteSlotCount; ++s) {
             int slot = g_pro_galaxy_layout.record_count;
@@ -387,7 +378,8 @@ void extras_set_pro_mode(bool active)
     }
 }
 
-// Android cRIntro::Init (000674f8): adds "Pro-Challenge" below Challenge Mode.
+// Android cRIntro::Init (000674f8): adds "Pro-Challenge" between Postal
+// Adventure and Time Trial.
 void cRIntro::Init()
 {
     if (g_port_ultimate && g_pro_initialized) {
@@ -412,10 +404,12 @@ void cRIntro::Init()
         color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    g_pro_challenge_button->SetBelow(challenge_button);
+    g_pro_challenge_button->SetBelow(postal_button);
+    time_trial_button->SetBelow(g_pro_challenge_button);
+    challenge_button->SetBelow(time_trial_button);
 
     // Keep navigation separate from the five game modes. The PC Help anchor
-    // puts this stack inside the lower-left frame, clear of Pro-Challenge.
+    // puts this stack inside the lower-left frame, clear of Challenge Mode.
     help_button->layout_anchor_y = 300.0f;
     help_button->RePosition();
     back_button->layout_center_x = help_button->layout_center_x;
@@ -482,11 +476,6 @@ void cRGalaxy::Init()
 
     int landscape_index = g_game->subgame.landscape_manager.Import((char*)"StarMapPro.txt");
     g_game->backdrop.Change(&g_game->subgame.landscape_manager.scripts[landscape_index], 0);
-
-    if (route_title_widget) {
-        Rstrcpy(route_title_widget->text_buffer, (char*)"Special Assignment");
-        route_title_widget->RePosition();
-    }
 }
 
 // Android's cRSubTracks::Load (00074888) only reads the course; the galaxy pick

@@ -1,0 +1,19 @@
+Android's cRSubGoldy::AI (0007ac54) adds a trampoline ring
+(cRSubTrampRingManager::AddRing, 0006d5b4) where the snail bounces off a trampoline,
+and nowhere else; the no-fall clamp and a path entry squash the snail without one.
+
+--- a/decomp/game/SubGame/update_subgoldy.cpp
++++ b/decomp/game/SubGame/update_subgoldy.cpp
+@@ -78,2 +78,4 @@
++void extras_add_tramp_ring(cRSubLoc* cell); // shell/extras.h
++
+ void cRSubGoldy::AI()
+ {
+@@ -638,6 +640,7 @@
+                 && trampoline_cell->position.y - 0.49000001f < transform.position.y) {
+                 squidge.StartY(velocity.y);
+                 velocity.y = game->subgame_rate * 0.30000001f;
++                extras_add_tramp_ring(trampoline_cell);
+                 transform.position.y = trampoline_cell->position.y + 0.49000001f;
+                 attachment_exit_pending = 0;
+                 trampoline_bounce_active = 1;
