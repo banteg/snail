@@ -68,6 +68,16 @@ void print_widgets()
     }
 }
 
+int live_slug_count()
+{
+    int live = 0;
+    for (const cRSlug& slug : g_game->subgame.slug_hazards.slots) {
+        if (slug.state != SUB_SLUG_STATE_INACTIVE)
+            ++live;
+    }
+    return live;
+}
+
 }  // namespace
 
 int main(int argc, char** argv)
@@ -128,6 +138,7 @@ int main(int argc, char** argv)
     int tramp_rings = 0;
     int sway_rings = 0;
     int upright_hazards = 0;
+    int slugs = 0;
     int lives = -1;
     int padding = 0;
     int parcels = 0;
@@ -183,6 +194,10 @@ int main(int argc, char** argv)
         if (trace && fixes_upright_hazard_count() != upright_hazards) {
             upright_hazards = fixes_upright_hazard_count();
             fprintf(stderr, "tick %d: upright_hazards %d\n", tick, upright_hazards);
+        }
+        if (trace && live_slug_count() != slugs) {
+            slugs = live_slug_count();
+            fprintf(stderr, "tick %d: slugs %d\n", tick, slugs);
         }
         // Once a screen has settled, list its widgets (for writing click scripts).
         if (trace && g_game->fade.state == 0 && widget_set_signature() != widgets) {
