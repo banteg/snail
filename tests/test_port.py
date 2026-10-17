@@ -219,9 +219,9 @@ def test_ultimate_collects_parcels_within_the_mobile_radius(tmp_path):
         text=True,
         check=False,
     )
-    # 1.24 to 1.73 from the snail on tick 958: only the mobile radius takes it
-    # then; the PC radius takes it three ticks later.
-    assert "tick 958: parcels 1" in replay.stderr
+    # 1.24 to 1.73 from the snail on tick 1054: only the mobile radius takes it
+    # then; the PC radius takes it two ticks later.
+    assert "tick 1054: parcels 1" in replay.stderr
 
 
 @pytest.mark.skipif(
@@ -325,14 +325,15 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
     )
     # Android lays Padding between each pair of random segments and skips
     # their RAND draws, so the random fringe that follows differs from a
-    # build without it. Track: r trades the level's SpaceRed for a random PC
-    # space backdrop. Challenge (Mode:Challenge) lists its 49 segments
-    # without Padding before each.
+    # build without it. The track set, segment picks and fringe all come from
+    # Android's RandTable.bin stream. Track: r trades the level's SpaceRed for
+    # a random PC space backdrop. Challenge (Mode:Challenge) lists its 49
+    # segments without Padding before each.
     assert (
-        'level "Challenge 0" track_set 6 (Objects/World00/Track6.tga) fringe (0.910, 0.094, 1.000)'
-        " rows 2024 segments 49 backdrop Backgrounds/SpaceBlueswhorl.tga" in challenge.stderr
+        'level "Challenge 0" track_set 4 (Objects/World00/Track4.tga) fringe (1.000, 1.000, 1.000)'
+        " rows 2025 segments 49 backdrop Backgrounds/SpaceBlueswhorl.tga" in challenge.stderr
     )
-    assert "padding_segments 35" in challenge.stderr
+    assert "padding_segments 32" in challenge.stderr
 
     # Original reads Track: r as 5: a random PC track set and space backdrop,
     # and the fringe the level gives. Its New Game menu lists Challenge Mode
