@@ -1,11 +1,10 @@
 // update_keyboard_input @ 0x44b870 (cdecl)
 
+#include <string.h>
+
 #include "direct_input_view.h"
 #include "input_controller_state.h"
 #include "input_polling.h"
-
-extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
-extern "C" void* memset(void* destination, int value, unsigned int count);
 
 unsigned char is_key_down(int key_code);
 

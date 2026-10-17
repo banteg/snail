@@ -1,8 +1,8 @@
 // load_frontend_level_by_mode_and_index @ 0x443650 (thiscall, ret 0x8)
 
-#include "sub_tracks.h"
+#include <stdio.h>
 
-int sprintf(char* buffer, const char* format, ...);
+#include "sub_tracks.h"
 
 extern char g_arcade_level_format[]; // 0x4a5014
 extern char g_arcade_extra_level_path[]; // 0x4a5000

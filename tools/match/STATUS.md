@@ -4,7 +4,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 **646/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **231721/294505** bytes (**78.68%**) are proof-grade, and overall fuzzy is **99.56%**.
 
-**116/120** platform helpers matched, **120/120** have a scratch, **19889/22833** bytes (**87.11%**) are proof-grade, and overall fuzzy is **97.11%**. Platform progress is tracked separately from port-relevant totals.
+**116/120** platform helpers matched, **120/120** have a scratch, **19889/22833** bytes (**87.11%**) are proof-grade, and overall fuzzy is **98.41%**. Platform progress is tracked separately from port-relevant totals.
 
 **3** third-party functions (**568** curated-extent bytes) remain visible for context and are excluded from both progress totals.
 
@@ -738,7 +738,7 @@ Proof blockers (overlapping extents): encoding: 4 functions / 10944 bytes; instr
 | 🖥 | save_file_bytes_with_optional_archive_scramble | 0x4052a0 | 160 | 56/56 | 100.00% | 56/56 | 10 ok |  | replaceable-platform |
 | 🖥 | delete_file_path | 0x405340 | 16 | 5/5 | 100.00% | 5/5 | 1 ok |  | replaceable-platform |
 | 🖥 | toggle_archive_high_bit_in_place | 0x405350 | 32 | 11/11 | 100.00% | 11/11 | - |  | replaceable-platform |
-| 🖥 | rebuild_game_archive_if_needed | 0x405370 | 720 | 220/232 | 25.22% | 5/232 | 2 unaudited, 22 ok |  | replaceable-platform |
+| 🖥 | rebuild_game_archive_if_needed | 0x405370 | 720 | 232/232 | 66.38% | 5/232 | 22 ok |  | replaceable-platform |
 | 🖥 | log_startup_timestamp | 0x406d30 | 64 | 19/19 | 100.00% | 19/19 | 4 ok | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
 | 🖥 | game_startup_and_main_loop | 0x406dc0 | 1328 | 325/325 | 100.00% | 325/325 | 163 ok | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |
 | 🖥 | handle_game_window_activate | 0x4072f0 | 192 | 44/44 | 100.00% | 44/44 | 26 ok | msvc6.3 /O2 /G5 /W3 /GX | replaceable-platform |

@@ -2,8 +2,8 @@
 // Structure-first scratch for the runtime grid builder setup and clear pass.
 
 #include <stddef.h>
+#include <string.h>
 
-extern "C" void* memset(void* destination, int value, unsigned int count);
 #pragma intrinsic(memset)
 
 #include "rdebug.h"

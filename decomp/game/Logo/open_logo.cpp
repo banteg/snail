@@ -1,12 +1,12 @@
 // cRLogo::Open @ 0x419110 (thiscall)
 
+#include <stdio.h>
+
 #include "bod_types.h"
 #include "intro_screen_runtime.h"
 #include "object_render_types.h"
 #include "rshell.h"
 #include "sprite.h"
-
-int sprintf(char* buffer, char* format, ...);
 
 void cRLogo::Open()
 {

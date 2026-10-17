@@ -1,6 +1,6 @@
 // Sqrt @ 0x44cab0 (cdecl)
 
-extern "C" double __cdecl sqrt(double value);
+#include <math.h>
 
 float Sqrt(float value)
 {

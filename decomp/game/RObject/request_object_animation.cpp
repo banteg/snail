@@ -1,12 +1,11 @@
 // request_object_animation @ 0x430a70 (thiscall, ret 0x10)
 
+#include <math.h>
 #include <stddef.h>
 
 #include "object_animation_types.h"
 #include "object_render_types.h"
 #include "tracked_allocation_stack.h"
-
-extern "C" double __cdecl floor(double value);
 
 void cRObject::RequestAnim(
     int keyframe_count, XAnimationKeyframe* keyframes,

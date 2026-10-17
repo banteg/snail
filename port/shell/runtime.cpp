@@ -28,34 +28,6 @@ unsigned int msvc_rand_seed()
     return g_msvc_rand_state;
 }
 
-// Recovered sources that declare these without C linkage call them by their
-// C++ names; forward to the C library.
-int sprintf(char* buffer, char* format, ...)
-{
-    va_list args;
-    va_start(args, format);
-    int written = vsprintf(buffer, format, args);
-    va_end(args);
-    return written;
-}
-
-int vsprintf(char* buffer, char* format, void* args)
-{
-    return vsprintf(buffer, (const char*)format, *(va_list*)&args);
-}
-
-// C++-mangled sprintf(char*, const char*, ...): same parameters as the C
-// library's, so it is defined under its symbol name.
-int sprintf_cxx(char* buffer, const char* format, ...) __asm__("_Z7sprintfPcPKcz");
-int sprintf_cxx(char* buffer, const char* format, ...)
-{
-    va_list args;
-    va_start(args, format);
-    int written = vsprintf(buffer, format, args);
-    va_end(args);
-    return written;
-}
-
 // The shipped build compiled debug output away (debug_report_stub @ 0x44b7c0
 // is empty). The port prints it, which changes no game state.
 int debug_report_stub(char* format, ...)

@@ -1,12 +1,12 @@
 // load_segment_definitions @ 0x448160 (thiscall)
 
+#include <stdio.h>
+
 #include "game_root.h"
 #include "rstring.h"
 #include "rtext.h"
 #include "segment_catalog_types.h"
 #include "rshell.h"
-
-int sprintf(char* buffer, char* format, ...);
 
 void cRSMTracks::Import() {
     char path_name[64];

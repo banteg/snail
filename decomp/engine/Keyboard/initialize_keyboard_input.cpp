@@ -1,5 +1,7 @@
 // initialize_keyboard_input @ 0x44b7d0 (cdecl)
 
+#include <string.h>
+
 #include "direct_input_view.h"
 #include "input_polling.h"
 #include "win32_window_state.h"
@@ -12,7 +14,6 @@ extern "C" int __stdcall DirectInput8Create(
     const DirectInputGuid* iid,
     DirectInput** out_input,
     void* outer_unknown);
-extern "C" void* memset(void* destination, int value, unsigned int count);
 
 int initialize_keyboard_input(HWND hwnd)
 {

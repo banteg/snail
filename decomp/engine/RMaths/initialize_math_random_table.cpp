@@ -1,8 +1,8 @@
 // gRMathRand2Init @ 0x44c8d0 (cdecl)
 
-#include "rmath_random.h"
+#include <stdlib.h>
 
-extern "C" int __cdecl rand();
+#include "rmath_random.h"
 
 #include "rmath_tables.h"
 

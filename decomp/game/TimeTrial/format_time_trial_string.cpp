@@ -1,5 +1,7 @@
 // cRTimeTrial::TimeString / format_time_trial_string @ 0x448960 (ret 0x4)
 
+#include <stdio.h>
+
 typedef struct TimeTrialTimeCView {
     float total_seconds;        // +0x00
     int minutes;                // +0x04
@@ -8,8 +10,6 @@ typedef struct TimeTrialTimeCView {
     int display_thousandths;    // +0x10
     float second_fraction;      // +0x14
 } TimeTrialTimeCView;
-
-int sprintf(char* buffer, char* format, ...);
 
 extern char g_time_trial_string[]; // 0x751478
 

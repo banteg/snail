@@ -1,8 +1,8 @@
 // j_rand @ 0x44c920 (cdecl)
 
-#include "rmath_random.h"
+#include <stdlib.h>
 
-extern "C" int __cdecl rand();
+#include "rmath_random.h"
 
 int __cdecl j_rand()
 {

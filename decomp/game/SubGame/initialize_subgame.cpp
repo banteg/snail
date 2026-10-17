@@ -1,6 +1,7 @@
 // initialize_subgame @ 0x4374b0 (thiscall)
 
 #include <stddef.h>
+#include <string.h>
 
 #include "backdrop.h"
 #include "border_manager.h"
@@ -19,8 +20,6 @@
 #include "transform_matrix.h"
 #include "subgame_runtime.h"
 
-extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
-extern "C" void* memset(void* destination, int value, unsigned int count);
 #pragma intrinsic(memcpy)
 #pragma intrinsic(memset)
 

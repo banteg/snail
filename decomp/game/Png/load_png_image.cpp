@@ -1,6 +1,8 @@
 // load_png_image @ 0x42f0a0 (cdecl)
 
 #include <setjmp.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 typedef unsigned char png_byte;
 typedef unsigned short png_uint_16;
@@ -32,13 +34,6 @@ typedef png_color_16* png_color_16p;
 
 extern png_structp g_png_read_struct;
 extern png_infop g_png_info_struct;
-
-FILE* __cdecl fopen(char* path, char* mode);
-int __cdecl fclose(FILE* stream);
-int __cdecl fseek(FILE* stream, long offset, int origin);
-unsigned int __cdecl fread(void* buffer, unsigned int size, unsigned int count, FILE* stream);
-void* __cdecl malloc(unsigned int size);
-void __cdecl free(void* pointer);
 
 int __cdecl png_check_sig(png_bytep signature, int count);
 png_structp __cdecl png_create_read_struct(char* version, void* error_ptr, void* error_fn, void* warning_fn);

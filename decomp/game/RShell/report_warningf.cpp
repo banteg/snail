@@ -1,10 +1,9 @@
 // report_warningf @ 0x431d10 (cdecl)
 
 #include <stdarg.h>
+#include <stdio.h>
 
 #include "rdebug.h"
-
-int vsprintf(char* buffer, char* format, va_list args);
 
 int report_warningf(char* format, ...)
 {

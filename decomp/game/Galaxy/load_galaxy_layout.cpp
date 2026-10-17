@@ -1,12 +1,11 @@
 // load_galaxy_layout @ 0x4088e0 (thiscall)
 
 #include <stddef.h>
+#include <stdio.h>
 
 #include "game_root.h"
 #include "rshell.h"
 #include "rstring.h"
-
-int sprintf(char* buffer, char* format, ...);
 
 void cRGalaxy::Open()
 {

@@ -1,13 +1,13 @@
 // cRLandscapeManager::Import @ 0x4182f0 (thiscall, ret 0x4)
 
+#include <stdio.h>
+
 #include "game_root.h"
 #include "landscape_manager.h"
 #include "rdebug.h"
 #include "rshell.h"
 #include "rstring.h"
 #include "rtext.h"
-
-int sprintf(char* buffer, char* format, ...);
 
 int cRLandscapeManager::Import(char* script_name)
 {

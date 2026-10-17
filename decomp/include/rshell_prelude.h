@@ -95,6 +95,8 @@ enum RShellProjectHeaderStandIn {
 #include <io.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "archive_index.h"
 #include "audio_system.h"
 #include "authored_view_state.h"

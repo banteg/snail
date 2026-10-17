@@ -1,5 +1,7 @@
 // cRLogo::Init @ 0x4191e0 (thiscall, ret 0x4)
 
+#include <stdio.h>
+
 #include "backdrop.h"
 #include "bod_ai_dispatch.h"
 #include "bod_types.h"
@@ -21,8 +23,6 @@
 
 extern cRTextures g_texture_refs; // data_4b7790
 extern char g_blank_text[]; // data_4dfb08
-
-int sprintf(char* buffer, const char* format, ...);
 
 static __forceinline void add_intro_renderable_to_active_list(LogoLetter* bod)
 {

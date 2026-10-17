@@ -1,8 +1,8 @@
 // add_vapour_point @ 0x442560 (thiscall, ret 0x4)
 
-#include "vapour.h"
+#include <string.h>
 
-extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
+#include "vapour.h"
 
 void cRVapour::Add(tMatrix& point)
 {
