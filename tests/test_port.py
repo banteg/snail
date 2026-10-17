@@ -219,9 +219,9 @@ def test_ultimate_collects_parcels_within_the_mobile_radius(tmp_path):
         text=True,
         check=False,
     )
-    # 1.24 to 1.73 from the snail on tick 958: only the mobile radius takes it
-    # then; the PC radius takes it three ticks later.
-    assert "tick 958: parcels 1" in replay.stderr
+    # 1.24 to 1.73 from the snail on tick 1054: only the mobile radius takes it
+    # then; the PC radius takes it two ticks later.
+    assert "tick 1054: parcels 1" in replay.stderr
 
 
 @pytest.mark.skipif(
@@ -325,19 +325,25 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
     )
     # Android lays Padding between each pair of random segments and skips
     # their RAND draws, so the random fringe that follows differs from a
-    # build without it. Track: r trades the level's SpaceRed for a random PC
-    # space backdrop. Challenge (Mode:Challenge) lists its 49 segments
-    # without Padding before each.
+    # build without it. The track set, segment picks and fringe all come from
+    # Android's RandTable.bin stream. Track: r trades the level's SpaceRed for
+    # a random PC space backdrop. Challenge (Mode:Challenge) lists its 49
+    # segments without Padding before each.
     assert (
-        'level "Challenge 0" track_set 6 (Objects/World00/Track6.tga) fringe (0.910, 0.094, 1.000)'
-        " rows 2024 segments 49 backdrop Backgrounds/SpaceBlueswhorl.tga" in challenge.stderr
+        'level "Challenge 0" track_set 4 (Objects/World00/Track4.tga) fringe (1.000, 1.000, 1.000)'
+        " rows 2025 segments 49 backdrop Backgrounds/SpaceBlueswhorl.tga" in challenge.stderr
     )
-    assert "padding_segments 35" in challenge.stderr
+    assert "padding_segments 32" in challenge.stderr
 
     # Original reads Track: r as 5: a random PC track set and space backdrop,
-    # and the fringe the level gives.
+    # and the fringe the level gives. Its New Game menu lists Challenge Mode
+    # third.
+    (tmp_path / "challenge_original.keys").write_text(
+        "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 310\n820 click 3\n"
+        "900 mouse 320 320\n920 click 3\n1000 mouse 320 300\n"
+    )
     original = subprocess.run(
-        ["node", str(runner), str(wasm), "--profile", "original", "--warmup", "1", "--trace", "--keys", str(tmp_path / "challenge.keys")],
+        ["node", str(runner), str(wasm), "--profile", "original", "--warmup", "1", "--trace", "--keys", str(tmp_path / "challenge_original.keys")],
         cwd=tmp_path,
         capture_output=True,
         text=True,
@@ -511,7 +517,7 @@ console.log(JSON.stringify(out));
     # Padding before every listed segment, so a probe course on route 1 drives
     # both ring effects: a drop onto trampolines, then a ring with a RingSpeed=.
     rows = (
-        ["@________@"] * 20 + ["@        @ NoFall"] * 4 + ["@((((((((@ NoFall"] * 10
+        ["@________@"] * 20 + ["@        @ NoFall"] * 4 + ["@   (((  @ NoFall"] * 10
         + ["@________@"] * 30 + ["@___R____@ Ring=Normal RingSpeed=0.5"] + ["@________@"] * 40
     )
     extras = tmp_path / "SnailMailExtras.dat"
@@ -547,8 +553,10 @@ console.log(JSON.stringify(out));
         text=True,
         check=True,
     )
-    assert "tick 1474: sway_rings 1" in rings.stderr
-    assert "tick 1497: tramp_rings 1" in rings.stderr
+    assert "tick 1465: sway_rings 1" in rings.stderr
+    # The trampoline spans lanes 3-5; Android centres the ring on the middle
+    # lane (x = lane - 3.5).
+    assert "tick 1497: tramp_rings 1, first at x 0.50" in rings.stderr
     assert "tick 1549: tramp_rings 0" in rings.stderr
 
 

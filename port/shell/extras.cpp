@@ -90,6 +90,7 @@ cRSoundBank g_mobile_sound_bank[] = {
     {(char*)"sfx2/UpRamp.ogg", 0, 1},
     {(char*)"", 0, 0},
 };
+
 bool path_equals_ignore_case(const char* a, const char* b)
 {
     while (*a && *b) {
@@ -379,11 +380,17 @@ const char* extras_roman_numeral(int value)
 }
 
 void cRSound::Init(cRSoundBank* entries)
+{
     sound_init_recovered(this, entries);
     if (g_port_ultimate)
         sound_init_recovered(this, g_mobile_sound_bank);
+}
+
 int extras_upramp_sample()
+{
     return g_mobile_sound_bank[0].sample_id;
+}
+
 char __cdecl archive_or_file_exists(char* path, char force_filesystem)
 {
     path = (char*)extras_save_path(path);

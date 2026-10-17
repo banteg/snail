@@ -81,6 +81,9 @@ PORT_LAYOUT = (
     ("position", "offsetof(cRSubGoldy, transform.position)"),
     ("camera_target", "offsetof(cRSubGoldy, cached_camera_target_world)"),
     ("row_event", "offsetof(cRSubGoldy, row_event.id)"),
+    ("segment_slots", "offsetof(cRSubTracks, segment_slots)"),
+    ("segment_slot", "sizeof(SubSegment)"),
+    ("segment_message", "offsetof(SubSegment, message_text)"),
     ("total_score", "offsetof(cRSubGoldy, total_score)"),
     ("score_buckets", "offsetof(cRSubGoldy, score_buckets)"),
     ("score_bucket_count", "SUBGOLDY_SCORE_BUCKET_COUNT"),
@@ -139,8 +142,8 @@ def port_layout_env() -> dict[str, str]:
 @pytest.fixture
 def probe_course(tmp_path):
     """Play a course of the PC Start, the given segment rows and the PC Finish on the headless
-    build (Pro 10 in Ultimate, Postal 1 in Original) and return its `--trace`. The snail waits for
-    its start click at z = 4 unless `start`."""
+    build (Pro 10 in Ultimate, Postal 1 in Original) and return its `--trace`. Ultimate lays the
+    four-row Padding before the rows. The snail waits for its start click at z = 4 unless `start`."""
     runs = itertools.count()
 
     def play(rows, ultimate, start=False):
@@ -183,7 +186,7 @@ def probe_course(tmp_path):
         (directory / "SnailMailMobile.cfg").write_bytes(config)
         (directory / "SnailMailPro.cfg").write_bytes(struct.pack("<ii", 10, 10))
         keys = directory / "probe.keys"
-        menu = f"600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 {383 if ultimate else 172}\n820 click 3\n"
+        menu = f"600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 {240 if ultimate else 172}\n820 click 3\n"
         keys.write_text(menu)
         args = ["node", str(REPO_ROOT / "port/shell/run.mjs"), str(REPO_ROOT / "port/zig-out/bin/snail.wasm")]
         args += ["--trace", "--keys", str(keys), *(["--profile", "ultimate"] if ultimate else [])]

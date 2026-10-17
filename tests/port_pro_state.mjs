@@ -52,6 +52,9 @@ report.afterProReplay = postalName();
 click(210, 400);  // Back
 wait('the main menu', () => state() === 5);
 highScores();
+// High Scores reopens on the Pro table it last showed, as on Android; the
+// toggle leads on to Postal.
+toggle();
 report.afterBack = postalName();
 toggle();
 toggle();

@@ -36,11 +36,16 @@ export async function openGame(wasm, ultimate, playerName) {
       root = candidate;
   }
   if (!root) throw Error('game root not found');
-  return new Game(e, memory, root);
+  return new Game(e, memory, root, ultimate);
 }
 
+// Ultimate names two front-end entries as Android does
+// (port/patches/18-frontend-texts.patch); scenarios use the PC names.
+const ULTIMATE_LABELS = {'New Game': 'Play', 'Postal Mode': 'Postal Adventure'};
+
 class Game {
-  constructor(e, memory, root) {
+  constructor(e, memory, root, ultimate) {
+    this.labels = ultimate ? ULTIMATE_LABELS : {};
     this.e = e;
     this.memory = memory;
     this.root = root;
@@ -88,6 +93,7 @@ class Game {
   // Waits until a widget whose text starts with `text` shows on a settled
   // screen (no fade running), as the headless --trace lists them.
   find(text, ticks = 600) {
+    text = this.labels[text] ?? text;
     return this.until(() => this.memory().readInt32LE(this.root + LAYOUT.fade_state) === 0
       && this.widgets().find(w => w.text.startsWith(text)), ticks);
   }

@@ -17,6 +17,8 @@ HEADLESS = REPO_ROOT / "port/zig-out/bin/snail.wasm"
 REACTOR = REPO_ROOT / "port/zig-out/bin/snail-web.wasm"
 # The PC Start.txt rows; slugs spawn only after them.
 START_ROWS = 31
+# Ultimate lays Padding (four rows) before the probe segment, as Android does.
+PADDING_ROWS = 4
 
 
 def live_slugs(trace):
@@ -32,15 +34,15 @@ def live_slugs(trace):
     ("rows", "ultimate", "original"),
     [
         # Mobile formations need more than the PC's eight slug slots (Barrage, SlugLine).
-        (["@MMMMMMMM@"] * 2, 16, 8),
+        (lambda padding: ["@MMMMMMMM@"] * 2, 16, 8),
         # From z = 4 the scan reaches row 43 on Android and row 41 on the PC; slugs on rows 41 and 43.
-        (["@________@"] * (41 - START_ROWS) + ["@___M____@", "@________@", "@___M____@"], 2, 1),
+        (lambda padding: ["@________@"] * (41 - START_ROWS - padding) + ["@___M____@", "@________@", "@___M____@"], 2, 1),
     ],
     ids=["pool", "look-ahead"],
 )
 def test_slugs_alive_before_the_start(probe_course, rows, ultimate, original):
-    assert live_slugs(probe_course(rows, ultimate=True)) == ultimate
-    assert live_slugs(probe_course(rows, ultimate=False)) == original
+    assert live_slugs(probe_course(rows(PADDING_ROWS), ultimate=True)) == ultimate
+    assert live_slugs(probe_course(rows(0), ultimate=False)) == original
 
 
 @pytest.mark.skipif(

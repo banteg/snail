@@ -14,11 +14,13 @@ from snail.symbols import REPO_ROOT
 WASM = REPO_ROOT / "port/zig-out/bin/snail-web.wasm"
 ASSETS = REPO_ROOT / "artifacts/bin"
 # Pro 1 opens with ParcelTest after Start. Level ground for the warning and
-# invincibility, then a raised ramp ('>' twice), a plain ramp and a SuperTramp.
+# invincibility, then a raised ramp ('>' twice), a plain ramp far enough on
+# that the snail lands before it, and a SuperTramp.
+# A segment holds at most 256 rows (cRSubSegment::rows).
 PROBE_COURSE = (
-    ["@........@"] * 150
+    ["@........@"] * 136
     + ["@>>>>>>>>@"] * 2
-    + ["@........@"] * 12
+    + ["@........@"] * 24
     + ["@<<<<<<<<@"]
     + ["@........@"] * 12
     + ["@pppPPppp@  Path=SuperTramp"]
@@ -107,7 +109,7 @@ def test_warning_invincibility_and_ramp_sounds_follow_the_profile(tmp_path, port
     assert ticks(plays(original, "invincible")) == [200]
     assert not plays(ultimate, "invincible")
 
-    # The snail goes up the raised ramp, the plain ramp 14 rows on and off the
+    # The snail goes up the raised ramp, the plain ramp 26 rows on and off the
     # SuperTramp path. Once it lands past the raised ramp, the harness moves it
     # 3 rows back, as a new level or life moves it back to the start, and it
     # goes up the raised ramp again.
@@ -115,7 +117,7 @@ def test_warning_invincibility_and_ramp_sounds_follow_the_profile(tmp_path, port
         first = int(launches(events)[0]["launch"])
         return ["path" if event["riding"] else int(event["launch"]) - first for event in launches(events)]
 
-    assert lifts(original) == lifts(ultimate) == [0, 0, 14, "path"]
+    assert lifts(original) == lifts(ultimate) == [0, 0, 26, "path"]
     # Windows has no ramp sound. Android plays upramp each time but the second
     # time up the raised ramp: the snail is not more than 1.0 past the z where
     # upramp last played, and nothing resets that mark when the snail goes back.
