@@ -15,6 +15,11 @@ PORT_LAYOUT = (
     ("player", "offsetof(cRSubGame, player)"),
     ("sm_tracks", "offsetof(cRSubGame, sm_tracks)"),
     ("segment_entry", "sizeof(SegmentCatalogEntry)"),
+    ("frontend_state", "offsetof(cRGame, players[0].frontend_state)"),
+    ("galaxy_name", "offsetof(cRGame, subgame.galaxy.route_names[0].name)"),
+    ("splash_message", "offsetof(cRGame, subgame.splash.message_widget)"),
+    ("splash_state", "offsetof(cRGame, subgame.splash.message_state)"),
+    ("border_text", "offsetof(cRBorder, text_buffer)"),
 )
 
 

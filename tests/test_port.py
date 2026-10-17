@@ -1,6 +1,7 @@
 """Port build inputs: source selection, generated data and link forwarders."""
 
 import json
+import re
 import shutil
 import subprocess
 
@@ -256,7 +257,7 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
 
     (tmp_path / "postal46.keys").write_text(
         "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 170\n820 click 3\n"
-        "900 mouse 480 300\n920 click 3\n1000 mouse 320 300\n"
+        "900 mouse 210 300\n920 click 3\n1000 mouse 320 300\n"
     )
     postal = subprocess.run(
         ["node", str(runner), str(wasm), "--profile", "ultimate", "--trace", "--keys", str(tmp_path / "postal46.keys")],
@@ -265,12 +266,14 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
         text=True,
         check=True,
     )
+    # Android's route card leads with the level numeral and stays on screen.
+    assert 'at (50, 127) size 320 x 31 flags 0x20400003 "XLVI: Pomacea cuprina aurea"' in postal.stderr
     assert 'level "70 Gph!" track_set 4 (Objects/World00/Track4.tga)' in postal.stderr
 
     (tmp_path / "SnailMail.cfg").write_bytes(cfg)
     (tmp_path / "SnailMailMobile.cfg").write_bytes(cfg)
     (tmp_path / "challenge.keys").write_text(
-        "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 310\n820 click 3\n"
+        "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 383\n820 click 3\n"
         "900 mouse 320 320\n920 click 3\n1000 mouse 320 300\n"
     )
     challenge = subprocess.run(
@@ -443,6 +446,9 @@ console.log(JSON.stringify(out));
     assert replay.returncode == 3
     assert "tramp_rings 1" in replay.stderr
     assert "tramp_rings 0" in replay.stderr
+    # Slugfest!'s Trampolines segment lays three-lane trampolines on lanes 0-2
+    # and 5-7; Android centres each ring on the middle lane (x = lane - 3.5).
+    assert re.findall(r"tramp_rings 1, first at x (\S+)", replay.stderr) == ["-2.50", "2.50", "-2.50"]
     # A Windows replay is intentionally different under mobile pacing and
     # level data. Both ring effects must still run; classic playback stays exact.
     assert "tick 2583: sway_rings 1" in replay.stderr
@@ -549,7 +555,7 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
 
     (tmp_path / "pro1.keys").write_text(
         "600 escape\n700 mouse 345 112\n720 click 3\n"
-        "800 mouse 345 383\n820 click 3\n"
+        "800 mouse 345 240\n820 click 3\n"
         "900 mouse 289 287\n920 click 3\n"
     )
     pro1 = subprocess.run(
@@ -560,8 +566,10 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
         check=True,
     )
     assert '"Pro-Challenge"' in pro1.stderr
-    assert '"Special Assignment"' in pro1.stderr
-    assert '"Limax maximus"' in pro1.stderr
+    # Android keeps the postal map's title on the Pro map.
+    assert '"Intergalactic Delivery Route"' in pro1.stderr
+    assert "Special Assignment" not in pro1.stderr
+    assert '"I: Limax maximus"' in pro1.stderr
     assert "lives 8" in pro1.stderr  # a new Pro game, as on Android
     assert 'level "Pros Only" track_set 5 (Objects/World00/Track5.tga) fringe (0.871, 1.000, 0.039)' in pro1.stderr
     # save_game() runs at the end of pro1 while g_pro_state_swapped == true inside "Pros Only"
@@ -572,7 +580,7 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
     (tmp_path / "SnailMailPro.cfg").write_bytes(struct.pack("<ii", 10, 10))
     (tmp_path / "pro10.keys").write_text(
         "600 escape\n700 mouse 345 112\n720 click 3\n"
-        "800 mouse 345 383\n820 click 3\n"
+        "800 mouse 345 240\n820 click 3\n"
         "900 mouse 248 414\n920 click 3\n"
     )
     pro10 = subprocess.run(
@@ -582,7 +590,7 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
         text=True,
         check=True,
     )
-    assert '"Ariolimax columbianus"' in pro10.stderr
+    assert '"X: Ariolimax columbianus"' in pro10.stderr
     assert 'level "Eximius Ferreus" track_set 6 (Objects/World00/Track6.tga) fringe (1.000, 0.980, 0.196)' in pro10.stderr
     assert struct.unpack("<ii", (tmp_path / "SnailMailPro.cfg").read_bytes()) == (10, 10)
     assert struct.unpack_from("<ii", (tmp_path / "SnailMail.cfg").read_bytes(), 0xA0) == (50, 7)
