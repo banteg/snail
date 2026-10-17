@@ -517,7 +517,7 @@ console.log(JSON.stringify(out));
     # Padding before every listed segment, so a probe course on route 1 drives
     # both ring effects: a drop onto trampolines, then a ring with a RingSpeed=.
     rows = (
-        ["@________@"] * 20 + ["@        @ NoFall"] * 4 + ["@((((((((@ NoFall"] * 10
+        ["@________@"] * 20 + ["@        @ NoFall"] * 4 + ["@   (((  @ NoFall"] * 10
         + ["@________@"] * 30 + ["@___R____@ Ring=Normal RingSpeed=0.5"] + ["@________@"] * 40
     )
     extras = tmp_path / "SnailMailExtras.dat"
@@ -553,8 +553,10 @@ console.log(JSON.stringify(out));
         text=True,
         check=True,
     )
-    assert "tick 1474: sway_rings 1" in rings.stderr
-    assert "tick 1497: tramp_rings 1" in rings.stderr
+    assert "tick 1465: sway_rings 1" in rings.stderr
+    # The trampoline spans lanes 3-5; Android centres the ring on the middle
+    # lane (x = lane - 3.5).
+    assert "tick 1497: tramp_rings 1, first at x 0.50" in rings.stderr
     assert "tick 1549: tramp_rings 0" in rings.stderr
 
 
