@@ -45,6 +45,8 @@ recovered code.
 | `16-time-trial-completion` | a Time Trial finish opens the completion panel in Ultimate: the continue prompt, and on a new best time a blinking "NEW FASTEST TIME!" and the Perfect jingle | Android's `cRCutScene::AI` (00072a5c), `cRCompletion::Init` (0006102c) and `cRCompletion::AI` (00060c0c) |
 | `17-route-numerals` | in Ultimate a route card's title leads with the level's Roman numeral, and a card that would start left of 40 is anchored at 50 | Android's `cRGalaxy::BoxOn` (00058d80) |
 | `18-frontend-texts` | in Ultimate the main menu's first entry reads Play and Postal reads Postal Adventure; after the Pro galaxy the thanks-for-playing screen shows Android's three Pro texts | Android's `cRMainMenu::Init` (000697d4), `cRIntro::Init` (000674f8), `cRSplash::Init` (0006aba4) and `cRSplash::AI` (0006a900) |
+| `20-sound-cues` | in Ultimate, the damage warning plays postalloop every 72 ticks on a timer of its own, not at each 26-tick blink, and lets the last one finish; invincibility starts silently | Android's `cRWarning::Init` (00070334), `Start` (0006ecb0), `AI` (000704f4) and `StopSample` (0006d3f4), and `cRInvincible::Start` (0006d1fc) |
+| `21-upramp-sound` | in Ultimate, the mobile `upramp` sample plays on raised and plain ramps, once the snail is more than a row past the last ramp that played it, and at the SuperTramp launch; the `cRSound::Init` wrapper (`port/shell/extras.cpp`) registers it after the PC bank, so every PC sound id stays put | Android's `gSFXBank` (0009bacc), which inserts it at 42, `cRSubGoldy::AI` (0007ac54) and `cRPathFollowGoldy::Traverse` (0004d70c) |
 
 Narrow seams wrap a matched function in the shell instead (`port/wrapped.txt`,
 its body renamed `*_recovered`): the mobile content and rules in

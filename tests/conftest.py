@@ -126,12 +126,16 @@ PORT_LAYOUT = (
     ("solution_active", "offsetof(cRSubSolution, active)"),
     ("solution_score", "offsetof(cRSubSolution, score)"),
     ("solution_seconds", "offsetof(cRSubSolution, total_seconds)"),
+    ("player_vy", "offsetof(cRSubGoldy, velocity.y)"),
+    ("follow_active", "offsetof(cRSubGoldy, follow_state.active)"),
+    ("gauge_fill", "offsetof(cRSubGoldy, damage_gauge.fill)"),
+    ("shooting_tier", "offsetof(cRSubGoldy, shooting_tier)"),
 )
 
 
 @pytest.fixture(scope="session")
 def port_layout_env() -> dict[str, str]:
-    """The environment for a harness that reads `SNAIL_LAYOUT` (tests/port_mobile_runtime.mjs, port_frontend.mjs)."""
+    """The environment for a harness that reads `SNAIL_LAYOUT` (tests/port_mobile_runtime.mjs, port_frontend*.mjs)."""
     return {**os.environ, "SNAIL_LAYOUT": json.dumps(layout_offsets(REPO_ROOT, PORT_LAYOUT, port=True))}
 
 
