@@ -41,6 +41,8 @@ void intro_init_recovered(cRIntro* self)
     __asm__("_ZN7cRIntro14Init_recoveredEv");
 void intro_ai_recovered(cRIntro* self)
     __asm__("_ZN7cRIntro12AI_recoveredEv");
+void main_menu_init_recovered(cRMainMenu* self)
+    __asm__("_ZN10cRMainMenu14Init_recoveredEv");
 void galaxy_init_recovered(cRGalaxy* self)
     __asm__("_ZN8cRGalaxy14Init_recoveredEv");
 void load_frontend_level_recovered(cRSubTracks* self, int mode, int level_index)
@@ -418,6 +420,19 @@ void cRIntro::Init()
         g_pro_challenge_button->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;
 }
 
+// The Pro credits, when the run sets no high score, and Back from High Scores
+// after a Pro replay lead here. Android keeps Pro progress and scores in their
+// own slots (cRHighScore::Init 00066010 shows them as bank 3), so the main menu
+// starts without them.
+void cRMainMenu::Init()
+{
+    if (g_port_ultimate && g_pro_initialized) {
+        g_high_score_pro_view = false;
+        extras_set_pro_mode(false);
+    }
+    main_menu_init_recovered(this);
+}
+
 // Android cRIntro::AI (00067ab8): dispatches Pro-Challenge into Pro galaxy mode.
 void cRIntro::AI()
 {
@@ -463,13 +478,11 @@ void cRGalaxy::Init()
     g_game->backdrop.Change(&g_game->subgame.landscape_manager.scripts[landscape_index], 0);
 }
 
+// Android's cRSubTracks::Load (00074888) only reads the course; the galaxy pick
+// records the selection (cRSubGame::AI 00082214), and a replay never does.
 void cRSubTracks::load_frontend_level_by_mode_and_index(int mode, int level_index)
 {
     if (g_port_ultimate && g_pro_mode_active && mode == 0) {
-        if (level_index >= 1 && level_index <= g_pro_highest_route_index) {
-            g_pro_selected_route_index = level_index;
-            save_pro_progress_file();
-        }
         char path[128];
         sprintf(path, "ArcadePro%03i.txt", level_index);
         Init(path);
@@ -543,8 +556,9 @@ void cRHighScore::Init(int mode_, int rank)
         return;
     }
 
-    if (!g_pro_mode_active)
-        swap_out_pro_state();
+    // High Scores opens from the main menu or after a replay, never during a
+    // game, so the Postal and Challenge views run without Pro state.
+    extras_set_pro_mode(false);
     high_score_init_recovered(this, mode_, rank);
     if (mode_ == 1 && bank_toggle_button) {
         Rstrcpy(bank_toggle_button->text_buffer, (char*)"Pro Scores");
@@ -582,15 +596,9 @@ void cRHighScore::AI()
         return;
     }
 
-    if (back_button
-        && (back_button->widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
-        g_high_score_pro_view = false;
-        if (!g_pro_mode_active)
-            swap_out_pro_state();
-    }
-
-    // If launching a replay from the Pro High Scores view, enable g_pro_mode_active
-    // so load_frontend_level_by_mode_and_index loads ArcadePro%03i.txt.
+    // A replay from the Pro view plays on the Pro courses (ArcadePro%03i.txt).
+    // Android's cRHighScore::AI (00066e60) clears its Pro flag on every replay
+    // launch, so it replays Pro records on the postal courses.
     bool was_pro_view = g_high_score_pro_view;
     high_score_ai_recovered(this);
     if (was_pro_view && g_game->subgame.replay_launch_active == 1)
