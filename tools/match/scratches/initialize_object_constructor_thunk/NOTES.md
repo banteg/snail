@@ -14,3 +14,10 @@ introduced by placement-new. The old fake member aliases are therefore gone.
 
 The function lies inside the verified contiguous `RObject.o` run between
 `cRBod::ApplyPos` and `cRObject::Init`.
+
+## 2026-10-17 not an initializer pair
+
+Despite the `_thunk` file name, this is not a VC6 `_$E` dynamic-initializer
+thunk: no CRT constructor-table entry points here, and the body is the
+`cRObject::cRObject()` definition itself. It keeps its explicit constructor
+form.

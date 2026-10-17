@@ -2,7 +2,6 @@
 #ifndef G0_H
 #define G0_H
 
-void initialize_default_runtime_config(); // @ 0x406c20
 int log_startup_timestamp(); // @ 0x406d30
 void initialize_main_loop_display_state(); // @ 0x406d70
 void initialize_main_loop_timing_state(); // @ 0x406da0

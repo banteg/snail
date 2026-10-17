@@ -13,19 +13,11 @@ enum {
 
 class ParcelCandidate {
 public:
-    ParcelCandidate* noop_runtime_slot_constructor(); // sub_408600, returns this
+    ParcelCandidate(); // folded @ 0x408600
 
     int row;          // +0x00, row within the source segment
     Vector3 position; // +0x04, authored or glyph-derived local position
 };
-
-typedef ParcelCandidate* (ParcelCandidate::*ParcelCandidateConstructor)();
-
-void __stdcall initialize_array_with_constructor(
-    ParcelCandidate* base,
-    int stride,
-    int count,
-    ParcelCandidateConstructor constructor);
 
 struct ParcelBucket {
     ParcelCandidate candidates[PARCEL_CANDIDATE_CAPACITY]; // +0x000
