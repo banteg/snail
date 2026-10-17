@@ -335,9 +335,14 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
     assert "padding_segments 35" in challenge.stderr
 
     # Original reads Track: r as 5: a random PC track set and space backdrop,
-    # and the fringe the level gives.
+    # and the fringe the level gives. Its New Game menu lists Challenge Mode
+    # third.
+    (tmp_path / "challenge_original.keys").write_text(
+        "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 310\n820 click 3\n"
+        "900 mouse 320 320\n920 click 3\n1000 mouse 320 300\n"
+    )
     original = subprocess.run(
-        ["node", str(runner), str(wasm), "--profile", "original", "--warmup", "1", "--trace", "--keys", str(tmp_path / "challenge.keys")],
+        ["node", str(runner), str(wasm), "--profile", "original", "--warmup", "1", "--trace", "--keys", str(tmp_path / "challenge_original.keys")],
         cwd=tmp_path,
         capture_output=True,
         text=True,
