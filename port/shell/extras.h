@@ -19,6 +19,8 @@ cRSubSegment* extras_next_padding();
 void extras_begin_level_build();
 // For --trace: Padding segments in the last level built.
 int extras_padding_pick_count();
+struct cRSubLoc;
+void extras_add_tramp_ring(cRSubLoc* cell);
 void extras_clear_tramp_rings();
 void extras_step_tramp_rings();
 const PathPair* extras_get_mobile_path_pair(int extra_index);
