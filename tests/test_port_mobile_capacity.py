@@ -19,8 +19,12 @@ EXTRAS = REPO_ROOT / "artifacts/bin/SnailMailExtras.dat"
     shutil.which("node") is None or not all(p.exists() for p in (WASM, BASE, EXTRAS)),
     reason="needs node, snail.wasm, and both game archives",
 )
-@pytest.mark.parametrize("rows,ultimate,accepted", [(3231, True, True), (3499, True, True), (3500, True, False), (3231, False, False)])
+# ArcadePro010, the longest mobile course, has 3407 rows as Android lays it.
+@pytest.mark.parametrize("rows,ultimate,accepted", [(3407, True, True), (3499, True, True), (3500, True, False), (3407, False, False)])
 def test_mobile_course_capacity_before_condensation(tmp_path, rows, ultimate, accepted):
+    def segment_rows(data):
+        return sum(line.startswith(b"@") for line in data.splitlines()) - 2
+
     index = parse_archive_index(EXTRAS)
     files = {entry.path.upper(): read_archive_entry(EXTRAS, entry) for entry in index.entries}
     # Keep the entry/exit definitions independent of later mobile asset changes.
@@ -29,18 +33,21 @@ def test_mobile_course_capacity_before_condensation(tmp_path, rows, ultimate, ac
     for kind, source in (("Start", "START.TXT"), ("Finish", "FINISH.TXT")):
         data = read_archive_entry(BASE, base_index.entry_by_path("Segments/" + source))
         files[f"SEGMENTS/CAPACITY{kind.upper()}.TXT"] = data
-        entry_rows += sum(line.startswith(b"@") for line in data.splitlines()) - 2
-    padding = rows - entry_rows
+        entry_rows += segment_rows(data)
+    # Ultimate lays Padding before each listed segment, as Android does.
+    padding_rows = segment_rows(files["SEGMENTS/PADDING.TXT"]) if ultimate else 0
+    remaining = rows - entry_rows
     # A segment owns at most 256 rows, so split the course into smaller pieces.
     names = []
-    for number, start in enumerate(range(0, padding, 240)):
-        name = f"CapacityProbe{number}.txt"
+    while remaining > 0:
+        name = f"CapacityProbe{len(names)}.txt"
         names.append(name)
-        count = min(240, padding - start)
+        count = min(240, remaining - padding_rows)
         files[f"SEGMENTS/{name.upper()}"] = (
             "ID:0\r\nName:'CapacityProbe'\r\nData:\r\n@@@@@@@@@@\r\n"
             + "@________@\r\n" * count + "@@@@@@@@@@\r\n"
         ).encode()
+        remaining -= padding_rows + count
     level = files["LEVELS/ARCADEPRO010.TXT"]
     level = re.sub(
         rb"(Segments Begin:[^\r\n]*\r?\n).*?(Segments End:)",
@@ -68,7 +75,7 @@ def test_mobile_course_capacity_before_condensation(tmp_path, rows, ultimate, ac
     (tmp_path / "SnailMailMobile.cfg").write_bytes(config)
     (tmp_path / "SnailMailPro.cfg").write_bytes(struct.pack("<ii", 10, 10))
     keys = tmp_path / "pro10.keys"
-    menu_y = 383 if ultimate else 172
+    menu_y = 240 if ultimate else 172
     menu = (
         "600 escape\n700 mouse 345 112\n720 click 3\n"
         f"800 mouse 345 {menu_y}\n820 click 3\n"

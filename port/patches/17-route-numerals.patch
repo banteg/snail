@@ -1,0 +1,66 @@
+Android's cRGalaxy::BoxOn (00058d80) titles a route card "%s: %s", the level's
+numeral from gRomanNumbers (0x8c22c: "", I .. LI) before the galaxy name, so the
+card is sized around it: "XVI: Planoribis rubrum". Postal and Pro share BoxOn. Its
+layout loop also keeps the longer card on screen: a card that would start left of
+40 is anchored at 50 and stays there (literals at 0x4918c-0x491a8). The PC keeps its
+own right, top and bottom bounds.
+
+--- a/decomp/game/Galaxy/open_galaxy_route.cpp
++++ b/decomp/game/Galaxy/open_galaxy_route.cpp
+@@ -1,4 +1,6 @@
+ // open_galaxy_route @ 0x409c50 (thiscall, ret 4)
+ 
++#include <stdio.h>
++
+ #include "frontend_widget.h"
+ #include "galaxy_route_types.h"
+@@ -6,4 +8,7 @@
+ #include "subgame_runtime.h"
+ 
++extern bool g_port_ultimate; // shell/profile.h
++const char* extras_roman_numeral(int value); // shell/extras.h
++
+ void cRGalaxy::BoxOn(int selected_level_index)
+ {
+@@ -12,10 +17,16 @@
+ 
+     title_widget->UnHideInit();
+-    Rstrcpy(
+-        title_widget->text_buffer,
+-        route_names[route_slots[selected_index].record.route_name_index].name);
++    if (g_port_ultimate) {
++        sprintf(title_widget->text_buffer, "%s: %s", extras_roman_numeral(selected_index),
++            route_names[route_slots[selected_index].record.route_name_index].name);
++    } else {
++        Rstrcpy(
++            title_widget->text_buffer,
++            route_names[route_slots[selected_index].record.route_name_index].name);
++    }
+     title_widget->layout_anchor_x = route_slots[selected_index].record.map_x + 60.0f;
+     title_widget->layout_anchor_y = route_slots[selected_index].record.map_y - 130.0f;
+ 
++    bool left_clamped = false;
+     while (1) {
+         title_widget->RePosition();
+@@ -66,8 +77,12 @@
+         max_x += 8.0f;
+ 
+-        if (max_x > 630.0f) {
++        if (max_x > 630.0f && !left_clamped) {
+             title_widget->layout_anchor_x =
+                 route_slots[selected_index].record.map_x - (max_x - min_x) - 40.0f;
+         }
++        if (g_port_ultimate && min_x < 40.0f) {
++            left_clamped = true;
++            title_widget->layout_anchor_x = 50.0f;
++        }
+         if (min_y < 50.0f) {
+             title_widget->layout_anchor_y = 50.0f;
+@@ -80,4 +95,7 @@
+             continue;
+         }
++        if (g_port_ultimate && min_x < 39.0f) {
++            continue;
++        }
+         if (min_y < 49.0f) {
+             continue;

@@ -5,8 +5,8 @@
 // (docs/port/README.md#gameplay-profiles).
 // Original plays the PC release as shipped, its bugs included; both oracles
 // (20/20 replays, 10/10 lockstep sessions) check it bit for bit.
-// Ultimate plays the mobile courses and rules (shell/extras*.cpp) with every
-// fix for the original's own bugs (shell/fixes.cpp).
+// Ultimate plays the mobile courses and rules (shell/extras*.cpp, patches/)
+// with every fix for the original's own bugs (docs/port/original-bugs.md).
 extern bool g_port_ultimate;
 
 #endif
