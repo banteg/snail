@@ -2,15 +2,13 @@
 
 #include "direct3d_device8_view.h"
 #include "direct3d_renderer.h"
+#include "gl.h"
 #include "object_render_types.h"
 #include "render_pipeline_state.h"
 #include "rerror.h"
 #include "rmath_random.h"
 #include "sprite.h"
 #include "vertex_buffer_view.h"
-
-void bind_texture_ref(cRTexture* texture);
-void set_immediate_blend_mode(int blend_mode);
 
 void draw_textured_quad_immediate(
     cRTexture* texture,

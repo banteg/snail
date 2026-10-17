@@ -2,6 +2,7 @@
 
 #include "authored_view_state.h"
 #include "game_root.h"
+#include "input_polling.h"
 #include "mouse_input_state.h"
 #include "runtime_config.h"
 #include "win32_window_state.h"
@@ -9,9 +10,6 @@
 extern "C" __declspec(dllimport) BOOL __stdcall GetCursorPos(Point* point);
 extern "C" __declspec(dllimport) HWND __stdcall GetActiveWindow();
 extern "C" __declspec(dllimport) BOOL __stdcall SetCursorPos(int x, int y);
-
-float resolve_uncaptured_cursor_sensitivity_scale(float scale);
-
 
 void convert_mouse_screen_xy(int sensitivity_slot, float* x, float* y)
 {

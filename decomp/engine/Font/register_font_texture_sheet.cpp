@@ -5,8 +5,6 @@
 #include "tga_image_view.h"
 #include "tracked_allocation_stack.h"
 
-int sample_tga_pixel_rgb(TgaImageView* image, int x, int y);
-
 int FontLoad(
     char* texture_path,
     int shadow_offset_pixels,

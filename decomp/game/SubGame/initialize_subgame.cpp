@@ -29,8 +29,6 @@ extern char g_menu_background_script_path[]; // 0x4a347c
 extern char g_blank_text[]; // 0x4dfb08
 extern SubSegmentRaw* g_builtin_segment_definitions[]; // 0x4a63d0
 
-char* save_config_file(char* file_name, void* bytes, int byte_count); // @ 0x42f540
-
 void cRSubGame::Init()
 {
     int scratch[6];

@@ -1,6 +1,7 @@
 // handle_game_window_activate @ 0x4072f0 (cdecl)
 
 #include "audio_system.h"
+#include "gl.h"
 #include "main_loop_state.h"
 #include "mouse_input_state.h"
 #include "rdebug.h"
@@ -11,8 +12,6 @@ extern "C" __declspec(dllimport) unsigned int __stdcall timeGetTime();
 extern "C" __declspec(dllimport) BOOL __stdcall ShowWindow(HWND window, int command);
 extern "C" __declspec(dllimport) BOOL __stdcall SetForegroundWindow(HWND window);
 extern "C" __declspec(dllimport) HWND __stdcall SetFocus(HWND window);
-
-void set_fullscreen_mode(char enabled);
 
 int handle_game_window_activate()
 {

@@ -1,6 +1,7 @@
 // rebuild_game_archive_if_needed @ 0x405370 (cdecl, C mode)
 
 #include "archive_index.h"
+#include "datbuild.h"
 #include "tga_image_view.h"
 
 typedef unsigned char u8;
@@ -10,12 +11,8 @@ void __cdecl free(void* pointer);
 void* __cdecl memcpy(void* dest, const void* src, unsigned int count);
 int printf(char* format, ...);
 
-char __cdecl file_exists(char* path);
-void* __cdecl load_file_bytes_allocating(char* file_name, int* out_size);
 void __cdecl toggle_archive_high_bit_in_place(void* bytes, int byte_count);
 ArchiveEntryExtensionClass __cdecl classify_archive_entry_extension(u8* path, u8* stem_out);
-int __cdecl save_file_bytes_with_optional_archive_scramble(char* file_name, void* bytes, int byte_count, char should_scramble);
-void __cdecl delete_file_path(char* path);
 
 int __cdecl load_png_image(
     char* png_path,

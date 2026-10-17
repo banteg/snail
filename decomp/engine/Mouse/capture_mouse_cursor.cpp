@@ -1,8 +1,7 @@
 // cRMouse::SetActive @ 0x44c3c0 (thiscall, ret)
 
+#include "input_polling.h"
 #include "mouse_cursor_state.h"
-
-void click_mouse_screen(int slot, int x, int y);
 
 void cRMouse::SetActive()
 {

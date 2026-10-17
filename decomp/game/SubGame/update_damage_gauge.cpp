@@ -2,27 +2,13 @@
 // Advances the contact-damage gauge state machine and queues its HUD quads.
 
 #include "damage_guage.h"
+#include "font_system.h"
 #include "game_root.h"
 #include "rmath_random.h"
 #include "sprite.h"
 #include "snail_skin.h"
 #include "voice_manager.h"
 #include "warning.h"
-
-int OSDPrintUV(
-    int texture_id,
-    float x,
-    float y,
-    float width,
-    float height,
-    int flags,
-    tColour* color,
-    float u0,
-    float v0,
-    float u1,
-    float v1,
-    int blend_mode,
-    float rotation);
 
 void cRDamageGuage::AI()
 {

@@ -61,4 +61,9 @@ typedef char RuntimeConfig_must_be_0xc4[
 
 extern RuntimeConfig g_runtime_config; // data_4df918
 
+// Register.o's config file helpers (mobile gRegisterSaveFile).
+void* load_config_file(char* file_name, void* buffer); // @ 0x42f470
+char* save_config_file(char* file_name, void* bytes, int byte_count); // @ 0x42f540
+char validate_config_tail_stub(char* config_tail); // @ 0x42f5b0
+
 #endif

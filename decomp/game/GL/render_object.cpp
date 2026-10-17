@@ -1,15 +1,12 @@
 // render_object @ 0x4126c0 (cdecl)
 
+#include "gl.h"
 #include "object_render_types.h"
 #include "render_pipeline_state.h"
 #include "sprite.h"
 #include "transform_matrix.h"
 
 int set_cull_mode(char cull_front); // @ 0x4129f0
-void set_blend_mode(int blend_mode); // @ 0x412d00
-void set_object_color(Object* object, tColour color); // @ 0x4141d0
-void bind_texture_ref(cRTexture* texture); // @ 0x414500
-void render_object_toon(Object* object, TransformMatrix* matrix); // @ 0x4123e0
 
 void render_object(
     Object* object,

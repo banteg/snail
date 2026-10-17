@@ -1,5 +1,6 @@
 // render_object_toon @ 0x4123e0 (cdecl)
 
+#include "gl.h"
 #include "object_render_types.h"
 #include "render_pipeline_state.h"
 #include "sprite.h"
@@ -8,7 +9,6 @@
 
 TransformMatrix* __stdcall build_perspective_projection_matrix(
     TransformMatrix* matrix, float arg2, float arg3, float near_z, float far_z); // @ 0x450314
-void bind_texture_ref(cRTexture* texture); // @ 0x414500
 
 void render_object_toon(Object* object, TransformMatrix* matrix)
 {

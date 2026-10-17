@@ -19,4 +19,6 @@ typedef struct TgaImageView {
 typedef char TgaImageView_must_be_0x14[
     (sizeof(TgaImageView) == 0x14) ? 1 : -1];
 
+int sample_tga_pixel_rgb(TgaImageView* image, int x, int y); // @ 0x44e780
+
 #endif

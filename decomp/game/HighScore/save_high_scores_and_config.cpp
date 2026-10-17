@@ -7,8 +7,6 @@
 
 const int HIGH_SCORE_SAVE_BUFFER_SIZE = 0x4c4b40;
 
-extern char* save_config_file(char* file_name, void* bytes, int byte_count);
-
 void cRSubHighScore::MiniSave(unsigned char save_mask)
 {
     char* bytes = (char*)allocate_tracked_memory(

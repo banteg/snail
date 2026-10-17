@@ -4,8 +4,6 @@
 #include "options.h"
 #include "runtime_config.h"
 
-extern char* save_config_file(char* file_name, void* bytes, int byte_count);
-
 void cROptions::UnInit()
 {
     g_game->border_manager.UnHideBorders();

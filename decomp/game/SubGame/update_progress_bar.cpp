@@ -6,22 +6,6 @@
 #include "progress_bar.h"
 #include "sprite.h"
 
-
-int OSDPrintUV(
-    int texture_id,
-    float x,
-    float y,
-    float width,
-    float height,
-    int flags,
-    tColour* color,
-    float u0,
-    float v0,
-    float u1,
-    float v1,
-    int blend_mode,
-    float rotation);
-
 void cRProgressBar::AI()
 {
     GameRoot* game = g_game;

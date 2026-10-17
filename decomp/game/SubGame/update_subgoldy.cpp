@@ -8,6 +8,7 @@
 // slow commentary, collisions, anim managers, movement flags/emitters,
 // and the replay cursor / times-up tail.
 
+#include "input_polling.h"
 #include "rmath_random.h"
 #include "x87_store.h"
 #include <stddef.h>
@@ -34,8 +35,6 @@
 #include "track_attachment_types.h"
 #include "track_parcel_runtime.h"
 #include "voice_manager.h"
-
-float resolve_uncaptured_cursor_sensitivity_scale(float scale);
 
 enum {
     TIME_TRIAL_RECORD_BANK_FROM_SUBGAME =

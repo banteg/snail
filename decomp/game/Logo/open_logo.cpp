@@ -6,7 +6,6 @@
 #include "rshell.h"
 #include "sprite.h"
 
-void load_object_definition(char* path, Object* object); // @ 0x44c420
 int sprintf(char* buffer, char* format, ...);
 
 void cRLogo::Open()

@@ -3,12 +3,11 @@
 #include <direct.h>
 
 #include "archive_index.h"
+#include "datbuild.h"
 #include "rerror.h"
 #include "rshell.h"
 #include "loading_bar.h"
 #include "tracked_allocation_stack.h"
-
-int get_stream_length_preserve_position(FILE* file);
 
 char* __cdecl load_file_bytes_from_archive_or_fs(
     char* file_name, char* buffer, int* out_size)

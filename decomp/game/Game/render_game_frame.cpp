@@ -3,6 +3,8 @@
 #include "bod_types.h"
 #include "font_system.h"
 #include "game_root.h"
+#include "gdx.h"
+#include "gl.h"
 #include "object_animation_types.h"
 #include "object_render_types.h"
 #include "rdebug.h"
@@ -10,11 +12,6 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-int reset_render_counters();                // @ 0x414650
-void begin_sprite_depth_render_state();      // @ 0x413540
-void end_sprite_depth_render_state();        // @ 0x413650
-int begin_overlay_render_state();           // @ 0x411e10
-int end_overlay_render_state();              // @ 0x411de0
 void noop_runtime_ai();                      // @ 0x407b50
 int draw_sprite_quad(Vector3* position, cRSprite* sprite); // @ 0x4137f0
 

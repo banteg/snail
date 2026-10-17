@@ -2,22 +2,8 @@
 // Queues the active split backdrop textures side-by-side.
 
 #include "backdrop.h"
+#include "font_system.h"
 #include "sprite.h"
-
-int OSDPrintUV(
-    int texture_id,
-    float x,
-    float y,
-    float width,
-    float height,
-    int flags,
-    tColour* color,
-    float u0,
-    float v0,
-    float u1,
-    float v1,
-    int blend_mode,
-    float rotation);
 
 int cRBackdrop::draw_split_backdrop()
 {

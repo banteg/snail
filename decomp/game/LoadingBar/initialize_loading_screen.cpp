@@ -2,6 +2,7 @@
 
 #include "direct3d_device8_view.h"
 #include "direct3d_renderer.h"
+#include "gdx.h"
 #include "loading_bar.h"
 #include "rerror.h"
 #include "runtime_config.h"
@@ -20,8 +21,6 @@ extern "C" int __stdcall D3DXCreateTextureFromFileExA(Direct3DDevice8* device, c
     unsigned int color_key, void* src_info, void* palette, Direct3DTexture8** texture);
 extern "C" int __stdcall D3DXCreateTextureFromFileA(
     Direct3DDevice8* device, char* path, Direct3DTexture8** texture);
-
-int begin_overlay_render_state();
 
 void cRLoadingBar::Init()
 {

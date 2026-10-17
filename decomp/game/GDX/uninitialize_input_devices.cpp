@@ -1,10 +1,7 @@
 // uninitialize_input_devices @ 0x411d80 (cdecl, tail return)
 
 #include "direct3d_renderer.h"
-
-int release_input_controllers();
-void release_keyboard_input();
-int release_mouse_input();
+#include "input_polling.h"
 
 int uninitialize_input_devices()
 {

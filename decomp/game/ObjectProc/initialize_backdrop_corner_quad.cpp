@@ -1,10 +1,9 @@
 // ObjectProcTileFloorCornerFast @ 0x41a290 (cdecl)
 
+#include "object_proc.h"
 #include "object_render_types.h"
 
 extern int g_backdrop_corner_vertex_indices[4]; // 0x4a3ce0
-
-void ObjectProcTileFloorFast(Object* object, char* texture_path, float x_offset);
 
 void ObjectProcTileFloorCornerFast(int selector, Object* object, char* texture_path)
 {

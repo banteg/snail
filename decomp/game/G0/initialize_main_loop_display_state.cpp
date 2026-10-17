@@ -1,11 +1,10 @@
 // initialize_main_loop_display_state @ 0x406d70 (cdecl)
 
 #include "display_mode_state.h"
+#include "g0.h"
 #include "main_loop_state.h"
 #include "render_pipeline_state.h"
 #include "transform_matrix.h"
-
-void initialize_main_loop_timing_state(); // @ 0x406da0
 
 void initialize_main_loop_display_state()
 {
