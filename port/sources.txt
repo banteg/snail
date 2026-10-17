@@ -499,6 +499,7 @@
 ../decomp/game/SubGame/initialize_anim_manager.cpp
 ../decomp/game/SubGame/update_anim_manager.cpp
 ../decomp/game/SubGame/initialize_squidge.cpp
+../decomp/game/SubGame/start_squidge_y.cpp
 ../decomp/game/SubGame/start_squidge_z.cpp
 ../decomp/game/SubGame/update_squidge.cpp
 ../decomp/game/SubGame/initialize_invincible_shell.cpp

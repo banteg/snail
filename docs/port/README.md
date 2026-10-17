@@ -332,9 +332,12 @@ into PC-layout 24-bit `Track4`–`6.tga` and `Slide4`–`6.tga` textures,
 converting the Pro backgrounds (`SpacePro`, `SpacePro2`, `StarmapProbg`,
 `SplashPro_A`/`_B`) and `Galaxy/*Pro.tga` overlays to PC TGA conventions, and
 packing `Sprites/FringeColours.tga`, `Objects/TrampRing/`, `Galaxy/_GalaxyPro.txt`,
-all 65 mobile level files and all 176 segment definitions, including shared
-names whose layouts changed. The combined catalog loads before any levels
-are parsed. Original uses only the PC archive and catalog. The mobile
+`Intro/Credits.txt` (the mobile staff and a 45 s crawl instead of 35 s),
+`X/_Animation.txt` (the falling snail swings between its two poses every
+second instead of curling once over six), all 65 mobile level files and all
+176 segment definitions, including shared names whose layouts changed. The
+combined catalog loads before any levels are parsed. Original uses only the
+PC archive and catalog. The mobile
 tutorial course keeps its own speed, segments and timing, but each line shows
 the PC text for the voice clip it plays: the port plays the PC clips, which
 say to steer with the mouse and hold its button to shoot, where the mobile
@@ -343,14 +346,27 @@ text says tilt and touch.
 The narrow hooks (`port/wrapped.txt`, `port/shell/extras.cpp`,
 `port/shell/extras_paths.cpp`, `port/shell/extras_pro.cpp`) select the mobile
 level data, seven track sets, new path templates, mobile CAGE2/TWISTER2
-geometry, trampoline effects and moving weapon rings. The New Game menu
-adds **Pro-Challenge**, opening the ten-level **Special Assignment** galaxy.
+geometry, trampoline effects and moving weapon rings. As on Android, every
+course but Challenge (postal, Time Trial, Pro and the tutorial) lays the
+four-row Padding segment before each segment its level lists, so
+ArcadePro010, the longest, builds 3,407 rows rather than 3,231. The front end follows
+Android: **Play** opens the New Game menu, which lists Postal Adventure,
+**Pro-Challenge**, Time Trial and Challenge Mode, and route cards lead with the
+level's numeral ("XVI: Planoribis rubrum"). Pro-Challenge opens the ten-level
+Pro galaxy (Limax maximus and Ariolimax columbianus) on Android's Pro star map,
+which has both galaxies painted in, and finishing it shows Android's Pro ending.
 Mobile acceleration and power-up pacing apply in every game mode;
 Original delegates to the PC rules. Patches at the native sites add the
 other Android rules (divergences.md#patches): a new Pro-Challenge game starts
 with 8 lives instead of 3, parcels are collected within 1.73 of the snail
-instead of 1.24, and `Random:` courses (Challenge) lay the four-row Padding
-segment between each pair of random segments. The shell's `j_rand` and
+instead of 1.24, `Random:` courses (Challenge) lay the four-row Padding
+segment between each pair of random segments, and only `Track: r` picks a
+random space backdrop and fringe colour, so Pro 1-5 (`Track: 5`, a mobile
+track set) keep their SpacePro sky. A path without a heading keeps
+its own roll, so turnovers roll the camera, and the snail can leave a path
+sideways while the jetpack is on. S-bends lift the camera linearly, to 0.55 of
+the snail's height at the top, and off a lift path the lift eases out by 0.98 a
+tick instead of dropping to 0. The shell's `j_rand` and
 `RandSeed` make `RAND` and `SRAND` step Android's index through
 `RandTable.bin`, so a seed draws what it draws on Android, the fixed seed 0
 of Time Trial and the tutorial included. Pro skies use the full
@@ -366,8 +382,10 @@ the PC campaign and scores without rewriting them.
 Android differences Ultimate leaves out: tilt and touch steering; the
 camera's wider field of view (120 where the PC has 110), which likely suits
 the phones' 3:2 screens; the slug-hit
-timer and firework variant; the Fluctuosa Pro unlock, resuming a Pro game,
-slug voice lines and the ramp and invulnerability sounds. Shared path meshes
+timer and firework variant; the Fluctuosa Pro unlock, resuming a postal or
+Pro game, slug voice lines and the ramp and invulnerability sounds; the
+OpenFeint logo that replaced the main menu's Exit button; the layout for the
+phones' 480x320 screens. Shared path meshes
 other than CAGE2, TWISTER2 and SBEND are not yet checked against the Android
 `.smo` meshes.
 
