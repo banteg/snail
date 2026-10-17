@@ -349,6 +349,26 @@ segment between each pair of random segments. Pro skies use the full
 converted image with normalized UVs, including horizontal flips; PC
 backdrops retain their padded-image UV layout.
 
+Patches also carry Android's rules on the track and at the finish:
+
+- a health pickup scores 250 points, which count toward the extra life every
+  50,000;
+- the ring counter, which keeps the power-up voice playing and default ramp
+  rings close together, stops at 8 rings instead of 10;
+- a default ramp ring turns slow on a single roll, 7% of the time; the PC
+  rolls again for every ring and, in Time Trial, turns about half of them
+  slow;
+- a wall turret fires with a chance of 4 − 3.5 × (1 − s) percent per tick,
+  s being the level's salt frequency (`Salt:` / 100), where the PC fires at
+  4 percent; most mobile courses set `Salt:10` or `Salt:20` (0.85 and 1.2
+  percent);
+- a segment's message (the tutorial's lines) starts 10 rows before its
+  segment and clears the tip still showing;
+- the replay cursor and sample count hold while the delivery summary waits
+  for a click, so an idle summary never reaches Time's Up;
+- skipping the delivery tally keeps the level bonus's extra life, a PC bug
+  Android fixed ([Original bugs](original-bugs.md)).
+
 Mobile campaign progress and scores use `SnailMailMobile.cfg` and
 `ScoreMobileA/B/C.dat`. The first mobile launch copies display/audio
 preferences from the PC config and starts its own campaign progress.

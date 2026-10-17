@@ -443,9 +443,10 @@ console.log(JSON.stringify(out));
     assert replay.returncode == 3
     assert "tramp_rings 1" in replay.stderr
     assert "tramp_rings 0" in replay.stderr
-    # A Windows replay is intentionally different under mobile pacing and
-    # level data. Both ring effects must still run; classic playback stays exact.
-    assert "tick 2583: sway_rings 1" in replay.stderr
+    # A Windows replay is intentionally different under mobile pacing, level
+    # data and rules (Slugfest's wall turrets fire at Android's Salt: chance).
+    # Both ring effects must still run; classic playback stays exact.
+    assert "tick 2587: sway_rings 1" in replay.stderr
     assert "first divergence at sample" in replay.stderr
 
     original = subprocess.run(

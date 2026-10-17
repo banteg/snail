@@ -5,7 +5,9 @@ import { WASI } from 'node:wasi';
 // Field offsets in the port's layout, from the test (tests/conftest.py).
 export const LAYOUT = JSON.parse(process.env.SNAIL_LAYOUT);
 
-export async function openMobileGame(wasm, presenter = {}) {
+// Opens Pro 1 ("Pros Only"), found by its name and its 25 segments; a test
+// that rewrites the course passes its own segment count.
+export async function openMobileGame(wasm, presenter = {}, segments = 25) {
   const wasi = new WASI({version: 'preview1', args: [], env: {...process.env, PWD: process.cwd()}, preopens: {'/': process.cwd()}});
   const module = await WebAssembly.compile(await readFile(wasm));
   const imports = wasi.getImportObject();
@@ -29,7 +31,7 @@ export async function openMobileGame(wasm, presenter = {}) {
   for(let p=m.indexOf(needle);p>=0;p=m.indexOf(needle,p+1)) {
     const candidate=p-LAYOUT.subgame-LAYOUT.level_definition-LAYOUT.level_display_name;
     if(candidate>0 && m.readInt32LE(candidate+LAYOUT.subgame+0x3c)===2
-        && m.readInt32LE(candidate+LAYOUT.subgame+LAYOUT.level_definition)===25) root=candidate;
+        && m.readInt32LE(candidate+LAYOUT.subgame+LAYOUT.level_definition)===segments) root=candidate;
   }
   if(!root) throw Error('Pro 1 did not enter gameplay');
   return {e, root, sub:root+LAYOUT.subgame, memory:()=>Buffer.from(e.memory.buffer)};
