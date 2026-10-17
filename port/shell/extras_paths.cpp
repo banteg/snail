@@ -262,7 +262,7 @@ void build_mobile_shared_path(Path* path, bool cage, bool handedness, char* text
     path->CalcLengthZ();
 }
 
-// Lifted from Android cRPath::BuildInvert1 (000416a4).
+// Lifted from Android cRPath::BuildInvert1 (000516a4).
 void build_invert1(Path* path, int width_cells_, char* texture_a, char* texture_b)
 {
     path->kind = PATH_TEMPLATE_KIND_INVERT;
@@ -335,7 +335,7 @@ void build_invert1(Path* path, int width_cells_, char* texture_a, char* texture_
     path->CalcLengthZ();
 }
 
-// Lifted from Android cRPath::BuildHalfPole (00040c78).
+// Lifted from Android cRPath::BuildHalfPole (00050c78).
 void build_halfpole(Path* path, int width_cells_, char* texture_a, char* texture_b)
 {
     path->kind = PATH_TEMPLATE_KIND_NONLINEAR_42;
@@ -414,7 +414,7 @@ void build_halfpole(Path* path, int width_cells_, char* texture_a, char* texture
     path->CalcLengthZ();
 }
 
-// Lifted from Android cRPath::BuildShimmy (00041f8c).
+// Lifted from Android cRPath::BuildShimmy (00051f8c).
 void build_shimmy(Path* path, int width_cells_, char* texture_a, char* texture_b)
 {
     path->kind = PATH_TEMPLATE_KIND_WIBBLE;
@@ -491,7 +491,7 @@ void build_shimmy(Path* path, int width_cells_, char* texture_a, char* texture_b
     path->CalcLengthZ();
 }
 
-// Lifted from Android cRPath::BuildDetour (00044e7c).
+// Lifted from Android cRPath::BuildDetour (00054e7c).
 void build_detour(Path* path, int width_cells_, char* texture_a, char* texture_b)
 {
     path->kind = PATH_TEMPLATE_KIND_SNAKE;
@@ -898,7 +898,7 @@ void extras_clear_tramp_rings()
     }
 }
 
-// Android cRSubTrampRingManager::AddRing (0005d5b4).
+// Android cRSubTrampRingManager::AddRing (0006d5b4).
 void extras_add_tramp_ring(cRSubLoc* cell)
 {
     if (!g_port_ultimate || !g_paths_initialized || !cell)
@@ -928,7 +928,7 @@ void extras_add_tramp_ring(cRSubLoc* cell)
     }
 }
 
-// Android cRSubTrampRing::AI (0005d948).
+// Android cRSubTrampRing::AI (0006d948).
 void extras_step_tramp_rings()
 {
     if (!g_port_ultimate || !g_paths_initialized || !g_game)
@@ -969,7 +969,7 @@ int cRPathManager::NameCode(char* name)
     return -1;
 }
 
-// Android cRPath::HalfPolePos (0003c5f0) when `this` is the HALFPOLE path pair.
+// Android cRPath::HalfPolePos (0004c5f0) when `this` is the HALFPOLE path pair.
 void cRPath::compute_kind42_attachment_transform(
     float radius, float x, float y, TransformMatrix* transform, float* out_angle)
 {
