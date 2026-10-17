@@ -45,6 +45,9 @@ and the fixes for the original's own bugs; see [Original bugs](original-bugs.md)
 Among them, the Ultimate `cRSubTracks::Init` lays Padding before every listed
 segment of a level that is not `Mode:Challenge`, as Android's Init (000850d4)
 does; the mobile level files stay as Android ships them.
+Among them, `j_rand` and `RandSeed` give Ultimate's `RAND` and `SRAND`
+Android's generator, an index stepped through `RandTable.bin` (`Rand()`
+000267f0, `RandSeed` 00029588), in place of the C runtime's `rand`.
 
 ## Shell behaviour that differs from the shipped build
 
