@@ -1,0 +1,88 @@
+Android's active track window reaches two rows further. cRSubGame::AI (00082214) scans
+rows up to the window's trailing edge plus 48, not 46, and up to 40 rows past the finish
+line, not 20. cRSubGoldy::AI (0007ac54) keeps the trailing edge at the snail's z - 8 to
+30 rows past the finish line, where Windows stops it 30 rows before the line, and
+cRSubGoldy::Init (00079da8) starts it at -3, not -19. The other 46-row reaches ahead of
+the snail grow to 48 with it: the finish banner shows within them (cRBanner::AI,
+0006da24), salt fades in across them (cRSalt::AI, 00072318) and a shot retires beyond
+them (cRSubGolb::AI, 000635d4). That function also lets a WALL2 cell stop a shot only
+between heights -1 and 7.
+
+--- a/decomp/game/SubGame/initialize_subgoldy.cpp
++++ b/decomp/game/SubGame/initialize_subgoldy.cpp
+@@ -19,2 +19,4 @@
++extern bool g_port_ultimate; // shell/profile.h
++
+ void cRSubGoldy::Init(int player_slot)
+ {
+@@ -46,1 +48,1 @@
+-    this->active_window_min_z = -19.0f;
++    this->active_window_min_z = g_port_ultimate ? -3.0f : -19.0f;
+--- a/decomp/game/SubGame/update_subgoldy.cpp
++++ b/decomp/game/SubGame/update_subgoldy.cpp
+@@ -78,2 +78,4 @@
++extern bool g_port_ultimate; // shell/profile.h
++
+ void cRSubGoldy::AI()
+ {
+@@ -948,2 +950,3 @@
+-    float active_window_min_z =
+-        (float)horizon_game->completion_row_start - 30.0f;
++    float active_window_min_z = g_port_ultimate
++        ? (float)horizon_game->completion_row_start + 30.0f
++        : (float)horizon_game->completion_row_start - 30.0f;
+--- a/decomp/game/SubGame/update_subgame.cpp
++++ b/decomp/game/SubGame/update_subgame.cpp
+@@ -30,2 +30,4 @@
++extern bool g_port_ultimate; // shell/profile.h
++
+ void cRSubGame::AI()
+ {
+@@ -212,1 +214,1 @@
+-                runtime_row_scan_end = (int)player.active_window_min_z + 46;
++                runtime_row_scan_end = (int)player.active_window_min_z + (g_port_ultimate ? 48 : 46);
+@@ -219,1 +221,1 @@
+-                int new_end = (int)player.active_window_min_z + 46;
++                int new_end = (int)player.active_window_min_z + (g_port_ultimate ? 48 : 46);
+@@ -225,1 +227,1 @@
+-        int scan_limit = completion_row_start + 20;
++        int scan_limit = completion_row_start + (g_port_ultimate ? 40 : 20);
+--- a/decomp/game/SubGame/update_banner.cpp
++++ b/decomp/game/SubGame/update_banner.cpp
+@@ -7,2 +7,4 @@
++extern bool g_port_ultimate; // shell/profile.h
++
+ void cRBanner::AI()
+ {
+@@ -18,1 +20,1 @@
+-        if (position.z - owner_player->transform.position.z < 46.0f)
++        if (position.z - owner_player->transform.position.z < (g_port_ultimate ? 48.0f : 46.0f))
+--- a/decomp/game/SubGame/update_salt_hazard.cpp
++++ b/decomp/game/SubGame/update_salt_hazard.cpp
+@@ -8,2 +8,4 @@
++extern bool g_port_ultimate; // shell/profile.h
++
+ void cRSalt::AI()
+ {
+@@ -47,2 +49,3 @@
+-        float alpha =
+-            1.0f - (transform.position.z - owner_game->player.transform.position.z) * 0.021739131f;
++        float alpha = g_port_ultimate
++            ? (transform.position.z - owner_game->player.transform.position.z) / -48.0f + 1.0f
++            : 1.0f - (transform.position.z - owner_game->player.transform.position.z) * 0.021739131f;
+--- a/decomp/game/Golb/update_golb_ai.cpp
++++ b/decomp/game/Golb/update_golb_ai.cpp
+@@ -15,2 +15,4 @@
++extern bool g_port_ultimate; // shell/profile.h
++
+ void cRSubGolb::AI()
+ {
+@@ -159,1 +161,1 @@
+-            && bounds_player->transform.position.z + 46.0f >= flight_transform.position.z) {
++            && bounds_player->transform.position.z + (g_port_ultimate ? 48.0f : 46.0f) >= flight_transform.position.z) {
+@@ -276,3 +278,5 @@
+             if (game->LocFromPos(new_output)->tile_id
+                 != SUBLOC_TILE_WALL2)
+                 return;
++            if (g_port_ultimate && (new_output->y <= -1.0f || new_output->y >= 7.0f))
++                return;

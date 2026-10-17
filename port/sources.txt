@@ -34,7 +34,6 @@
 ../decomp/game/Border/border_mouse_test.cpp
 ../decomp/game/Border/set_border_justify_centre.cpp
 ../decomp/game/Cheat/initialize_cheat.cpp
-../decomp/game/Cheat/update_cheat.cpp
 ../decomp/game/Cheat/match_cheat_text.cpp
 ../decomp/game/Completion/flush_row_event_display.cpp
 ../decomp/game/Completion/initialize_completion_screen.cpp
@@ -176,14 +175,12 @@
 ../decomp/game/Help/initialize_help_screen.cpp
 ../decomp/game/Help/destroy_help_screen.cpp
 ../decomp/game/Help/update_help_screen.cpp
-../decomp/game/HighScore/destroy_high_score_screen.cpp
 ../decomp/game/HighScore/initialize_high_score_tables.cpp
 ../decomp/game/HighScore/load_high_scores_from_file.cpp
 ../decomp/game/HighScore/add_arcade_high_score.cpp
 ../decomp/game/HighScore/add_survival_high_score.cpp
 ../decomp/game/HighScore/add_time_trial_high_score.cpp
 ../decomp/game/HighScore/initialize_high_score_entry.cpp
-../decomp/game/HighScore/mini_delete_high_score_entry.cpp
 ../decomp/game/HighScore/exit_high_score_screen.cpp
 ../decomp/game/Landscape/reset_landscape_manager.cpp
 ../decomp/game/Landscape/load_landscape_script_by_name.cpp
@@ -199,7 +196,6 @@
 ../decomp/game/Logo/update_intro_screen.cpp
 ../decomp/game/Logo/update_intro_logo_renderable.cpp
 ../decomp/game/MainMenu/destroy_main_menu.cpp
-../decomp/game/MainMenu/initialize_main_menu.cpp
 ../decomp/game/MainMenu/update_main_menu.cpp
 ../decomp/game/ObjectProc/initialize_duplicate_vertices.cpp
 ../decomp/game/ObjectProc/clean_duplicate_vertices.cpp
@@ -499,6 +495,7 @@
 ../decomp/game/SubGame/initialize_anim_manager.cpp
 ../decomp/game/SubGame/update_anim_manager.cpp
 ../decomp/game/SubGame/initialize_squidge.cpp
+../decomp/game/SubGame/start_squidge_y.cpp
 ../decomp/game/SubGame/start_squidge_z.cpp
 ../decomp/game/SubGame/update_squidge.cpp
 ../decomp/game/SubGame/initialize_invincible_shell.cpp
@@ -613,9 +610,7 @@
 ../decomp/engine/RMaths/convert_math_type16_to_32.cpp
 ../decomp/engine/RMaths/initialize_math_random_table.cpp
 ../decomp/engine/RMaths/next_math_random_value.cpp
-../decomp/engine/RMaths/j_rand.cpp
 ../decomp/engine/RMaths/initialize_trigonometry_tables.cpp
-../decomp/engine/RMaths/set_math_random_seed.cpp
 ../decomp/engine/RMaths/cosine.cpp
 ../decomp/engine/RMaths/sine.cpp
 ../decomp/engine/RMaths/arccosine.cpp
