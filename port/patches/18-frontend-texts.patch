@@ -1,0 +1,78 @@
+Android's front end has its own texts. cRMainMenu::Init (000697d4) labels the first
+entry "Play" (.rodata 0x82f24); the PC keeps its Exit button, where Android shows the
+OpenFeint logo. cRIntro::Init (000674f8) labels Postal "Postal Adventure" (0x835cc).
+After the Pro galaxy, cRSplash::Init (0006aba4) reads "Holy Flying Snails!" (0x839c8)
+and cRSplash::AI (0006a900) "That isn't humanly possible!" (0x83924) and "You're
+totally awesome!" (0x83968), where the postal ending advertises Challenge Mode and
+Time Trial. The PC layout keeps each text on one line, so Android's leading '>' line
+breaks are left out.
+
+--- a/decomp/game/MainMenu/initialize_main_menu.cpp
++++ b/decomp/game/MainMenu/initialize_main_menu.cpp
+@@ -15,4 +15,5 @@
+ extern char g_options_text[]; // 0x4a3b60
+ extern char g_credits_text[]; // 0x4a3b58
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ void cRMainMenu::Init()
+@@ -33,5 +34,5 @@
+         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
+-        g_new_game_text,
++        g_port_ultimate ? (char*)"Play" : g_new_game_text,
+         0x14,
+         20.0f,
+--- a/decomp/game/Intro/initialize_new_game_menu.cpp
++++ b/decomp/game/Intro/initialize_new_game_menu.cpp
+@@ -16,4 +16,5 @@
+ extern char g_tutorial_text[]; // 0x4a38e4
+ extern char g_back_text[]; // 0x4a20ec
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ void cRIntro::Init()
+@@ -48,5 +49,5 @@
+             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
+             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
+-        g_postal_mode_text,
++        g_port_ultimate ? (char*)"Postal Adventure" : g_postal_mode_text,
+         0x14,
+         20.0f,
+--- a/decomp/game/Splash/initialize_thanks_for_playing_screen.cpp
++++ b/decomp/game/Splash/initialize_thanks_for_playing_screen.cpp
+@@ -12,4 +12,5 @@
+ 
+ extern char g_blank_text[]; // 0x4dfb08
++bool extras_is_pro_mode(); // shell/extras.h
+ 
+ void cRSplash::Init()
+@@ -29,5 +30,5 @@
+         FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
+             | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
+-        "Thanks For Playing!",
++        extras_is_pro_mode() ? (char*)"Holy Flying Snails!" : (char*)"Thanks For Playing!",
+         0x14,
+         0.0f,
+--- a/decomp/game/Splash/update_thanks_for_playing_screen.cpp
++++ b/decomp/game/Splash/update_thanks_for_playing_screen.cpp
+@@ -8,4 +8,5 @@
+ 
+ extern char g_click_to_continue_text[]; // 0x4a11c4
++bool extras_is_pro_mode(); // shell/extras.h
+ 
+ void cRSplash::AI()
+@@ -42,5 +43,6 @@
+         message_progress_step = 0.00416666688f;
+         Rstrcpy(
+-            message_widget->text_buffer, "Test your reflexes in Challenge Mode!");
++            message_widget->text_buffer,
++            extras_is_pro_mode() ? "That isn't humanly possible!" : "Test your reflexes in Challenge Mode!");
+         message_widget->UnHideInit();
+         return;
+@@ -56,5 +58,6 @@
+         message_progress_step = 0.00416666688f;
+         Rstrcpy(
+-            message_widget->text_buffer, "Improve your skills in Time Trial!");
++            message_widget->text_buffer,
++            extras_is_pro_mode() ? "You're totally awesome!" : "Improve your skills in Time Trial!");
+         message_widget->UnHideInit();
+         return;

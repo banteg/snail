@@ -145,7 +145,7 @@ def test_each_complete_mobile_pro_course_starts(tmp_path, level):
     (tmp_path / "SnailMailPro.cfg").write_bytes(struct.pack("<ii", 10, level))
     keys = tmp_path / "start.keys"
     menu = (
-        "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 383\n820 click 3\n"
+        "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 240\n820 click 3\n"
     )
     keys.write_text(menu)
     args = [
@@ -184,7 +184,14 @@ def test_each_complete_mobile_pro_course_starts(tmp_path, level):
     entry = parse_archive_index(archive).entry_by_path(
         f"LEVELS/ARCADEPRO{level:03}.TXT"
     )
-    name = re.search(rb"Name:'([^']+)'", read_archive_entry(archive, entry))[1].decode()
-    assert f'level "{name}"' in result.stderr
+    level_text = read_archive_entry(archive, entry)
+    name = re.search(rb"Name:'([^']+)'", level_text)[1].decode()
+    background = re.search(rb"Background:(\w+)\.txt", level_text)[1].decode()
+    # Android's random space backdrop is for Track: r alone; Pro 1-5 are Track: 5.
+    assert re.search(
+        rf'level "{re.escape(name)}" .* backdrop Backgrounds/{background}\.tga$',
+        result.stderr,
+        re.MULTILINE,
+    ), result.stderr
     for error in ("too long", "Cannot find segment", "Unknown path"):
         assert error not in result.stderr

@@ -4,7 +4,7 @@
 import { LAYOUT, openMobileGame } from './port_mobile_runtime.mjs';
 
 const [wasm, ultimate, tally] = process.argv.slice(2);
-const game = await openMobileGame(wasm, {}, 3);
+const game = await openMobileGame(wasm, {}, 6);
 const { e, sub } = game;
 e.snail_set_profile(Number(ultimate));
 const player = sub + LAYOUT.player;

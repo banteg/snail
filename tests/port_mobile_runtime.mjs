@@ -7,7 +7,7 @@ export const LAYOUT = JSON.parse(process.env.SNAIL_LAYOUT);
 
 // Opens Pro 1 ("Pros Only"), found by its name and its 25 segments; a test
 // that rewrites the course passes its own segment count.
-export async function openMobileGame(wasm, presenter = {}, segments = 25) {
+export async function openMobileGame(wasm, presenter = {}, segments = 50) {
   const wasi = new WASI({version: 'preview1', args: [], env: {...process.env, PWD: process.cwd()}, preopens: {'/': process.cwd()}});
   const module = await WebAssembly.compile(await readFile(wasm));
   const imports = wasi.getImportObject();
@@ -25,9 +25,10 @@ export async function openMobileGame(wasm, presenter = {}, segments = 25) {
     e.snail_button(0,1);e.snail_frame(1/60);e.snail_button(0,0);step();
   };
   step(25);e.snail_key(1,1);e.snail_frame(1/60);e.snail_key(1,0);step();
-  click(345,112);click(345,383);click(289,287);step();click(320,300);step(1);
+  click(345,112);click(345,240);click(289,287);step();click(320,300);step(1);
   let m=Buffer.from(e.memory.buffer), root;
   const needle=Buffer.from('Pros Only\0');
+  // Its 25 listed segments, each after a Padding, as Android lays them.
   for(let p=m.indexOf(needle);p>=0;p=m.indexOf(needle,p+1)) {
     const candidate=p-LAYOUT.subgame-LAYOUT.level_definition-LAYOUT.level_display_name;
     if(candidate>0 && m.readInt32LE(candidate+LAYOUT.subgame+0x3c)===2
