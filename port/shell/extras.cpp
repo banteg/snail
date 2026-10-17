@@ -344,11 +344,6 @@ char __cdecl archive_or_file_exists(char* path, char force_filesystem)
     return archive_or_file_exists_recovered(path, force_filesystem);
 }
 
-char __cdecl archive_or_file_exists(char* path, int force_filesystem)
-{
-    return archive_or_file_exists(path, (char)force_filesystem);
-}
-
 char* __cdecl load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out_size)
 {
     file_name = (char*)extras_save_path(file_name);

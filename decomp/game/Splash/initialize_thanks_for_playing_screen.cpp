@@ -5,13 +5,12 @@
 #include "frontend_widget.h"
 #include "game_root.h"
 #include "landscape_manager.h"
+#include "rshell.h"
 #include "sprite.h"
 #include "star_manager.h"
 #include "thanks_screen.h"
 
 extern char g_blank_text[]; // 0x4dfb08
-
-char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 
 void cRSplash::Init()
 {

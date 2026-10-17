@@ -3,6 +3,7 @@
 #include "game_root.h"
 #include "new_game_menu.h"
 #include "rmath_random.h"
+#include "rshell.h"
 
 
 void cRIntro::AI()

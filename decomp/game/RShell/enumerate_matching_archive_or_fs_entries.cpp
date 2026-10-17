@@ -1,14 +1,13 @@
 // enumerate_matching_archive_or_fs_entries @ 0x431740 (cdecl)
 
 #include "archive_index.h"
+#include "rshell.h"
 #include "rstring.h"
 
 #include <direct.h>
 #include <io.h>
 
 extern int g_enumerated_entry_count; // data_503320
-
-int set_current_directory_with_drive_fallback(char* path);
 
 void __cdecl enumerate_matching_archive_or_fs_entries(
     char* directory, char* pattern, int* out_count, DirectoryEntryName* names)

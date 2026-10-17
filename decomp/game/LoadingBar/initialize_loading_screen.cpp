@@ -21,7 +21,6 @@ extern "C" int __stdcall D3DXCreateTextureFromFileExA(Direct3DDevice8* device, c
 extern "C" int __stdcall D3DXCreateTextureFromFileA(
     Direct3DDevice8* device, char* path, Direct3DTexture8** texture);
 
-char is_archive_index_loaded(); // @ 0x431a80
 int begin_overlay_render_state();
 
 void cRLoadingBar::Init()

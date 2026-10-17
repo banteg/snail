@@ -6,16 +6,10 @@
 #include "bod_types.h"
 #include "directx_loader.h"
 #include "object_animation_types.h"
+#include "rshell.h"
 #include "rstring.h"
 #include "rtext.h"
 #include "tracked_allocation_stack.h"
-
-char is_archive_index_loaded(); // @ 0x431a80
-void enumerate_matching_archive_or_fs_entries(
-    char* directory,
-    char* pattern,
-    int* out_count,
-    DirectoryEntryName* out_names); // @ 0x431740
 
 extern DirectoryEntryName g_animation_directory[128]; // data_4b2f50
 

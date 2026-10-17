@@ -7,6 +7,7 @@
 #include "game_root.h"
 #include "landscape_manager.h"
 #include "mouse_cursor_state.h"
+#include "rshell.h"
 #include "runtime_config.h"
 #include "star_manager.h"
 #include "subgame_runtime.h"
@@ -15,8 +16,6 @@ extern char g_blank_text[]; // data_4dfb08
 extern char g_main_menu_music_path[]; // data_4a2128
 extern char g_exit_text[]; // data_4a20f4
 extern char g_back_text[]; // data_4a20ec
-
-char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 
 void cRGalaxy::Init()
 {

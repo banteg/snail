@@ -5,13 +5,12 @@
 #include "frontend_widget.h"
 #include "game_root.h"
 #include "mouse_cursor_state.h"
+#include "rshell.h"
 #include "runtime_config.h"
 #include "sound_effect_manager.h"
 #include "tooltip_state.h"
 #include "twinkle_manager.h"
 
-
-char read_pressed_text_input_key_code();
 int sprintf(char* buffer, const char* format, ...);
 
 void cRBorder::AI()

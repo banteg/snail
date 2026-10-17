@@ -2,9 +2,7 @@
 
 #include "game_root.h"
 #include "intro_screen_runtime.h"
-
-
-char read_pressed_text_input_key_code();
+#include "rshell.h"
 
 void cRLogo::AI()
 {

@@ -1,8 +1,8 @@
 // cRDirectX::Init @ 0x405c90 (thiscall, ret)
 
 #include "directx_loader.h"
+#include "rshell.h"
 
-char* load_file_bytes(char* file_name, int* out_size);
 extern char g_x_animation_script_path[]; // "XAnimation.txt"
 
 void cRDirectX::Init()

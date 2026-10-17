@@ -1,10 +1,10 @@
 // FontLoad @ 0x449f50 (cdecl)
 
 #include "font_system.h"
+#include "rshell.h"
 #include "tga_image_view.h"
 #include "tracked_allocation_stack.h"
 
-char* load_file_bytes(char* file_name, int* out_size);
 int sample_tga_pixel_rgb(TgaImageView* image, int x, int y);
 
 int FontLoad(

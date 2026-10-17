@@ -5,10 +5,6 @@
 #include "texture_registry.h"
 #include "tga_image_view.h"
 
-char archive_or_file_exists(char* path, char force_filesystem); // @ 0x430fd0
-char* load_file_bytes(char* file_name, int* out_size); // @ 0x431520
-char is_archive_index_loaded(); // @ 0x431a80
-
 extern "C" int __stdcall D3DXCreateTextureFromFileInMemoryEx(Direct3DDevice8* device,
     void* src_data, unsigned int src_data_size, unsigned int width, unsigned int height,
     unsigned int mip_levels, unsigned int usage, unsigned int format, unsigned int pool,

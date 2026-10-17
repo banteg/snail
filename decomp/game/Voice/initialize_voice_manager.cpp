@@ -9,8 +9,6 @@
 
 #include <string.h>
 
-int register_sound_sample(char* path, int normalization_class);
-
 extern char g_tutorial_text[]; // 0x4a38e4
 
 void cRVoiceManager::Init()

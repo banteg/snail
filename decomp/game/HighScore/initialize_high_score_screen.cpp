@@ -6,6 +6,7 @@
 #include "high_score.h"
 #include "landscape_manager.h"
 #include "mouse_cursor_state.h"
+#include "rshell.h"
 #include "star_manager.h"
 #include "subgame_runtime.h"
 
@@ -13,8 +14,6 @@ extern char g_main_menu_music_path[]; // 0x4a2128
 extern char g_menu_background_script_path[]; // 0x4a347c
 extern char g_blank_text[]; // data_4dfb08
 extern char g_back_text[]; // 0x4a20ec
-
-char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 
 void cRHighScore::Init(int mode_, int rank)
 {

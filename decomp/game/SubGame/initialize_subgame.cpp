@@ -9,6 +9,7 @@
 #include "game_root.h"
 #include "galaxy_route_types.h"
 #include "landscape_manager.h"
+#include "rshell.h"
 #include "rstring.h"
 #include "runtime_config.h"
 #include "segment_catalog_types.h"
@@ -28,7 +29,6 @@ extern char g_menu_background_script_path[]; // 0x4a347c
 extern char g_blank_text[]; // 0x4dfb08
 extern SubSegmentRaw* g_builtin_segment_definitions[]; // 0x4a63d0
 
-char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 char* save_config_file(char* file_name, void* bytes, int byte_count); // @ 0x42f540
 
 void cRSubGame::Init()

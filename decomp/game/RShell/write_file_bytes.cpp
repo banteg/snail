@@ -4,8 +4,7 @@
 #include <stdio.h>
 
 #include "rerror.h"
-
-int set_current_directory_with_drive_fallback(char* path);
+#include "rshell.h"
 
 int __cdecl write_file_bytes(char* path, void* bytes, int byte_count)
 {

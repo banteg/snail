@@ -1,10 +1,8 @@
 // cRSound::Play(int, tVector&) @ 0x44dce0 (thiscall, ret 0x8)
 
+#include "rshell.h"
 #include "sound_effect_manager.h"
 #include "game_root.h"
-
-
-void play_sound_effect_backend(int sample_id, float gain, float pitch, float pan);
 
 void cRSound::Play(int sound_id, tVector& position)
 {

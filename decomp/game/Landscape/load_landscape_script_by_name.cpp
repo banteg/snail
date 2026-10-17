@@ -3,12 +3,11 @@
 #include "game_root.h"
 #include "landscape_manager.h"
 #include "rdebug.h"
+#include "rshell.h"
 #include "rstring.h"
 #include "rtext.h"
 
 int sprintf(char* buffer, char* format, ...);
-char* load_file_bytes(char* path, char* out_buffer);
-char archive_or_file_exists(char* path, char force_filesystem);
 
 int cRLandscapeManager::Import(char* script_name)
 {

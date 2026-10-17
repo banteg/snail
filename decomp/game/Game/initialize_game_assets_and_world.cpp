@@ -13,6 +13,7 @@
 #include "landscape_manager.h"
 #include "object_render_types.h"
 #include "rdebug.h"
+#include "rshell.h"
 #include "rstring.h"
 #include "runtime_config.h"
 #include "segment_catalog_types.h"
@@ -29,11 +30,6 @@ extern SubSegmentRaw* g_builtin_segment_definitions[]; // 0x4a63d0
 
 void FontInit(); // @ 0x449c70
 void FontMake3D(short font_id); // @ 0x44ae10
-int register_font_texture_sheet_wrapper(
-    char* font_path,
-    int shadow_offset_pixels,
-    float width_scale,
-    float height_scale); // @ 0x432d20
 void ObjectProcTileFloorFast(Object* object, char* texture_path, float x_offset); // @ 0x41a1c0
 void ObjectProcTileFast(Object* object, char* texture_path, float x_offset); // @ 0x41a0b0
 void ObjectProcTileFastRamp(int edge_pair, Object* object); // @ 0x41a170

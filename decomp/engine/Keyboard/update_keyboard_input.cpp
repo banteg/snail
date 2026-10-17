@@ -1,13 +1,13 @@
 // update_keyboard_input @ 0x44b870 (cdecl)
 
 #include "direct_input_view.h"
+#include "input_controller_state.h"
 #include "input_polling.h"
 
 extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
 extern "C" void* memset(void* destination, int value, unsigned int count);
 
 unsigned char is_key_down(int key_code);
-void set_input_controller_slot0_button_axes(int buttons, float axis_x, float axis_y);
 
 int update_keyboard_input(HWND)
 {

@@ -4,6 +4,7 @@
 #include "border_manager.h"
 #include "game_root.h"
 #include "landscape_manager.h"
+#include "rshell.h"
 
 extern char g_main_menu_music_path[]; // 0x4a2128
 extern char g_menu_background_script_path[]; // 0x4a347c
@@ -14,8 +15,6 @@ extern char g_time_trial_text[]; // 0x4a38cc
 extern char g_postal_mode_text[]; // 0x4a38d8
 extern char g_tutorial_text[]; // 0x4a38e4
 extern char g_back_text[]; // 0x4a20ec
-
-char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 
 void cRIntro::Init()
 {

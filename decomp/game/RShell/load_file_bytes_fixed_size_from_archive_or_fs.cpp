@@ -9,7 +9,6 @@
 #include "tracked_allocation_stack.h"
 
 int get_stream_length_preserve_position(FILE* file);
-void xor_archive_bytes_in_place(int start_offset, char* bytes, int count);
 
 char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(
     char* file_name, char* buffer, int byte_count)

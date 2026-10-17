@@ -1,9 +1,8 @@
 // play_slug_voice @ 0x43f560 (thiscall, ret 0x4)
 
 #include "game_root.h"
+#include "rshell.h"
 #include "slug_hazard_types.h"
-
-void play_voice_backend(int sample_id, float volume, float pitch, float pan);
 
 void cRSlug::VoicePlay(int sample_index)
 {

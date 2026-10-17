@@ -1,13 +1,12 @@
 // save_high_scores_and_config @ 0x417940 (thiscall, ret 0x4)
 
+#include "rshell.h"
 #include "sub_high_score.h"
 #include "runtime_config.h"
 #include "tracked_allocation_stack.h"
 
 const int HIGH_SCORE_SAVE_BUFFER_SIZE = 0x4c4b40;
 
-extern void xor_decode_buffer_with_index(void* buffer, int byte_count);
-extern int write_file_bytes(char* file_name, void* bytes, int byte_count);
 extern char* save_config_file(char* file_name, void* bytes, int byte_count);
 
 void cRSubHighScore::MiniSave(unsigned char save_mask)

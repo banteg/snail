@@ -5,6 +5,7 @@
 #include "bod_list.h"
 #include "bod_ai_dispatch.h"
 #include "fringe_object.h"
+#include "rshell.h"
 #include "sub_solution.h"
 #include "new_game_menu.h"
 #include "player.h"

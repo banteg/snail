@@ -5,6 +5,7 @@
 #include "font_system.h"
 #include "game_root.h"
 #include "input_polling.h"
+#include "rshell.h"
 #include "sub_high_score.h"
 #include "display_mode_state.h"
 #include "loading_bar.h"
@@ -30,7 +31,6 @@ char validate_config_tail_stub(char* config_tail); // @ 0x42f5b0
 void abort_startup_with_3d_error(); // @ 0x4088a0
 int rebuild_game_archive_if_needed(); // @ 0x405370
 void* load_config_file(char* file_name, void* buffer); // @ 0x42f470
-char initialize_game_data_archive(); // @ 0x430e40
 int snapshot_current_display_mode(); // @ 0x407850
 void initialize_mouse_authored_scale_from_clip_rect(); // @ 0x44bbb0
 int probe_display_mode_count(); // @ 0x407880
@@ -50,7 +50,6 @@ int present_backbuffer(); // @ 0x413520
 int shutdown_bass_audio_window(); // @ 0x407b00
 void scalar_delete(void* pointer); // @ 0x48ba34
 char* save_config_file(char* file_name, void* bytes, int byte_count); // @ 0x42f540
-int uninitialize_game_data_archive(); // @ 0x430ef0
 int uninitialize_input_devices(); // @ 0x411d80
 int restore_desktop_display_mode(); // @ 0x407860
 

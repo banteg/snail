@@ -2,10 +2,8 @@
 
 #include "audio_system.h"
 #include "rerror.h"
+#include "rshell.h"
 #include "tracked_allocation_stack.h"
-
-extern char* load_file_bytes(char* file_name, int* out_size);
-extern int write_file_bytes(char* file_name, char* bytes, int byte_count);
 
 extern "C" __declspec(dllimport) void* __stdcall LoadLibraryA(char* library_name);
 extern "C" __declspec(dllimport) void* __stdcall GetProcAddress(void* module, char* name);

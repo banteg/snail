@@ -10,8 +10,6 @@
 #include "sprite.h"
 #include "tracked_allocation_stack.h"
 
-char is_archive_index_loaded(); // @ 0x431a80
-
 void cRDirectX::Load(char* mesh_path, Object* object, int options_flags)
 {
     char* file_text = (char*)get_archive_data_base();
