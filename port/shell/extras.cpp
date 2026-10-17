@@ -18,6 +18,7 @@
 #include "rmath_random.h"
 #include "rstring.h"
 #include "segment_cache.h"
+#include "sound_effect_manager.h"
 #include "sub_tracks.h"
 #include "subgame_runtime.h"
 #include "texture_registry.h"
@@ -45,6 +46,8 @@ void subgame_add_ring_recovered(cRSubGame* self, cRSubLoc* cell, int requested_k
     __asm__("_ZN9cRSubGame17AddRing_recoveredEP8cRSubLociP10cRSubGoldyf");
 void sub_ring_init_recovered(cRSubRing* self, int lives_snapshot)
     __asm__("_ZN9cRSubRing14Init_recoveredEi");
+void sound_init_recovered(cRSound* self, cRSoundBank* entries)
+    __asm__("_ZN7cRSound14Init_recoveredEP11cRSoundBank");
 
 void* allocate_tracked_memory(int size, char* name);
 void xor_archive_bytes_in_place(int start_offset, char* bytes, int count);
@@ -70,6 +73,14 @@ float g_add_ring_speed = 0.0f;
 SubSegment* g_padding_segment = 0;
 bool g_padding_turn = false;
 int g_padding_picks = 0;
+
+// Android's gSFXBank (0009bacc) has one sample the PC bank lacks, upramp, and
+// inserts it at 42, moving every later id up by one. Ultimate registers it
+// after the PC bank, so each id the recovered code plays keeps its PC sample.
+cRSoundBank g_mobile_sound_bank[] = {
+    {(char*)"sfx2/UpRamp.ogg", 0, 1},
+    {(char*)"", 0, 0},
+};
 
 bool path_equals_ignore_case(const char* a, const char* b)
 {
@@ -334,6 +345,18 @@ const char* extras_track_texture_name(int slot)
     if (g_port_ultimate && slot >= 0 && slot < kMobileTrackSetCount && g_extra_track_textures[slot])
         return g_extra_track_textures[slot]->name;
     return "?";
+}
+
+void cRSound::Init(cRSoundBank* entries)
+{
+    sound_init_recovered(this, entries);
+    if (g_port_ultimate)
+        sound_init_recovered(this, g_mobile_sound_bank);
+}
+
+int extras_upramp_sample()
+{
+    return g_mobile_sound_bank[0].sample_id;
 }
 
 char __cdecl archive_or_file_exists(char* path, char force_filesystem)

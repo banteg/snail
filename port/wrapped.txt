@@ -29,3 +29,4 @@ load_config_file                              ../decomp/game/Register/load_confi
 write_file_bytes                              ../decomp/game/RShell/write_file_bytes.cpp                                                 write_file_bytes
 render_backdrop                               ../decomp/game/Game/render_backdrop.cpp                                                       render_backdrop
 draw_sprite_quad                              ../decomp/game/GL/draw_sprite_quad.cpp                                  draw_sprite_quad
+initialize_sound_bank                         ../decomp/engine/RSound/initialize_sound_bank.cpp                       Init

@@ -15,6 +15,11 @@ PORT_LAYOUT = (
     ("player", "offsetof(cRSubGame, player)"),
     ("sm_tracks", "offsetof(cRSubGame, sm_tracks)"),
     ("segment_entry", "sizeof(SegmentCatalogEntry)"),
+    ("player_z", "offsetof(cRSubGoldy, transform.position.z)"),
+    ("player_vy", "offsetof(cRSubGoldy, velocity.y)"),
+    ("follow_active", "offsetof(cRSubGoldy, follow_state.active)"),
+    ("gauge_fill", "offsetof(cRSubGoldy, damage_gauge.fill)"),
+    ("shooting_tier", "offsetof(cRSubGoldy, shooting_tier)"),
 )
 
 
