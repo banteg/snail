@@ -2294,7 +2294,7 @@
       "kind": "function_alias",
       "aliases": [],
       "size": "0x5",
-      "description": "VC6 local CRT registration thunk emitted for the authored StartupNoopRenderableBods g_startup_noop_renderable_bods global."
+      "description": "VC6 local CRT registration thunk emitted for the authored StartupNoopRenderableBod g_startup_noop_renderable_bod_0, _1, _2 declaration."
     },
     {
       "address": "0x406bd0",
@@ -2302,7 +2302,7 @@
       "kind": "function_alias",
       "aliases": [],
       "size": "0x3d",
-      "description": "VC6 local dynamic initializer emitted for the authored StartupNoopRenderableBods g_startup_noop_renderable_bods global."
+      "description": "VC6 local dynamic initializer emitted for the authored StartupNoopRenderableBod g_startup_noop_renderable_bod_0, _1, _2 declaration."
     },
     {
       "address": "0x406c10",
@@ -7202,13 +7202,34 @@
     },
     {
       "address": "0x4b6fb4",
-      "name": "g_startup_noop_renderable_bods",
+      "name": "g_startup_noop_renderable_bod_0",
       "kind": "global",
       "aliases": [
-        "data_4b6fb4"
+        "data_4b6fb4",
+        "g_startup_noop_renderable_bods"
       ],
-      "size": "0x24c",
-      "description": "Three 0xc4-byte global records whose only Windows references are the startup constructor body at 0x406bd0. Each owns a RenderableBod prefix and receives the shared no-op runtime callback table; no surviving consumer proves a narrower gameplay class."
+      "size": "0xc4",
+      "description": "One of three 0xc4-byte globals declared together, whose only Windows references are the startup initializer at 0x406bd0. Each owns a RenderableBod prefix and receives the shared no-op runtime callback table; no surviving consumer proves a narrower gameplay class."
+    },
+    {
+      "address": "0x4b7078",
+      "name": "g_startup_noop_renderable_bod_1",
+      "kind": "global",
+      "aliases": [
+        "data_4b7078"
+      ],
+      "size": "0xc4",
+      "description": "One of three 0xc4-byte globals declared together, whose only Windows references are the startup initializer at 0x406bd0. Each owns a RenderableBod prefix and receives the shared no-op runtime callback table; no surviving consumer proves a narrower gameplay class."
+    },
+    {
+      "address": "0x4b713c",
+      "name": "g_startup_noop_renderable_bod_2",
+      "kind": "global",
+      "aliases": [
+        "data_4b713c"
+      ],
+      "size": "0xc4",
+      "description": "One of three 0xc4-byte globals declared together, whose only Windows references are the startup initializer at 0x406bd0. Each owns a RenderableBod prefix and receives the shared no-op runtime callback table; no surviving consumer proves a narrower gameplay class."
     },
     {
       "address": "0x4b7230",
