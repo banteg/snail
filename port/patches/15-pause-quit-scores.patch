@@ -1,0 +1,32 @@
+Android's cRExit::AI (00062568) ends a Challenge or Time Trial run from the
+pause menu without cRSubGame::Complete (state 2 at 0x526d4 goes straight to
+UnInit and cRSubGame::Init; its only Complete call, at 0x528b4, is the galaxy
+quit), so the run records no score and enters no name. Windows calls
+Complete(1) first, which puts an abandoned Challenge run in the table.
+Ending a postal or Pro run still records it: Android saves that game to resume
+instead (SetGameState), which the port does not have.
+
+--- a/decomp/game/Exit/update_completion_screen.cpp
++++ b/decomp/game/Exit/update_completion_screen.cpp
+@@ -3,6 +3,7 @@
+ #include "exit.h"
+ #include "game_root.h"
+ 
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ void cRExit::AI()
+ {
+@@ -62,8 +63,11 @@
+         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
+             button->widget_flags =
+                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
+-            g_game->subgame.Complete(1);
+-            if (g_game->players[0].high_score_entry_pending == 1) {
++            int quit_mode = g_game->subgame.level_mode;
++            bool scored = !g_port_ultimate || (quit_mode != 1 && quit_mode != 4);
++            if (scored)
++                g_game->subgame.Complete(1);
++            if (scored && g_game->players[0].high_score_entry_pending == 1) {
+                 previous_frontend_state = g_game->players[0].frontend_state;
+                 UnInit();
+                 g_game->subgame.sub_pause.UnInit();

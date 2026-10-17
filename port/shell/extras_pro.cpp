@@ -51,6 +51,8 @@ void splash_init_recovered(cRSplash* self)
     __asm__("_ZN8cRSplash14Init_recoveredEv");
 void high_score_init_recovered(cRHighScore* self, int mode, int rank)
     __asm__("_ZN11cRHighScore14Init_recoveredEii");
+void high_score_uninit_recovered(cRHighScore* self)
+    __asm__("_ZN11cRHighScore16UnInit_recoveredEv");
 void high_score_ai_recovered(cRHighScore* self)
     __asm__("_ZN11cRHighScore12AI_recoveredEv");
 void mini_save_recovered(cRSubHighScore* self, unsigned char save_mask)
@@ -64,6 +66,9 @@ enum {
     kProGalaxyCount = 2,
     kProRouteSlotCount = 11,
     kProMaxRouteIndex = 10,
+    // Android's High Scores bank for the Pro table (cRHighScore::Init, 00066010);
+    // the port shows it as bank 0 with the Pro tables swapped in.
+    kProHighScoreBank = 3,
 };
 
 struct ProPoint {
@@ -226,6 +231,14 @@ void swap_out_pro_state()
     g_sprite_texture_table[153] = g_normal_line_tex;
 
     g_pro_state_swapped = false;
+}
+
+// Opens every route of a galaxy and lowers a selection past its last route.
+void open_every_route(int& highest, int& selected, const cRGalaxy& galaxy)
+{
+    highest = galaxy.record_count - 1;
+    if (highest < selected)
+        selected = highest;
 }
 
 void import_pro_landscape(char* name, int target_sprite_id)
@@ -452,6 +465,20 @@ void cRIntro::AI()
 // Android cRGalaxy::Init (0005a21c) and Init2 (00059830).
 void cRGalaxy::Init()
 {
+    // Android opens every postal and Pro route, for good, whenever the last
+    // high-score name entered is "Fluctuosa" (any case).
+    if (g_port_ultimate && g_pro_initialized
+        && Rstrcmp((char*)"Fluctuosa", g_runtime_config.last_entered_player_name)) {
+        if (g_pro_state_swapped) {
+            open_every_route(g_saved_postal_highest_route, g_saved_postal_selected_route, g_postal_galaxy_layout);
+            open_every_route(g_runtime_config.highest_galaxy_route_index,
+                g_runtime_config.landscape_backdrop_variant_selector, g_pro_galaxy_layout);
+        } else {
+            open_every_route(g_runtime_config.highest_galaxy_route_index,
+                g_runtime_config.landscape_backdrop_variant_selector, g_postal_galaxy_layout);
+            open_every_route(g_pro_highest_route_index, g_pro_selected_route_index, g_pro_galaxy_layout);
+        }
+    }
     galaxy_init_recovered(this);
     if (!g_port_ultimate || !g_pro_mode_active)
         return;
@@ -540,6 +567,8 @@ void cRHighScore::Init(int mode_, int rank)
         return;
     }
 
+    if (mode_ == kProHighScoreBank)
+        g_high_score_pro_view = true;
     if (g_high_score_pro_view) {
         swap_in_pro_state();
         high_score_init_recovered(this, 0, -1);
@@ -561,6 +590,26 @@ void cRHighScore::Init(int mode_, int rank)
         Rstrcpy(bank_toggle_button->text_buffer, (char*)"Pro Scores");
         bank_toggle_button->RePosition();
     }
+    // Android's Init (00066010) also fades out before a Challenge replay
+    // starts: its Replay rows take 0x60000014 where Windows has 0x20000014.
+    // Postal and Pro show none.
+    if (mode_ == 1) {
+        for (cRBorder* replay : replay_row_widgets) {
+            if (replay)
+                replay->widget_flags |= FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION;
+        }
+    }
+}
+
+// Android cRHighScore::UnInit (00065ed4) remembers the bank on screen for the
+// next visit, bank 3 while Pro High Scores shows, and AddArcadePro (00065d00)
+// enters a Pro name on bank 3 as well.
+void cRHighScore::UnInit()
+{
+    high_score_uninit_recovered(this);
+    if (g_port_ultimate && g_pro_initialized
+        && (g_high_score_pro_view || (entering_name != 0 && g_pro_mode_active)))
+        g_runtime_config.high_score_selected_bank = kProHighScoreBank;
 }
 
 void cRHighScore::AI()
@@ -581,7 +630,7 @@ void cRHighScore::AI()
         } else if (!g_high_score_pro_view && selected_bank == 1) {
             g_high_score_pro_view = true;
             selected_bank = 0;
-            g_runtime_config.high_score_selected_bank = 0;
+            g_runtime_config.high_score_selected_bank = kProHighScoreBank;
             Init(0, -1);
         } else {
             g_high_score_pro_view = false;
@@ -593,17 +642,19 @@ void cRHighScore::AI()
         return;
     }
 
-    if (back_button
-        && (back_button->widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
-        g_high_score_pro_view = false;
-        if (!g_pro_mode_active)
-            swap_out_pro_state();
-    }
+    // Back leaves the Pro view only after UnInit has remembered it.
+    bool back = back_button
+        && (back_button->widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0;
 
     // If launching a replay from the Pro High Scores view, enable g_pro_mode_active
     // so load_frontend_level_by_mode_and_index loads ArcadePro%03i.txt.
     bool was_pro_view = g_high_score_pro_view;
     high_score_ai_recovered(this);
+    if (back) {
+        g_high_score_pro_view = false;
+        if (!g_pro_mode_active)
+            swap_out_pro_state();
+    }
     if (was_pro_view && g_game->subgame.replay_launch_active == 1)
         g_pro_mode_active = true;
 }
