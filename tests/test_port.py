@@ -358,7 +358,7 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
     or not (REPO_ROOT / "artifacts/android/asm_extracted/DATA/O_HALFPOLE.SMO").exists(),
     reason="needs node, snail.wasm, SnailMail.dat, SnailMailExtras.dat and Android .SMO meshes",
 )
-def test_extras_mobile_path_meshes_and_rings(tmp_path):
+def test_extras_mobile_path_meshes_and_rings(tmp_path, probe_course):
     import json
     import re
     import struct
