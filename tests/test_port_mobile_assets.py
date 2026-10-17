@@ -14,8 +14,10 @@ PC_ARCHIVE = REPO_ROOT / "artifacts/bin/SnailMail.dat"
 
 
 @pytest.mark.skipif(
-    not (ANDROID / "LEVELS/ARCADEPRO010.TXT").exists() or not PC_ARCHIVE.exists(),
-    reason="needs extracted mobile assets and SnailMail.dat",
+    not (ANDROID / "LEVELS/ARCADEPRO010.TXT").exists()
+    or not (APK / "upramp.ogg").exists()
+    or not PC_ARCHIVE.exists(),
+    reason="needs extracted mobile assets, the unpacked APK assets and SnailMail.dat",
 )
 def test_all_mobile_levels_and_segments_are_preserved():
     files = build_extras_files(ANDROID, PC_ARCHIVE, APK)
@@ -58,8 +60,10 @@ def test_deployable_extras_include_mobile_shared_dependencies():
 
 
 @pytest.mark.skipif(
-    not (ANDROID / "LEVELS/TUTORIAL.TXT").exists() or not PC_ARCHIVE.exists(),
-    reason="needs extracted mobile assets and SnailMail.dat",
+    not (ANDROID / "LEVELS/TUTORIAL.TXT").exists()
+    or not (APK / "upramp.ogg").exists()
+    or not PC_ARCHIVE.exists(),
+    reason="needs extracted mobile assets, the unpacked APK assets and SnailMail.dat",
 )
 def test_mobile_tutorial_course_shows_the_pc_text_for_its_voice_clips():
     tutorial = build_extras_files(ANDROID, PC_ARCHIVE, APK)["LEVELS/TUTORIAL.TXT"].decode("latin-1")
@@ -76,8 +80,10 @@ def test_mobile_tutorial_course_shows_the_pc_text_for_its_voice_clips():
 
 
 @pytest.mark.skipif(
-    not (APK / "upramp.ogg").exists() or not PC_ARCHIVE.exists(),
-    reason="needs the unpacked APK assets and SnailMail.dat",
+    not (ANDROID / "LEVELS/ARCADEPRO010.TXT").exists()
+    or not (APK / "upramp.ogg").exists()
+    or not PC_ARCHIVE.exists(),
+    reason="needs extracted mobile assets, the unpacked APK assets and SnailMail.dat",
 )
 def test_extras_add_the_mobile_ramp_sound_beside_the_pc_ones():
     files = build_extras_files(ANDROID, PC_ARCHIVE, APK)

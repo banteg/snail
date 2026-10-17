@@ -1,10 +1,11 @@
 Android plays the damage warning's postalloop on a timer of its own. Its
 cRWarning::Start (0006ecb0) sets the timer at +0xc to 1.0; AI (000704f4) adds
-the 1/72 step Init (00070334) leaves at +0x10 on each tick the warning shows
-and, once the timer reaches 1.0, zeroes it and plays the sample (Android's 51,
-Windows' 50): the whole 1.23 s clip every 72 ticks, where Windows restarts it
-at each 26-tick blink. StopSample (0006d3f4) is empty, so the last play runs
-out. Android's cRInvincible::Start (0006d1fc) plays no sound.
+the 1/72 step Init (00070334) leaves at +0x10 on each unpaused tick while the
+warning is active and, once the timer reaches 1.0, zeroes it and plays the
+sample (Android's 51, Windows' 50): the 1.23 s clip every 72 ticks (1.2 s),
+where Windows restarts it at each 26-tick blink. StopSample (0006d3f4) is
+empty, so the last play runs out. Android's cRInvincible::Start (0006d1fc)
+plays no sound.
 
 --- a/decomp/game/SubGame/update_warning.cpp
 +++ b/decomp/game/SubGame/update_warning.cpp
@@ -40,14 +41,16 @@ out. Android's cRInvincible::Start (0006d1fc) plays no sound.
  }
 --- a/decomp/game/SubGame/start_warning.cpp
 +++ b/decomp/game/SubGame/start_warning.cpp
-@@ -5,5 +5,8 @@
+@@ -5,5 +5,10 @@
++extern bool g_port_ultimate; // shell/profile.h
 +extern float g_warning_sound_timer; // update_warning.cpp
 +
  void cRWarning::Start()
  {
      phase = 1.0f;
      state = WARNING_STATE_FADING;
-+    g_warning_sound_timer = 1.0f;
++    if (g_port_ultimate)
++        g_warning_sound_timer = 1.0f;
      border->UnHideInit();
 --- a/decomp/game/SubGame/stop_warning_sample.cpp
 +++ b/decomp/game/SubGame/stop_warning_sample.cpp

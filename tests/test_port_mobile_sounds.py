@@ -76,8 +76,22 @@ def test_warning_invincibility_and_ramp_sounds_follow_the_profile(tmp_path, port
     def ticks(events):
         return [event["tick"] for event in events]
 
-    # The harness fills the damage gauge before tick 0 and empties it before
-    # tick 170; the warning shows from tick 1.
+    def launches(events):
+        return [event for event in events if "launch" in event]
+
+    # Started in Original, the port registers the PC sound bank, where
+    # postalloop is 50, and the voices, and nothing else. Ultimate adds upramp
+    # right after the bank and keeps every other sample in its order.
+    registered = data["registered"]
+    assert "upramp" not in registered["original"]
+    assert registered["original"].index("postalloop") == 50
+    assert registered["ultimate"].pop(51) == "upramp"
+    assert registered["ultimate"] == registered["original"]
+
+    # Pro 1 needs Ultimate's menus, so each play-through starts in Ultimate and
+    # then sets the profile it checks. The harness fills the damage gauge
+    # before tick 0 and empties it before tick 170; the warning shows from
+    # tick 1.
     original, ultimate = data["original"], data["ultimate"]
     # Windows restarts postalloop at every 26-tick blink and cuts it off when
     # the warning stops (StopSample plays it looped, then stops the sample).
@@ -93,9 +107,19 @@ def test_warning_invincibility_and_ramp_sounds_follow_the_profile(tmp_path, port
     assert ticks(plays(original, "invincible")) == [200]
     assert not plays(ultimate, "invincible")
 
-    # Android plays upramp on the raised and the plain ramp, 14 rows apart,
-    # and as the SuperTramp launches the snail off its path.
+    # The snail goes up the raised ramp, the plain ramp 14 rows on and off the
+    # SuperTramp path. Once it lands past the raised ramp, the harness moves it
+    # 3 rows back, as a new level or life moves it back to the start, and it
+    # goes up the raised ramp again.
+    def lifts(events):
+        first = int(launches(events)[0]["launch"])
+        return ["path" if event["riding"] else int(event["launch"]) - first for event in launches(events)]
+
+    assert lifts(original) == lifts(ultimate) == [0, 0, 14, "path"]
+    # Windows has no ramp sound. Android plays upramp each time but the second
+    # time up the raised ramp: the snail is not more than 1.0 past the z where
+    # upramp last played, and nothing resets that mark when the snail goes back.
     assert not plays(original, "upramp")
-    ramps = plays(ultimate, "upramp")
-    assert [event["riding"] for event in ramps] == [0, 0, 1]
-    assert int(ramps[1]["z"]) - int(ramps[0]["z"]) == 14
+    played = ticks(plays(ultimate, "upramp"))
+    assert [event["tick"] in played for event in launches(ultimate)] == [True, False, True, True]
+    assert len(played) == 3

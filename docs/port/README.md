@@ -329,7 +329,7 @@ converting the Pro backgrounds (`SpacePro`, `SpacePro2`, `StarmapProbg`,
 packing `Sprites/FringeColours.tga`, `Objects/TrampRing/`, `Galaxy/_GalaxyPro.txt`,
 all 65 mobile level files and all 176 segment definitions, including shared
 names whose layouts changed, and the ramp sound `upramp.ogg` from the APK's
-loose assets as `Sfx2/UpRamp.ogg`. The combined catalog loads before any levels
+loose assets as `sfx2/UpRamp.ogg`. The combined catalog loads before any levels
 are parsed. Original uses only the PC archive and catalog. The mobile
 tutorial course keeps its own speed, segments and timing, but each line shows
 the PC text for the voice clip it plays: the port plays the PC clips, which
@@ -347,15 +347,15 @@ other Android rules (divergences.md#patches): a new Pro-Challenge game starts
 with 8 lives instead of 3, parcels are collected within 1.73 of the snail
 instead of 1.24, and `Random:` courses (Challenge) lay the four-row Padding
 segment between each pair of random segments. They also play Android's
-sound cues: the damage warning plays its whole postalloop clip every 72
-ticks, where the PC restarts it at each 26-tick blink, and lets the last one
-run out instead of cutting it off; invincibility starts silently; and the
-mobile ramp sound, appended to the PC sound bank, plays on ramps and at the
-SuperTramp launch. A ramp plays it only once the snail is more than a row
-past the last ramp that did. Android never resets that mark, so after a long
-level the next level's ramps stay silent until the snail passes it; the port
-keeps that. Pro skies use the full converted image with normalized UVs,
-including horizontal flips; PC backdrops retain their padded-image UV layout.
+sound cues: the damage warning plays postalloop every 72 ticks, where the
+PC restarts it at each 26-tick blink, and lets the last one run out instead
+of cutting it off; invincibility starts silently; and the mobile ramp sound,
+appended to the PC sound bank, plays on ramps and at the SuperTramp launch. A
+ramp plays it only once the snail is more than a row past the last ramp that
+did. Android never resets that mark, so after a long level the next level's
+ramps stay silent until the snail passes it; the port keeps that. Pro skies
+use the full converted image with normalized UVs, including horizontal flips;
+PC backdrops retain their padded-image UV layout.
 
 Mobile campaign progress and scores use `SnailMailMobile.cfg` and
 `ScoreMobileA/B/C.dat`. The first mobile launch copies display/audio
