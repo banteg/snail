@@ -275,6 +275,42 @@ Which functions the port compiles:
   wasm expects the result slot, zeroing every pillar vertex. A hand-written
   shim (`shell/abi_shims.cpp`) bridges it, and `snail port link` no longer
   forwards what the shims define.
+- **The Ultimate profile: the Android oracle.** The oracles above check
+  Original. For Ultimate, `snail android trace` runs the Android release's
+  own `libsnailmail.so` (armeabi-v7a, symbols intact) headless under Unicorn
+  (`src/snail/android_emu.py`, `src/snail/android_game.py`). The library
+  loads at 0x10000, so its addresses are the Ghidra exports'. Its imports are
+  Python stubs: libc, the host's libm, and GL ES calls that draw nothing.
+  The Java side is replaced at the `JAVA*` bridge: the game reads `asm.mp3`
+  and the APK's assets, writes saves to a sandbox, leaves images undecoded,
+  records sounds by sample name, and reads a virtual clock that `appRender`
+  steps one 16,666 us tick per frame. It boots in about a second and plays
+  at roughly 9x real time. Touches go straight into `cRMouse`, in the
+  640x480 frame the widgets use, so a script presses buttons by their text:
+
+  ```
+  uv run snail android trace --press Play --press Tutorial
+  uv run snail android trace --tutorial-done --sliders 50,0.5,50 --seed 28745 \
+    --press Play --press "Challenge Mode" --press Play --segments
+  ```
+
+  Each level build prints its rows, finish row, listed segments, the seed
+  `BuildLevel` passed to `RandSeed`, and every `RAND`/`SRAND` draw up to the
+  end of `cRSubGame::StartLevel`, counted by tag. `--segments` lists each
+  laid piece's rows and mirror flag; `--seed` replaces the seed, so a build
+  can be compared with the port's for the same seed. The comparisons so far
+  ran against the ten open profile PRs merged together:
+  - the tutorial, and route I in Time Trial and postal, match Android row
+    for row and draw for draw;
+  - Challenge 0 showed that Android lays a random course's finish in pieces
+    sized by the picks past the finish line; with
+    `port/patches/22-challenge-finish.patch`, Ultimate matches its 147 draws
+    and 72 pieces.
+
+  The oracle does not draw, play audio, steer, or replay recorded Android
+  sessions, and its libm is the host's.
+  `tests/test_android_game.py` skips without the unpacked APK under
+  `artifacts/android/unpacked/`.
 
 ## Playing in the browser
 
