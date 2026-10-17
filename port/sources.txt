@@ -613,9 +613,7 @@
 ../decomp/engine/RMaths/convert_math_type16_to_32.cpp
 ../decomp/engine/RMaths/initialize_math_random_table.cpp
 ../decomp/engine/RMaths/next_math_random_value.cpp
-../decomp/engine/RMaths/j_rand.cpp
 ../decomp/engine/RMaths/initialize_trigonometry_tables.cpp
-../decomp/engine/RMaths/set_math_random_seed.cpp
 ../decomp/engine/RMaths/cosine.cpp
 ../decomp/engine/RMaths/sine.cpp
 ../decomp/engine/RMaths/arccosine.cpp

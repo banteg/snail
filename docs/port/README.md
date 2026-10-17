@@ -183,8 +183,13 @@ Which functions the port compiles:
   x86 ABI and x87 leniency, behind a `SNAIL_PORT` guard; both are listed in
   the divergence ledger ([divergences.md](divergences.md)).
 - **Exact `rand`.** Track generation reseeds with `RandSeed(runtime_build_seed)`,
-  so the port implements the MSVC `rand` LCG exactly. `gRMathRand2` and the
-  sine tables are recovered code and come along unchanged.
+  so the port implements the MSVC `rand` LCG exactly, and Original's `RAND`
+  and `SRAND` draw from it. In Ultimate they draw from Android's
+  `RandTable.bin` instead, through an index that `RandSeed` sets to
+  `seed % 8191`. That file holds the LCG's first 8191 values from seed 1,
+  which `RMathInit` copies into `g_math_random_table` before anything else
+  draws. `gRMathRand2` and the sine tables are recovered code and come along
+  unchanged.
 - **Float sums in the binary's order.** VC6 reassociates float additions; clang
   evaluates the source exactly. When a matched function's float sum is
   written in another order than the object computes it, rewrite it in the
@@ -345,7 +350,10 @@ Original delegates to the PC rules. Patches at the native sites add the
 other Android rules (divergences.md#patches): a new Pro-Challenge game starts
 with 8 lives instead of 3, parcels are collected within 1.73 of the snail
 instead of 1.24, and `Random:` courses (Challenge) lay the four-row Padding
-segment between each pair of random segments. Pro skies use the full
+segment between each pair of random segments. The shell's `j_rand` and
+`RandSeed` make `RAND` and `SRAND` step Android's index through
+`RandTable.bin`, so a seed draws what it draws on Android, the fixed seed 0
+of Time Trial and the tutorial included. Pro skies use the full
 converted image with normalized UVs, including horizontal flips; PC
 backdrops retain their padded-image UV layout.
 
