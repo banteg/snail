@@ -8,6 +8,7 @@ const char* extras_save_path(const char* name);
 bool extras_init_archive();
 void extras_init_assets();
 const char* extras_track_texture_name(int slot);
+const char* extras_sprite_texture_name(int slot);
 
 struct cRSubTracks;
 struct PathPair;
@@ -17,6 +18,8 @@ void extras_import_padding(cRSubTracks* level_definition);
 struct cRSubSegment;
 cRSubSegment* extras_next_padding();
 void extras_begin_level_build();
+class cRSubGame;
+void extras_skirt_colour_random(cRSubGame* subgame, float t);
 // For --trace: Padding segments in the last level built.
 int extras_padding_pick_count();
 struct cRSubLoc;
