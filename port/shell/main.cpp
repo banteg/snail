@@ -171,6 +171,16 @@ int main(int argc, char** argv)
                     f.r, f.g, f.b, g_game->subgame.runtime_row_count,
                     g_game->subgame.level_definition.segment_count,
                     extras_sprite_texture_name(g_game->backdrop.pending_primary_texture_id));
+                // Pieces BuildLevel laid from the finish line on (port/patches/22-challenge-finish.patch).
+                const cRSubGame& sub = g_game->subgame;
+                int pieces = 0;
+                for (int row = sub.completion_row_start; row < sub.runtime_row_count; ++row) {
+                    if (row == sub.completion_row_start
+                        || sub.runtime_rows[row].row_event_id != sub.runtime_rows[row - 1].row_event_id)
+                        ++pieces;
+                }
+                fprintf(stderr, "tick %d: finish rows %d pieces %d\n",
+                    tick, sub.runtime_row_count - sub.completion_row_start, pieces);
             }
         }
         if (trace && extras_tramp_ring_active_count() != tramp_rings) {

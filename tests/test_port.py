@@ -328,12 +328,15 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
     # build without it. The track set, segment picks and fringe all come from
     # Android's RandTable.bin stream. Track: r trades the level's SpaceRed for
     # a random PC space backdrop. Challenge (Mode:Challenge) lists its 49
-    # segments without Padding before each.
+    # segments without Padding before each. Its finish comes in pieces as long
+    # as the picks past the finish line, three of them with Padding, which draws
+    # their picks too.
     assert (
-        'level "Challenge 0" track_set 4 (Objects/World00/Track4.tga) fringe (1.000, 1.000, 1.000)'
-        " rows 2025 segments 49 backdrop Backgrounds/SpaceBlueswhorl.tga" in challenge.stderr
+        'level "Challenge 0" track_set 4 (Objects/World00/Track4.tga) fringe (0.086, 0.047, 1.000)'
+        " rows 2025 segments 49 backdrop Backgrounds/SpaceGreenwarp.tga" in challenge.stderr
     )
-    assert "padding_segments 32" in challenge.stderr
+    assert "finish rows 160 pieces 7" in challenge.stderr
+    assert "padding_segments 35" in challenge.stderr
 
     # Original reads Track: r as 5: a random PC track set and space backdrop,
     # and the fringe the level gives. Its New Game menu lists Challenge Mode

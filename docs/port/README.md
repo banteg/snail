@@ -361,7 +361,9 @@ Original delegates to the PC rules. Patches at the native sites add the
 other Android rules (divergences.md#patches): a new Pro-Challenge game starts
 with 8 lives instead of 3, parcels are collected within 1.73 of the snail
 instead of 1.24, `Random:` courses (Challenge) lay the four-row Padding
-segment between each pair of random segments, and only `Track: r` picks a
+segment between each pair of random segments and lay their finish in pieces
+as long as the random picks that carry on past the finish line, drawing those
+picks and mirror flips as Android does, and only `Track: r` picks a
 random space backdrop and fringe colour, so Pro 1-5 (`Track: 5`, a mobile
 track set) keep their SpacePro sky. A path without a heading keeps
 its own roll, so turnovers roll the camera, and the snail can leave a path
