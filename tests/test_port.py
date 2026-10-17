@@ -285,9 +285,27 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
     )
     # Android lays Padding between each pair of random segments and skips
     # their RAND draws, so the random fringe that follows differs from a
-    # build without it.
-    assert 'level "Challenge 0" track_set 6 (Objects/World00/Track6.tga) fringe (0.910, 0.094, 1.000)' in challenge.stderr
+    # build without it. Track: r trades the level's SpaceRed for a random PC
+    # space backdrop.
+    assert (
+        'level "Challenge 0" track_set 6 (Objects/World00/Track6.tga) fringe (0.910, 0.094, 1.000)'
+        " backdrop Backgrounds/SpaceBlueswhorl.tga" in challenge.stderr
+    )
     assert "padding_segments 35" in challenge.stderr
+
+    # Original reads Track: r as 5: a random PC track set and space backdrop,
+    # and the fringe the level gives.
+    original = subprocess.run(
+        ["node", str(runner), str(wasm), "--profile", "original", "--warmup", "1", "--trace", "--keys", str(tmp_path / "challenge.keys")],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert (
+        'level "Challenge 0" track_set 0 (Objects/World00/Track0.tga) fringe (0.000, 1.000, 0.996)'
+        " backdrop Backgrounds/SpacePurple.tga" in original.stderr
+    )
 
 
 @pytest.mark.skipif(

@@ -351,8 +351,14 @@ Mobile acceleration and power-up pacing apply in every game mode;
 Original delegates to the PC rules. Patches at the native sites add the
 other Android rules (divergences.md#patches): a new Pro-Challenge game starts
 with 8 lives instead of 3, parcels are collected within 1.73 of the snail
-instead of 1.24, and `Random:` courses (Challenge) lay the four-row Padding
-segment between each pair of random segments. Pro skies use the full
+instead of 1.24, `Random:` courses (Challenge) lay the four-row Padding
+segment between each pair of random segments, and only `Track: r` picks a
+random space backdrop and fringe colour, so Pro 1-5 (`Track: 5`, a mobile
+track set) keep their SpacePro sky. A path without a heading keeps
+its own roll, so turnovers roll the camera, and the snail can leave a path
+sideways while the jetpack is on. S-bends lift the camera linearly, to 0.55 of
+the snail's height at the top, and off a lift path the lift eases out by 0.98 a
+tick instead of dropping to 0. Pro skies use the full
 converted image with normalized UVs, including horizontal flips; PC
 backdrops retain their padded-image UV layout.
 

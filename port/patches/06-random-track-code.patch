@@ -1,0 +1,26 @@
+Android's cRSubTracks::Init (000850d4) reads Track: 0-6 as track sets 0-6 and
+Track: r as 8, and its cRSubGame::StartLevel (000817ac) picks the random space
+backdrop and flip, then a random fringe colour (GetSkirtColourRandom, 0006c624),
+only for 8 (the `cmp r3, 8` at 00081a7c). Windows reads Track: r as 5, which
+Android's Pro 1-5 use as a track set, with their own SpacePro background. The
+shell parses the track sets and samples the colour (extras_skirt_colour_random).
+
+--- a/decomp/game/SubGame/build_subgame_level.cpp
++++ b/decomp/game/SubGame/build_subgame_level.cpp
+@@ -26,3 +26,5 @@
+ extern char g_blank_text[];
++extern bool g_port_ultimate; // shell/profile.h
++void extras_skirt_colour_random(cRSubGame* subgame, float t); // shell/extras.h
+ 
+ void set_input_controller_pointer_authored_xy(int controller, float x, float y);
+@@ -133,1 +135,1 @@
+-    if (level_definition.track_texture_set == 5) {
++    if (level_definition.track_texture_set == (g_port_ultimate ? 8 : 5)) {
+@@ -159,5 +161,7 @@
+         if (RAND(1.0f, 0) > 0.5f)
+             g_game->backdrop.pending_flip = 1;
+         else
+             g_game->backdrop.pending_flip = 0;
++        if (g_port_ultimate)
++            extras_skirt_colour_random(this, RAND(1.0f, 0));
+     } else {
