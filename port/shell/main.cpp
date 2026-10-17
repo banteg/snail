@@ -153,11 +153,13 @@ int main(int argc, char** argv)
             subgame_state = g_game->subgame.subgame_state;
             if (subgame_state == 2) {
                 const tColour& f = g_game->subgame.level_definition.fringe_color;
-                fprintf(stderr, "tick %d: level \"%s\" track_set %d (%s) fringe (%.3f, %.3f, %.3f) backdrop %s\n",
+                fprintf(stderr, "tick %d: level \"%s\" track_set %d (%s) fringe (%.3f, %.3f, %.3f) rows %d segments %d backdrop %s\n",
                     tick, g_game->subgame.level_definition.level_display_name,
                     g_game->track.current_texture_set,
                     extras_track_texture_name(g_game->track.current_texture_set),
-                    f.r, f.g, f.b, extras_sprite_texture_name(g_game->backdrop.pending_primary_texture_id));
+                    f.r, f.g, f.b, g_game->subgame.runtime_row_count,
+                    g_game->subgame.level_definition.segment_count,
+                    extras_sprite_texture_name(g_game->backdrop.pending_primary_texture_id));
             }
         }
         if (trace && extras_tramp_ring_active_count() != tramp_rings) {

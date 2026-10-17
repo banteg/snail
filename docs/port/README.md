@@ -341,7 +341,10 @@ text says tilt and touch.
 The narrow hooks (`port/wrapped.txt`, `port/shell/extras.cpp`,
 `port/shell/extras_paths.cpp`, `port/shell/extras_pro.cpp`) select the mobile
 level data, seven track sets, new path templates, mobile CAGE2/TWISTER2
-geometry, trampoline effects and moving weapon rings. The front end follows
+geometry, trampoline effects and moving weapon rings. As on Android, every
+course but Challenge (postal, Time Trial, Pro and the tutorial) lays the
+four-row Padding segment before each segment its level lists, so
+ArcadePro010, the longest, builds 3,407 rows rather than 3,231. The front end follows
 Android: **Play** opens the New Game menu, which lists Postal Adventure,
 **Pro-Challenge**, Time Trial and Challenge Mode, and route cards lead with the
 level's numeral ("XVI: Planoribis rubrum"). Pro-Challenge opens the ten-level

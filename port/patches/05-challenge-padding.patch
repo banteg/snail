@@ -1,6 +1,8 @@
-Android's cRSubTracks::Init (000850d4) imports Padding, a four-row empty segment,
-and its BuildLevel (0007e88c) lays it between each pair of segments a Random: level
-picks, without drawing RAND for it. The shell imports it (extras_import_padding).
+Android's cRSubTracks::Init (000850d4) imports Padding, four rows of plain track,
+into a slot of its own, and its BuildLevel (0007e88c) lays it between each pair of
+segments a Random: level picks, without drawing RAND for it. The shell imports it
+(extras_import_padding); the Padding Init lays before each listed segment of every
+other level is the shell's cRSubTracks::Init.
 
 --- a/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
 +++ b/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
