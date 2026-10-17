@@ -183,8 +183,13 @@ Which functions the port compiles:
   x86 ABI and x87 leniency, behind a `SNAIL_PORT` guard; both are listed in
   the divergence ledger ([divergences.md](divergences.md)).
 - **Exact `rand`.** Track generation reseeds with `RandSeed(runtime_build_seed)`,
-  so the port implements the MSVC `rand` LCG exactly. `gRMathRand2` and the
-  sine tables are recovered code and come along unchanged.
+  so the port implements the MSVC `rand` LCG exactly, and Original's `RAND`
+  and `SRAND` draw from it. In Ultimate they draw from Android's
+  `RandTable.bin` instead, through an index that `RandSeed` sets to
+  `seed % 8191`. That file holds the LCG's first 8191 values from seed 1,
+  which `RMathInit` copies into `g_math_random_table` before anything else
+  draws. `gRMathRand2` and the sine tables are recovered code and come along
+  unchanged.
 - **Float sums in the binary's order.** VC6 reassociates float additions; clang
   evaluates the source exactly. When a matched function's float sum is
   written in another order than the object computes it, rewrite it in the
@@ -327,9 +332,12 @@ into PC-layout 24-bit `Track4`–`6.tga` and `Slide4`–`6.tga` textures,
 converting the Pro backgrounds (`SpacePro`, `SpacePro2`, `StarmapProbg`,
 `SplashPro_A`/`_B`) and `Galaxy/*Pro.tga` overlays to PC TGA conventions, and
 packing `Sprites/FringeColours.tga`, `Objects/TrampRing/`, `Galaxy/_GalaxyPro.txt`,
-all 65 mobile level files and all 176 segment definitions, including shared
-names whose layouts changed. The combined catalog loads before any levels
-are parsed. Original uses only the PC archive and catalog. The mobile
+`Intro/Credits.txt` (the mobile staff and a 45 s crawl instead of 35 s),
+`X/_Animation.txt` (the falling snail swings between its two poses every
+second instead of curling once over six), all 65 mobile level files and all
+176 segment definitions, including shared names whose layouts changed. The
+combined catalog loads before any levels are parsed. Original uses only the
+PC archive and catalog. The mobile
 tutorial course keeps its own speed, segments and timing, but each line shows
 the PC text for the voice clip it plays: the port plays the PC clips, which
 say to steer with the mouse and hold its button to shoot, where the mobile
@@ -338,14 +346,30 @@ text says tilt and touch.
 The narrow hooks (`port/wrapped.txt`, `port/shell/extras.cpp`,
 `port/shell/extras_paths.cpp`, `port/shell/extras_pro.cpp`) select the mobile
 level data, seven track sets, new path templates, mobile CAGE2/TWISTER2
-geometry, trampoline effects and moving weapon rings. The New Game menu
-adds **Pro-Challenge**, opening the ten-level **Special Assignment** galaxy.
+geometry, trampoline effects and moving weapon rings. As on Android, every
+course but Challenge (postal, Time Trial, Pro and the tutorial) lays the
+four-row Padding segment before each segment its level lists, so
+ArcadePro010, the longest, builds 3,407 rows rather than 3,231. The front end follows
+Android: **Play** opens the New Game menu, which lists Postal Adventure,
+**Pro-Challenge**, Time Trial and Challenge Mode, and route cards lead with the
+level's numeral ("XVI: Planoribis rubrum"). Pro-Challenge opens the ten-level
+Pro galaxy (Limax maximus and Ariolimax columbianus) on Android's Pro star map,
+which has both galaxies painted in, and finishing it shows Android's Pro ending.
 Mobile acceleration and power-up pacing apply in every game mode;
 Original delegates to the PC rules. Patches at the native sites add the
 other Android rules (divergences.md#patches): a new Pro-Challenge game starts
 with 8 lives instead of 3, parcels are collected within 1.73 of the snail
 instead of 1.24, `Random:` courses (Challenge) lay the four-row Padding
-segment between each pair of random segments, and 16 slugs can be alive at
+segment between each pair of random segments, and only `Track: r` picks a
+random space backdrop and fringe colour, so Pro 1-5 (`Track: 5`, a mobile
+track set) keep their SpacePro sky. A path without a heading keeps
+its own roll, so turnovers roll the camera, and the snail can leave a path
+sideways while the jetpack is on. S-bends lift the camera linearly, to 0.55 of
+the snail's height at the top, and off a lift path the lift eases out by 0.98 a
+tick instead of dropping to 0. The shell's `j_rand` and
+`RandSeed` make `RAND` and `SRAND` step Android's index through
+`RandTable.bin`, so a seed draws what it draws on Android, the fixed seed 0
+of Time Trial and the tutorial included. Sixteen slugs can be alive at
 once instead of 8, which the mobile Barrage and SlugLine formations need. The
 active track window reaches two rows further: objects spawn 40 rows ahead
 of the snail instead of 38, and the finish banner, the salt fade-in and
@@ -356,6 +380,26 @@ stops a shot only between heights -1 and 7. Pro skies use the full
 converted image with normalized UVs, including horizontal flips; PC
 backdrops retain their padded-image UV layout.
 
+Patches also carry Android's rules on the track and at the finish:
+
+- a health pickup scores 250 points, which count toward the extra life every
+  50,000;
+- the ring counter, which keeps the power-up voice playing and default ramp
+  rings close together, stops at 8 rings instead of 10;
+- a default ramp ring turns slow on a single roll, 7% of the time; the PC
+  rolls again for every ring and, in Time Trial, turns about half of them
+  slow;
+- a wall turret fires with a chance of 4 − 3.5 × (1 − s) percent per tick,
+  s being the level's salt frequency (`Salt:` / 100), where the PC fires at
+  4 percent; most mobile courses set `Salt:10` or `Salt:20` (0.85 and 1.2
+  percent);
+- a segment's message (the tutorial's lines) starts 10 rows before its
+  segment and clears the tip still showing;
+- the replay cursor and sample count hold while the delivery summary waits
+  for a click, so an idle summary never reaches Time's Up;
+- skipping the delivery tally keeps the level bonus's extra life, a PC bug
+  Android fixed ([Original bugs](original-bugs.md)).
+
 Mobile campaign progress and scores use `SnailMailMobile.cfg` and
 `ScoreMobileA/B/C.dat`. The first mobile launch copies display/audio
 preferences from the PC config and starts its own campaign progress.
@@ -365,8 +409,10 @@ the PC campaign and scores without rewriting them.
 Android differences Ultimate leaves out: tilt and touch steering; the
 camera's wider field of view (120 where the PC has 110), which likely suits
 the phones' 3:2 screens; the slug-hit
-timer and firework variant; the Fluctuosa Pro unlock, resuming a Pro game,
-slug voice lines and the ramp and invulnerability sounds. Shared path meshes
+timer and firework variant; the Fluctuosa Pro unlock, resuming a postal or
+Pro game, slug voice lines and the ramp and invulnerability sounds; the
+OpenFeint logo that replaced the main menu's Exit button; the layout for the
+phones' 480x320 screens. Shared path meshes
 other than CAGE2, TWISTER2 and SBEND are not yet checked against the Android
 `.smo` meshes.
 

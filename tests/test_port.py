@@ -1,6 +1,7 @@
 """Port build inputs: source selection, generated data and link forwarders."""
 
 import json
+import re
 import shutil
 import subprocess
 
@@ -187,8 +188,10 @@ def test_original_profile_keeps_upright_hazard_spawns(tmp_path):
     )
     assert replay.stderr.count("upright_hazards 1") == 3
     assert "matches the original" in replay.stderr
-    # No Ultimate rule reaches the Original profile.
+    # No Ultimate rule reaches the Original profile: the PC course lists its
+    # 17 segments back to back.
     assert "padding_segments" not in replay.stderr
+    assert 'level "Slug Attack!" track_set 0 (Objects/World00/Track0.tga) fringe (0.871, 1.000, 0.039) rows 1064 segments 17' in replay.stderr
 
 
 @pytest.mark.skipif(
@@ -199,7 +202,7 @@ def test_original_profile_keeps_upright_hazard_spawns(tmp_path):
     reason="needs node, snail.wasm, SnailMail.dat and SnailMailExtras.dat",
 )
 def test_ultimate_collects_parcels_within_the_mobile_radius(tmp_path):
-    # A1's recorded input drives the mobile course (it diverges from the
+    # A9's recorded input drives the mobile course (it diverges from the
     # Windows recording, as intended); Android collects parcels within 1.73,
     # Windows within 1.24.
     for name in ("SnailMail.dat", "SnailMailExtras.dat"):
@@ -209,15 +212,51 @@ def test_ultimate_collects_parcels_within_the_mobile_radius(tmp_path):
         [
             "node", str(REPO_ROOT / "port/shell/run.mjs"), str(REPO_ROOT / "port/zig-out/bin/snail.wasm"),
             "--profile", "ultimate", "--trace", "--keys", str(REPO_ROOT / "port/scripts/high_scores.keys"),
-            "--replay", "A1",
+            "--replay", "A9",
         ],
         cwd=tmp_path,
         capture_output=True,
         text=True,
         check=False,
     )
-    # 1.24 to 1.73 from the snail on tick 1064: only the mobile radius takes it.
-    assert "tick 1064: parcels 3" in replay.stderr
+    # 1.24 to 1.73 from the snail on tick 1054: only the mobile radius takes it
+    # then; the PC radius takes it two ticks later.
+    assert "tick 1054: parcels 1" in replay.stderr
+
+
+@pytest.mark.skipif(
+    shutil.which("node") is None
+    or not (REPO_ROOT / "port/zig-out/bin/snail.wasm").exists()
+    or not (REPO_ROOT / "artifacts/bin/SnailMail.dat").exists()
+    or not (REPO_ROOT / "artifacts/bin/SnailMailExtras.dat").exists(),
+    reason="needs node, snail.wasm, SnailMail.dat and SnailMailExtras.dat",
+)
+@pytest.mark.parametrize(
+    ("profile", "course"),
+    [
+        # Android's cRSubTracks::Init (000850d4) lays Padding before every
+        # listed segment unless the level is Mode:Challenge. Its tutorial test
+        # looks for "Mode:Tutourial", so TUTORIAL.TXT (Mode:Tutorial) pads too:
+        # 22 segments of 1252 rows become 44 of 1340.
+        ("ultimate", "rows 1340 segments 44"),
+        ("original", "rows 1283 segments 23"),
+    ],
+)
+def test_tutorial_pads_its_listed_segments_only_in_ultimate(tmp_path, profile, course):
+    for name in ("SnailMail.dat", "SnailMailExtras.dat"):
+        (tmp_path / name).symlink_to(REPO_ROOT / "artifacts/bin" / name)
+    tutorial = subprocess.run(
+        [
+            "node", str(REPO_ROOT / "port/shell/run.mjs"), str(REPO_ROOT / "port/zig-out/bin/snail.wasm"),
+            "--profile", profile, "--trace", "--ticks", "850",
+            "--keys", str(REPO_ROOT / "port/scripts/tutorial.keys"),
+        ],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert f'level "Tutorial" track_set 0 (Objects/World00/Track0.tga) fringe (0.502, 1.000, 0.502) {course}' in tutorial.stderr
 
 
 @pytest.mark.skipif(
@@ -256,7 +295,7 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
 
     (tmp_path / "postal46.keys").write_text(
         "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 170\n820 click 3\n"
-        "900 mouse 480 300\n920 click 3\n1000 mouse 320 300\n"
+        "900 mouse 210 300\n920 click 3\n1000 mouse 320 300\n"
     )
     postal = subprocess.run(
         ["node", str(runner), str(wasm), "--profile", "ultimate", "--trace", "--keys", str(tmp_path / "postal46.keys")],
@@ -265,12 +304,16 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
         text=True,
         check=True,
     )
+    # Android's route card leads with the level numeral and stays on screen.
+    assert 'at (50, 127) size 320 x 31 flags 0x20400003 "XLVI: Pomacea cuprina aurea"' in postal.stderr
+    # Padding before each of its 27 listed segments, as Android lays it.
     assert 'level "70 Gph!" track_set 4 (Objects/World00/Track4.tga)' in postal.stderr
+    assert "rows 2127 segments 54" in postal.stderr
 
     (tmp_path / "SnailMail.cfg").write_bytes(cfg)
     (tmp_path / "SnailMailMobile.cfg").write_bytes(cfg)
     (tmp_path / "challenge.keys").write_text(
-        "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 310\n820 click 3\n"
+        "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 383\n820 click 3\n"
         "900 mouse 320 320\n920 click 3\n1000 mouse 320 300\n"
     )
     challenge = subprocess.run(
@@ -282,9 +325,35 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
     )
     # Android lays Padding between each pair of random segments and skips
     # their RAND draws, so the random fringe that follows differs from a
-    # build without it.
-    assert 'level "Challenge 0" track_set 6 (Objects/World00/Track6.tga) fringe (0.910, 0.094, 1.000)' in challenge.stderr
-    assert "padding_segments 35" in challenge.stderr
+    # build without it. The track set, segment picks and fringe all come from
+    # Android's RandTable.bin stream. Track: r trades the level's SpaceRed for
+    # a random PC space backdrop. Challenge (Mode:Challenge) lists its 49
+    # segments without Padding before each.
+    assert (
+        'level "Challenge 0" track_set 4 (Objects/World00/Track4.tga) fringe (1.000, 1.000, 1.000)'
+        " rows 2025 segments 49 backdrop Backgrounds/SpaceBlueswhorl.tga" in challenge.stderr
+    )
+    assert "padding_segments 32" in challenge.stderr
+
+    # Original reads Track: r as 5: a random PC track set and space backdrop,
+    # and the fringe the level gives. Its New Game menu lists Challenge Mode
+    # third.
+    (tmp_path / "challenge_original.keys").write_text(
+        "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 310\n820 click 3\n"
+        "900 mouse 320 320\n920 click 3\n1000 mouse 320 300\n"
+    )
+    original = subprocess.run(
+        ["node", str(runner), str(wasm), "--profile", "original", "--warmup", "1", "--trace", "--keys", str(tmp_path / "challenge_original.keys")],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert re.search(
+        r'level "Challenge 0" track_set 0 \(Objects/World00/Track0\.tga\) fringe \(0\.000, 1\.000, 0\.996\)'
+        r" rows \d+ segments \d+ backdrop Backgrounds/SpacePurple\.tga",
+        original.stderr,
+    )
 
 
 @pytest.mark.skipif(
@@ -297,6 +366,7 @@ def test_extras_track_colours_and_random_fringe(tmp_path):
 )
 def test_extras_mobile_path_meshes_and_rings(tmp_path, probe_course):
     import json
+    import re
     import struct
     from pathlib import Path
 
@@ -427,34 +497,8 @@ console.log(JSON.stringify(out));
                 rev = max(min(max(abs(a[0] - b[0]), abs(a[1] - b[1]), abs(a[2] - b[2])) for b in smo) for a in gen)
                 assert fwd < 0.012 and rev < 0.012, f"{name} error fwd={fwd} rev={rev}"
 
+    # Classic playback stays exact, without the mobile ring sway.
     shutil.copy2(REPO_ROOT / "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat", tmp_path / "ScoreA.dat")
-    shutil.copy2(tmp_path / "ScoreA.dat", tmp_path / "ScoreMobileA.dat")
-    replay = subprocess.run(
-        [
-            "node", str(runner), str(wasm), "--profile", "ultimate", "--trace",
-            "--keys", str(REPO_ROOT / "port/scripts/high_scores.keys"),
-            "--replay", "A4",
-        ],
-        cwd=tmp_path,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    assert replay.returncode == 3
-    # A Windows replay is intentionally different under mobile pacing and
-    # level data; classic playback stays exact.
-    assert "first divergence at sample" in replay.stderr
-    # Both ring effects run: the snail drops onto a trampoline, which throws up
-    # its ring, and a moving weapon ring sways.
-    rings = probe_course(
-        ["@________@"] * 20 + ["@        @ NoFall"] * 9 + ["@   (((  @ NoFall"] * 5 + ["@        @"] * 18
-        + ["@________@"] * 10 + ["@___R____@ Ring=Normal RingSpeed=0.5"],
-        ultimate=True, start=True,
-    )  # fmt: skip
-    assert "tramp_rings 1" in rings
-    assert "tramp_rings 0" in rings
-    assert "sway_rings 1" in rings
-
     original = subprocess.run(
         [
             "node", str(runner), str(wasm), "--trace",
@@ -469,6 +513,49 @@ console.log(JSON.stringify(out));
     assert "sway_rings" not in original.stderr
     assert "matches the original" in original.stderr
 
+    # No Windows replay reaches a trampoline on the mobile courses, which lay
+    # Padding before every listed segment, so a probe course on route 1 drives
+    # both ring effects: a drop onto trampolines, then a ring with a RingSpeed=.
+    rows = (
+        ["@________@"] * 20 + ["@        @ NoFall"] * 4 + ["@((((((((@ NoFall"] * 10
+        + ["@________@"] * 30 + ["@___R____@ Ring=Normal RingSpeed=0.5"] + ["@________@"] * 40
+    )
+    extras = tmp_path / "SnailMailExtras.dat"
+    files = {entry.path.upper(): read_archive_entry(extras, entry) for entry in parse_archive_index(extras).entries}
+    files["SEGMENTS/RINGPROBE.TXT"] = "\r\n".join(
+        ["ID:0", "Name:'RingProbe'", "Data:", "@@@@@@@@@@", *rows, "@@@@@@@@@@", ""]
+    ).encode()
+    files["LEVELS/ARCADE001.TXT"] = re.sub(
+        rb"(Segments Begin:[^\r\n]*\r?\n).*?(Segments End:)", rb"\1RingProbe.txt\r\n\2",
+        files["LEVELS/ARCADE001.TXT"], flags=re.DOTALL,
+    )
+    extras.unlink()
+    write_archive(extras, files)
+    cfg = bytearray(196)
+    struct.pack_into("<ff", cfg, 0, 1.0, 1.0)
+    cfg[0x60:0x69] = b"Fluctuosa"
+    struct.pack_into("<ifi", cfg, 0x40, 50, 0.5, 50)
+    struct.pack_into("<ii", cfg, 0xA0, 50, 1)
+    cfg[0xC0] = 1
+    (tmp_path / "SnailMail.cfg").write_bytes(cfg)
+    (tmp_path / "SnailMailMobile.cfg").write_bytes(cfg)
+    (tmp_path / "rings.keys").write_text(
+        "600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 170\n820 click 3\n"
+        "920 mouse 216 327\n940 click 3\n1150 mouse 320 222\n1160 click 3\n1200 mouse 320 300\n"
+    )
+    rings = subprocess.run(
+        [
+            "node", str(runner), str(wasm), "--profile", "ultimate", "--trace", "--ticks", "1600",
+            "--keys", str(tmp_path / "rings.keys"),
+        ],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert "tick 1474: sway_rings 1" in rings.stderr
+    assert "tick 1497: tramp_rings 1" in rings.stderr
+    assert "tick 1549: tramp_rings 0" in rings.stderr
 
 
 @pytest.mark.skipif(
@@ -556,7 +643,7 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
 
     (tmp_path / "pro1.keys").write_text(
         "600 escape\n700 mouse 345 112\n720 click 3\n"
-        "800 mouse 345 383\n820 click 3\n"
+        "800 mouse 345 240\n820 click 3\n"
         "900 mouse 289 287\n920 click 3\n"
     )
     pro1 = subprocess.run(
@@ -567,10 +654,12 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
         check=True,
     )
     assert '"Pro-Challenge"' in pro1.stderr
-    assert '"Special Assignment"' in pro1.stderr
-    assert '"Limax maximus"' in pro1.stderr
+    # Android keeps the postal map's title on the Pro map.
+    assert '"Intergalactic Delivery Route"' in pro1.stderr
+    assert "Special Assignment" not in pro1.stderr
+    assert '"I: Limax maximus"' in pro1.stderr
     assert "lives 8" in pro1.stderr  # a new Pro game, as on Android
-    assert 'level "Pros Only" track_set 5 (Objects/World00/Track5.tga) fringe (0.871, 1.000, 0.039)' in pro1.stderr
+    assert 'level "Pros Only" track_set 5 (Objects/World00/Track5.tga) fringe (0.871, 1.000, 0.039) rows 2054 segments 50' in pro1.stderr
     # save_game() runs at the end of pro1 while g_pro_state_swapped == true inside "Pros Only"
     assert struct.unpack("<ii", (tmp_path / "SnailMailPro.cfg").read_bytes()) == (1, 1)
     assert struct.unpack_from("<ii", (tmp_path / "SnailMail.cfg").read_bytes(), 0xA0) == (50, 7)
@@ -579,7 +668,7 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
     (tmp_path / "SnailMailPro.cfg").write_bytes(struct.pack("<ii", 10, 10))
     (tmp_path / "pro10.keys").write_text(
         "600 escape\n700 mouse 345 112\n720 click 3\n"
-        "800 mouse 345 383\n820 click 3\n"
+        "800 mouse 345 240\n820 click 3\n"
         "900 mouse 248 414\n920 click 3\n"
     )
     pro10 = subprocess.run(
@@ -589,8 +678,9 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
         text=True,
         check=True,
     )
-    assert '"Ariolimax columbianus"' in pro10.stderr
-    assert 'level "Eximius Ferreus" track_set 6 (Objects/World00/Track6.tga) fringe (1.000, 0.980, 0.196)' in pro10.stderr
+    assert '"X: Ariolimax columbianus"' in pro10.stderr
+    # The longest mobile course: 44 listed segments, each after a Padding.
+    assert 'level "Eximius Ferreus" track_set 6 (Objects/World00/Track6.tga) fringe (1.000, 0.980, 0.196) rows 3407 segments 88' in pro10.stderr
     assert struct.unpack("<ii", (tmp_path / "SnailMailPro.cfg").read_bytes()) == (10, 10)
     assert struct.unpack_from("<ii", (tmp_path / "SnailMail.cfg").read_bytes(), 0xA0) == (50, 7)
     assert (tmp_path / "ScoreA.dat").read_bytes() == score_a_orig

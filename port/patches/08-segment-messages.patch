@@ -1,0 +1,34 @@
+Android's cRSubGoldy::AI (0007ac54) looks up a segment's message 10 rows ahead of
+the snail, so the line and its voice clip start before the segment does, and
+clears the tips still showing (cRTipManager::UnInitTips) before it shows the new
+one. Windows reads the snail's own row and stacks a new tip on one still showing.
+
+--- a/decomp/game/SubGame/update_subgoldy.cpp
++++ b/decomp/game/SubGame/update_subgoldy.cpp
+@@ -75,6 +75,8 @@
+ // voice id at +0x204 (0xa874); the flat 0xa874 read is
+ // level_segment_count.
+ 
++extern bool g_port_ultimate; // shell/profile.h
++
+ void cRSubGoldy::AI()
+ {
+     // Mobile symbols name both accumulators as function-local statics:
+@@ -284,7 +286,7 @@
+     cRSubLoc* source_cell = game->LocFromPos(p_position);
+     cRSubGame* event_game = game;
+     SubRow* row_record =
+-        &event_game->runtime_rows[source_cell->Yi()];
++        &event_game->runtime_rows[source_cell->Yi() + (g_port_ultimate ? 10 : 0)];
+     int event_id = row_record->row_event_id;
+     if (event_id > 0 && event_id != row_event.id
+         && event_id < event_game->level_definition.segment_count + 1) {
+@@ -327,6 +329,8 @@
+                         ->level_definition
+                         .segment_slots[definition - 1]
+                         .message_sample_id);
++            if (g_port_ultimate)
++                g_game->tip_manager.UnInitTips();
+             g_game->tip_manager.TipNew(&row_event.definition, 1);
+         }
+     }

@@ -11,7 +11,7 @@ from snail.archive import parse_archive_index, read_archive_entry, write_archive
 from snail.port_lockstep import layout_offsets
 from snail.symbols import REPO_ROOT
 
-# Fields the JavaScript harnesses reach in the port's memory, in the layout the port compiles.
+# Fields and constants the JavaScript harnesses reach in the port's memory, in the layout the port compiles.
 PORT_LAYOUT = (
     ("subgame", "offsetof(cRGame, subgame)"),
     ("backdrop", "offsetof(cRGame, backdrop)"),
@@ -20,6 +20,74 @@ PORT_LAYOUT = (
     ("player", "offsetof(cRSubGame, player)"),
     ("sm_tracks", "offsetof(cRSubGame, sm_tracks)"),
     ("segment_entry", "sizeof(SegmentCatalogEntry)"),
+    ("runtime_flags", "offsetof(cRSubGame, runtime_flags)"),
+    ("runtime_cells", "offsetof(cRSubGame, runtime_cells)"),
+    ("lanes", "SUBGAME_TRACK_LANE_COUNT"),
+    ("cell", "sizeof(cRSubLoc)"),
+    ("cell_position", "offsetof(cRSubLoc, position)"),
+    ("cell_tile", "offsetof(cRSubLoc, tile_id)"),
+    ("paths", "offsetof(cRSubGame, paths)"),
+    ("path", "sizeof(cRPath)"),
+    ("path_kind", "offsetof(cRPath, kind)"),
+    ("path_segment_count", "offsetof(cRPath, segment_count)"),
+    ("path_heading", "offsetof(cRPath, installed_heading_delta)"),
+    ("path_primary_samples", "offsetof(cRPath, primary_samples)"),
+    ("path_secondary_samples", "offsetof(cRPath, secondary_samples)"),
+    ("sample", "sizeof(AttachmentSample)"),
+    ("sample_center_x", "offsetof(AttachmentSample, center_x)"),
+    ("sample_roll", "offsetof(AttachmentSample, rotation_scalar_98)"),
+    ("sample_lateral_scale", "offsetof(AttachmentSample, lateral_scale)"),
+    ("sample_delta_length", "offsetof(AttachmentSample, delta_length)"),
+    ("player_position", "offsetof(cRSubGoldy, transform.position)"),
+    ("player_velocity", "offsetof(cRSubGoldy, velocity)"),
+    ("player_exit_pending", "offsetof(cRSubGoldy, attachment_exit_pending)"),
+    ("player_hover_state", "offsetof(cRSubGoldy, sub_hover.state)"),
+    ("player_pitch_cycle", "offsetof(cRSubGoldy, cutscene_pitch_cycle)"),
+    ("player_lift", "offsetof(cRSubGoldy, cameraman.attachment_lift_envelope)"),
+    ("follow", "offsetof(cRSubGoldy, follow_state)"),
+    ("follow_template", "offsetof(cRPathFollowGoldy, template_record)"),
+    ("follow_cell", "offsetof(cRPathFollowGoldy, source_cell)"),
+    ("follow_index", "offsetof(cRPathFollowGoldy, sample_index)"),
+    ("follow_progress", "offsetof(cRPathFollowGoldy, progress)"),
+    ("follow_vertical", "offsetof(cRPathFollowGoldy, vertical_offset)"),
+    ("follow_roll", "offsetof(cRPathFollowGoldy, orientation_b)"),
+    ("allow_falling", "SUBGAME_RUNTIME_FLAG_ALLOW_FALLING"),
+    ("hover_active", "SUB_HOVER_STATE_ACTIVE"),
+    ("mobile_sbend", "PATH_TEMPLATE_KIND_MOBILE_SBEND"),
+    ("trampoline", "SUBLOC_TILE_TRAMPOLINE"),
+    ("frontend_state", "offsetof(cRGame, players[0].frontend_state)"),
+    ("galaxy_name", "offsetof(cRGame, subgame.galaxy.route_names[0].name)"),
+    ("splash_message", "offsetof(cRGame, subgame.splash.message_widget)"),
+    ("splash_state", "offsetof(cRGame, subgame.splash.message_state)"),
+    ("border_text", "offsetof(cRBorder, text_buffer)"),
+    ("rings", "offsetof(cRSubGame, ring_effects.slots)"),
+    ("ring", "sizeof(cRSubRing)"),
+    ("ring_slots", "SUB_RING_POOL_CAPACITY"),
+    ("ring_state", "offsetof(cRSubRing, state)"),
+    ("ring_kind", "offsetof(cRSubRing, kind)"),
+    ("ring_position", "offsetof(cRSubRing, transform.position)"),
+    ("ring_oscillate_x", "offsetof(cRSubRing, oscillate_x)"),
+    ("completion", "offsetof(cRSubGame, completion)"),
+    ("completion_state", "offsetof(cRCompletion, state)"),
+    ("completion_target", "offsetof(cRCompletion, parcel_target_count)"),
+    ("completion_display_token", "offsetof(cRCompletion, display_token)"),
+    ("replay_update_cursor", "offsetof(cRSubGame, replay_update_cursor)"),
+    ("replay_sample_count", "offsetof(cRSubGame, current_high_score_record.replay_sample_count)"),
+    ("tips", "offsetof(cRGame, tip_manager.tips)"),
+    ("tip", "sizeof(cRTip)"),
+    ("tip_slots", "TIP_SLOT_COUNT"),
+    ("position", "offsetof(cRSubGoldy, transform.position)"),
+    ("camera_target", "offsetof(cRSubGoldy, cached_camera_target_world)"),
+    ("row_event", "offsetof(cRSubGoldy, row_event.id)"),
+    ("segment_slots", "offsetof(cRSubTracks, segment_slots)"),
+    ("segment_slot", "sizeof(SubSegment)"),
+    ("segment_message", "offsetof(SubSegment, message_text)"),
+    ("total_score", "offsetof(cRSubGoldy, total_score)"),
+    ("score_buckets", "offsetof(cRSubGoldy, score_buckets)"),
+    ("score_bucket_count", "SUBGOLDY_SCORE_BUCKET_COUNT"),
+    ("ring_counter", "offsetof(cRSubGoldy, lives)"),
+    ("lives", "offsetof(cRSubGoldy, visible_life_stock)"),
+    ("handoff_timer", "offsetof(cRSubGoldy, completion_handoff_timer)"),
     ("completion_row_start", "offsetof(cRSubGame, completion_row_start)"),
     ("runtime_row_scan_end", "offsetof(cRSubGame, runtime_row_scan_end)"),
     ("finish_banner_z", "offsetof(cRSubGame, banners.slots[1].position.z)"),
@@ -38,8 +106,8 @@ def port_layout_env() -> dict[str, str]:
 @pytest.fixture
 def probe_course(tmp_path):
     """Play a course of the PC Start, the given segment rows and the PC Finish on the headless
-    build (Pro 10 in Ultimate, Postal 1 in Original) and return its `--trace`. The snail waits for
-    its start click at z = 4 unless `start`."""
+    build (Pro 10 in Ultimate, Postal 1 in Original) and return its `--trace`. Ultimate lays the
+    four-row Padding before the rows. The snail waits for its start click at z = 4 unless `start`."""
     runs = itertools.count()
 
     def play(rows, ultimate, start=False):
@@ -82,7 +150,7 @@ def probe_course(tmp_path):
         (directory / "SnailMailMobile.cfg").write_bytes(config)
         (directory / "SnailMailPro.cfg").write_bytes(struct.pack("<ii", 10, 10))
         keys = directory / "probe.keys"
-        menu = f"600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 {383 if ultimate else 172}\n820 click 3\n"
+        menu = f"600 escape\n700 mouse 345 112\n720 click 3\n800 mouse 345 {240 if ultimate else 172}\n820 click 3\n"
         keys.write_text(menu)
         args = ["node", str(REPO_ROOT / "port/shell/run.mjs"), str(REPO_ROOT / "port/zig-out/bin/snail.wasm")]
         args += ["--trace", "--keys", str(keys), *(["--profile", "ultimate"] if ultimate else [])]
