@@ -56,10 +56,11 @@ async function record(ultimate) {
       memory.writeFloatLE(0.001, player + LAYOUT.gauge_fill);  // and stops as the gauge empties
     if (tick === 200)
       memory.writeInt32LE(7, player + LAYOUT.shooting_tier);  // invincible, firing pw7
-    if (tick === launch?.tick + 100) {
+    if (launch && !launch.rewound && launch.falling && Math.abs(vy) < 0.01) {
       // Landed past the first ramp: back 3 rows before it, as a new level or
       // life puts the snail back at its start.
       memory.writeFloatLE(launch.z - 3, player + LAYOUT.player_z);
+      launch.rewound = true;
     }
     riding = memory.readUInt8(player + LAYOUT.follow_active);  // on a path as the tick starts
     e.snail_frame(1 / 60);
@@ -71,6 +72,7 @@ async function record(ultimate) {
       launch ??= { tick, z };
     }
     vy = rising;
+    if (launch && vy < -0.05) launch.falling = true;
   }
   return events;
 }
