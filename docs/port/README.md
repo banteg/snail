@@ -342,7 +342,8 @@ Files the game writes (`SnailMail.cfg` with progress and options, the
 its score tables only when quitting, so the page runs those saves when it is
 hidden or closed. `?reset` clears them, and `?mute` silences the game until
 `?mute=0` (the page remembers either).
-`?warmup=N` fixes the random warmup for a repeatable start.
+`?warmup=N` fixes Original's random warmup for a repeatable start; Ultimate,
+like Android, makes no warmup draws.
 
 ### Gameplay profiles
 
@@ -406,8 +407,10 @@ sideways while the jetpack is on. S-bends lift the camera linearly, to 0.55 of
 the snail's height at the top, and off a lift path the lift eases out by 0.98 a
 tick instead of dropping to 0. The shell's `j_rand` and
 `RandSeed` make `RAND` and `SRAND` step Android's index through
-`RandTable.bin`, so a seed draws what it draws on Android, the fixed seed 0
-of Time Trial and the tutorial included. Sixteen slugs can be alive at
+`RandTable.bin`, and Ultimate makes no startup warmup draws, as Android's
+`AppInit` makes none. Under `snail android trace` the tutorial, route I in
+Time Trial and postal, and Challenge 0 build row for row and draw for draw as
+on Android; other courses, and play after the build, have not been compared. Sixteen slugs can be alive at
 once instead of 8, which the mobile Barrage and SlugLine formations need. The
 active track window reaches two rows further: objects spawn 40 rows ahead
 of the snail instead of 38, and the finish banner, the salt fade-in and

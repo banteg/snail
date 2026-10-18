@@ -80,9 +80,14 @@ bool start_game(int warmup)
 
     initialize_main_loop_display_state();
     g_loading_bar.Init();
-    for (int i = 0; i < warmup; ++i) {
-        RAND(1.0f, 0);
-        gRMathRand2();
+    // The PC drew timeGetTime() % 1000 times from both generators here. Android's
+    // AppInit (0002639c) draws nothing after gRMathRand2Init zeroes both indices,
+    // so Ultimate starts from them.
+    if (!g_port_ultimate) {
+        for (int i = 0; i < warmup; ++i) {
+            RAND(1.0f, 0);
+            gRMathRand2();
+        }
     }
     g_startup_rng.crt_rand_seed = msvc_rand_seed();
     g_startup_rng.math_random_index = g_math_random_index;

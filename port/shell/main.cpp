@@ -6,8 +6,9 @@
 //        snail.wasm --tape TAPE --tape-out STATES
 //   --ticks   ticks to run (default 600; with --keys, until the script ends)
 //   --keys    input script (shell/input_script.cpp)
-//   --warmup  random draws before construction; the original used
-//             timeGetTime() % 1000, so a run is reproducible only with this
+//   --warmup  random draws before construction in Original; the original
+//             used timeGetTime() % 1000, so a run is reproducible only with
+//             this. Ultimate makes none, as Android does
 //   --trace   print front-end state changes and each screen's widgets
 //   --profile original (default) or ultimate (shell/profile.h); --replay and
 //             --tape recordings come from the original
