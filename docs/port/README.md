@@ -449,6 +449,10 @@ Patches also carry Android's rules on the track and at the finish:
   for a click, so an idle summary never reaches Time's Up;
 - skipping the delivery tally keeps the level bonus's extra life, a PC bug
   Android fixed ([Original bugs](original-bugs.md)).
+- mid-air re-entry onto a path piece (HALFPIPE, ramps, loop exits) tests a
+  gravity-adjusted swept segment against each sample's plane and XZ quad of
+  half-width `width_cells / 2`, seeding progress and height from the pre-move
+  position.
 
 The front end follows Android's rules too. The typed cheats NEWTON (no score
 records) and AUTUMN (no falling) do nothing. A last high-score name of

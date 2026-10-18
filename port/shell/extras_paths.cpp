@@ -998,6 +998,113 @@ void cRPath::compute_kind42_attachment_transform(
     transform->position.x = Sin(*out_angle) * r;
     transform->position.y = -(radius - Cos(*out_angle) * r);
 }
+namespace {
+// Android PointTriangle (0004c13c): barycentric point-in-triangle test in XZ.
+bool point_triangle_xz(const Vector3& p, const Vector3& a, const Vector3& b, const Vector3& c)
+{
+    float ex = b.x - a.x;
+    float ez = b.z - a.z;
+    float denom = ez * (c.x - a.x) - ex * (c.z - a.z);
+    float u = (p.x * ez - p.z * ex - a.x * ez + a.z * ex) / denom;
+    if (u < 0.0f || u > 1.0f)
+        return false;
+    float v = ez == 0.0f
+        ? ((p.x - a.x) - u * (c.x - a.x)) / ex
+        : ((p.z - a.z) - u * (c.z - a.z)) / ez;
+    return v >= 0.0f && v <= 1.0f - u;
+}
+}  // namespace
+
+// Android cRPath::Search (0004e318): swept plane crossing and XZ quad test
+// with half-width width_cells * 0.5, seeding progress and height from the
+// position before the move.
+void extras_path_search(cRPath* path, Vector3 now, Vector3 before, Vector3 sweep, cRSubLoc* cell)
+{
+    Vector3 s = before - sweep;
+    Vector3 anchor = cell->position;
+    float half_width = (float)path->width_cells * 0.5f;
+
+    for (int idx = path->segment_count - 1; idx >= 0; --idx) {
+        AttachmentSample* sample = &path->secondary_samples[idx];
+        if (sample->transform.basis_up.y <= 0.0f)
+            continue;
+        Vector3 o(
+            anchor.x + sample->transform.position.x,
+            anchor.y + sample->transform.position.y,
+            anchor.z + sample->transform.position.z);
+        Vector3 right = sample->transform.basis_right;
+        Vector3 up = sample->transform.basis_up;
+        Vector3 r0(
+            o.x + half_width * right.x,
+            o.y + half_width * right.y,
+            o.z + half_width * right.z);
+        float dot_s = (s.x - r0.x) * up.x + (s.y - r0.y) * up.y + (s.z - r0.z) * up.z;
+        if (dot_s <= 0.0f)
+            continue;
+        float dot_a = (now.x - r0.x) * up.x + (now.y - r0.y) * up.y + (now.z - r0.z) * up.z;
+        if (dot_a >= 0.0f)
+            continue;
+
+        Vector3 delta = now - s;
+        float denom = up.x * delta.x + up.y * delta.y + up.z * delta.z;
+        float t = -dot_s / denom;
+        Vector3 h(s.x + t * delta.x, s.y + t * delta.y, s.z + t * delta.z);
+
+        Vector3 l0(
+            o.x - half_width * right.x,
+            o.y - half_width * right.y,
+            o.z - half_width * right.z);
+        Vector3 r1, l1;
+        if (idx < path->segment_count - 1) {
+            AttachmentSample* next = &path->secondary_samples[idx + 1];
+            Vector3 o1(
+                anchor.x + next->transform.position.x,
+                anchor.y + next->transform.position.y,
+                anchor.z + next->transform.position.z);
+            Vector3 right1 = next->transform.basis_right;
+            r1 = Vector3(
+                o1.x + half_width * right1.x,
+                o1.y + half_width * right1.y,
+                o1.z + half_width * right1.z);
+            l1 = Vector3(
+                o1.x - half_width * right1.x,
+                o1.y - half_width * right1.y,
+                o1.z - half_width * right1.z);
+        } else {
+            Vector3 fwd = sample->transform.basis_forward;
+            float dl = sample->delta_length;
+            r1 = Vector3(r0.x + dl * fwd.x, r0.y + dl * fwd.y, r0.z + dl * fwd.z);
+            l1 = Vector3(l0.x + dl * fwd.x, l0.y + dl * fwd.y, l0.z + dl * fwd.z);
+        }
+
+        if (!point_triangle_xz(h, r0, l0, r1) && !point_triangle_xz(h, l1, l0, r1))
+            continue;
+
+        Vector3 local = before - o;
+        local.Rotate(sample->inverse_matrix);
+        cRSubGoldy* player = &g_game->subgame.player;
+        player->attachment_exit_pending = 0;
+        player->squidge.StartY(player->velocity.y);
+        player->follow_state.active = 1;
+        player->follow_state.template_record = path;
+        player->follow_state.source_cell = cell;
+        player->follow_state.sample_index = idx;
+        player->follow_state.progress = local.z;
+        player->follow_state.vertical_offset = 0;
+        player->transform.position.y = local.y;
+        player->velocity.y = 0;
+        player->follow_state.player = player;
+        player->follow_state.template_record->installed_heading_delta =
+            g_game->subgame.runtime_rows[cell->Yi()].installed_heading_delta;
+        player->follow_state.orientation_b = 0;
+        player->follow_state.orientation_a = 0;
+        player->follow_state.Traverse(
+            player->velocity.z,
+            player->transform.position,
+            &player->velocity);
+        return;
+    }
+}
 
 __attribute__((export_name("snail_extra_path_pair")))
 const PathPair* extras_get_mobile_path_pair(int extra_index)

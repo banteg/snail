@@ -129,5 +129,43 @@ for (const ultimate of [0, 1]) {
       y: position(m, 1),
     };
   }
+
+  const setupReentry = (m, x, y, zOff, vy, vz, width = 2) => {
+    const baseRow = Math.floor(position(m, 2));
+    const pCell = cellAt(baseRow, 4);
+    const s0 = m.readUInt32LE(turnover + L.path_secondary_samples);
+    const s0x = m.readFloatLE(s0 + 0x30);
+    const s0y = m.readFloatLE(s0 + 0x34);
+    m.writeFloatLE(-s0x, pCell + L.cell_position);
+    m.writeFloatLE(2.0 - s0y, pCell + L.cell_position + 4);
+    m.writeFloatLE(baseRow, pCell + L.cell_position + 8);
+    m.writeUInt32LE(turnover, pCell + L.cell_attachment);
+    m.writeInt32LE(width, turnover + L.path_width_cells);
+    for (const r of [baseRow, baseRow + 1]) {
+      const rowAddr = sub + L.runtime_rows + r * L.runtime_row;
+      m.writeUInt32LE(
+        m.readUInt32LE(rowAddr + L.row_flags) | L.primary_attachment_flag,
+        rowAddr + L.row_flags,
+      );
+      m.writeUInt32LE(pCell, rowAddr + L.row_primary_cell);
+    }
+    m[follow] = 0;
+    m[player + L.player_exit_pending] = 1;
+    m.writeFloatLE(x, player + L.player_position);
+    m.writeFloatLE(y, player + L.player_position + 4);
+    m.writeFloatLE(baseRow + zOff, player + L.player_position + 8);
+    m.writeFloatLE(0, player + L.player_velocity);
+    m.writeFloatLE(vy, player + L.player_velocity + 4);
+    m.writeFloatLE(vz, player + L.player_velocity + 8);
+  };
+
+  m = tick(ultimate, m => setupReentry(m, 0, 2.25, 0.3, -0.2, 0.2));
+  result.reentryBeforeCrossing = followState(m);
+
+  m = tick(ultimate, m => setupReentry(m, 0, 2.05, 0.3, -0.1, 0.2));
+  result.reentryAfterCrossing = followState(m);
+
+  m = tick(ultimate, m => setupReentry(m, 1.45, 2.05, 0.3, -0.1, 0.2, 2));
+  result.reentryOutsideHalfWidth = followState(m);
 }
 console.log(JSON.stringify(out));
