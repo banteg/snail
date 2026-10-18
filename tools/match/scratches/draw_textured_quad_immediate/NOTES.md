@@ -21,7 +21,11 @@ Important type notes:
   before checking `DrawPrimitive`, then increments `data_4f7454` only on
   success.
 
-Current focused result:
+Current result (2026-10-18, msvc6.3, whole GL unit): **exact**, 100.00%,
+332/332 instructions, encoded body match, 26 clean references. The sections
+below record the earlier 98.34% source.
+
+Earlier focused result:
 
 - match: 98.34%
 - target/candidate instructions: 332 / 331
@@ -298,3 +302,41 @@ an uncoalesced copy), and which also makes the `height*0.5` value used by `cente
 test. Scalar copies are coalesced or propagated, and inline by-value parameters are replaced by their
 argument symbol, so neither works. The residual is a missing second candidate, not x87 scheduling. The
 current source is kept.
+
+## 2026-10-18: exact with unnamed half extents
+
+**98.34% -> 100.00%**, 332/332 instructions, encoded body match, 26 clean
+references, compiled in the whole GL unit under msvc6.3. No other GL member
+changes (STATUS regenerated).
+
+The rotated branch names no half extents:
+
+```cpp
+float center_x = x0 + width * 0.5f;
+float center_y = y0 + height * 0.5f;
+float radius = Sqrt((width * 0.5f) * (width * 0.5f) + (height * 0.5f) * (height * 0.5f))
+    * 1.41400003f;
+```
+
+This is the "separate candidate whose definition is a load" from the x87
+section above. `height * 0.5f` is one CSE value. Its first use (`center_y`)
+takes it from the stack, it is stored to `width`'s dead home, and the radius
+reloads it as a distinct stack range (`fld [esp+0x3c]; fld st(0); fmul st(1)`).
+`width * 0.5f` stays on the stack as before. The same change supplies the
+three tuples that the vertex-2 U load needed (see the 81-tuple cut).
+
+Controls (all in the whole unit):
+
+| Variant | Result |
+|---|---|
+| unnamed halves, parenthesized products (retained) | 100.00%, 332/332 |
+| the same, on one line | 100.00%, 332/332 |
+| unnamed halves, `width * 0.5f * (width * 0.5f)` without the outer parentheses | 96.82%, 329/332, one unaudited reference |
+| named `half_width`/`half_height`, both centers from unnamed `* 0.5f` | 99.70%, 332/332, prefix 260 |
+| named `half_width`, `center_y = y0 + height * 0.5f`, named `half_height` (S4 above) | 97.58%, 330/332 |
+| `center_y = y0 + (half_height = height * 0.5f)` with parenthesized radius | 98.64% (the known third-tuple form) |
+| `width`/`height` reused as the half extents | 96.83–97.44% |
+
+The 2026-06-20 "repeated `height * 0.5f`" probe kept the named `half_width` and
+both centers named. Here every half extent is unnamed.
+
