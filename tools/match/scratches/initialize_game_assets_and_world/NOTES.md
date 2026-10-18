@@ -1,5 +1,60 @@
 # initialize_game_assets_and_world @ 0x40acf0
 
+## 2026-10-19: exact match
+
+**100.00%**, 5,411/5,411, prefix 5,411, encoded body match, 1,881 clean
+references. `inline_budget.py` gives own size 24,110, final total 35,033 and
+native's five refusals (pair 60 four times, then the barrier).
+
+The 2026-10-18 entry set three conditions. Each change below meets one of them:
+
+- **Weapon-1 cleanup as `for (slot_index = 0; slot_index < 5; ++slot_index)`**,
+  indexing the slot per statement. This clears the 9-instruction rotation
+  residue. Weapons 0 and 2 keep their pointer cursors.
+- **Own size.** Each cleanup `distort` triple is now one chained assignment
+  `xyz_scale = y_squash = z_wave = 0.0f`. The stores stay in z, y, x order,
+  and each of the ten sites saves 4 units. Also, five loop and pointer tests
+  drop `!= 0` (`while (--slot_count)`, `while (border_count)`,
+  `if (test_line)`), saving 2 units each.
+- **Pair-2 field records.** The fog block at `cRGame +0x04` is now
+  `FogSettings fog` with an inline `Init()`. It holds the five fields that
+  are contiguous from +0x04 to +0x24. Its `this` is used more than once, so
+  the expansion keeps its own alias class, and the four scalar stores leave
+  the root's 96 `this` records. This is the "4 fewer ranges before pair 2,
+  outside pairs 0 and 1" target from 2026-09-25. The pair-2 window now
+  matches native's order exactly. The addresses stay `[ebp+K]` because the
+  parameter is left in memory. The type name is inferred: no mobile or Wii
+  symbol names it.
+- **Alias classes.** The fog expansion and the extra inlined zero site cost
+  classes before `_golb_shot`. Five symbol merges pay for them:
+  - one `slot_index` serves the sub-lazer, salt, banner and all animation loops
+    (it was three `for`-scoped indices plus `animation_index`);
+  - one `slot_count` serves the cleanup countdowns and the Golb shot loop
+    (it replaces `golb_shot_count`);
+  - the `Test:` copy advances `test_line` itself instead of a `source` local.
+
+  Every merge is needed: dropping any one of them falls back into the degraded
+  state (80.71%, 5,418, prefix 53). Dropping `inactive_node` instead also
+  escapes (98.69%), but it changes the early free-list code.
+
+Measured steps (whole Game TU, msvc6.3):
+
+| Source | Own | Refused | Match |
+|---|---|---|---|
+| weapon-1 `for` | 24,209 | 6 | 99.55% |
+| + chained zeros | 24,169 | 5 | 80.67% (classes) |
+| + shared salt/banner index | 24,163 | 5 | **99.96%**, pair-2 stores only |
+| + `fog.Init()` (and the cutscene/jetpack `for` loops, −6) | 24,121 | 6 | 99.58%, prefix 3,963 |
+| + `!= 0` removals | 24,111 | 5 | 80.71% (classes) |
+| + `test_line`, `slot_count`, animation index merges | 24,111 | 5 | **100.00%** |
+| final source (do-while cutscene/jetpack loops) | 24,110 | 5 | **100.00%** |
+
+The cutscene and jetpack `for` loops are neutral, so they are left as
+do-while loops. A variable index for pair 24 (`int fringe_pair = 24`, the
+2026-09-25 mechanism) also fixes pair 2. It costs 24 in own size and about 5
+classes, and it stays degraded even after the `test_line` and `slot_count`
+merges.
+
 ## 2026-10-18: weapon-1 `for` loop and the refusal window
 
 Unchanged at **99.56%** (13/13, structural 99.76%). Measured in the whole Game

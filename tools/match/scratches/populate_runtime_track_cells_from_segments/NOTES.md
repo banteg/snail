@@ -1,5 +1,16 @@
 # populate_runtime_track_cells_from_segments
 
+## 2026-10-19: back to 91.50% from a header id shift
+
+The source is unchanged. Its score drops from 91.66% to **91.50%** (1,246/1,246,
+structural 99.34%, 9/9). `game_root.h` now declares the `FogSettings`
+block that makes initialize_game_assets_and_world exact. That type shifts
+TU-wide frontend ids by 9 to 11. The score returns to the 91.50% that the
+2026-10-16 entry measured before its own header changes. Windows 32 and 168
+were not traced again. All variants tried give 91.50%: no method,
+no size assert, no explicit pad. Ids could only be restored by padding a
+header, so that was not done.
+
 ## 2026-10-16: typed cell and row accesses; the lane-word load register
 
 **91.66%** (1,246/1,246, structural 99.49%). The typed source alone is

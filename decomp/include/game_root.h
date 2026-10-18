@@ -31,6 +31,30 @@ enum {
     GAME_ROOT_PLAYER_SLOT_COUNT = 2,
 };
 
+// Root fog block at cRGame +0x04 (the type name is inferred). Startup sets
+// its defaults through one inline Init: its own alias class keeps these four
+// stores out of the root's 96 `this` field records, which the pair-2 strip
+// stores in initialize_game_assets_and_world need.
+struct FogSettings {
+    unsigned char enabled; // +0x00
+    char unknown_01[0x04 - 0x01];
+    float start; // +0x04, D3DRS_FOGSTART
+    float end; // +0x08, D3DRS_FOGEND
+    float density; // +0x0c, D3DRS_FOGDENSITY
+    tColour color; // +0x10, packed for D3DRS_FOGCOLOR
+
+    void Init()
+    {
+        color.store_color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        density = 1.0f;
+        start = 30.0f;
+        end = 50.0f;
+        enabled = 1;
+    }
+};
+typedef char FogSettings_must_be_0x20[
+    (sizeof(FogSettings) == 0x20) ? 1 : -1];
+
 // Windows cRPlayer owns the front-end state machine and an embedded cRCamera.
 // GameRoot constructs two consecutive 0x1f8-byte players at +0x124; viewport
 // viewports only borrow their camera subobjects at player +0xa0.
@@ -71,12 +95,7 @@ typedef char GamePlayer_must_be_0x1f8[
 class cRGame {
 public:
     void* vtable; // +0x00, one-slot cRGame::LevelInit callback table
-    unsigned char fog_enabled; // +0x04
-    char unknown_000005[0x08 - 0x05];
-    float fog_start; // +0x08, D3DRS_FOGSTART
-    float fog_end; // +0x0c, D3DRS_FOGEND
-    float fog_density; // +0x10, D3DRS_FOGDENSITY
-    tColour fog_color; // +0x14, packed for D3DRS_FOGCOLOR
+    FogSettings fog; // +0x04, render_camera's D3D fog state
     cRFade fade; // +0x24, root-owned transition controller
     union {
         int frontend_quit_requested; // +0x38, nonzero run-loop exit request

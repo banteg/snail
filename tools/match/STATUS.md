@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**646/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **231721/294505** bytes (**78.68%**) are proof-grade, and overall fuzzy is **99.56%**.
+**647/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **254793/294505** bytes (**86.52%**) are proof-grade, and overall fuzzy is **99.59%**.
 
 **117/120** platform helpers matched, **120/120** have a scratch, **21057/22833** bytes (**92.22%**) are proof-grade, and overall fuzzy is **98.49%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -12,37 +12,36 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**16** non-exact scratch-backed functions hold **62784 target bytes** without proof-grade credit and **1304 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **83.6%** of that gap; the top 10 hold **99.1%**.
+**15** non-exact scratch-backed functions hold **39712 target bytes** without proof-grade credit and **1210 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **90.8%** of that gap; the top 10 hold **99.7%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **16 / 1304** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **0 functions / 0 gap bytes**; **15 / 1210** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
 Ranked by withheld target extent. Structural similarity masks caller-saved register names and local labels; it is diagnostic and grants no proof credit. Proof blockers come from the current matcher, independently of manual residual labels.
 
-Proof blockers (overlapping extents): encoding: 4 functions / 10944 bytes; instructions: 12 functions / 51840 bytes; references: 1 functions / 2688 bytes.
+Proof blockers (overlapping extents): encoding: 4 functions / 10944 bytes; instructions: 11 functions / 28768 bytes; references: 1 functions / 2688 bytes.
 
 | rank | function | withheld bytes | fuzzy gap | structural | changed insns t/c | blockers | recovery | residual | evidence | current/all | flags |
 |---:|---|---:|---:|---:|---:|---|---|---|---|---:|---|
-| 1 | initialize_game_assets_and_world | 23072 | 102 | 99.76% | 13/13 | instructions | semantic-complete | analysis,references | historical-only | 0/23 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 2 | update_subgoldy | 8464 | 61 | 99.28% | 14/16 | instructions | semantic-complete | analysis | historical-only | 0/16 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 3 | populate_runtime_track_cells_from_segments | 5056 | 422 | 99.49% | 7/7 | instructions | semantic-complete | analysis | historical-only | 0/150 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 4 | initialize_loopbow_path_template_pair | 2944 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/21 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 5 | initialize_worm_path_template_pair | 2768 | 195 | 97.61% | 21/14 | instructions | semantic-complete | analysis | historical-only | 0/14 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 6 | initialize_looptheloopw_path_template_pair | 2736 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/19 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
-| 7 | update_frontend_widget_interaction | 2688 | 122 | 96.99% | 19/20 | instructions,references | semantic-complete | analysis,references | historical-only | 0/16 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 8 | update_golb_ai | 2656 | 13 | 99.50% | 3/4 | instructions | semantic-complete | analysis | historical-only | 0/34 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 9 | initialize_looptheloop_path_template_pair | 2640 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/18 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
-| 10 | initialize_loopout_path_template_pair | 2624 | 0 | 100.00% | 0/0 | encoding | unspecified | unspecified | historical-only | 0/28 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 11 | initialize_dip_path_template_pair | 2400 | 4 | 99.85% | 1/1 | instructions | semantic-complete | analysis | historical-only | 0/59 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 12 | border_input_text | 1584 | 16 | 99.66% | 3/0 | instructions | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
-| 13 | register_font_texture_sheet | 1040 | 139 | 92.50% | 21/20 | instructions | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
-| 14 | set_snail_weapon | 944 | 212 | 93.29% | 31/29 | instructions | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
-| 15 | try_enter_track_attachment_from_swept_motion | 800 | 8 | 99.02% | 2/2 | instructions | semantic-complete | analysis | historical-only | 0/13 | historical-only,stale-dependencies |
-| 16 | sample_smtrack_heightmap | 368 | 10 | 97.25% | 3/3 | instructions | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
+| 1 | update_subgoldy | 8464 | 61 | 99.28% | 14/16 | instructions | semantic-complete | analysis | historical-only | 0/16 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 2 | populate_runtime_track_cells_from_segments | 5056 | 430 | 99.34% | 9/9 | instructions | semantic-complete | analysis | historical-only | 0/150 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 3 | initialize_loopbow_path_template_pair | 2944 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/21 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 4 | initialize_worm_path_template_pair | 2768 | 195 | 97.61% | 21/14 | instructions | semantic-complete | analysis | historical-only | 0/14 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 5 | initialize_looptheloopw_path_template_pair | 2736 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/19 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
+| 6 | update_frontend_widget_interaction | 2688 | 122 | 96.99% | 19/20 | instructions,references | semantic-complete | analysis,references | historical-only | 0/16 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 7 | update_golb_ai | 2656 | 13 | 99.50% | 3/4 | instructions | semantic-complete | analysis | historical-only | 0/34 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 8 | initialize_looptheloop_path_template_pair | 2640 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/18 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
+| 9 | initialize_loopout_path_template_pair | 2624 | 0 | 100.00% | 0/0 | encoding | unspecified | unspecified | historical-only | 0/28 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 10 | initialize_dip_path_template_pair | 2400 | 4 | 99.85% | 1/1 | instructions | semantic-complete | analysis | historical-only | 0/59 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 11 | border_input_text | 1584 | 16 | 99.66% | 3/0 | instructions | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
+| 12 | register_font_texture_sheet | 1040 | 139 | 92.50% | 21/20 | instructions | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
+| 13 | set_snail_weapon | 944 | 212 | 93.29% | 31/29 | instructions | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
+| 14 | try_enter_track_attachment_from_swept_motion | 800 | 8 | 99.02% | 2/2 | instructions | semantic-complete | analysis | historical-only | 0/13 | historical-only,stale-dependencies |
+| 15 | sample_smtrack_heightmap | 368 | 10 | 97.25% | 3/3 | instructions | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
 
 
-## Proof Grade (646)
+## Proof Grade (647)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -159,6 +158,7 @@ Proof blockers (overlapping extents): encoding: 4 functions / 10944 bytes; instr
 | ✅ | begin_frontend_fade_out | 0x40abc0 | 32 | 5/5 | 100.00% | 5/5 | - |  | core |
 | ✅ | begin_frontend_fade_in | 0x40abe0 | 16 | 3/3 | 100.00% | 3/3 | - |  | core |
 | ✅ | update_frontend_transition_overlay | 0x40abf0 | 256 | 63/63 | 100.00% | 63/63 | 9 ok |  | core |
+| ✅ | initialize_game_assets_and_world | 0x40acf0 | 23072 | 5411/5411 | 100.00% | 5411/5411 | 1881 ok |  | core |
 | ✅ | zero_vector3 | 0x410710 | 16 | 5/5 | 100.00% | 5/5 | - |  | core |
 | ✅ | initialize_game_last | 0x410720 | 16 | 4/4 | 100.00% | 4/4 | 1 ok |  | core |
 | ✅ | select_level_track_texture_set | 0x410730 | 160 | 44/44 | 100.00% | 44/44 | 7 ok |  | core |
@@ -702,13 +702,12 @@ Proof blockers (overlapping extents): encoding: 4 functions / 10944 bytes; instr
 | ⚠ | initialize_loopout_path_template_pair | 0x41c5f0 | 2624 | 718/718 | 100.00% | 718/718 | 52 ok |  | core |
 | ⚠ | initialize_loopbow_path_template_pair | 0x42ba80 | 2944 | 796/796 | 100.00% | 796/796 | 63 ok |  | core |
 
-## Near Match (95-99.99%) (8)
+## Near Match (95-99.99%) (7)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
 | 🚧 | update_frontend_widget_interaction | 0x402820 | 2688 | 648/647 | 95.44% | 180/647 | 1 unaudited, 96 ok |  | core |
 | 🚧 | border_input_text | 0x4035b0 | 1584 | 443/446 | 98.99% | 423/446 | 8 ok |  | core |
-| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23072 | 5411/5411 | 99.56% | 3567/5411 | 1881 ok |  | core |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 695/694 | 99.50% | 417/694 | 71 ok |  | core |
 | 🚧 | sample_smtrack_heightmap | 0x41a360 | 368 | 109/109 | 97.25% | 67/109 | 13 ok |  | core |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2400 | 655/655 | 99.85% | 100/655 | 37 ok |  | core |
@@ -720,7 +719,7 @@ Proof blockers (overlapping extents): encoding: 4 functions / 10944 bytes; instr
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2768 | 729/736 | 92.97% | 0/736 | 37 ok |  | core |
-| 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5056 | 1246/1246 | 91.66% | 232/1246 | 165 ok |  | core |
+| 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5056 | 1246/1246 | 91.50% | 232/1246 | 165 ok |  | core |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1040 | 273/274 | 86.65% | 55/274 | 57 ok |  | boundary |
 
 ## Mid Progress (50-79.99%) (1)

@@ -68,6 +68,6 @@ void cRLandscapeManager::Init(int script_index)
     g_game->border_manager.SetJustifyCentre(0.0f);
 
     tColour* source = &scripts[script_index].fog_color;
-    tColour* destination = &g_game->fog_color;
+    tColour* destination = &g_game->fog.color;
     *destination = *source;
 }
