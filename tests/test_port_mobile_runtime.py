@@ -283,6 +283,167 @@ def test_pro_state_ends_with_its_game_or_replay(tmp_path, port_layout_env):
     ),
     reason="needs browser WASM, node, and game archives",
 )
+def test_ultimate_replay_caption_fade_exit_and_summary_cap(tmp_path, port_layout_env):
+    def scramble(data: bytes) -> bytearray:
+        return bytearray(b ^ (i & 0xFF) for i, b in enumerate(data))
+
+    for name in ("SnailMail.dat", "SnailMailExtras.dat"):
+        shutil.copyfile(ASSETS / name, tmp_path / name)
+    config = bytearray(196)
+    struct.pack_into("<ff", config, 0, 1.0, 1.0)
+    config[0x60:0x69] = b"Fluctuosa"
+    struct.pack_into("<ii", config, 0xA0, 50, 7)
+    config[0xC0] = 1
+    (tmp_path / "SnailMailMobile.cfg").write_bytes(config)
+    (tmp_path / "SnailMailPro.cfg").write_bytes(struct.pack("<ii", 10, 1))
+    scores = scramble(
+        (REPO_ROOT / "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat").read_bytes()
+    )
+    struct.pack_into("<ii", scores, 0x4C, 65, 80)
+    (tmp_path / "ScoreMobileA-v2.dat").write_bytes(scramble(scores))
+
+    script = f"""
+import {{ LAYOUT, openMobileGame }} from {json.dumps(str(REPO_ROOT / "tests/port_mobile_runtime.mjs"))};
+const wasm = {json.dumps(str(WASM))};
+const {{ e, root, sub, memory, step, click }} = await openMobileGame(wasm);
+const fstate = () => memory().readInt32LE(root + LAYOUT.frontend_state);
+const fadeState = () => memory().readInt32LE(root + LAYOUT.fade_state);
+const text = (addr) => {{
+  const m = memory();
+  return m.toString("latin1", addr, m.indexOf(0, addr));
+}};
+const caption = () => text(e.snail_replay_caption());
+const alpha = () => e.snail_replay_caption_alpha();
+const wait = (done) => {{
+  for (let i = 0; i < 120 && !done(); ++i) {{
+    e.snail_key(1, 1); e.snail_frame(1 / 60); e.snail_key(1, 0);
+    step(1);
+  }}
+}};
+
+const m0 = memory();
+m0.writeInt32LE(2, sub + LAYOUT.subgame_rebuild_selector);
+m0.writeInt32LE(29, root + LAYOUT.saved_frontend_state);
+m0.writeInt32LE(26, root + LAYOUT.frontend_state);
+wait(() => fstate() === 5);
+click(345, 180);
+for (let i = 0; i < 60 && fstate() !== 19; ++i) step(1);
+
+const launchReplay = (row = 0) => {{
+  const m = memory();
+  const widget = m.readUInt32LE(root + LAYOUT.high_score + LAYOUT.replay_row_widgets + 4 * row);
+  m.writeUInt32LE(m.readUInt32LE(widget + LAYOUT.widget_flags) | LAYOUT.primary_action_triggered, widget + LAYOUT.widget_flags);
+  for (let i = 0; i < 300 && !(fstate() === 11 && memory().readInt32LE(sub + LAYOUT.subgame_state) === 2); ++i) {{
+    e.snail_frame(1 / 60);
+  }}
+}};
+
+const tickHold = () => {{
+  memory().writeFloatLE(4.0, sub + LAYOUT.sub_player_z);
+  memory().writeInt32LE(0, sub + LAYOUT.replay_update_cursor);
+  e.snail_frame(1 / 60);
+}};
+launchReplay(0);
+const postalCaptions = [];
+const postalAlphas = [];
+for (let phase = 0; phase < 5; ++phase) {{
+  for (let t = 0; t < 120; ++t) tickHold();
+  postalCaptions.push(caption());
+  postalAlphas.push(alpha());
+  for (let t = 0; t < 120; ++t) tickHold();
+}}
+
+// Click during replay: starts fade-out without cutting away on the click tick.
+while (fadeState() !== 0) e.snail_frame(1 / 60);
+e.snail_button(0, 1);
+e.snail_frame(1 / 60);
+e.snail_button(0, 0);
+const stateOnClickTick = fstate();
+const fadeOnClickTick = fadeState();
+let ticksToExit = 0;
+while (fstate() === 11 && ticksToExit < 200) {{
+  e.snail_frame(1 / 60);
+  ++ticksToExit;
+}}
+for (let i = 0; i < 60 && fstate() !== 19; ++i) step(1);
+const stateAfterClickExit = fstate();
+
+// Launch again and test Time Trial caption cycle (mode 4) + 2 s summary cap.
+launchReplay(0);
+memory().writeInt32LE(4, sub + 0x40); // level_mode = 4 (Time Trial)
+const ttCaptions = [];
+for (let t = 0; t < 600; ++t) {{
+  tickHold();
+  const c = caption();
+  if (c && ttCaptions[ttCaptions.length - 1] !== c) ttCaptions.push(c);
+}}
+
+while (fadeState() !== 0) tickHold();
+memory().writeInt32LE(4, sub + LAYOUT.completion + LAYOUT.completion_state); // SUMMARY_ACTIVE
+for (let t = 0; t < 119; ++t) tickHold();
+const fadeAt119 = fadeState();
+tickHold();
+e.snail_frame(1 / 60);
+const fadeAt120 = fadeState();
+let summaryExitTicks = 0;
+while (fstate() === 11 && summaryExitTicks < 200) {{
+  e.snail_frame(1 / 60);
+  ++summaryExitTicks;
+}}
+for (let i = 0; i < 60 && fstate() !== 19; ++i) step(1);
+const stateAfterSummaryExit = fstate();
+
+console.log(JSON.stringify({{
+  postalCaptions,
+  postalAlphas,
+  stateOnClickTick,
+  fadeOnClickTick,
+  ticksToExit,
+  stateAfterClickExit,
+  ttCaptions,
+  fadeAt119,
+  fadeAt120,
+  summaryExitTicks,
+  stateAfterSummaryExit,
+}}));
+"""
+    (tmp_path / "replay_overlay.mjs").write_text(script)
+    result = subprocess.run(
+        ["node", str(tmp_path / "replay_overlay.mjs")],
+        cwd=tmp_path,
+        env=port_layout_env,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    report = json.loads(result.stdout.splitlines()[-1])
+    assert report["postalCaptions"] == [
+        "Replay: Challenge",
+        "Player: banteg",
+        "Difficulty: 80%",
+        "Speed: 65%",
+        "Replay: Challenge",
+    ]
+    assert all(a == pytest.approx(0.8, abs=0.05) for a in report["postalAlphas"])
+    assert report["stateOnClickTick"] == 11
+    assert report["fadeOnClickTick"] != 0
+    assert 10 < report["ticksToExit"] < 100
+    assert report["stateAfterClickExit"] == 19
+    assert set(report["ttCaptions"]) == {"Replay: Time Trial", "Player: banteg"}
+    assert report["fadeAt119"] == 0
+    assert report["fadeAt120"] != 0
+    assert 10 < report["summaryExitTicks"] < 100
+    assert report["stateAfterSummaryExit"] == 19
+
+
+@pytest.mark.skipif(
+    shutil.which("node") is None
+    or not WASM.exists()
+    or not all(
+        (ASSETS / name).exists() for name in ("SnailMail.dat", "SnailMailExtras.dat")
+    ),
+    reason="needs browser WASM, node, and game archives",
+)
 def test_window_state_pause_and_freeze_rules(tmp_path, port_layout_env):
     for name in ("SnailMail.dat", "SnailMailExtras.dat"):
         shutil.copyfile(ASSETS / name, tmp_path / name)
