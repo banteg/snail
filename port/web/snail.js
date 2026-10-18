@@ -147,10 +147,18 @@ function connectInput(exports, settings) {
   };
   window.addEventListener("keydown", (event) => key(event, 1));
   window.addEventListener("keyup", (event) => key(event, 0));
+  const syncWindowState = () => {
+    exports.snail_window_state(
+      document.visibilityState === "visible" ? 1 : 0,
+      document.hasFocus() ? 1 : 0,
+    );
+  };
   // Keys held while the page loses focus would otherwise stay down.
   window.addEventListener("blur", () => {
     for (const code of Object.values(SCAN_CODES)) exports.snail_key(code, 0);
+    syncWindowState();
   });
+  window.addEventListener("focus", syncWindowState);
 }
 
 // Escape is the game's pause key, but a browser takes it to release a locked
@@ -275,6 +283,9 @@ async function main() {
       // The extracted BASS library is a temporary file, deleted on a clean quit.
       if (!/(^|\/)tbass\.dll$/i.test(path)) saves.save(path, data.slice());
     },
+    onUnlink: (path) => {
+      if (!/(^|\/)tbass\.dll$/i.test(path)) saves.remove(path);
+    },
   });
   const instance = await WebAssembly.instantiate(module, {
     wasi_snapshot_preview1: wasi.imports,
@@ -299,14 +310,21 @@ async function main() {
   connectInput(exports, settings);
   forwardEscapeOnRelease(exports);
   const save = () => exports.snail_save();
+  let last = performance.now();
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") save();
+    const visible = document.visibilityState === "visible";
+    exports.snail_window_state(visible ? 1 : 0, document.hasFocus() ? 1 : 0);
+    if (!visible) {
+      // Run one tick before rAF stops so cRSubGame::AI enters the pause menu.
+      exports.snail_frame(1 / 60);
+      save();
+    } else {
+      last = performance.now();
+    }
   });
   window.addEventListener("pagehide", save);
   window.snail = { exports, renderer, audio, fs, settings }; // for the console
   canvas.focus();
-
-  let last = performance.now();
   const frame = (now) => {
     const elapsed = Math.min(1, (now - last) / 1000);
     last = now;

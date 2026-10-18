@@ -16,7 +16,7 @@ APK_ASSETS = Path("artifacts/android/unpacked/com.sandlotgames.snailmail.1/asset
 OUTPUT = Path("artifacts/bin/SnailMailExtras.dat")
 PC_ARCHIVE = Path("artifacts/bin/SnailMail.dat")
 TUTORIAL = "LEVELS/TUTORIAL.TXT"
-VOICED_MESSAGE = re.compile(r'Sample="([^"]+)" Message="([^"]*)"')
+VOICED_MESSAGE = re.compile(r'Sample="([^"]+)" Message="([^"]*)"(?: SampleB="[^"]*" MessageB="[^"]*")?')
 
 def swap_tga32_rb(raw: bytes) -> bytes:
     """Swap OpenGL ES RGBA 32-bit TGA pixels to PC D3D BGRA layout."""

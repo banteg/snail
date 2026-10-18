@@ -25,6 +25,9 @@ export async function openSaves() {
     save(name, bytes) {
       return request(store("readwrite").put(bytes, name));
     },
+    remove(name) {
+      return request(store("readwrite").delete(name));
+    },
     clear() {
       return request(store("readwrite").clear());
     },

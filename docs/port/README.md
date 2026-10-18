@@ -1,13 +1,15 @@
 # Modern port plan
 
-Status (2026-10-15, v0.3.0): stages 1 and 2 done, stages 3 and 4 running.
+Status (2026-10-18, v0.4.0): stages 1 and 2 done, stages 3 and 4 running.
 The recovered source lives in [`decomp/`](../../decomp/README.md). `port/`
 links it into a headless wasm32 program for scripts and oracles, and into a
 build you can play in the browser, hosted at
 [snail.banteg.xyz](https://snail.banteg.xyz), or natively on macOS: see
 [Playing in the browser](#playing-in-the-browser) and
-[Playing natively](#playing-natively-macos). Both oracles match the original
-bit for bit on everything recorded so far.
+[Playing natively](#playing-natively-macos). It plays one of two
+[gameplay profiles](#gameplay-profiles): Original, which both oracles match
+bit for bit on everything recorded so far, and Ultimate, the Android
+release's content and rules, checked with the Android oracle.
 This page records the decisions and the order of work; update it as stages
 land.
 
@@ -338,10 +340,14 @@ archive as AVIF, about 16 KB together); when the game has started it waits for
 a click or key press, which unlocks sound (browsers require a gesture) without
 reaching the game, so the intro plays from its start.
 Files the game writes (`SnailMail.cfg` with progress and options, the
-`ScoreA/B/C.dat` tables) persist in the browser's IndexedDB. The game wrote
-its score tables only when quitting, so the page runs those saves when it is
-hidden or closed. `?reset` clears them, and `?mute` silences the game until
-`?mute=0` (the page remembers either).
+`ScoreA/B/C.dat` tables) persist in the browser's IndexedDB. Losing focus or
+hiding the tab follows the profile's window rules: Ultimate opens the in-game
+pause menu on any focus loss or tab hide and pauses sound when the tab is
+hidden; Original opens the pause menu when the tab is hidden or fullscreen
+loses focus, freezes AI in place when a windowed game loses focus, and pauses
+sound on either. The game wrote its score tables only when quitting, so the
+page also runs those saves when it is hidden or closed. `?reset` clears them,
+and `?mute` silences the game until `?mute=0` (the page remembers either).
 `?warmup=N` fixes Original's random warmup for a repeatable start; Ultimate,
 like Android, makes no warmup draws.
 
@@ -463,9 +469,10 @@ Mobile campaign progress and scores use `SnailMailMobile.cfg` and
 `ScoreMobileA/B/C-v2.dat`. A score table keeps each run's replay, which plays
 back only on the courses and rules it was recorded under, so the table names
 carry a version (`kUltimateScoreVersion` in `port/shell/extras.cpp`): a rule
-change that would make stored replays drift bumps it and starts fresh tables,
-and progress keeps its file. Version 2 begins with the profile audit's rules
-(v0.4.0). The first mobile launch copies the volumes and display
+change that would make stored replays drift bumps it, removes older Ultimate
+score files, and starts fresh tables, while progress keeps its file. Version 2
+begins with the profile audit's rules (v0.4.0). The first mobile launch copies
+the volumes and display
 settings (fullscreen, render flags, display mode) from the PC config. The rest,
 from campaign progress and the tutorial to the Challenge sliders and the
 high-score name, starts at the defaults, which Android's match.
@@ -477,16 +484,23 @@ every replay launch (`cRHighScore::AI`), so it replays Pro records on the
 postal courses. Switching to Original reloads the PC campaign and scores
 without rewriting them.
 
-Android differences Ultimate leaves out: tilt and touch steering; the camera's
-wider field of view (120 where the PC has 110), which likely suits the phones'
-3:2 screens; the slug hit's vibration and its render-only flattening of
-Android's track mesh (`cRWorld`) during the death cut-scene; resuming a postal
-or Pro game, which Android saves when such a run is ended from the pause menu
-(Ultimate records its score, as the PC does); the Options screen's version
-label, in full for Fluctuosa; the OpenFeint logo that replaced the main menu's
-Exit button; the layout for the phones' 480x320 screens. Shared path meshes
-other than CAGE2, TWISTER2 and SBEND are not yet checked against the Android
-`.smo` meshes. The slug voice lines play in both profiles: the PC's
+Android differences Ultimate leaves out: tilt and touch steering, with their
+camera roll (Tilt Mode), frustum shift (Touch Mode) and Touch Mode tutorial
+line (`tut1b`); the touch-only menus and controls (the Tilt/Touch option in
+place of Fullscreen, touch prompts, tap-to-dismiss Help, and the on-screen name
+keypad and pause button); the galaxy step buttons (`<< < > >>`), 24-unit star
+pick radius and no click-away card close; the camera's wider field of view (120
+where the PC has 110); the slug hit's 300 ms vibration and its render-only
+flattening of Android's track mesh (`cRWorld`) during the death cut-scene;
+resuming a postal or Pro game, which Android saves when such a run is ended
+from the pause menu (Ultimate records its score, as the PC does); the Options
+screen's version label, in full for Fluctuosa; OpenFeint (35 achievements, 56
+leaderboards, lifetime parcel and slug counters, and the main menu's OpenFeint
+logo in place of Exit); the phone menu and help frames, the publisher loading
+splashes, and the repacked 256×256 font with its wider metrics; and overlapping
+voice lines (both mobile backends dropped BASS's active-sample check). Shared
+path meshes other than CAGE2, TWISTER2 and SBEND are not yet checked against
+the Android `.smo` meshes. The slug voice lines play in both profiles: the PC's
 `cRSlugVoiceManager` has Android's constants, call sites and clips.
 
 Ultimate selects the mobile 3,500-row build limit; Original retains the PC
@@ -606,7 +620,8 @@ for the PC release; `--tape` defaults to Original, the profile its recordings
 come from) and has the same comfort settings, on by default: rendering at the
 window's pixel resolution, the game's Fullscreen option making the window
 fullscreen (the window's own controls turn the option off and on), a click
-trapping the pointer (Escape in a window, or leaving it, frees it).
+trapping the pointer (Escape in a window, or leaving it, frees it), and window
+focus or minimize following the profile's pause, freeze and sound rules.
 `--no-hidpi`, `--no-fullscreen` and `--no-trap-mouse` switch them off one by
 one; compare screenshots with the original's at 640x480 with
 `--profile original --no-hidpi`.

@@ -238,8 +238,28 @@ void cRSMTracks::Import()
 // A score table keeps each run's replay, which plays back only on the courses
 // and rules it was recorded under. Ultimate's table names carry a version, so a
 // rule change that would make stored replays drift starts fresh tables by
-// bumping it; campaign progress keeps its file.
+// bumping it and removing older Ultimate score files; campaign progress keeps
+// its file.
 const int kUltimateScoreVersion = 2;
+const char* const kUltimateScoreTables[][2] = {
+    {"ScoreA.dat", "ScoreMobileA"},
+    {"ScoreB.dat", "ScoreMobileB"},
+    {"ScoreC.dat", "ScoreMobileC"},
+    {"ScorePro.dat", "ScorePro"},
+};
+
+void clean_obsolete_ultimate_scores()
+{
+    char stale[32];
+    for (int i = 0; i < (int)(sizeof(kUltimateScoreTables) / sizeof(kUltimateScoreTables[0])); ++i) {
+        snprintf(stale, sizeof(stale), "%s.dat", kUltimateScoreTables[i][1]);
+        remove(stale);
+        for (int v = 1; v < kUltimateScoreVersion; ++v) {
+            snprintf(stale, sizeof(stale), "%s-v%d.dat", kUltimateScoreTables[i][1], v);
+            remove(stale);
+        }
+    }
+}
 
 const char* extras_save_path(const char* name)
 {
@@ -247,16 +267,10 @@ const char* extras_save_path(const char* name)
         return name;
     if (path_equals_ignore_case(name, "SnailMail.cfg"))
         return "SnailMailMobile.cfg";
-    static const char* const kTables[][2] = {
-        {"ScoreA.dat", "ScoreMobileA"},
-        {"ScoreB.dat", "ScoreMobileB"},
-        {"ScoreC.dat", "ScoreMobileC"},
-        {"ScorePro.dat", "ScorePro"},
-    };
     static char path[32];
-    for (int i = 0; i < (int)(sizeof(kTables) / sizeof(kTables[0])); ++i) {
-        if (path_equals_ignore_case(name, kTables[i][0])) {
-            snprintf(path, sizeof(path), "%s-v%d.dat", kTables[i][1], kUltimateScoreVersion);
+    for (int i = 0; i < (int)(sizeof(kUltimateScoreTables) / sizeof(kUltimateScoreTables[0])); ++i) {
+        if (path_equals_ignore_case(name, kUltimateScoreTables[i][0])) {
+            snprintf(path, sizeof(path), "%s-v%d.dat", kUltimateScoreTables[i][1], kUltimateScoreVersion);
             return path;
         }
     }
@@ -294,6 +308,7 @@ bool extras_init_archive()
 {
     if (!g_port_ultimate)
         return true;
+    clean_obsolete_ultimate_scores();
     FILE* f = fopen("SnailMailExtras.dat", "rb");
     if (!f) {
         fprintf(stderr, "snail: the ultimate profile needs SnailMailExtras.dat (run `uv run snail port extras`)\n");
