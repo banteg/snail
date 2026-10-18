@@ -20,6 +20,7 @@ PORT_LAYOUT = (
     ("player", "offsetof(cRSubGame, player)"),
     ("subgame_state", "offsetof(cRSubGame, subgame_state)"),
     ("subgame_rebuild_selector", "offsetof(cRSubGame, subgame_rebuild_selector)"),
+    ("subgame_pause_gate", "offsetof(cRSubGame, subgame_pause_gate)"),
     ("sm_tracks", "offsetof(cRSubGame, sm_tracks)"),
     ("segment_entry", "sizeof(SegmentCatalogEntry)"),
     ("runtime_flags", "offsetof(cRSubGame, runtime_flags)"),

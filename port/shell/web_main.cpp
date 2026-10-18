@@ -4,9 +4,11 @@
 // loop's timing: whole 1/60 s steps from an accumulator capped at 25 steps,
 // then one rendered frame.
 
+#include "audio_system.h"
 #include "game_session.h"
 #include "input_state.h"
 #include "lockstep_tape.h"
+#include "main_loop_state.h"
 #include "profile.h"
 #include "runtime_config.h"
 
@@ -17,6 +19,7 @@ const float kStepSeconds = 0.016666668f;      // g_frame_time_accumulator step
 const float kMaxAccumulated = 0.41666666f;    // cap after a stall
 const float kSnapToZero = 0.0000083333334f;
 float g_accumulator = 0;
+bool g_frozen = false;
 }  // namespace
 
 // 1 selects the Ultimate profile, 0 Original (the default).
@@ -27,6 +30,8 @@ WEB_EXPORT("snail_set_profile") void snail_set_profile(int ultimate)
 
 WEB_EXPORT("snail_start") int snail_start(int warmup)
 {
+    g_accumulator = 0;
+    g_frozen = false;
     return start_game(warmup) ? 1 : 0;
 }
 
@@ -41,8 +46,10 @@ WEB_EXPORT("snail_frame") int snail_frame(float elapsed_seconds)
         g_accumulator -= kStepSeconds;
         if ((g_accumulator < 0 ? -g_accumulator : g_accumulator) < kSnapToZero)
             g_accumulator = 0;
-        if (int result = run_fixed_step(g_accumulator <= 0))
-            return result;
+        if (!g_frozen) {
+            if (int result = run_fixed_step(g_accumulator <= 0))
+                return result;
+        }
         stepped = true;
     }
     if (stepped)
@@ -67,6 +74,24 @@ WEB_EXPORT("snail_fullscreen_changed") void snail_fullscreen_changed(int enabled
 WEB_EXPORT("snail_fullscreen_enabled") int snail_fullscreen_enabled()
 {
     return g_runtime_config.fullscreen_enabled;
+}
+
+// Window visibility and focus: Original pauses when minimized or when a
+// fullscreen window loses focus, freezes AI without a menu when a windowed
+// game loses focus, and pauses BASS on either (game_window_proc,
+// game_startup_and_main_loop); Ultimate pauses on any focus loss or hide
+// and pauses audio when hidden, as Android's ADRenderer/onPause do.
+WEB_EXPORT("snail_window_state") void snail_window_state(int visible, int focused)
+{
+    bool vis = visible != 0;
+    bool foc = focused != 0;
+    g_window_deactivated = (unsigned char)(
+        !vis || (!foc && (g_port_ultimate || g_runtime_config.fullscreen_enabled != 0)));
+    g_frozen = !g_port_ultimate && vis && !foc && g_runtime_config.fullscreen_enabled == 0;
+    if (!vis || (!g_port_ultimate && !foc))
+        g_audio_backend.pause_audio_backend_if_running();
+    else
+        g_audio_backend.resume_audio_backend_if_paused();
 }
 
 WEB_EXPORT("snail_key") void snail_key(int scan_code, int down)
