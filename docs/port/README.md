@@ -1,13 +1,15 @@
 # Modern port plan
 
-Status (2026-10-15, v0.3.0): stages 1 and 2 done, stages 3 and 4 running.
+Status (2026-10-18, v0.4.0): stages 1 and 2 done, stages 3 and 4 running.
 The recovered source lives in [`decomp/`](../../decomp/README.md). `port/`
 links it into a headless wasm32 program for scripts and oracles, and into a
 build you can play in the browser, hosted at
 [snail.banteg.xyz](https://snail.banteg.xyz), or natively on macOS: see
 [Playing in the browser](#playing-in-the-browser) and
-[Playing natively](#playing-natively-macos). Both oracles match the original
-bit for bit on everything recorded so far.
+[Playing natively](#playing-natively-macos). It plays one of two
+[gameplay profiles](#gameplay-profiles): Original, which both oracles match
+bit for bit on everything recorded so far, and Ultimate, the Android
+release's content and rules, checked with the Android oracle.
 This page records the decisions and the order of work; update it as stages
 land.
 
