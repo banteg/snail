@@ -1,5 +1,66 @@
 # initialize_game_assets_and_world @ 0x40acf0
 
+## 2026-10-18: weapon-1 `for` loop and the refusal window
+
+Unchanged at **99.56%** (13/13, structural 99.76%). Measured in the whole Game
+unit at f1aa36159 with `inline_budget.py`.
+
+**Window.** The baseline has own size 24,142 and final total 35,002. Native's
+243rd zero site is the last one inlined, at a running total of 34,964. So an
+own-size change d keeps exactly native's five refusals only for
+**−1 ≤ d ≤ +36**.
+
+**Loop costs.** Each cleanup loop, converted alone to
+`for (animation_index = 0; animation_index < N; ++animation_index)`:
+
+| Loops as `for` | Own size | Refused | Classes | Match |
+|---|---|---|---|---|
+| none (baseline) | 24,142 | 5 | 0x417 | 99.56%, 5,411 |
+| cutscene or jetpack alone | – | – | – | 99.16%, 5,412 |
+| weapon 0, 1 or 2 alone | 24,209 (+67) | 6 | 0x417 | 99.14%, 99.55%, 94.59% (5,410) |
+| weapons 1 and 2 | 24,276 | 8 | 0x417 | 99.45%, 5,408 |
+| all three weapons | 24,343 | 10 | 0x417 | 99.34%, 5,406 |
+| all five (the 2026-10-16 form) | 24,337 (+195) | 10 | 0x417 | 99.34%, 5,406 |
+
+Once a weapon loop is converted, the cutscene and jetpack forms make no
+difference.
+
+**Weapon 1 alone clears the rotation residue.** With only the weapon-1 loop as
+`for` (99.55%, 5,410/5,411), the 9-instruction weapon-1 channel residue is
+gone. The diff is then the pair-2 stores (4), one extra out-of-line
+`zero_vector3` call (the sixth refusal, pair 59) and label shifts. The
+weapon-0 and weapon-2 pointer cursors already match native. A keepable answer
+therefore needs a code-neutral own-size saving of **31–68**, not 159–196.
+
+**Classes bind too.** A diagnostic (not source) drops the last two
+`set_object_color` calls, about 19 units each and after every zero site. On
+the weapon-1 form this gives 24,171, exactly 5 refused, and 0x417 classes.
+The result falls into the degraded state (80.55%, prefix 53, `0x200` in a
+register), because the extra inlined zero site plus the loop's own classes
+land before `_golb_shot`. Removing the `inactive_node` local as well lifts it
+out (98.41%, prefix 43). Its remaining diff is then the early `inactive_node`
+code, the deleted tail and the pair-2 stores: the weapon-1 residue and the
+extra zero call are both gone. So the full answer needs three things:
+
+- weapon-1 `for`;
+- 31–68 own-size units and at least one class or symbol, removed without
+  changing code;
+- the pair-2 field records (unchanged by all of this).
+
+**Code-neutral size knobs tried.** All are byte-identical and size-neutral,
+because own size is counted after constant folding:
+
+- `= 0.0f` written as `= 0` (40 sites);
+- literal loop counts instead of `sizeof` quotients.
+
+`path->` for `subgame.paths[A][B].` inside `path = &subgame.paths[A][B]`
+blocks would save 8 per site (141 sites), but even one site changes code
+(99.10%, 5,412). All 141 give 73.40%. `tVector()` and `tMatrix()` must stay
+user-declared, because both types have other constructors. So their 4×20 +
+64 units are fixed.
+
+No source change.
+
 ## 2026-10-16: path bank, animation slots and inline helpers
 
 Still **99.56%** (13/13, structural 99.76%). The inline pattern now matches

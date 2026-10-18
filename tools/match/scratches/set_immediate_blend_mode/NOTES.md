@@ -191,3 +191,25 @@ longer than 20 bytes then, or its anchor had a counter. Neither difference shows
 Candidates: a tuple that `late_register_value_cse` (`0x10736b27`) or the mover later deletes (a
 redundant device load would add 5 bytes and change the rotation), or a different device expression per
 case. The retained source is unchanged.
+
+## 2026-10-18: whole-unit msvc6.3 retest
+
+The current source is **88.00%**, 136/137 instructions, prefix 2, 21 clean
+references, one mismatched (jump table) and one unaudited, in the whole GL unit.
+The case blocks are unchanged from the cross-jump section above: cases 1 and 4
+merge, and case 6 keeps its tail.
+
+Two new families test whether an IL difference that vanishes after jump
+optimization separates cases 1 and 4:
+
+- **An inline helper** (`set_alpha_blend(source, dest)` for the three
+  `SetRenderState` calls) is fully transparent. With it on none, all, or any
+  one of the eight alpha-blend case groups, the result is byte-identical
+  (88.00%).
+- **Returning the last call's result** (diagnostic only: `int` return, with
+  `gl.h` edited on a copy). All 256 subsets of `return SetRenderState(...)`
+  versus call-then-`break` were compiled. The results depend only on cases 4
+  and 6: 88.00% (136), 88.05% (154), 84.81% (144) or 85.15% (164), plus one
+  internal compiler error. None separates cases 1 and 4 the way native does.
+
+No source change.
