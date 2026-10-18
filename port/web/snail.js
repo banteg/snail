@@ -275,6 +275,9 @@ async function main() {
       // The extracted BASS library is a temporary file, deleted on a clean quit.
       if (!/(^|\/)tbass\.dll$/i.test(path)) saves.save(path, data.slice());
     },
+    onUnlink: (path) => {
+      if (!/(^|\/)tbass\.dll$/i.test(path)) saves.remove(path);
+    },
   });
   const instance = await WebAssembly.instantiate(module, {
     wasi_snapshot_preview1: wasi.imports,

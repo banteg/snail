@@ -54,9 +54,11 @@ def test_mobile_catalog_rules_swing_and_classic_save_isolation(tmp_path, port_la
         REPO_ROOT / "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat"
     ).read_bytes()
     (tmp_path / "ScoreA.dat").write_bytes(score)
-    # A table from before Ultimate's score version: its replays belong to older
-    # courses and rules, so Ultimate starts a fresh one beside it.
+    # Tables from before Ultimate's score version: their replays belong to older
+    # courses and rules, so Ultimate removes them and starts fresh v2 tables.
     (tmp_path / "ScoreMobileA.dat").write_bytes(score)
+    (tmp_path / "ScoreMobileB-v1.dat").write_bytes(score)
+    (tmp_path / "ScorePro.dat").write_bytes(score)
     result = subprocess.run(
         ["node", str(REPO_ROOT / "tests/port_mobile_rates.mjs"), str(WASM)],
         cwd=tmp_path,
@@ -94,7 +96,9 @@ def test_mobile_catalog_rules_swing_and_classic_save_isolation(tmp_path, port_la
     assert all(abs(x) <= 3 for x in data["swing"])
     assert (tmp_path / "SnailMail.cfg").read_bytes() == config
     assert (tmp_path / "ScoreA.dat").read_bytes() == score
-    assert (tmp_path / "ScoreMobileA.dat").read_bytes() == score
+    assert not (tmp_path / "ScoreMobileA.dat").exists()
+    assert not (tmp_path / "ScoreMobileB-v1.dat").exists()
+    assert not (tmp_path / "ScorePro.dat").exists()
     assert (tmp_path / "ScoreMobileA-v2.dat").exists()
 
 
