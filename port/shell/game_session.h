@@ -5,7 +5,8 @@
 // shared by the headless and browser entry points.
 
 // Startup through the first fade-in. `warmup` replaces the original's
-// timeGetTime() % 1000 random draws. Returns false with a message on stderr.
+// timeGetTime() % 1000 random draws; Ultimate makes none, as Android does.
+// Returns false with a message on stderr.
 bool start_game(int warmup);
 
 // The RNG state right after the warmup, as the lockstep capture records it at

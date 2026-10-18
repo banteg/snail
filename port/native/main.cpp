@@ -1,7 +1,7 @@
 // Native Snail Mail: snail-web.wasm translated by wasm2c, run in an SDL3
 // window. Usage: snail-native [options] [data directory]
 //   --mute                  no sound
-//   --warmup N              N random draws before construction (default: the clock, as the original)
+//   --warmup N              N random draws before construction in Original (default: the clock, as the original)
 //   --frames N --screenshot FILE
 //                           run N fixed 1/60 s frames without input in a hidden window, save the last as PNG
 //   --tape T --screenshot FILE
