@@ -1,5 +1,36 @@
 # cRBorder::InputText @ 0x4035b0
 
+## 2026-10-18: identical-arm branch on `text_buffer[0]` reproduces the store pair
+
+Unchanged at **98.99%**, 443/446, prefix 423, in the whole Border unit.
+
+The completion residual is native's dead `mov cl, byte [esi+0x2cc]` between
+the flag stores, with the first `widget_flags` store kept. A read of
+`text_buffer[0]` that C1 or early C2 drops does not reproduce it. All of these
+are byte-identical to the current source:
+
+- an empty `if (text_buffer[0] == 0) {}`, before or after `--input_length`;
+- `(void)text_buffer[0];` and an unused `char first = text_buffer[0];`;
+- dead assignments to the function-scope `final_character`, `key` or
+  `insertion_end`;
+- `switch (text_buffer[0]) { default: ... }`;
+- `input_length -= text_buffer[0] != 0 ? 1 : 1;`.
+
+A branch whose two arms stay identical until the late cross-jump does
+reproduce it. `if (text_buffer[0] != 0) --input_length; else --input_length;`
+keeps both `widget_flags` stores and the `mov cl, byte [esi+0x2cc]` load,
+scheduled ahead of the first store as in native. That confirms that native's
+IL holds a char read between the stores until after dead-store elimination.
+The form also leaves a dead `test cl, cl`, which native lacks. It moves the
+whole function off `edi` (`push edi` is gone, prefix 2), at 93.14%, 443/446.
+The same holds with the branch on `== 0`, around the second store, around
+both statements, as `switch (text_buffer[0]) { case 0: ... default: ... }`,
+or as an always-true `||` condition (93.03–93.24%).
+
+So native's read is in the IL and then disappears without a test or branch,
+and costs no global register. The construct is still unknown. No source
+change.
+
 ## 2026-10-16: msvc6.3 whole-TU retest, two-flag OK-placement test
 
 **98.76% -> 98.99%**, 443/446 instructions, prefix **6 -> 423**, eight clean

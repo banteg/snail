@@ -162,3 +162,25 @@ Recorded msvc6.3 probes preserve the current extracted code and
 comparison metrics. No compiler setting or source change is retained. See the
 [profile controls](../rebuild_game_archive_if_needed/profile-controls-20260907.md)
 for component provenance, exact neighbors, and the limits of this comparison.
+
+## 2026-10-18: whole-unit msvc6.3 retest
+
+Unchanged at **92.31%**, 182/182 instructions, prefix 9, 26 clean references,
+compiled in the whole RShell unit. The opening summary's 81.52% is historical.
+The 2026-09-07 sections record the move to 92.31%. The structural diff is
+14/14: the swapped pattern-byte/folded-name ownership across the two
+`RstrASC` calls (`bl`), and the stack slots of the entry index and offset,
+which sit 4 bytes higher in native.
+
+New forms, which drop the named temporaries as the exact textured-quad source
+does:
+
+| Variant | Result |
+|---|---|
+| no `pattern_char` local (reads `pattern[pattern_index]`) | 54.55%, 181/182 |
+| no locals, direct `RstrASC(...) != RstrASC(...)` | 87.36%, 182/182 |
+| null checks folded into the `while` condition | 54.55% |
+| the same, with a direct comparison | 87.36% |
+| the same, with `(pattern_char = pattern[pattern_index]) != 0` in the condition | 92.31%, byte-identical |
+
+No source change.

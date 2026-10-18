@@ -154,3 +154,32 @@ This scratch compiled as C (`/TC`) at 66.38%. Its DatBuild object is C++: under
 msvc6.3 nine of ten members are exact as C++ and four cannot compile as C.
 As C++ the unchanged source scores 25.22%, so the C-mode score was a
 source-shape coincidence and the body needs a C++ shape; see the [compiler identification](../../compiler-identification-20261005.md).
+
+## 2026-10-18: whole-unit msvc6.3 retest of the C++ seed
+
+The canonical source is still **66.38%**, 232/232 instructions, prefix 5, 22
+clean references. It now compiles as C++ in the whole DatBuild unit, with
+`<stdlib.h>`/`<string.h>` and `datbuild.h` supplying the declarations. The
+25.22% C++ figure in the 2026-10-05 entry came from the handwritten libc
+prototypes (see 2026-09-07); with the CRT headers, C++ and the old C score
+agree.
+
+The twelve `output-entry-base-and-header-copy-lifetimes-20260907.json`
+bodies, under the current includes, give the same scores as on 2026-09-07:
+
+| Candidate | Result |
+|---|---|
+| `output-base/before-loop-guarded-for`, `after-copy-guarded-for` (the seed) | 73.87%, 231/232, prefix 5, 22 clean |
+| `before-copy-for`, `before-copy-guarded-do` | 73.43%, 231/232 |
+| `before-copy-guarded-for` | 73.00% |
+| the other six | 52.70–60.48% |
+
+On the seed, four placements of `entry_index = 0` ahead of the guard (native
+zeroes it before `jle`), dropping the two dead delta/cursor assignments, and
+their combinations are all byte-neutral at 73.87%. An empty `for` initializer
+regresses to 57.08% (234 instructions). The seed's remaining diff is register
+and stack-slot assignment from the header copy onwards. Native keeps the
+entry count in `edi`, reloads the index through `esi` and zeroes through `edx`;
+the seed zeroes through `esi`. It is also one instruction short. The seed is
+still not adopted: it is shorter than native, and the canonical source keeps
+the native instruction count.
