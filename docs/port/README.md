@@ -453,6 +453,10 @@ Patches also carry Android's rules on the track and at the finish:
   for a click, so an idle summary never reaches Time's Up;
 - skipping the delivery tally keeps the level bonus's extra life, a PC bug
   Android fixed ([Original bugs](original-bugs.md)).
+- mid-air re-entry onto a path piece (HALFPIPE, ramps, loop exits) tests a
+  gravity-adjusted swept segment against each sample's plane and XZ quad of
+  half-width `width_cells / 2`, seeding progress and height from the pre-move
+  position.
 
 The front end follows Android's rules too. The typed cheats NEWTON (no score
 records) and AUTUMN (no falling) do nothing. A last high-score name of
@@ -466,17 +470,17 @@ finish shows the continue prompt and, on a new best time
 for the route, a blinking "NEW FASTEST TIME!" with the Perfect jingle.
 
 Mobile campaign progress and scores use `SnailMailMobile.cfg` and
-`ScoreMobileA/B/C-v2.dat`. A score table keeps each run's replay, which plays
+`ScoreMobileA/B/C-v3.dat`. A score table keeps each run's replay, which plays
 back only on the courses and rules it was recorded under, so the table names
 carry a version (`kUltimateScoreVersion` in `port/shell/extras.cpp`): a rule
 change that would make stored replays drift bumps it, removes older Ultimate
 score files, and starts fresh tables, while progress keeps its file. Version 2
-begins with the profile audit's rules (v0.4.0). The first mobile launch copies
-the volumes and display
+began with the profile audit's rules (v0.4.0), version 3 with Android's swept
+path re-entry. The first mobile launch copies the volumes and display
 settings (fullscreen, render flags, display mode) from the PC config. The rest,
 from campaign progress and the tutorial to the Challenge sliders and the
 high-score name, starts at the defaults, which Android's match.
-Pro keeps `SnailMailPro.cfg` and `ScorePro-v2.dat`. The Pro galaxy, progress and
+Pro keeps `SnailMailPro.cfg` and `ScorePro-v3.dat`. The Pro galaxy, progress and
 scores stand in for the postal ones only during a Pro game and a replay from
 the Pro High Scores, so the main menu and the Postal table always show postal
 records. A Pro record replays on its Pro course; Android clears its Pro flag on

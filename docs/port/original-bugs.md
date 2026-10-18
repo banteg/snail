@@ -153,7 +153,7 @@ Why it's a bug:
   it with the Challenge rows one rank further down, names, scores and replays
   included, and the next save writes them to `ScoreA.dat`. The port enters a
   Pro name on the Postal bank with the Pro table swapped in, so without the fix
-  they would reach Pro's score file (`ScorePro-v2.dat`).
+  they would reach Pro's score file (`ScorePro-v3.dat`).
 - Android's `cRSubHighScore::RemoveHighScore` (`00065270`), which its Cancel
   calls with the entry's bank and rank, deletes the cancelled entry and shifts
   the rows below it up within that bank (Postal, Challenge or Pro); iOS's

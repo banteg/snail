@@ -112,3 +112,20 @@ def test_trampoline_rings_come_only_from_the_bounce(rules):
     # The no-fall clamp squashes the snail without a ring.
     assert ultimate["noFallClamp"]["rings"] == 0
     assert original["trampolineBounce"]["rings"] == original["noFallClamp"]["rings"] == 0
+
+
+def test_ultimate_swept_path_reentry_plane_quad_and_seed(rules):
+    ultimate, original = rules["profiles"]["ultimate"], rules["profiles"]["original"]
+    # PC catches a frame early while the new position is still above the plane
+    # (y = +0.05 > 0, next probe <= 0.001); Android requires crossing below it.
+    assert original["reentryBeforeCrossing"]["active"] == 1
+    assert ultimate["reentryBeforeCrossing"]["active"] == 0
+    # Once the snail crosses below the plane (y = -0.05 < 0), both catch, and
+    # Android seeds progress from the pre-move position instead of the new one.
+    assert original["reentryAfterCrossing"]["active"] == 1
+    assert ultimate["reentryAfterCrossing"]["active"] == 1
+    assert ultimate["reentryAfterCrossing"]["progress"] < original["reentryAfterCrossing"]["progress"]
+    # For width_cells = 2, Android's quad half-width is 1.0 (w * 0.5) whereas
+    # the PC box accepts up to (2 / 2) + 0.3 = 1.3.
+    assert original["reentryOutsideHalfWidth"]["active"] == 1
+    assert ultimate["reentryOutsideHalfWidth"]["active"] == 0
