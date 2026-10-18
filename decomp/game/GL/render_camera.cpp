@@ -81,20 +81,20 @@ void render_camera(
     g_d3d_device->vtbl->SetRenderState(g_d3d_device, 14, 1);
     g_d3d_device->vtbl->SetRenderState(g_d3d_device, 23, 4);
 
-    if (draw_world != 0 && g_game->fog_enabled != 0) {
-        float fog_start = g_game->fog_start;
-        float fog_end = g_game->fog_end;
+    if (draw_world != 0 && g_game->fog.enabled != 0) {
+        float fog_start = g_game->fog.start;
+        float fog_end = g_game->fog.end;
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 28, 1);
 
         tColourSmall packed_fog;
         packed_fog.noop_this_constructor();
-        packed_fog.operator=(g_game->fog_color);
+        packed_fog.operator=(g_game->fog.color);
         packed_fog.a = 0;
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 34, *(int*)&packed_fog);
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 140, 3);
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 36, *(int*)&fog_start);
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 37, *(int*)&fog_end);
-        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 38, *(int*)&g_game->fog_density);
+        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 38, *(int*)&g_game->fog.density);
     } else {
         g_d3d_device->vtbl->SetRenderState(g_d3d_device, 28, 0);
     }

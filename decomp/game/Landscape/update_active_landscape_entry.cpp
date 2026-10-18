@@ -31,7 +31,7 @@ active:
     }
 
     if (landscape_object->bounds_min.z + transform.position.z >
-        g_game->fog_end + reference->transform.position.z) {
+        g_game->fog.end + reference->transform.position.z) {
         list_flags &= ~BOD_FLAG_RENDER_ENABLED;
     } else {
         list_flags |= BOD_FLAG_RENDER_ENABLED;

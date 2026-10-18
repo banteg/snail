@@ -60,11 +60,7 @@ char cRGame::initialize_game_assets_and_world()
     tColour asset_color;
     asset_color.noop_this_constructor();
 
-    fog_color.store_color4f(1.0f, 1.0f, 1.0f, 1.0f);
-    fog_density = 1.0f;
-    fog_start = 30.0f;
-    fog_end = 50.0f;
-    fog_enabled = 1;
+    fog.Init();
     player_count = GAME_ROOT_PLAYER_SLOT_COUNT;
     fade.Init();
     frontend_link_latch = 0;
@@ -375,45 +371,46 @@ char cRGame::initialize_game_assets_and_world()
         BANNER_SLOT_COUNT =
             sizeof(((BannerPool*)0)->slots) / sizeof(((BannerPool*)0)->slots[0])
     };
-    for (int sub_lazer_index = 0; sub_lazer_index < SUB_LAZER_SLOT_COUNT; sub_lazer_index++) {
-        subgame.sub_lazers.slots[sub_lazer_index].SetObject(root_bod_catalog.lazer_model.object);
-        subgame.sub_lazers.slots[sub_lazer_index].object->facequads[0].texture_ref->flags |=
+    int slot_index;
+    for (slot_index = 0; slot_index < SUB_LAZER_SLOT_COUNT; slot_index++) {
+        subgame.sub_lazers.slots[slot_index].SetObject(root_bod_catalog.lazer_model.object);
+        subgame.sub_lazers.slots[slot_index].object->facequads[0].texture_ref->flags |=
             TEXTURE_REF_REGISTERED;
-        subgame.sub_lazers.slots[sub_lazer_index].owner_game = &subgame;
-        subgame.sub_lazers.slots[sub_lazer_index].color.store_color4f(1.0f, 1.0f, 1.0f, 0.7f);
-        subgame.sub_lazers.slots[sub_lazer_index].object->blend_mode = 9;
+        subgame.sub_lazers.slots[slot_index].owner_game = &subgame;
+        subgame.sub_lazers.slots[slot_index].color.store_color4f(1.0f, 1.0f, 1.0f, 0.7f);
+        subgame.sub_lazers.slots[slot_index].object->blend_mode = 9;
     }
 
     root_bod_catalog.salt_model.SetObject(g_object_list.Add());
     loader->Load((char*)"salt.x", root_bod_catalog.salt_model.object, 1);
 
-    for (int salt_index = 0; salt_index < 40; salt_index++) {
-        subgame.salt_hazards.slots[salt_index].SetObject(root_bod_catalog.salt_model.object);
-        subgame.salt_hazards.slots[salt_index].owner_game = &subgame;
-        subgame.salt_hazards.slots[salt_index].color.store_color4f(1.0f, 1.0f, 1.0f, 0.9f);
-        subgame.salt_hazards.slots[salt_index].object->blend_mode = 12;
-        subgame.salt_hazards.slots[salt_index].transform.Identity();
+    for (slot_index = 0; slot_index < 40; slot_index++) {
+        subgame.salt_hazards.slots[slot_index].SetObject(root_bod_catalog.salt_model.object);
+        subgame.salt_hazards.slots[slot_index].owner_game = &subgame;
+        subgame.salt_hazards.slots[slot_index].color.store_color4f(1.0f, 1.0f, 1.0f, 0.9f);
+        subgame.salt_hazards.slots[slot_index].object->blend_mode = 12;
+        subgame.salt_hazards.slots[slot_index].transform.Identity();
     }
 
-    for (int banner_index = 0; banner_index < BANNER_SLOT_COUNT; banner_index++) {
-        subgame.banners.slots[banner_index].SetObject(g_object_list.Add());
-        if (banner_index == 0) {
+    for (slot_index = 0; slot_index < BANNER_SLOT_COUNT; slot_index++) {
+        subgame.banners.slots[slot_index].SetObject(g_object_list.Add());
+        if (slot_index == 0) {
             loader->Load(
                 (char*)"postofficestop.x",
                 subgame.banners.slots[0].object,
                 1);
         }
-        if (banner_index == 1) {
+        if (slot_index == 1) {
             loader->Load(
                 (char*)"postofficestop.x",
                 subgame.banners.slots[1].object,
-                banner_index);
+                slot_index);
         }
-        subgame.banners.slots[banner_index].position.zero_vector3();
-        subgame.banners.slots[banner_index].owner_game = &subgame;
-        subgame.banners.slots[banner_index].visibility_mode = banner_index;
-        subgame.banners.slots[banner_index].phase = 0.0f;
-        subgame.banners.slots[banner_index].phase_step = 0.006944444f;
+        subgame.banners.slots[slot_index].position.zero_vector3();
+        subgame.banners.slots[slot_index].owner_game = &subgame;
+        subgame.banners.slots[slot_index].visibility_mode = slot_index;
+        subgame.banners.slots[slot_index].phase = 0.0f;
+        subgame.banners.slots[slot_index].phase_step = 0.006944444f;
     }
 
     BodNode* track_bod_list = &subgame.track_body_list_head;
@@ -1996,11 +1993,11 @@ char cRGame::initialize_game_assets_and_world()
     char base_animation_name[0x80];
     char* test_line = Rstrfind(
         (char*)"Test:", loader->animation_bytes);
-    if (test_line != 0) {
-        char* source = Rstrfind((char*)":", test_line) + 1;
+    if (test_line) {
+        test_line = Rstrfind((char*)":", test_line) + 1;
         char* destination = base_animation_name;
-        while (*source != '.')
-            *destination++ = *source++;
+        while (*test_line != '.')
+            *destination++ = *test_line++;
         *destination++ = '.';
         *destination++ = 'x';
         *destination = 0;
@@ -2070,25 +2067,25 @@ char cRGame::initialize_game_assets_and_world()
         2);
     subgame.player.presentation.ExtractHotSpots();
 
-    int animation_count =
+    int slot_count =
         sizeof(subgame.player.presentation.cutscene_animation_slots)
         / sizeof(subgame.player.presentation.cutscene_animation_slots[0]);
     RenderableBod* animation_slot;
-    int animation_index = 0;
+    slot_index = 0;
     do {
-        subgame.player.presentation.cutscene_animation_slots[animation_index].object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
-        subgame.player.presentation.cutscene_animation_slots[animation_index].object->ApplyToon(0);
-        subgame.player.presentation.cutscene_animation_slots[animation_index].object->distort.z_wave = 0.0f;
-        subgame.player.presentation.cutscene_animation_slots[animation_index].object->distort.y_squash = 0.0f;
-        subgame.player.presentation.cutscene_animation_slots[animation_index].object->distort.xyz_scale = 0.0f;
-        ++animation_index;
-    } while (--animation_count != 0);
+        subgame.player.presentation.cutscene_animation_slots[slot_index].object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
+        subgame.player.presentation.cutscene_animation_slots[slot_index].object->ApplyToon(0);
+        subgame.player.presentation.cutscene_animation_slots[slot_index].object->distort.xyz_scale =
+            subgame.player.presentation.cutscene_animation_slots[slot_index].object->distort.y_squash =
+            subgame.player.presentation.cutscene_animation_slots[slot_index].object->distort.z_wave = 0.0f;
+        ++slot_index;
+    } while (--slot_count);
 
     subgame.player.presentation.object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
     subgame.player.presentation.object->ApplyToon(0);
-    subgame.player.presentation.object->distort.z_wave = 0.0f;
-    subgame.player.presentation.object->distort.y_squash = 0.0f;
-    subgame.player.presentation.object->distort.xyz_scale = 0.0f;
+    subgame.player.presentation.object->distort.xyz_scale =
+        subgame.player.presentation.object->distort.y_squash =
+        subgame.player.presentation.object->distort.z_wave = 0.0f;
 
     subgame.player.presentation.jetpack_channel.SetObject(
         g_object_list.Add());
@@ -2110,23 +2107,23 @@ char cRGame::initialize_game_assets_and_world()
         subgame.player.presentation.jetpack_channel.animation_slots[1]
             .object);
 
-    animation_count = 2;
-    animation_index = 0;
+    slot_count = 2;
+    slot_index = 0;
     do {
-        subgame.player.presentation.jetpack_channel.animation_slots[animation_index].object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
-        subgame.player.presentation.jetpack_channel.animation_slots[animation_index].object->ApplyToon(0);
-        subgame.player.presentation.jetpack_channel.animation_slots[animation_index].object->distort.z_wave = 0.0f;
-        subgame.player.presentation.jetpack_channel.animation_slots[animation_index].object->distort.y_squash = 0.0f;
-        subgame.player.presentation.jetpack_channel.animation_slots[animation_index].object->distort.xyz_scale = 0.0f;
-        ++animation_index;
-    } while (--animation_count != 0);
+        subgame.player.presentation.jetpack_channel.animation_slots[slot_index].object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
+        subgame.player.presentation.jetpack_channel.animation_slots[slot_index].object->ApplyToon(0);
+        subgame.player.presentation.jetpack_channel.animation_slots[slot_index].object->distort.xyz_scale =
+            subgame.player.presentation.jetpack_channel.animation_slots[slot_index].object->distort.y_squash =
+            subgame.player.presentation.jetpack_channel.animation_slots[slot_index].object->distort.z_wave = 0.0f;
+        ++slot_index;
+    } while (--slot_count);
 
     subgame.player.presentation.jetpack_channel.object->flags |=
         OBJECT_FLAG_DYNAMIC_VERTICES;
     subgame.player.presentation.jetpack_channel.object->ApplyToon(0);
-    subgame.player.presentation.jetpack_channel.object->distort.z_wave = 0.0f;
-    subgame.player.presentation.jetpack_channel.object->distort.y_squash = 0.0f;
-    subgame.player.presentation.jetpack_channel.object->distort.xyz_scale = 0.0f;
+    subgame.player.presentation.jetpack_channel.object->distort.xyz_scale =
+        subgame.player.presentation.jetpack_channel.object->distort.y_squash =
+        subgame.player.presentation.jetpack_channel.object->distort.z_wave = 0.0f;
 
     subgame.player.presentation.weapon_channels[0].SetObject(
         g_object_list.Add());
@@ -2164,7 +2161,7 @@ char cRGame::initialize_game_assets_and_world()
         subgame.player.presentation.weapon_channels[0].animation_slots[4]
             .object);
 
-    animation_count =
+    slot_count =
         sizeof(subgame.player.presentation.weapon_channels[0].animation_slots)
         / sizeof(subgame.player.presentation.weapon_channels[0].animation_slots[0]);
     animation_slot =
@@ -2172,18 +2169,18 @@ char cRGame::initialize_game_assets_and_world()
     do {
         animation_slot->object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
         animation_slot->object->ApplyToon(0);
-        animation_slot->object->distort.z_wave = 0.0f;
-        animation_slot->object->distort.y_squash = 0.0f;
-        animation_slot->object->distort.xyz_scale = 0.0f;
+        animation_slot->object->distort.xyz_scale =
+            animation_slot->object->distort.y_squash =
+            animation_slot->object->distort.z_wave = 0.0f;
         ++animation_slot;
-    } while (--animation_count != 0);
+    } while (--slot_count);
 
     subgame.player.presentation.weapon_channels[0].object->flags |=
         OBJECT_FLAG_DYNAMIC_VERTICES;
     subgame.player.presentation.weapon_channels[0].object->ApplyToon(0);
-    subgame.player.presentation.weapon_channels[0].object->distort.z_wave = 0.0f;
-    subgame.player.presentation.weapon_channels[0].object->distort.y_squash = 0.0f;
-    subgame.player.presentation.weapon_channels[0].object->distort.xyz_scale = 0.0f;
+    subgame.player.presentation.weapon_channels[0].object->distort.xyz_scale =
+        subgame.player.presentation.weapon_channels[0].object->distort.y_squash =
+        subgame.player.presentation.weapon_channels[0].object->distort.z_wave = 0.0f;
 
     subgame.player.presentation.weapon_channels[1].SetObject(
         g_object_list.Add());
@@ -2221,26 +2218,20 @@ char cRGame::initialize_game_assets_and_world()
         subgame.player.presentation.weapon_channels[1].animation_slots[4]
             .object);
 
-    animation_count =
-        sizeof(subgame.player.presentation.weapon_channels[1].animation_slots)
-        / sizeof(subgame.player.presentation.weapon_channels[1].animation_slots[0]);
-    animation_slot =
-        &subgame.player.presentation.weapon_channels[1].animation_slots[0];
-    do {
-        animation_slot->object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
-        animation_slot->object->ApplyToon(0);
-        animation_slot->object->distort.z_wave = 0.0f;
-        animation_slot->object->distort.y_squash = 0.0f;
-        animation_slot->object->distort.xyz_scale = 0.0f;
-        ++animation_slot;
-    } while (--animation_count != 0);
+    for (slot_index = 0; slot_index < 5; ++slot_index) {
+        subgame.player.presentation.weapon_channels[1].animation_slots[slot_index].object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
+        subgame.player.presentation.weapon_channels[1].animation_slots[slot_index].object->ApplyToon(0);
+        subgame.player.presentation.weapon_channels[1].animation_slots[slot_index].object->distort.xyz_scale =
+            subgame.player.presentation.weapon_channels[1].animation_slots[slot_index].object->distort.y_squash =
+            subgame.player.presentation.weapon_channels[1].animation_slots[slot_index].object->distort.z_wave = 0.0f;
+    }
 
     subgame.player.presentation.weapon_channels[1].object->flags |=
         OBJECT_FLAG_DYNAMIC_VERTICES;
     subgame.player.presentation.weapon_channels[1].object->ApplyToon(0);
-    subgame.player.presentation.weapon_channels[1].object->distort.z_wave = 0.0f;
-    subgame.player.presentation.weapon_channels[1].object->distort.y_squash = 0.0f;
-    subgame.player.presentation.weapon_channels[1].object->distort.xyz_scale = 0.0f;
+    subgame.player.presentation.weapon_channels[1].object->distort.xyz_scale =
+        subgame.player.presentation.weapon_channels[1].object->distort.y_squash =
+        subgame.player.presentation.weapon_channels[1].object->distort.z_wave = 0.0f;
 
     subgame.player.presentation.weapon_channels[2].SetObject(
         g_object_list.Add());
@@ -2278,7 +2269,7 @@ char cRGame::initialize_game_assets_and_world()
         subgame.player.presentation.weapon_channels[2].animation_slots[4]
             .object);
 
-    animation_count =
+    slot_count =
         sizeof(subgame.player.presentation.weapon_channels[2].animation_slots)
         / sizeof(subgame.player.presentation.weapon_channels[2].animation_slots[0]);
     animation_slot =
@@ -2286,18 +2277,18 @@ char cRGame::initialize_game_assets_and_world()
     do {
         animation_slot->object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
         animation_slot->object->ApplyToon(0);
-        animation_slot->object->distort.z_wave = 0.0f;
-        animation_slot->object->distort.y_squash = 0.0f;
-        animation_slot->object->distort.xyz_scale = 0.0f;
+        animation_slot->object->distort.xyz_scale =
+            animation_slot->object->distort.y_squash =
+            animation_slot->object->distort.z_wave = 0.0f;
         ++animation_slot;
-    } while (--animation_count != 0);
+    } while (--slot_count);
 
     subgame.player.presentation.weapon_channels[2].object->flags |=
         OBJECT_FLAG_DYNAMIC_VERTICES;
     subgame.player.presentation.weapon_channels[2].object->ApplyToon(0);
-    subgame.player.presentation.weapon_channels[2].object->distort.z_wave = 0.0f;
-    subgame.player.presentation.weapon_channels[2].object->distort.y_squash = 0.0f;
-    subgame.player.presentation.weapon_channels[2].object->distort.xyz_scale = 0.0f;
+    subgame.player.presentation.weapon_channels[2].object->distort.xyz_scale =
+        subgame.player.presentation.weapon_channels[2].object->distort.y_squash =
+        subgame.player.presentation.weapon_channels[2].object->distort.z_wave = 0.0f;
 
     subgame.player.presentation.snail_skin
         .material_overrides[SNAIL_SKIN_SLOT_DEFAULT] =
@@ -2326,7 +2317,7 @@ char cRGame::initialize_game_assets_and_world()
         g_object_list.Add());
     loader->Load(
         (char*)"rocket-base-000.x", golb_shot->tertiary_body.object, 1);
-    int golb_shot_count = 12;
+    slot_count = 12;
     do {
         golb_shot->vapour.SetObject(
             g_object_list.Add());
@@ -2337,7 +2328,7 @@ char cRGame::initialize_game_assets_and_world()
         golb_shot->vapour.Init(golb_shot->vapour.object, 0.159999996f);
         golb_shot->tertiary_body.SetObject(subgame.player.golb_shots[0].tertiary_body.object);
         ++golb_shot;
-    } while (--golb_shot_count != 0);
+    } while (--slot_count);
 
     cRTexture* texture_ref = g_texture_refs.Add(
         (char*)"Objects/VapourLazer/Lazer.tga", 0, 0);
@@ -2530,7 +2521,7 @@ char cRGame::initialize_game_assets_and_world()
         border->flags = 0;
         ++border;
         --border_count;
-    } while (border_count != 0);
+    } while (border_count);
 
     g_object_list.BuildObjects();
 
