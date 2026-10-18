@@ -217,7 +217,7 @@ def run_observer(scratch, out):
     try:
         # The preserving COFF/metric checks run before the (deliberately empty)
         # stock snapshot stream is decoded, so only that final step may fail.
-        t.trace(scratch, out)
+        t.trace(scratch, out, target_only=True)
     except ValueError as error:
         if "Empty C2 trace" not in str(error):
             raise
