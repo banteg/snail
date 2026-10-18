@@ -240,7 +240,7 @@ void cRSMTracks::Import()
 // rule change that would make stored replays drift starts fresh tables by
 // bumping it and removing older Ultimate score files; campaign progress keeps
 // its file.
-const int kUltimateScoreVersion = 2;
+const int kUltimateScoreVersion = 3;
 const char* const kUltimateScoreTables[][2] = {
     {"ScoreA.dat", "ScoreMobileA"},
     {"ScoreB.dat", "ScoreMobileB"},

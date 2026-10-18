@@ -207,7 +207,7 @@ def test_ultimate_collects_parcels_within_the_mobile_radius(tmp_path):
     # Windows within 1.24.
     for name in ("SnailMail.dat", "SnailMailExtras.dat"):
         (tmp_path / name).symlink_to(REPO_ROOT / "artifacts/bin" / name)
-    shutil.copy2(REPO_ROOT / "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat", tmp_path / "ScoreMobileA-v2.dat")
+    shutil.copy2(REPO_ROOT / "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat", tmp_path / "ScoreMobileA-v3.dat")
     replay = subprocess.run(
         [
             "node", str(REPO_ROOT / "port/shell/run.mjs"), str(REPO_ROOT / "port/zig-out/bin/snail.wasm"),
@@ -634,8 +634,8 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
     rec0[0x5C : 0x5C + 20] = b"ProChamp\x00".ljust(20, b"\x00")
     score_pro_orig = bytes(scramble_score_bytes(rec0))
     (tmp_path / "ScoreA.dat").write_bytes(score_a_orig)
-    (tmp_path / "ScoreMobileA-v2.dat").write_bytes(score_a_orig)
-    (tmp_path / "ScorePro-v2.dat").write_bytes(score_pro_orig)
+    (tmp_path / "ScoreMobileA-v3.dat").write_bytes(score_a_orig)
+    (tmp_path / "ScorePro-v3.dat").write_bytes(score_pro_orig)
 
     cfg = bytearray(196)
     struct.pack_into("<ff", cfg, 0, 1.0, 1.0)
@@ -670,7 +670,7 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
     assert struct.unpack("<ii", (tmp_path / "SnailMailPro.cfg").read_bytes()) == (10, 1)
     assert struct.unpack_from("<ii", (tmp_path / "SnailMail.cfg").read_bytes(), 0xA0) == (50, 7)
     assert (tmp_path / "ScoreA.dat").read_bytes() == score_a_orig
-    assert (tmp_path / "ScorePro-v2.dat").read_bytes() == score_pro_orig
+    assert (tmp_path / "ScorePro-v3.dat").read_bytes() == score_pro_orig
     (tmp_path / "SnailMailPro.cfg").write_bytes(struct.pack("<ii", 10, 10))
     (tmp_path / "pro10.keys").write_text(
         "600 escape\n700 mouse 345 112\n720 click 3\n"
@@ -690,7 +690,7 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
     assert struct.unpack("<ii", (tmp_path / "SnailMailPro.cfg").read_bytes()) == (10, 10)
     assert struct.unpack_from("<ii", (tmp_path / "SnailMail.cfg").read_bytes(), 0xA0) == (50, 7)
     assert (tmp_path / "ScoreA.dat").read_bytes() == score_a_orig
-    assert (tmp_path / "ScorePro-v2.dat").read_bytes() == score_pro_orig
+    assert (tmp_path / "ScorePro-v3.dat").read_bytes() == score_pro_orig
     (tmp_path / "hs_quit.keys").write_text(
         "600 escape\n700 mouse 345 180\n720 click 3\n"
         "800 mouse 420 400\n820 click 3\n"
@@ -713,5 +713,5 @@ console.log(JSON.stringify(Object.fromEntries(slots.map(s => [s, cstr(instance.e
     assert '"Pro High Scores"' in pro_view and '"ProChamp"' in pro_view
     assert "snail: quit requested" in hs.stderr
     assert (tmp_path / "ScoreA.dat").read_bytes() == score_a_orig
-    assert (tmp_path / "ScorePro-v2.dat").read_bytes() == score_pro_orig
+    assert (tmp_path / "ScorePro-v3.dat").read_bytes() == score_pro_orig
     assert struct.unpack_from("<ii", (tmp_path / "SnailMail.cfg").read_bytes(), 0xA0) == (50, 7)
