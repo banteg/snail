@@ -220,6 +220,16 @@ If the object does not resolve that function, it falls back to the last one.
 `globalregs.py` select that function's snapshots and side-stream records;
 the last two write a marker at each function entry into their side stream.
 
+These tools, plus `inline_budget.py` and `splittrace.py`, trace with
+`target_only`: the observer snapshots nodes only at the traced function's
+hooks. The other members keep their event headers with no nodes, so ordinals
+still count. The profile records the gate as `snapshot_ordinal`. Without the
+gate, every member's per-pass nodes go to `phases.bin`: 160 MB for the
+43-function Path unit and 177 MB for SubGame. With it, they take 2 MB and
+16 MB, and the target's snapshots and `address-order.json` are unchanged.
+The positional tracers (`heightmap.py`, `turnover.py`, `loopout.py`) trace
+standalone scratches and keep every event.
+
 ## Crimson's tracers and compiler notes
 
 The sibling Crimson project keeps the generic C2 notes in

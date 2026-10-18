@@ -14,8 +14,12 @@ from snail import match as m
 STOCK_LOADER = c2.load_profile
 
 
-def trace(scratch, out, *, passes_only=False, early_addresses=False):
-    """Preserving observation: whole-COFF identity and matcher metrics are checked."""
+def trace(scratch, out, *, passes_only=False, early_addresses=False, target_only=False):
+    """Preserving observation: whole-COFF identity and matcher metrics are checked.
+
+    `target_only` snapshots nodes for the scratch's function alone; the other
+    functions of a translation unit keep empty events, so ordinals still count.
+    """
     config = m.load_scratch_config(scratch.resolve())
     if m.scratch_translation_unit(config):
         raise ValueError(
@@ -34,8 +38,14 @@ def trace(scratch, out, *, passes_only=False, early_addresses=False):
             "hooks": profile["early_address_hooks"],
         }
     c2.load_profile = lambda: profile
+    target = config.symbol or config.function
     try:
-        result = c2.trace(scratch, out, passes_only=passes_only)
+        result = c2.trace(
+            scratch,
+            out,
+            passes_only=passes_only,
+            snapshot_function=target if target_only else None,
+        )
     finally:
         c2.load_profile = loader
     events = c2.read_verified(out)
@@ -52,8 +62,10 @@ def trace(scratch, out, *, passes_only=False, early_addresses=False):
     result["early_addresses"] = early_addresses
     obj = m.parse_coff_object((out / result["object_paths"][0]).read_bytes())
     result["function_ordinal"] = target_function(
-        obj, config.symbol or config.function, events[-1]["function_ordinal"] + 1
+        obj, target, events[-1]["function_ordinal"] + 1
     )
+    if target_only and result["snapshot_ordinal"] != result["function_ordinal"]:
+        raise ValueError("Snapshots gated on a different function than the one traced")
     (out / "snail-receipt.json").write_text(json.dumps(result, indent=2) + "\n")
     return result, events
 

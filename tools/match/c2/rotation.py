@@ -178,7 +178,7 @@ def run_observer(scratch, out):
     c2.load_profile = lambda: profile
     c2.observer_source = lambda p: observer(p, stock_source)
     try:
-        result, events = t.trace(scratch, out)
+        result, events = t.trace(scratch, out, target_only=True)
     finally:
         c2.load_profile, c2.observer_source = stock_profile, stock_source
     return result, events, (out / "observed/rotation.bin").read_bytes()

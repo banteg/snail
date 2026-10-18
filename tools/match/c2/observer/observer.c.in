@@ -5,6 +5,7 @@ typedef int (__stdcall *invoke_t)(int, char **, void *);
 typedef BOOL (__stdcall *protect_t)(LPVOID, DWORD, DWORD, PDWORD);
 static HANDLE trace_file;
 static unsigned long targets[HOOK_COUNT], returns[HOOK_COUNT], active[HOOK_COUNT], saved_function;
+static long function_ordinal = -1;
 /* GENERATED_PROFILE */
 
 static void write_block(void *data, unsigned long size)
@@ -22,6 +23,14 @@ static void __cdecl observe(unsigned long phase, unsigned long *registers)
     unsigned long *function;
     unsigned long first, node, count = 0, record[742], op, side, j, k, at;
     if (phase < 12) saved_function = registers[6];
+    if (phase == 0) ++function_ordinal;
+    /* Other functions of a translation unit keep their event headers, without nodes. */
+    if (SNAPSHOT_ORDINAL >= 0 && function_ordinal != SNAPSHOT_ORDINAL) {
+        write_block(&phase, 4);
+        write_block(&saved_function, 4);
+        write_block(&count, 4);
+        return;
+    }
     function = (unsigned long *)saved_function;
     first = *(unsigned long *)(*(unsigned long *)function[2] + 0x1c);
     node = first;

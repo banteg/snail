@@ -70,6 +70,25 @@ def test_function_event_selects_one_function():
         c2_trace.function_event(events, 2, 1)
 
 
+def test_gated_trace_keeps_ordinals_of_functions_without_nodes():
+    observer = c2_trace.c2
+    profile = {"hooks": [{"site": 1, "target": 2, "return": False}], "invoke_rva": 0}
+    assert "#define SNAPSHOT_ORDINAL -1\n" in observer.observer_source(profile)
+    gated = dict(profile, snapshot_ordinal=1)
+    assert "#define SNAPSHOT_ORDINAL 1\n" in observer.observer_source(gated)
+    # Two function entries: the first keeps its header without nodes.
+    node = struct.pack(f"<{observer.NODE_WORDS}I", 0x1234, 0x16D, 7, 0, *[0] * 738)
+    data = (
+        struct.pack("<3I", 0x43325431, 1, 0)
+        + struct.pack("<3I", 0, 0x100, 0)
+        + struct.pack("<3I", 0, 0x200, 1)
+        + node
+    )
+    events = observer.decode_trace(data, gated)
+    assert [(e["function_ordinal"], len(e["nodes"])) for e in events] == [(0, 0), (1, 1)]
+    assert events[1]["nodes"][0]["op"] == 0x16D
+
+
 # addrorder and cse_slot_trace read the VC6 backend's C2 profile on import.
 
 

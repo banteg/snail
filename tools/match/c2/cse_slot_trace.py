@@ -201,7 +201,7 @@ def run_observer(scratch: Path, out: Path):
     ao.c2.load_profile = lambda: profile
     ao.c2.observer_source = lambda p: observer(p, stock_source, [h["kind"] for h in table])
     try:
-        result, events = ao.t.trace(scratch, out)
+        result, events = ao.t.trace(scratch, out, target_only=True)
     finally:
         ao.c2.load_profile, ao.c2.observer_source = stock_profile, stock_source
     words = struct.iter_unpack(f"<{RECORD_WORDS}I", (out / "observed/slots.bin").read_bytes())

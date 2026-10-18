@@ -71,6 +71,7 @@ def observer_source(profile: dict[str, Any]) -> str:
         f"#define HOOK_COUNT {len(hooks)}",
         f"#define INVOKE_RVA {profile['invoke_rva']}",
         f"#define MAX_NODES {MAX_NODES}",
+        f"#define SNAPSHOT_ORDINAL {profile.get('snapshot_ordinal', -1)}",
     ]
     wrappers = []
     for index, hook in enumerate(hooks):
@@ -301,7 +302,14 @@ def compare(left: list[dict[str, Any]], right: list[dict[str, Any]]) -> dict[str
     }
 
 
-def trace(scratch: Path, out: Path, *, passes_only: bool = False) -> dict[str, Any]:
+def trace(
+    scratch: Path,
+    out: Path,
+    *,
+    passes_only: bool = False,
+    snapshot_function: str | None = None,
+) -> dict[str, Any]:
+    """Observe one compile; with `snapshot_function`, only that function's events carry nodes."""
     profile = load_profile()
     if passes_only:
         profile = {**profile, "hooks": profile["hooks"][:12]}
@@ -317,7 +325,6 @@ def trace(scratch: Path, out: Path, *, passes_only: bool = False) -> dict[str, A
     # Copy local includes as well as source; retain shared include-overlay configuration.
     require(not out.is_relative_to(config.directory.resolve()), "Output must be outside the scratch directory")
     out.mkdir(parents=True)
-    (out / "profile.json").write_text(json.dumps(profile, indent=2) + "\n")
     source = out / "source"
     shutil.copytree(config.directory, source, ignore=shutil.ignore_patterns("build", "__pycache__", ".git"))
     # Freeze the recovered source (decomp/ via SOURCE=) beside its config.
@@ -337,6 +344,13 @@ def trace(scratch: Path, out: Path, *, passes_only: bool = False) -> dict[str, A
         replay.compile_driver(helper, "capture.c", "capture.obj")
         replay.link(helper, "capture.dll", "capture.obj", dll=True)
         normal = match.compile_scratch(frozen)
+        if snapshot_function is not None:
+            # C2 enters functions in code order, so the n-th entry is the n-th function symbol.
+            obj = match.parse_coff_object(normal.read_bytes())
+            functions = match.object_function_symbols(obj)
+            target = match.find_object_function_symbol(obj, snapshot_function)
+            profile = {**profile, "snapshot_ordinal": functions.index(target)}
+        (out / "profile.json").write_text(json.dumps(profile, indent=2) + "\n")
         wrapped_config = replace(
             frozen,
             directory=captured_source,
@@ -416,6 +430,7 @@ def trace(scratch: Path, out: Path, *, passes_only: bool = False) -> dict[str, A
         "missing_stream_rejected": True,
         "compiler_decisions_modified": False,
         "passes_only": passes_only,
+        "snapshot_ordinal": profile.get("snapshot_ordinal"),
         "metrics": metrics,
         "events": len(snapshots),
         "object_paths": [str(p.relative_to(out)) for p in objects],

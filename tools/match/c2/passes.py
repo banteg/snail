@@ -90,7 +90,7 @@ def run(scratch, source, out):
     profile = dict(profile, name=profile["name"] + "-late-passes", hooks=hooks)
     c2.load_profile = lambda *a, **kw: profile
     try:
-        result, events = t.trace(work, out)
+        result, events = t.trace(work, out, target_only=True)
     finally:
         c2.load_profile = stock
     return t.function_events(events, result["function_ordinal"])

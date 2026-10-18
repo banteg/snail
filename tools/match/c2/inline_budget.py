@@ -158,7 +158,7 @@ def run_observer(scratch, out):
     c2.load_profile = lambda *_: profile
     c2.observer_source = lambda p: observer(p, stock_source, hooks)
     try:
-        result, _events = t.trace(scratch, out)
+        result, _events = t.trace(scratch, out, target_only=True)
     finally:
         c2.load_profile, c2.observer_source = stock_profile, stock_source
     return result, (out / "observed/inline.bin").read_bytes()
