@@ -463,9 +463,10 @@ Mobile campaign progress and scores use `SnailMailMobile.cfg` and
 `ScoreMobileA/B/C-v2.dat`. A score table keeps each run's replay, which plays
 back only on the courses and rules it was recorded under, so the table names
 carry a version (`kUltimateScoreVersion` in `port/shell/extras.cpp`): a rule
-change that would make stored replays drift bumps it and starts fresh tables,
-and progress keeps its file. Version 2 begins with the profile audit's rules
-(v0.4.0). The first mobile launch copies the volumes and display
+change that would make stored replays drift bumps it, removes older Ultimate
+score files, and starts fresh tables, while progress keeps its file. Version 2
+begins with the profile audit's rules (v0.4.0). The first mobile launch copies
+the volumes and display
 settings (fullscreen, render flags, display mode) from the PC config. The rest,
 from campaign progress and the tutorial to the Challenge sliders and the
 high-score name, starts at the defaults, which Android's match.
@@ -477,16 +478,23 @@ every replay launch (`cRHighScore::AI`), so it replays Pro records on the
 postal courses. Switching to Original reloads the PC campaign and scores
 without rewriting them.
 
-Android differences Ultimate leaves out: tilt and touch steering; the camera's
-wider field of view (120 where the PC has 110), which likely suits the phones'
-3:2 screens; the slug hit's vibration and its render-only flattening of
-Android's track mesh (`cRWorld`) during the death cut-scene; resuming a postal
-or Pro game, which Android saves when such a run is ended from the pause menu
-(Ultimate records its score, as the PC does); the Options screen's version
-label, in full for Fluctuosa; the OpenFeint logo that replaced the main menu's
-Exit button; the layout for the phones' 480x320 screens. Shared path meshes
-other than CAGE2, TWISTER2 and SBEND are not yet checked against the Android
-`.smo` meshes. The slug voice lines play in both profiles: the PC's
+Android differences Ultimate leaves out: tilt and touch steering, with their
+camera roll (Tilt Mode), frustum shift (Touch Mode) and Touch Mode tutorial
+line (`tut1b`); the touch-only menus and controls (the Tilt/Touch option in
+place of Fullscreen, touch prompts, tap-to-dismiss Help, and the on-screen name
+keypad and pause button); the galaxy step buttons (`<< < > >>`), 24-unit star
+pick radius and no click-away card close; the camera's wider field of view (120
+where the PC has 110); the slug hit's 300 ms vibration and its render-only
+flattening of Android's track mesh (`cRWorld`) during the death cut-scene;
+resuming a postal or Pro game, which Android saves when such a run is ended
+from the pause menu (Ultimate records its score, as the PC does); the Options
+screen's version label, in full for Fluctuosa; OpenFeint (35 achievements, 56
+leaderboards, lifetime parcel and slug counters, and the main menu's OpenFeint
+logo in place of Exit); the phone menu and help frames, the publisher loading
+splashes, and the repacked 256×256 font with its wider metrics; and overlapping
+voice lines (both mobile backends dropped BASS's active-sample check). Shared
+path meshes other than CAGE2, TWISTER2 and SBEND are not yet checked against
+the Android `.smo` meshes. The slug voice lines play in both profiles: the PC's
 `cRSlugVoiceManager` has Android's constants, call sites and clips.
 
 Ultimate selects the mobile 3,500-row build limit; Original retains the PC

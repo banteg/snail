@@ -33,6 +33,10 @@ export class MemoryFileSystem {
     return this.files.get(MemoryFileSystem.key(path));
   }
 
+  delete(path) {
+    return this.files.delete(MemoryFileSystem.key(path));
+  }
+
   isDirectory(path) {
     const key = MemoryFileSystem.key(path);
     if (key === "") return true;
@@ -55,8 +59,9 @@ export class MemoryFileSystem {
   }
 }
 
-// `onClose(path, data)` sees every file the program wrote, when it closes.
-export function createWasi(fs, { log = console.log, onClose = () => {} } = {}) {
+// `onClose(path, data)` sees every file the program wrote, when it closes;
+// `onUnlink(path)` sees every file the program removed.
+export function createWasi(fs, { log = console.log, onClose = () => {}, onUnlink = () => {} } = {}) {
   let memory = null;
   const descriptors = new Map(); // fd -> { path, directory, data?, position }
   let nextFd = ROOT_FD + 1;
@@ -217,6 +222,18 @@ export function createWasi(fs, { log = console.log, onClose = () => {} } = {}) {
       else if (fs.isDirectory(path)) writeStat(pointer, FILETYPE.DIRECTORY, 0);
       else return ERRNO.NOENT;
       return ERRNO.SUCCESS;
+    },
+    path_unlink_file(fd, pathPointer, pathLength) {
+      const path = resolve(fd, pathPointer, pathLength);
+      if (path === null) return ERRNO.BADF;
+      const file = fs.file(path);
+      if (!file) return fs.isDirectory(path) ? ERRNO.ISDIR : ERRNO.NOENT;
+      fs.delete(path);
+      onUnlink(file.name);
+      return ERRNO.SUCCESS;
+    },
+    path_remove_directory() {
+      return ERRNO.ISDIR;
     },
     fd_readdir(fd, buffer, length, cookie, used) {
       const descriptor = fd === ROOT_FD ? { path: "", directory: true } : descriptors.get(fd);
