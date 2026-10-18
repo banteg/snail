@@ -54,6 +54,9 @@ def test_mobile_catalog_rules_swing_and_classic_save_isolation(tmp_path, port_la
         REPO_ROOT / "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat"
     ).read_bytes()
     (tmp_path / "ScoreA.dat").write_bytes(score)
+    # A table from before Ultimate's score version: its replays belong to older
+    # courses and rules, so Ultimate starts a fresh one beside it.
+    (tmp_path / "ScoreMobileA.dat").write_bytes(score)
     result = subprocess.run(
         ["node", str(REPO_ROOT / "tests/port_mobile_rates.mjs"), str(WASM)],
         cwd=tmp_path,
@@ -91,7 +94,8 @@ def test_mobile_catalog_rules_swing_and_classic_save_isolation(tmp_path, port_la
     assert all(abs(x) <= 3 for x in data["swing"])
     assert (tmp_path / "SnailMail.cfg").read_bytes() == config
     assert (tmp_path / "ScoreA.dat").read_bytes() == score
-    assert (tmp_path / "ScoreMobileA.dat").read_bytes() != score
+    assert (tmp_path / "ScoreMobileA.dat").read_bytes() == score
+    assert (tmp_path / "ScoreMobileA-v2.dat").exists()
 
 
 @pytest.mark.skipif(
@@ -239,10 +243,10 @@ def test_pro_state_ends_with_its_game_or_replay(tmp_path, port_layout_env):
         (REPO_ROOT / "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat").read_bytes()
     )
     struct.pack_into("<i", scores, 0x2C, 3)
-    (tmp_path / "ScoreMobileA.dat").write_bytes(scramble(scores))
+    (tmp_path / "ScoreMobileA-v2.dat").write_bytes(scramble(scores))
     pro = scores[: struct.unpack_from("<I", scores, 0)[0]]
     pro[0x5C : 0x5C + 20] = b"ProChamp".ljust(20, b"\x00")
-    (tmp_path / "ScorePro.dat").write_bytes(scramble(pro))
+    (tmp_path / "ScorePro-v2.dat").write_bytes(scramble(pro))
     result = subprocess.run(
         ["node", str(REPO_ROOT / "tests/port_pro_state.mjs"), str(WASM)],
         cwd=tmp_path,
