@@ -338,10 +338,14 @@ archive as AVIF, about 16 KB together); when the game has started it waits for
 a click or key press, which unlocks sound (browsers require a gesture) without
 reaching the game, so the intro plays from its start.
 Files the game writes (`SnailMail.cfg` with progress and options, the
-`ScoreA/B/C.dat` tables) persist in the browser's IndexedDB. The game wrote
-its score tables only when quitting, so the page runs those saves when it is
-hidden or closed. `?reset` clears them, and `?mute` silences the game until
-`?mute=0` (the page remembers either).
+`ScoreA/B/C.dat` tables) persist in the browser's IndexedDB. Losing focus or
+hiding the tab follows the profile's window rules: Ultimate opens the in-game
+pause menu on any focus loss or tab hide and pauses sound when the tab is
+hidden; Original opens the pause menu when the tab is hidden or fullscreen
+loses focus, freezes AI in place when a windowed game loses focus, and pauses
+sound on either. The game wrote its score tables only when quitting, so the
+page also runs those saves when it is hidden or closed. `?reset` clears them,
+and `?mute` silences the game until `?mute=0` (the page remembers either).
 `?warmup=N` fixes Original's random warmup for a repeatable start; Ultimate,
 like Android, makes no warmup draws.
 
@@ -604,7 +608,8 @@ for the PC release; `--tape` defaults to Original, the profile its recordings
 come from) and has the same comfort settings, on by default: rendering at the
 window's pixel resolution, the game's Fullscreen option making the window
 fullscreen (the window's own controls turn the option off and on), a click
-trapping the pointer (Escape in a window, or leaving it, frees it).
+trapping the pointer (Escape in a window, or leaving it, frees it), and window
+focus or minimize following the profile's pause, freeze and sound rules.
 `--no-hidpi`, `--no-fullscreen` and `--no-trap-mouse` switch them off one by
 one; compare screenshots with the original's at 640x480 with
 `--profile original --no-hidpi`.

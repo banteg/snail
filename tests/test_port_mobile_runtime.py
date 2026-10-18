@@ -269,3 +269,150 @@ def test_pro_state_ends_with_its_game_or_replay(tmp_path, port_layout_env):
     assert report["postalReplay"] == level_name("LEVELS/ARCADE003.TXT")
     assert report["proProgressDuringReplay"] == [10, 1]
     assert report["proProgress"] == [10, 1]
+
+
+@pytest.mark.skipif(
+    shutil.which("node") is None
+    or not WASM.exists()
+    or not all(
+        (ASSETS / name).exists() for name in ("SnailMail.dat", "SnailMailExtras.dat")
+    ),
+    reason="needs browser WASM, node, and game archives",
+)
+def test_window_state_pause_and_freeze_rules(tmp_path, port_layout_env):
+    for name in ("SnailMail.dat", "SnailMailExtras.dat"):
+        shutil.copyfile(ASSETS / name, tmp_path / name)
+    config = bytearray(196)
+    struct.pack_into("<ff", config, 0, 1.0, 1.0)
+    config[0x60:0x69] = b"Fluctuosa"
+    struct.pack_into("<ii", config, 0xA0, 50, 7)
+    config[0xC0] = 1
+    (tmp_path / "SnailMailMobile.cfg").write_bytes(config)
+
+    script = f"""
+import {{ LAYOUT, openMobileGame, startGame }} from {json.dumps(str(REPO_ROOT / "tests/port_mobile_runtime.mjs"))};
+const wasm = {json.dumps(str(WASM))};
+
+const ultPaused = [];
+const ult = await openMobileGame(wasm, {{
+  set_paused: (p) => ultPaused.push(p),
+}});
+const sub = ult.sub;
+const state = (m, s = sub) => m.readInt32LE(s + LAYOUT.subgame_state);
+const gate = (m, s = sub) => m.readUInt8(s + LAYOUT.subgame_pause_gate);
+const playerZ = (m, s = sub) => m.readFloatLE(s + LAYOUT.sub_player_z);
+
+const ultInitialState = state(ult.memory());
+ult.e.snail_window_state(1, 0);
+ult.e.snail_frame(1 / 60);
+const ultBlurState = state(ult.memory());
+const ultBlurGate = gate(ult.memory());
+const ultBlurAudio = [...ultPaused];
+
+ult.e.snail_window_state(1, 1);
+ult.step(2);
+ult.click(320, 330);
+const ultResumedState = state(ult.memory());
+ult.e.snail_frame(1 / 60);
+const ultNextTickState = state(ult.memory());
+
+ult.e.snail_window_state(0, 0);
+ult.e.snail_frame(1 / 60);
+const ultHiddenState = state(ult.memory());
+const ultHiddenAudio = [...ultPaused];
+
+const origPaused = [];
+const origE = await startGame(wasm, {{
+  set_paused: (p) => origPaused.push(p),
+}}, 0);
+const origStep = (n = 5) => {{ for (let i = 0; i < n; ++i) origE.snail_frame(0.4); }};
+const origClick = (x, y) => {{
+  origE.snail_pointer(x, y); origE.snail_frame(1 / 60);
+  origE.snail_button(0, 1); origE.snail_frame(1 / 60);
+  origE.snail_button(0, 0); origStep();
+}};
+origStep(25);
+origE.snail_key(1, 1); origE.snail_frame(1 / 60); origE.snail_key(1, 0); origStep();
+origClick(345, 112);
+origClick(344, 102);
+origStep(10);
+origClick(320, 222);
+origStep(2);
+const origMem = () => Buffer.from(origE.memory.buffer);
+let origSub = 0;
+const needle = Buffer.from("Tutorial\\0");
+for (let p = origMem().indexOf(needle); p >= 0; p = origMem().indexOf(needle, p + 1)) {{
+  const candidate = p - LAYOUT.subgame - LAYOUT.level_definition - LAYOUT.level_display_name;
+  if (candidate > 0 && origMem().readInt32LE(candidate + LAYOUT.subgame + LAYOUT.subgame_state) === 2) {{
+    origSub = candidate + LAYOUT.subgame;
+  }}
+}}
+const origInitialState = state(origMem(), origSub);
+const zBeforeFreeze = playerZ(origMem(), origSub);
+origE.snail_fullscreen_changed(0);
+origE.snail_window_state(1, 0);
+for (let i = 0; i < 10; ++i) origE.snail_frame(1 / 60);
+const origWindowedBlurState = state(origMem(), origSub);
+const origWindowedBlurGate = gate(origMem(), origSub);
+const zDuringFreeze = playerZ(origMem(), origSub);
+const origWindowedBlurAudio = [...origPaused];
+
+origE.snail_window_state(1, 1);
+for (let i = 0; i < 10; ++i) origE.snail_frame(1 / 60);
+const zAfterUnfreeze = playerZ(origMem(), origSub);
+const origRefocusAudio = [...origPaused];
+
+origE.snail_fullscreen_changed(1);
+origE.snail_window_state(1, 0);
+origE.snail_frame(1 / 60);
+const origFullscreenBlurState = state(origMem(), origSub);
+const origFullscreenBlurGate = gate(origMem(), origSub);
+
+console.log(JSON.stringify({{
+  ultInitialState,
+  ultBlurState,
+  ultBlurGate,
+  ultBlurAudio,
+  ultResumedState,
+  ultNextTickState,
+  ultHiddenState,
+  ultHiddenAudio,
+  origInitialState,
+  origWindowedBlurState,
+  origWindowedBlurGate,
+  zBeforeFreeze,
+  zDuringFreeze,
+  zAfterUnfreeze,
+  origWindowedBlurAudio,
+  origRefocusAudio,
+  origFullscreenBlurState,
+  origFullscreenBlurGate,
+}}));
+"""
+    (tmp_path / "window_state.mjs").write_text(script)
+    result = subprocess.run(
+        ["node", str(tmp_path / "window_state.mjs")],
+        cwd=tmp_path,
+        env=port_layout_env,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    report = json.loads(result.stdout.splitlines()[-1])
+    assert report["ultInitialState"] == 2
+    assert report["ultBlurState"] == 3
+    assert report["ultBlurGate"] == 1
+    assert report["ultBlurAudio"] == []
+    assert report["ultResumedState"] == 2
+    assert report["ultNextTickState"] == 2
+    assert report["ultHiddenState"] == 3
+    assert report["ultHiddenAudio"] == [1]
+    assert report["origInitialState"] == 2
+    assert report["origWindowedBlurState"] == 2
+    assert report["origWindowedBlurGate"] == 0
+    assert report["zDuringFreeze"] == report["zBeforeFreeze"]
+    assert report["zAfterUnfreeze"] > report["zBeforeFreeze"]
+    assert report["origWindowedBlurAudio"] == [1]
+    assert report["origRefocusAudio"] == [1, 0]
+    assert report["origFullscreenBlurState"] == 3
+    assert report["origFullscreenBlurGate"] == 1
