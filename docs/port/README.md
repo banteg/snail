@@ -454,7 +454,9 @@ records) and AUTUMN (no falling) do nothing. A last high-score name of
 Challenge or Time Trial run from the pause menu records no score. High Scores
 cycles Postal, Challenge and Pro and reopens on the table last shown, also
 after a Pro name entry and a restart; Challenge replays fade out before they
-start. A Time Trial finish shows the continue prompt and, on a new best time
+start, and all replays show Android's bottom-left caption, fade out when
+dismissed, and leave 2 s after the delivery summary appears. A Time Trial
+finish shows the continue prompt and, on a new best time
 for the route, a blinking "NEW FASTEST TIME!" with the Perfect jingle.
 
 Mobile campaign progress and scores use `SnailMailMobile.cfg` and

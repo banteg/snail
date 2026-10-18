@@ -561,11 +561,138 @@ void cRSubTracks::Init(char* filename)
     extras_map_level_paths(this);
 }
 
+namespace {
+int g_replay_caption_index = 0;
+float g_replay_caption_progress = 0.0f;
+float g_replay_caption_alpha = 0.0f;
+char g_replay_caption_text[64] = "";
+float g_replay_summary_timer = 0.0f;
+bool g_replay_exit_pending = false;
+
+void reset_replay_overlay()
+{
+    g_replay_caption_index = 0;
+    g_replay_caption_progress = 0.0f;
+    g_replay_caption_alpha = 0.0f;
+    g_replay_caption_text[0] = 0;
+    g_replay_summary_timer = 0.0f;
+    g_replay_exit_pending = false;
+}
+}  // namespace
+
+// Android's cRSubGame::AI (00082214) cycles a bottom-left replay caption in
+// 240-tick phases instead of drawing the PC's Play icon, fades out when a
+// replay is clicked or latched away, and ends the replay 120 ticks (2 s) after
+// the delivery summary reaches COMPLETION_STATE_SUMMARY_ACTIVE.
+void extras_draw_replay_caption(cRSubGame* subgame)
+{
+    g_replay_caption_progress += 0.00416666688f; // 1/240 (0x3b888889)
+    float envelope;
+    if (g_replay_caption_progress > 1.0f) {
+        g_replay_caption_progress = 0.0f;
+        ++g_replay_caption_index;
+        envelope = 0.0f;
+    } else if (g_replay_caption_progress < 0.2f) {
+        envelope = g_replay_caption_progress / 0.2f;
+    } else if (g_replay_caption_progress > 0.8f) {
+        envelope = (1.0f - g_replay_caption_progress) / 0.2f;
+    } else {
+        envelope = 1.0f;
+    }
+
+    g_replay_caption_text[0] = 0;
+    cRSubSolution* record = subgame->selected_level_record;
+    switch (g_replay_caption_index) {
+    case 0:
+    case 4:
+    default:
+        g_replay_caption_index = 0;
+        Rstrcpy(
+            g_replay_caption_text,
+            (char*)(subgame->level_mode == 4 ? "Replay: Time Trial" : "Replay: Challenge"));
+        break;
+    case 1:
+        snprintf(
+            g_replay_caption_text, sizeof(g_replay_caption_text),
+            "Player: %s", record ? record->player_name : "");
+        break;
+    case 2:
+        if (subgame->level_mode == 4) {
+            g_replay_caption_index = 0;
+        } else {
+            snprintf(
+                g_replay_caption_text, sizeof(g_replay_caption_text),
+                "Difficulty: %i%%", record ? record->challenge_difficulty_value : 0);
+        }
+        break;
+    case 3:
+        snprintf(
+            g_replay_caption_text, sizeof(g_replay_caption_text),
+            "Speed: %i%%", record ? record->challenge_speed_value : 0);
+        break;
+    }
+
+    g_replay_caption_alpha = envelope * 0.8f;
+    tColour color;
+    float out_x = 0.0f, out_y = 0.0f, out_w = 0.0f, out_h = 0.0f;
+    FontType(
+        g_replay_caption_text, 0, 1.0f, 20.0f, 440.0f,
+        &out_x, &out_y, &out_w, &out_h,
+        0.0f, 0, 0, 0.0f, 0x1000000,
+        color.Set(1.0f, 1.0f, 1.0f, g_replay_caption_alpha), 0, 0);
+}
+
+bool extras_replay_exit_ready(cRSubGame* subgame)
+{
+    bool request_exit = false;
+    if (subgame->selected_level_record_active != 0
+        && subgame->completion.state == COMPLETION_STATE_SUMMARY_ACTIVE
+        && g_game->fade.state == 0) {
+        g_replay_summary_timer += 0.00833333377f; // 1/120 (0x3c088889)
+        if (g_replay_summary_timer > 1.0f)
+            request_exit = true;
+    } else if (subgame->completion.state != COMPLETION_STATE_SUMMARY_ACTIVE) {
+        g_replay_summary_timer = 0.0f;
+    }
+
+    if ((subgame->selected_level_record_active != 0
+            && subgame->pause_fade == 0.0f
+            && (subgame->player.control_source->control_flags_a
+                    & INPUT_BUTTON_PRIMARY)
+                != 0)
+        || g_game->intro.hide_for_replay_latch != 0) {
+        request_exit = true;
+    }
+
+    if (request_exit && g_game->fade.state == 0) {
+        g_replay_exit_pending = true;
+        g_game->fade.Start(0);
+    }
+
+    if (g_replay_exit_pending && g_game->fade.state == 4) {
+        g_replay_exit_pending = false;
+        return true;
+    }
+    return false;
+}
+
+__attribute__((export_name("snail_replay_caption")))
+const char* extras_replay_caption()
+{
+    return g_replay_caption_text;
+}
+
+__attribute__((export_name("snail_replay_caption_alpha")))
+float extras_replay_caption_alpha()
+{
+    return g_replay_caption_alpha;
+}
 // Each level starts with no trampoline rings and lays its Padding afresh.
 void cRSubGame::StartLevel(int level_index)
 {
     extras_clear_tramp_rings();
     extras_begin_level_build();
+    reset_replay_overlay();
     subgame_start_level_recovered(this, level_index);
 }
 
