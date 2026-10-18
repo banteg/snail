@@ -314,6 +314,28 @@ uint32_t w2c_wasi__snapshot__preview1_path_filestat_get(w2c_wasi__snapshot__prev
     return ERRNO_SUCCESS;
 }
 
+uint32_t w2c_wasi__snapshot__preview1_path_unlink_file(w2c_wasi__snapshot__preview1* wasi, uint32_t fd,
+    uint32_t path_pointer, uint32_t path_length)
+{
+    std::string path;
+    if (!resolve(wasi->state, fd, guest_string(wasi, path_pointer, path_length), &path))
+        return ERRNO_BADF;
+    if (unlink(path.c_str()) != 0)
+        return wasi_errno(errno);
+    return ERRNO_SUCCESS;
+}
+
+uint32_t w2c_wasi__snapshot__preview1_path_remove_directory(w2c_wasi__snapshot__preview1* wasi, uint32_t fd,
+    uint32_t path_pointer, uint32_t path_length)
+{
+    std::string path;
+    if (!resolve(wasi->state, fd, guest_string(wasi, path_pointer, path_length), &path))
+        return ERRNO_BADF;
+    if (rmdir(path.c_str()) != 0)
+        return wasi_errno(errno);
+    return ERRNO_SUCCESS;
+}
+
 uint32_t w2c_wasi__snapshot__preview1_fd_readdir(w2c_wasi__snapshot__preview1* wasi, uint32_t fd, uint32_t buffer,
     uint32_t length, uint64_t cookie, uint32_t used)
 {

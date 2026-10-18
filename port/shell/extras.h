@@ -23,6 +23,8 @@ cRSubSegment* extras_next_padding();
 void extras_begin_level_build();
 class cRSubGame;
 void extras_skirt_colour_random(cRSubGame* subgame, float t);
+void extras_draw_replay_caption(cRSubGame* subgame);
+bool extras_replay_exit_ready(cRSubGame* subgame);
 // For --trace: Padding segments in the last level built.
 int extras_padding_pick_count();
 struct cRSubLoc;

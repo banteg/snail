@@ -234,6 +234,12 @@ int main(int argc, char** argv)
             SDL_SetWindowRelativeMouseMode(window, on);
     };
     Uint64 last = SDL_GetTicksNS();
+    auto sync_window_state = [&]() {
+        SDL_WindowFlags wflags = SDL_GetWindowFlags(window);
+        bool visible = !(wflags & (SDL_WINDOW_MINIMIZED | SDL_WINDOW_HIDDEN));
+        bool focused = (wflags & SDL_WINDOW_INPUT_FOCUS) != 0;
+        w2c_game_snail_window_state(&game, visible ? 1 : 0, focused ? 1 : 0);
+    };
     bool running = true;
     while (running) {
         SDL_Event event;
@@ -272,6 +278,23 @@ int main(int argc, char** argv)
                 for (int code = 0; code < 256; ++code)
                     w2c_game_snail_key(&game, (uint32_t)code, 0);
                 trap(false);
+                sync_window_state();
+                break;
+            case SDL_EVENT_WINDOW_FOCUS_GAINED:
+                sync_window_state();
+                last = SDL_GetTicksNS();
+                break;
+            case SDL_EVENT_WINDOW_MINIMIZED:
+                for (int code = 0; code < 256; ++code)
+                    w2c_game_snail_key(&game, (uint32_t)code, 0);
+                trap(false);
+                sync_window_state();
+                if (w2c_game_snail_frame(&game, 1.0f / 60.0f) != 0)
+                    running = false;
+                break;
+            case SDL_EVENT_WINDOW_RESTORED:
+                sync_window_state();
+                last = SDL_GetTicksNS();
                 break;
             case SDL_EVENT_WINDOW_ENTER_FULLSCREEN:
             case SDL_EVENT_WINDOW_LEAVE_FULLSCREEN:

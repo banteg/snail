@@ -77,8 +77,16 @@ def test_mobile_tutorial_course_shows_the_pc_text_for_its_voice_clips():
     # The PC voice clips' words, for the mouse.
     assert 'Message="Hi! I\'m Turbo the Snail.>Steer } with the mouse!"' in tutorial
     assert 'Message="Asteroids slow me down.> Hold the Mouse Button> to shoot ]"' in tutorial
-    assert "Tilt" not in tutorial.replace("MessageB", "")
+    assert "Tilt" not in tutorial
+    assert "SampleB" not in tutorial and "MessageB" not in tutorial
     assert "Touch anywhere" not in tutorial
+    # Segment option tails must fit LevelDefinitionParseBuffers::line_options[128].
+    option_lengths = [
+        len(line.split(" ", 2)[2])
+        for line in tutorial.splitlines()
+        if line.startswith("Tutorial ") and len(line.split(" ", 2)) == 3
+    ]
+    assert option_lengths and max(option_lengths) < 128
 
 
 @pytest.mark.skipif(
