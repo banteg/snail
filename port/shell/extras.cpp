@@ -235,13 +235,30 @@ void cRSMTracks::Import()
     free(merged);
 }
 
+// A score table keeps each run's replay, which plays back only on the courses
+// and rules it was recorded under. Ultimate's table names carry a version, so a
+// rule change that would make stored replays drift starts fresh tables by
+// bumping it; campaign progress keeps its file.
+const int kUltimateScoreVersion = 2;
+
 const char* extras_save_path(const char* name)
 {
-    if (g_port_ultimate) {
-        if (path_equals_ignore_case(name, "SnailMail.cfg")) return "SnailMailMobile.cfg";
-        if (path_equals_ignore_case(name, "ScoreA.dat")) return "ScoreMobileA.dat";
-        if (path_equals_ignore_case(name, "ScoreB.dat")) return "ScoreMobileB.dat";
-        if (path_equals_ignore_case(name, "ScoreC.dat")) return "ScoreMobileC.dat";
+    if (!g_port_ultimate)
+        return name;
+    if (path_equals_ignore_case(name, "SnailMail.cfg"))
+        return "SnailMailMobile.cfg";
+    static const char* const kTables[][2] = {
+        {"ScoreA.dat", "ScoreMobileA"},
+        {"ScoreB.dat", "ScoreMobileB"},
+        {"ScoreC.dat", "ScoreMobileC"},
+        {"ScorePro.dat", "ScorePro"},
+    };
+    static char path[32];
+    for (int i = 0; i < (int)(sizeof(kTables) / sizeof(kTables[0])); ++i) {
+        if (path_equals_ignore_case(name, kTables[i][0])) {
+            snprintf(path, sizeof(path), "%s-v%d.dat", kTables[i][1], kUltimateScoreVersion);
+            return path;
+        }
     }
     return name;
 }
