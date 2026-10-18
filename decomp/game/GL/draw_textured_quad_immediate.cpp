@@ -105,11 +105,9 @@ void draw_textured_quad_immediate(
             vertices[3].diffuse = *(unsigned int*)&packed;
         }
     } else {
-        float half_width = width * 0.5f;
-        float center_x = x0 + half_width;
-        float half_height = height * 0.5f;
-        float center_y = y0 + half_height;
-        float radius = Sqrt(half_width * half_width + half_height * half_height)
+        float center_x = x0 + width * 0.5f;
+        float center_y = y0 + height * 0.5f;
+        float radius = Sqrt((width * 0.5f) * (width * 0.5f) + (height * 0.5f) * (height * 0.5f))
             * 1.41400003f;
         float sin_radius = Sin(rotation) * radius;
         float cos_radius = Cos(rotation) * radius;

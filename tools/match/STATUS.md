@@ -4,7 +4,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 **646/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **231721/294505** bytes (**78.68%**) are proof-grade, and overall fuzzy is **99.56%**.
 
-**116/120** platform helpers matched, **120/120** have a scratch, **19889/22833** bytes (**87.11%**) are proof-grade, and overall fuzzy is **98.41%**. Platform progress is tracked separately from port-relevant totals.
+**117/120** platform helpers matched, **120/120** have a scratch, **21057/22833** bytes (**92.22%**) are proof-grade, and overall fuzzy is **98.49%**. Platform progress is tracked separately from port-relevant totals.
 
 **3** third-party functions (**568** curated-extent bytes) remain visible for context and are excluded from both progress totals.
 
@@ -775,7 +775,7 @@ Proof blockers (overlapping extents): encoding: 4 functions / 10944 bytes; instr
 | 🖥 | initialize_direct3d_renderer | 0x4129c0 | 48 | 12/12 | 100.00% | 12/12 | 7 ok |  | replaceable-platform |
 | 🖥 | set_blend_mode | 0x412d00 | 336 | 92/92 | 100.00% | 92/92 | 16 ok |  | replaceable-platform |
 | 🖥 | set_immediate_blend_mode | 0x412e50 | 480 | 136/137 | 88.00% | 2/137 | 1 mismatch, 1 unaudited, 21 ok |  | replaceable-platform |
-| 🖥 | draw_textured_quad_immediate | 0x413030 | 1168 | 331/332 | 98.34% | 111/332 | 26 ok |  | replaceable-platform |
+| 🖥 | draw_textured_quad_immediate | 0x413030 | 1168 | 332/332 | 100.00% | 332/332 | 26 ok |  | replaceable-platform |
 | 🖥 | render_game_frame_scene | 0x4134c0 | 92 | 24/24 | 100.00% | 24/24 | 8 ok |  | replaceable-platform |
 | 🖥 | present_backbuffer | 0x413520 | 20 | 9/9 | 100.00% | 9/9 | 1 ok |  | replaceable-platform |
 | 🖥 | begin_sprite_depth_render_state | 0x413540 | 272 | 60/60 | 100.00% | 60/60 | 7 ok |  | replaceable-platform |
