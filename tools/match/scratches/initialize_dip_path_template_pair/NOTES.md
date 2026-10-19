@@ -1,3 +1,15 @@
+## 2026-10-19: `STOREREG` mechanism of `[esp+0x14]` and single-index `i`
+
+No source change (still **99.85%**, 655/655, prefix 100). C2 trace of `build_live_ranges` (`C2+0x2cac2`) and `score_live_ranges` (`C2+0x22463`) explains the pre-loop `mov dword [esp+0x14], ebx` and 3 of the 17 SIB bytes:
+
+- **`[esp+0x14]` is `STOREREG` (`0x164`) of `i`, not an authored `curve_phase_index` variable.**
+  - With a single loop counter `i` (`int i = 0;` before the loop, `(float)i` at the top of the loop, `i + 1` passed to `initialize_primary_curve`, and `++i` at the loop latch), `cse1` (`C2+0x6b7e`) recognizes `++i` (`i = i + 1`) at the latch as the same `i + 1` expression already computed into CSE temporary `0x52e` inside `initialize_primary_curve`, and rewrites the latch to `i = temp_0x52e`.
+  - Because `i` is a register candidate (`ebx`) that also has a memory-only `fild [i]` read at the top of the loop, `build_live_ranges` (`C2+0x2cac2`) inserts `0x164` (`STOREREG [i], ebx`) after every definition of `i`: once after `i = 0` in the preheader (`mov dword [esp+0x14], ebx` at instruction 100) and once after `i = temp_0x52e` at the latch (`mov dword [esp+0x14], ebx` at instruction 257). `stack.c` then packs `i`'s `STOREREG` home and `angle` (live only between `fild [esp+0x14]` and `initialize_secondary_curve_position`) into the same slot `[esp+0x14]`.
+  - Removing `curve_phase_index` also shifts `initialize_primary_curve`'s `bank` reference parameter from `local 0x1f9` (`1 mod 8`, key `0x12007 > 0x10200`) to `local 0x1f8` (`0 mod 8`, key `0x10007 < 0x10200`), fixing all three SIB bytes inside `initialize_primary_curve` (`+0x256, +0x27b, +0x286`, reducing SIB diffs from 17 to 14).
+- **Why dropping `curve_phase_index = 0` flips `ebp` and `ebx` (86.18%, 647/655).**
+  - In Block 0 (lines 45..114, one basic block with $w = 1$ and $P = 15$), `curve_phase_index = 0` was an explicit `mov [mem], 0` before `promote_immediates_to_candidates`, contributing $1 \times 15 \times 1 = +15$ to `const=0`'s priority (`148` vs `133` when `STOREREG [i], ebx` replaces it after promotion).
+  - After `sample_offset` (`id=32`, `prio=120`) takes `ebx` in the vertex loop, `vertices` (`id=22`, `prio=120`) splits into `id=87` (`allowed = {ebp}`, `prio = 144`). With `const=0` at `148 > 144`, `const=0` takes `ebp` and `vertices` stays in memory; at `133 < 144`, `vertices` takes `ebp` (eliminating 8 reloads: 647 instructions) and `const=0` takes `ebx`. Bumping `const=0`'s piece from `133` to `148` in the observer on the single-`i` source produces **100.00% normalized (655/655, prefix 655)** with 14 SIB bytes (`temp(this+0x58)` `n=24` and `temp(this+0x5c)` `n=44`, both `0 mod 4`).
+
 ## 2026-10-16: msvc6.3 whole-TU retest
 
 Unchanged at **99.85%**, 655/655, prefix 100. `globalregs.py` on the live

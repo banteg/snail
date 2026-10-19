@@ -635,3 +635,15 @@ copies never produce B); the inline budget (20 expansions, no refusals,
 0xf2 alias classes). The stack packer would append B and C as weight-4
 12-byte slots after A with no density re-sort, so the frame residual is
 exactly B + C.
+
+## 2026-10-19: C2 kill-set and destination-fold audit for `B` (`C2+0x70c7`, `0x7645`, `0x651a`)
+
+No source change (still **92.97%**, structural 97.61%, 21/14, 729/736). Disassembly of `globopt_run` (`C2+0x13615`), `find_available_copy_source` (`C2+0x70c7`), `avail_transfer_tuple` (`C2+0x7645`), and `C2+0x651a` in msvc6.3 `C2.DLL` narrows how `B.x` can be rewritten while `B.y`/`B.z` survive:
+
+- **Why a direct `NK_SYM` (`kind = 2`) write `C.x` never kills direct `NK_SYM` field copies `B.y = A.y` / `B.z = A.z`, even when address-taken.**
+  - `0x107077bf..0x107077e3` walks sibling parts of `C`'s parent symbol with an explicit byte-range overlap check (`0x107077ca: cmp ecx, edx; jge`), so `[0, 4)` never kills `[4, 8)` or `[8, 12)` on the same symbol.
+  - In `C2+0x651a`, an address-taken (`flags5 & 2`) direct stack local (`NK_SYM`, `[ebp] != 0` at `0x10706562`) adds its copy bit only to `g_alias_class_kill_sets2` (`0x1079961c`), not to `g_symbol_own_alias_class` (`0x10799474`), whereas `0x14c` pointer dereferences (`NK_MEM`, `[ebp] == 0`) add to both.
+  - In `avail_transfer_tuple` (`C2+0x7645`), a direct `NK_SYM` write to an address-taken symbol subtracts `g_symbol_own_alias_class` (`0x10799474`), whereas only a `NK_MEM` (`kind = 6`) pointer write (`0x1070780e`) subtracts `g_alias_class_kill_sets2` (`0x1079961c`).
+- **Two remaining C2 paths for `B`.**
+  1. *Alias kill via `0x1079961c` or `0x10799474`:* `C.x` is written through `NK_MEM` (`kind = 6`) while `B` or `A` is in an intersecting alias class (verified in diagnostic `work_m2`: `alias_classes_intersect` `C2+0x2e1c` ignores field offsets across distinct primary classes and kills `B.y`/`B.z` right after `B.x` is rewritten), or `B.y`/`B.z` are `NK_MEM` copies killed by an address-taken `NK_SYM` write `C.x`.
+  2. *Asymmetric `+0` vs `+4`/`+8` destination folding before `cse1`:* `canonicalize` (`C2+0x1a701`) folds `*(&b + 0)` to `b.x` (`kind = 2`) immediately, whereas `*(&b + 4)` and `*(&b + 8)` use `t = &b + 4` (`0x16d` `ADD`), which pre-`globopt` `0x1070f349` (`0x1070b425`) refuses to fold on the destination side until `t`'s def becomes `0x15b` inside `globopt_run` (`0x107129ec`). Entering `cse1`, `b.x` is already `kind = 2` while `b.y`/`b.z` stores are still `kind = 6` (`[b.y + 0x3c] == 0`).
