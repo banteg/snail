@@ -1,4 +1,4 @@
-"""Build SnailMailExtras.dat from the extracted Android release assets."""
+"""Build SnailMailExtras.dat from Android content and matching iPhone HD art."""
 
 from __future__ import annotations
 
@@ -6,13 +6,14 @@ import io
 import re
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageMath
 
 from .archive import parse_archive_index, read_archive_entry, write_archive
 
 ANDROID_ROOT = Path("artifacts/android/asm_extracted")
 # The APK's loose assets, beside the asm.mp3 archive that asm_extracted unpacks.
 APK_ASSETS = Path("artifacts/android/unpacked/com.sandlotgames.snailmail.1/assets")
+IOS_ROOT = Path("artifacts/asset-scout/src/ios19/Payload/iSM103010_1.app")
 OUTPUT = Path("artifacts/bin/SnailMailExtras.dat")
 PC_ARCHIVE = Path("artifacts/bin/SnailMail.dat")
 TUTORIAL = "LEVELS/TUTORIAL.TXT"
@@ -48,6 +49,58 @@ def split_surface_strip(strip_bytes: bytes) -> tuple[bytes, bytes]:
     return tga_rgb24(track), tga_rgb24(slide)
 
 
+def match_surface_palette(high: Image.Image, reference: Image.Image) -> Image.Image:
+    """Keep HD detail, transferring the Android tile's low-resolution colours.
+
+    iPhone 1.9's red set is darker and more magenta than Android's. Transfer
+    the signed colour difference at Android resolution back onto the HD tile,
+    rather than enlarging Android or recolouring the warning arrows by hand.
+    Work on each tile separately so adjacent atlas tiles cannot bleed into it.
+    """
+    reduced = high.resize(reference.size, Image.Resampling.LANCZOS)
+    channels = []
+    for original, target, source in zip(
+        high.split(), reference.split(), reduced.split(), strict=True,
+    ):
+        delta = ImageMath.lambda_eval(
+            lambda images: images["target"] - images["source"],
+            target=target.convert("F"),
+            source=source.convert("F"),
+        ).resize(high.size, Image.Resampling.BILINEAR)
+        channels.append(
+            ImageMath.lambda_eval(
+                lambda images: images["original"] + images["delta"] + 0.5,
+                original=original.convert("F"), delta=delta,
+            ).convert("L")
+        )
+    return Image.merge("RGB", channels)
+
+
+def hd_surface_tiles(
+    ios_bytes: bytes, android_bytes: bytes, *, match_palette: bool,
+) -> tuple[bytes, bytes]:
+    """Decode iPhone 1.9's RGBA-ordered TGA atlas into two 256px PC tiles.
+
+    All seven atlases use OpenGL channel order, including the 24-bit sets 5/6.
+    Once R/B are swapped, sets 0-3 reproduce PC Track/Slide0-3 pixel for pixel.
+    """
+    raw = Image.open(io.BytesIO(ios_bytes)).convert("RGB")
+    red, green, blue = raw.split()
+    high = Image.merge("RGB", (blue, green, red))
+    reference = Image.open(io.BytesIO(android_bytes)).convert("RGB")
+    if high.size != (1024, 256) or reference.size != (512, 128):
+        raise ValueError(f"unexpected HD/Android surface sizes: {high.size}, {reference.size}")
+    tiles = []
+    for index in range(2):
+        tile = high.crop((index * 256, 0, (index + 1) * 256, 256))
+        if match_palette:
+            tile = match_surface_palette(
+                tile, reference.crop((index * 128, 0, (index + 1) * 128, 128)),
+            )
+        tiles.append(tga_rgb24(tile))
+    return tiles[0], tiles[1]
+
+
 def tutorial_with_pc_messages(mobile: bytes, pc: bytes) -> bytes:
     """The mobile tutorial course, each line showing the PC text for the voice clip it plays.
 
@@ -62,12 +115,17 @@ def tutorial_with_pc_messages(mobile: bytes, pc: bytes) -> bytes:
     return VOICED_MESSAGE.sub(pc_message, mobile.decode("latin-1")).encode("latin-1")
 
 
-def build_extras_files(android_root: Path, pc_archive: Path, apk_assets: Path) -> dict[str, bytes]:
-    """Mobile-only assets converted to PC archive conventions."""
+def build_extras_files(
+    android_root: Path, pc_archive: Path, apk_assets: Path, ios_root: Path,
+) -> dict[str, bytes]:
+    """Android content with matching HD art, converted to PC conventions."""
     files: dict[str, bytes] = {}
     for index in (4, 5, 6):
         surface_path = android_root / f"OBJECTS/WORLD00/SURFACE{index}.PNG"
-        track_tga, slide_tga = split_surface_strip(surface_path.read_bytes())
+        hd_path = ios_root / f"objects_world00_hi_surface{index}.tga"
+        track_tga, slide_tga = hd_surface_tiles(
+            hd_path.read_bytes(), surface_path.read_bytes(), match_palette=index == 4,
+        )
         files[f"OBJECTS/WORLD00/TRACK{index}.TGA"] = track_tga
         files[f"OBJECTS/WORLD00/SLIDE{index}.TGA"] = slide_tga
     fringe_path = android_root / "SPRITES/FRINGECOLOURS.TGA"
@@ -96,7 +154,8 @@ def build_extras_files(android_root: Path, pc_archive: Path, apk_assets: Path) -
         jpg_p = android_root / f"BACKGROUNDS/{stem}.JPG"
         if txt_p.exists() and jpg_p.exists():
             files[f"BACKGROUNDS/{stem}.TXT"] = txt_p.read_bytes()
-            im = Image.open(io.BytesIO(jpg_p.read_bytes())).convert("RGB").resize((512, 256), Image.Resampling.BILINEAR)
+            # These skies use full-image normalized UVs: keep every source row.
+            im = Image.open(io.BytesIO(jpg_p.read_bytes())).convert("RGB")
             files[f"BACKGROUNDS/{stem}.TGA"] = tga_rgb24(im)
     starmap_txt = android_root / "BACKGROUNDS/STARMAPPRO.TXT"
     starmap_jpg = android_root / "BACKGROUNDS/STARMAPPROBG.JPG"
@@ -123,10 +182,13 @@ def build_extras_files(android_root: Path, pc_archive: Path, apk_assets: Path) -
 
 
 def generate(
-    root: Path, *, out: Path | None = None, android_root: Path | None = None, apk_assets: Path | None = None
+    root: Path, *, out: Path | None = None, android_root: Path | None = None,
+    apk_assets: Path | None = None, ios_root: Path | None = None,
 ) -> Path:
     target = out or (root / OUTPUT)
     source = android_root or (root / ANDROID_ROOT)
-    files = build_extras_files(source, root / PC_ARCHIVE, apk_assets or (root / APK_ASSETS))
+    files = build_extras_files(
+        source, root / PC_ARCHIVE, apk_assets or (root / APK_ASSETS), ios_root or (root / IOS_ROOT),
+    )
     write_archive(target, files)
     return target

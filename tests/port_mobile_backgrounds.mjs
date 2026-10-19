@@ -2,14 +2,14 @@ import { LAYOUT, openMobileGame } from './port_mobile_runtime.mjs';
 
 const expected = JSON.parse(process.argv[3]);
 let exports, recording = false, textureId, vertices;
-const ids = {};
+const ids = {}, sizes = {};
 const game = await openMobileGame(process.argv[2], {
   ready(e) { exports = e; },
   texture_create(id, width, height, pixels) {
     const memory = Buffer.from(exports.memory.buffer);
     const signature = memory.subarray(pixels, pixels + 64).toString('hex');
     for (const [name, reference] of Object.entries(expected))
-      if (reference === signature) ids[name] = id;
+      if (reference === signature) { ids[name] = id; sizes[name] = [width, height]; }
   },
   draw(primitive, address, count, state) {
     if (!recording) return;
@@ -48,7 +48,7 @@ for (const [name, ultimate, flip] of [
   if (!vertices.length) throw Error(`no draws for ${name}`);
   const xs = vertices.map(v => v.x), us = vertices.map(v => v.u), vs = vertices.map(v => v.v);
   const left = Math.min(...xs), right = Math.max(...xs);
-  results.push({ name, ultimate, flip, count: vertices.length,
+  results.push({ name, ultimate, flip, size: sizes[name], count: vertices.length,
     minU: Math.min(...us), maxU: Math.max(...us), minV: Math.min(...vs), maxV: Math.max(...vs),
     leftU: vertices.find(v => v.x === left).u, rightU: vertices.find(v => v.x === right).u });
 }

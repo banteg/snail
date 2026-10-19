@@ -369,11 +369,14 @@ in one game.
   (`port/wrapped.txt`) delegates to the recovered function unchanged.
 
 `uv run snail port extras` builds `artifacts/bin/SnailMailExtras.dat`
-from the extracted Android assets: splitting `OBJECTS/WORLD00/SURFACE4`–`6.PNG`
-into PC-layout 24-bit `Track4`–`6.tga` and `Slide4`–`6.tga` textures,
-converting the Pro backgrounds (`SpacePro`, `SpacePro2`, `StarmapProbg`,
+from the extracted Android assets and iPhone 1.9 HD surface atlases. The latter
+provide native 256×256 `Track4`–`6.tga` and `Slide4`–`6.tga` tiles, matching the
+PC textures' resolution; set 4 is colour-matched to Android's red palette.
+The default iPhone source is
+`artifacts/asset-scout/src/ios19/Payload/iSM103010_1.app` (`--ios-root` overrides it).
+It also converts the Pro backgrounds (`SpacePro`, `SpacePro2`, `StarmapProbg`,
 `SplashPro_A`/`_B`) and `Galaxy/*Pro.tga` overlays to PC TGA conventions, and
-packing `Sprites/FringeColours.tga`, `Objects/TrampRing/`, `Galaxy/_GalaxyPro.txt`,
+packs `Sprites/FringeColours.tga`, `Objects/TrampRing/`, `Galaxy/_GalaxyPro.txt`,
 `Intro/Credits.txt` (the mobile staff and a 45 s crawl instead of 35 s),
 `X/_Animation.txt` (the falling snail swings between its two poses every
 second instead of curling once over six), all 65 mobile level files and all
@@ -385,6 +388,10 @@ tutorial course keeps its own speed, segments and timing, but each line shows
 the PC text for the voice clip it plays: the port plays the PC clips, which
 say to steer with the mouse and hold its button to shoot, where the mobile
 text says tilt and touch.
+
+Both Pro skies retain their source 512×512 pixels. See
+[asset upgrades](asset-upgrades.md) for source hashes, palette conversion,
+and the other mobile textures checked for possible upgrades.
 
 The narrow hooks (`port/wrapped.txt`, `port/shell/extras.cpp`,
 `port/shell/extras_paths.cpp`, `port/shell/extras_pro.cpp`) select the mobile

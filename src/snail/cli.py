@@ -665,11 +665,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     port_extras_parser = port_subparsers.add_parser(
         "extras",
-        help="Build artifacts/bin/SnailMailExtras.dat from the extracted Android release assets.",
+        help="Build artifacts/bin/SnailMailExtras.dat from Android content and iPhone 1.9 HD art.",
     )
     port_extras_parser.add_argument("--out", type=Path)
     port_extras_parser.add_argument("--android-root", type=Path)
     port_extras_parser.add_argument("--apk-assets", type=Path)
+    port_extras_parser.add_argument(
+        "--ios-root", type=Path, help="Extracted iPhone 1.9 app directory (HD surface atlases).",
+    )
     port_serve_parser = port_subparsers.add_parser(
         "serve", help="Serve the browser build (port/web/, snail-web.wasm, SnailMail.dat) on localhost."
     )
@@ -1865,7 +1868,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             from . import port_extras
 
             out = port_extras.generate(
-                REPO_ROOT, out=args.out, android_root=args.android_root, apk_assets=args.apk_assets
+                REPO_ROOT, out=args.out, android_root=args.android_root,
+                apk_assets=args.apk_assets, ios_root=args.ios_root,
             )
             print(f"{out}: {out.stat().st_size:,} bytes")
             return 0
