@@ -19,6 +19,18 @@ deflection-product operand order. Their source shape is still unresolved.
 The persistent collision-side carrier previously tested is behaviorally wrong
 and is not retained.
 
+## 2026-10-19: C2 mechanism corrections for the garbage gate and deflection Z product
+
+No source change (still **99.50%**, 695/694, prefix 417, 71 clean references). Direct C2 traces correct both mechanism explanations from 2026-10-16:
+
+- **Deflection Z product (`probe.z` is a Pool-B scalarized part, not a kind-6 displacement expression).**
+  - `addrorder.py --nodes 329` and `--nodes 331` show that `probe` (`local 0x2`) is scalarized into class-4 Pool-B part records (`^probe+0 z4`, `^probe+4 z4`, `^probe+8 z4`). `deflect_speed`, `probe.x`, and `probe.z` all reach the post-`globopt` commutative sort (`C2+0xd010` in 6.3) as kind-2 class-4 symbol leaves with cost `0x10000 | (id << 5)`.
+  - Pool-B slot IDs are allocated in order of first explicit IL reference in the reader: `probe.x` (`0x1ad`, cost `0x135a0`) is created at `if (probe.x < 0.0f)` in the garbage loop before `deflect_speed` (`0x1b8`, cost `0x13700`, created at `deflect_speed = velocity.Normalize()`), whereas `probe.z` (`0x1bc`, cost `0x13780`) is first referenced at `delta.z = -(deflect_speed * probe.z)` after `deflect_speed`. Native loads `deflect_speed` (`[esp+0x10]`) first in both X and Z.
+- **Garbage active-state comparison (`test ah, 1` is post-allocation; `C2+0x40279` and `C2+0x4032d` split `const=1`).**
+  - `passes.py` shows `fnstsw ax; test ah, 0x1` is lowered by `C2+0x34d29` *after* global register allocation (`C2+0x2fb58`), using a `k7` immediate `0x1`, and never participates in `build_live_ranges` or `score_live_ranges`.
+  - When the slug-loop byte-offset IV takes `ebx` at `prio=27`, `propagate_colour_to_neighbours` (`C2+0x24877`) sees `const=1` (`id=2`, byte-constrained due to 1-byte uses at `skip_one_tick == 1`, `path_follow.active == 1`, `slug_bounce_armed = 1`) with an empty `allowed` set and calls `C2+0x40279` (`demote_byte_uses_of_constant_range`), which demotes only 1-byte uses of `const=1` back to immediates.
+  - `C2+0x4032d` then runs a forward BFS (`C2+0x4059e`) from the first remaining 4-byte use of `const=1`. With `switch (garbage->state)` (`mov eax, [esi+0x84]; dec eax`), `B45` has no `const=1` reference, so `id=11` starts at `B51` (`collision_side = 1`) and `const=2` keeps `ebx` across `B38..B54`. With `if (garbage->state == 1)`, `B45` is a 4-byte use of `const=1`, and because uncoloured class-13 constants are skipped by the pressure counter (`C2+0x23bdf: cmp byte ptr [eax+4], 0xd; je`), integer pressure in `B46..B50` stays below 6 (no `0x1b` split marker), so the BFS connects `B45` through `B46..B50` to `B52..B65` into a single `ebx` range across the garbage loop.
+
 ## 2026-10-16: msvc6.3 whole-TU retest
 
 Unchanged at **99.50%**, 695/694, prefix 417, 71 clean references (Golb TU).

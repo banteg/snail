@@ -1,5 +1,21 @@
 # populate_runtime_track_cells_from_segments
 
+## 2026-10-19: Window 37 mechanism (reference spelling rejected) and C2 trace of Windows 32, 87, 168
+
+Source unchanged at **91.50%** normalized and **99.34%** structural (9/9 changed). An experimental spelling reached **91.58%** normalized and **99.42%** structural (**8/8** changed, 1,246/1,246 instructions, prefix 232, 165 clean references) in the whole SubGame unit under msvc6.3, but it was not adopted (below).
+
+- **Window 37 (mechanism found; the `float& rate = base_subgame_rate; rate = 1.0f;` spelling was rejected).**
+  - In `alias_collect_field_classes` (`C2+0x1afd0`), new constant-offset `(offset, size)` records on `this` (`class 0x62`, 27 records) are prepended to the class list and numbered `bit 0..30, 31` from the head (newest first). `[ebp+0x48]` (`base_subgame_rate = 1.0f`, first touched at L297) is the 2nd newest record (`bit 1`) and `[ebp+0x1b013c]` (`level_definition.random_enabled`, first touched at L97) holds `bit 8`.
+  - Pushing `[ebp+0x48]` into `bit 31` requires +30 distinct constant-offset `this` accesses after L297 (`57` total), which also pushes all 25 older `this` records (`bits 2..26`) into `bit 31` and breaks Windows 9, 10, 11, 14, and 22 (for example, `subgame_rebuild_selector` at position 19 and `replay_update_cursor` at position 20 in Window 9). Thus `[ebp+0x48]` and `[ebp+0x1b013c]` never shared `bit 31` in native.
+  - Binding `float& rate = base_subgame_rate; rate = 1.0f;` (the same idiom as `update_subgame` case 3; see [scheduler.md](../../c2/scheduler.md)) gives `[ebp+0x48]` bare class `@c3`, creating the `#1 -> #2 load` edge in Window 37 with no side effects on any other window or function. A reference bound only to perform one store reads as byte-shaped here, so it was reverted.
+- **Why Windows 32 and 168 flip on TU-wide frontend ID shifts.**
+  - `promote_immediates_to_candidates` (`C2+0x2795a`) inserts symbol-address constants (`&sym`, kind 3)—including `"Seed"` (`id=4`) and `"Track (%s) too long, Maximum Length %i"` (`id=12`)—into `g_constant_symbol_hash` (`0x1079d750`, 64 buckets) by `fe_id(sym->parent) % 64`.
+  - `create_web_live_ranges` (`0x1072f55d`) walks buckets `0..63` in ascending order and frees single-use constant candidates onto the LIFO `g_live_range_free_list`, from which `this` and `runtime_build_seed` pop their initial live-range IDs (`id=4` vs `id=12`). When `active_segment` (`id=154`) later takes `ebx`, `split_at_markers` (`0x107204d6`) processes `pending_split_set` in 32-range batches in ascending `id` order, reversing the `0x163` (`IL_RELOAD`) insertion order of `this` (`ebp`) and `build_row` (`edi`) when `"Seed"` and `"Track (%s)..."` cross mod-64 buckets.
+- **Why the lane-word load (`mov ecx, [esi+eax*4+0x3bfb08]`, Window 87) folds during `/G5` scheduling.**
+  - Entering the `/G5` list scheduler (`C2+0x3ad9b`), `#8` is still `mov ecx <- [esi+0x3bfb08]@c3, esi` after `#6 lea esi <- [esi+eax*4], esi, eax`.
+  - In `sched_break_dep_by_displacement` (`0x1073a9fb`), at `0x1073ac18..0x1073ad07`, an edge from `lea dst, [base+index*scale]` with `base == dst` (`esi == esi`) is refused break code `brk0x5` if and only if the edge also carries a WAR (`0x2`) or WAW (`0x4`) bit (`test al, 6 != 0`).
+  - In native, `#8` is `mov eax, [esi+0x3bfb08]` (writing `eax`, which `#6 lea esi, [esi+eax*4]` reads), so `#6 -> #8` has WAR bit `0x2` (`raw+war/2`) and `0x1073ad07` refuses `brk0x5`, keeping `lea esi, [esi+eax*4]` separate before `mov eax, [esi+0x3bfb08]` and freeing `ecx` for `xor ecx, ecx` at cycle 5 V-slot. In our candidate, `t3 = 3 * t2` (`lea eax, [eax+eax*2]`, Pick #73) is pruned to the local rotation allocator and takes `eax` (`cursor 2 -> 1`), so `#8` (`Pick #75`) takes `ecx` (`pure raw/2`, `brk0x5` allowed).
+
 ## 2026-10-19: back to 91.50% from a header id shift
 
 The source is unchanged. Its score drops from 91.66% to **91.50%** (1,246/1,246,
