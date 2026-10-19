@@ -37,7 +37,7 @@ const result = {};
 for (const kind of ['Track', 'Slide']) for (const index of [0, 4, 5, 6]) {
   const name = `Objects/World00/${kind}${index}.tga`;
   const needle = Buffer.from(name + '\\0');
-  const dimension = index === 0 ? 256 : 128;
+  const dimension = 256;
   // Read the registered cRTexture record, excluding identical path literals.
   // sprite.h fixes flags/width/height/name/mip_levels at 0/4/8/12/160.
   for (let p = memory.indexOf(needle); p >= 0; p = memory.indexOf(needle, p + 1)) {
