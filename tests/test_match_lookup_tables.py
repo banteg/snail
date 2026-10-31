@@ -10,15 +10,20 @@ from snail import match as m
 from snail import match_report as report
 
 
-def lookup_fixture(*, lookup=b'\x00\x01\x00', movzx=False, padding=b'\x90' * 8):
+def lookup_fixture(*, lookup=b'\x00\x01\x00', movzx=False, padding=b'\x90' * 8,
+                   before_ja=b'', stack_index=False):
     base = 0x401000
-    code = bytearray(bytes.fromhex('83f9007700'))
-    code[2] = len(lookup) - 1
+    code = bytearray((0x83, 0xfc if stack_index else 0xf9, len(lookup) - 1))
+    code += before_ja
+    branch = len(code)
+    code += bytes.fromhex('7700')
     if not movzx:
         code += bytes.fromhex('31d2')
     load = len(code)
-    code += bytes.fromhex('0fb69100000000' if movzx else '8a9100000000')
-    load_disp = load + (3 if movzx else 2)
+    code += bytes.fromhex('0fb6' if movzx else '8a')
+    code += bytes.fromhex('9424' if stack_index else '91')
+    load_disp = len(code)
+    code += bytes(4)
     dispatch = len(code)
     code += bytes.fromhex('ff249500000000')
     first = len(code)
@@ -27,7 +32,7 @@ def lookup_fixture(*, lookup=b'\x00\x01\x00', movzx=False, padding=b'\x90' * 8):
     code += bytes.fromhex('b801000000c3')
     default = len(code)
     code += bytes.fromhex('b8ffffffffc3')
-    code[4] = default - 5
+    code[branch + 1] = default - (branch + 2)
     jump_offset = len(code)
     destinations = (first, second) + (first,) * max(0, max(lookup) - 1)
     lookup_offset = jump_offset + 4 * len(destinations)
@@ -55,7 +60,7 @@ def lookup_fixture(*, lookup=b'\x00\x01\x00', movzx=False, padding=b'\x90' * 8):
         m.ReferenceSymbol(base + jump_offset, 'foo_jump', 'jump_table', size=4 * len(destinations)),
         m.ReferenceSymbol(base + lookup_offset, 'foo_lookup', 'lookup_table', size=len(lookup)),
     ))
-    offsets = dict(load=load, load_disp=load_disp, dispatch=dispatch, first=first,
+    offsets = dict(save=3, branch=branch, load=load, load_disp=load_disp, dispatch=dispatch, first=first,
                    default=default, jump=jump_offset, lookup=lookup_offset,
                    end=lookup_offset + len(lookup))
     return bytes(native), m.extract_object_function(obj, 'foo'), references, offsets
@@ -97,6 +102,37 @@ def test_lookup_byte_difference_cannot_be_hidden_by_reference_normalization():
     assert result.target_inline_data_ranges and result.candidate_inline_data_ranges
     assert not result.exact and not result.body_byte_exact
     assert result.masked_operand_audit.problem_count
+
+
+@pytest.mark.parametrize('movzx', [False, True])
+@pytest.mark.parametrize('scheduled,count', [
+    ('57', 1),                # push edi
+    ('51 57', 2),             # push ecx (the index), push edi
+    ('57 8b f1 c6 44 24 12 00', 3),  # push edi, mov esi,ecx, mov byte [esp+12h],0
+    ('57 89 4c 24 14', 2),    # push edi, mov [esp+14h],ecx
+    ('8d 6e 04', 1),          # lea ebp,[esi+4]
+])
+def test_lookup_allows_scheduled_instructions_between_compare_and_ja(movzx, scheduled, count):
+    target, candidate, references, at = lookup_fixture(movzx=movzx, before_ja=bytes.fromhex(scheduled))
+    result = compare(target, candidate, references)
+    assert result.target_inline_lookup_ranges == result.candidate_inline_lookup_ranges == (
+        (at['lookup'], at['end']),
+    )
+    assert result.body_byte_exact
+    assert result.target_instruction_count == (10 if movzx else 11) + count
+
+
+@pytest.mark.parametrize('intervening,stack_index', [
+    (b'\x47', False),      # inc edi changes the comparison flags.
+    (b'\x89\xc1', False),  # mov ecx,eax changes only the lookup index.
+    (b'\xb5\x01', False),  # mov ch,1 changes part of the lookup index.
+    (b'\x8d\x4e\x04', False),  # lea ecx,[esi+4] replaces the index.
+    (b'\x57', True),       # push edi changes ESP when ESP is the lookup index.
+])
+def test_lookup_rejects_clobbered_guard(intervening, stack_index):
+    target, candidate, references, _ = lookup_fixture(before_ja=intervening, stack_index=stack_index)
+    result = compare(target, candidate, references)
+    assert not result.target_inline_lookup_ranges and not result.candidate_inline_lookup_ranges
 
 
 @pytest.mark.parametrize('offset,replacement', [
@@ -144,9 +180,9 @@ def test_lookup_needs_curation_complete_storage_and_literal_valid_indices(mode):
     assert not any(x.text.startswith('db.lookup ') for x in side)
 
 
-@pytest.mark.parametrize('destination', ['load', 'dispatch', 'lookup'])
+@pytest.mark.parametrize('destination', ['save', 'branch', 'load', 'dispatch', 'lookup'])
 def test_code_branch_cannot_bypass_the_guard_or_enter_lookup_data(destination):
-    target, candidate, references, at = lookup_fixture()
+    target, candidate, references, at = lookup_fixture(before_ja=b'\x57')
     native, data = bytearray(target), bytearray(candidate.data)
     jump = bytes((0xeb, (at[destination] - at['first'] - 2) & 0xff))
     native[at['first']:at['first'] + 2] = data[at['first']:at['first'] + 2] = jump
