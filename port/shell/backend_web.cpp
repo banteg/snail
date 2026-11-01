@@ -10,6 +10,7 @@ WEB_IMPORT("texture_destroy") void web_texture_destroy(int id);
 WEB_IMPORT("clear") void web_clear(int flags, unsigned int color, float z, const RenderState* state);
 WEB_IMPORT("draw") void web_draw(int primitive, const RenderVertex* vertices, int count, const RenderState* state);
 WEB_IMPORT("set_fullscreen") void web_set_fullscreen(int enabled);
+WEB_IMPORT("pointer_warp") void web_warp_pointer(int x, int y);
 
 void backend_create_texture(int id, int width, int height, const unsigned char* rgba)
 {
@@ -32,6 +33,7 @@ void backend_draw(int primitive, const RenderVertex* vertices, int count, const 
 void backend_present() {}
 
 void backend_set_fullscreen(int enabled) { web_set_fullscreen(enabled); }
+void backend_warp_pointer(int x, int y) { web_warp_pointer(x, y); }
 
 // Audio goes to Web Audio in port/web/audio.js.
 #include "audio_backend.h"

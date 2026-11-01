@@ -150,20 +150,21 @@ void load_pro_progress_file()
     fclose(f);
 }
 
-void save_pro_high_scores_file()
+void save_top_ten_file(char* path, SubSolution* records)
 {
-    const int kBufferSize = 0x4c4b40;
+    const int kBufferSize = SUB_HIGH_SCORE_TOP_TEN_STORAGE_COUNT
+        * (SUB_SOLUTION_HEADER_BYTES + 5 * SUB_SOLUTION_RUN_RECORD_COUNT);
     char* bytes = (char*)allocate_tracked_memory(kBufferSize, (char*)"High Score Table");
     char* out = bytes;
     int bytes_used = 0;
     for (int i = 0; i < SUB_HIGH_SCORE_TOP_TEN_STORAGE_COUNT; ++i) {
-        if (g_pro_records[i].active == 1) {
-            bytes_used += g_pro_records[i].Save((SubSolutionHeader*)out);
+        if (records[i].active == 1) {
+            bytes_used += records[i].Save((SubSolutionHeader*)out);
             out = bytes + bytes_used;
         }
     }
     xor_decode_buffer_with_index(bytes, bytes_used);
-    write_file_bytes((char*)"ScorePro.dat", bytes, bytes_used);
+    write_file_bytes(path, bytes, bytes_used);
     free_tracked_memory(bytes);
 }
 
@@ -670,19 +671,21 @@ void cRSubHighScore::MiniSave(unsigned char save_mask)
         return;
     }
 
-    bool was_swapped = g_pro_state_swapped;
-    if (was_swapped)
-        swap_out_pro_state();
-
-    mini_save_recovered(this, save_mask);
+    // A browser autosave can run with the Pro route card open. Its live
+    // galaxy owns those widgets, so select the banks without swapping maps.
+    unsigned char pc_mask = save_mask;
+    if (g_pro_state_swapped && (save_mask & 1) != 0) {
+        save_top_ten_file((char*)"ScoreA.dat", g_postal_records_backup);
+        pc_mask &= ~1;
+    }
+    mini_save_recovered(this, pc_mask);
 
     if ((save_mask & 1) != 0 || (save_mask & 16) != 0) {
-        save_pro_high_scores_file();
-        save_pro_progress_file();
+        save_top_ten_file((char*)"ScorePro.dat",
+            g_pro_state_swapped ? postal_records : g_pro_records);
+        if (!g_pro_state_swapped) // save_config_file already wrote the live Pro progress
+            save_pro_progress_file();
     }
-
-    if (was_swapped)
-        swap_in_pro_state();
 }
 
 char* __cdecl save_config_file(char* file_name, void* bytes, int byte_count)

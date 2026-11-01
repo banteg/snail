@@ -18,22 +18,26 @@ export const OPTIONS = [
 ];
 
 export class Settings {
-  constructor(onChange, releasePointer) {
+  constructor(onChange, releasePointer, profileOverride) {
     this.onChange = onChange;
     this.releasePointer = releasePointer;
     this.values = { profile: "ultimate", ...Object.fromEntries(OPTIONS.map((option) => [option.id, true])) };
     try {
       Object.assign(this.values, JSON.parse(localStorage.getItem(KEY)) ?? {});
     } catch {}
+    this.profileOverride = PROFILES.find((profile) => profile.id === profileOverride)?.id;
+    if (!PROFILES.some((profile) => profile.id === this.values.profile)) this.values.profile = "ultimate";
     this.open = false;
     this.build();
   }
 
   get(id) {
+    if (id === "profile" && this.profileOverride) return this.profileOverride;
     return this.values[id];
   }
 
   set(changes) {
+    if ("profile" in changes) this.profileOverride = undefined;
     Object.assign(this.values, changes);
     try {
       localStorage.setItem(KEY, JSON.stringify(this.values));
@@ -65,7 +69,7 @@ export class Settings {
     panel.addEventListener("change", (event) => this.set({ [event.target.dataset.id]: event.target.checked }));
     for (const button of panel.querySelectorAll("[data-profile]")) {
       button.addEventListener("click", () => {
-        if (button.dataset.profile !== this.values.profile) this.set({ profile: button.dataset.profile });
+        if (button.dataset.profile !== this.get("profile")) this.set({ profile: button.dataset.profile });
       });
     }
     document.body.append(gear, panel);
@@ -76,9 +80,9 @@ export class Settings {
   sync() {
     for (const input of this.panel.querySelectorAll("input[data-id]")) input.checked = this.values[input.dataset.id];
     for (const button of this.panel.querySelectorAll("[data-profile]")) {
-      button.classList.toggle("active", button.dataset.profile === this.values.profile);
+      button.classList.toggle("active", button.dataset.profile === this.get("profile"));
     }
-    this.panel.querySelector(".profile-detail").textContent = PROFILES.find((profile) => profile.id === this.values.profile).detail;
+    this.panel.querySelector(".profile-detail").textContent = PROFILES.find((profile) => profile.id === this.get("profile")).detail;
   }
 
   toggle(open = !this.open) {

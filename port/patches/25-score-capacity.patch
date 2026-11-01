@@ -1,0 +1,33 @@
+At Click to Start the PC rewinds the sample cursor, but keeps incrementing
+the count. Ultimate discards the overwritten samples. Original keeps its
+valid replay counts, and uses the actual cursor when its count would exceed
+the recording's storage. Size the port's save workspace for the largest bank.
+
+--- a/decomp/game/SubGame/update_click_start.cpp
++++ b/decomp/game/SubGame/update_click_start.cpp
+@@ -9,1 +9,2 @@
++extern bool g_port_ultimate;
+ void set_input_controller_pointer_authored_xy(int slot, float authored_x, float authored_y);
+@@ -38,3 +39,6 @@
+         g_game->backdrop.unknown_660 = 1;
+-        if (g_game->subgame.replay_update_cursor > 8)
++        if (g_game->subgame.replay_update_cursor > 8) {
+             g_game->subgame.replay_update_cursor = 8;
++            if (g_port_ultimate)
++                g_game->subgame.current_high_score_record.replay_sample_count = 8;
++        }
+--- a/decomp/game/SubGame/complete_subgame.cpp
++++ b/decomp/game/SubGame/complete_subgame.cpp
+@@ -11,2 +11,6 @@
++    if (replay_update_cursor >= SUB_SOLUTION_RUN_RECORD_COUNT)
++        replay_update_cursor = SUB_SOLUTION_RUN_RECORD_COUNT - 1;
++    if (current_high_score_record.replay_sample_count >= SUB_SOLUTION_RUN_RECORD_COUNT)
++        current_high_score_record.replay_sample_count = replay_update_cursor;
+     current_high_score_record.run_records[replay_update_cursor].flags |= 0x08;
+     ++current_high_score_record.replay_sample_count;
+--- a/decomp/game/HighScore/save_high_scores_and_config.cpp
++++ b/decomp/game/HighScore/save_high_scores_and_config.cpp
+@@ -8,1 +8,2 @@
+-const int HIGH_SCORE_SAVE_BUFFER_SIZE = 0x4c4b40;
++const int HIGH_SCORE_SAVE_BUFFER_SIZE = SUB_HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT
++    * (SUB_SOLUTION_HEADER_BYTES + 5 * SUB_SOLUTION_RUN_RECORD_COUNT);

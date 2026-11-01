@@ -86,6 +86,14 @@ void input_add_wheel(int direction)
     g_mouse_wheel_delta[0] = direction > 0 ? 1 : -1;
 }
 
+void input_reset_buttons_and_keys()
+{
+    memset(g_keys, 0, sizeof(g_keys));
+    input_set_button(INPUT_MOUSE_LEFT, false);
+    input_set_button(INPUT_MOUSE_RIGHT, false);
+    g_mouse_wheel_delta[0] = 0;
+}
+
 int update_joystick_input(HWND) { return 0; }
 int consume_mouse_wheel_delta(int slot);       // @ 0x4077f0
 unsigned char read_left_mouse_button_state(int slot);   // @ 0x407810

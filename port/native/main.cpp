@@ -112,7 +112,20 @@ struct Cursor {
     }
 };
 
+Cursor g_cursor;
+
 }  // namespace
+
+extern "C" void w2c_snail_pointer_warp(w2c_snail* host, uint32_t x, uint32_t y)
+{
+    g_cursor.x = (float)x;
+    g_cursor.y = (float)y;
+    SDL_Window* window = host->window;
+    if (!SDL_GetWindowRelativeMouseMode(window) && SDL_GetMouseFocus() == window) {
+        float left, top, scale = Cursor::frame(window, &left, &top);
+        SDL_WarpMouseInWindow(window, left + x * scale, top + y * scale);
+    }
+}
 
 // The game's Fullscreen option (set_fullscreen_mode): fullscreen on the desktop's mode.
 extern "C" void w2c_snail_set_fullscreen(w2c_snail* host, uint32_t enabled)
@@ -228,7 +241,6 @@ int main(int argc, char** argv)
         return saved ? 0 : 1;
     }
 
-    Cursor cursor;
     auto trap = [&](bool on) {
         if (options.trap_mouse)
             SDL_SetWindowRelativeMouseMode(window, on);
@@ -258,13 +270,13 @@ int main(int argc, char** argv)
                     trap(false);
                 break;
             case SDL_EVENT_MOUSE_MOTION:
-                cursor.move(&game, window, event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel);
+                g_cursor.move(&game, window, event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel);
                 break;
             case SDL_EVENT_MOUSE_BUTTON_DOWN:
             case SDL_EVENT_MOUSE_BUTTON_UP:
                 if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
                     trap(true);
-                cursor.move(&game, window, event.button.x, event.button.y, 0, 0);
+                g_cursor.move(&game, window, event.button.x, event.button.y, 0, 0);
                 if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
                     w2c_game_snail_button(&game, event.button.button == SDL_BUTTON_LEFT ? 0 : 1,
                         event.type == SDL_EVENT_MOUSE_BUTTON_DOWN);
@@ -274,9 +286,6 @@ int main(int argc, char** argv)
                     w2c_game_snail_wheel(&game, event.wheel.y > 0 ? 1u : (uint32_t)-1);
                 break;
             case SDL_EVENT_WINDOW_FOCUS_LOST:
-                // Keys held while the window loses focus would otherwise stay down.
-                for (int code = 0; code < 256; ++code)
-                    w2c_game_snail_key(&game, (uint32_t)code, 0);
                 trap(false);
                 sync_window_state();
                 break;
@@ -285,8 +294,6 @@ int main(int argc, char** argv)
                 last = SDL_GetTicksNS();
                 break;
             case SDL_EVENT_WINDOW_MINIMIZED:
-                for (int code = 0; code < 256; ++code)
-                    w2c_game_snail_key(&game, (uint32_t)code, 0);
                 trap(false);
                 sync_window_state();
                 if (w2c_game_snail_frame(&game, 1.0f / 60.0f) != 0)

@@ -10,8 +10,10 @@
 #include "archive_index.h"
 #include "game_root.h"
 #include "input_controller_state.h"
+#include "input_state.h"
 #include "main_loop_state.h"
 #include "mouse_input_state.h"
+#include "render_backend.h"
 #include "text_input_repeat_state.h"
 #include "tracked_allocation_stack.h"
 
@@ -51,6 +53,12 @@ char initialize_game_data_archive()
 // owns the system cursor.
 void click_mouse_screen(int slot, int x, int y)
 {
+    // Before the first live poll the screen region is empty: the recovered
+    // startup's center request maps to (0, 0), not an actual host position.
+    if (slot == 0 && g_input_region_right[0] > g_input_region_left[0]) {
+        input_set_pointer(x, y);
+        backend_warp_pointer(x, y);
+    }
     g_mouse_screen_x[slot] = x;
     g_mouse_screen_y[slot] = y;
     g_mouse_live_x[slot] = (float)x;

@@ -176,7 +176,6 @@
 ../decomp/game/Help/destroy_help_screen.cpp
 ../decomp/game/Help/update_help_screen.cpp
 ../decomp/game/HighScore/initialize_high_score_tables.cpp
-../decomp/game/HighScore/load_high_scores_from_file.cpp
 ../decomp/game/HighScore/add_arcade_high_score.cpp
 ../decomp/game/HighScore/add_survival_high_score.cpp
 ../decomp/game/HighScore/add_time_trial_high_score.cpp

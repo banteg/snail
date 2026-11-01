@@ -31,11 +31,12 @@ def config_name(ultimate):
 def play(tmp_path, port_layout_env):
     """Run a scenario on a fresh save: the tutorial done, so every New Game mode is open."""
 
-    def run(scenario, ultimate, arg="", *, name="Probe", routes=(1, 1), bank=0, pro=None):
+    def run(scenario, ultimate, arg="", *, name="Probe", routes=(1, 1), bank=0, pro=None, fullscreen=False):
         for archive in ("SnailMail.dat", "SnailMailExtras.dat"):
             shutil.copyfile(ASSETS / archive, tmp_path / archive)
         config = bytearray(196)
         struct.pack_into("<ff", config, 0, 1.0, 1.0)
+        config[0x08] = fullscreen
         config[0x60 : 0x60 + len(name)] = name.encode()
         struct.pack_into("<ifi", config, 0x40, 50, 0.5, 50)
         struct.pack_into("<iii", config, 0xA0, *routes, bank)
@@ -45,7 +46,7 @@ def play(tmp_path, port_layout_env):
             (tmp_path / "SnailMailPro.cfg").write_bytes(struct.pack("<ii", *pro))
         result = subprocess.run(
             ["node", str(REPO_ROOT / "tests/port_frontend_rules.mjs"), str(WASM), scenario, str(int(ultimate)), name, arg],
-            cwd=tmp_path, env=port_layout_env, capture_output=True, text=True, check=True,
+            cwd=tmp_path, env=port_layout_env, capture_output=True, text=True, check=True, timeout=90,
         )  # fmt: skip
         return json.loads(result.stdout.splitlines()[-1])
 
@@ -55,6 +56,76 @@ def play(tmp_path, port_layout_env):
 def saved_config(path, ultimate):
     """(highest route, selected route, High Scores bank) as the game saved them."""
     return struct.unpack_from("<iii", (path / config_name(ultimate)).read_bytes(), 0xA0)
+
+
+def scramble_scores(data):
+    return bytes(value ^ (index & 255) for index, value in enumerate(data))
+
+
+def test_autosave_preserves_pro_route_controls(play):
+    assert play("save-pro-map", True)["prompt"] == "Click to Start"
+
+
+@pytest.mark.parametrize("ultimate", [False, True])
+def test_idling_at_start_keeps_saved_replay_within_capacity(play, tmp_path, ultimate):
+    result = play("idle-start", ultimate)
+    if ultimate:
+        assert result["waiting"] <= 9
+    table = tmp_path / ("ScoreMobileA-v3.dat" if ultimate else "ScoreA.dat")
+    record = scramble_scores(table.read_bytes())
+    size, score = struct.unpack_from("<ii", record)
+    samples = struct.unpack_from("<i", record, 0x74)[0]
+    assert score > 0
+    assert 0 < samples < 1000  # the actual run to the first parcel
+    assert size == len(record) == 0x88 + samples * 5
+
+
+def test_score_loader_bounds_records_and_recovers_legacy_samples(play, tmp_path):
+    def row(index, samples, *, bank=0):
+        record = bytearray(0x88 + samples * 5)
+        score = 100 + index
+        struct.pack_into("<ii", record, 0, len(record), score)
+        struct.pack_into("<I", record, 0x28, (score * score) ^ 0xDEADBABE)
+        struct.pack_into("<ii", record, 0x3C, bank, index)
+        struct.pack_into("<i", record, 0x74, samples)
+        return record
+
+    capacity = 21600
+    samples = capacity + 2500
+    legacy = row(1, samples)
+    planes = (b"\x23\x45" * samples, b"\x56\x78" * samples, b"\x08" * samples)
+    legacy[0x88:] = b"".join(planes)
+    bad_count = row(2, 1)
+    struct.pack_into("<i", bad_count, 0x74, 2)
+    bad_name = row(3, 1)
+    bad_name[0x5C:0x70] = b"X" * 20
+    bad_checksum = row(1, 1)
+    struct.pack_into("<I", bad_checksum, 0x28, 0)
+    table = tmp_path / "ScoreMobileA-v3.dat"
+    # Skip invalid frames with known boundaries, then stop at an invalid
+    # byte_count. The two valid neighbors must survive the next save.
+    table.write_bytes(scramble_scores(
+        row(-1, 0) + row(11, 0) + legacy + bad_count + bad_name + bad_checksum
+        + row(4, 0, bank=1) + row(5, 1) + bytes(0x88)
+    ))
+    result = play("load-scores", True)
+    assert result["postal"] == [None, 101, None, None, None, 105, *[None] * 5]
+    assert result["challenge"] == [None] * 11
+    restored = scramble_scores(table.read_bytes())
+    assert struct.unpack_from("<i", restored, 0x74)[0] == capacity
+    assert restored[0x88 : 0x88 + 5 * capacity] == b"".join(
+        plane[: capacity * width] for plane, width in zip(planes, (2, 2, 1), strict=True)
+    )
+
+
+@pytest.mark.parametrize("ultimate", [False, True])
+def test_click_to_start_recenters_steering(play, ultimate):
+    assert play("recenter", ultimate) == 0
+
+
+@pytest.mark.parametrize("enabled", [False, True])
+def test_startup_applies_saved_fullscreen(play, enabled):
+    assert play("fullscreen", False, fullscreen=enabled) == [int(enabled)]
 
 
 @pytest.mark.parametrize("ultimate", [False, True])

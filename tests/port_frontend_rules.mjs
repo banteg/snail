@@ -37,6 +37,16 @@ function title() {
 }
 
 const scenarios = {
+  fullscreen() { return game.fullscreenRequests; },
+  recenter() {
+    game.mainMenu();
+    game.press(newGame('Postal Mode').text);
+    game.find('Click to Start');
+    game.click(600, 240);
+    game.step(60);
+    return memory().readFloatLE(game.sub + LAYOUT.player + LAYOUT.position);
+  },
+
   // NEWTON turns off score records and AUTUMN falling, typed anywhere.
   cheats() {
     game.mainMenu();
@@ -79,6 +89,36 @@ const scenarios = {
     newGame(arg);
     game.e.snail_save();
     return {};
+  },
+
+  'save-pro-map'() {
+    game.mainMenu();
+    newGame('Pro-Challenge');
+    game.e.snail_save();
+    game.press('Deliver');
+    return {prompt: game.find('Click to Start').text};
+  },
+
+  'idle-start'() {
+    game.mainMenu();
+    game.press(newGame('Postal Mode').text);
+    game.find('Click to Start');
+    for (let i = 0; i < 920; ++i) game.e.snail_frame(0.4);
+    const waiting = memory().readInt32LE(game.sub + LAYOUT.replay_sample_count);
+    game.press('Click to Start');
+    game.until(() => memory().readInt32LE(game.sub + LAYOUT.sub_total_score) > 0);
+    game.key(ESCAPE);
+    game.press('End Game');
+    game.press('Yes');
+    game.press('Submit');
+    game.step(120);
+    game.e.snail_save();
+    return {waiting};
+  },
+
+  'load-scores'() {
+    game.e.snail_save();
+    return {postal: game.scores(LAYOUT.hs_postal_records), challenge: game.scores(LAYOUT.survival_records)};
   },
 
   // High Scores from the main menu, toggled twice and left, then reopened.

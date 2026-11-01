@@ -304,6 +304,88 @@ int write_file_bytes(char* path, void* bytes, int byte_count)
     return write_file_bytes_recovered((char*)extras_save_path(path), bytes, byte_count);
 }
 
+namespace {
+
+// Score files concatenate XOR-encoded headers and three sample arrays. Their
+// XOR index starts at the beginning of the file, including for later records.
+bool read_score_bytes(FILE* file, long offset, void* buffer, int size)
+{
+    if (fseek(file, offset, SEEK_SET) != 0 || fread(buffer, 1, size, file) != (size_t)size)
+        return false;
+    unsigned char* bytes = (unsigned char*)buffer;
+    for (int i = 0; i < size; ++i)
+        bytes[i] ^= (unsigned char)(offset + i);
+    return true;
+}
+
+struct ScoreBank {
+    SubSolution* rows;
+    int count;
+    int selector;
+    int mode;
+    int last_level;
+};
+
+}  // namespace
+
+void cRSubHighScore::load_high_scores_from_file(char* name)
+{
+    FILE* file = fopen(extras_save_path(name), "rb");
+    if (!file)
+        return;
+    g_loading_bar.AI();
+    long end = fseek(file, 0, SEEK_END) == 0 ? ftell(file) : -1;
+    ScoreBank bank = {postal_records, SUB_HIGH_SCORE_TOP_TEN_STORAGE_COUNT, 0, 0, 51};
+    if (path_equals_ignore_case(name, "ScoreB.dat")) {
+        const ScoreBank challenge = {survival_records, SUB_HIGH_SCORE_TOP_TEN_STORAGE_COUNT, 1, 1, 0};
+        bank = challenge;
+    } else if (path_equals_ignore_case(name, "ScoreC.dat")) {
+        const ScoreBank time_trial = {time_trial_route_records, SUB_HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT,
+            2, 4, SUB_HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT - 1};
+        bank = time_trial;
+    } else if (path_equals_ignore_case(name, "ScorePro.dat")) {
+        bank.last_level = 10;
+    }
+
+    // Stage at most one in-memory record, even if the file claims gigabytes.
+    const int capacity = SUB_SOLUTION_RUN_RECORD_COUNT;
+    SubSolutionHeader* record = (SubSolutionHeader*)malloc(SUB_SOLUTION_HEADER_BYTES + 5 * capacity);
+    for (long offset = 0; record && end - offset >= SUB_SOLUTION_HEADER_BYTES;) {
+        if (!read_score_bytes(file, offset, record, SUB_SOLUTION_HEADER_BYTES))
+            break;
+        int size = record->byte_count;
+        if (size < SUB_SOLUTION_HEADER_BYTES || size > end - offset)
+            break; // no trustworthy boundary for a following record
+        long payload = offset + SUB_SOLUTION_HEADER_BYTES;
+        offset += size;
+        int samples = record->replay_sample_count;
+        int payload_size = size - SUB_SOLUTION_HEADER_BYTES;
+        unsigned int score = (unsigned int)record->score;
+        if (payload_size % 5 != 0 || payload_size / 5 != samples
+            || (unsigned int)record->checksum != ((score * score) ^ SUB_SOLUTION_CHECKSUM_MASK)
+            || record->bank_selector != bank.selector || record->entry_index < 0 || record->entry_index >= bank.count
+            || record->replay_mode_id != bank.mode || record->replay_level_index < 0
+            || record->replay_level_index > bank.last_level
+            || record->replay_start_cursor < 0 || record->replay_start_cursor > 8
+            || record->replay_start_cursor > samples
+            || !memchr(record->player_name, 0, sizeof(record->player_name)))
+            continue;
+
+        // Older builds counted every tick at Click to Start, although only
+        // the first eight samples advanced. Recover the bounded prefix of
+        // each plane using its original file stride.
+        int kept = samples < capacity ? samples : capacity;
+        if (!read_score_bytes(file, payload, record->lateral_samples(), 2 * kept)
+            || !read_score_bytes(file, payload + 2 * samples, record->delta_z_samples(kept), 2 * kept)
+            || !read_score_bytes(file, payload + 4 * samples, record->flag_samples(kept), kept))
+            break;
+        record->replay_sample_count = kept;
+        bank.rows[record->entry_index].Load(record);
+    }
+    free(record);
+    fclose(file);
+}
+
 bool extras_init_archive()
 {
     if (!g_port_ultimate)
