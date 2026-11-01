@@ -448,7 +448,7 @@ As of the current extracted corpus and parser state, `uv run snail trace plan --
   - best first probe for confirming how `Ring=None`, `Ring=PowerUp`, `Ring=Explode`, and `Ring=Slow` surface in live runtime behavior
 - no-fall run: [`LEVELS/ARCADE047.TXT`](../../artifacts/extracted/SnailMail.dat/LEVELS/ARCADE047.TXT)
   - current top level by explicit `NoFall` rows once repeated segment placements are counted
-  - `286` `NoFall` rows, driven mostly by repeated trampoline-family segments
+  - 286 authored rows across the two spellings. Windows recognizes 238 `NoFall` rows and skips the 48 `No Fall` rows in SuperTramp2.
   - best first probe if you want to correlate trampoline-heavy authored rows with the now-recovered runtime `NoFall` lane at mask `0x100`
 - jetpack-off run: [`LEVELS/ARCADE025.TXT`](../../artifacts/extracted/SnailMail.dat/LEVELS/ARCADE025.TXT)
   - current top level by repeated `JetPackOff` segment exposure

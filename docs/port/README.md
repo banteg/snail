@@ -365,9 +365,9 @@ in one game.
 
 - **Ultimate** (the default in the browser and natively): the latest content,
   backported from the Android release (#28): all mobile courses and segments,
-  mobile rules and capacities, Pro-Challenge, separate saves, and every fix in
-  [Original bugs](original-bugs.md). It needs `SnailMailExtras.dat` and won't
-  start without it.
+  mobile rules and capacities, Pro-Challenge, separate saves, and the fixes for
+  entries 1–4 in [Original bugs](original-bugs.md). It needs
+  `SnailMailExtras.dat` and won't start without it.
 - **Original** (the default headless, since both oracles check it): the 2004 PC
   release as shipped, its bugs included. Every Ultimate hook
   (`port/wrapped.txt`) delegates to the recovered function unchanged.
@@ -433,8 +433,9 @@ matched tile IDs, row flags, segment boundaries, finish rows and the next
 random draw. Sixteen slugs can be alive at
 once instead of 8, which the mobile Barrage and SlugLine formations need. The
 active track window reaches two rows further: objects spawn 40 rows ahead
-of the snail instead of 38, and the finish banner, the salt fade-in and
-shots reach 48 rows ahead instead of 46. Near the finish line the window's
+of the snail instead of 38, and the finish banner and shots reach 48 rows
+ahead instead of 46. The salt hazard also calculates its fade over 48 rows,
+although its mesh uses a fixed opacity. Near the finish line the window's
 trailing edge keeps following the snail instead of stopping 30 rows before
 the line, and rows are scanned up to 40 past it instead of 20. A WALL2 cell
 stops a shot only between heights -1 and 7. Ultimate also plays Android's

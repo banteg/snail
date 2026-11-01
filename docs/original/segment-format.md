@@ -25,7 +25,7 @@ Current corpus notes:
 - `JetPack=Off`
 - `3DModel=<mesh> (<x>,<y>,<z>)`
 - `Velocity=(<x>,<y>,<z>)` appears in RWG parser code, though no shipped segment currently uses it
-- `No Fall` / `NoFall`
+- `NoFall` sets the runtime flag. The spaced spelling `No Fall` also appears in the archive and the Windows importer ignores it.
 
 Representative samples:
 
@@ -35,7 +35,7 @@ Representative samples:
 ## Practical Notes
 
 - `Path=<name>` resolves through a hardcoded string table in the gameplay executable, not through a path-definition file in the archive
-- tag matching in the original parser is case-insensitive and substring-based, which explains spellings like `Ring=Powerup` and `Ring=Explosive`
+- tag matching is case-insensitive and substring-based. `Ring=Powerup` matches `Ring=PowerUp`. The tutorial's `Ring=Explosive` fails to match `Ring=Explode`. See the [Windows course reproductions](../port/original-bugs.md#other-verified-windows-bugs).
 - deeper runtime notes for path templates, runtime flags, and entity dispatch now live under [RE](../re/index.md)
 
 ## Tooling
