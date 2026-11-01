@@ -78,6 +78,11 @@ jobs:
       - name: Install the selected source's dependencies
         working-directory: source
         run: uv sync --frozen
+      # v0.3.0 predates the manifest. Its original asset pin was committed
+      # when the deployment workflow was introduced.
+      - name: Restore the asset pin for v0.3.0
+        if: steps.source.outputs.revision == '60d8b6c3869e4b9787cb66dca6a9b01d26c71b55'
+        run: git show 167c37158ed18493cb4ef8622bf23cc81f7aa1c2:port/deploy-assets.json > source/port/deploy-assets.json
       - name: Download and verify both game archives
         run: uv run --directory source --no-sync python ../tools/port/deploy.py fetch-assets --root "$GITHUB_WORKSPACE/source"
       - name: Generate the recovered-source link inputs

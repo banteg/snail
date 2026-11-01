@@ -25,7 +25,6 @@ import io
 import mimetypes
 import shutil
 import subprocess
-import tempfile
 from functools import partial
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -76,21 +75,63 @@ def page_images(archive: Path) -> dict[str, bytes]:
     return images
 
 
+def _check_previous_site(out: Path, web: Path) -> None:
+    if out.is_symlink():
+        raise ValueError(f"refusing to replace symlink: {out}")
+    if not out.exists():
+        return
+    entries = list(out.iterdir())
+    if not entries:
+        return
+    required = {"index.html", WASM.name, "SnailMail.dat.gz"}
+    allowed = required | {p.name for p in web.iterdir()} | set(SPLASH_IMAGES) | {
+        CARD, "SnailMailExtras.dat.gz", "build.json",
+    }
+    names = {p.name for p in entries}
+    if not required <= names <= allowed or any(p.is_symlink() or not p.is_file() for p in entries):
+        raise ValueError(f"output contains files outside a packed Snail Mail site: {out}")
+
+
 def pack_site(root: Path, out: Path, archive: Path) -> None:
     """The page, a release build of snail-web.wasm and the packed archive, in `out`."""
-    with tempfile.TemporaryDirectory(prefix="snail-site-") as prefix:
+    web = (root / WEB).resolve()
+    _check_previous_site(out, web)
+    out = out.absolute()
+    if out.resolve().is_relative_to(web) or web.is_relative_to(out.resolve()):
+        raise ValueError(f"output overlaps site sources: {out}")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    # Reserve a sibling on the same filesystem. Concurrent packers cannot move
+    # the destination out from under each other. An interrupted swap leaves
+    # the old site at the named 'previous' path for recovery.
+    work = out.with_name(f".{out.name}.snail-pack")
+    work.mkdir()
+    staged, previous = work / "site", work / "previous"
+    try:
+        prefix = work / "zig"
         subprocess.run(
-            ["zig", "build", "-Doptimize=ReleaseFast", "-Dstrip", "-p", prefix], cwd=root / "port", check=True
+            ["zig", "build", "-Doptimize=ReleaseFast", "-Dstrip", "-p", str(prefix)], cwd=root / "port", check=True
         )
+        shutil.copytree(web, staged)
+        shutil.copy(prefix / "bin" / WASM.name, staged / WASM.name)
+        (staged / "SnailMail.dat.gz").write_bytes(pack_archive(archive))
+        if (root / EXTRAS_ARCHIVE).exists():
+            (staged / "SnailMailExtras.dat.gz").write_bytes(pack_archive(root / EXTRAS_ARCHIVE))
+        for name, data in page_images(archive).items():
+            (staged / name).write_bytes(data)
+        _check_previous_site(out, web)
         if out.exists():
-            shutil.rmtree(out)
-        shutil.copytree(root / WEB, out)
-        shutil.copy(Path(prefix) / "bin" / WASM.name, out / WASM.name)
-    (out / "SnailMail.dat.gz").write_bytes(pack_archive(archive))
-    if (root / EXTRAS_ARCHIVE).exists():
-        (out / "SnailMailExtras.dat.gz").write_bytes(pack_archive(root / EXTRAS_ARCHIVE))
-    for name, image in page_images(archive).items():
-        (out / name).write_bytes(image)
+            out.rename(previous)
+        try:
+            staged.rename(out)
+        except BaseException:
+            if previous.exists():
+                previous.rename(out)
+            raise
+        if previous.exists():
+            shutil.rmtree(previous)
+    finally:
+        if not previous.exists():
+            shutil.rmtree(work)
 
 
 def routes(root: Path, archive: Path) -> dict[str, Path | bytes]:
