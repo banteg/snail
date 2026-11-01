@@ -11,6 +11,7 @@ from snail.port_extras import (
     APK_ASSETS,
     IOS_ROOT,
     build_extras_files,
+    generate,
     hd_surface_tiles,
     match_surface_palette,
 )
@@ -20,6 +21,22 @@ ANDROID = REPO_ROOT / "artifacts/android/asm_extracted"
 APK = REPO_ROOT / APK_ASSETS
 PC_ARCHIVE = REPO_ROOT / "artifacts/bin/SnailMail.dat"
 IOS = REPO_ROOT / IOS_ROOT
+
+
+@pytest.mark.skipif(
+    not (IOS / "objects_world00_hi_surface6.tga").exists() or not ANDROID.is_dir(),
+    reason="needs Android/iPhone inputs",
+)
+def test_missing_mobile_catalog_does_not_replace_existing_pack(tmp_path):
+    extracted = tmp_path / "android"
+    extracted.mkdir()
+    for directory in ("OBJECTS", "SPRITES", "GALAXY", "INTRO", "X", "LEVELS"):
+        (extracted / directory).symlink_to(ANDROID / directory, target_is_directory=True)
+    output = tmp_path / "extras.dat"
+    output.write_bytes(b"existing pack")
+    with pytest.raises(ValueError, match="missing mobile segments"):
+        generate(REPO_ROOT, android_root=extracted, out=output)
+    assert output.read_bytes() == b"existing pack"
 
 
 def image_bytes(image, format="TGA"):

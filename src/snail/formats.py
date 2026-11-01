@@ -81,10 +81,10 @@ class LevelDefinition(msgspec.Struct, frozen=True):
     source: str | None = None
     name: str = ""
     mode: str = ""
-    track: int | None = None
+    track: int | Literal["random"] | None = None
     galaxy_text: str | None = None
     background: str | None = None
-    fringe: tuple[int, int, int] | None = None
+    fringe: tuple[int, int, int] | Literal["random"] | None = None
     parcels: int | None = None
     quota: int | None = None
     speed: int | None = None
@@ -261,10 +261,10 @@ def _is_segment_data_fence(line: str) -> bool:
 def parse_level_text(text: str, source: str | None = None) -> LevelDefinition:
     name = ""
     mode = ""
-    track: int | None = None
+    track: int | Literal["random"] | None = None
     galaxy_text: str | None = None
     background: str | None = None
-    fringe: tuple[int, int, int] | None = None
+    fringe: tuple[int, int, int] | Literal["random"] | None = None
     parcels: int | None = None
     quota: int | None = None
     speed: int | None = None
@@ -318,7 +318,7 @@ def parse_level_text(text: str, source: str | None = None) -> LevelDefinition:
         elif key_lower == "background":
             background = value
         elif key_lower == "fringe":
-            fringe = _parse_rgb_tuple(value)
+            fringe = "random" if value.lower() == "random" else _parse_rgb_tuple(value)
         elif key_lower == "parcels":
             parcels = int(value)
         elif key_lower == "quota":
@@ -485,10 +485,10 @@ def _parse_rgb_tuple(value: str) -> tuple[int, int, int]:
     return (int(match.group(1)), int(match.group(2)), int(match.group(3)))
 
 
-def _parse_track_value(value: str) -> int:
+def _parse_track_value(value: str) -> int | Literal["random"]:
     normalized = value.strip().lower()
     if normalized in {"r", "random"}:
-        return 5
+        return "random"
     return int(value)
 
 

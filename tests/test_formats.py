@@ -8,6 +8,7 @@ from snail.formats import (
     LevelDefinition,
     ObjectDefinition,
     SegmentDefinition,
+    parse_level_text,
     parse_text_asset,
 )
 
@@ -107,4 +108,11 @@ def test_parse_challenge_level_random_track_alias() -> None:
 
     assert isinstance(parsed, LevelDefinition)
     assert parsed.mode == "challenge"
-    assert parsed.track == 5
+    assert parsed.track == "random"
+
+
+def test_random_mobile_fringe_and_track_are_distinct_from_authored_values():
+    random = parse_level_text("Track:random\nFringe:random")
+    fixed = parse_level_text("Track:5\nFringe:(0,255,254)")
+    assert (random.track, random.fringe) == ("random", "random")
+    assert (fixed.track, fixed.fringe) == (5, (0, 255, 254))

@@ -5,11 +5,53 @@ from pathlib import Path
 
 import pytest
 
-from snail.archive import extract_archive, parse_archive_index, read_archive_entry
+from snail.archive import extract_archive, parse_archive_index, read_archive_entry, write_archive
 from snail.recon import inspect_path
 
 
 ARCHIVE_PATH = Path(__file__).resolve().parents[1] / "artifacts/bin/SnailMail.dat"
+
+
+@pytest.mark.parametrize("name", ["../OUTSIDE", "/OUTSIDE", r"C:\OUTSIDE", r"..\OUTSIDE", "manifest.json", "ONE/../TWO"])
+def test_unsafe_entries_rejected_before_extracting_anything(tmp_path, name):
+    source = tmp_path / "source.dat"
+    output = tmp_path / "out"
+    write_archive(source, {"SAFE": b"first", name: b"unexpected"})
+    with pytest.raises(ValueError, match="archive path"):
+        extract_archive(source, output)
+    assert not output.exists()
+    assert not (tmp_path / "OUTSIDE").exists()
+
+
+@pytest.mark.parametrize("link", ["PARENT", "PARENT/FILE", "manifest.json"])
+def test_existing_symlinks_cannot_redirect_writes(tmp_path, link):
+    source = tmp_path / "source.dat"
+    write_archive(source, {"SAFE": b"first", "PARENT/FILE": b"unexpected"})
+    output = tmp_path / "out"
+    symlink = output / link
+    symlink.parent.mkdir(parents=True)
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    sentinel = outside / "FILE"
+    sentinel.write_bytes(b"original")
+    symlink.symlink_to(outside if link == "PARENT" else sentinel, target_is_directory=link == "PARENT")
+    with pytest.raises(ValueError, match="symlink"):
+        extract_archive(source, output)
+    assert sentinel.read_bytes() == b"original"
+    assert not (output / "SAFE").exists()
+
+
+def test_existing_hardlink_is_replaced_without_modifying_other_link(tmp_path):
+    source = tmp_path / "source.dat"
+    write_archive(source, {"FILE": b"new"})
+    output = tmp_path / "out"
+    output.mkdir()
+    sentinel = tmp_path / "sentinel"
+    sentinel.write_bytes(b"original")
+    (output / "FILE").hardlink_to(sentinel)
+    extract_archive(source, output)
+    assert (output / "FILE").read_bytes() == b"new"
+    assert sentinel.read_bytes() == b"original"
 
 
 @pytest.mark.local_artifacts

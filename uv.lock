@@ -203,35 +203,33 @@ name = "snail"
 version = "0.4.0"
 source = { editable = "." }
 dependencies = [
+    { name = "capstone" },
     { name = "construct" },
     { name = "msgspec" },
     { name = "pefile" },
     { name = "pillow" },
     { name = "pyelftools" },
+    { name = "unicorn" },
 ]
 
 [package.dev-dependencies]
 dev = [
-    { name = "capstone" },
     { name = "pytest" },
-    { name = "unicorn" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "capstone", specifier = ">=5.0.9" },
     { name = "construct", specifier = ">=2.10.70" },
     { name = "msgspec", specifier = ">=0.20.0" },
     { name = "pefile", specifier = ">=2024.8.26" },
     { name = "pillow", specifier = ">=12.1.1" },
     { name = "pyelftools", specifier = ">=0.33" },
+    { name = "unicorn", specifier = ">=2.1.4" },
 ]
 
 [package.metadata.requires-dev]
-dev = [
-    { name = "capstone", specifier = ">=5.0.9" },
-    { name = "pytest", specifier = ">=9.0.2" },
-    { name = "unicorn", specifier = ">=2.1.4" },
-]
+dev = [{ name = "pytest", specifier = ">=9.0.2" }]
 
 [[package]]
 name = "unicorn"

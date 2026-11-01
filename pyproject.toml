@@ -8,11 +8,13 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
+    "capstone>=5.0.9",
     "construct>=2.10.70",
     "msgspec>=0.20.0",
     "pefile>=2024.8.26",
     "pillow>=12.1.1",
     "pyelftools>=0.33",
+    "unicorn>=2.1.4",
 ]
 
 [project.scripts]
@@ -20,9 +22,7 @@ snail = "snail:main"
 
 [dependency-groups]
 dev = [
-    "capstone>=5.0.9",
     "pytest>=9.0.2",
-    "unicorn>=2.1.4",
 ]
 
 [build-system]

@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import json
+import ntpath
+import tempfile
 from collections import Counter
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 import msgspec
 from construct import Array, Int32ul, this
@@ -149,38 +151,76 @@ def read_archive_entry(path: Path, entry: ArchiveEntry) -> bytes:
     return bytes(data)
 
 
+def _extraction_path(root: Path, name: str) -> Path:
+    path = PureWindowsPath(name)
+    if not path.parts or path.anchor or ".." in path.parts or ntpath.isreserved(name):
+        raise ValueError(f"unsafe archive path: {name!r}")
+    destination = root
+    for part in path.parts:
+        destination /= part
+        if destination.is_symlink() or destination.is_junction():
+            raise ValueError(f"symlink in extraction path: {destination}")
+    return destination
+
+
+def _replace_bytes(path: Path, data: bytes) -> None:
+    # Replace the directory entry, including when the old file has other hard links.
+    with tempfile.TemporaryDirectory(dir=path.parent) as staging:
+        temporary = Path(staging) / "payload"
+        temporary.write_bytes(data)
+        temporary.replace(path)
+
+
 def extract_archive(
     archive_path: Path,
     output_dir: Path,
     prefix: str | None = None,
 ) -> dict[str, object]:
     index = parse_archive_index(archive_path)
-    output_dir.mkdir(parents=True, exist_ok=True)
-
+    if output_dir.is_symlink() or output_dir.is_junction():
+        raise ValueError(f"symlink in extraction path: {output_dir}")
+    output_dir = output_dir.resolve()
     normalized_prefix = prefix.upper() if prefix else None
-    written_files = 0
-    written_bytes = 0
-
+    manifest_path = _extraction_path(output_dir, "manifest.json")
+    destinations = {}
+    files = {PureWindowsPath("manifest.json")}
+    directories = set()
+    archive_size = archive_path.stat().st_size
     for entry in index.entries:
         if normalized_prefix is not None and not entry.path.upper().startswith(normalized_prefix):
             continue
+        destination = _extraction_path(output_dir, entry.path)
+        relative = PureWindowsPath(entry.path)
+        if relative in files or relative in directories or any(parent in files for parent in relative.parents):
+            raise ValueError(f"conflicting archive path: {entry.path!r}")
+        if entry.data_offset < index.index_size or entry.data_offset + entry.size > archive_size:
+            raise ValueError(f"{entry.path} is outside the archive data")
+        files.add(relative)
+        directories.update(relative.parents)
+        destinations[destination] = entry
 
-        decoded = read_archive_entry(archive_path, entry)
-        destination = output_dir / entry.path
+    # Validate the whole selection before replacing any existing output.
+    for destination in (*destinations, manifest_path):
+        if destination.exists() and not destination.is_file():
+            raise ValueError(f"extraction target is not a file: {destination}")
+        if any(parent.exists() and not parent.is_dir() for parent in destination.parents):
+            raise ValueError(f"extraction parent is not a directory: {destination}")
+        if destination.exists() and destination.samefile(archive_path):
+            raise ValueError(f"extraction would replace the source archive: {destination}")
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for destination, entry in destinations.items():
         destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_bytes(decoded)
-        written_files += 1
-        written_bytes += len(decoded)
+        _replace_bytes(destination, read_archive_entry(archive_path, entry))
 
     manifest = summarize_archive(index)
     manifest["archive_path"] = archive_path.resolve().as_posix()
     manifest["output_dir"] = output_dir.resolve().as_posix()
     manifest["prefix"] = prefix
-    manifest["written_files"] = written_files
-    manifest["written_bytes"] = written_bytes
+    manifest["written_files"] = len(destinations)
+    manifest["written_bytes"] = sum(entry.size for entry in destinations.values())
 
-    manifest_path = output_dir / "manifest.json"
-    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    _replace_bytes(manifest_path, (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode())
     return manifest
 
 
@@ -201,4 +241,4 @@ def encode_archive(files: dict[str, bytes]) -> bytes:
 
 def write_archive(path: Path, files: dict[str, bytes]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(encode_archive(files))
+    _replace_bytes(path, encode_archive(files))
