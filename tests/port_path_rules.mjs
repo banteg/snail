@@ -128,6 +128,14 @@ for (const ultimate of [0, 1]) {
       rings: e.snail_tramp_ring_active_count(),
       y: position(m, 1),
     };
+    if (ultimate && falling) {
+      e.snail_key(1, 1);
+      e.snail_frame(1 / 60);
+      e.snail_key(1, 0);
+      for (let i = 0; i < 90; ++i) e.snail_frame(1 / 60);
+      result.pausedState = m.readInt32LE(sub + L.subgame_state);
+      result.ringsAfterPause = e.snail_tramp_ring_active_count();
+    }
   }
 
   const setupReentry = (m, x, y, zOff, vy, vz, width = 2) => {

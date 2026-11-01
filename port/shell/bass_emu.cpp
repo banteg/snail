@@ -184,8 +184,7 @@ BassHandle __stdcall bass_sample_load(int from_memory, const void* source, unsig
     return handle(KIND_SAMPLE, index);
 }
 
-BassHandle __stdcall bass_sample_play_ex(BassHandle sample_handle, unsigned int, int frequency, int volume, int pan,
-    int loop)
+BassHandle play_sample(BassHandle sample_handle, int frequency, float gain, float balance, int loop)
 {
     Sample* sample = lookup(g_samples, KIND_SAMPLE, sample_handle);
     if (!sample)
@@ -217,12 +216,18 @@ BassHandle __stdcall bass_sample_play_ex(BassHandle sample_handle, unsigned int,
         return fail(BASS_ERROR_NOCHAN);
     g_channels[index].sample = sample_index;
     g_channels[index].serial = ++g_serial;
-    float gain = volume < 0 ? 1.0f : (volume > 100 ? 100 : volume) / 100.0f;
-    float balance = pan < -100 || pan > 100 ? 0.0f : pan / 100.0f;
     bool looped = loop < 0 ? (sample->flags & BASS_SAMPLE_LOOP) != 0 : loop != 0;
     audio_play(handle(KIND_CHANNEL, index), sample->sound, AUDIO_BUS_SAMPLE, gain, balance,
         frequency > 0 ? frequency : 0, looped);
     return handle(KIND_CHANNEL, index);
+}
+
+BassHandle __stdcall bass_sample_play_ex(BassHandle sample_handle, unsigned int, int frequency, int volume, int pan,
+    int loop)
+{
+    float gain = volume < 0 ? 1.0f : (volume > 100 ? 100 : volume) / 100.0f;
+    float balance = pan < -100 || pan > 100 ? 0.0f : pan / 100.0f;
+    return play_sample(sample_handle, frequency, gain, balance, loop);
 }
 
 int __stdcall bass_sample_stop(BassHandle h)
@@ -345,6 +350,16 @@ const Export kExports[] = {
 char g_bass_library;  // the module handle LoadLibraryA returns
 
 }  // namespace
+
+// Android passes one floating-point gain to SoundPool for both channels.
+// The presenter applies the user's sample volume on the bus.
+void play_mobile_positional_sound(int sample_id, float attenuation)
+{
+    if (sample_id < 0 || sample_id >= RSHELL_SOUND_MAX || attenuation <= 0.0f)
+        return;
+    float gain = attenuation * g_audio_backend_sfx_normalization_scale;
+    play_sample(g_registered_sound_sample_handles[sample_id], -1, gain, 0.0f, 0);
+}
 
 // The Win32 loader calls initialize_bass_audio_backend makes. Only the
 // extracted BASS DLL is ever loaded.

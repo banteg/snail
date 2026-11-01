@@ -74,8 +74,11 @@ def test_ultimate_camera_lift_eases_out_after_a_path(rules):
     ultimate, original = rules["profiles"]["ultimate"], rules["profiles"]["original"]
     assert ultimate["liftOffPath"] == pytest.approx(0.5 * 0.98)
     assert original["liftOffPath"] == 0
-    # A supertramp's pitch cycle restarts the lift from 0 in both.
-    assert ultimate["liftDuringPitch"] == original["liftDuringPitch"] > 0
+    # The two trig tables give the same pitch response within one binary32 ULP.
+    original_lift = original["liftDuringPitch"]
+    assert original_lift > 0
+    _, exponent = math.frexp(original_lift)
+    assert ultimate["liftDuringPitch"] == pytest.approx(original_lift, abs=2.0 ** (exponent - 24), rel=0)
 
 
 def test_ultimate_paths_without_a_heading_keep_their_roll(rules):
@@ -109,6 +112,8 @@ def test_trampoline_rings_come_only_from_the_bounce(rules):
         assert profile["trampolineBounce"]["y"] == pytest.approx(-3 + 0.49)
         assert profile["noFallClamp"]["y"] == pytest.approx(0.49)
     assert ultimate["trampolineBounce"]["rings"] == 1
+    assert ultimate["pausedState"] == 4
+    assert ultimate["ringsAfterPause"] == 0  # Android keeps ticking the bounce effect while paused
     # The no-fall clamp squashes the snail without a ring.
     assert ultimate["noFallClamp"]["rings"] == 0
     assert original["trampolineBounce"]["rings"] == original["noFallClamp"]["rings"] == 0
@@ -129,3 +134,16 @@ def test_ultimate_swept_path_reentry_plane_quad_and_seed(rules):
     # the PC box accepts up to (2 / 2) + 0.3 = 1.3.
     assert original["reentryOutsideHalfWidth"]["active"] == 1
     assert ultimate["reentryOutsideHalfWidth"]["active"] == 0
+
+
+def test_both_profiles_build_their_worm_and_road_meshes(tmp_path, port_layout_env):
+    for name in ("SnailMail.dat", "SnailMailExtras.dat"):
+        shutil.copyfile(ASSETS / name, tmp_path / name)
+    config = bytearray(196)
+    config[0x60:0x69] = b"MeshProbe"
+    for name in ("SnailMail.cfg", "SnailMailMobile.cfg"):
+        (tmp_path / name).write_bytes(config)
+    subprocess.run(
+        ["node", str(REPO_ROOT / "tests/port_path_meshes.mjs"), str(WASM)],
+        cwd=tmp_path, env=port_layout_env, capture_output=True, text=True, check=True,
+    )

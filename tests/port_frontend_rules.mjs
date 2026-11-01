@@ -99,6 +99,25 @@ const scenarios = {
     return {prompt: game.find('Click to Start').text};
   },
 
+  fringe() {
+    game.mainMenu();
+    startRun('Postal Mode');
+    const color = game.sub + LAYOUT.cached_skirt_bgra;
+    return [...memory().subarray(color, color + 4)];
+  },
+
+  'pro-markers'() {
+    game.mainMenu();
+    newGame('Pro-Challenge');
+    const titles = [];
+    for (const [x, y, title] of [[398, 252, 'X:'], [104, 187, 'I:']]) {
+      game.click(625, 350); // close the previous route card
+      game.click(x, y);
+      titles.push(game.find(title).text);
+    }
+    return titles;
+  },
+
   'idle-start'() {
     game.mainMenu();
     game.press(newGame('Postal Mode').text);
@@ -140,6 +159,51 @@ const scenarios = {
     titles.push(title());
     game.e.snail_save();
     return {titles, replays};
+  },
+
+  // Put the finish line in front of a live run or a recorded Challenge run.
+  delivery() {
+    game.mainMenu();
+    if (arg === 'replay') {
+      game.press('High Scores');
+      game.press('Replay');
+      game.until(() => memory().readFloatLE(game.sub + LAYOUT.sub_player_z) > 10);
+    } else {
+      startRun('Postal Mode');
+    }
+    const m = memory();
+    const panel = game.sub + LAYOUT.completion;
+    const state = () => m.readInt32LE(panel + LAYOUT.completion_state);
+    const prompt = () => game.widgets().some(widget => widget.text === 'Click to Continue');
+    m.writeInt32LE(Math.ceil(m.readFloatLE(game.sub + LAYOUT.sub_player_z)) + 1, game.sub + LAYOUT.completion_row_start);
+    game.until(() => state() === 1);
+    game.step();
+    const duringTally = prompt();
+    const view = game.root + LAYOUT.view_transform;
+    let camera;
+    game.until(() => {
+      if (state() === 4) return true;
+      // Completion AI uses this camera before the next frame is presented.
+      camera = Buffer.from(m.subarray(view, view + 64));
+      return false;
+    });
+    const atSummary = prompt();
+    let depth = 0;
+    for (let axis = 0; axis < 3; ++axis) {
+      const end = m.readFloatLE(panel + LAYOUT.parcel_destination + 4 * axis);
+      const eye = camera.readFloatLE(48 + 4 * axis);
+      depth += (end - eye) * camera.readFloatLE(32 + 4 * axis);
+    }
+    if (arg === 'live') {
+      game.key(ESCAPE);
+      game.press('Resume');
+      game.find('Click to Continue');
+    }
+    game.e.snail_button(0, 1);
+    game.step();
+    game.e.snail_button(0, 0);
+    game.step();
+    return {duringTally, atSummary, depth, afterClick: state(), fade: m.readInt32LE(game.root + LAYOUT.fade_state)};
   },
 
   // A Time Trial finish, with the route's best time `arg` (0 for none) and a

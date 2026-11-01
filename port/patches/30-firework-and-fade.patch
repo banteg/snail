@@ -1,0 +1,225 @@
+Android's cRFireWork::Shoot (00075b6c) draws a second lifetime for each
+particle. cRFade::Start and StartOn (0004a5b0, 0004a598) advance immediately.
+Fade AI (0004a40c) waits for a rendered black frame and then the new screen;
+its FadeIn (0003e0b0) holds black for three ticks before revealing the screen.
+The port's Options and Exit screens also release the fade when they are ready.
+
+--- a/decomp/game/SubGame/firework_shoot.cpp
++++ b/decomp/game/SubGame/firework_shoot.cpp
+@@ -5,4 +5,6 @@
+ #include "runtime_config.h"
+ #include "sprite.h"
++
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ // Signed random in [-scale, scale).
+@@ -26,4 +28,6 @@
+         sprite->progress = 0.0f;
+ 
++        if (g_port_ultimate)
++            RAND(0.5f, 0); // Android evaluates the positive lifetime once for its zero check.
+         float duration = (float)RAND(0.5f, 0);
+         duration += 0.800000012f;
+--- a/decomp/include/frontend_fade.h
++++ b/decomp/include/frontend_fade.h
+@@ -10,4 +10,5 @@
+     void Init(); // folded @ 0x404350
+     void Start(FrontendFadeCallback completion_callback); // @ 0x40abc0
++    void FadeIn(); // Android: release the black frame once the next screen is ready
+     void StartOn(); // @ 0x40abe0
+     void AI(); // @ 0x40abf0
+@@ -18,5 +19,8 @@
+         float alpha;
+     };
+-    float hold_progress; // +0x08
++    union { // +0x08, only one fade profile is active
++        float hold_progress;
++        int black_frames_left;
++    };
+     float hold_progress_step; // +0x0c
+     FrontendFadeCallback completion_callback; // +0x10
+--- a/decomp/game/Game/begin_frontend_fade_out.cpp
++++ b/decomp/game/Game/begin_frontend_fade_out.cpp
+@@ -2,4 +2,6 @@
+ 
+ #include "frontend_fade.h"
++
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ void cRFade::Start(FrontendFadeCallback completion_callback_)
+@@ -8,3 +10,5 @@
+     alpha_bits = 0;
+     completion_callback = completion_callback_;
++    if (g_port_ultimate)
++        AI();
+ }
+--- a/decomp/game/Game/begin_frontend_fade_in.cpp
++++ b/decomp/game/Game/begin_frontend_fade_in.cpp
+@@ -2,4 +2,15 @@
+ 
+ #include "frontend_fade.h"
++
++extern bool g_port_ultimate; // shell/profile.h
++
++void cRFade::FadeIn()
++{
++    if (g_port_ultimate && state == 4) {
++        state = 5;
++        alpha = 1.0f;
++        black_frames_left = 3;
++    }
++}
+ 
+ void cRFade::StartOn()
+@@ -7,3 +18,5 @@
+     state = 1;
+     alpha_bits = 0x3f800000;
++    if (g_port_ultimate)
++        AI();
+ }
+--- a/decomp/game/Game/update_frontend_transition_overlay.cpp
++++ b/decomp/game/Game/update_frontend_transition_overlay.cpp
+@@ -3,8 +3,13 @@
+ #include "frontend_fade.h"
+ #include "font_system.h"
++#include "game_root.h"
++#include "main_loop_state.h"
++
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ void cRFade::AI()
+ {
+     tColour color;
++    const float alpha_step = g_port_ultimate ? (1.0f / 18.0f) : 0.0555555522f;
+ 
+     switch (state) {
+@@ -13,10 +18,15 @@
+ 
+     case 2:
+-        alpha = alpha + 0.0555555522f;
++        alpha = alpha + alpha_step;
+         if (alpha > 1.0f) {
+             alpha = 1.0f;
+-            state = 3;
+-            hold_progress = 0.0f;
+-            hold_progress_step = 0.33333334f;
++            if (g_port_ultimate) {
++                if (g_render_queue_active)
++                    state = 4;
++            } else {
++                state = 3;
++                hold_progress = 0.0f;
++                hold_progress_step = 0.33333334f;
++            }
+         }
+         break;
+@@ -30,9 +40,19 @@
+ 
+     case 4:
+-        state = 1;
++        if (!g_port_ultimate)
++            state = 1;
++        break;
++
++    case 5:
++        if (--black_frames_left == 0)
++            state = 1;
+         break;
+ 
+     case 1:
+-        alpha = alpha - 0.0555555522f;
++        if (g_port_ultimate && g_game->render_skip_count > 0) {
++            alpha = 1.0f;
++            break;
++        }
++        alpha = alpha - alpha_step;
+         if (alpha <= 0.0f) {
+             alpha = 0.0f;
+--- a/decomp/game/Exit/initialize_exit_prompt.cpp
++++ b/decomp/game/Exit/initialize_exit_prompt.cpp
+@@ -8,4 +8,5 @@
+ void cRExit::Init()
+ {
++    g_game->fade.FadeIn();
+     tColour color_2;
+     tColour color_3;
+--- a/decomp/game/Galaxy/initialize_galaxy.cpp
++++ b/decomp/game/Galaxy/initialize_galaxy.cpp
+@@ -20,4 +20,5 @@
+ void cRGalaxy::Init()
+ {
++    g_game->fade.FadeIn();
+     g_game->star_manager.Hide();
+     cache_music_file(g_main_menu_music_path, 0, g_blank_text);
+--- a/decomp/game/GUI/initialize_challenge_setup_screen.cpp
++++ b/decomp/game/GUI/initialize_challenge_setup_screen.cpp
+@@ -14,4 +14,5 @@
+ void cRGUI::Init()
+ {
++    g_game->fade.FadeIn();
+     g_game->players[0].mouse_cursor.SetActive();
+     game->level_definition.load_frontend_level_by_mode_and_index(
+--- a/decomp/game/Help/initialize_help_screen.cpp
++++ b/decomp/game/Help/initialize_help_screen.cpp
+@@ -15,4 +15,5 @@
+ void cRHelp::Init()
+ {
++    g_game->fade.FadeIn();
+     tColour color;
+ 
+--- a/decomp/game/HighScore/initialize_high_score_screen.cpp
++++ b/decomp/game/HighScore/initialize_high_score_screen.cpp
+@@ -18,4 +18,5 @@
+ void cRHighScore::Init(int mode_, int rank)
+ {
++    g_game->fade.FadeIn();
+     selected_bank = mode_;
+     selected_rank = rank;
+--- a/decomp/game/Intro/initialize_new_game_menu.cpp
++++ b/decomp/game/Intro/initialize_new_game_menu.cpp
+@@ -20,4 +20,5 @@
+ void cRIntro::Init()
+ {
++    g_game->fade.FadeIn();
+     tColour color;
+ 
+--- a/decomp/game/Logo/initialize_intro_screen.cpp
++++ b/decomp/game/Logo/initialize_intro_screen.cpp
+@@ -32,4 +32,5 @@
+ void cRLogo::Init(char* file_name)
+ {
++    g_game->fade.FadeIn();
+     cache_music_file((char*)"music/introtext.ogg", 0, g_blank_text);
+     int script_index = g_game->subgame.landscape_manager
+--- a/decomp/game/MainMenu/initialize_main_menu.cpp
++++ b/decomp/game/MainMenu/initialize_main_menu.cpp
+@@ -19,4 +19,5 @@
+ void cRMainMenu::Init()
+ {
++    g_game->fade.FadeIn();
+     tColour color;
+ 
+--- a/decomp/game/Options/initialize_options_menu.cpp
++++ b/decomp/game/Options/initialize_options_menu.cpp
+@@ -12,4 +12,5 @@
+ void cROptions::Init()
+ {
++    g_game->fade.FadeIn();
+     tColour color;
+ 
+--- a/decomp/game/Splash/initialize_thanks_for_playing_screen.cpp
++++ b/decomp/game/Splash/initialize_thanks_for_playing_screen.cpp
+@@ -16,4 +16,5 @@
+ void cRSplash::Init()
+ {
++    g_game->fade.FadeIn();
+     tColour color;
+ 
+--- a/decomp/game/SubGame/build_subgame_level.cpp
++++ b/decomp/game/SubGame/build_subgame_level.cpp
+@@ -37,4 +37,5 @@
+ void cRSubGame::StartLevel(int level_index)
+ {
++    g_game->fade.FadeIn();
+     g_game->star_manager.UnHide();
+     if (level_mode == 7)

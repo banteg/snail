@@ -119,12 +119,12 @@ int g_pro_selected_route_index = 1;
 
 float scale_galaxy_x(float x)
 {
-    return x * 0.80000001f;
+    return x * 480.0f / 640.0f;
 }
 
 float scale_galaxy_y(float y)
 {
-    return (y * 0.80000001f - 240.0f) * 0.93000001f + 250.0f;
+    return (y * 320.0f / 480.0f - 240.0f) * 0.93f + 250.0f;
 }
 
 void save_pro_progress_file()

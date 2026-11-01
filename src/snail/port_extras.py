@@ -158,6 +158,11 @@ def build_extras_files(
         )
         files[f"OBJECTS/WORLD00/TRACK{index}.TGA"] = track_tga
         files[f"OBJECTS/WORLD00/SLIDE{index}.TGA"] = slide_tga
+    # The tunnel repeats this RGBA rainbow twice per tile on Android.
+    worm = io.BytesIO()
+    with Image.open(android_root / "OBJECTS/WORLD00/WORM.PNG") as source:
+        source.convert("RGBA").save(worm, format="TGA", compression=None)
+    files["OBJECTS/WORLD00/WORM.TGA"] = worm.getvalue()
     fringe_path = android_root / "SPRITES/FRINGECOLOURS.TGA"
     files["SPRITES/FRINGECOLOURS.TGA"] = fringe_path.read_bytes()
     for rel in ("OBJECTS/TRAMPRING/_OBJECT.TXT", "GALAXY/_GALAXYPRO.TXT", "INTRO/CREDITS.TXT", "X/_ANIMATION.TXT"):

@@ -24,7 +24,7 @@ ASSETS = REPO_ROOT / "artifacts/bin"
     ),
     reason="needs browser WASM, node, and game archives",
 )
-def test_mobile_skies_use_whole_image_and_flip_correctly(tmp_path, port_layout_env):
+def test_mobile_skies_match_android_zoom_distortion_and_rng(tmp_path, port_layout_env):
     for name in ("SnailMail.dat", "SnailMailExtras.dat"):
         shutil.copyfile(ASSETS / name, tmp_path / name)
     config = bytearray(196)
@@ -55,24 +55,36 @@ def test_mobile_skies_use_whole_image_and_flip_correctly(tmp_path, port_layout_e
         env=port_layout_env,
         capture_output=True,
         text=True,
-        check=True,
+        check=False,
     )
-    draws = json.loads(result.stdout.splitlines()[-1])
-    assert len(draws) == 6
+    assert result.returncode == 0, result.stderr[-1400:]
+    data = json.loads(result.stdout.splitlines()[-1])
+    assert data["course"]["target"] == pytest.approx(data["course"]["z"] / 36000)
+    assert data["worm"]["target"] == pytest.approx(0.1, abs=2e-4)
+    draws = data["draws"]
+    assert len(draws) == 10
+    # ARM cRBackdrop::SetDistort(10), gRMathRand2Index=123, then one AI tick.
+    # The oracle sends bottom-up JPEG V; the port uploads its TGA top-first.
+    android_centers = {640: (0.49786076, 0.51019654), 320: (0.50558132, 0.49995208)}
     for draw in draws:
-        assert draw["count"] == 49 * 6
-        assert draw["size"] == (
-            [512, 512] if draw["name"] in ("SpacePro", "SpacePro2") else [512, 256]
-        )
-        if draw["ultimate"] and draw["name"] in ("SpacePro", "SpacePro2"):
-            assert [draw[k] for k in ("minU", "maxU", "minV", "maxV")] == pytest.approx(
-                [0, 1, 0, 1]
-            )
-            assert [draw["leftU"], draw["rightU"]] == pytest.approx(
-                [1, 0] if draw["flip"] else [0, 1]
-            )
-        else:
-            # Controls retain the original PC padded-image UV contract.
-            assert [draw[k] for k in ("minU", "maxU", "minV", "maxV")] == pytest.approx(
-                [0, 0.625, 0, 0.9375]
-            )
+        pro = draw["name"] != "SpacePurple"
+        assert draw["size"] == ([512, 512] if pro else [512, 256])
+        if not draw["ultimate"]:
+            assert draw["count"] == 49 * 6
+            assert draw["seedDraws"] == 144
+            assert draw["left"] == pytest.approx([0, 0])
+            assert draw["right"] == pytest.approx([0.625, 0.9375])
+            continue
+        width = draw["screenWidth"]
+        n = 8 if width == 320 else 20
+        assert draw["count"] == 6 * n * n
+        assert (draw["xCount"], draw["yCount"]) == (n + 1, n + 1)
+        assert draw["seedDraws"] == 5 * (n - 1) ** 2
+        us, vs = (1.0, 1.0) if pro else (0.625, 0.9375)
+        u, v = android_centers[width]
+        assert draw["center"] == pytest.approx([u * us, v * vs], abs=2e-5)
+        # Zoom eases from the course's near-zero starting zoom toward 0.05.
+        left, top = draw["left"]
+        assert left / us == pytest.approx(0.015, abs=0.001)
+        assert top / vs == pytest.approx(left / us, abs=1e-6)
+        assert draw["right"] == pytest.approx([us - left, vs - top], abs=1e-6)

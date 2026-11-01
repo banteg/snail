@@ -1,0 +1,35 @@
+Android passes positional sound as one floating gain to both channels. Its
+GetSkirtColour converts the authored RGB and a fixed 0.5 alpha to bytes.
+
+--- a/decomp/engine/RSound/play_sound_effect_at_position.cpp
++++ b/decomp/engine/RSound/play_sound_effect_at_position.cpp
+@@ -5,3 +5,6 @@
+ #include "game_root.h"
+ 
++extern bool g_port_ultimate;
++void play_mobile_positional_sound(int sample_id, float attenuation);
++
+ void cRSound::Play(int sound_id, tVector& position)
+@@ -23,3 +26,8 @@
+     if (distance <= 25.0f) {
++        if (g_port_ultimate) {
++            play_mobile_positional_sound(sound_id, 1.0f - distance / 25.0f);
++            return;
++        }
++
+         float gain = 1.0f - distance * 0.039999999f;
+         float pan = position.x * -0.25f;
+--- a/decomp/game/SubGame/get_track_skirt_color.cpp
++++ b/decomp/game/SubGame/get_track_skirt_color.cpp
+@@ -3,3 +3,5 @@
+ #include "subgame_runtime.h"
+ 
++extern bool g_port_ultimate;
++
+ tColour* cRSubGame::GetSkirtColour(tColour* out)
+@@ -10,4 +12,4 @@
+         level_definition.fringe_color.g,
+         level_definition.fringe_color.b,
+-        0.400000006f);
++        g_port_ultimate ? 127.0f / 255.0f : 0.400000006f);
+     return out;

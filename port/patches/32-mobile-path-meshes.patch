@@ -1,0 +1,300 @@
+Android LoadPaths gives the shared paths Slide/Back, builds both worm hands
+independently and centers the warning texture on each SuperTramp lip.
+Mirror only the allocated vertices for Original's closed, seam-free worm.
+
+--- a/decomp/game/Game/initialize_game_assets_and_world.cpp
++++ b/decomp/game/Game/initialize_game_assets_and_world.cpp
+@@ -25,6 +25,13 @@
+ #include "thanks_screen.h"
+ #include "transform_matrix.h"
+ #include "voice_manager.h"
++
++extern bool g_port_ultimate; // shell/profile.h
++
++static char* path_underside(const char* original)
++{
++    return (char*)(g_port_ultimate ? "Objects/World00/Back.tga" : original);
++}
+ 
+ extern char g_directx_loader_scratch[]; // 0x74eb18, cleared before DirectX loader init
+ extern char g_help_script_path[]; // 0x4a3488
+@@ -877,7 +884,7 @@
+         8,
+         1,
+         (char*)"Objects/World00/Slide0.tga",
+-        (char*)"Objects/World00/Slide0.tga",
++        path_underside("Objects/World00/Slide0.tga"),
+         (char*)"Objects/Path/VeryDark.tga");
+     subgame.paths[36][0].position.zero_vector3();
+     path->build_track_fringe_mesh(
+@@ -891,7 +898,7 @@
+         8,
+         1,
+         (char*)"Objects/World00/Slide0.tga",
+-        (char*)"Objects/World00/Slidex.tga",
++        path_underside("Objects/World00/Slidex.tga"),
+         (char*)"Objects/Path/VeryDark.tga");
+     subgame.paths[36][1].position.zero_vector3();
+     path->build_track_fringe_mesh(
+@@ -1071,7 +1078,7 @@
+         20.0f,
+         1,
+         (char*)"Objects/World00/Slide0.tga",
+-        (char*)"Objects/World00/Slide0.tga",
++        path_underside("Objects/World00/Slide0.tga"),
+         (char*)"Objects/Path/VeryDark.tga");
+     subgame.paths[8][0].position.zero_vector3();
+ 
+@@ -1167,7 +1174,7 @@
+         20.0f,
+         1,
+         (char*)"Objects/World00/Slide0.tga",
+-        (char*)"Objects/World00/Slide0.tga",
++        path_underside("Objects/World00/Slide0.tga"),
+         (char*)"Objects/Path/VeryDark.tga");
+     subgame.paths[11][0].position.zero_vector3();
+ 
+@@ -1191,7 +1198,7 @@
+         20.0f,
+         0,
+         (char*)"Objects/World00/Slide0.tga",
+-        (char*)"Objects/World00/Slide0.tga",
++        path_underside("Objects/World00/Slide0.tga"),
+         (char*)"Objects/Path/VeryDark.tga");
+     subgame.paths[13][0].position.zero_vector3();
+ 
+@@ -1215,7 +1222,7 @@
+         20.0f,
+         1,
+         (char*)"Objects/World00/Slide0.tga",
+-        (char*)"Objects/World00/Slide0.tga",
++        path_underside("Objects/World00/Slide0.tga"),
+         (char*)"Objects/Path/VeryDark.tga");
+     subgame.paths[12][0].position.zero_vector3();
+ 
+@@ -1261,7 +1268,7 @@
+         3,
+         1,
+         (char*)"Objects/World00/Slide0.tga",
+-        (char*)"Objects/World00/Slide0.tga",
++        path_underside("Objects/World00/Slide0.tga"),
+         (char*)"Objects/Path/VeryDark.tga");
+     subgame.paths[21][0].position.zero_vector3();
+ 
+@@ -1354,7 +1361,10 @@
+ 
+     subgame.paths[24][1].SetObject(
+         g_object_list.Add());
+-    subgame.paths[24][1].Mirror(path);
++    if (g_port_ultimate)
++        subgame.paths[24][1].initialize_worm_path_template_pair((char*)"Objects/World00/Worm.tga");
++    else
++        subgame.paths[24][1].Mirror(path);
+     subgame.paths[24][1].position.zero_vector3();
+ 
+     subgame.paths[24][0].fringe_mesh_bod.SetObject(
+@@ -1497,7 +1507,7 @@
+         4,
+         1,
+         (char*)"Objects/World00/Slide0.tga",
+-        (char*)"Objects/World00/Track0.tga",
++        path_underside("Objects/World00/Track0.tga"),
+         (char*)"Objects/Path/VeryDark.tga");
+     subgame.paths[29][0].position.zero_vector3();
+ 
+@@ -1518,7 +1528,7 @@
+     path->initialize_toad_path_template_pair(
+         1,
+         (char*)"Objects/World00/Slide0.tga",
+-        (char*)"Objects/World00/Track0.tga",
++        path_underside("Objects/World00/Track0.tga"),
+         (char*)"Objects/Path/VeryDark.tga");
+     subgame.paths[47][0].position.zero_vector3();
+ 
+@@ -1539,7 +1549,7 @@
+     path->initialize_toad_path_template_pair(
+         0,
+         (char*)"Objects/World00/Slide0.tga",
+-        (char*)"Objects/World00/Track0.tga",
++        path_underside("Objects/World00/Track0.tga"),
+         (char*)"Objects/Path/VeryDark.tga");
+     subgame.paths[48][0].position.zero_vector3();
+ 
+@@ -1560,7 +1570,7 @@
+     path->initialize_toad_path_template_pair(
+         1,
+         (char*)"Objects/World00/Slide0.tga",
+-        (char*)"Objects/World00/Track0.tga",
++        path_underside("Objects/World00/Track0.tga"),
+         (char*)"Objects/Path/VeryDark.tga");
+     subgame.paths[49][0].position.zero_vector3();
+ 
+@@ -1581,7 +1591,7 @@
+     path->initialize_toad_path_template_pair(
+         0,
+         (char*)"Objects/World00/Slide0.tga",
+-        (char*)"Objects/World00/Track0.tga",
++        path_underside("Objects/World00/Track0.tga"),
+         (char*)"Objects/Path/VeryDark.tga");
+     subgame.paths[50][0].position.zero_vector3();
+ 
+
+--- a/decomp/game/Path/mirror_path.cpp
++++ b/decomp/game/Path/mirror_path.cpp
+@@ -72,7 +72,7 @@
+         } while (sample_index < segment_count);
+     }
+ 
+-    ((Object*)strip_mesh)->RequestVertices((width_cells + 1) * (segment_count + 1));
++    ((Object*)strip_mesh)->RequestVertices(source->strip_mesh->vertex_count);
+     ((Object*)strip_mesh)->RequestFaceQuads(2 * width_cells * segment_count);
+ 
+     Object* destination_mesh = strip_mesh;
+@@ -86,30 +86,11 @@
+     Vector3* destination_vertices = destination_mesh->vertices;
+     cRFaceQuad* destination_facequads = destination_mesh->facequads;
+ 
+-    int row = 0;
+-    if (segment_count >= 0) {
+-        do {
+-            int column = 0;
+-            if (width_cells >= 0) {
+-                do {
+-                    destination_vertices[column + row * (width_cells + 1)].x =
+-                        -source->strip_mesh->vertices[column + row * (width_cells + 1)].x;
+-                    destination_vertices[column + row * (width_cells + 1)].y =
+-                        source->strip_mesh->vertices[column + row * (width_cells + 1)].y;
+-                    destination_vertices[column + row * (width_cells + 1)].z =
+-                        source->strip_mesh->vertices[column + row * (width_cells + 1)].z;
+-
+-                    if ((strip_mesh->flags & OBJECT_FLAG_USE_VERTEX_COLOURS) != 0) {
+-                        destination_colours[column + row * (width_cells + 1)] =
+-                            source->strip_mesh->vertex_colours[column + row * (width_cells + 1)];
+-                    }
+-
+-                    ++column;
+-                } while (column <= width_cells);
+-            }
+-
+-            ++row;
+-        } while (row <= segment_count);
++    for (int vertex = 0; vertex < source->strip_mesh->vertex_count; ++vertex) {
++        destination_vertices[vertex] = source->strip_mesh->vertices[vertex];
++        destination_vertices[vertex].x *= -1.0f;
++        if (destination_colours)
++            destination_colours[vertex] = source->strip_mesh->vertex_colours[vertex];
+     }
+ 
+     int segment = 0;
+
+--- a/decomp/game/Path/initialize_supertramp_path_template_pair.cpp
++++ b/decomp/game/Path/initialize_supertramp_path_template_pair.cpp
+@@ -8,6 +8,8 @@
+ #include "transform_matrix.h"
+ 
+ typedef AttachmentSample PathTemplateSample;
++
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ static __forceinline void build_supertramp_strip_mesh(Path *path, char *top_texture,
+                                                       char *bottom_texture,
+@@ -120,13 +122,15 @@
+                     }
+                     if (side == 0)
+                     {
+-                        facequads[face_offset].uv[0].u = u0;
++                        const float cap_offset =
++                            g_port_ultimate && row == path->segment_count - 1 ? 0.375f : 0.0f;
++                        facequads[face_offset].uv[0].u = u0 + cap_offset;
+                         facequads[face_offset].uv[0].v = v0;
+-                        facequads[face_offset].uv[1].u = u1;
++                        facequads[face_offset].uv[1].u = u1 + cap_offset;
+                         facequads[face_offset].uv[1].v = v0;
+-                        facequads[face_offset].uv[2].u = u1;
++                        facequads[face_offset].uv[2].u = u1 + cap_offset;
+                         facequads[face_offset].uv[2].v = v1;
+-                        facequads[face_offset].uv[3].u = u0;
++                        facequads[face_offset].uv[3].u = u0 + cap_offset;
+                         facequads[face_offset].uv[3].v = v1;
+                     }
+                     else
+
+--- a/decomp/game/Path/initialize_start_path_template_pair.cpp
++++ b/decomp/game/Path/initialize_start_path_template_pair.cpp
+@@ -9,7 +9,9 @@
+ 
+ typedef AttachmentSample PathTemplateSample;
+ 
+-static __forceinline void build_start_strip_mesh(Path* path, char* texture)
++extern bool g_port_ultimate; // shell/profile.h
++
++static __forceinline void build_start_strip_mesh(Path* path, char* texture, char* underside)
+ {
+     path->strip_mesh->RequestVertices(
+         (path->width_cells + 1) * (path->segment_count + 1));
+@@ -92,10 +94,10 @@
+                         + column + 1;
+                     if (!((column ^ row) & 1)) {
+                         facequads[face_offset].texture_ref =
+-                            g_texture_refs.Add(texture, 0, 0);
++                            g_texture_refs.Add(underside, 0, 0);
+                     } else {
+                         facequads[face_offset].texture_ref =
+-                            g_texture_refs.Add(texture, 0, 0);
++                            g_texture_refs.Add(underside, 0, 0);
+                     }
+                 }
+                 if (face_index == 0) {
+@@ -295,9 +297,8 @@
+             ++delta_index;
+         } while (delta_index < segment_count);
+     }
+-    build_start_strip_mesh(this, texture_a);
++    build_start_strip_mesh(this, texture_a, g_port_ultimate ? texture_b : texture_a);
+     CalcLengthZ();
+     (void)side_exit;
+-    (void)texture_b;
+     (void)cap_texture;
+ }
+
+--- a/decomp/game/Path/initialize_halfpipe_path_template_pair.cpp
++++ b/decomp/game/Path/initialize_halfpipe_path_template_pair.cpp
+@@ -5,6 +5,8 @@
+ #include "sprite.h"
+ #include "track_attachment_types.h"
+ #include "transform_matrix.h"
++
++void project_baked_halfpipe_vertex(Vector3& vertex, float radius); // shell/extras_paths.cpp
+ 
+ static __forceinline void build_halfpipe_middle(
+     Path *path, AttachmentSample* const& primary_bank, float &out_angle)
+@@ -200,8 +202,6 @@
+ 
+     cRFaceQuad *facequads = strip_mesh->facequads;
+     Vector3 *vertices = strip_mesh->vertices;
+-    TransformMatrix kind42_transform;
+-    kind42_transform.Identity();
+ 
+     int row, column;
+     row = 0;
+@@ -233,17 +233,9 @@
+                     vertices[column + row * (width_cells + 1)] = generated_position;
+                 }
+ 
+-                int radius_sample = row - 1;
+-                if (row != segment_count)
+-                    radius_sample = row;
+-                compute_kind42_attachment_transform(
+-                    primary_samples[radius_sample].special_scalar, vertices[column + row * (width_cells + 1)].x, 0.0f,
+-                    &kind42_transform, &out_angle);
+-                if (sample_offset > (int)sizeof(AttachmentSample) && row != segment_count)
+-                {
+-                    vertices[column + row * (width_cells + 1)].x = kind42_transform.position.x;
+-                    vertices[column + row * (width_cells + 1)].y = kind42_transform.position.y;
+-                }
++                if (row > 1 && row < segment_count)
++                    project_baked_halfpipe_vertex(vertices[column + row * (width_cells + 1)],
++                                                 primary_samples[row].special_scalar);
+             }
+             ++row;
+             sample_offset += sizeof(AttachmentSample);

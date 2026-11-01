@@ -26,7 +26,7 @@
 #include "track.h"
 
 extern char g_level_file_text_buffer[];
-void backdrop_render_recovered(cRBackdrop* self) __asm__("_ZN10cRBackdrop25render_backdrop_recoveredEv");
+void reset_mobile_backdrop();
 void sm_tracks_import_recovered(cRSMTracks* self) __asm__("_ZN10cRSMTracks16Import_recoveredEv");
 void* load_config_file_recovered(char* name, void* bytes) __asm__("_Z26load_config_file_recoveredPcPv");
 int write_file_bytes_recovered(char* name, void* bytes, int count) __asm__("_Z26write_file_bytes_recoveredPcPvi");
@@ -137,7 +137,7 @@ void sample_skirt_colour_random(tColour* out, float t)
     out->r = (float)g_fringe_colours_tga[offset + 0] / 255.0f;
     out->g = (float)g_fringe_colours_tga[offset + 1] / 255.0f;
     out->b = (float)g_fringe_colours_tga[offset + 2] / 255.0f;
-    out->a = 0.4f;
+    out->a = 127.0f / 255.0f;
 }
 
 void refresh_built_level_skirt_colours(cRSubGame* subgame)
@@ -240,7 +240,7 @@ void cRSMTracks::Import()
 // rule change that would make stored replays drift starts fresh tables by
 // bumping it and removing older Ultimate score files; campaign progress keeps
 // its file.
-const int kUltimateScoreVersion = 3;
+const int kUltimateScoreVersion = 4;
 const char* const kUltimateScoreTables[][2] = {
     {"ScoreA.dat", "ScoreMobileA"},
     {"ScoreB.dat", "ScoreMobileB"},
@@ -440,6 +440,7 @@ ArchiveIndex* extras_get_archive_index()
 
 void extras_init_assets()
 {
+    reset_mobile_backdrop();
     if (!g_port_ultimate)
         return;
     for (int i = 0; i < 4; ++i) {
@@ -875,47 +876,4 @@ float extras_swaying_ring_x()
             return ring.transform.position.x;
     }
     return 0.0f;
-}
-
-// PC single-texture backdrops contain a 320x240 image inside a 512x256
-// allocation. Converted Pro skies fill their texture, as on Android, so they
-// need normalized UVs for the complete image, including horizontal flips.
-void cRBackdrop::render_backdrop()
-{
-    cRTexture* texture = active_primary_texture_id >= 0 && active_primary_texture_id < SPRITE_TEXTURE_CAPACITY
-        ? g_sprite_texture_table[active_primary_texture_id] : 0;
-    if (!g_port_ultimate || !texture
-        || (!path_equals_ignore_case(texture->name, "Backgrounds/SpacePro.tga")
-            && !path_equals_ignore_case(texture->name, "Backgrounds/SpacePro2.tga"))) {
-        backdrop_render_recovered(this);
-        return;
-    }
-    tColour color;
-    color.Set(1.0f, 1.0f, 1.0f, 1.0f);
-    for (int y = 0; y < 7; ++y) {
-        for (int x = 0; x < 7; ++x) {
-            const BackdropDistortCell& tl = distort_grid[y][x];
-            const BackdropDistortCell& tr = distort_grid[y][x + 1];
-            const BackdropDistortCell& br = distort_grid[y + 1][x + 1];
-            const BackdropDistortCell& bl = distort_grid[y + 1][x];
-            float x0 = (float)x * 91.4285736f;
-            float x1 = (float)(x + 1) * 91.4285736f;
-            float y0 = (float)y * 68.5714264f;
-            float y1 = (float)(y + 1) * 68.5714264f;
-            float u0 = (float)x / 7.0f;
-            float u1 = (float)(x + 1) / 7.0f;
-            if (active_flip) {
-                u0 = 1.0f - u0;
-                u1 = 1.0f - u1;
-            }
-            OSDPrintUV(
-                active_primary_texture_id,
-                x0 + tl.current_x_offset, y0 + tl.current_y_offset,
-                x1 + tr.current_x_offset, y0 + tr.current_y_offset,
-                x1 + br.current_x_offset, y1 + br.current_y_offset,
-                x0 + bl.current_x_offset, y1 + bl.current_y_offset,
-                0, 0, 0x8000000, &color,
-                u0, (float)y / 7.0f, u1, (float)(y + 1) / 7.0f, 0, 0);
-        }
-    }
 }

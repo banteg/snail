@@ -163,6 +163,7 @@ def test_deployable_extras_include_mobile_shared_dependencies():
         "LEVELS/TUTORIAL.TXT",
         "INTRO/CREDITS.TXT",
         "X/_ANIMATION.TXT",
+        "OBJECTS/WORLD00/WORM.TGA",
         "SFX2/UPRAMP.OGG",
     ):
         assert read_archive_entry(archive, index.entry_by_path(name))
@@ -229,6 +230,19 @@ def test_mobile_credits_and_fall_animation_replace_the_pc_scripts():
     assert {name for name in pc if pc[name] != mobile[name]} == {b"turbo-fall-000.x"}
     assert pc[b"turbo-fall-000.x"] == ([b"6"], [b"once"])
     assert mobile[b"turbo-fall-000.x"] == ([b"1"], [b"pingpong"])
+
+
+@pytest.mark.skipif(
+    not (ANDROID / "OBJECTS/WORLD00/WORM.PNG").exists() or not PC_ARCHIVE.exists()
+    or not (IOS / "objects_world00_hi_surface6.tga").exists(),
+    reason="needs extracted mobile assets and SnailMail.dat",
+)
+def test_ultimate_worm_retains_mobile_colours_and_alpha():
+    files = build_extras_files(ANDROID, PC_ARCHIVE, APK, IOS)
+    encoded = Image.open(io.BytesIO(files["OBJECTS/WORLD00/WORM.TGA"]))
+    original = Image.open(ANDROID / "OBJECTS/WORLD00/WORM.PNG").convert("RGBA")
+    assert encoded.mode == "RGBA" and encoded.size == original.size
+    assert encoded.tobytes() == original.tobytes()
 
 
 @pytest.mark.skipif(

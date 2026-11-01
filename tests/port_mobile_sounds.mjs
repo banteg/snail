@@ -38,7 +38,7 @@ async function record(ultimate) {
       if (!sounds[sound]) return;
       channels[channel] = sounds[sound];
       const z = game.memory().readFloatLE(game.sub + LAYOUT.player + LAYOUT.player_z);
-      events.push({ tick, play: sounds[sound], loop, z, riding });
+      events.push({ tick, play: sounds[sound], loop, z, riding, volume, pan });
     },
     channel_stop: channel => {
       if (channels[channel]) events.push({ tick, stop: channels[channel] });

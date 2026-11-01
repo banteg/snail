@@ -12,6 +12,7 @@
 #include "game_root.h"
 #include "object_render_types.h"
 #include "path_manager.h"
+#include "rmath_tables.h"
 #include "rstring.h"
 #include "segment_catalog_types.h"
 #include "sub_loc_tile_ids.h"
@@ -33,6 +34,22 @@ void kind42_transform_recovered(
     cRPath* self, float radius, float x, float y, TransformMatrix* transform, float* out_angle)
     __asm__("_ZN6cRPath45compute_kind42_attachment_transform_recoveredEfffP7tMatrixPf");
 void set_object_color(Object* object, tColour color);
+
+// The shipped mobile road meshes were baked on an 8192-step circle. Live
+// attachment samples use the game's profile-specific trig tables.
+static int baked_trig_index(float angle)
+{
+    float scaled_angle = angle * 0.159154937f;
+    return (int)(scaled_angle * RMATH_TRIG_TABLE_COUNT) & (RMATH_TRIG_TABLE_COUNT - 1);
+}
+
+void project_baked_halfpipe_vertex(Vector3& vertex, float radius)
+{
+    float angle = ATan(4.0f, (float)Sqrt(radius * radius - 16.0f)) * vertex.x * 0.25f;
+    int index = baked_trig_index(angle);
+    vertex.x = g_sine_table[index] * radius;
+    vertex.y = radius - g_cosine_table[index] * radius;
+}
 
 // The shell keeps its extra paths as primary/secondary pairs, laid out like
 // one row of cRSubGame::paths.
@@ -124,40 +141,31 @@ void compute_path_deltas(int count, PathTemplateSample* primary, PathTemplateSam
     secondary[count - 1].delta_length = 1.0f;
 }
 
-void build_strip_mesh(Path* path, char* texture_a, char* texture_b, bool halfpole)
+void build_strip_mesh(Path* path, char* texture_a, char* texture_b, bool halfpole, float sbend_height = 0.0f)
 {
     path->strip_mesh->RequestVertices((path->width_cells + 1) * (path->segment_count + 1));
     path->strip_mesh->RequestFaceQuads(2 * path->width_cells * path->segment_count);
 
     Vector3* vertices = path->strip_mesh->vertices;
     cRFaceQuad* facequads = path->strip_mesh->facequads;
-    TransformMatrix pole_transform;
-    pole_transform.Identity();
-    float out_angle = 0.0f;
 
     for (int row = 0; row <= path->segment_count; ++row) {
+        const int sample = row == path->segment_count ? row - 1 : row;
+        const TransformMatrix& frame = path->primary_samples[sample].transform;
+        Vector3 center = frame.position;
+        if (row == path->segment_count)
+            center.z += 1.0f;
+        if (sbend_height && sample > 0) {
+            float phase = (float)(sample - 1) * 6.2831855f / (float)(path->segment_count - 1);
+            center.y = (1.0f - g_cosine_table[baked_trig_index(phase * 0.5f)]) * 0.5f * sbend_height;
+        }
         for (int column = 0; column <= path->width_cells; ++column) {
             float lateral = (float)column - (float)path->width_cells * 0.5f;
-            Vector3 generated;
-            if (row != path->segment_count) {
-                Vector3 offset = path->primary_samples[row].transform.basis_right * lateral;
-                generated = path->primary_samples[row].transform.position + offset;
-            } else {
-                Vector3 offset = path->primary_samples[row - 1].transform.basis_right * lateral;
-                generated = (path->primary_samples[row - 1].transform.position + Vector3(0.0f, 0.0f, 1.0f)) + offset;
-            }
             int v_idx = column + row * (path->width_cells + 1);
-            vertices[v_idx] = generated;
-            if (halfpole) {
-                int r_sample = row != path->segment_count ? row : row - 1;
-                float radius = path->primary_samples[r_sample].special_scalar;
-                float root = (float)Sqrt(radius * radius - 16.0f);
-                float angle = ATan(4.0f, root) * vertices[v_idx].x * 0.25f;
-                out_angle = angle;
-                if (row > 1 && row != path->segment_count) {
-                    vertices[v_idx].x = Sin(angle) * radius;
-                    vertices[v_idx].y = -(radius - Cos(angle) * radius);
-                }
+            vertices[v_idx] = center + frame.basis_right * lateral;
+            if (halfpole && row > 1 && row < path->segment_count) {
+                project_baked_halfpipe_vertex(vertices[v_idx], path->primary_samples[row].special_scalar);
+                vertices[v_idx].y = -vertices[v_idx].y;
             }
         }
     }
@@ -208,7 +216,7 @@ void build_strip_mesh(Path* path, char* texture_a, char* texture_b, bool halfpol
 
 // Android BuildCage2 (30 nodes) and BuildTwister2A (66 nodes). These replace
 // the PC variants only in the extras bank; original constructors stay intact.
-void build_mobile_shared_path(Path* path, bool cage, bool handedness, char* texture)
+void build_mobile_shared_path(Path* path, bool cage, bool handedness, char* surface, char* underside)
 {
     path->kind = cage ? PATH_TEMPLATE_KIND_CAGE2 : PATH_TEMPLATE_KIND_TWISTER2;
     path->is_mirrored_x = 0;
@@ -265,7 +273,7 @@ void build_mobile_shared_path(Path* path, bool cage, bool handedness, char* text
         }
     }
     compute_path_deltas(path->segment_count, path->primary_samples, path->secondary_samples);
-    build_strip_mesh(path, texture, texture, false);
+    build_strip_mesh(path, surface, underside, false);
     path->CalcLengthZ();
 }
 
@@ -637,7 +645,7 @@ void build_sbend(Path* path, int width_cells_, float height, bool centered, char
     }
 
     compute_path_deltas(path->segment_count, p, s);
-    build_strip_mesh(path, texture_a, texture_b, false);
+    build_strip_mesh(path, texture_a, texture_b, false, height);
     path->CalcLengthZ();
 }
 
@@ -704,7 +712,6 @@ void extras_init_paths()
     }
 
     char* slide0 = (char*)"Objects/World00/Slide0.tga";
-    char* track0 = (char*)"Objects/World00/Track0.tga";
     char* back = (char*)"Objects/World00/Back.tga";
     char* dark = (char*)"Objects/Path/VeryDark.tga";
     char* warn = (char*)"Objects/World00/TrackWarn.tga";
@@ -721,13 +728,13 @@ void extras_init_paths()
     // 1..3: SBEND1, SBEND2, SBEND4 + update PC slot 14 (SBEND, unused on PC) to Android BuildSBend
     const int sbend_widths[3] = {1, 2, 4};
     for (int i = 0; i < 3; ++i) {
-        build_sbend(&g_extra_path_pairs[1 + i].primary, sbend_widths[i], 8.0f, true, track0, track0);
+        build_sbend(&g_extra_path_pairs[1 + i].primary, sbend_widths[i], 8.0f, true, slide0, back);
         finish_standard_pair(g_extra_path_pairs[1 + i]);
     }
     g_pc_path_pairs_backup[14].primary.initialize_path_template_record_pair();
     g_pc_path_pairs_backup[14].secondary.initialize_path_template_record_pair();
     g_pc_path_pairs_backup[14].primary.SetObject(g_object_list.Add());
-    build_sbend(&g_pc_path_pairs_backup[14].primary, 8, 8.0f, true, track0, track0);
+    build_sbend(&g_pc_path_pairs_backup[14].primary, 8, 8.0f, true, slide0, back);
     finish_standard_pair(g_pc_path_pairs_backup[14]);
     subgame_path_pair(14) = g_pc_path_pairs_backup[14];
 
@@ -780,7 +787,7 @@ void extras_init_paths()
     const int shared_slots[3] = {15, 45, 46};
     for (int i = 0; i < 3; ++i) {
         PathPair& pair = g_extra_path_pairs[18 + i];
-        build_mobile_shared_path(&pair.primary, i == 0, i != 2, slide0);
+        build_mobile_shared_path(&pair.primary, i == 0, i != 2, slide0, back);
         finish_standard_pair(pair);
         g_pc_path_pairs_backup[shared_slots[i]] = pair;
         subgame_path_pair(shared_slots[i]) = pair;
@@ -943,8 +950,6 @@ void extras_add_tramp_ring(cRSubLoc* cell)
 void extras_step_tramp_rings()
 {
     if (!g_port_ultimate || !g_paths_initialized || !g_game)
-        return;
-    if (g_game->subgame.subgame_state != 2)
         return;
     for (int i = 0; i < kTrampRingSlotCount; ++i) {
         SubTrampRing& ring = g_tramp_rings[i];

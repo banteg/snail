@@ -222,7 +222,10 @@ Which functions the port compiles:
   positions and differences greater than the recording's 1/32 quantum. The replay
   starts through the High Scores screen's Replay handler (the shipped game
   hides those buttons but keeps the handler), and playback runs to the run's
-  end marker. As of 2026-10-08 all 20 replays match, 57,817 ticks, every one
+  end marker. Manual quit can append an empty marker after the final motion
+  sample. The oracle checks the return to High Scores at that cursor and
+  still compares the position on any marker that contains motion.
+  All 20 Windows replays match, 57,817 ticks, every one
   within 0.0007 of the original. Next: more of the state per tick (lateral
   x, speed, score) and per-tick captures from the original through Frida
   (`tools/frida/`, `docs/re/frida-runtime-trace.md`) for what replays don't
@@ -304,14 +307,15 @@ Which functions the port compiles:
   Each level build prints its rows, finish row, listed segments, the seed
   `BuildLevel` passed to `RandSeed`, and every `RAND`/`SRAND` draw up to the
   end of `cRSubGame::StartLevel`, counted by tag. `--segments` lists each
-  laid piece's rows and mirror flag; `--seed` replaces the seed, so a build
-  can be compared with the port's for the same seed. Comparisons so far:
+  laid piece's rows and mirror flag. `--seed` selects the same build in both engines.
   - the tutorial, and route I in Time Trial and postal, match Android row
     for row and draw for draw;
   - Challenge 0 showed that Android lays a random course's finish in pieces
     sized by the picks past the finish line; with
     `port/patches/22-challenge-finish.patch`, Ultimate matches its 147 draws
     and 72 pieces.
+  - At 40% difficulty and speed, Challenge seed 318 finishes at row 1,739.
+    Android divides each percentage by 100 before choosing the course length.
 
   The oracle does not draw, play audio, steer, or replay recorded Android
   sessions, and its libm is the host's.
@@ -376,7 +380,8 @@ The default iPhone source is
 `artifacts/asset-scout/src/ios19/Payload/iSM103010_1.app` (`--ios-root` overrides it).
 It also converts the Pro backgrounds (`SpacePro`, `SpacePro2`, `StarmapProbg`,
 `SplashPro_A`/`_B`) and `Galaxy/*Pro.tga` overlays to PC TGA conventions, and
-packs `Sprites/FringeColours.tga`, `Objects/TrampRing/`, `Galaxy/_GalaxyPro.txt`,
+packs `Sprites/FringeColours.tga`, the Android `Objects/World00/Worm.tga`
+tunnel texture, `Objects/TrampRing/`, `Galaxy/_GalaxyPro.txt`,
 `Intro/Credits.txt` (the mobile staff and a 45 s crawl instead of 35 s),
 `X/_Animation.txt` (the falling snail swings between its two poses every
 second instead of curling once over six), all 65 mobile level files and all
@@ -423,7 +428,9 @@ tick instead of dropping to 0. The shell's `j_rand` and
 `RandTable.bin`, and Ultimate makes no startup warmup draws, as Android's
 `AppInit` makes none. Under `snail android trace` the tutorial, route I in
 Time Trial and postal, and Challenge 0 build row for row and draw for draw as
-on Android; other courses, and play after the build, have not been compared. Sixteen slugs can be alive at
+on Android. A separate seeded check of all 50 Postal and 10 Pro routes
+matched tile IDs, row flags, segment boundaries, finish rows and the next
+random draw. Sixteen slugs can be alive at
 once instead of 8, which the mobile Barrage and SlugLine formations need. The
 active track window reaches two rows further: objects spawn 40 rows ahead
 of the snail instead of 38, and the finish banner, the salt fade-in and
@@ -437,9 +444,10 @@ of cutting it off; invincibility starts silently; and the mobile ramp sound,
 appended to the PC sound bank, plays on ramps and at the SuperTramp launch. A
 ramp plays it only once the snail is more than a row past the last ramp that
 did. Android never resets that mark, so after a long level the next level's
-ramps stay silent until the snail passes it; the port keeps that. Pro skies use the full
-converted image with normalized UVs, including horizontal flips; PC
-backdrops retain their padded-image UV layout.
+ramps stay silent until the snail passes it. Gameplay skies zoom with distance
+and inside the WORM tunnel. Distortion animates the UVs across a fixed grid.
+Pro uses the full converted image and retains its orientation for either value
+of the level's flip flag, as in the Android renderer.
 
 Patches also carry Android's rules on the track and at the finish:
 
@@ -477,17 +485,19 @@ finish shows the continue prompt and, on a new best time
 for the route, a blinking "NEW FASTEST TIME!" with the Perfect jingle.
 
 Mobile campaign progress and scores use `SnailMailMobile.cfg` and
-`ScoreMobileA/B/C-v3.dat`. A score table keeps each run's replay, which plays
+`ScoreMobileA/B/C-v4.dat`. A score table keeps each run's replay, which plays
 back only on the courses and rules it was recorded under, so the table names
 carry a version (`kUltimateScoreVersion` in `port/shell/extras.cpp`): a rule
 change that would make stored replays drift bumps it, removes older Ultimate
 score files, and starts fresh tables, while progress keeps its file. Version 2
-began with the profile audit's rules (v0.4.0), version 3 with Android's swept
-path re-entry. The first mobile launch copies the volumes and display
+began with the profile audit's rules (v0.4.0), and version 3 introduced
+Android's swept path re-entry. Version 4 uses the mobile course arithmetic,
+trigonometry and random draws, and records each fired shot in replay bit 0x40.
+The first mobile launch copies the volumes and display
 settings (fullscreen, render flags, display mode) from the PC config. The rest,
 from campaign progress and the tutorial to the Challenge sliders and the
 high-score name, starts at the defaults, which Android's match.
-Pro keeps `SnailMailPro.cfg` and `ScorePro-v3.dat`. The Pro galaxy, progress and
+Pro keeps `SnailMailPro.cfg` and `ScorePro-v4.dat`. The Pro galaxy, progress and
 scores stand in for the postal ones only during a Pro game and a replay from
 the Pro High Scores, so the main menu and the Postal table always show postal
 records. A Pro record replays on its Pro course; Android clears its Pro flag on
@@ -509,9 +519,10 @@ screen's version label, in full for Fluctuosa; OpenFeint (35 achievements, 56
 leaderboards, lifetime parcel and slug counters, and the main menu's OpenFeint
 logo in place of Exit); the phone menu and help frames, the publisher loading
 splashes, and the repacked 256×256 font with its wider metrics; and overlapping
-voice lines (both mobile backends dropped BASS's active-sample check). Shared
-path meshes other than CAGE2, TWISTER2 and SBEND are not yet checked against
-the Android `.smo` meshes. The slug voice lines play in both profiles: the PC's
+voice lines (both mobile backends dropped BASS's active-sample check).
+Both hands of the WORM, the SuperTramp warning stripes and the surface
+materials on 18 track pieces were checked against the shipped Android meshes.
+The slug voice lines play in both profiles: the PC's
 `cRSlugVoiceManager` has Android's constants, call sites and clips.
 
 Ultimate selects the mobile 3,500-row build limit; Original retains the PC

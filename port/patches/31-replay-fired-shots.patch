@@ -1,0 +1,57 @@
+Android Goldy AI (0007ac54) records the shot after its live input and
+cooldown checks fire, and replays that event without checking them again.
+Keep the raw input bits alongside bit 0x40. The port has one playable
+Goldy; its second Windows input slot does not represent a second snail.
+
+--- a/decomp/game/SubGame/update_subgoldy.cpp
++++ b/decomp/game/SubGame/update_subgoldy.cpp
+@@ -90,4 +90,17 @@
+ 
+ void extras_path_search(cRPath* path, Vector3 now, Vector3 before, Vector3 sweep, cRSubLoc* cell); // shell/extras.h
++enum { REPLAY_FLAG_FIRED = 0x40 };
++
++static void play_and_record_shot(cRSubGoldy* player)
++{
++    player->PlayShootSfx();
++    player->Shoot(player);
++    cRSubGame* game = player->game;
++    int cursor = game->replay_update_cursor;
++    if (g_port_ultimate && player->steering_mode_selector == 0
++        && (unsigned int)cursor < SUB_SOLUTION_RUN_RECORD_COUNT)
++        game->current_high_score_record.run_records[cursor].flags |= REPLAY_FLAG_FIRED;
++}
++
+ void cRSubGoldy::AI()
+ {
+@@ -1075,5 +1088,14 @@
+ 
+     cRSubGame* emitter_game = game;
+-    if ((emitter_game->runtime_flags
++    if (g_port_ultimate && emitter_game->selected_level_record_active) {
++        const SubSolution* replay = emitter_game->selected_level_record;
++        int cursor = emitter_game->replay_update_cursor;
++        if ((unsigned int)cursor < SUB_SOLUTION_RUN_RECORD_COUNT
++            && cursor < replay->replay_sample_count
++            && (replay->run_records[cursor].flags & REPLAY_FLAG_FIRED)) {
++            PlayShootSfx();
++            Shoot(this);
++        }
++    } else if ((emitter_game->runtime_flags
+             & SUBGAME_RUNTIME_FLAG_MOVEMENT_FIRE_EMITTERS)
+             != 0
+@@ -1093,6 +1115,5 @@
+                 || (!emitter_game->selected_level_record_active
+                     && (control_source->control_flags_a & INPUT_BUTTON_PRIMARY))) {
+-                PlayShootSfx();
+-                Shoot(this);
++                play_and_record_shot(this);
+                 shoot_cooldown_progress = shoot_cooldown_step + 0.30000001f;
+             } else if ((emitter_game->selected_level_record_active
+@@ -1102,6 +1123,5 @@
+                     && (control_source->control_flags_b & INPUT_BUTTON_PRIMARY))) {
+                 shoot_cooldown_progress = shoot_cooldown_step;
+-                PlayShootSfx();
+-                Shoot(this);
++                play_and_record_shot(this);
+             }
+         }

@@ -1,0 +1,387 @@
+Android's independent effect RNG consumes an extra sample in random-duration
+guards (BlinkRandInit 00071f4c, AddSlug 0007953c, Twinkle::AI 0005cc38,
+Slug::Explode 00077b08) and one angle per background star (0006aff8).
+Slugs burst into 20 larger particles; basic shots have no trail and rockets
+emit smoke every fourth tick (000629c0, 000635d4). Pick-up rings allocate,
+update and release eight larger stars 45 degrees apart (0006fa10, 0006e8a0).
+
+--- a/decomp/include/rmath_random.h
++++ b/decomp/include/rmath_random.h
+@@ -5,6 +5,16 @@
+ float __cdecl MathType16to32(short value, float scale);
+ void __cdecl gRMathRand2Init();
+ int __cdecl gRMathRand2();
++// Android tests the random duration for zero, then rolls again to compute it.
++// All durations using this helper are positive for every 15-bit table entry.
++extern bool g_port_ultimate;
++inline int random_duration_sample()
++{
++    if (g_port_ultimate)
++        gRMathRand2();
++    return gRMathRand2();
++}
++
+ void __cdecl RMathInit();
+ void __cdecl RandSeed(int seed);
+ float __cdecl Cos(float angle);
+--- a/decomp/game/SubGame/initialize_blink_random.cpp
++++ b/decomp/game/SubGame/initialize_blink_random.cpp
+@@ -10,7 +10,7 @@
+     int remaining = 24;
+ 
+     do {
+-        int result = gRMathRand2();
++        int result = random_duration_sample();
+         --remaining;
+         *sample = 1.0f / (((float)result * 0.000030517578f + 1.0f) * 60.0f);
+         ++sample;
+--- a/decomp/game/SubGame/spawn_slug_hazard.cpp
++++ b/decomp/game/SubGame/spawn_slug_hazard.cpp
+@@ -106,7 +106,7 @@
+     }
+ 
+     slug_hazards.slots[slot_index].blink_progress = 0.0f;
+-    int blink_random_value = gRMathRand2();
++    int blink_random_value = random_duration_sample();
+     slug_hazards.slots[slot_index].blink_step =
+         1.0f /
+         (((float)blink_random_value * 0.000030517578f + 1.0f) * 60.0f);
+--- a/decomp/game/Border/update_twinkle.cpp
++++ b/decomp/game/Border/update_twinkle.cpp
+@@ -29,6 +29,10 @@
+                     ((float)gRMathRand2() - 16384.0f) *
+                     0.0000610351562f * 3.1415927f;
+ 
++                // Android evaluates the spin period before it chooses the direction.
++                int step_random;
++                if (g_port_ultimate)
++                    step_random = random_duration_sample();
+                 int spin_direction;
+                 if (((float)gRMathRand2() - 16384.0f) *
+                         0.000061035156f <
+@@ -43,7 +47,8 @@
+                             : 1;
+                 }
+ 
+-                int step_random = gRMathRand2();
++                if (!g_port_ultimate)
++                    step_random = gRMathRand2();
+                 delay_progress = 0.0f;
+                 cRBorder* active_owner = owner_widget;
+                 delay_step = 1.0f;
+@@ -104,7 +109,7 @@
+             delay_progress = 0.0f;
+             delay_step =
+                 1.0f /
+-                (((float)gRMathRand2() * 0.000030517578f +
++                (((float)random_duration_sample() * 0.000030517578f +
+                      0.0099999998f) *
+                     60.0f);
+         }
+--- a/decomp/game/Star/initialize_star_field.cpp
++++ b/decomp/game/Star/initialize_star_field.cpp
+@@ -51,10 +51,15 @@
+                 camera_offset.y + root->overlay_0.transform.position.y,
+                 camera_offset.z + root->overlay_0.transform.position.z);
+ 
+-            entries[index].velocity = Vector3(
+-                ((float)gRMathRand2() - 16384.0f) * 0.0000610351562f,
+-                ((float)gRMathRand2() - 16384.0f) * 0.0000610351562f,
+-                0.0f);
++            if (g_port_ultimate) {
++                float angle = (float)gRMathRand2() * 0.000030517578125f * 6.28318548f;
++                entries[index].velocity = Vector3(Sin(angle), Cos(angle), 0.0f);
++            } else {
++                entries[index].velocity = Vector3(
++                    ((float)gRMathRand2() - 16384.0f) * 0.0000610351562f,
++                    ((float)gRMathRand2() - 16384.0f) * 0.0000610351562f,
++                    0.0f);
++            }
+             entries[index].velocity.Normalize();
+ 
+             float random_scale =
+--- a/decomp/game/SubGame/explode_slug_hazard.cpp
++++ b/decomp/game/SubGame/explode_slug_hazard.cpp
+@@ -7,12 +7,16 @@
+ 
+ void cRSlug::Explode()
+ {
+-    int count = 70;
++    int count = g_port_ultimate ? 20 : 70;
++    const float spread_scale = g_port_ultimate ? 0.4f : 0.2f;
++    const float size_scale = g_port_ultimate ? 0.85f : 0.75f;
++    const float size_base = g_port_ultimate ? 0.55f : 0.25f;
++    const float duration_base = g_port_ultimate ? 0.3f : 0.6f;
+     do {
+         float spread =
+-            ((float)gRMathRand2() * 0.0000305175781f * 0.2f) + 0.2f;
++            ((float)gRMathRand2() * 0.0000305175781f * spread_scale) + spread_scale;
+         float size = (float)gRMathRand2() * 0.000030517578f;
+-        size = (size * 0.75f) + 0.25f;
++        size = (size * size_scale) + size_base;
+         cRSprite* sprite = g_sprite_manager.New(1, 129, -1, -1);
+         sprite->progress = 0.0f;
+         sprite->flags |=
+@@ -20,8 +24,8 @@
+         sprite->corner_scale = size + size;
+         float progress_step =
+             1.0f
+-            / ((((float)gRMathRand2() * 0.0000305175781f * 0.5f)
+-                   + 0.6f)
++            / ((((float)random_duration_sample() * 0.0000305175781f * 0.5f)
++                   + duration_base)
+                 * 60.0f)
+             * owner_game->subgame_rate;
+         sprite->lifetime = 0.0f;
+--- a/decomp/include/golb.h
++++ b/decomp/include/golb.h
+@@ -94,7 +94,8 @@
+     float spin_step;                 // +0x1b8
+     unsigned char skip_one_tick;     // +0x1bc
+     unsigned char slug_bounce_armed; // +0x1bd
+-    char unknown_1be[2];
++    unsigned char rocket_smoke_tick; // Ultimate emits a pair of puffs every four updates
++    char unknown_1bf;
+     int kind;                    // +0x1c0
+     // Path interpolation writes the basis rows and raw projectile position
+     // into one transform. The next 0x40-byte owner retains the previous
+--- a/decomp/game/Golb/create_golb.cpp
++++ b/decomp/game/Golb/create_golb.cpp
+@@ -163,6 +163,7 @@
+             lifetime = 0.0f;
+             lifetime_step = game->subgame_rate * 0.027777776f;
+             rocket_owner_shot = this;
++            rocket_smoke_tick = 0;
+             spin = 0.0f;
+             spin_step = 0.20943952f;
+             homing_target_object = 0;
+--- a/decomp/game/Golb/update_golb_ai.cpp
++++ b/decomp/game/Golb/update_golb_ai.cpp
+@@ -125,9 +125,12 @@
+         tertiary_body.transform = source_matrix;
+         if (spun > 6.2831855f)
+             spin = spun - 6.2831855f;
+-        Smoke(&source_matrix.position);
+-        smoke_position = source_matrix.position - direction * 0.5f;
+-        Smoke(&smoke_position);
++        if (!g_port_ultimate || rocket_smoke_tick == 0) {
++            Smoke(&source_matrix.position);
++            smoke_position = source_matrix.position - direction * 0.5f;
++            Smoke(&smoke_position);
++        }
++        rocket_smoke_tick = (rocket_smoke_tick + 1) % 4;
+         break;
+     }
+     case 1:
+@@ -136,6 +139,8 @@
+     case 0: {
+         Vec3* body_position = &render_sprite->position;
+         *body_position = source_matrix.position;
++        if (g_port_ultimate)
++            break; // Android's Jet is empty.
+         Jet(&source_matrix.position);
+         trail_a = source_matrix.position - direction * 0.30000001f;
+         Jet(&trail_a);
+--- a/decomp/include/ring_special_effect_types.h
++++ b/decomp/include/ring_special_effect_types.h
+@@ -84,7 +84,8 @@
+     float active_phase_step; // +0x1e4
+     int star_shower_counter; // +0x1e8
+     int star_sprite_id; // +0x1ec
+-    char unknown_1f0[0x1f8 - 0x1f0];
++    int particle_count; // Set at spawn; keep the count that owns the live sprites until teardown.
++    char unknown_1f4[0x1f8 - 0x1f4];
+ };
+ 
+ typedef char cRSubRing_must_be_0x1f8[
+--- a/decomp/game/SubGame/initialize_ring_or_special_effect_particles.cpp
++++ b/decomp/game/SubGame/initialize_ring_or_special_effect_particles.cpp
+@@ -2,12 +2,16 @@
+ // Authored owner: cRSubRing::Init(int).
+ 
+ #include "player.h"
++#include "rmath_random.h"
+ #include "ring_special_effect_types.h"
+ #include "sprite.h"
+ #include "subgame_runtime.h"
+ 
+ void cRSubRing::Init(int)
+ {
++    particle_count = g_port_ultimate ? 8 : SUB_RING_PARTICLE_COUNT;
++    const float phase_spacing = g_port_ultimate ? 0.785398185f : 0.628318548f;
++    const float star_size = g_port_ultimate ? 0.900000036f : 0.72f;
+     int i = 0;
+     state = SUB_RING_STATE_ACTIVE;
+     star_shower_counter = 0;
+@@ -15,9 +19,9 @@
+     Vector3* parent_position = &transform.position;
+     do {
+         cRSubRingStar* particle = &particles[i];
+-        particle->phase = (float)i * 0.628318548f;
++        particle->phase = (float)i * phase_spacing;
+         float* phase_step = &particle->phase_step;
+-        *phase_step = rate_source->subgame_rate * 0.104719758f;
++        *phase_step = rate_source->subgame_rate * (g_port_ultimate ? 0.104719765f : 0.104719758f);
+         particle->parent = this;
+         Vector3* base_position = &particle->base_position;
+         *base_position = *parent_position;
+@@ -54,17 +58,20 @@
+             particle->sprite->draw_mode = 0xd;
+         }
+ 
++        // Mobile blend mode 5 uses source alpha / inverse source alpha.
++        if (g_port_ultimate)
++            particle->sprite->draw_mode = 0;
+         tColour color;
+         particle->sprite->color =
+-            *color.Set(1.0f, 1.0f, 1.0f, 0.800000012f);
++            *color.Set(1.0f, 1.0f, 1.0f, g_port_ultimate ? 1.0f : 0.800000012f);
+         unsigned int flags = particle->sprite->flags;
+         flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
+         particle->sprite->flags = flags;
+         particle->sprite->progress = 0.0f;
+         particle->sprite->progress_step = 0.0f;
+         particle->sprite->gravity_step = 0.0f;
+-        particle->sprite->size_start = 0.720000029f;
+-        particle->sprite->size_end = 0.720000029f;
++        particle->sprite->size_start = star_size;
++        particle->sprite->size_end = star_size;
+         particle->sprite->position = *parent_position;
+         particle->sprite->facing_angle = particle->phase;
+ 
+@@ -77,6 +84,6 @@
+ 
+         particle->AI();
+         i++;
+-    } while (i < SUB_RING_PARTICLE_COUNT);
++    } while (i < particle_count);
+ 
+ }
+--- a/decomp/game/SubGame/update_ring_or_special_effect_parent.cpp
++++ b/decomp/game/SubGame/update_ring_or_special_effect_parent.cpp
+@@ -36,29 +36,29 @@
+                 active_phase = phase + 6.28318548f;
+             }
+             transform.position.x = Sin(active_phase) * 3.0f;
+         }
+ 
+         {
+         cRSubRingStar* particle = particles;
+-        int count = SUB_RING_PARTICLE_COUNT;
++        int count = particle_count;
+         do {
+             particle->AI();
+             particle++;
+             count--;
+         } while (count != 0);
+         }
+ 
+         if (transform.position.z < owner_player->active_window_min_z) {
+             state = SUB_RING_STATE_INACTIVE;
+             g_game->active_bod_list.remove_bod(this);
+ 
+             cRSubRingStar* particle =
+                 particles;
+-            int count = SUB_RING_PARTICLE_COUNT;
++            int count = particle_count;
+             do {
+                 particle->sprite->Kill();
+                 particle++;
+                 count--;
+             } while (count != 0);
+             return;
+         } else {
+@@ -73,30 +73,30 @@
+         transition_progress = 0.0f;
+         transition_step = rate->subgame_rate * 0.0694444478f;
+         // fall through
+ 
+     case SUB_RING_STATE_COLLECTING:
+         {
+         cRSubRingStar* particle = particles;
+-        int count = SUB_RING_PARTICLE_COUNT;
++        int count = particle_count;
+         do {
+             particle->AI();
+             particle++;
+             count--;
+         } while (count != 0);
+         }
+ 
+         transition_progress += transition_step;
+         if (transition_progress > 1.0f) {
+             state = SUB_RING_STATE_INACTIVE;
+             g_game->active_bod_list.remove_bod(this);
+ 
+             cRSubRingStar* particle =
+                 particles;
+-            int count = SUB_RING_PARTICLE_COUNT;
++            int count = particle_count;
+             do {
+                 particle->sprite->Kill();
+                 particle++;
+                 count--;
+             } while (count != 0);
+             return;
+         } else {
+@@ -120,56 +120,56 @@
+             current_position->y += scaled_delta.y;
+             current_position->z += scaled_delta.z;
+ 
+             do {
+                 particles[count].radius *= 0.939999998f;
+                 particles[count].base_position = *current_position;
+                 count++;
+-            } while (count < SUB_RING_PARTICLE_COUNT);
++            } while (count < particle_count);
+             return;
+         }
+ 
+     case SUB_RING_STATE_EXPAND_PENDING:
+         state = SUB_RING_STATE_EXPANDING;
+         transition_progress = 0.0f;
+         transition_step = rate->subgame_rate * 0.0694444478f;
+         // fall through
+ 
+     case SUB_RING_STATE_EXPANDING:
+         {
+         cRSubRingStar* particle = particles;
+-        int count = SUB_RING_PARTICLE_COUNT;
++        int count = particle_count;
+         do {
+             particle->AI();
+             particle++;
+             count--;
+         } while (count != 0);
+         }
+ 
+         transition_progress += transition_step;
+         if (transition_progress > 1.0f) {
+             state = SUB_RING_STATE_INACTIVE;
+             g_game->active_bod_list.remove_bod(this);
+ 
+             cRSubRingStar* particle =
+                 particles;
+-            int count = SUB_RING_PARTICLE_COUNT;
++            int count = particle_count;
+             do {
+                 particle->sprite->Kill();
+                 particle++;
+                 count--;
+             } while (count != 0);
+             return;
+         } else {
+             int count = 0;
+             do {
+                 particles[count].radius *= 1.10000002f;
+                 particles[count].base_position = transform.position;
+                 count++;
+-            } while (count < SUB_RING_PARTICLE_COUNT);
++            } while (count < particle_count);
+             return;
+         }
+ 
+     default:
+         break;
+     }
+ 

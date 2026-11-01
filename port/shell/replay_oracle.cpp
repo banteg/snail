@@ -32,9 +32,11 @@ struct Oracle {
     int bank = 0;  // 0 postal (ScoreA.dat), 1 challenge (ScoreB.dat)
     int rank = 0;
     bool launched = false;
-    bool finished = false;
+    bool terminal_handoff = false;
     SubSolution* record = nullptr;
     float* recorded_z = nullptr;  // the original's z after each sample
+    int motion_samples = 0;
+    int terminal_only_sample = -1;
     int compared = 0;
     int first_divergence = -1;
     float max_error = 0;
@@ -62,12 +64,28 @@ void launch()
     g_oracle.launched = true;
     // The recording accumulated quantized deltas (update_subgoldy).
     int count = record->replay_sample_count;
+    g_oracle.motion_samples = count;
     g_oracle.recorded_z = (float*)malloc((count > 0 ? count : 1) * sizeof(float));
     float accumulated = 0;
     for (int i = 0; i < count; ++i) {
         float delta = MathType16to32(record->run_records[i].delta_z, 32.0f);
         accumulated = i == 0 ? delta : accumulated + delta;
         g_oracle.recorded_z[i] = accumulated;
+    }
+    for (int i = 0; i < count; ++i) {
+        const ReplayRunRecord& sample = record->run_records[i];
+        if (!(sample.flags & 8))
+            continue;
+        g_oracle.motion_samples = i + 1;
+        // Complete() can append a bare end marker at the unused cursor on
+        // manual quit. A live sample would retain the previous tick's latched
+        // flag 4. Populated terminal samples still have a position to check.
+        if (i == count - 1 && i > 0 && (record->run_records[i - 1].flags & 4)
+                && sample.flags == 8 && sample.lateral_x == 0 && sample.delta_z == 0) {
+            g_oracle.terminal_only_sample = i;
+            g_oracle.motion_samples = i;
+        }
+        break;
     }
     fprintf(stderr, "oracle: replaying %s #%d: score %d, level %d, mode %d, %d samples\n",
         g_oracle.bank ? "challenge" : "postal", g_oracle.rank + 1, record->score, record->replay_level_index,
@@ -104,6 +122,12 @@ bool replay_oracle_tick(int tick)
     }
     cRSubGame& subgame = g_game->subgame;
     int cursor = subgame.replay_update_cursor;
+    if (g_oracle.terminal_only_sample >= 0 && g_oracle.last_cursor == g_oracle.terminal_only_sample
+            && cursor == g_oracle.last_cursor && g_game->players[0].frontend_state == 18) {
+        g_oracle.terminal_handoff = true;
+        fprintf(stderr, "oracle: terminal marker %d returned to High Scores at tick %d\n", cursor, tick);
+        return true;
+    }
     if (!subgame.selected_level_record_active || cursor == g_oracle.last_cursor)
         return g_oracle.last_cursor >= 0 && g_game->players[0].frontend_state != 11;
     // After a tick the cursor names the sample that tick's z became in the
@@ -112,6 +136,8 @@ bool replay_oracle_tick(int tick)
     g_oracle.last_cursor = cursor;
     if (sample < 0 || sample >= g_oracle.record->replay_sample_count)
         return sample >= g_oracle.record->replay_sample_count;
+    if (sample == g_oracle.terminal_only_sample)
+        return false;  // The next tick consumes the marker and returns to High Scores.
     float error = fabsf(subgame.player.transform.position.z - g_oracle.recorded_z[sample]);
     if (!isfinite(error))
         error = INFINITY;
@@ -135,15 +161,9 @@ int replay_oracle_report()
         return 1;
     }
     int count = g_oracle.record->replay_sample_count;
-    // Playback stops at the run's end marker (flag 8); the recording goes on
-    // past it, so the samples after it are never played.
-    int end = count;
-    for (int i = 0; i < count; ++i)
-        if (g_oracle.record->run_records[i].flags & 8) {
-            end = i + 1;
-            break;
-        }
-    bool complete = g_oracle.compared > 0 && g_oracle.compared == end;
+    int end = g_oracle.motion_samples;
+    bool complete = g_oracle.compared > 0 && g_oracle.compared == end
+        && (g_oracle.terminal_only_sample < 0 || g_oracle.terminal_handoff);
     const char* verdict = g_oracle.first_divergence >= 0 ? "diverges" : complete ? "matches the original" : "incomplete";
     fprintf(stderr,
         "oracle: compared %d of %d samples up to the run's end (%d recorded); max |dz| %.4f at sample %d; %s\n",

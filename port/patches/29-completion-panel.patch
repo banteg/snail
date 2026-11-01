@@ -1,0 +1,27 @@
+Android's cRCompletion::AI (00060c0c) reveals Continue when the tally becomes
+a summary and accepts it only during live play. Replay clicks dismiss the
+replay through cRSubGame::AI instead. Resuming the port's pause menu restores
+the prompt only if the summary was already open. The flying parcels end four units
+along the camera's forward axis.
+
+--- a/decomp/game/Completion/update_row_event_display.cpp
++++ b/decomp/game/Completion/update_row_event_display.cpp
+@@ -42,2 +42,3 @@
+     }
+-    controller->continue_widget->UnHideInit();
++    if (!g_port_ultimate || controller->state == COMPLETION_STATE_SUMMARY_ACTIVE)
++        controller->continue_widget->UnHideInit();
+@@ -129,4 +130,4 @@
+         if ((game->players[0].game_input->input.pressed_buttons
+                 & INPUT_BUTTON_PRIMARY)
+-            != 0) {
++            != 0 && (!g_port_ultimate || !game->subgame.replay_launch_active)) {
+             controller->state = COMPLETION_STATE_CONTINUE_ACCEPTED;
+@@ -148,3 +149,4 @@
+-    camera_forward.x = player_transform->basis_forward.x * 6.0f;
+-    camera_forward.y = player_transform->basis_forward.y * 6.0f;
+-    camera_forward.z = player_transform->basis_forward.z * 6.0f;
++    float forward_distance = g_port_ultimate ? 4.0f : 6.0f;
++    camera_forward.x = player_transform->basis_forward.x * forward_distance;
++    camera_forward.y = player_transform->basis_forward.y * forward_distance;
++    camera_forward.z = player_transform->basis_forward.z * forward_distance;

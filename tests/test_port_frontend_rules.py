@@ -66,18 +66,77 @@ def test_autosave_preserves_pro_route_controls(play):
     assert play("save-pro-map", True)["prompt"] == "Click to Start"
 
 
+def test_pro_markers_select_the_route_at_androids_map_positions(play):
+    assert play("pro-markers", True, pro=(10, 1)) == ["X: Ariolimax columbianus", "I: Limax maximus"]
+
+
+@pytest.mark.parametrize("ultimate,alpha", [(False, 102), (True, 127)])
+def test_render_cache_keeps_postal_fringe_rgb_and_uses_profile_alpha(play, ultimate, alpha):
+    # Route I authors Fringe:(128,24,200) in both games. The track mesh packs BGRA.
+    assert play("fringe", ultimate) == [200, 24, 128, alpha]
+
+
+@pytest.mark.parametrize("ultimate,replay", [(False, False), (True, False), (True, True)])
+def test_delivery_prompt_input_and_parcel_endpoint(play, tmp_path, ultimate, replay):
+    if replay:
+        score = REPO_ROOT / "tests/fixtures/replays/ScoreB.windows-2026-04-17.dat"
+        shutil.copyfile(score, tmp_path / "ScoreMobileB-v4.dat")
+    result = play("delivery", ultimate, "replay" if replay else "live", bank=1)
+    assert result["duringTally"] == (not ultimate)
+    assert result["atSummary"]
+    assert result["depth"] == pytest.approx(4 if ultimate else 6, abs=0.0001)
+    assert result["afterClick"] == (4 if replay else 5)
+    if replay:
+        assert result["fade"] != 0
+
+
 @pytest.mark.parametrize("ultimate", [False, True])
 def test_idling_at_start_keeps_saved_replay_within_capacity(play, tmp_path, ultimate):
     result = play("idle-start", ultimate)
     if ultimate:
         assert result["waiting"] <= 9
-    table = tmp_path / ("ScoreMobileA-v3.dat" if ultimate else "ScoreA.dat")
+    table = tmp_path / ("ScoreMobileA-v4.dat" if ultimate else "ScoreA.dat")
     record = scramble_scores(table.read_bytes())
     size, score = struct.unpack_from("<ii", record)
     samples = struct.unpack_from("<i", record, 0x74)[0]
     assert score > 0
     assert 0 < samples < 1000  # the actual run to the first parcel
     assert size == len(record) == 0x88 + samples * 5
+
+
+@pytest.mark.skipif(not WASM.with_name("snail.wasm").exists(), reason="needs the headless replay oracle")
+def test_manual_quit_oracle_validates_final_motion_and_handoff(play, tmp_path):
+    play("idle-start", True)
+    bank = tmp_path / "ScoreMobileA-v4.dat"
+    record = bytearray(scramble_scores(bank.read_bytes()))
+    count = struct.unpack_from("<i", record, 0x74)[0]
+    deltas = 0x88 + count * 2
+    assert record[-2] & 4 and record[-1] == 8
+
+    def replay(ticks):
+        cmd = [
+            "node", REPO_ROOT / "port/shell/run.mjs", WASM.with_name("snail.wasm"),
+            "--profile", "ultimate", "--keys", REPO_ROOT / "port/scripts/high_scores.keys",
+            "--replay", "A1", "--ticks", str(ticks),
+        ]  # fmt: skip
+        return subprocess.run(cmd, cwd=tmp_path, capture_output=True, text=True, timeout=90, check=False)
+
+    good = replay(6000)
+    assert good.returncode == 0, good.stderr
+    assert f"compared {count - 1} of {count - 1} samples" in good.stderr
+    handoff = next(line for line in good.stderr.splitlines() if line.startswith("oracle: terminal marker "))
+    assert f"terminal marker {count - 1} returned to High Scores" in handoff
+    # Stop after all motion, just before the terminal transition.
+    early = replay(int(handoff.split()[-1]))
+    assert early.returncode == 3 and "incomplete" in early.stderr
+
+    for index in (count - 2, count - 1):
+        corrupted = record.copy()
+        struct.pack_into("<h", corrupted, deltas + 2 * index, 4096)
+        bank.write_bytes(scramble_scores(corrupted))
+        bad = replay(6000)
+        assert bad.returncode == 3
+        assert f"first divergence at sample {index} " in bad.stderr
 
 
 def test_score_loader_bounds_records_and_recovers_legacy_samples(play, tmp_path):
@@ -101,7 +160,7 @@ def test_score_loader_bounds_records_and_recovers_legacy_samples(play, tmp_path)
     bad_name[0x5C:0x70] = b"X" * 20
     bad_checksum = row(1, 1)
     struct.pack_into("<I", bad_checksum, 0x28, 0)
-    table = tmp_path / "ScoreMobileA-v3.dat"
+    table = tmp_path / "ScoreMobileA-v4.dat"
     # Skip invalid frames with known boundaries, then stop at an invalid
     # byte_count. The two valid neighbors must survive the next save.
     table.write_bytes(scramble_scores(

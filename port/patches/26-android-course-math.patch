@@ -1,0 +1,126 @@
+Android StartLevel (000817ac) divides percentages by 100. At 40% Challenge
+difficulty, multiplying by the PC reciprocal rounds the target down one row
+and can skip a complete finish segment. Android RMathInit (00029698), Sin
+(000268a8) and Cos (0002685c) use 32,768 entries. Their finer spacing changes
+both the shape of a path and whether the snail remains attached at its edge.
+
+--- a/decomp/game/SubGame/build_subgame_level.cpp
++++ b/decomp/game/SubGame/build_subgame_level.cpp
+@@ -30,4 +30,9 @@
+ void set_input_controller_pointer_authored_xy(int controller, float x, float y);
+ 
++static float level_percent(float percent)
++{
++    return g_port_ultimate ? percent / 100.0f : percent * 0.00999999978f;
++}
++
+ void cRSubGame::StartLevel(int level_index)
+ {
+@@ -74,5 +79,5 @@
+         challenge_speed_value = selected_level_record->challenge_speed_value;
+         challenge_difficulty_scalar =
+-            (float)selected_level_record->challenge_difficulty_value * 0.00999999978f;
++            level_percent((float)selected_level_record->challenge_difficulty_value);
+     } else {
+         int mode = level_mode;
+@@ -84,14 +89,12 @@
+             } else {
+                 float normalized_speed =
+-                    level_definition.selected_speed * 0.00999999978f;
++                    level_percent(level_definition.selected_speed);
+                 base_rate = normalized_speed * 0.900000036f + 0.200000003f;
+             }
+         } else if (mode == 1) {
+             base_rate = CalcSliderToRate(
+-                (float)g_runtime_config.challenge_speed_percent
+-                * 0.00999999978f);
++                level_percent((float)g_runtime_config.challenge_speed_percent));
+             challenge_difficulty_scalar =
+-                (float)g_runtime_config.challenge_difficulty_percent
+-                * 0.00999999978f;
++                level_percent((float)g_runtime_config.challenge_difficulty_percent);
+         } else if (mode == 2) {
+             base_rate = CalcSliderToRate(
+@@ -108,16 +111,14 @@
+         if (mode == 2 || mode == 3 || mode == 0 || mode == 4 || mode == 7) {
+             garbage_frequency =
+-                level_definition.garbage_frequency * 0.00999999978f;
++                level_percent(level_definition.garbage_frequency);
+             salt_frequency =
+-                level_definition.salt_frequency * 0.00999999978f;
++                level_percent(level_definition.salt_frequency);
+         } else if (mode == 1) {
+             float normalized_garbage_difficulty =
+-                (float)g_runtime_config.challenge_difficulty_percent
+-                * 0.00999999978f;
++                level_percent((float)g_runtime_config.challenge_difficulty_percent);
+             garbage_frequency =
+                 normalized_garbage_difficulty * 0.800000012f;
+             float normalized_salt_difficulty =
+-                (float)g_runtime_config.challenge_difficulty_percent
+-                * 0.00999999978f;
++                level_percent((float)g_runtime_config.challenge_difficulty_percent);
+             salt_frequency =
+                 normalized_salt_difficulty * 0.800000012f;
+--- a/decomp/include/rmath_tables.h
++++ b/decomp/include/rmath_tables.h
+@@ -4,4 +4,5 @@
+ enum {
+     RMATH_TRIG_TABLE_COUNT = 0x2000,
++    ANDROID_TRIG_TABLE_COUNT = 0x8000,
+     RMATH_RANDOM_TABLE_COUNT = 0x1fff,
+ };
+@@ -13,4 +14,14 @@
+ extern float g_sine_table[RMATH_TRIG_TABLE_COUNT];   // @ 0x77ff8c
+ 
++extern bool g_port_ultimate; // shell/profile.h
++extern float g_android_sine_table[ANDROID_TRIG_TABLE_COUNT];
++extern float g_android_cosine_table[ANDROID_TRIG_TABLE_COUNT];
++
++inline int android_trig_index(float angle)
++{
++    int index = (int)((angle / 6.2831855f) * ANDROID_TRIG_TABLE_COUNT);
++    return index & (ANDROID_TRIG_TABLE_COUNT - 1);
++}
++
+ extern int g_math_random_index; // @ 0x77ff3c
+ extern int g_math_random_table[RMATH_RANDOM_TABLE_COUNT]; // @ 0x787f8c
+--- a/decomp/engine/RMaths/initialize_trigonometry_tables.cpp
++++ b/decomp/engine/RMaths/initialize_trigonometry_tables.cpp
+@@ -6,4 +6,7 @@
+ 
+ #include "rmath_tables.h"
++
++float g_android_sine_table[ANDROID_TRIG_TABLE_COUNT];
++float g_android_cosine_table[ANDROID_TRIG_TABLE_COUNT];
+ 
+ void RMathInit()
+@@ -22,4 +25,10 @@
+         g_sine_table[index] = (float)sin(angle);
+     }
++    for (int index = 0; index < ANDROID_TRIG_TABLE_COUNT; ++index) {
++        // ARM rounds the angle to binary32 before its double libm call.
++        float angle = ((float)index / ANDROID_TRIG_TABLE_COUNT) * 6.2831855f;
++        g_android_cosine_table[index] = (float)cos((double)angle);
++        g_android_sine_table[index] = (float)sin((double)angle);
++    }
+     gRMathRand2Init();
+ }
+--- a/decomp/engine/RMaths/sine.cpp
++++ b/decomp/engine/RMaths/sine.cpp
+@@ -5,4 +5,6 @@
+ float Sin(float angle)
+ {
++    if (g_port_ultimate)
++        return g_android_sine_table[android_trig_index(angle)];
+     float scaled_angle = angle * 0.159154937f;
+     int index = (int)(scaled_angle * 8192.0f);
+--- a/decomp/engine/RMaths/cosine.cpp
++++ b/decomp/engine/RMaths/cosine.cpp
+@@ -7,4 +7,6 @@
+ float Cos(float angle)
+ {
++    if (g_port_ultimate)
++        return g_android_cosine_table[android_trig_index(angle)];
+     float scaled_angle = angle * 0.159154937f;
+     int index = (int)(scaled_angle * 8192.0f);
