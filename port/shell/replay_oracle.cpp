@@ -113,6 +113,8 @@ bool replay_oracle_tick(int tick)
     if (sample < 0 || sample >= g_oracle.record->replay_sample_count)
         return sample >= g_oracle.record->replay_sample_count;
     float error = fabsf(subgame.player.transform.position.z - g_oracle.recorded_z[sample]);
+    if (!isfinite(error))
+        error = INFINITY;
     ++g_oracle.compared;
     if (error > g_oracle.max_error) {
         g_oracle.max_error = error;
@@ -141,9 +143,11 @@ int replay_oracle_report()
             end = i + 1;
             break;
         }
+    bool complete = g_oracle.compared > 0 && g_oracle.compared == end;
+    const char* verdict = g_oracle.first_divergence >= 0 ? "diverges" : complete ? "matches the original" : "incomplete";
     fprintf(stderr,
         "oracle: compared %d of %d samples up to the run's end (%d recorded); max |dz| %.4f at sample %d; %s\n",
         g_oracle.compared, end, count, g_oracle.max_error, g_oracle.max_error_sample,
-        g_oracle.first_divergence < 0 ? "matches the original" : "diverges");
-    return g_oracle.first_divergence < 0 && g_oracle.compared == end ? 0 : 3;
+        verdict);
+    return g_oracle.first_divergence < 0 && complete ? 0 : 3;
 }

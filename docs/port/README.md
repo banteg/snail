@@ -6,10 +6,10 @@ links it into a headless wasm32 program for scripts and oracles, and into a
 build you can play in the browser, hosted at
 [snail.banteg.xyz](https://snail.banteg.xyz), or natively on macOS: see
 [Playing in the browser](#playing-in-the-browser) and
-[Playing natively](#playing-natively-macos). It plays one of two
-[gameplay profiles](#gameplay-profiles): Original, which both oracles match
-bit for bit on everything recorded so far, and Ultimate, the Android
-release's content and rules, checked with the Android oracle.
+[Playing natively](#playing-natively-macos). The Original profile is checked
+against Windows high-score replays and lockstep captures. Ultimate uses the
+Android release’s content and rules, checked with the Android oracle.
+See [gameplay profiles](#gameplay-profiles).
 This page records the decisions and the order of work; update it as stages
 land.
 
@@ -218,8 +218,8 @@ Which functions the port compiles:
   port and compares the snail's z with the recording, tick by tick. A
   recording stores each tick's lateral position and input flags, which
   playback feeds back in, and the z the original's physics produced, which
-  playback leaves to the port's simulation. So any difference is a port
-  divergence; the tolerance is the recording's own 1/32 quantum. The replay
+  playback leaves to the port's simulation. The oracle flags nonfinite
+  positions and differences greater than the recording's 1/32 quantum. The replay
   starts through the High Scores screen's Replay handler (the shipped game
   hides those buttons but keeps the handler), and playback runs to the run's
   end marker. As of 2026-10-08 all 20 replays match, 57,817 ticks, every one
@@ -561,8 +561,8 @@ wrangler deploy -c port/wrangler.jsonc
 
 `pack` writes `artifacts/web/`: the page, a stripped `ReleaseFast` build of
 `snail-web.wasm` (4.1 MB, about 0.2 MB as sent compressed; the DWARF is 7 MB of
-the development build), the packed archive and the loading screen images. The release build replays the
-lockstep sessions and high-score runs bit for bit, like the development one.
+the development build), the packed archive and the loading screen images.
+Release builds use the same [replay and lockstep checks](#oracles) as development builds.
 The deploy also points the custom domain at the Worker and provisions its
 certificate.
 
@@ -591,8 +591,9 @@ Set these in the repository's **Settings → Secrets and variables → Actions**
 Dry runs need neither credential. Production uses the `production` GitHub
 environment, where deployment protection rules can be configured separately.
 
-The untracked game archives are supplied by the release attachment pinned in
-[`port/deploy-assets.json`](../../port/deploy-assets.json). The downloader
+The untracked game archives come from the attachment pinned in the selected
+revision’s [`port/deploy-assets.json`](../../port/deploy-assets.json).
+The v0.3.0 tag predates this file and uses its original v1 bundle. The downloader
 checks the bundle and both archives before writing any file; game binaries
 remain outside Git. To publish an updated bundle after changing mobile assets:
 

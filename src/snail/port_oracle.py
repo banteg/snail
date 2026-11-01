@@ -25,7 +25,7 @@ ROWS = 10
 STARTED = re.compile(r"oracle: replaying \w+ #\d+: score (\d+), level (\d+), mode (\d+), (\d+) samples")
 SUMMARY = re.compile(
     r"oracle: compared (\d+) of (\d+) samples up to the run's end \((\d+) recorded\); "
-    r"max \|dz\| ([\d.]+) at sample (-?\d+)"
+    r"max \|dz\| ([\d.]+|inf) at sample (-?\d+)"
 )
 DIVERGENCE = re.compile(r"oracle: first divergence at sample (\d+)")
 
@@ -51,8 +51,8 @@ class ReplayResult:
         )
 
 
-def run_replay(root: Path, workdir: Path, spec: str) -> ReplayResult | None:
-    """Replay one record; None when the bank has no record in that row."""
+def run_replay(root: Path, workdir: Path, spec: str) -> ReplayResult:
+    """Replay one expected record from the fixture banks."""
     completed = subprocess.run(
         ["node", str(root / RUNNER), str(root / WASM), "--keys", str(root / SCRIPT), "--replay", spec],
         cwd=workdir,
@@ -64,8 +64,8 @@ def run_replay(root: Path, workdir: Path, spec: str) -> ReplayResult | None:
     result = ReplayResult(spec)
     if started := STARTED.search(output):
         result.score, result.level, _, result.samples = (int(g) for g in started.groups())
-    elif "the replay never started" in output:
-        return None
+    else:
+        result.error = "the replay never started"
     if summary := SUMMARY.search(output):
         result.compared, result.run_samples, result.samples = int(summary[1]), int(summary[2]), int(summary[3])
         result.max_error, result.max_error_sample = float(summary[4]), int(summary[5])
@@ -73,6 +73,8 @@ def run_replay(root: Path, workdir: Path, spec: str) -> ReplayResult | None:
         result.error = (output.strip().splitlines() or [f"exit {completed.returncode}"])[-1]
     if divergence := DIVERGENCE.search(output):
         result.first_divergence = int(divergence[1])
+    if completed.returncode and result.matches:
+        result.error = f"headless port exited with status {completed.returncode}"
     return result
 
 
@@ -89,8 +91,11 @@ def run_oracle(root: Path, specs: list[str] | None = None, *, jobs: int = 8) -> 
     specs = specs or [f"{letter}{row}" for letter in BANKS for row in range(1, ROWS + 1)]
     # The game writes (and deletes) tBass.dll where it runs, so each replay gets its own directory.
     with tempfile.TemporaryDirectory(prefix="snail-oracle-") as temp, ThreadPoolExecutor(jobs) as pool:
-        results = list(pool.map(lambda spec: run_replay(root, stage(root, Path(temp) / spec), spec), specs))
-    return [result for result in results if result is not None]
+        runs = [
+            pool.submit(run_replay, root, stage(root, Path(temp) / str(i)), spec)
+            for i, spec in enumerate(specs)
+        ]
+        return [run.result() for run in runs]
 
 
 def report_text(results: list[ReplayResult]) -> str:
@@ -100,6 +105,8 @@ def report_text(results: list[ReplayResult]) -> str:
             verdict = f"error: {r.error}"
         elif r.first_divergence is not None:
             verdict = f"diverges from sample {r.first_divergence}"
+        elif r.compared == 0:
+            verdict = "no samples compared"
         elif r.compared != r.run_samples:
             verdict = "playback stopped before the run's end"
         else:

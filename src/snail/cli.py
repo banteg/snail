@@ -1792,7 +1792,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
             results = run_oracle(REPO_ROOT, args.replays or None, jobs=args.jobs)
             print(report_text(results))
-            return 0 if all(result.matches for result in results) else 1
+            return 0 if results and all(result.matches for result in results) else 1
         if args.port_command == "lockstep":
             from .port_tape import (
                 load_session,
