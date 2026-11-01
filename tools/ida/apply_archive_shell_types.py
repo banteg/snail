@@ -241,6 +241,14 @@ TRUSTED_DECLARATIONS = [
         "int __cdecl load_png_image(char* png_path, unsigned char** out_pixels, int* out_width, int* out_height, int* out_channels, unsigned char* background_rgb, int file_offset);",
     ),
     (
+        "png_check_sig",
+        "int __cdecl png_check_sig(unsigned char* signature, int count);",
+    ),
+    (
+        "png_read_image",
+        "void __cdecl png_read_image(struct png_struct_def* png_ptr, unsigned char** row_pointers);",
+    ),
+    (
         "file_exists",
         "unsigned char __cdecl file_exists(char* path);",
     ),
@@ -362,6 +370,8 @@ TRUSTED_NAMES = [
     (0x449BA0, "resume_audio_backend_if_paused"),
     (0x449BC0, "pause_audio_backend_if_running"),
     (0x449BE0, "set_audio_normalization_scales"),
+    (0x47E3D9, "png_read_image"),
+    (0x482A0C, "png_check_sig"),
     (0x48B3A7, "fclose"),
     (0x48B41D, "fopen"),
     (0x48B430, "fseek"),

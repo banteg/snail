@@ -1,19 +1,15 @@
 {
   "tool": "binary_ninja",
   "target": {
-    "active": false,
     "basename": "SnailMail_unwrapped.exe.bndb",
     "filename": "/Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb",
     "selector": "SnailMail_unwrapped.exe.bndb",
-    "session_id": "13062151736391379633",
-    "target_id": "18071:2:13062151736391379633",
-    "view_id": "2",
     "view_name": "PE"
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 743,
-  "function_count": 743,
+  "selected_count": 785,
+  "function_count": 785,
   "mismatch_count": 0,
   "mismatches": [],
   "analysis_refreshed": true,
@@ -321,6 +317,11 @@
       "artifact": "analysis/decompile/binja/functions/004067e0-update_completion_screen.c"
     },
     {
+      "address": "0x406bc0",
+      "name": "initialize_global_noop_renderable_bods_thunk",
+      "artifact": "analysis/decompile/binja/functions/00406bc0-initialize_global_noop_renderable_bods_thunk.c"
+    },
+    {
       "address": "0x406bd0",
       "name": "initialize_global_noop_renderable_bods",
       "artifact": "analysis/decompile/binja/functions/00406bd0-initialize_global_noop_renderable_bods.c"
@@ -336,6 +337,16 @@
       "artifact": "analysis/decompile/binja/functions/00406c20-initialize_default_runtime_config.c"
     },
     {
+      "address": "0x406d10",
+      "name": "initialize_global_trivial_object_thunk",
+      "artifact": "analysis/decompile/binja/functions/00406d10-initialize_global_trivial_object_thunk.c"
+    },
+    {
+      "address": "0x406d20",
+      "name": "initialize_global_trivial_object",
+      "artifact": "analysis/decompile/binja/functions/00406d20-initialize_global_trivial_object.c"
+    },
+    {
       "address": "0x406d30",
       "name": "log_startup_timestamp",
       "artifact": "analysis/decompile/binja/functions/00406d30-log_startup_timestamp.c"
@@ -344,6 +355,11 @@
       "address": "0x406d70",
       "name": "initialize_main_loop_display_state",
       "artifact": "analysis/decompile/binja/functions/00406d70-initialize_main_loop_display_state.c"
+    },
+    {
+      "address": "0x406da0",
+      "name": "initialize_main_loop_timing_state",
+      "artifact": "analysis/decompile/binja/functions/00406da0-initialize_main_loop_timing_state.c"
     },
     {
       "address": "0x406dc0",
@@ -364,6 +380,11 @@
       "address": "0x407440",
       "name": "handle_game_window_deactivate",
       "artifact": "analysis/decompile/binja/functions/00407440-handle_game_window_deactivate.c"
+    },
+    {
+      "address": "0x407490",
+      "name": "minimize_game_window",
+      "artifact": "analysis/decompile/binja/functions/00407490-minimize_game_window.c"
     },
     {
       "address": "0x4074b0",
@@ -419,6 +440,11 @@
       "address": "0x407930",
       "name": "read_next_display_mode_view_sample",
       "artifact": "analysis/decompile/binja/functions/00407930-read_next_display_mode_view_sample.c"
+    },
+    {
+      "address": "0x4079e0",
+      "name": "bass_audio_window_proc",
+      "artifact": "analysis/decompile/binja/functions/004079e0-bass_audio_window_proc.c"
     },
     {
       "address": "0x407a10",
@@ -716,6 +742,16 @@
       "artifact": "analysis/decompile/binja/functions/004107d0-update_frontend_state_machine.c"
     },
     {
+      "address": "0x410c00",
+      "name": "initialize_global_color4f_bank_32_thunk",
+      "artifact": "analysis/decompile/binja/functions/00410c00-initialize_global_color4f_bank_32_thunk.c"
+    },
+    {
+      "address": "0x410c10",
+      "name": "initialize_global_color4f_bank_32",
+      "artifact": "analysis/decompile/binja/functions/00410c10-initialize_global_color4f_bank_32.c"
+    },
+    {
       "address": "0x410c30",
       "name": "set_backdrop_zoom",
       "artifact": "analysis/decompile/binja/functions/00410c30-set_backdrop_zoom.c"
@@ -811,6 +847,11 @@
       "artifact": "analysis/decompile/binja/functions/00411960-release_direct3d_device_interfaces.c"
     },
     {
+      "address": "0x4119c0",
+      "name": "initialize_game_window_and_input_wrapper",
+      "artifact": "analysis/decompile/binja/functions/004119c0-initialize_game_window_and_input_wrapper.c"
+    },
+    {
       "address": "0x4119d0",
       "name": "initialize_game_window_and_input",
       "artifact": "analysis/decompile/binja/functions/004119d0-initialize_game_window_and_input.c"
@@ -824,6 +865,16 @@
       "address": "0x411d80",
       "name": "uninitialize_input_devices",
       "artifact": "analysis/decompile/binja/functions/00411d80-uninitialize_input_devices.c"
+    },
+    {
+      "address": "0x411de0",
+      "name": "end_overlay_render_state",
+      "artifact": "analysis/decompile/binja/functions/00411de0-end_overlay_render_state.c"
+    },
+    {
+      "address": "0x411e10",
+      "name": "begin_overlay_render_state",
+      "artifact": "analysis/decompile/binja/functions/00411e10-begin_overlay_render_state.c"
     },
     {
       "address": "0x411fa0",
@@ -861,6 +912,16 @@
       "artifact": "analysis/decompile/binja/functions/004129f0-set_cull_mode.c"
     },
     {
+      "address": "0x412a00",
+      "name": "load_registered_texture_refs",
+      "artifact": "analysis/decompile/binja/functions/00412a00-load_registered_texture_refs.c"
+    },
+    {
+      "address": "0x412a70",
+      "name": "load_registered_texture_ref",
+      "artifact": "analysis/decompile/binja/functions/00412a70-load_registered_texture_ref.c"
+    },
+    {
       "address": "0x412d00",
       "name": "set_blend_mode",
       "artifact": "analysis/decompile/binja/functions/00412d00-set_blend_mode.c"
@@ -884,6 +945,16 @@
       "address": "0x413520",
       "name": "present_backbuffer",
       "artifact": "analysis/decompile/binja/functions/00413520-present_backbuffer.c"
+    },
+    {
+      "address": "0x413540",
+      "name": "begin_sprite_depth_render_state",
+      "artifact": "analysis/decompile/binja/functions/00413540-begin_sprite_depth_render_state.c"
+    },
+    {
+      "address": "0x413650",
+      "name": "end_sprite_depth_render_state",
+      "artifact": "analysis/decompile/binja/functions/00413650-end_sprite_depth_render_state.c"
     },
     {
       "address": "0x413670",
@@ -1186,6 +1257,11 @@
       "artifact": "analysis/decompile/binja/functions/00419fd0-sort_object_faces_by_texture_group.c"
     },
     {
+      "address": "0x41a0a0",
+      "name": "disable_object_rendering",
+      "artifact": "analysis/decompile/binja/functions/0041a0a0-disable_object_rendering.c"
+    },
+    {
       "address": "0x41a0b0",
       "name": "initialize_textured_backdrop_quad",
       "artifact": "analysis/decompile/binja/functions/0041a0b0-initialize_textured_backdrop_quad.c"
@@ -1461,6 +1537,11 @@
       "artifact": "analysis/decompile/binja/functions/0042e720-initialize_cage2_path_template_pair.c"
     },
     {
+      "address": "0x42f0a0",
+      "name": "load_png_image",
+      "artifact": "analysis/decompile/binja/functions/0042f0a0-load_png_image.c"
+    },
+    {
       "address": "0x42f470",
       "name": "load_config_file",
       "artifact": "analysis/decompile/binja/functions/0042f470-load_config_file.c"
@@ -1539,6 +1620,16 @@
       "address": "0x42f850",
       "name": "request_object_vertex_colours",
       "artifact": "analysis/decompile/binja/functions/0042f850-request_object_vertex_colours.c"
+    },
+    {
+      "address": "0x42f8a0",
+      "name": "initialize_global_temp_colour_thunk",
+      "artifact": "analysis/decompile/binja/functions/0042f8a0-initialize_global_temp_colour_thunk.c"
+    },
+    {
+      "address": "0x42f8b0",
+      "name": "initialize_global_temp_colour",
+      "artifact": "analysis/decompile/binja/functions/0042f8b0-initialize_global_temp_colour.c"
     },
     {
       "address": "0x42f8c0",
@@ -1624,6 +1715,16 @@
       "address": "0x430d90",
       "name": "replace_object_list_texture_refs",
       "artifact": "analysis/decompile/binja/functions/00430d90-replace_object_list_texture_refs.c"
+    },
+    {
+      "address": "0x430e20",
+      "name": "initialize_tracked_allocation_depth_thunk",
+      "artifact": "analysis/decompile/binja/functions/00430e20-initialize_tracked_allocation_depth_thunk.c"
+    },
+    {
+      "address": "0x430e30",
+      "name": "initialize_tracked_allocation_depth",
+      "artifact": "analysis/decompile/binja/functions/00430e30-initialize_tracked_allocation_depth.c"
     },
     {
       "address": "0x430e40",
@@ -1886,6 +1987,11 @@
       "artifact": "analysis/decompile/binja/functions/00433040-get_authored_view_height.c"
     },
     {
+      "address": "0x433050",
+      "name": "launch_alpha72_url",
+      "artifact": "analysis/decompile/binja/functions/00433050-launch_alpha72_url.c"
+    },
+    {
       "address": "0x433060",
       "name": "initialize_track_render_cache_manager",
       "artifact": "analysis/decompile/binja/functions/00433060-initialize_track_render_cache_manager.c"
@@ -1976,9 +2082,19 @@
       "artifact": "analysis/decompile/binja/functions/00434800-update_star_positions.c"
     },
     {
+      "address": "0x434980",
+      "name": "initialize_track_colour_bank_a_thunk",
+      "artifact": "analysis/decompile/binja/functions/00434980-initialize_track_colour_bank_a_thunk.c"
+    },
+    {
       "address": "0x434990",
       "name": "initialize_track_colour_bank_a",
       "artifact": "analysis/decompile/binja/functions/00434990-initialize_track_colour_bank_a.c"
+    },
+    {
+      "address": "0x4349b0",
+      "name": "initialize_track_colour_banks_b_c_thunk",
+      "artifact": "analysis/decompile/binja/functions/004349b0-initialize_track_colour_banks_b_c_thunk.c"
     },
     {
       "address": "0x4349c0",
@@ -1986,9 +2102,19 @@
       "artifact": "analysis/decompile/binja/functions/004349c0-initialize_track_colour_banks_b_c.c"
     },
     {
+      "address": "0x4349e0",
+      "name": "initialize_track_colour_bank_d_thunk",
+      "artifact": "analysis/decompile/binja/functions/004349e0-initialize_track_colour_bank_d_thunk.c"
+    },
+    {
       "address": "0x4349f0",
       "name": "initialize_track_colour_bank_d",
       "artifact": "analysis/decompile/binja/functions/004349f0-initialize_track_colour_bank_d.c"
+    },
+    {
+      "address": "0x434a10",
+      "name": "initialize_track_colour_bank_e_thunk",
+      "artifact": "analysis/decompile/binja/functions/00434a10-initialize_track_colour_bank_e_thunk.c"
     },
     {
       "address": "0x434a20",
@@ -1996,9 +2122,19 @@
       "artifact": "analysis/decompile/binja/functions/00434a20-initialize_track_colour_bank_e.c"
     },
     {
+      "address": "0x434a40",
+      "name": "initialize_track_colour_bank_f_thunk",
+      "artifact": "analysis/decompile/binja/functions/00434a40-initialize_track_colour_bank_f_thunk.c"
+    },
+    {
       "address": "0x434a50",
       "name": "initialize_track_colour_bank_f",
       "artifact": "analysis/decompile/binja/functions/00434a50-initialize_track_colour_bank_f.c"
+    },
+    {
+      "address": "0x434a70",
+      "name": "initialize_track_colour_bank_g_thunk",
+      "artifact": "analysis/decompile/binja/functions/00434a70-initialize_track_colour_bank_g_thunk.c"
     },
     {
       "address": "0x434a80",
@@ -2006,9 +2142,19 @@
       "artifact": "analysis/decompile/binja/functions/00434a80-initialize_track_colour_bank_g.c"
     },
     {
+      "address": "0x434aa0",
+      "name": "initialize_track_colour_bank_h_thunk",
+      "artifact": "analysis/decompile/binja/functions/00434aa0-initialize_track_colour_bank_h_thunk.c"
+    },
+    {
       "address": "0x434ab0",
       "name": "initialize_track_colour_bank_h",
       "artifact": "analysis/decompile/binja/functions/00434ab0-initialize_track_colour_bank_h.c"
+    },
+    {
+      "address": "0x434ad0",
+      "name": "initialize_track_colour_bank_i_thunk",
+      "artifact": "analysis/decompile/binja/functions/00434ad0-initialize_track_colour_bank_i_thunk.c"
     },
     {
       "address": "0x434ae0",
@@ -2016,9 +2162,19 @@
       "artifact": "analysis/decompile/binja/functions/00434ae0-initialize_track_colour_bank_i.c"
     },
     {
+      "address": "0x434b00",
+      "name": "initialize_track_colour_bank_j_thunk",
+      "artifact": "analysis/decompile/binja/functions/00434b00-initialize_track_colour_bank_j_thunk.c"
+    },
+    {
       "address": "0x434b10",
       "name": "initialize_track_colour_bank_j",
       "artifact": "analysis/decompile/binja/functions/00434b10-initialize_track_colour_bank_j.c"
+    },
+    {
+      "address": "0x434b30",
+      "name": "initialize_track_colour_bank_k_thunk",
+      "artifact": "analysis/decompile/binja/functions/00434b30-initialize_track_colour_bank_k_thunk.c"
     },
     {
       "address": "0x434b40",
@@ -2626,9 +2782,19 @@
       "artifact": "analysis/decompile/binja/functions/00443730-spawn_track_parcel.c"
     },
     {
+      "address": "0x443860",
+      "name": "initialize_parcel_set_bucket_pool_thunk",
+      "artifact": "analysis/decompile/binja/functions/00443860-initialize_parcel_set_bucket_pool_thunk.c"
+    },
+    {
       "address": "0x443870",
       "name": "initialize_parcel_set_bucket_pool",
       "artifact": "analysis/decompile/binja/functions/00443870-initialize_parcel_set_bucket_pool.c"
+    },
+    {
+      "address": "0x4438a0",
+      "name": "initialize_zero_parcel_bucket_pool_thunk",
+      "artifact": "analysis/decompile/binja/functions/004438a0-initialize_zero_parcel_bucket_pool_thunk.c"
     },
     {
       "address": "0x4438b0",
@@ -3196,6 +3362,11 @@
       "artifact": "analysis/decompile/binja/functions/0044ae10-initialize_font3d_objects.c"
     },
     {
+      "address": "0x44afc0",
+      "name": "query_directx_runtime_version",
+      "artifact": "analysis/decompile/binja/functions/0044afc0-query_directx_runtime_version.c"
+    },
+    {
       "address": "0x44b3c0",
       "name": "enumerate_input_controllers",
       "artifact": "analysis/decompile/binja/functions/0044b3c0-enumerate_input_controllers.c"
@@ -3311,6 +3482,11 @@
       "artifact": "analysis/decompile/binja/functions/0044c420-load_object_definition.c"
     },
     {
+      "address": "0x44c870",
+      "name": "initialize_global_identity_matrix_thunk",
+      "artifact": "analysis/decompile/binja/functions/0044c870-initialize_global_identity_matrix_thunk.c"
+    },
+    {
       "address": "0x44c880",
       "name": "initialize_global_identity_matrix",
       "artifact": "analysis/decompile/binja/functions/0044c880-initialize_global_identity_matrix.c"
@@ -3334,6 +3510,11 @@
       "address": "0x44c900",
       "name": "next_math_random_value",
       "artifact": "analysis/decompile/binja/functions/0044c900-next_math_random_value.c"
+    },
+    {
+      "address": "0x44c920",
+      "name": "j_rand",
+      "artifact": "analysis/decompile/binja/functions/0044c920-j_rand.c"
     },
     {
       "address": "0x44c930",
@@ -3534,6 +3715,11 @@
       "artifact": "analysis/decompile/binja/functions/0044da90-linear_interpolate_matrix.c"
     },
     {
+      "address": "0x44db50",
+      "name": "noop_this_constructor",
+      "artifact": "analysis/decompile/binja/functions/0044db50-noop_this_constructor.c"
+    },
+    {
       "address": "0x44db60",
       "name": "set_color_rgba",
       "artifact": "analysis/decompile/binja/functions/0044db60-set_color_rgba.c"
@@ -3612,6 +3798,26 @@
       "address": "0x44de30",
       "name": "stop_warning_sample_handle",
       "artifact": "analysis/decompile/binja/functions/0044de30-stop_warning_sample_handle.c"
+    },
+    {
+      "address": "0x44de40",
+      "name": "initialize_global_sprite_pool_colors_thunk",
+      "artifact": "analysis/decompile/binja/functions/0044de40-initialize_global_sprite_pool_colors_thunk.c"
+    },
+    {
+      "address": "0x44de50",
+      "name": "initialize_global_sprite_pool_colors",
+      "artifact": "analysis/decompile/binja/functions/0044de50-initialize_global_sprite_pool_colors.c"
+    },
+    {
+      "address": "0x44de70",
+      "name": "initialize_global_sprite_sentinel_color_thunk",
+      "artifact": "analysis/decompile/binja/functions/0044de70-initialize_global_sprite_sentinel_color_thunk.c"
+    },
+    {
+      "address": "0x44de80",
+      "name": "initialize_global_sprite_sentinel_color",
+      "artifact": "analysis/decompile/binja/functions/0044de80-initialize_global_sprite_sentinel_color.c"
     },
     {
       "address": "0x44de90",

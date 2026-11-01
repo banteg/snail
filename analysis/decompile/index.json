@@ -4,52 +4,236 @@
   "function_count": 785,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 743,
-  "ida_exported": 732,
-  "bn_missing_count": 42,
-  "ida_missing_count": 53,
+  "bn_exported": 785,
+  "ida_exported": 785,
+  "bn_missing_count": 0,
+  "ida_missing_count": 0,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": false,
-  "binja_refreshed": false,
-  "binja_analysis_refreshed": false,
+  "sync_ida_symbols": true,
+  "binja_refreshed": true,
+  "binja_analysis_refreshed": true,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "append_track_cache_object",
-      "address": "0x433960"
+      "name": "initialize_global_noop_renderable_bods_thunk",
+      "address": "0x406bc0"
+    },
+    {
+      "name": "initialize_global_trivial_object_thunk",
+      "address": "0x406d10"
+    },
+    {
+      "name": "initialize_global_trivial_object",
+      "address": "0x406d20"
+    },
+    {
+      "name": "initialize_main_loop_timing_state",
+      "address": "0x406da0"
+    },
+    {
+      "name": "minimize_game_window",
+      "address": "0x407490"
+    },
+    {
+      "name": "bass_audio_window_proc",
+      "address": "0x4079e0"
+    },
+    {
+      "name": "initialize_galaxy_route_name_record",
+      "address": "0x408880"
+    },
+    {
+      "name": "initialize_global_color4f_bank_32_thunk",
+      "address": "0x410c00"
+    },
+    {
+      "name": "initialize_global_color4f_bank_32",
+      "address": "0x410c10"
+    },
+    {
+      "name": "direct3d_renderer_set_cull_mode",
+      "address": "0x411700"
+    },
+    {
+      "name": "reset_direct3d_render_state",
+      "address": "0x4118b0"
+    },
+    {
+      "name": "release_direct3d_device_interfaces",
+      "address": "0x411960"
+    },
+    {
+      "name": "initialize_game_window_and_input_wrapper",
+      "address": "0x4119c0"
+    },
+    {
+      "name": "release_global_direct3d_renderer_resources",
+      "address": "0x411d70"
+    },
+    {
+      "name": "end_overlay_render_state",
+      "address": "0x411de0"
+    },
+    {
+      "name": "begin_overlay_render_state",
+      "address": "0x411e10"
+    },
+    {
+      "name": "load_registered_texture_refs",
+      "address": "0x412a00"
+    },
+    {
+      "name": "load_registered_texture_ref",
+      "address": "0x412a70"
+    },
+    {
+      "name": "set_immediate_blend_mode",
+      "address": "0x412e50"
+    },
+    {
+      "name": "present_backbuffer",
+      "address": "0x413520"
+    },
+    {
+      "name": "begin_sprite_depth_render_state",
+      "address": "0x413540"
+    },
+    {
+      "name": "end_sprite_depth_render_state",
+      "address": "0x413650"
+    },
+    {
+      "name": "restore_texture_ref_stage_states",
+      "address": "0x4143c0"
+    },
+    {
+      "name": "query_direct3d_device_caps",
+      "address": "0x414600"
+    },
+    {
+      "name": "reset_render_counters",
+      "address": "0x414650"
+    },
+    {
+      "name": "disable_object_rendering",
+      "address": "0x41a0a0"
+    },
+    {
+      "name": "load_png_image",
+      "address": "0x42f0a0"
+    },
+    {
+      "name": "initialize_global_temp_colour_thunk",
+      "address": "0x42f8a0"
+    },
+    {
+      "name": "initialize_global_temp_colour",
+      "address": "0x42f8b0"
+    },
+    {
+      "name": "initialize_tracked_allocation_depth_thunk",
+      "address": "0x430e20"
+    },
+    {
+      "name": "initialize_tracked_allocation_depth",
+      "address": "0x430e30"
+    },
+    {
+      "name": "launch_alpha72_url",
+      "address": "0x433050"
+    },
+    {
+      "name": "initialize_track_colour_bank_a_thunk",
+      "address": "0x434980"
+    },
+    {
+      "name": "initialize_track_colour_banks_b_c_thunk",
+      "address": "0x4349b0"
+    },
+    {
+      "name": "initialize_track_colour_bank_d_thunk",
+      "address": "0x4349e0"
+    },
+    {
+      "name": "initialize_track_colour_bank_e_thunk",
+      "address": "0x434a10"
+    },
+    {
+      "name": "initialize_track_colour_bank_f_thunk",
+      "address": "0x434a40"
+    },
+    {
+      "name": "initialize_track_colour_bank_g_thunk",
+      "address": "0x434a70"
+    },
+    {
+      "name": "initialize_track_colour_bank_h_thunk",
+      "address": "0x434aa0"
+    },
+    {
+      "name": "initialize_track_colour_bank_i_thunk",
+      "address": "0x434ad0"
+    },
+    {
+      "name": "initialize_track_colour_bank_j_thunk",
+      "address": "0x434b00"
+    },
+    {
+      "name": "initialize_track_colour_bank_k_thunk",
+      "address": "0x434b30"
+    },
+    {
+      "name": "initialize_parcel_set_bucket_pool_thunk",
+      "address": "0x443860"
+    },
+    {
+      "name": "initialize_zero_parcel_bucket_pool_thunk",
+      "address": "0x4438a0"
+    },
+    {
+      "name": "query_directx_runtime_version",
+      "address": "0x44afc0"
+    },
+    {
+      "name": "initialize_global_identity_matrix_thunk",
+      "address": "0x44c870"
+    },
+    {
+      "name": "j_rand",
+      "address": "0x44c920"
+    },
+    {
+      "name": "noop_this_constructor",
+      "address": "0x44db50"
+    },
+    {
+      "name": "initialize_global_sprite_pool_colors_thunk",
+      "address": "0x44de40"
+    },
+    {
+      "name": "initialize_global_sprite_pool_colors",
+      "address": "0x44de50"
+    },
+    {
+      "name": "initialize_global_sprite_sentinel_color_thunk",
+      "address": "0x44de70"
+    },
+    {
+      "name": "initialize_global_sprite_sentinel_color",
+      "address": "0x44de80"
+    },
+    {
+      "name": "sample_tga_pixel_rgb",
+      "address": "0x44e780"
     }
   ],
   "health_check_count": 1177,
   "health_failing_check_count": 0,
   "health_passed": true,
-  "health_config": "analysis/decompile/health_checks.json",
-  "bn_missing": [
-    "initialize_global_noop_renderable_bods_thunk",
-    "initialize_global_trivial_object_thunk",
-    "initialize_global_trivial_object",
-    "initialize_main_loop_timing_state",
-    "minimize_game_window",
-    "bass_audio_window_proc",
-    "initialize_global_color4f_bank_32_thunk",
-    "initialize_global_color4f_bank_32",
-    "initialize_game_window_and_input_wrapper",
-    "end_overlay_render_state"
-  ],
-  "ida_missing": [
-    "initialize_global_noop_renderable_bods_thunk",
-    "initialize_global_trivial_object_thunk",
-    "initialize_global_trivial_object",
-    "initialize_main_loop_timing_state",
-    "minimize_game_window",
-    "bass_audio_window_proc",
-    "initialize_galaxy_route_name_record",
-    "initialize_global_color4f_bank_32_thunk",
-    "initialize_global_color4f_bank_32",
-    "direct3d_renderer_set_cull_mode"
-  ]
+  "health_config": "analysis/decompile/health_checks.json"
 }
