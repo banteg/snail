@@ -9,6 +9,18 @@ import pytest
 from snail import match_report as report
 
 
+def test_auxiliary_proof_cannot_cover_a_gap_by_repeating_bytes():
+    assert report.intersection_size([[0, 27], [0, 5]], [[0, 32]]) == 27
+    assert report.intersection_size([[0, 27], [24, 32]], [[0, 32]]) == 32
+
+
+@pytest.mark.parametrize("option", ["CL", "_CL_"])
+def test_public_evidence_requires_explicit_compiler_options(monkeypatch, option):
+    monkeypatch.setenv(option, "/Od")
+    with pytest.raises(ValueError, match="unset CL and _CL_"):
+        report._external_inputs([])
+
+
 def row(address=1, size=100, **changes):
     return {
         "address": address, "name": f"function_{address}", "size": size,

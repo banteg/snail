@@ -58,12 +58,14 @@ for WebAssembly and replaces only the original's platform layer: Direct3D 8
 and the BASS audio library are emulated underneath it, so the game logic is
 the original's own.
 
-- The [matching status board](tools/match/STATUS.md) lists the byte-proven
-  functions and the remaining differences for every partial match.
+- As of November 1, 2026, 647 of 662 port-relevant functions are byte-proven.
+  The [matching status board](tools/match/STATUS.md) lists the remaining
+  differences for all 15 partial matches.
 - In all 20 recorded high-score runs, the Original profile reproduces the
   snail’s forward position within the recording’s 1/32-unit precision.
-  A separate lockstep check compares recorded state fields across 10 original
-  sessions covering menus, tutorial, postal, challenge and time trial play.
+  A separate lockstep check matched the recorded state fields across 10
+  original captures spanning 56,977 ticks of menus, tutorial, postal,
+  challenge and time trial play.
 - **Ultimate, checked against Android:** `snail android trace` runs the
   Android release's own game library headless and compares what it builds and
   draws with the port. See [Gameplay profiles](docs/port/README.md#gameplay-profiles)

@@ -210,6 +210,8 @@ def inventory() -> list[dict[str, Any]]:
 
 
 def _external_inputs(configs: list[matchlib.ScratchConfig]) -> dict[str, Any]:
+    if matchlib.cl_option_environment():
+        raise ValueError("unset CL and _CL_ for a public report refresh; pin options in scratch.conf")
     manifest = load_function_symbol_manifest(REPO_ROOT / "analysis/symbols/gameplay-functions.json")
     image = REPO_ROOT / manifest.primary_target
     if file_hash(image) != manifest.unwrapped_sha256:
@@ -244,6 +246,9 @@ def native_id(address: int) -> str:
 
 
 def intersection_size(left: list, right: list) -> int:
+    # An auxiliary helper may overlap the main body or another helper.
+    # Each address can contribute to coverage only once.
+    left, right = code_inventory.merge_ranges(left), code_inventory.merge_ranges(right)
     return sum(max(0, min(b, d) - max(a, c)) for a, b in left for c, d in right)
 
 
