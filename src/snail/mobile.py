@@ -130,12 +130,16 @@ def resolve_corpus_symbols(
     ]
     if exact:
         return exact
-    requested_base = signature_base(requested)
+    # A bare method name or an explicit ellipsis leaves the signature open.
+    # An absent full signature may belong to a different game version.
+    requested_base = requested.removesuffix("(...)")
     base_matches = [
         function
         for function in functions
         if signature_base(function.get("demangled", "")) == requested_base
     ]
+    if len({function["demangled"] for function in base_matches}) > 1:
+        return []
     return base_matches
 
 

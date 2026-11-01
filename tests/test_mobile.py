@@ -67,6 +67,14 @@ def test_resolve_corpus_symbols_preserves_constructor_variants() -> None:
     assert len(resolved) == 2
 
 
+def test_resolve_corpus_symbols_rejects_other_signatures_and_ambiguous_overloads() -> None:
+    index = _index("cRSound::Play(int)", "cRSound::Play(int, float)")
+    assert not resolve_corpus_symbols(index, "cRSound::Play(float)")
+    assert not resolve_corpus_symbols(index, "cRSound::Play")
+    assert not resolve_corpus_symbols(index, "cRSound::Play(...)")
+    assert len(resolve_corpus_symbols(index, "cRSound::Play(int)")) == 1
+
+
 def test_rank_mobile_symbols_uses_path_family_shape() -> None:
     index = _index(
         "cRPath::BuildSlalomBig(int, int, bool, char*, char*)",
@@ -11702,7 +11710,7 @@ def test_cameraman_uses_authored_primary_owner() -> None:
     assert initializer["android_symbol"] == "cRCameraman::Init()"
     assert initializer["ios_symbol"] == "cRCameraman::Init(cRSubGoldy*)"
     assert initializer["android_body_count"] == 1
-    assert initializer["ios_body_count"] == 1
+    assert initializer["ios_body_count"] == 0
     assert functions_by_name["initialize_cameraman"]["aliases"] == [
         "cRCameraman_Init"
     ]

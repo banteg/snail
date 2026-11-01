@@ -29,7 +29,7 @@
     "verified_android_symbols": 591,
     "verified_ios_symbols": 467,
     "available_android_mappings": 591,
-    "available_ios_mappings": 434
+    "available_ios_mappings": 432
   },
   "entries": [
     {
@@ -17620,7 +17620,7 @@
       "source_object": "SubGame.o",
       "confidence": "high",
       "android_body_count": 1,
-      "ios_body_count": 1
+      "ios_body_count": 0
     },
     {
       "address": "0x441650",
@@ -19083,7 +19083,7 @@
       "source_object": "SubGame.o",
       "confidence": "high",
       "android_body_count": 1,
-      "ios_body_count": 1
+      "ios_body_count": 0
     },
     {
       "address": "0x4461d0",

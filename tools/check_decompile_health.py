@@ -35,6 +35,8 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_CONFIG_PATH,
         help="Path to the decompile health-check config.",
     )
+    parser.add_argument("--root", type=Path, default=DECOMPILE_ROOT, help="Decompile corpus to check.")
+    parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST_PATH, help="Manifest for export coverage.")
     parser.add_argument(
         "--strict",
         action="store_true",
@@ -47,14 +49,15 @@ def main() -> int:
     args = parse_args()
     config_path = args.config.resolve()
     checks = load_decompile_health_checks(config_path)
-    manifest = load_function_symbol_manifest(DEFAULT_MANIFEST_PATH)
+    root = args.root.resolve()
+    manifest = load_function_symbol_manifest(args.manifest)
     missing = decompile_export_coverage(
-        root=DECOMPILE_ROOT,
+        root=root,
         functions=tuple((f.address, f.name) for f in manifest.functions),
     )
     summary = {
-        "config": str(config_path.relative_to(REPO_ROOT)),
-        **evaluate_decompile_health_checks(repo_root=REPO_ROOT, checks=checks),
+        "config": str(config_path.relative_to(REPO_ROOT) if config_path.is_relative_to(REPO_ROOT) else config_path),
+        **evaluate_decompile_health_checks(repo_root=REPO_ROOT, decompile_root=root, checks=checks),
         "missing_exports": {lane: names for lane, names in missing.items() if names},
     }
     print(json.dumps(summary, indent=2))
