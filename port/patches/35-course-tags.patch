@@ -1,0 +1,98 @@
+Ultimate reads the first segment when the list header shares its line, and
+accepts the alternate hazard and ring spellings in the shipped courses.
+Original keeps the Windows loaders.
+
+--- a/decomp/game/Subtrack/load_level_definition_file.cpp
++++ b/decomp/game/Subtrack/load_level_definition_file.cpp
+@@ -1,6 +1,7 @@
+ // cRSubTracks::Init(char*) @ 0x447480 (thiscall, ret 0x4)
+ 
+ #include <stdio.h>
++#include <string.h>
+ 
+ #include "sprite.h"
+ #include "landscape_manager.h"
+@@ -11,6 +12,8 @@
+ #include "game_root.h"
+ #include "rshell.h"
+ 
++extern bool g_port_ultimate; // shell/profile.h
++
+ extern char* g_current_level_definition_name; // data_74ec74
+ extern char g_level_file_text_buffer[]; // data_74ec78
+ 
+@@ -23,6 +26,27 @@
+     char segment_name[512];
+     char background_name[512];
+ };
++
++static char* first_listed_segment(char* header)
++{
++    char* next_line = Rstrnewline(header);
++    if (!g_port_ultimate || !next_line)
++        return next_line;
++
++    char* entry = header + sizeof("Segments Begin:") - 1;
++    entry += strspn(entry, " \t");
++    if (entry[0] == '/' && entry[1] == '*') {
++        char* close = strstr(entry + 2, "*/");
++        if (!close || close >= next_line)
++            return next_line;
++        entry = close + 2;
++        entry += strspn(entry, " \t");
++    }
++
++    // The recovered entry loop expects a filename, optionally followed by metadata.
++    char* extension = Rstrfind(".txt", entry);
++    return extension && extension < next_line ? entry : next_line;
++}
+ 
+ void cRSubTracks::Init(char* filename)
+ {
+@@ -232,6 +256,8 @@
+     }
+ 
+     cursor = Rstrfind("Garbage:", LEVEL_FILE_BUFFER);
++    if (!cursor && g_port_ultimate)
++        cursor = Rstrfind("Slug:", LEVEL_FILE_BUFFER);
+     if (cursor == 0)
+         garbage_frequency = -1.0f;
+     else
+@@ -255,7 +281,7 @@
+         return;
+     }
+ 
+-    cursor = Rstrnewline(cursor);
++    cursor = first_listed_segment(cursor);
+     if (cursor == 0) {
+         report_errorf("Unexpected end of file in %s", level_path);
+         return;
+--- a/decomp/game/Subtrack/load_segment_definitions.cpp
++++ b/decomp/game/Subtrack/load_segment_definitions.cpp
+@@ -7,6 +7,8 @@
+ #include "rtext.h"
+ #include "segment_catalog_types.h"
+ #include "rshell.h"
++
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ void cRSMTracks::Import() {
+     char path_name[64];
+@@ -210,7 +212,7 @@
+             }
+ 
+             option_match = Rstrfind("NoFall", option_text);
+-            if (option_match != 0)
++            if (option_match || (g_port_ultimate && Rstrfind("No Fall", option_text)))
+                 entries[segment_index].rows[row_index].flags |=
+                     AUTHORED_SEGMENT_ROW_FLAG_NO_FALL;
+             option_match = Rstrfind("Ring=None", option_text);
+@@ -226,7 +228,7 @@
+                 entries[segment_index].rows[row_index].flags |=
+                     AUTHORED_SEGMENT_ROW_FLAG_RING_POWER_UP;
+             option_match = Rstrfind("Ring=Explode", option_text);
+-            if (option_match != 0)
++            if (option_match || (g_port_ultimate && Rstrfind("Ring=Explosive", option_text)))
+                 entries[segment_index].rows[row_index].flags |=
+                     AUTHORED_SEGMENT_ROW_FLAG_RING_EXPLODE;
+             option_match = Rstrfind("Ring=Slow", option_text);

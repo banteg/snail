@@ -365,8 +365,8 @@ in one game.
 
 - **Ultimate** (the default in the browser and natively): the latest content,
   backported from the Android release (#28): all mobile courses and segments,
-  mobile rules and capacities, Pro-Challenge, separate saves, and the fixes for
-  entries 1–4 in [Original bugs](original-bugs.md). It needs
+  mobile rules and capacities, Pro-Challenge, separate saves, and the
+  gameplay and presentation fixes in [Original bugs](original-bugs.md). It needs
   `SnailMailExtras.dat` and won't start without it.
 - **Original** (the default headless, since both oracles check it): the 2004 PC
   release as shipped, its bugs included. Every Ultimate hook
@@ -434,8 +434,8 @@ random draw. Sixteen slugs can be alive at
 once instead of 8, which the mobile Barrage and SlugLine formations need. The
 active track window reaches two rows further: objects spawn 40 rows ahead
 of the snail instead of 38, and the finish banner and shots reach 48 rows
-ahead instead of 46. The salt hazard also calculates its fade over 48 rows,
-although its mesh uses a fixed opacity. Near the finish line the window's
+ahead instead of 46. Each salt crystal fades in over those 48 rows.
+Near the finish line the window's
 trailing edge keeps following the snail instead of stopping 30 rows before
 the line, and rows are scanned up to 40 past it instead of 20. A WALL2 cell
 stops a shot only between heights -1 and 7. Ultimate also plays Android's
@@ -486,7 +486,7 @@ finish shows the continue prompt and, on a new best time
 for the route, a blinking "NEW FASTEST TIME!" with the Perfect jingle.
 
 Mobile campaign progress and scores use `SnailMailMobile.cfg` and
-`ScoreMobileA/B/C-v4.dat`. A score table keeps each run's replay, which plays
+`ScoreMobileA/B/C-v5.dat`. A score table keeps each run's replay, which plays
 back only on the courses and rules it was recorded under, so the table names
 carry a version (`kUltimateScoreVersion` in `port/shell/extras.cpp`): a rule
 change that would make stored replays drift bumps it, removes older Ultimate
@@ -494,11 +494,13 @@ score files, and starts fresh tables, while progress keeps its file. Version 2
 began with the profile audit's rules (v0.4.0), and version 3 introduced
 Android's swept path re-entry. Version 4 uses the mobile course arithmetic,
 trigonometry and random draws, and records each fired shot in replay bit 0x40.
+Version 5 starts fresh score tables for the corrected courses, parcel
+placement, combat, pickup collisions and Time Trial finish times.
 The first mobile launch copies the volumes and display
 settings (fullscreen, render flags, display mode) from the PC config. The rest,
 from campaign progress and the tutorial to the Challenge sliders and the
 high-score name, starts at the defaults, which Android's match.
-Pro keeps `SnailMailPro.cfg` and `ScorePro-v4.dat`. The Pro galaxy, progress and
+Pro keeps `SnailMailPro.cfg` and `ScorePro-v5.dat`. The Pro galaxy, progress and
 scores stand in for the postal ones only during a Pro game and a replay from
 the Pro High Scores, so the main menu and the Postal table always show postal
 records. A Pro record replays on its Pro course; Android clears its Pro flag on

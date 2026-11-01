@@ -37,6 +37,50 @@ function title() {
 }
 
 const scenarios = {
+  'name-line-break'() {
+    game.mainMenu();
+    startRun('Postal Mode');
+    quitRun(4321);
+    game.find('Enter your name here!');
+    // With 15 letters already entered, the first break fits. The next does not.
+    for (let i = 0; i < 2; ++i) {
+      game.e.snail_key(0x1d, 1);
+      game.key(0x1c);
+      game.e.snail_key(0x1d, 0);
+      game.step();
+    }
+    game.key(SCAN.A);
+    game.key(0x1c);
+    game.step(120);
+    game.e.snail_save();
+    return {};
+  },
+
+  'finish-fraction'() {
+    game.mainMenu();
+    startRun('Time Trial');
+    const m = memory();
+    const p = game.sub + LAYOUT.player;
+    const z = p + LAYOUT.player_z;
+    const clock = p + LAYOUT.stopwatch_seconds;
+    // Both courses open on a path. Measure the crossing on the flat road beyond it.
+    game.until(() => m.readFloatLE(z) > 50 && !m.readUInt8(p + LAYOUT.follow_active));
+    const vz = m.readFloatLE(p + LAYOUT.player_velocity + 8);
+    const line = Math.ceil(m.readFloatLE(z));
+    m.writeInt32LE(line, game.sub + LAYOUT.completion_row_start);
+    m.writeFloatLE(line - vz / 2, z);
+    const startZ = m.readFloatLE(z);
+    const before = m.readFloatLE(clock);
+    game.step();
+    const endZ = m.readFloatLE(z);
+    const elapsed = m.readFloatLE(clock) - before;
+    const route = m.readInt32LE(game.sub + LAYOUT.level_mode_arg);
+    const record = game.record(LAYOUT.time_trial_records, route);
+    game.until(() => memory().readInt32LE(record + LAYOUT.solution_active) === 1, 1200);
+    return {fraction: (line - startZ) / (endZ - startZ), elapsed, before,
+      saved: memory().readFloatLE(record + LAYOUT.solution_seconds)};
+  },
+
   fullscreen() { return game.fullscreenRequests; },
   recenter() {
     game.mainMenu();

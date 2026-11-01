@@ -1,0 +1,76 @@
+Ultimate mirrors each bracket ramp into its opposite hand and builds the right
+bracket with the matching right edge. A heart can be collected at its base
+or anywhere up to its visible bobbing center.
+
+--- a/decomp/game/SubGame/normalize_segment_glyph_for_track_flags.cpp
++++ b/decomp/game/SubGame/normalize_segment_glyph_for_track_flags.cpp
+@@ -1,6 +1,8 @@
+ // normalize_segment_glyph_for_track_flags @ 0x437270 (thiscall, ret 0xc)
+ 
+ #include "subgame_runtime.h"
++
++extern bool g_port_ultimate;
+ 
+ char cRSubGame::LevelConvert(char glyph, int row, char edge_row)
+ {
+@@ -52,7 +54,7 @@
+         if ((flags & SUBGAME_RUNTIME_FLAG_PRESERVE_BRACE_ORIENTATION) == 0)
+             return '<';
+         if (track_mirror_enabled != 0)
+-            return '{';
++            return g_port_ultimate ? '[' : '{';
+         return glyph;
+     }
+ 
+@@ -63,7 +65,7 @@
+         if ((flags & SUBGAME_RUNTIME_FLAG_PRESERVE_BRACE_ORIENTATION) == 0)
+             return '<';
+         if (track_mirror_enabled != 0)
+-            return '[';
++            return g_port_ultimate ? ']' : '[';
+         return glyph;
+     }
+ 
+
+--- a/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
++++ b/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
+@@ -762,6 +762,16 @@
+                         runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_EMPTY;
+                     }
+                     break;
++                case ']':
++                    if (g_port_ultimate) {
++                        runtime_cells[build_row][lane].SetObject(ROOT_BOD_OBJECT(ramp_edges[2]));
++                        runtime_cells[build_row][lane].render_arg_1c = 0;
++                        runtime_cells[build_row][lane].render_arg_20 = 0;
++                        runtime_cells[build_row][lane].tile_id = SUBLOC_TILE_RAMP_RIGHT_BRACKET;
++                        runtime_cells[build_row][lane].list_flags |= 0x20;
++                        break;
++                    }
++                    // The original sends an unmirrored right bracket to its unknown-glyph handler.
+                 default:
+                     debug_report_stub(
+                         "TrackError:%c in Segment %s\n",
+
+--- a/decomp/game/SubGame/handle_subgoldy_collisions.cpp
++++ b/decomp/game/SubGame/handle_subgoldy_collisions.cpp
+@@ -18,6 +18,7 @@
+ #include "sound_effect_manager.h"
+ #include "subgame_runtime.h"
+ #include "sub_lazer_types.h"
++#include "sprite.h"
+ #include "track_health_pickup.h"
+ #include "track_jetpack_pickup.h"
+ #include "track_parcel_runtime.h"
+@@ -187,6 +188,11 @@
+             probe_b.y =
+                 game->health_pickups[ii].position.y
+                 - cached_camera_target_world.y;
++            if (g_port_ultimate && probe_b.y < 0.0f) {
++                // The collectible spans from its ground pickup height to the animated heart.
++                float drawn_delta_y = game->health_pickups[ii].sprite->position.y - cached_camera_target_world.y;
++                probe_b.y = drawn_delta_y < 0.0f ? drawn_delta_y : 0.0f;
++            }
+             probe_b.z =
+                 game->health_pickups[ii].position.z
+                 - cached_camera_target_world.z;

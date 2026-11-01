@@ -62,6 +62,24 @@ def scramble_scores(data):
     return bytes(value ^ (index & 255) for index, value in enumerate(data))
 
 
+@pytest.mark.parametrize("ultimate", [False, True])
+def test_high_score_line_break_obeys_name_limit_in_ultimate(play, tmp_path, ultimate):
+    name = "a" * 15
+    play("name-line-break", ultimate, name=name)
+    table = tmp_path / ("ScoreMobileA-v5.dat" if ultimate else "ScoreA.dat")
+    row = scramble_scores(table.read_bytes())
+    assert row[0x5C:0x70].split(b"\0", 1)[0] == name.encode() + (b">" if ultimate else b">>")
+
+
+@pytest.mark.parametrize("ultimate", [False, True])
+def test_time_trial_finishes_on_interpolated_tick_in_ultimate(play, ultimate):
+    result = play("finish-fraction", ultimate)
+    assert 0.49 < result["fraction"] < 0.51
+    seconds = result["fraction"] / 60
+    assert result["elapsed"] == pytest.approx(seconds if ultimate else seconds / 60, abs=0.000005)
+    assert result["saved"] == result["before"] + result["elapsed"]
+
+
 def test_autosave_preserves_pro_route_controls(play):
     assert play("save-pro-map", True)["prompt"] == "Click to Start"
 
@@ -80,7 +98,7 @@ def test_render_cache_keeps_postal_fringe_rgb_and_uses_profile_alpha(play, ultim
 def test_delivery_prompt_input_and_parcel_endpoint(play, tmp_path, ultimate, replay):
     if replay:
         score = REPO_ROOT / "tests/fixtures/replays/ScoreB.windows-2026-04-17.dat"
-        shutil.copyfile(score, tmp_path / "ScoreMobileB-v4.dat")
+        shutil.copyfile(score, tmp_path / "ScoreMobileB-v5.dat")
     result = play("delivery", ultimate, "replay" if replay else "live", bank=1)
     assert result["duringTally"] == (not ultimate)
     assert result["atSummary"]
@@ -95,7 +113,7 @@ def test_idling_at_start_keeps_saved_replay_within_capacity(play, tmp_path, ulti
     result = play("idle-start", ultimate)
     if ultimate:
         assert result["waiting"] <= 9
-    table = tmp_path / ("ScoreMobileA-v4.dat" if ultimate else "ScoreA.dat")
+    table = tmp_path / ("ScoreMobileA-v5.dat" if ultimate else "ScoreA.dat")
     record = scramble_scores(table.read_bytes())
     size, score = struct.unpack_from("<ii", record)
     samples = struct.unpack_from("<i", record, 0x74)[0]
@@ -107,7 +125,7 @@ def test_idling_at_start_keeps_saved_replay_within_capacity(play, tmp_path, ulti
 @pytest.mark.skipif(not WASM.with_name("snail.wasm").exists(), reason="needs the headless replay oracle")
 def test_manual_quit_oracle_validates_final_motion_and_handoff(play, tmp_path):
     play("idle-start", True)
-    bank = tmp_path / "ScoreMobileA-v4.dat"
+    bank = tmp_path / "ScoreMobileA-v5.dat"
     record = bytearray(scramble_scores(bank.read_bytes()))
     count = struct.unpack_from("<i", record, 0x74)[0]
     deltas = 0x88 + count * 2
@@ -160,7 +178,7 @@ def test_score_loader_bounds_records_and_recovers_legacy_samples(play, tmp_path)
     bad_name[0x5C:0x70] = b"X" * 20
     bad_checksum = row(1, 1)
     struct.pack_into("<I", bad_checksum, 0x28, 0)
-    table = tmp_path / "ScoreMobileA-v4.dat"
+    table = tmp_path / "ScoreMobileA-v5.dat"
     # Skip invalid frames with known boundaries, then stop at an invalid
     # byte_count. The two valid neighbors must survive the next save.
     table.write_bytes(scramble_scores(

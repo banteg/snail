@@ -1,9 +1,9 @@
 # Original bugs
 
-The [Ultimate profile](README.md#gameplay-profiles) fixes the first four
-Windows bugs below. The Original profile preserves them for the oracles.
-[Other verified Windows bugs](#other-verified-windows-bugs) covers course
-generation, combat, timing, input and presentation in the shipped game.
+The [Ultimate profile](README.md#gameplay-profiles) corrects the Windows
+gameplay, input and presentation bugs catalogued here. Original preserves
+their Windows behavior. Both profiles use the host's monotonic clock, which
+already avoids the Windows uptime bug (20).
 
 A fix that acts around a function wraps it (`port/wrapped.txt`) and lives in
 `port/shell/fixes.cpp` or `port/shell/extras*.cpp`; one that acts inside it
@@ -153,7 +153,7 @@ Why it's a bug:
   it with the Challenge rows one rank further down, names, scores and replays
   included, and the next save writes them to `ScoreA.dat`. The port enters a
   Pro name on the Postal bank with the Pro table swapped in, so without the fix
-  they would reach Pro's score file (`ScorePro-v4.dat`).
+  they would reach Pro's score file (`ScorePro-v5.dat`).
 - Android's `cRSubHighScore::RemoveHighScore` (`00065270`), which its Cancel
   calls with the entry's bank and rank, deletes the cancelled entry and shifts
   the rows below it up within that bank (Postal, Challenge or Pro); iOS's
@@ -173,6 +173,16 @@ The addresses below refer to `SnailMail_unwrapped.exe`. The x86 probes ran
 instructions from that executable with controlled inputs. Course and replay
 checks used the Original profile with the Windows archive. Where a control
 changed an asset or a starting position, the entry identifies the change.
+
+| Entries | Ultimate behavior | Regression in `tests/` |
+|---|---|---|
+| 5, 6 | Challenge places digit parcels relative to the new road. Postal fills shortages from unused authored rows without another random draw, and scales the quota if the course cannot fit the requested count. | `test_port_parcel_placement.py` |
+| 7, 8, 10, 11 | The level loader reads a filename after the list header and accepts `Slug:` as an alias. The segment importer recognizes `Ring=Explosive` and `No Fall`. | `test_port_course_tags.py` |
+| 9, 14 | Both bracket ramp glyphs reflect and produce opposite rolls. The heart's pickup volume reaches from its base to its bobbing sprite. | `test_port_ramps_and_hearts.py` |
+| 12, 13 | Lasers test asteroid collisions along the distance traveled each tick. Rockets resolve normal damage and splash before retiring at their target. | `test_port_projectile_contacts.py` |
+| 15, 18 | Each salt draw uses its own distance-scaled tint, including on the spawn frame. Double quotes use the quote glyph. | `test_port_salt_and_font.py` |
+| 16, 17 | The finish clock credits the fraction of the tick spent reaching the line. A line break consumes one character of the high-score name limit. | `test_port_frontend_rules.py` |
+| 19, 20 | Ultimate delivers mouse transitions across input polls. Both host clocks keep their precision past eight days and across the 32-bit millisecond boundary. | `test_port_input_clock.py` |
 
 ### 5) A previous course can bury a Challenge parcel
 
@@ -196,6 +206,8 @@ groups, fills the remainder from individual candidates, then replaces the
 authored total with however many it placed. Some group choices exhaust the
 individual candidates early. The x86 routine also changed the internal quota
 from 20 to 78 when it placed 39. The player sees a 39-parcel total.
+Ultimate's mobile-generator seed 17673 also produced 39 parcels with quota
+78 before the fix. It now produces all 40 with the authored quota of 20.
 
 ### 7) Four Postal routes lose their opening Wibble
 
@@ -272,8 +284,10 @@ sprite center missed. Placing it at the base collected it.
 
 `cRSalt::AI` (`0x441c10`) stored fade values of 0, 0.5 and 1 at
 distances of 46, 23 and 0 units in the Windows probe. At every distance
-the next instruction sequence set the mesh's opacity to 0.9. The renderer
-uses that mesh color. The camera's distance fog is a separate effect.
+the next instruction sequence set the body's alpha to 0.9. The shared salt
+mesh also lacks the per-draw tint flag. Original submitted vertex alpha 255
+at every distance tested. Ultimate submitted 0 and 229 for a distant and a
+nearby crystal sharing the mesh in the same frame. Camera fog is separate.
 
 ### 16) Time Trial undercounts the finish tick
 

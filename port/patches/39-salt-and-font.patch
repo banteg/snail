@@ -1,0 +1,87 @@
+Use each salt crystal's distance fade on its shared mesh and draw the quote glyph
+in Ultimate. The salt tint is initialized when the crystal enters the draw list.
+
+--- a/decomp/engine/Font/font_slot_index_for_char.cpp
++++ b/decomp/engine/Font/font_slot_index_for_char.cpp
+@@ -1,3 +1,5 @@
+ // FontASCIIRemap @ 0x449d20 (cdecl)
++
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ int FontASCIIRemap(char value)
+@@ -11,5 +13,5 @@
+     if (value == ' ')
+         return 0x35;
+-    if ((int)value == '""')
++    if (value == '"' && g_port_ultimate)
+         return 0x40;
+ 
+--- a/decomp/game/Game/initialize_game_assets_and_world.cpp
++++ b/decomp/game/Game/initialize_game_assets_and_world.cpp
+@@ -391,4 +391,6 @@
+     root_bod_catalog.salt_model.SetObject(g_object_list.Add());
+     loader->Load((char*)"salt.x", root_bod_catalog.salt_model.object, 1);
++    if (g_port_ultimate)
++        root_bod_catalog.salt_model.object->flags |= OBJECT_FLAG_REFRESH_TINT_EACH_DRAW;
+ 
+     for (slot_index = 0; slot_index < 40; slot_index++) {
+--- a/decomp/include/salt_hazard_types.h
++++ b/decomp/include/salt_hazard_types.h
+@@ -20,4 +20,5 @@
+     cRSalt(); // @ 0x408630
+     void AI(); // @ 0x441c10
++    void UpdateFade();
+ 
+     SaltState state;            // +0x80
+--- a/decomp/game/SubGame/spawn_salt_hazard.cpp
++++ b/decomp/game/SubGame/spawn_salt_hazard.cpp
+@@ -4,4 +4,6 @@
+ #include "salt_hazard_types.h"
+ #include "transform_matrix.h"
++
++extern bool g_port_ultimate; // shell/profile.h
+ 
+ void cRSaltManager::Add(tVector& position)
+@@ -29,4 +31,6 @@
+     Vector3* spawn_position = &slot->transform.position;
+     *spawn_position = position;
++    if (g_port_ultimate)
++        slot->UpdateFade();
+     live_matrix->RotIdentity();
+     live_matrix->RotLocalY(
+--- a/decomp/game/SubGame/update_salt_hazard.cpp
++++ b/decomp/game/SubGame/update_salt_hazard.cpp
+@@ -7,4 +7,16 @@
+ 
+ extern bool g_port_ultimate; // shell/profile.h
++
++void cRSalt::UpdateFade()
++{
++    float distance = transform.position.z - owner_game->player.transform.position.z;
++    float alpha = g_port_ultimate ? 1.0f - distance / 48.0f : 1.0f - distance * 0.021739131f;
++    if (alpha < 0.0f)
++        alpha = 0.0f;
++    else if (alpha > 1.0f)
++        alpha = 1.0f;
++    fade_alpha = alpha;
++    color.Alpha(g_port_ultimate ? 0.9f * alpha : 0.9f);
++}
+ 
+ void cRSalt::AI()
+@@ -47,15 +59,5 @@
+     }
+     case SALT_STATE_ACTIVE: {
+-        float alpha = g_port_ultimate
+-            ? (transform.position.z - owner_game->player.transform.position.z) / -48.0f + 1.0f
+-            : 1.0f - (transform.position.z - owner_game->player.transform.position.z) * 0.021739131f;
+-        fade_alpha = alpha;
+-        if (alpha < 0.0f) {
+-            alpha = 0.0f;
+-        } else if (alpha > 1.0f) {
+-            alpha = 1.0f;
+-        }
+-        fade_alpha = alpha;
+-        color.Alpha(0.899999976f);
++        UpdateFade();
+         if (transform.position.z < owner_game->player.active_window_min_z)
+             state = SALT_STATE_RECYCLE_PENDING;

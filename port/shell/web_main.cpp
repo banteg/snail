@@ -106,9 +106,10 @@ WEB_EXPORT("snail_pointer") void snail_pointer(int x, int y)
     input_set_pointer(x, y);
 }
 
-WEB_EXPORT("snail_button") void snail_button(int button, int down)
+// Positive for down, zero for up, negative when the host cancels the gesture.
+WEB_EXPORT("snail_button") void snail_button(int button, int down, unsigned source)
 {
-    input_set_button(button, down != 0);
+    input_set_button(button, down > 0, source, down < 0);
 }
 
 WEB_EXPORT("snail_wheel") void snail_wheel(int direction)

@@ -1,0 +1,101 @@
+In Ultimate, initialize Challenge digit parcels from the new road and fill shortages
+from unused authored rows before the finish. A row holds one parcel request.
+
+--- a/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
++++ b/decomp/game/SubGame/populate_runtime_track_cells_from_segments.cpp
+@@ -744,8 +744,9 @@
+                         runtime_rows[build_row].parcel_set_id = 0;
+                         runtime_rows[build_row].parcel_spawn_position.x =
+                             (float)lane - 4.0f + 0.5f;
++                        // A digit cell's road is built at local y=0 below this switch.
+                         runtime_rows[build_row].parcel_spawn_position.y =
+-                            runtime_cells[build_row][lane].position.y;
++                            g_port_ultimate ? 0.0f : runtime_cells[build_row][lane].position.y;
+                         runtime_rows[build_row].parcel_spawn_position.z =
+                             (float)build_row + 0.5f;
+                         if (track_mirror_enabled)
+--- a/decomp/game/SubGame/place_parcels_on_track.cpp
++++ b/decomp/game/SubGame/place_parcels_on_track.cpp
+@@ -15,6 +15,8 @@
+ #include "rerror.h"
+ #include "subgame_runtime.h"
+ 
++extern bool g_port_ultimate;
++
+ // row records at game + 244*row + 0x5ccac8: flags +0x00, payload vec3
+ // +0x90, count accumulator +0x94, row-center accumulator +0x98, and primary
+ // attachment cell ptr +0xa4. SubRowFlag owns the packed state transitions.
+@@ -37,7 +39,7 @@
+     int zero_candidate_total = 0;
+     int zero_entry_count = 0;
+     int set_entry_count = 0;
+-    int last_segment_max_set_size;
++    int last_segment_max_set_size = 0;
+ 
+     for (int segment = 0; segment < level_definition.segment_count; ++segment) {
+         last_segment_max_set_size = 0;
+@@ -244,13 +246,63 @@
+         }
+     }
+ 
++    if (g_port_ultimate) {
++        // The game can spawn only one parcel per row, before the finish.
++        placed = 0;
++        for (int row = 0; row < runtime_row_count; ++row) {
++            SubRow& target = runtime_rows[row];
++            if (target.flags & SUBROW_FLAG_PARCEL_SPAWN_REQUESTED) {
++                if (row < completion_row_start && placed < required)
++                    ++placed;
++                else
++                    target.flags &= ~SUBROW_FLAG_PARCEL_SPAWN_REQUESTED;
++            }
++        }
++        // Set selection discards alternate patterns from each chosen segment.
++        // If singles ran out, fill still-vacant authored rows without another draw.
++        for (int row = 0; row < completion_row_start && placed < required; ++row) {
++            SubRow& target = runtime_rows[row];
++            SubSegment* segment = target.source_segment;
++            if ((target.flags & SUBROW_FLAG_PARCEL_SPAWN_REQUESTED) || !segment
++                || segment == &level_definition.first_segment)
++                continue;
++            int local_row = row - segment->row_base;
++            if (local_row < 0 || local_row >= segment->row_count)
++                continue;
++            AuthoredSegmentRow& authored = segment->rows[local_row];
++            Vector3 position;
++            if (authored.flags & AUTHORED_SEGMENT_ROW_FLAG_PARCEL) {
++                position = authored.local_position;
++            } else {
++                int lane = 0;
++                while (lane < SUBGAME_TRACK_LANE_COUNT) {
++                    char glyph = segment->glyph_rows[lane][local_row];
++                    if (glyph >= '0' && glyph <= '9')
++                        break;
++                    ++lane;
++                }
++                if (lane == SUBGAME_TRACK_LANE_COUNT)
++                    continue;
++                position = Vector3((float)lane - 3.5f, 0.0f, 0.0f);
++            }
++            if (target.flags & SUBROW_FLAG_MIRRORED)
++                position.x *= -1.0f;
++            position.y += 1.0f;
++            position.z = (float)row + position.z + 0.5f;
++            target.parcel_spawn_position = position;
++            target.flags |= SUBROW_FLAG_PARCEL_CANDIDATE | SUBROW_FLAG_PARCEL_SPAWN_REQUESTED;
++            ++placed;
++        }
++    }
++
+     if (placed != level_definition.parcel_count) {
+         report_errorf("Did not generate required Parcels(%i) in %s",
+                       level_definition.parcel_count,
+                       level_definition.level_display_name);
+         if (level_definition.parcel_quota)
+             level_definition.parcel_quota =
+-                placed * level_definition.parcel_count / level_definition.parcel_quota;
++                g_port_ultimate ? (int)((long long)placed * level_definition.parcel_quota / required)
++                                : placed * level_definition.parcel_count / level_definition.parcel_quota;
+     }
+     int& final_parcel_count = level_definition.parcel_count;
+     final_parcel_count = placed;
