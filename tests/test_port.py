@@ -19,6 +19,28 @@ from snail.wasm_object import SYMBOL_FUNCTION, Signature, read_symbols
 I32 = ("i32",)
 
 
+@pytest.mark.skipif(not shutil.which("zig") or not shutil.which("node"), reason="needs zig and node")
+def test_headless_runner_preserves_piped_output(tmp_path):
+    source = tmp_path / "burst.c"
+    source.write_text("""\
+#include <stdio.h>
+#include <string.h>
+static char data[256 * 1024];
+int main(void) {
+    fwrite(data, 1, sizeof data, stdout);
+    memset(data, 'e', sizeof data);
+    fwrite(data, 1, sizeof data, stderr);
+    return 7;
+}
+""")
+    program = tmp_path / "burst.wasm"
+    subprocess.run(["zig", "cc", "-target", "wasm32-wasi", source, "-o", program], check=True)
+    run = subprocess.run(["node", "--no-warnings", REPO_ROOT / "port/shell/run.mjs", program], capture_output=True)
+    assert run.returncode == 7
+    assert run.stdout == bytes(256 * 1024)
+    assert run.stderr == b"e" * (256 * 1024)
+
+
 def test_committed_sources_are_current():
     assert (REPO_ROOT / port.SOURCES).read_text() == port.sources_text(REPO_ROOT)
 
