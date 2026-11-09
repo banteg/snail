@@ -35,13 +35,9 @@ void cRPath::initialize_looptheloopw_path_template_pair(
 
     for (i = 0; i < 7; ++i) {
         sample_f = (float)i;
-        primary_bank[i].center_x = (float)width_cells * 0.5f - 4.0f
-            - loop_wiggle * (sample_f / 7.0f);
-        primary_bank[i].rotation_scalar_98 = 0.0f;
-        primary_bank[i].rotation_scalar_94 = 0.0f;
-        primary_bank[i].special_scalar = 0.0f;
-        primary_bank[i].lateral_scale = 1.0f;
-        primary_bank[i].transform.Identity();
+        reset_primary_sample(
+            primary_samples, i * sizeof(AttachmentSample),
+            (float)width_cells * 0.5f - 4.0f - loop_wiggle * (sample_f / 7.0f));
         primary_bank[i].transform.position.x = primary_bank[i].center_x;
         primary_bank[i].transform.position.y = 0.0f;
         primary_bank[i].transform.position.z = sample_f;
@@ -56,14 +52,10 @@ void cRPath::initialize_looptheloopw_path_template_pair(
 
     for (i = 0; i < 7; ++i) {
         int sample_index = curve_count + 7 + i;
-        primary_bank[sample_index].center_x =
+        reset_primary_sample(
+            primary_samples, sample_index * sizeof(AttachmentSample),
             (1.0f - (float)i * 0.16666667f) * loop_wiggle
-            + (4.0f - (float)width_cells * 0.5f);
-        primary_bank[sample_index].rotation_scalar_98 = 0.0f;
-        primary_bank[sample_index].rotation_scalar_94 = 0.0f;
-        primary_bank[sample_index].special_scalar = 0.0f;
-        primary_bank[sample_index].lateral_scale = 1.0f;
-        primary_bank[sample_index].transform.Identity();
+                + (4.0f - (float)width_cells * 0.5f));
         primary_bank[sample_index].transform.position.x =
             primary_bank[sample_index].center_x;
         primary_bank[sample_index].transform.position.y = 0.0f;

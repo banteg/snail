@@ -502,3 +502,22 @@ following rotation, and reproduces all 745 instructions, 55 references
 and body bytes. The unmodified compiler still selects ECX for this source.
 Only unmodified builds count. Staging the sine arguments or binding the
 departure sample's center by reference did not remove the extra decision.
+
+## Straight samples and the last vertex (2026-11-09)
+
+The approach and departure primary nodes use the same reset as Dip and
+Slalom: store the center, clear the three control fields, set unit lateral
+scale and call Identity. Both sections now call the existing
+`reset_primary_sample`. After the secondary Identity, Windows copies
+one float from the primary center at +0x90 to the secondary X at +0x30
+(`0x41bc6d..0x41bc74` in the approach). It writes the secondary Y and
+Z separately. The corresponding straight sections in Chromadrome 2 at
+`0x461522..0x461529` and `0x462882..0x462889` retain this scalar copy.
+
+The terminal mesh row computes its vertex from the previous sample's
+position, unit Z and lateral offset. Its only output copy covers three
+four-byte coordinates at `0x41c354`, `0x41c356` and `0x41c361`.
+Combining a named source sample with a full vector assignment in the
+straight sections loses native bank reloads. The shared reset with
+scalar coordinate writes preserves every code and relocation fingerprint
+across all 43 Path functions. The SIB at `+0x35b` remains open.
