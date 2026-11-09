@@ -1,3 +1,29 @@
+## 2026-11-10 identical Windows strip vertices in three path builders
+
+The vertex loop is the same 311 bytes (92 instructions) in three places
+in the retail PE. The ranges below start at the signed row guard and end
+immediately after the loop latch. The end addresses are exclusive.
+
+| Builder | Start VA | End VA |
+| --- | --- | --- |
+| Dip | `0x41ea1a` | `0x41eb51` |
+| Slalom | `0x41fe03` | `0x41ff3a` |
+| SlalomBig | `0x422893` | `0x4229ca` |
+
+Each range hashes to
+`ed8a9d35b37f684bd2b24a7d473786cb48146856dc33bc97ab7ddfa9a3a7b031`.
+Both paths through the loop use the same position and right-vector
+geometry. The terminal row adds one unit of Z to the preceding node.
+SlalomDouble uses that geometry too, with 304 bytes and 89 instructions
+at `0x4256dc..0x42580c`.
+
+Calling the existing `build_extrapolated_strip_mesh` from a single-index
+Dip control reproduced all 311 bytes at their original body offsets while
+preserving the full Slalom and SlalomBig matches. The rest of that Dip
+control differed, including its common face-header write. Native Dip
+writes the header in each winding arm. This gives separate controls for
+the vertex and face portions of subsequent reconstructions.
+
 ## 2026-11-09: primary sample bank and secondary position
 
 Dip now reproduces every non-relocation byte in its 2,390-byte body except the
