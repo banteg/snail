@@ -301,21 +301,6 @@ def attach_final(rows, events):
         row["final"] = "kept" if row["register"] in registers else "folded"
 
 
-def definition_line(source_text, symbol):
-    """Line of the function definition; C2 line labels are relative to it."""
-    name = symbol
-    if symbol.startswith("?"):
-        parts = symbol[1:].split("@@")[0].split("@")
-        name = "::".join(reversed(parts))
-    pattern = re.compile(r"^\S.*\b" + re.escape(name) + r"\s*\(")
-    lines = [
-        i for i, text in enumerate(source_text.splitlines(), 1) if pattern.match(text)
-    ]
-    if not lines:
-        raise ValueError(f"Cannot find the definition of {name}")
-    return lines[-1]
-
-
 SCRATCH_TOKEN = re.compile(r"\b(?:e?[abcd]x|[abcd][lh])\b")
 WIDE = {"a": "eax", "b": "ebx", "c": "ecx", "d": "edx"}
 
@@ -486,10 +471,11 @@ def prepare(scratch, source, work):
     (work / "scratch.conf").write_text(
         m.overlay_scratch_conf((scratch / "scratch.conf").read_text())
     )
-    text = m.scratch_compilation_source(
-        m.load_scratch_config(scratch),
-        source_text=source.read_text(encoding="utf-8") if source else None,
-    )
+    config = m.load_scratch_config(scratch)
+    member_text = (source or config.source_path).read_text(encoding="utf-8")
+    # Preserve member-relative source lines alongside the full compiler input.
+    (work / "member.cpp").write_text(member_text, encoding="utf-8")
+    text = m.scratch_compilation_source(config, source_text=member_text)
     (work / "scratch.cpp").write_text(text, encoding="utf-8")
     return work
 
@@ -527,7 +513,9 @@ def main():
     attach_final(rows, events)
     config = m.load_scratch_config(work)
     source_text = (work / "scratch.cpp").read_text()
-    first_line = definition_line(source_text, config.symbol or config.function)
+    first_line = t.source_line_base(
+        source_text, config.symbol or config.function, member_path=work / "member.cpp",
+    )
     object_path = m.compile_scratch(config)
     instructions = native_registers(config, work, object_path)
     link(rows, instructions, first_line)

@@ -487,7 +487,9 @@ def main():
     lines_of, _ = symbol_uses(rows, "global")
     _, final_regs = symbol_uses(rows, "local")
     source_text = (work / "scratch.cpp").read_text()
-    first_line = rot.definition_line(source_text, config.symbol or config.function)
+    first_line = t.source_line_base(
+        source_text, config.symbol or config.function, member_path=work / "member.cpp",
+    )
     metrics = c2.replay.function_metrics(config, object_path)
     natives = native_map(config, work, object_path, first_line)
     chosen, rest = ranges(rows)

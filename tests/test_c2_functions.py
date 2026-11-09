@@ -52,6 +52,33 @@ def test_target_function_of_a_single_function_is_silent(capsys):
     assert capsys.readouterr().err == ""
 
 
+@pytest.mark.parametrize("signature", [
+    "void Game::step() {",
+    "void Game::step(\n    int frames)\n{",
+    'void Game::step(char c = \'{\') // {\n\n/* { */\n{',
+])
+def test_c2_labels_start_at_one_on_the_body_brace(signature):
+    body = signature + "\n    move();\n}\n"
+    prototype = "void Game::step();\n"
+    for prefix in ("", prototype + "int previous() { return 1; }\n"):
+        source = prefix + body + prototype
+        base = c2_trace.source_line_base(source, "?step@Game@@QAEXXZ")
+        assert source.splitlines()[base].endswith("{")
+        assert source.splitlines()[base + 1].strip() == "move();"
+
+
+def test_c2_labels_use_the_selected_translation_unit_overload(tmp_path):
+    first = "void Game::step(int frames) {\n    move(frames);\n}\n"
+    second = "void Game::step()\n{\n    move(1);\n}\n"
+    source = first + "\n" + second
+    member = tmp_path / "member.cpp"
+    member.write_text(first)
+    assert c2_trace.source_line_base(source, "?step@Game@@QAEXH@Z", member_path=member) == 0
+    member.write_text(second)
+    assert c2_trace.source_line_base(source, "?step@Game@@QAEXXZ", member_path=member) == 5
+    assert c2_trace.source_line_base(second, "?step@Game@@QAEXXZ") == 1
+
+
 def test_label_functions_counts_entries():
     records = [(5,), (1000,), (3,), (1001,), (1000,), (7,)]
     labelled = list(c2_trace.label_functions(records, lambda r: r[0] == 1000))

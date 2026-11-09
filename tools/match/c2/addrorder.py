@@ -11,6 +11,7 @@ class, slot id and cost, and, for temporaries, their position n after the
 first CSE slot C0. Finally it lists the matcher's encoded differences and
 marks base/index swaps.
 
+`--line` and `--nodes` use line numbers in the member source (or overlay).
 `--nodes LINE` also lists every commutative add/mul on one source line with
 its operands in sorted order. For x87 arithmetic the first operand is the
 one loaded (`fld`), the second becomes the memory or `st(i)` operand
@@ -322,17 +323,6 @@ def line_nodes(event, label):
     return rows
 
 
-def body_line(source_text, symbol):
-    """C2 line labels count from the line before the function body's opening brace."""
-    lines = source_text.splitlines()
-    start = rot.definition_line(source_text, symbol)
-    for number in range(start, len(lines) + 1):
-        text = lines[number - 1]
-        if "{" in text:
-            return number - 1 if text.strip() == "{" else number
-    raise ValueError("Cannot find the function body")
-
-
 SIB = re.compile(r"\[(\w+) \+ (\w+)")
 
 
@@ -360,7 +350,7 @@ def operand_text(o):
     return f"{o['class']:8} slot {o['id']:#6x}  cost {o['cost']:#x}{n}"
 
 
-def report(rows, differences, base, source_lines, only_line, c0):
+def report(rows, differences, source_lines, only_line, c0):
     if c0 is not None:
         print(
             f"C0 (first CSE temporary slot): {c0:#x}; temporaries hash (slot mod 0x400) * 0x40"
@@ -369,8 +359,7 @@ def report(rows, differences, base, source_lines, only_line, c0):
         f"{'line':>5} {'node':>4}  {'access':14} first = SIB base / second = SIB index"
     )
     for row in rows:
-        line = base + row["label"]
-        row["line"] = line
+        line = row["line"]
         if only_line is not None and line != only_line:
             continue
         access = (
@@ -426,11 +415,12 @@ def main():
     c0, creation = cse_origin(allocations, function)
     event = t.function_event(events, function, address_pass)
     config = m.load_scratch_config(work)
-    source_text = (work / "scratch.cpp").read_text()
-    base = body_line(source_text, config.symbol or config.function)
+    source_text = (work / "member.cpp").read_text(encoding="utf-8")
+    base = t.source_line_base(source_text, config.symbol or config.function)
     object_path = m.compile_scratch(config)
     rows = address_sums(event)
     for row in rows:
+        row["line"] = base + row["label"]
         for operand in (row["first"], row["second"]):
             operand["n"] = (
                 creation.get(operand["id"])
@@ -457,7 +447,7 @@ def main():
         )
         return
     print(f"trace: {out}  metrics: {json.dumps(result['metrics'])}")
-    report(rows, differences, base, source_text.splitlines(), args.line, c0)
+    report(rows, differences, source_text.splitlines(), args.line, c0)
     if args.nodes is not None:
         print(f"\ncommutative nodes on line {args.nodes} (first operand is loaded):")
         for row in line_nodes(event, args.nodes - base):

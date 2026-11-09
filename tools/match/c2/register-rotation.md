@@ -108,8 +108,8 @@ harness read the second copy.
 
 ## Mapping to source
 
-The node's line word (`node+0x10`) equals the source line minus the line of
-the function definition, the line containing `Class::Method(`. Inlined code
+The node's line word (`node+0x10`) equals the source line minus the opening
+body brace's line plus one. Inlined code
 carries its call-site line. The cursor follows **layout order at allocation
 time**. For example, a `goto` target block placed after its first
 predecessor is allocated there.
