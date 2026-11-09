@@ -1,6 +1,4 @@
 // try_enter_track_attachment_from_swept_motion @ 0x42c770 (thiscall, ret 0x1c)
-// WIP: the backward search and both miss epilogues are recovered; see NOTES.md
-// for the remaining swept-X x87 operand order.
 #include "track_attachment.h"
 #include "game_root.h"
 
@@ -17,9 +15,8 @@ void cRPath::Search(
     for (; idx >= 0; --idx) {
         if (secondary_samples[idx].transform.basis_up.y > 0.0f) {
             AttachmentSample* sample = &secondary_samples[idx];
-            tVector world = position;
             Vector3 sample_origin = sample->transform.position + anchor;
-            local = world - sample_origin;
+            local = position - sample_origin;
             local.Rotate(sample->inverse_matrix);
             if ((float)(width_cells / -2) - 0.3f < local.x
                 && (float)(width_cells / 2) + 0.3f > local.x
@@ -28,8 +25,8 @@ void cRPath::Search(
                 if (local.z < secondary_samples[idx].delta_length) {
                     AttachmentSample* hit = &secondary_samples[idx];
                     Vector3 hit_origin = hit->transform.position + anchor;
-                    world = world + sweep;
-                    Vector3 probe = world - hit_origin;
+                    tVector endpoint = sweep + position;
+                    Vector3 probe = endpoint - hit_origin;
                     probe.Rotate(hit->inverse_matrix);
                     if (probe.y <= 0.001f)
                         goto seed;

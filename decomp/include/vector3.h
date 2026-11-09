@@ -16,6 +16,15 @@ struct tVector {
     // inlines the same three-lane copy where it is used.
     tVector(float* values) : x(values[0]), y(values[1]), z(values[2]) {}
 
+    tVector operator-(const tVector& rhs) const
+    {
+        tVector result;
+        result.x = x - rhs.x;
+        result.y = y - rhs.y;
+        result.z = z - rhs.z;
+        return result;
+    }
+
     tVector operator*(float scale) const
     {
         tVector result;
@@ -77,15 +86,6 @@ inline tVector operator+(const tVector& lhs, const tVector& rhs)
     result.x = lhs.x + rhs.x;
     result.y = lhs.y + rhs.y;
     result.z = lhs.z + rhs.z;
-    return result;
-}
-
-inline tVector operator-(const tVector& lhs, const tVector& rhs)
-{
-    tVector result;
-    result.x = lhs.x - rhs.x;
-    result.y = lhs.y - rhs.y;
-    result.z = lhs.z - rhs.z;
     return result;
 }
 

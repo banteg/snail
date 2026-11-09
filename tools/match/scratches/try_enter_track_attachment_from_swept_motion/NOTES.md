@@ -1,8 +1,30 @@
-# Near match — 99.02% score, 204/204 instructions on standard flags
+# Byte-proven swept path search
 
-## Where VC6 creates the two endpoint arguments' component records
+The stock VC6 SP3 Path build matches all 800 bytes of `cRPath::Search`,
+including 204 instructions and 47 resolved references. Both probes subtract
+their sample origin and rotate the result. The second probe first computes
+the endpoint as `sweep + position`.
 
-The remaining two instruction differences are the commuted X `fld`/`fadd`
+Implementing subtraction as a const member on the left-hand vector, with
+the right-hand vector passed by const reference, reproduces the native
+x87 operand order. At the endpoint Windows loads sweep X first, then
+position Y and position Z first. A private before/after build of every
+registered unit found identical code and relocation targets for all 784
+other candidates.
+
+The preserving VC6 trace identifies the ordinary compiler decision.
+Inline parameter propagation creates the sweep-X field at slot `0x142`
+and position-X at `0x131`. Copy propagation creates the Y and Z fields
+in the opposite order: position/sweep at `0x154/0x153` and
+`0x158/0x157`. Running the three alternate sources below against the
+member operator gives 99.02%, 99.02% and 98.04%, all with 47 references.
+
+Run `uv run snail match scratch try_enter_track_attachment_from_swept_motion`
+for the encoded-body and reference check.
+
+## Earlier free-operator comparison and argument-component creation
+
+Before the subtraction member was recovered, two instructions differed in the X `fld`/`fadd`
 pair. The native sequence at `0x42c8ef` loads sweep X before position X.
 It loads position before sweep on Y and Z. A preserving trace of the SP3
 backend now identifies each component by its formal parameter name, part
@@ -40,8 +62,9 @@ order on X relative to Y/Z at `0x420fba` in
 `traverse_path_follow_golb`. Those operands come from pointed-to fields.
 The Search traces above instead observe split records of stack arguments.
 
-To reproduce the controls and inspect the compiler's decisions from the
-repository root, choose new output directories:
+The earlier receipts used the free subtraction operator at commit `5d6fdfbb5`.
+The recipe also runs against the current source. To inspect how the active
+compiler creates the endpoint arguments, choose new output directories:
 
 ```sh
 scratch=tools/match/scratches/try_enter_track_attachment_from_swept_motion
