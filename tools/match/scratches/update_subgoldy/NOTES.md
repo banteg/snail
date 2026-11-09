@@ -1,5 +1,33 @@
 # update_subgoldy @ 0x43b120
 
+## Completion speed bounds in the Windows games
+
+Both automatic speed limits now use a conditional three-argument clamp. At
+each site the stock VC6 build reloads the live forward speed from the player,
+makes the two x87 comparisons and emits one final store to `velocity.z`.
+A by-value function materializes its upper argument before entering the
+clamp and introduces a stack spill.
+
+The Chromadrome 1 retail player at `0x43811a` has the same reload pattern.
+In Chromadrome 2, the upper speed limit is itself the smaller of a scaled
+rate and a constant. The player selects that upper limit once for the
+comparison and again when it actually clamps the speed (`0x4a5270` and
+`0x4a529a`). This distinguishes conditional evaluation in the Windows
+games from an eagerly evaluated upper-bound parameter.
+
+The complete Snail Mail SubGame unit now emits 2,087/2,087 instructions
+for the player, with the first 1,650 and all 315 references matching.
+The remaining instruction differences are the camera copy and ghost playback.
+All 190 SubGame peers keep their previous results. The two peers whose COFF
+relocations changed, `update_garbage_hazard` and `update_click_start`, still
+pass the full encoded-body check, including their inline tables and all
+22 and 24 references respectively.
+
+A preserving SP3 trace shows how the compiler obtains the original loads.
+After global optimization, three `IL_FROUND` nodes for the player's speed
+remain at each clamp. All three reload the member when lowered. Passing a
+named speed by value gives it a stack home instead.
+
 ## 2026-11-09: recovered position addition on the attachment transition
 
 The case-2 movement addition now has the native x87 operand order for all

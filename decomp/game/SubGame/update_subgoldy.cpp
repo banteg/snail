@@ -60,6 +60,9 @@ struct SubgoldyFloorSamplerCallView {
 // voice id at +0x204 (0xa874); the flat 0xa874 read is
 // level_segment_count.
 
+#define CLAMP_FLOAT(value, lower, upper) \
+    ((value) >= (lower) ? ((value) <= (upper) ? (value) : (upper)) : (lower))
+
 void cRSubGoldy::AI()
 {
     // Mobile symbols name both accumulators as function-local statics:
@@ -705,14 +708,9 @@ steering_stored:
     float completion_start = (float)completion_game->completion_row_start;
     if (transform.position.z < completion_start || attachment_exit_pending) {
         if (!boost_one_tick && !slug_fall_active) {
-            float window = completion_game->subgame_rate * 0.17f;
-            float speed = velocity.z;
-            if (speed >= window) {
-                window = completion_game->subgame_rate * 0.5f;
-                if (speed <= window)
-                    window = speed;
-            }
-            velocity.z = window;
+            velocity.z = CLAMP_FLOAT(
+                velocity.z, completion_game->subgame_rate * 0.17f,
+                completion_game->subgame_rate * 0.5f);
         }
     } else {
         if (!completion_handoff_active) {
@@ -726,14 +724,9 @@ steering_stored:
             completion_handoff_timer = 0.0f;
             completion_handoff_timer_step = 0.016666668f;
             completion_handoff_voice_gate = 0;
-            float window = handoff_game->subgame_rate * 0.17f;
-            float speed = velocity.z;
-            if (speed >= window) {
-                window = handoff_game->subgame_rate * 0.5f;
-                if (speed <= window)
-                    window = speed;
-            }
-            velocity.z = window;
+            velocity.z = CLAMP_FLOAT(
+                velocity.z, handoff_game->subgame_rate * 0.17f,
+                handoff_game->subgame_rate * 0.5f);
             g_voice_manager.ReSet();
             sub_hover.End();
             presentation.cutscene.state = CUT_SCENE_STATE_COMPLETION_PENDING;
@@ -1046,3 +1039,5 @@ steering_stored:
 }
 
 #undef TIME_TRIAL_RECORD_AT
+
+#undef CLAMP_FLOAT
