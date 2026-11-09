@@ -1,6 +1,36 @@
 # `initialize_looptheloop_path_template_pair` starter
 
-## 2026-10-16 whole-TU recheck: not closable with honest source
+## 2026-11-09 Wii circle center and departure indexing
+
+The Wii `BuildLoopTheLoop` at `0x80057500..0x800581f0` constructs a
+three-component circle center before the curved samples. The stores at
+`0x80057948`, `0x80057950`, and `0x80057960` put zero, the quantized
+radius, and the integer approach length (7) converted to float at
+`sp+0x98..0xa0`. The position and radial-up calculations use the latter two
+components in `f30` and `f29`. The two right vectors have their own
+temporaries at `sp+0x8c` and `sp+0x80`. All 828 instruction words in the
+disassembly agree with the pinned Wii DOL.
+
+Using `Vector3 loop_center(0.0f, curve_source, 7.0f)` for both banks' position
+and orientation under MSVC 6 SP3 changes the Windows departure loop. Its
+secondary `Identity()` receiver becomes `mov ecx,[esi+0x5c]; add ecx,edi`
+where the target starts `mov ecx,edi`, then loads the bank into EAX and adds
+it to ECX. The whole Path overlay gives 720/721 instructions (96.18%). The
+interpolation store still encodes SIB `38`. Using the Wii integer approach
+and departure lengths for the taper divisions, or casting the count and index
+independently for both curve expressions, preserves the original 721/721
+result and the same unequal byte.
+
+Wii's departure loop derives the sample index from the curve count, logical
+row, and seven lead samples (`0x800577d4..0x8005780c`). Recomputing that
+index once per pass in the Windows source gives 722/721 when the logical
+row advances between the final two stores, or 720/721 when it advances at the
+loop end. The tracked Windows source retains the loop-carried sample index.
+Its only unequal literal is at body offset `+0x318` in the store starting
+at `+0x316`: original `d9 9c 07 90 00 00 00`, candidate
+`d9 9c 38 90 00 00 00`.
+
+## 2026-10-16 whole-TU recheck of the remaining SIB
 
 The last byte is still `+0x316`. Bank temp `0x576` (key `0x15d80`) sorts
 ahead of the curve iv-temp `0x894` (`0x12500`). Native needs the endpoint

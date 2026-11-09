@@ -1,6 +1,34 @@
-## 2026-10-16 whole-TU recheck: not closable with honest source
+## 2026-11-09 Wii curve and departure controls
 
-The last byte is still `+0x359`. Bank temp `0x55a` (`0x15680`) sorts ahead
+The Wii counterpart at `0x800581f0..0x80058f74` preserves a circle center
+that the Windows optimizer could have eliminated. At `0x80058630..0x80058674`
+it converts the integer approach length (7) to float and writes the three
+components `(0, curve_source, 7)` to `sp+0x98..0xa0`. The primary and
+secondary positions and up vectors use the center's Y and Z in `f30` and
+`f29`. The rotation calculation multiplies the two sine results by π and
+then ⅛ (`0x800586d4..0x8005870c`). Windows consumes the same two sines and
+multiplies by the single constant `0.39269909262657166` at `+0x337`.
+
+Source overlays compiled with `msvc6.3` against all 43 Path members at
+`64d8ae884` give the following results:
+
+| Source shape | Windows result |
+| --- | --- |
+| Set `Vector3 center(0.0f, curve_source, 7.0f)` before the curve and use its Y/Z in both positions and up vectors | 96.04%. Departure's secondary `Identity()` receiver loses `mov ecx,edi` at `+0x21f`, and the two operands of the face-row multiply change at `+0x8da`. The interpolation store still encodes SIB `38`. |
+| Name the two seven-sample spans and use the integer counts in the float divisions and indices | 96.31%. Combining the spans with the circle center gives the same 96.04% score as the center alone. |
+| Spell the roll factor as `* 3.1415927f / 8.0f` after the sine product | Identical function bytes and relocations to the current source. |
+| Departure index `i + curve_count + 7`, or `z = i + 7; sample_index = curve_count + z` with `z` also used for longitudinal position | Both compile identically to the current source. Carrying the sample index between iterations instead gives 95.83%. |
+| Share a straight-sample initializer for the two banks, taking the index, center and Z | 90.27%, whether used for departure alone or both straight sections. |
+
+The current body matches all 745 normalized instructions and 55 references.
+The unequal instruction starts at `+0x359`; its SIB is **byte `+0x35b`**, native
+`07` and candidate `38`. The Wii evidence distinguishes a real geometric
+temporary from an invented local, but adding it to this Windows source loses
+more native code than it recovers.
+
+## 2026-10-16 whole-TU recheck
+
+The store at `+0x359` still differs in one byte. Bank temp `0x55a` (`0x15680`) sorts ahead
 of iv-temp `0x8ad` (`0x12b40`). Native's curve preheader ends in
 `mov edi, 0x498` after the hoisted endpoint and constant stores. That is the
 strength-reduction init, so a source byte cursor (the HalfPipe/Turnover fix)
