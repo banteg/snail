@@ -1,3 +1,20 @@
+## 2026-11-10 departure X copy and curve argument registers
+
+A typed reconstruction using a named `float x` for the secondary
+departure position produced both retail interpolation address bytes, at
+`+0x343` and `+0x35b`. It also retained the full body length and all
+55 references. Its remaining differences were in the departure stores at
+`+0x23c..+0x26e` and in the register used for the second sine argument at
+`+0x31f` and `+0x327`.
+
+In that reconstruction VC6 copies X using the x87 stack. Retail uses an
+integer register to copy the float's bits. Tracing the unmodified compiler
+shows the effect on the following argument. With the integer copy the
+selector reaches EAX at selection 34. With the floating-point copy it
+reaches EDX at selection 33. An additional bank selection for interpolation
+then restores the register sequence in the remainder of the function.
+Matching the two address bytes in isolation leaves these differences.
+
 ## 2026-11-10 paired straight samples and terminal deltas
 
 Regular LoopTheLoop and LoopTheLoopW use the same straight-sample
