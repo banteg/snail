@@ -16,8 +16,8 @@ SuperTramp launch, before the voice line.
 +// games.
 +float g_upramp_z;
 +
- enum {
-     TIME_TRIAL_RECORD_BANK_FROM_SUBGAME =
+ // The standalone helper body is exact with a double source declaration, but
+ // this native caller consumes the x87 return as float arithmetic. Return type
 @@ -586,3 +593,7 @@
                          == SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH) {
                      velocity.y = game->subgame_rate * 0.30000001f;

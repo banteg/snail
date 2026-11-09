@@ -11,7 +11,6 @@
 #include "input_polling.h"
 #include "rmath_random.h"
 #include "x87_store.h"
-#include <stddef.h>
 
 #include "attachment_sample.h"
 #include "audio_system.h"
@@ -35,15 +34,6 @@
 #include "track_attachment_types.h"
 #include "track_parcel_runtime.h"
 #include "voice_manager.h"
-
-enum {
-    TIME_TRIAL_RECORD_BANK_FROM_SUBGAME =
-        offsetof(cRSubGame, sub_high_score)
-        + offsetof(SubHighScore, time_trial_route_records),
-};
-
-#define TIME_TRIAL_RECORD_AT(block_expr) \
-    ((SubSolution*)((block_expr) + TIME_TRIAL_RECORD_BANK_FROM_SUBGAME))
 
 // The standalone helper body is exact with a double source declaration, but
 // this native caller consumes the x87 return as float arithmetic. Return type
@@ -113,13 +103,11 @@ void cRSubGoldy::AI()
         && !latch_game->track_state_latch)
         latch_game->track_state_latch = 1;
 
-    Vector3* p_position;
     cRSubGame* replay_game = game;
     if (replay_game->selected_level_record_active
         && replay_game->replay_update_cursor
                < replay_game->selected_level_record->replay_sample_count
         && click_start.state != CLICK_START_STATE_WAITING_FOR_START) {
-        p_position = &transform.position;
         transform.position.x = MathType16to32(
             replay_game
                 ->selected_level_record
@@ -195,7 +183,6 @@ steering_stored:
                     + transform.position.x;
             }
         }
-        p_position = &transform.position;
         float quantized_x = MathType16to32(
             MathType32to16(transform.position.x, 16.0f), 16.0f);
         transform.position.x = quantized_x;
@@ -255,18 +242,19 @@ steering_stored:
                 .flags |= 4;
     }
 
-    if (p_position->x < -4.0f) {
-        p_position->x = -4.0f;
+    if (transform.position.x < -4.0f) {
+        transform.position.x = -4.0f;
         velocity.x = 0.0f;
     }
-    if (p_position->x > 4.0f) {
-        p_position->x = 4.0f;
+    if (transform.position.x > 4.0f) {
+        transform.position.x = 4.0f;
         velocity.x = 0.0f;
     }
 
     if (resurrect_active)
         RessurectAI();
 
+    Vector3* p_position = &transform.position;
     cRSubLoc* source_cell = game->LocFromPos(p_position);
     cRSubGame* event_game = game;
     int row_index = source_cell->Yi();
@@ -393,16 +381,15 @@ steering_stored:
             break;
         }
     } else {
-        p_position->x = velocity.x + p_position->x;
-        p_position->y = velocity.y + p_position->y;
-        p_position->z = velocity.z + p_position->z;
+        tVector& motion = velocity;
+        *p_position += motion;
         if (p_position->x < -4.0f) {
             p_position->x = -4.0f;
-            velocity.x = 0.0f;
+            motion.x = 0.0f;
         }
         if (p_position->x > 4.0f) {
             p_position->x = 4.0f;
-            velocity.x = 0.0f;
+            motion.x = 0.0f;
         }
         if (!completion_handoff_active) {
             cRSubLoc* slide_cell;
@@ -816,9 +803,9 @@ steering_stored:
         }
     }
 
-    Vector3 stashed_position = *p_position;
+    Vector3 stashed_position = transform.position;
     if (follow_state.active == 1)
-        *p_position = follow_state.output_position;
+        transform.position = follow_state.output_position;
     sub_hover.AI();
     if (completion_handoff_active) {
         g_game->players[0].completion_handoff_transform =
@@ -829,7 +816,7 @@ steering_stored:
     damage_gauge.AI();
     progress_bar.AI();
 
-    cached_camera_target_world = *p_position;
+    cached_camera_target_world = transform.position;
     Vector3 camera_offset =
         transform.basis_right * sub_hover.wobble_x
         + transform.basis_up * sub_hover.wobble_y
@@ -840,7 +827,7 @@ steering_stored:
     if (hold_ticks > 0)
         damage_gauge.skin_hold_ticks = hold_ticks - 1;
     if (follow_state.active == 1)
-        p_position->x = stashed_position.x;
+        transform.position.x = stashed_position.x;
 
     float lean_step = game->subgame_rate * 0.037037037f;
     lane_lean_progress_step = lean_step;
@@ -875,33 +862,27 @@ steering_stored:
 
     cRSubGame* ghost_game = game;
     if (ghost_game->level_mode == 4) {
-        char* record_block =
-            (char*)ghost_game + sizeof(SubSolution) * ghost_game->level_mode_arg;
-        if (TIME_TRIAL_RECORD_AT(record_block)->active == 1
+        int route = ghost_game->level_mode_arg;
+        if (ghost_game->sub_high_score.time_trial_route_records[route].active == 1
             && !ghost_game->selected_level_record_active) {
             int cursor = ghost_game->replay_update_cursor;
-            if (cursor
-                >= TIME_TRIAL_RECORD_AT(record_block)->replay_sample_count)
-                cursor =
-                    TIME_TRIAL_RECORD_AT(record_block)->replay_sample_count;
+            if (cursor >= ghost_game->sub_high_score
+                    .time_trial_route_records[route].replay_sample_count)
+                cursor = ghost_game->sub_high_score
+                    .time_trial_route_records[route].replay_sample_count;
+            const ReplayRunRecord* samples =
+                ghost_game->sub_high_score.time_trial_route_records[route].run_records;
             int anchor = replay_start_cursor;
             if (!anchor)
                 cursor = 0;
             else
-                cursor = TIME_TRIAL_RECORD_AT(record_block)->replay_start_cursor
-                    - anchor + cursor;
+                cursor += ghost_game->sub_high_score
+                    .time_trial_route_records[route].replay_start_cursor - anchor;
 
-            if (cursor) {
-                GhostZ += MathType16to32(
-                    TIME_TRIAL_RECORD_AT(record_block)
-                        ->run_records[cursor].delta_z,
-                    32.0f);
-            } else {
-                GhostZ = MathType16to32(
-                    TIME_TRIAL_RECORD_AT(record_block)
-                        ->run_records[cursor].delta_z,
-                    32.0f);
-            }
+            if (!cursor)
+                GhostZ = MathType16to32(samples[cursor].delta_z, 32.0f);
+            else
+                GhostZ += MathType16to32(samples[cursor].delta_z, 32.0f);
             if (game->selected_level_record_active)
                 GhostZ = transform.position.z;
             float ghost_horizon = transform.position.z + 20.0f;
@@ -1039,7 +1020,5 @@ steering_stored:
         times_game->times_up.Init();
     game->times_up.AI();
 }
-
-#undef TIME_TRIAL_RECORD_AT
 
 #undef CLAMP_FLOAT

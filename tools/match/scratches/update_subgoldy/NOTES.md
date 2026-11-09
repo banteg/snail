@@ -1,5 +1,29 @@
 # update_subgoldy @ 0x43b120
 
+## Byte-proven Windows player update
+
+The stock VC6 SP3 compiler reproduces the full 8,456-byte player update:
+2,087 instructions, the 16-byte inline table and all 315 references. Run
+`uv run snail match scratch update_subgoldy` to verify the retail body.
+All 190 other SubGame functions keep their code bytes and relocation
+destinations. VC6 renumbers local labels in two neighboring switch tables;
+both pass their original encoded-body checks.
+
+The movement pass borrows the player's position at the first cell lookup.
+During free motion it adds the velocity vector to that position and clamps
+lateral movement. After the HUD callbacks, the camera takes its initial
+target directly from the player's live transform. The original schedules
+the load of position Z ahead of the store of target Y. Chronologically
+earlier and later Windows relatives, and the iPad build, independently show
+the full live-position copy, temporary follow override and subsequent X
+restore.
+
+The ghost checks the selected route's activity, caps the cursor against its
+recorded count, then borrows the six-byte sample array. A corrected cursor
+of zero resets ghost Z; a nonzero cursor advances it. Holding the samples
+as a typed array reproduces both decoder paths and their register choices
+without manually computing any record offsets.
+
 ## Ghost playback cursor and the Windows predecessor
 
 The player now corrects the replay cursor before indexing the ghost sample.
@@ -16,8 +40,8 @@ retains that check after the decoder calls and also guards the block on
 entry. Chromadrome 2 retains the two decoder calls with eight-byte records.
 
 The source change preserves the complete Windows player body and relocation
-destinations. The Windows ghost branch order and register assignments
-remain open.
+destinations. At this intermediate stage the Windows ghost branch order and register
+assignments still differed.
 
 ## Completion speed bounds in the Windows games
 

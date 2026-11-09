@@ -12,9 +12,9 @@ pre-move position.
  void cRSubGoldy::AI()
  {
 @@ -408,2 +409,3 @@
-     } else {
+         tVector& motion = velocity;
 +        Vector3 before = *p_position;
-         p_position->x = velocity.x + p_position->x;
+         *p_position += motion;
 @@ -480,10 +482,22 @@
                      swept.z = velocity.z * 1.05f;
 -                    game->runtime_rows[landing_cell->Yi()]
