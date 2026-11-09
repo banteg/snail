@@ -30,6 +30,15 @@ references. Guarding the offset initializer restores branch order but changes
 allocation. Reusing the endpoint index, endpoint offset or following delta
 offset as the cursor leaves the same reordered pair on the unguarded form.
 
+## 2026-11-09: Dip radius scale
+
+Both the Android and iOS `BuildDip` bodies calculate the radius from the
+curve count divided by a full turn, then multiply by 0.6 and 0.5. Windows
+uses one float multiply. Grouping those constants at compile time gives
+the native coefficient `0x3d4391d1`. With that expression MSVC 6 SP3
+keeps all 43 Path function bodies and their relocation fingerprints
+identical.
+
 ## 2026-10-19: `STOREREG` mechanism of `[esp+0x14]` and single-index `i`
 
 No source change (still **99.85%**, 655/655, prefix 100). C2 trace of `build_live_ranges` (`C2+0x2cac2`) and `score_live_ranges` (`C2+0x22463`) explains the pre-loop `mov dword [esp+0x14], ebx` and 3 of the 17 SIB bytes:

@@ -42,7 +42,7 @@ void cRPath::initialize_dip_path_template_pair(
     segment_count = endpoint + 1;
     segment_count_f = (float)segment_count;
     float curve_count_f = (float)curve_count;
-    curve_source = curve_count_f * 0.047746483f;
+    curve_source = curve_count_f * (0.6f * 0.5f / 6.2831855f);
     GetNodes();
     has_entry_mesh_transition = 0;
 
