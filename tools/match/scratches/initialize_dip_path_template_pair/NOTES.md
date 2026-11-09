@@ -1,3 +1,23 @@
+## 2026-11-09: primary sample bank and secondary position
+
+Dip now reproduces every non-relocation byte in its 2,390-byte body except the
+ModR/M byte at **+0x183**. A reference to the primary bank member spans the
+curve and delta passes. Each access still reloads the bank when needed across
+Identity, Cos, Normalize and Cross. The curve loop writes the secondary position
+directly after secondary Identity, using the same primary bank for its X
+coordinate. HillValley's matching curve also keeps a reference to a live bank
+member. Wii Dip reloads the primary member around Identity and Cos
+(`0x8005b7f8..0x8005b84c`) and reads it again for the secondary X
+(`0x8005b860..0x8005b878`).
+
+Compiled in the complete msvc6.3 Path translation unit, the old and new
+objects differ at exactly 17 Dip bytes. Each was a scale-one SIB with reversed
+base/index roles. All 42 peer function bodies and relocation fingerprints agree.
+The local matcher still gives 655/655 instructions, 99.85%, with 37 clean
+references and a prefix of 100 instructions. The surviving difference at
+`0x41e5c2` is `mov [esp+0x14],ebp` versus native `mov [esp+0x14],ebx`.
+Dip remains partial.
+
 ## 2026-10-19: `STOREREG` mechanism of `[esp+0x14]` and single-index `i`
 
 No source change (still **99.85%**, 655/655, prefix 100). C2 trace of `build_live_ranges` (`C2+0x2cac2`) and `score_live_ranges` (`C2+0x22463`) explains the pre-loop `mov dword [esp+0x14], ebx` and 3 of the 17 SIB bytes:

@@ -10,7 +10,7 @@
 typedef AttachmentSample PathAttachmentSample;
 
 static __forceinline void initialize_primary_curve(
-    PathAttachmentSample *&bank, int offset, int index,
+    PathAttachmentSample *const &bank, int offset, int index,
     float angle, float radius, float &z)
 {
     ((PathAttachmentSample *)((char *)bank + offset))
@@ -21,21 +21,6 @@ static __forceinline void initialize_primary_curve(
         -((1.0f - Cos(angle)) * radius);
     z = (float)index;
     ((PathAttachmentSample *)((char *)bank + offset))[0].transform.position.z = z;
-}
-
-static __forceinline void initialize_secondary_curve_position(
-    PathAttachmentSample *&primary, PathAttachmentSample *&secondary,
-    int offset, float angle, float radius, const float &z)
-{
-    ((PathAttachmentSample *)((char *)secondary + offset))
-        ->transform.position.x =
-        ((PathAttachmentSample *)((char *)primary + offset))
-            ->center_x;
-    ((PathAttachmentSample *)((char *)secondary + offset))
-        ->transform.position.y =
-        0.49000001f - (1.0f - Cos(angle)) * radius;
-    ((PathAttachmentSample *)((char *)secondary + offset))
-        ->transform.position.z = z;
 }
 
 void cRPath::initialize_dip_path_template_pair(
@@ -109,6 +94,7 @@ void cRPath::initialize_dip_path_template_pair(
     ((PathAttachmentSample *)((char *)secondary_samples + endpoint))
         ->transform.position.z = endpoint_z;
 
+    PathAttachmentSample *const &primary_bank = primary_samples;
     int i = 0;
     int curve_phase_index = 0;
     if (width_cells_ > 0)
@@ -116,42 +102,47 @@ void cRPath::initialize_dip_path_template_pair(
         int sample_offset = (int)sizeof(PathAttachmentSample);
         do
         {
-            ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)primary_bank + sample_offset))
                 ->center_x = 0.0f;
-            ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)primary_bank + sample_offset))
                 ->rotation_scalar_98 = 0.0f;
-            ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)primary_bank + sample_offset))
                 ->rotation_scalar_94 = 0.0f;
-            ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)primary_bank + sample_offset))
                 ->special_scalar = 0.0f;
-            ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
+            ((PathAttachmentSample *)((char *)primary_bank + sample_offset))
                 ->lateral_scale = 1.0f;
             float angle = (float)curve_phase_index * 6.2831855f / curve_count_f;
             float z;
-            initialize_primary_curve(primary_samples, sample_offset, i + 1,
-                                              angle, curve_source, z);
+            initialize_primary_curve(primary_bank, sample_offset, i + 1,
+                                     angle, curve_source, z);
             ++i;
             ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))
                 ->transform.Identity();
-            initialize_secondary_curve_position(primary_samples, secondary_samples,
-                                       sample_offset, angle, curve_source, z);
+            ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))
+                ->transform.position.x =
+                ((PathAttachmentSample *)((char *)primary_bank + sample_offset))->center_x;
+            ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))
+                ->transform.position.y = 0.49000001f - (1.0f - Cos(angle)) * curve_source;
+            ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))
+                ->transform.position.z = z;
             if (sample_offset > (int)sizeof(PathAttachmentSample))
             {
-                ((PathAttachmentSample *)((char *)primary_samples + sample_offset))[-1]
+                ((PathAttachmentSample *)((char *)primary_bank + sample_offset))[-1]
                     .transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
-                ((PathAttachmentSample *)((char *)primary_samples + sample_offset))[-1]
+                ((PathAttachmentSample *)((char *)primary_bank + sample_offset))[-1]
                     .transform.basis_forward =
-                    ((PathAttachmentSample *)((char *)primary_samples + sample_offset))
+                    ((PathAttachmentSample *)((char *)primary_bank + sample_offset))
                         ->transform.position -
-                    ((PathAttachmentSample *)((char *)primary_samples + sample_offset))[-1]
+                    ((PathAttachmentSample *)((char *)primary_bank + sample_offset))[-1]
                         .transform.position;
-                ((PathAttachmentSample *)((char *)primary_samples + sample_offset))[-1]
+                ((PathAttachmentSample *)((char *)primary_bank + sample_offset))[-1]
                     .transform.basis_forward.Normalize();
-                ((PathAttachmentSample *)((char *)primary_samples + sample_offset))[-1]
+                ((PathAttachmentSample *)((char *)primary_bank + sample_offset))[-1]
                     .transform.basis_up.Cross(
-                        ((PathAttachmentSample *)((char *)primary_samples + sample_offset))[-1]
+                        ((PathAttachmentSample *)((char *)primary_bank + sample_offset))[-1]
                             .transform.basis_forward,
-                        ((PathAttachmentSample *)((char *)primary_samples + sample_offset))[-1]
+                        ((PathAttachmentSample *)((char *)primary_bank + sample_offset))[-1]
                             .transform.basis_right);
                 ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))[-1]
                     .transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
@@ -174,7 +165,7 @@ void cRPath::initialize_dip_path_template_pair(
             }
             else
             {
-                ((PathAttachmentSample *)((char *)primary_samples + sample_offset))[-1]
+                ((PathAttachmentSample *)((char *)primary_bank + sample_offset))[-1]
                     .transform.RotIdentity();
                 ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))[-1]
                     .transform.RotIdentity();
@@ -190,17 +181,17 @@ void cRPath::initialize_dip_path_template_pair(
         int delta_sample_offset = 0;
         do
         {
-            ((PathAttachmentSample *)((char *)primary_samples + delta_sample_offset))
+            ((PathAttachmentSample *)((char *)primary_bank + delta_sample_offset))
                 ->delta_dir_to_next =
-                ((PathAttachmentSample *)((char *)primary_samples +
+                ((PathAttachmentSample *)((char *)primary_bank +
                                           delta_sample_offset) +
                  1)
                     ->transform.position -
-                ((PathAttachmentSample *)((char *)primary_samples +
+                ((PathAttachmentSample *)((char *)primary_bank +
                                           delta_sample_offset))
                     ->transform.position;
-            ((PathAttachmentSample *)((char *)primary_samples + delta_sample_offset))
-                ->delta_length = ((PathAttachmentSample *)((char *)primary_samples +
+            ((PathAttachmentSample *)((char *)primary_bank + delta_sample_offset))
+                ->delta_length = ((PathAttachmentSample *)((char *)primary_bank +
                                                            delta_sample_offset))
                                      ->delta_dir_to_next.Normalize();
 
@@ -223,8 +214,8 @@ void cRPath::initialize_dip_path_template_pair(
         } while (delta_index < segment_count - 1);
     }
 
-    primary_samples[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    primary_samples[segment_count - 1].delta_length = 1.0f;
+    primary_bank[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
+    primary_bank[segment_count - 1].delta_length = 1.0f;
     secondary_samples[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
     secondary_samples[segment_count - 1].delta_length = 1.0f;
 
