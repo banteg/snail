@@ -1,5 +1,44 @@
 # populate_runtime_track_cells_from_segments
 
+## 2026-11-09: packed lane and hazard fields
+
+The whole SubGame unit now reaches **99.28%** normalized and **99.93%**
+structural, up from 91.50% / 99.34%. The first 572 of 1,246 instructions
+match. Both sides contain 206 bytes of inline table data, and all 165
+reference checks are clean. The sole remaining region prepares the first
+`LevelConvert` call. Its caller-saved registers rotate, moving the receiver
+reload past the glyph push. The matcher still classifies the body as partial.
+
+The Wii USA DOL (SHA-256
+`523f848f2a0b8ef8c9dfe2714744bf0479a4feec79b25f0d1f5e035a6487c096`)
+distinguishes a source-level field from a fixed mask in a portable integer.
+At `0x80028d04..0x80028d14`, the Wii builder loads the packed word, inserts
+the physical lane in PowerPC bits 0–2 with `rlwimi r0,r23,29,0,2`, clears
+bits 3–4 with `rlwinm r0,r0,0,5,2`, and stores the word. These bits are
+at the *high* end on PowerPC. Android `BuildLevel` at `0x7e88c` and the
+Windows builder update the five *low* bits. The other bits survive.
+
+Wii `DeSaltTrack` at `0x80027c98..0x80027cac` extracts bits 3–4 as
+one field, ORs in 1, inserts the result, and repeats with 2 for the
+same field. The consumers at `0x8002b22c` and `0x8002b400` test its
+numeric values 2 for garbage and 1 for salt. On Windows those correspond
+to word masks `0x10` and `0x08`, respectively. `cRSubLoc::Yi` uses the
+lane as an unsigned index. Together these observations support an unsigned
+3-bit lane followed by a 2-bit hazard-suppression field. A VC6 SP3 control
+assigning those two fields reproduces the original DWORD load/store and
+byte-sized accumulator mask; 8- and 16-bit storage change the memory widths.
+
+The source updates the two fields in a copy of the word and writes it back.
+This reproduces the native lane loop through the fringe-slot clear and
+`SetObject(0)`, including the `and al,0xe0`, register order and physical
+jump-table alignment. Assigning the fields directly in the indexed cell can
+instead emit a two-XOR bitfield insertion or change the stack slots of
+`this` and `active_segment`. A reference to the active level definition,
+used for segment selection and table bounds, also restores the store to
+`base_subgame_rate` before the random-enable flag load. The native instructions
+determine the field behavior and access order; the original local names
+remain unknown.
+
 ## 2026-10-19: Window 37 mechanism (reference spelling rejected) and C2 trace of Windows 32, 87, 168
 
 Source unchanged at **91.50%** normalized and **99.34%** structural (9/9 changed). An experimental spelling reached **91.58%** normalized and **99.42%** structural (**8/8** changed, 1,246/1,246 instructions, prefix 232, 165 clean references) in the whole SubGame unit under msvc6.3, but it was not adopted (below).
