@@ -195,6 +195,19 @@ def test_encoded_differences_report_swapped_sib_operands():
     assert difference["candidate"] == "d99c3890000000"
 
 
+def test_scratch_cli_shows_differing_byte_offset_within_instruction(tmp_path, monkeypatch, capsys):
+    from snail import cli
+
+    target = bytes.fromhex("50 d99c0790000000 c3")
+    candidate = m.ObjectFunction("test", bytes.fromhex("50 d99c3890000000 c3"), frozenset())
+    monkeypatch.setattr(cli, "run_scratch_match", lambda **kwargs: compare(target, candidate))
+    assert cli.main(["match", "scratch", str(tmp_path)]) == 1
+    output = capsys.readouterr().out
+    assert "1 byte in 1 normalized-equal instruction\n" in output
+    assert "+0x1 fstp" in output
+    assert "(differs at +0x3)" in output
+
+
 def test_byte_exact_body_has_no_encoded_differences():
     body = bytes.fromhex("d99c0790000000c3")
     result = compare(body, m.ObjectFunction("test", body, frozenset()))

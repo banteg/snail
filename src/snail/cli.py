@@ -2984,13 +2984,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"encoded body: {'match' if result.body_byte_exact else 'not matched'}")
         if result.encoded_body_differences:
             unequal = sum(len(d["unequal_bytes"]) for d in result.encoded_body_differences)
+            instructions = len(result.encoded_body_differences)
             print(
-                f"encoded differences: {unequal} bytes in "
-                f"{len(result.encoded_body_differences)} normalized-equal instructions"
+                f"encoded differences: {unequal} byte{'s' if unequal != 1 else ''} in "
+                f"{instructions} normalized-equal instruction{'s' if instructions != 1 else ''}"
             )
             for difference in result.encoded_body_differences:
+                offsets = ", ".join(f"+0x{offset:x}" for offset in difference["unequal_bytes"])
                 print(
-                    f"  +0x{difference['offset']:x} {difference['text']}\n"
+                    f"  +0x{difference['offset']:x} {difference['text']} (differs at {offsets})\n"
                     f"    target    {difference['target']}  {difference['target_asm']}\n"
                     f"    candidate {difference['candidate']}  {difference['candidate_asm']}"
                 )
