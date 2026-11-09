@@ -74,17 +74,17 @@ int FontLoad(
                 if (glyph_left > split_x) {
                     g_font_sheets[font_index].glyph_u0[slot] =
                         ((float)(glyph_left - split_x) + 0.5f)
-                            * 0.0009765625f;
+                            / (float)(image->width / 2);
                     g_font_sheets[font_index].glyph_u1[slot] =
                         ((float)(x - split_x) + 0.5f)
-                            / (float)(image->width >> 1);
+                            / (float)(image->width / 2);
                     g_font_sheets[font_index].texture_page[slot] = 1;
                 } else {
                     g_font_sheets[font_index].glyph_u0[slot] =
-                        centered_left * 0.0009765625f;
+                        centered_left / (float)(image->width / 2);
                     g_font_sheets[font_index].glyph_u1[slot] =
                         centered_last
-                        / (float)(image->width >> 1);
+                        / (float)(image->width / 2);
                     g_font_sheets[font_index].texture_page[slot] = 0;
                 }
             }

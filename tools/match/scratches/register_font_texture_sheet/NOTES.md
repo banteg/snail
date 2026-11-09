@@ -226,3 +226,20 @@ byte-identical, and so is `if (++slot == FONT_GLYPH_CAPACITY)`. These regress:
 direct `g_registered_font_count` indexing (42/48), a `FontSheet*` borrow
 (92/85), resetting `run_width` after the page store (22/21) or before
 `++slot` (68/65). No source change is retained.
+
+## 2026-11-09: split-page UV denominator
+
+The split-page case divides all four horizontal texture coordinates by
+`image->width / 2`. In each arm the initial width test establishes 2048,
+so VC6 folds the first division to multiplication by 1/1024. After the first
+UV store it reads width again for the second division. This single source
+expression reproduces both native instruction sequences. Comparing all 18
+functions in the Font translation unit before and after the change found
+identical code bytes and relocations for every function.
+
+Storing the font index across sampling calls changed the reference audit.
+Sharing the cursor between the horizontal and vertical scans, moving the
+slot initialization across the path-loading code, and defining the font
+globals in the translation unit did not recover the native memory-resident
+slot. FontLoad remains at 273/274 instructions, 86.65% normalized and
+92.50% structural with all 57 audited references clean.
