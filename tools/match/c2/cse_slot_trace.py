@@ -12,7 +12,7 @@ prints, for each pool-E slot:
 
 For an 0x14c address slot the key is (base symbol, #alias class of the memory operand). `--upto ID` stops the
 listing at a slot id; `--lines A-B` keeps only slots created while visiting those line labels; `--sums` also
-prints sib_operand_trace's address sums. The matcher result (and the encoded SIB swaps at 100%) closes the report.
+prints sib_operand_trace's address sums. The report includes SIB swaps in normalized-equal instructions.
 
 `--phantom K:M[,K:M]` is an intervention, not an observation: it re-runs the traced compile with M extra pool-E
 ids burned before fresh slot K and matches that object instead. It answers "would the listing be native if
@@ -33,6 +33,7 @@ import struct
 from pathlib import Path
 
 import addrorder as ao
+import sib_diff
 import rotation as rot
 import sib_operand_trace as sot
 
@@ -329,31 +330,18 @@ def main() -> None:
             break
     config = m.load_scratch_config(work)
     manifest = m.load_function_symbol_manifest(m.DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH)
-    obj = m.compile_scratch(config)
+    obj = args.out / result["object_paths"][-1]
     if args.phantom:
         phantom = [tuple(int(x, 0) for x in item.split(":")) for item in args.phantom.split(",")]
         obj = run_phantom(args.out, phantom)
         burned = ", ".join(f"{count} before fresh slot {at}" for at, count in phantom)
         print(f"phantom: extra pool-E ids {burned} (compiler decision modified)")
-    match = m.run_match(
-        obj_path=obj,
-        function_name=config.function,
-        end_va=config.end_va,
-        symbol_name=config.symbol,
-        manifest=manifest,
-        image_path=m.REPO_ROOT / manifest.primary_target,
-    )
+    match, diagnostic = sib_diff.from_object(config, obj, manifest)
     print(f"match: {match.ratio:.4%} exact={match.exact}")
-    if match.ratio == 1.0:
-        rows = ao.sib_differences(match)
-        swaps = [d for d in rows if d["swapped"]]
-        print(
-            f"encoded differences: {len(rows)}, SIB swaps: {len(swaps)}  "
-            + " ".join(f"+{d['offset']:#x}" for d in swaps),
-        )
-        for d in rows:
-            if not d["swapped"]:
-                print(f"  other +{d['offset']:#x} target {d['target_asm']}  candidate {d['candidate_asm']}")
+    print(sib_diff.summary(diagnostic))
+    for row in diagnostic["differences"]:
+        kind = "swapped" if row["swapped"] else "other"
+        print(f"  {kind} {sib_diff.location(row)}  target {row['target_asm']}  candidate {row['candidate_asm']}")
     if args.sums:
         creation = {s["id"]: n for n, s in enumerate(slots)}
         for row in sot.address_sums(event, creation):

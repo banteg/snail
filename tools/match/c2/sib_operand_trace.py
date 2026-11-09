@@ -18,8 +18,8 @@ classifies each ranked operand (sib-operand-order.md):
 
 The tool re-derives every leaf hash from the captured records and fails if C2's key disagrees. It runs the
 scratch through addrorder's observer (Crimson's preserving observer: whole COFF, replay and
-missing-stream checks unchanged) and prints C0, each sum with its C2 line label, and the matcher's encoded
-SIB swaps.
+missing-stream checks unchanged) and prints C0, each sum with its C2 line label, and the SIB
+swaps in aligned normalized-equal instructions of the observed object.
 
     uv run tools/match/c2/sib_operand_trace.py <scratch> --out <new-dir> [--lines A-B]
 
@@ -33,6 +33,7 @@ from itertools import pairwise
 from pathlib import Path
 
 import addrorder as ao
+import sib_diff
 import rotation as rot
 
 from snail import match as m
@@ -171,21 +172,11 @@ def main() -> None:
             print(f"    more  {o['key']:#010x} {o['what']:9} {o['text']}")
     config = m.load_scratch_config(work)
     manifest = m.load_function_symbol_manifest(m.DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH)
-    match = m.run_match(
-        obj_path=m.compile_scratch(config),
-        function_name=config.function,
-        end_va=config.end_va,
-        symbol_name=config.symbol,
-        manifest=manifest,
-        image_path=m.REPO_ROOT / manifest.primary_target,
-    )
-    swaps = [d for d in ao.sib_differences(match) if d["swapped"]]
-    if match.ratio == 1.0:
-        print(f"\nencoded SIB swaps: {len(swaps)}")
-    else:
-        print(f"\nencoded bytes are compared only at 100% normalized (now {match.ratio:.2%})")
-    for d in swaps:
-        print(f"  +{d['offset']:#x} target {d['target_asm']}  candidate {d['candidate_asm']}")
+    _, diagnostic = sib_diff.from_object(config, args.out / result["object_paths"][-1], manifest)
+    print("\n" + sib_diff.summary(diagnostic))
+    for row in diagnostic["differences"]:
+        if row["swapped"]:
+            print(f"  {sib_diff.location(row)}  target {row['target_asm']}  candidate {row['candidate_asm']}")
 
 
 if __name__ == "__main__":
