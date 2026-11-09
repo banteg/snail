@@ -170,7 +170,7 @@ void cRSubGolb::AI()
                         garbage->transform.position.z - new_output->z;
                     collision_delta.z = dz;
                     probe = collision_delta;
-                    if (dz < 0.0f)
+                    if (probe.z < 0.0f)
                         dz = -dz;
                     if (dz < 3.0f) {
                         float collision_distance = probe.Normalize();
@@ -212,7 +212,7 @@ void cRSubGolb::AI()
                             - new_output->z;
                         slug_delta.z = dz;
                         probe = slug_delta;
-                        if (dz < 0.0f)
+                        if (probe.z < 0.0f)
                             dz = -dz;
                         if (dz < 2.5f && probe.Normalize() < 2.5f) {
                             path_follow.active = 0;

@@ -13,11 +13,26 @@ only by the kind-zero trail path and becomes each trail Sprite's opaque object
 reference; impact sprites deliberately retain the allocator sentinel.
 
 The scratch exports `?AI@cRSubGolb@@QAEXXZ`. Its current result is
-99.50%, 695/694 instructions, prefix 417, with all 71 references clean.
-The remaining differences are the direct active-state comparison and one
-deflection-product operand order. Their source shape is still unresolved.
+99.78%, 695/694 instructions, prefix 417, with all 71 references clean.
+The remaining difference is the direct active-state comparison.
 The persistent collision-side carrier previously tested is behaviorally wrong
 and is not retained.
+
+## 2026-11-09: use the contact vector for both Z sign tests
+
+Both mobile exports test the sign of the contact vector's Z component before
+normalizing that same vector in the garbage and slug loops. Android reads
+`local_64` in the vector at `local_6c`, and iOS reads `local_40` in the vector
+at `local_48`. The Windows code compares the signed difference while copying
+the three components into the vector passed to Normalize. The source now
+tests `probe.z < 0.0f` at both sites and keeps the existing scalar Z distance
+for the magnitude test.
+
+Either sign-test change on its own restores the deflection Z product; using
+both follows the two mobile contact loops. The full Golb TU probe restores
+`fld [esp+0x10]; fmul [esp+0x1c]` without changing the deflection expression.
+The full normalized diff now consists of native `cmp dword [esi+0x84], 1`
+versus candidate `mov eax, [esi+0x84]; dec eax` before the same branch.
 
 ## 2026-10-19: C2 mechanism corrections for the garbage gate and deflection Z product
 
