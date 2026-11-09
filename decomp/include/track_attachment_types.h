@@ -251,10 +251,7 @@ struct cRPath : public BodBase {
     void build_track_fringe_supertramp_mesh(char* texture_path); // @ 0x424ad0, cRPath::BuildFringeSuperTramp
     void Mirror(cRPath* source); // @ 0x421dc0
     void __fastcall CalcLengthZ(); // @ 0x42c600, cRPath::CalcLengthZ
-    void try_enter_track_attachment_from_swept_motion(
-        float px, float py, float pz,
-        float sweep_x, float sweep_y, float sweep_z,
-        cRSubLoc* cell); // @ 0x42c770, cRPath::Search
+    void Search(tVector position, tVector sweep, cRSubLoc* cell); // @ 0x42c770
     void compute_kind42_attachment_transform(
         float radius, float x, float y, TransformMatrix* transform, float* out_angle);
     bool SearchPos(

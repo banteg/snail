@@ -45,21 +45,6 @@ enum {
 #define TIME_TRIAL_RECORD_AT(block_expr) \
     ((SubSolution*)((block_expr) + TIME_TRIAL_RECORD_BANK_FROM_SUBGAME))
 
-// Caller-local cRPath prefix. This aggregate-argument declaration preserves
-// the native VC6 push sequence in this large caller; the shared Path owner has
-// the same fields and callee address with a scalar spelling.
-struct SubgoldyPathView {
-    char unknown_00[0x38];
-    PathTemplateKind kind; // +0x38: CAGE2 detour-follow behavior, WORM voice
-    char unknown_3c[0x44 - 0x3c];
-    int segment_count; // +0x44
-    char unknown_48[0x58 - 0x48];
-    AttachmentSample* primary_samples; // +0x58
-
-    void try_enter_track_attachment_from_swept_motion(
-        Vector3 position, Vector3 sweep, cRSubLoc* cell);
-};
-
 // The standalone helper body is exact with a double source declaration, but
 // this native caller consumes the x87 return as float arithmetic. Return type
 // is not encoded in the MSVC thiscall symbol, so retain this caller-side ABI
@@ -478,11 +463,10 @@ steering_stored:
                     swept.x = velocity.x * 1.05f;
                     swept.y = velocity.y * 1.05f;
                     swept.z = velocity.z * 1.05f;
-                    ((SubgoldyPathView*)game
-                         ->runtime_rows[landing_cell->Yi()]
-                         .primary_attachment_cell
-                         ->attachment_template_record)
-                        ->try_enter_track_attachment_from_swept_motion(
+                    game->runtime_rows[landing_cell->Yi()]
+                        .primary_attachment_cell
+                        ->attachment_template_record
+                        ->Search(
                             *p_position, swept,
                             game
                                 ->runtime_rows[landing_cell->Yi()]
@@ -497,11 +481,10 @@ steering_stored:
                     swept.x = velocity.x * 1.05f;
                     swept.y = velocity.y * 1.05f;
                     swept.z = velocity.z * 1.05f;
-                    ((SubgoldyPathView*)game
-                         ->runtime_rows[landing_cell->Yi()]
-                         .secondary_attachment_cell
-                         ->attachment_template_record)
-                        ->try_enter_track_attachment_from_swept_motion(
+                    game->runtime_rows[landing_cell->Yi()]
+                        .secondary_attachment_cell
+                        ->attachment_template_record
+                        ->Search(
                             *p_position, swept,
                             game
                                 ->runtime_rows[landing_cell->Yi()]

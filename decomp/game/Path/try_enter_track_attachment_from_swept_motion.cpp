@@ -7,9 +7,8 @@
 // The follow state is embedded in the fixed player owned by cRSubGame.
 #define PLAYER (&g_game->subgame.player)
 
-void cRPath::try_enter_track_attachment_from_swept_motion(
-    float px, float py, float pz,
-    float sweep_x, float sweep_y, float sweep_z,
+void cRPath::Search(
+    tVector position, tVector sweep,
     cRSubLoc* cell)
 {
     Vector3 local;
@@ -18,8 +17,9 @@ void cRPath::try_enter_track_attachment_from_swept_motion(
     for (; idx >= 0; --idx) {
         if (secondary_samples[idx].transform.basis_up.y > 0.0f) {
             AttachmentSample* sample = &secondary_samples[idx];
+            tVector world = position;
             Vector3 sample_origin = sample->transform.position + anchor;
-            local = Vector3(px, py, pz) - sample_origin;
+            local = world - sample_origin;
             local.Rotate(sample->inverse_matrix);
             if ((float)(width_cells / -2) - 0.3f < local.x
                 && (float)(width_cells / 2) + 0.3f > local.x
@@ -28,9 +28,8 @@ void cRPath::try_enter_track_attachment_from_swept_motion(
                 if (local.z < secondary_samples[idx].delta_length) {
                     AttachmentSample* hit = &secondary_samples[idx];
                     Vector3 hit_origin = hit->transform.position + anchor;
-                    Vector3 swept_position =
-                        Vector3(px, py, pz) + Vector3(sweep_x, sweep_y, sweep_z);
-                    Vector3 probe = swept_position - hit_origin;
+                    world = world + sweep;
+                    Vector3 probe = world - hit_origin;
                     probe.Rotate(hit->inverse_matrix);
                     if (probe.y <= 0.001f)
                         goto seed;

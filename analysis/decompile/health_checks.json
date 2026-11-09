@@ -4551,6 +4551,8 @@
       "required_substrings": [
         "void __thiscall try_enter_track_attachment_from_swept_motion(",
         "cRPath *self,",
+        "Vec3 position,",
+        "Vec3 sweep,",
         "cRSubLoc *source_cell)",
         "PathTemplateSample *",
         "self->secondary_samples[i]",

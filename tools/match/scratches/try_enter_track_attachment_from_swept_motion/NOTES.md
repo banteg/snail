@@ -25,8 +25,21 @@ both complete origin expressions fused, and with the accepted handoff
 inside the hit branch. Copying the first by-value argument into a named
 vector used in both probes reproduced the six-scalar result (99.02%,
 prefix 109). A snapshot used only for the first probe stayed at 98.04%.
-The caller and mobile symbols support vector arguments, but these results
-do not establish the extra local or an exact Windows source form.
+The accepted source now gives the caller and callee one declaration,
+`cRPath::Search(tVector position, tVector sweep, cRSubLoc*)`. For each
+eligible sample it copies the start point, checks that point, advances the
+copy by the sweep, and checks the endpoint. Both Windows caller sites already
+pass two whole vectors. The adjacent exact SearchPos, the mobile Search
+symbols and the seven-dword Windows stack extent corroborate the types.
+The port calls the recovered member directly on both Windows-style search
+paths. The old caller-only class and the manual argument-unpacking shim
+are gone.
+
+A second preserving trace explains the remaining X difference with a position
+copy. VC6 assigned the position components slots 0x166, 0x167, 0x168 and the
+sweep components 0x143, 0x15b, 0x15d. This sorts position first for all lanes.
+Both spellings leave the width test, rotated endpoints and follow handoff
+intact. A fresh source-only proof still requires the native X operand order.
 
 ## 2026-10-16: msvc6.3 whole-TU retest of the vector signature
 
