@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**655/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **273257/294505** bytes (**92.79%**) are proof-grade, and overall fuzzy is **99.98%**.
+**656/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **281721/294505** bytes (**95.66%**) are proof-grade, and overall fuzzy is **99.99%**.
 
 **117/120** platform helpers matched, **120/120** have a scratch, **21057/22833** bytes (**92.22%**) are proof-grade, and overall fuzzy is **98.67%**. Platform progress is tracked separately from port-relevant totals.
 
@@ -12,28 +12,27 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**7** non-exact scratch-backed functions hold **21248 target bytes** without proof-grade credit and **60 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **100.0%** of that gap; the top 10 hold **100.0%**.
+**6** non-exact scratch-backed functions hold **12784 target bytes** without proof-grade credit and **28 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **100.0%** of that gap; the top 10 hold **100.0%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **7 / 60** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **0 functions / 0 gap bytes**; **6 / 28** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
 Ranked by withheld target extent. Structural similarity masks caller-saved register names and local labels; it is diagnostic and grants no proof credit. Proof blockers come from the current matcher, independently of manual residual labels.
 
-Proof blockers (overlapping extents): encoding: 3 functions / 8000 bytes; instructions: 4 functions / 13248 bytes.
+Proof blockers (overlapping extents): encoding: 3 functions / 8000 bytes; instructions: 3 functions / 4784 bytes.
 
 | rank | function | withheld bytes | fuzzy gap | structural | changed insns t/c | blockers | recovery | residual | evidence | current/all | flags |
 |---:|---|---:|---:|---:|---:|---|---|---|---|---:|---|
-| 1 | update_subgoldy | 8464 | 32 | 99.62% | 8/8 | instructions | semantic-complete | analysis | historical-only | 0/16 | repeated-variants,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 2 | initialize_looptheloopw_path_template_pair | 2736 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/19 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
-| 3 | initialize_looptheloop_path_template_pair | 2640 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/18 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
-| 4 | initialize_loopout_path_template_pair | 2624 | 0 | 100.00% | 0/0 | encoding | unspecified | unspecified | historical-only | 0/28 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 5 | initialize_dip_path_template_pair | 2400 | 4 | 99.85% | 1/1 | instructions | semantic-complete | analysis | historical-only | 0/59 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 6 | border_input_text | 1584 | 16 | 99.66% | 3/0 | instructions | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
-| 7 | try_enter_track_attachment_from_swept_motion | 800 | 8 | 99.02% | 2/2 | instructions | semantic-complete | analysis | historical-only | 0/15 | historical-only,stale-dependencies |
+| 1 | initialize_looptheloopw_path_template_pair | 2736 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/19 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
+| 2 | initialize_looptheloop_path_template_pair | 2640 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/18 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
+| 3 | initialize_loopout_path_template_pair | 2624 | 0 | 100.00% | 0/0 | encoding | unspecified | unspecified | historical-only | 0/28 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 4 | initialize_dip_path_template_pair | 2400 | 4 | 99.85% | 1/1 | instructions | semantic-complete | analysis | historical-only | 0/59 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
+| 5 | border_input_text | 1584 | 16 | 99.66% | 3/0 | instructions | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
+| 6 | try_enter_track_attachment_from_swept_motion | 800 | 8 | 99.02% | 2/2 | instructions | semantic-complete | analysis | historical-only | 0/15 | historical-only,stale-dependencies |
 
 
-## Proof Grade (655)
+## Proof Grade (656)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -424,6 +423,7 @@ Proof blockers (overlapping extents): encoding: 3 functions / 8000 bytes; instru
 | ✅ | show_subgoldy_lives | 0x43af10 | 80 | 23/23 | 100.00% | 23/23 | 2 ok |  | core |
 | ✅ | begin_post_follow_carryover | 0x43af60 | 112 | 20/20 | 100.00% | 20/20 | - |  | core |
 | ✅ | play_subgoldy_shoot_sfx | 0x43afd0 | 336 | 88/88 | 100.00% | 88/88 | 19 ok |  | core |
+| ✅ | update_subgoldy | 0x43b120 | 8464 | 2087/2087 | 100.00% | 2087/2087 | 315 ok |  | core |
 | ✅ | initialize_subgoldy_ghost | 0x43d230 | 416 | 108/108 | 100.00% | 108/108 | 6 ok |  | core |
 | ✅ | set_subgoldy_ghost_z | 0x43d3d0 | 64 | 18/18 | 100.00% | 18/18 | - |  | core |
 | ✅ | get_track_grid_cell_at_world_position | 0x43d410 | 112 | 34/34 | 100.00% | 34/34 | 3 ok |  | core |
@@ -701,14 +701,13 @@ Proof blockers (overlapping extents): encoding: 3 functions / 8000 bytes; instru
 | ⚠ | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2736 | 745/745 | 100.00% | 745/745 | 55 ok |  | core |
 | ⚠ | initialize_loopout_path_template_pair | 0x41c5f0 | 2624 | 718/718 | 100.00% | 718/718 | 52 ok |  | core |
 
-## Near Match (95-99.99%) (4)
+## Near Match (95-99.99%) (3)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
 | 🚧 | border_input_text | 0x4035b0 | 1584 | 443/446 | 98.99% | 423/446 | 8 ok |  | core |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2400 | 655/655 | 99.85% | 100/655 | 37 ok |  | core |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 204/204 | 99.02% | 109/204 | 47 ok |  | core |
-| 🚧 | update_subgoldy | 0x43b120 | 8464 | 2087/2087 | 99.62% | 1650/2087 | 315 ok |  | core |
 
 ## Platform Helpers (120)
 
