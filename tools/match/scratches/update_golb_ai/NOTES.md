@@ -46,6 +46,29 @@ and a separate boolean for the broad-phase and radius tests all leave
 the state gate open. All eight other members of Golb.o retain their
 encoded-body matches.
 
+### Wii state and collision controls
+
+The Wii `cRSubGolb` RTTI record at `0x808f3820` identifies vtable
+`0x80167410`, installed by the player constructor. Its callback at
+`0x800497a0..0x8004afe4` handles the same flight, collision and retirement
+phases. The skip and path-follow bytes compare equal to 1 at `0x800497fc`
+and `0x80049820`. The projectile state and both garbage states are word
+compares with 1 at `0x80049814`, `0x8004a284` and `0x8004a4b8`. The slug
+loop accepts state 1 or 4 at `0x8004a574`; its bounce latch tests zero
+before storing byte 1 at `0x8004a900..0x8004a910`.
+
+Both garbage hits store state 2 followed by side 2 or 1 according to the
+sign of X, then call ScoreAdd with two zeros. Wii's first loop also calls
+`0x80031574` to test the high byte of the intersection of two flag words.
+The Windows active-state branch proceeds directly to vector subtraction.
+
+Using Wii's early retirement for lifetime and bounds and its 0, 1, 2 source
+order for the presentation switch, singly or together with the direct
+garbage gate, still produces 93.53% with 694 instructions. Expressing
+both projectile and garbage state gates as direct comparisons drops to
+89.27%, 693 instructions. The Wii compares corroborate the field widths and
+values; they do not distinguish an original C++ switch from an if.
+
 ## 2026-10-19: C2 mechanism corrections for the garbage gate and deflection Z product
 
 No source change (still **99.50%**, 695/694, prefix 417, 71 clean references). Direct C2 traces correct both mechanism explanations from 2026-10-16:

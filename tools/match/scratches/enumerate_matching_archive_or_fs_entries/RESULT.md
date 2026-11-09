@@ -1,19 +1,16 @@
 # enumerate_matching_archive_or_fs_entries @ 0x431740
 
-Initial scratch added for the archive/filesystem enumerator.
+| Metric | Whole RShell unit, MSVC6 SP3 |
+|---|---:|
+| Normalized match | 92.31% |
+| Candidate / target instructions | 182 / 182 |
+| Common prefix | 9 / 182 |
+| Reference audit | 26 clean |
+| Encoded body | Partial |
 
-| Metric | Starter | Current |
-|---|---:|---:|
-| Match | 0.00% | **81.52%** |
-| Target instructions | 182 | 182 |
-| Candidate instructions | 0 | 186 |
-| Common prefix | 0 / 182 | **7 / 182** |
-| Masked operands | none | **26 clean, 0 unresolved, 0 mismatched** |
-
-No inline assembly, dummy symbols, stack padding, or normalizer-specific tricks are used.
-
-The source recovers the archive-backed and filesystem-backed filename
-enumeration behavior. The filesystem lane uses the bundled MSVC6 CRT's exact
-`_finddata_t`, `_findfirst`, `_findnext`, `_getcwd`, and `_chdir` ownership;
-remaining differences are the documented wildcard-loop byte allocation and
-ASCII-fold expression shape.
+The current source walks the typed archive entries and uses the VC6 CRT's
+`_finddata_t`, `_findfirst`, `_findnext`, `_getcwd`, and `_chdir` for loose
+files. The remaining differences lie in the two archive-index stack slots
+and the wildcard comparison. Windows carries the pattern byte through the
+first `RstrASC` call in BL and spills the folded basename byte across the
+second. [Scratch notes](NOTES.md)

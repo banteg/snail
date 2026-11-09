@@ -30,6 +30,16 @@ Its only unequal literal is at body offset `+0x318` in the store starting
 at `+0x316`: original `d9 9c 07 90 00 00 00`, candidate
 `d9 9c 38 90 00 00 00`.
 
+The [2005 Shockwave Windows build](../../../../docs/original/shockwave-web-demo.md)
+also emits `d9 9c 07 90 00 00 00` at `0x4163a6`. Its LoopTheLoop,
+LoopTheLoopW, LoopOut, and LoopBow entries are respectively `0x416090`,
+`0x416ae0`, `0x417590`, and `0x426a20`. All 2,980 instructions align with
+the retail bodies at the same relative offsets. Every differing byte is in a
+relative call operand or an absolute address mapped into the corresponding
+PE image. That comparison checks operand positions and widths, without
+claiming symbol identity. In particular, all four addressing bytes under
+investigation also occur in the later release.
+
 ## 2026-10-16 whole-TU recheck of the remaining SIB
 
 The last byte is still `+0x316`. Bank temp `0x576` (key `0x15d80`) sorts

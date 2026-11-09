@@ -18,6 +18,18 @@ references and a prefix of 100 instructions. The surviving difference at
 `0x41e5c2` is `mov [esp+0x14],ebp` versus native `mov [esp+0x14],ebx`.
 Dip remains partial.
 
+With the recovered bank, the single-index control now differs only in the
+order of two instructions. Remove `curve_phase_index`, compute the angle from
+`i`, increment `i` at the latch, and initialize `sample_offset` to
+`sizeof(PathAttachmentSample)` before `while (i < width_cells_)`. At +0x197
+the candidate emits `mov edi,0xa8` followed by `jle` to body offset +0x417.
+The target puts the branch first. All non-relocation bytes outside
+`[+0x197,+0x1a2)` agree, including both stores of the integer counter and the
+entire mesh. Whole-Path msvc6.3 gives 655/655, prefix 105 and 37 clean
+references. Guarding the offset initializer restores branch order but changes
+allocation. Reusing the endpoint index, endpoint offset or following delta
+offset as the cursor leaves the same reordered pair on the unguarded form.
+
 ## 2026-10-19: `STOREREG` mechanism of `[esp+0x14]` and single-index `i`
 
 No source change (still **99.85%**, 655/655, prefix 100). C2 trace of `build_live_ranges` (`C2+0x2cac2`) and `score_live_ranges` (`C2+0x22463`) explains the pre-loop `mov dword [esp+0x14], ebx` and 3 of the 17 SIB bytes:
