@@ -12,11 +12,9 @@ garbage and slug collision trees, bounce, splash, wall impact, and the exact
 only by the kind-zero trail path and becomes each trail Sprite's opaque object
 reference; impact sprites deliberately retain the allocator sentinel.
 
-The scratch exports `?AI@cRSubGolb@@QAEXXZ`. Its current result is
-99.78%, 695/694 instructions, prefix 417, with all 71 references clean.
-The remaining difference is the direct active-state comparison.
-The persistent collision-side carrier previously tested is behaviorally wrong
-and is not retained.
+The scratch exports `?AI@cRSubGolb@@QAEXXZ`. The stock compiler now
+reproduces the full 2,656-byte body, including the table and all 71
+references. The [current result](RESULT.md) records the whole-unit check.
 
 ## 2026-11-09: use the contact vector for both Z sign tests
 

@@ -1,18 +1,19 @@
 # Current projectile AI result
 
-`cRSubGolb::AI()` at `0x414820` scores **99.78%** in the whole Golb
-translation unit under `msvc6.3 /O2 /G5 /W3`. The candidate has 695
-instructions against 694 in the target, a matching prefix of 417, and
-71 clean references. The only instruction difference is the first
-garbage-state test. Windows emits `cmp dword [esi+0x84], 1`. The
-reconstructed switch loads the field into EAX and decrements it.
+The stock VC6 SP3 whole-Golb build reproduces the complete retail body of
+`cRSubGolb::AI()` at `0x414820`. All 2,656 bytes match after resolving
+71 references, including 694 instructions and the 16-byte inline table.
+The other eight functions in the translation unit retain their original
+code and relocations.
 
-A direct C++ comparison produces 694 instructions but assigns EBX to
-constant 1 across the garbage loop. A private compiler diagnostic kept
-the comparison's 1 as an immediate at C2's constant-promotion pass.
-Changing only that decision reproduced all 694 instructions and the encoded
-body. The preserving observer rejected the changed object. The source
-remains partial under the unmodified compiler.
+The garbage loop tests the active state directly. Each collision computes
+the signed Z displacement, copies it into the vector that will be normalized,
+and uses the sign of that vector component to select the absolute distance.
+Expressing the garbage selection as a conditional value also restores the
+native immediate comparison. Changing the slug selection alone leaves the
+constant in EBX. Both loops now use the same distance expression.
+
+To reproduce the proof, run `uv run snail match scratch update_golb_ai`.
 
 The Shockwave Windows demo at `0x412480` omits the three calls to `Jet`
 and uses a smaller `0x58` stack frame. Its garbage comparison at
@@ -26,10 +27,10 @@ with 1 (`0x31d30` and `0x31f26`). The first loop calls a collision
 filter before computing the displacement, as in the Wii build. The skip,
 path-follow and bounce gates test bit zero of their bytes. Substituting
 C++ bool fields for these three bytes while retaining the Windows
-predicates leaves the Windows gate unresolved.
+predicates did not recover the Windows gate on the earlier source.
 
 The [scratch notes](NOTES.md) record the recovered Z-product ordering and
-the register allocation on the ordinary compiler.
+the earlier register allocation differences.
 
 ## Historical initial recovery
 

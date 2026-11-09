@@ -159,8 +159,7 @@ void cRSubGolb::AI()
             && bounds_player->transform.position.z + 46.0f >= flight_transform.position.z) {
             cRSubGarbage* garbage = game->garbage_hazards.active_head;
             while (garbage) {
-                switch (garbage->state) {
-                case SUB_GARBAGE_STATE_ACTIVE: {
+                if (garbage->state == SUB_GARBAGE_STATE_ACTIVE) {
                     Vec3 collision_delta;
                     collision_delta.x =
                         garbage->transform.position.x - new_output->x;
@@ -170,9 +169,7 @@ void cRSubGolb::AI()
                         garbage->transform.position.z - new_output->z;
                     collision_delta.z = dz;
                     probe = collision_delta;
-                    if (probe.z < 0.0f)
-                        dz = -dz;
-                    if (dz < 3.0f) {
+                    if ((probe.z < 0.0f ? -dz : dz) < 3.0f) {
                         float collision_distance = probe.Normalize();
                         if (collision_distance < garbage->radius + 0.49000001f) {
                             garbage->state = SUB_GARBAGE_STATE_BURST_PENDING;
@@ -187,10 +184,6 @@ void cRSubGolb::AI()
                                 goto garbage_hit;
                         }
                     }
-                    break;
-                }
-                default:
-                    break;
                 }
                 garbage = garbage->next_active;
             }
@@ -212,9 +205,7 @@ void cRSubGolb::AI()
                             - new_output->z;
                         slug_delta.z = dz;
                         probe = slug_delta;
-                        if (probe.z < 0.0f)
-                            dz = -dz;
-                        if (dz < 2.5f && probe.Normalize() < 2.5f) {
+                        if ((probe.z < 0.0f ? -dz : dz) < 2.5f && probe.Normalize() < 2.5f) {
                             path_follow.active = 0;
                             deflect_speed = velocity.Normalize();
                             probe.y = 0.0f;
