@@ -2,6 +2,7 @@
 import importlib.util
 import struct
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -103,3 +104,20 @@ def test_identically_corrupt_outputs_cannot_pass(tmp_path, damage):
 def test_unequal_headers_cannot_hide_missing_cases(tmp_path):
     with pytest.raises(ValueError, match="unequal output headers"):
         compare(tmp_path, output(2), output(1))
+
+
+def test_fixture_editor_preserves_whole_unit_call_and_float():
+    callback = "?RePosition@cRBorder@@QAEXXZ"
+    constant = "__real@4@3fff8000000000000000"
+    name = "?InputText@cRBorder@@QAEXXZ"
+    body = b"\xe8\0\0\0\0\xd9\x05\0\0\0\0\xc3"
+    data = editor.write_object(name, body, {constant: struct.pack("<f", 1.0)},
+                               [(1, callback, 0x14), (7, constant, 0x06)], {callback: 0x20})
+    bounded = editor.extract_object_function(editor.parse_coff_object(data), name)
+    call, value = bounded.relocation_references
+    whole_unit = replace(bounded, relocation_references=(replace(call, symbol_size=64), value))
+    _, extracted = editor.fixture_editor_object(whole_unit)
+    assert extracted == bounded
+    invalid = replace(whole_unit, relocation_references=(call, replace(value, constant_data=b"")))
+    with pytest.raises(ValueError, match="complete float constant"):
+        editor.fixture_editor_object(invalid)

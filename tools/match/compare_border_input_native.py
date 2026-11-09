@@ -14,17 +14,19 @@ import os
 import re
 import shutil
 import struct
+from dataclasses import replace
 from pathlib import Path
 
 from compare_loaders_native import verify_source_link
 from compare_quaternion_native import checked_run
-from compare_sbend_native import make_oracle, verify_oracle_link
+from compare_sbend_native import make_oracle, verify_oracle_link, write_object
 from link_path_math import support_inputs
 
 from snail.match import (
     DEFAULT_MATCH_ROOT,
+    ObjectFunction,
     cl_environment,
-    compile_scratch,
+    compile_scratch_data,
     extract_object_function,
     load_scratch_config,
     object_function_fingerprint,
@@ -137,19 +139,43 @@ def compare_outputs(left: Path, right: Path) -> dict:
             "differing_cases": len(differences), "differences": differences[:16]}
 
 
+def fixture_editor_object(function: ObjectFunction) -> tuple[bytes, ObjectFunction]:
+    """Bind the whole-TU editor to the fixture's external callback implementations."""
+    constants, externals, relocations = {}, {}, []
+    for ref in function.relocation_references:
+        if ref.relocation_type == 0x06 and ref.key and ref.key.startswith("const:f32:"):
+            if ref.constant_data is None or len(ref.constant_data) < 4 or ref.addend:
+                raise ValueError("editor fixture needs a complete float constant")
+            constants[ref.symbol_name] = ref.constant_data[:4]
+        elif ref.relocation_type in (0x14, 0x06) and ref.key and ref.key.startswith("name:"):
+            externals[ref.symbol_name] = 0x20 if ref.relocation_type == 0x14 else 0
+        else:
+            raise ValueError(f"unsupported editor fixture reference: {ref}")
+        relocations.append((ref.offset, ref.symbol_name, ref.relocation_type))
+    data = write_object(function.name, function.data, constants, relocations, externals)
+    extracted = extract_object_function(parse_coff_object(data), function.name)
+    # A callback provided by the fixture no longer has a definition size in
+    # this object. All other relocation evidence and every byte must survive.
+    references = tuple(
+        replace(ref, symbol_size=None) if ref.symbol_name in externals else ref
+        for ref in function.relocation_references
+    )
+    if extracted != replace(function, relocation_references=references):
+        raise ValueError("fixture extraction changed the editor body or its references")
+    return data, extracted
+
+
 def compare(runtime: Path, out: Path) -> dict:
     receipt_path = out / "comparison.json"
     receipt_path.unlink(missing_ok=True)
     runner_name = os.environ.get("WIBO") or str(DEFAULT_MATCH_ROOT / "bin/wibo")
     runner = Path(shutil.which(runner_name) or runner_name).resolve(strict=True)
-    linker = DEFAULT_MATCH_ROOT / "compilers/msvc6.5/Bin/LINK.EXE"
     manifest = load_function_symbol_manifest(DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH)
     native_path = REPO_ROOT / manifest.primary_target
     if file_digest(native_path) != manifest.unwrapped_sha256:
         raise ValueError("native image differs from matching manifest")
     config = load_scratch_config(DEFAULT_MATCH_ROOT / "scratches" / FUNCTION)
-    if config.compiler != "msvc6.5":
-        raise ValueError("diagnostic requires the current VC6 profile")
+    linker = DEFAULT_MATCH_ROOT / "compilers" / config.compiler / "Bin/LINK.EXE"
     fixed = [runtime, runner, linker, native_path, Path(__file__).resolve(),
              DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
              DEFAULT_MATCH_ROOT / "compare_loaders_native.py",
@@ -165,7 +191,7 @@ def compare(runtime: Path, out: Path) -> dict:
     identities[str(fixture_path)] = fixtures["sha256"]
     dependencies = scratch_dependency_sha256(config)
     source_object = out / "border_input_text.obj"
-    source_object.write_bytes(compile_scratch(config).read_bytes())
+    source_object.write_bytes(compile_scratch_data(config))
     obj = parse_coff_object(source_object.read_bytes())
     function = extract_object_function(obj, config.symbol or config.function)
     match = run_match(obj_path=source_object, function_name=FUNCTION, image_path=native_path,
@@ -183,13 +209,18 @@ def compare(runtime: Path, out: Path) -> dict:
     fixture_object = out / "border_input_smoke.obj"
     checked_run([str(DEFAULT_MATCH_ROOT / "cl.sh"), "/c", "/O2", "/G5", "/W3",
                  f"/FoZ:{fixture_object}", f"Z:{fixture_source}"], out / "fixture.compile.log",
-                env=cl_environment("msvc6.5"))
+                env=cl_environment(config.compiler))
     native_object = out / "border_input_text.native.obj"
     oracle = make_oracle(native_object, function_name=FUNCTION, source_object=source_object)
-    for path in (source_object, fixture_object, native_object):
+    control_object = out / "border_input_text.control.obj"
+    control_data, control_function = fixture_editor_object(function)
+    control_object.write_bytes(control_data)
+    control_record = {**record, "object_name": control_object.name,
+                      "code_sha256": object_function_fingerprint(control_function)}
+    for path in (source_object, fixture_object, control_object, native_object):
         identities[str(path)] = file_digest(path)
     results = {}
-    for label, implementation in [("source", source_object), ("native", native_object)]:
+    for label, implementation in [("source", control_object), ("native", native_object)]:
         exe, mapping = out / f"{label}.exe", out / f"{label}.map"
         for path in (exe, mapping):
             path.unlink(missing_ok=True)
@@ -203,7 +234,7 @@ def compare(runtime: Path, out: Path) -> dict:
         rsp.write_text("\n".join(f'"{s}"' for s in options) + "\n")
         checked_run([str(runner), str(linker), f"@Z:{rsp}"], out / f"{label}.link.log")
         if label == "source":
-            linked_proof = verify_source_link(exe, mapping, [source_object, fixture_object], [record], None)
+            linked_proof = verify_source_link(exe, mapping, [control_object, fixture_object], [control_record], None)
         else:
             linked_proof = verify_oracle_link(exe, mapping, native_object, oracle)
             oracle["link_verification"] = linked_proof
