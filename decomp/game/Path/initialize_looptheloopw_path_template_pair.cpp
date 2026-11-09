@@ -61,7 +61,6 @@ void cRPath::initialize_looptheloopw_path_template_pair(
 
     i = 0;
     if (curve_count > 0) {
-        float secondary_radius = curve_source - 0.49000001f;
         do {
             int sample_index = i + 7;
             sample_f = (float)i;
@@ -86,6 +85,7 @@ void cRPath::initialize_looptheloopw_path_template_pair(
             secondary_bank[sample_index].transform.Identity();
             secondary_bank[sample_index].transform.position.x =
                 primary_bank[sample_index].center_x;
+            float secondary_radius = curve_source - 0.49000001f;
             secondary_bank[sample_index].transform.position.z =
                 Sin(angle) * secondary_radius + 7.0f;
             secondary_bank[sample_index].transform.position.y =

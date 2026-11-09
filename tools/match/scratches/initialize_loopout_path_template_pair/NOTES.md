@@ -1,3 +1,22 @@
+## 2026-11-10 floating-point operand order in the three loop builders
+
+The Android armeabi library calls software floating-point routines with
+both operands in registers. For LoopOut, `0x4c944` subtracts the first
+center from the departure center. At `0x4c950` the sample ordinal is
+the left operand of the multiply. At `0x4c958` the divisor is the number
+of curved samples.
+At `0x4c96c` the first center is the left operand of the addition.
+The library has SHA-256
+`96dbeaeb20c60d687301ca769656727467371489db5e3ed744a93248bc8d8136`.
+
+LoopTheLoop and LoopTheLoopW use the same arithmetic with the final
+sample as the endpoint. Both calculate the secondary radius where they
+position the secondary sample (`0x4d7a4` and `0x4d118`). Expressing
+the three interpolations in this order and scoping those two radii to
+their first use preserves all 43 Windows code and relocation fingerprints.
+The optimized WASM code sections of all three builders are identical
+before and after. Their Windows address-encoding differences remain open.
+
 ## 2026-11-09 Windows family comparison of the endpoint load
 
 The older Chromadrome 1.00 builder at `0x41c4c0` uses **0x5c-byte** nodes.

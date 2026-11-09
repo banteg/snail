@@ -22,8 +22,8 @@ static inline void interpolate_path_center(
     float sample_f, float curve_count_f)
 {
     bank[sample_index].center_x =
-        (bank[loop_segment_count - 1].center_x - bank[0].center_x)
-        * sample_f / curve_count_f + bank[0].center_x;
+        bank[0].center_x + sample_f *
+        (bank[loop_segment_count - 1].center_x - bank[0].center_x) / curve_count_f;
 }
 
 static __forceinline void reset_primary_sample(AttachmentSample *&bank,
