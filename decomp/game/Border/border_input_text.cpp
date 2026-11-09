@@ -6,6 +6,46 @@
 #include "input_ok_state.h"
 #include "rshell.h"
 
+inline void cRBorder::end_input_frame(bool completing)
+{
+    if ((input_flags & 2) != 0) {
+        char* buffer = text_buffer;
+        int index = 0;
+        bool scan = buffer[index] != 0 && !completing;
+        while (scan) {
+            if (buffer[index] != ' ' && index != input_cursor)
+                break;
+            if (index != input_cursor) {
+                char* remove = &buffer[index];
+                while (*remove != 0) {
+                    *remove = remove[1];
+                    ++remove;
+                }
+                if (index <= input_cursor)
+                    --input_cursor;
+                --input_length;
+            }
+            scan = buffer[++index] != 0;
+        }
+    }
+    if (!completing) {
+        input_cursor_blink_progress += input_cursor_blink_step;
+        if (input_cursor_blink_progress > 1.0f) {
+            input_cursor_blink_progress = 0.0f;
+            input_cursor_visible = input_cursor_visible == 0;
+        }
+        if (input_cursor_visible == 1)
+            text_buffer[input_cursor] = '|';
+        else
+            text_buffer[input_cursor] = ' ';
+    } else {
+        widget_flags |= FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;
+    }
+    RePosition();
+    if (completing && ((input_flags & 4) != 0 || (input_flags & 8) != 0))
+        g_game->border_manager.kill_border(input_ok_state()->ok_widget);
+}
+
 void cRBorder::InputText()
 {
     char* insertion_end;
@@ -240,39 +280,7 @@ finish_insertion:
     insertion_end[1] = 0;
     ++input_length;
 input_postprocess:
-    if ((input_flags & 2) != 0) {
-        char* buffer = text_buffer;
-        int index = 0;
-        char ch = buffer[0];
-        while (ch != 0) {
-            if (buffer[index] != ' ' && index != input_cursor)
-                break;
-            if (index != input_cursor) {
-                char* remove = &buffer[index];
-                while (*remove != 0) {
-                    *remove = remove[1];
-                    ++remove;
-                }
-                if (index <= input_cursor)
-                    --input_cursor;
-                --input_length;
-            }
-            ch = buffer[index + 1];
-            ++index;
-        }
-    }
-
-    input_cursor_blink_progress += input_cursor_blink_step;
-    if (input_cursor_blink_progress > 1.0f) {
-        input_cursor_blink_progress = 0.0f;
-        input_cursor_visible = input_cursor_visible == 0;
-    }
-
-    if (input_cursor_visible == 1)
-        text_buffer[input_cursor] = '|';
-    else
-        text_buffer[input_cursor] = ' ';
-    RePosition();
+    end_input_frame(false);
     return;
 
 finish_input:
@@ -281,13 +289,7 @@ finish_input:
         *remove = remove[1];
         ++remove;
     }
-    unsigned int flags = widget_flags;
-    widget_flags = flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
     --input_length;
-    widget_flags = (flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE)
-        | FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;
-    RePosition();
-    if ((input_flags & 4) != 0 || (input_flags & 8) != 0)
-        g_game->border_manager
-            .kill_border(input_ok_state()->ok_widget);
+    widget_flags &= ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
+    end_input_frame(true);
 }

@@ -218,6 +218,9 @@ public:
         cRBorder* child_widget_2;
         cRBorder* slider_value_widget;
     }; // +0x720
+
+private:
+    void end_input_frame(bool completing);
 };
 
 typedef char FrontendWidget_must_be_0x724[

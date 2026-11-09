@@ -1,5 +1,26 @@
 # cRBorder::InputText @ 0x4035b0
 
+## 2026-11-10: editing and submission share end-of-frame layout
+
+The reconstructed `end_input_frame` method handles layout for both paths.
+During editing it trims leading spaces in numeric input and updates the
+cursor. On submission, the caller removes the cursor and clears the active
+bit; the method sets the completion bit and tears down the optional OK widget.
+VC6 SP3 now emits both native flag stores and the same three indexed
+address encodings in the numeric scan.
+
+The original and rebuilt functions agree through the first 425 instructions
+(0x5e1 code bytes, with five relocated operands). At 0x403b91, retail
+loads the first text character into CL. The rebuilt function omits that
+load and schedules the length decrement and flag stores differently.
+The result is still partial at 445/446 instructions, 99.21%, with eight
+verified references. All 34 other Border functions remain exact.
+
+The native execution comparison matches on all 43,776 fixtures, including
+all 117,346 callbacks. In each release WASM only the editor body changes
+(2,397 to 2,384 bytes); the web and headless high-score and menu tests pass
+in both game modes.
+
 ## 2026-11-09: empty-submission policies across builds
 
 The iPad 1.0.6 executable (SHA-256
