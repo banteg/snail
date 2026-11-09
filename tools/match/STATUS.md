@@ -12,9 +12,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 ## Residual frontier
 
-**5** non-exact scratch-backed functions hold **11984 target bytes** without proof-grade credit and **20 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **100.0%** of that gap; the top 10 hold **100.0%**.
+**5** non-exact scratch-backed functions hold **11984 target bytes** without proof-grade credit and **16 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **100.0%** of that gap; the top 10 hold **100.0%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **5 / 20** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **0 functions / 0 gap bytes**; **5 / 16** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -28,7 +28,7 @@ Proof blockers (overlapping extents): encoding: 3 functions / 8000 bytes; instru
 | 2 | initialize_looptheloop_path_template_pair | 2640 | 0 | 100.00% | 0/0 | encoding | semantic-complete | analysis | historical-only | 0/18 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
 | 3 | initialize_loopout_path_template_pair | 2624 | 0 | 100.00% | 0/0 | encoding | unspecified | unspecified | historical-only | 0/28 | metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 4 | initialize_dip_path_template_pair | 2400 | 4 | 99.85% | 1/1 | instructions | semantic-complete | analysis | historical-only | 0/59 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
-| 5 | border_input_text | 1584 | 16 | 99.66% | 3/0 | instructions | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
+| 5 | border_input_text | 1584 | 12 | 99.44% | 3/2 | instructions | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
 
 
 ## Proof Grade (657)
@@ -705,7 +705,7 @@ Proof blockers (overlapping extents): encoding: 3 functions / 8000 bytes; instru
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
-| 🚧 | border_input_text | 0x4035b0 | 1584 | 443/446 | 98.99% | 423/446 | 8 ok |  | core |
+| 🚧 | border_input_text | 0x4035b0 | 1584 | 445/446 | 99.21% | 425/446 | 8 ok |  | core |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2400 | 655/655 | 99.85% | 100/655 | 37 ok |  | core |
 
 ## Platform Helpers (120)
