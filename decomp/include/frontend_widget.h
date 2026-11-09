@@ -193,7 +193,8 @@ public:
     float previous_mouse_y; // +0x280
     char unknown_284[0x28c - 0x284];
     cRToolTip tooltip; // +0x28c, authored cRToolTip owner
-    char text_buffer[0x420]; // +0x2cc
+    char text_buffer[0x400]; // +0x2cc
+    char saved_input_text[0x20]; // +0x6cc, saved name supplied to InputTextInit
     int font_id; // +0x6ec
     float font_scale; // +0x6f0
     float layout_anchor_x; // +0x6f4

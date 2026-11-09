@@ -7,7 +7,7 @@
 void cRBorder::InputTextInit(int capacity, char* text, int flags)
 {
     input_flags = flags;
-    Rstrcpy(text_buffer + 0x400, text);
+    Rstrcpy(saved_input_text, text);
 
     input_cursor = 0;
     input_length = 0;
