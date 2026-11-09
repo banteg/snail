@@ -241,13 +241,14 @@ finish_insertion:
     ++input_length;
 input_postprocess:
     if ((input_flags & 2) != 0) {
+        char* buffer = text_buffer;
         int index = 0;
-        char ch = text_buffer[0];
+        char ch = buffer[0];
         while (ch != 0) {
-            if (text_buffer[index] != ' ' && index != input_cursor)
+            if (buffer[index] != ' ' && index != input_cursor)
                 break;
             if (index != input_cursor) {
-                char* remove = &text_buffer[index];
+                char* remove = &buffer[index];
                 while (*remove != 0) {
                     *remove = remove[1];
                     ++remove;
@@ -256,7 +257,7 @@ input_postprocess:
                     --input_cursor;
                 --input_length;
             }
-            ch = text_buffer[index + 1];
+            ch = buffer[index + 1];
             ++index;
         }
     }

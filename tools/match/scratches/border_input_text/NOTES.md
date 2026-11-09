@@ -1,5 +1,41 @@
 # cRBorder::InputText @ 0x4035b0
 
+## 2026-11-09: numeric trim buffer and empty submission
+
+Numeric trim keeps a single pointer to the text buffer for its test, removal
+and advance. On Wii, `0x80020098` forms the buffer base and the loop uses it
+for both the indexed character load and the removal pointer at
+`0x800200f0..0x800200f4`. With the same owner, VC6 SP3 emits native SIB
+`31` at offsets `+1252` and `+1259`. Those two bytes are the only changes
+to the compiled editor. All 34 other Border members retain their instruction
+bytes and scores. Two exact peers have renumbered local jump labels.
+
+The Wii completion path independently explains a use for the first character.
+After removing the cursor, it loads the first character at `0x8001f838`,
+decrements the length, clears the active bit and branches at `0x8001f858`.
+For empty text it copies the saved name back, marks input complete and jumps
+to the ordinary input postprocessing. For nonempty text it marks input
+complete and runs layout and optional OK-button teardown. Wii's initializer
+saves the fallback with the same string-copy function. This can be checked
+in the US DOL, SHA-256
+`523f848f2a0b8ef8c9dfe2714744bf0479a4feec79b25f0d1f5e035a6487c096`.
+
+The Windows initializer also saves a string, at `text_buffer + 0x400`.
+At submission the retail Windows image loads the first character at
+`0x403b91`, and the separate Shockwave demo does so at `0x403ac1`. In both
+Windows builds empty submissions retain the empty text and take the same
+layout and teardown path as nonempty submissions. Android and iOS also
+publish completion unconditionally. The Wii fallback would change Windows
+behavior. Duplicating completion in identical arms merely to retain a load
+would invent a distinction in the reconstructed program.
+
+The current whole-unit build has **443/446 instructions**, **98.99%**
+agreement, a **423-instruction prefix** and eight clean references. The
+remaining differences are in completion. The native comparison runner
+checked 35,568 editor cases with 100,930 callbacks and zero state or callback
+differences. Its one-byte corruption control identified the changed case
+and byte.
+
 ## 2026-10-18: identical-arm branch on `text_buffer[0]` reproduces the store pair
 
 Unchanged at **98.99%**, 443/446, prefix 423, in the whole Border unit.
