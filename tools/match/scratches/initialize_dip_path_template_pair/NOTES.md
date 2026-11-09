@@ -20,6 +20,23 @@ linked release WebAssembly binaries.
 
 ## 2026-11-10 identical Windows strip vertices in three path builders
 
+BuildP at `0x425bf5` and HillValley at `0x42d74e` provide independent
+examples of the curved sample loop. Each spills the actual zero-based
+index for the first x87 integer conversion, initializes a nonzero record
+stride after a signed guard, and spills the updated index on the back edge.
+They assign EBX and EBP the opposite roles from Dip.
+
+In a single-index Dip reconstruction, capturing `width_cells + 1` once
+per vertex row reproduces the native index spill, guard and stride. All
+235 differing bytes of that build fall in the vertex loop. Both loops
+occupy 311 bytes and 92 instructions, including the same 39 x87 operations
+with identical operands. The generated loop keeps the derived stride in
+EDI and uses ECX for the column. Retail and the exact Slalom vertex loop
+keep the raw width in ECX, row in EDX and column in EDI. They form the
+stride separately at each vertex store. This localizes the remaining
+difference in that control to addressing, register allocation and the
+integer stores.
+
 The vertex loop is the same 311 bytes (92 instructions) in three places
 in the retail PE. The ranges below start at the signed row guard and end
 immediately after the loop latch. The end addresses are exclusive.

@@ -5,7 +5,7 @@
 The reconstructed `end_input_frame` method handles layout for both paths.
 During editing it trims leading spaces in numeric input and updates the
 cursor. On submission, the caller removes the cursor and clears the active
-bit; the method sets the completion bit and tears down the optional OK widget.
+bit. The method sets the completion bit and tears down the optional OK widget.
 VC6 SP3 now emits both native flag stores and the same three indexed
 address encodings in the numeric scan.
 
@@ -18,8 +18,19 @@ verified references. All 34 other Border functions remain exact.
 
 The native execution comparison matches on all 43,776 fixtures, including
 all 117,346 callbacks. In each release WASM only the editor body changes
-(2,397 to 2,384 bytes); the web and headless high-score and menu tests pass
+(2,397 to 2,384 bytes). The web and headless high-score and menu tests pass
 in both game modes.
+
+The two CL loads at the end of cursor removal have separate origins in the
+VC6 SP3 build. Register allocation supplies the byte copied to the previous
+position at function offset `+0x5c8`. Later, C2 at `+0x31ae7` splits the
+latch's byte comparison against zero into a load and comparison, selecting
+CL again. At `+0x34d29` the comparison becomes a test. Sharing a source
+character or text cursor between removal and the numeric scan reproduced
+the existing result. The forms that retained the later first-character
+load also wrote it to the stack. These observations account for the two
+loads in the removal loop. The separate retail load at `+0x5e1` remains
+unresolved.
 
 ## 2026-11-09: empty-submission policies across builds
 
