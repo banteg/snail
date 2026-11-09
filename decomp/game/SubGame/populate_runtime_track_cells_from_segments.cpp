@@ -22,17 +22,6 @@
 
 void set_object_color(Object* object, tColour color);
 
-// BuildLevel updates the physical lane and clears both random-hazard blockers.
-// Other cell producers own the remaining bits in the same word.
-union SubLocFlags {
-    unsigned int word;
-    struct {
-        unsigned int lane_index : 3;
-        unsigned int hazard_suppression : 2;
-        unsigned int other_flags : 27;
-    } fields;
-};
-
 void cRSubGame::BuildLevel()
 {
     int runtime_build_seed;
@@ -422,9 +411,9 @@ void cRSubGame::BuildLevel()
                             authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE
                             + AUTHORED_ROW_OBJECT_VELOCITY_X);
                 } else {
-                    runtime_rows[build_row].row_model.velocity.x = 0;
-                    runtime_rows[build_row].row_model.velocity.y = 0;
-                    runtime_rows[build_row].row_model.velocity.z = 0;
+                    runtime_rows[build_row].row_model.velocity.x =
+                        runtime_rows[build_row].row_model.velocity.y =
+                        runtime_rows[build_row].row_model.velocity.z = 0.0f;
                 }
             }
 
@@ -489,17 +478,14 @@ void cRSubGame::BuildLevel()
                 else
                     authored_lane = lane;
 
-                SubLocFlags flags = {runtime_cells[build_row][lane].lane_and_flags};
+                SubLocFlags flags = runtime_cells[build_row][lane].flags;
                 flags.fields.lane_index = lane;
                 flags.fields.hazard_suppression = 0;
-                runtime_cells[build_row][lane].lane_and_flags = flags.word;
+                runtime_cells[build_row][lane].flags = flags;
 
                 Fringe** subobject_slot =
                     runtime_cells[build_row][lane].fringes;
-                subobject_slot[0] = 0;
-                subobject_slot[1] = 0;
-                subobject_slot[2] = 0;
-                subobject_slot[3] = 0;
+                memset(subobject_slot, 0, sizeof(runtime_cells[build_row][lane].fringes));
 
                 char edge_row = build_row < first_block_row_count || build_row >= completion_row_start;
 

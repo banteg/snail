@@ -1,5 +1,35 @@
 # populate_runtime_track_cells_from_segments
 
+## 2026-11-09: full encoded match
+
+The canonical whole SubGame unit now matches **1,246/1,246 instructions**, all
+**206 inline table bytes**, and the encoded body with **165/165 positional
+references**. Three changes close the final comparison:
+
+- Clearing the four fringe pointers with `memset` over the actual array gives
+  the four native stores. It also restores the caller-saved register sequence
+  for the following `LevelConvert` call. With separate assignments the local
+  allocator enters that call's argument sequence at `ecx`; the target takes
+  `edx`. Right-to-left assignment to the four pointers changes their store
+  order and does not reproduce the original.
+- `cRSubLoc` owns the recovered 32-bit packed flags at +0x40. Its unsigned
+  word view supports the existing mask consumers. Copying the typed member,
+  updating the lane and hazard-suppression fields, then writing the member
+  back reproduces the native read/modify/write. The canonical header now
+  supplies the type for the whole unit. The two TU-sensitive row-loop reloads
+  described below also take their native order in this layout.
+- The row-model velocity reset uses `x = y = z = 0`. This writes Z, Y, X as
+  the native reset does, consistent with the recovered `tVector::zero_vector3`
+  order. The previous X, Y, Z stores had the same normalized instructions.
+  The positional reference audit rejected their exchanged X and Z
+  displacements at target offsets +0x66c and +0x678.
+
+The port's wasm32-wasi compiler emits a four-byte word at +0x40 in a 0x54-byte
+cell. A runtime control checked all eight lane inputs against every setting
+of the low five bits and four patterns for the high bits (1,024 word updates).
+All nine Ultimate patch hunks touching this source applied and the patched
+source compiled for wasm32-wasi.
+
 ## 2026-11-09: packed lane and hazard fields
 
 The whole SubGame unit now reaches **99.28%** normalized and **99.93%**
