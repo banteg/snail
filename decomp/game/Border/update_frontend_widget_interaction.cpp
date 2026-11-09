@@ -13,6 +13,13 @@
 #include "tooltip_state.h"
 #include "twinkle_manager.h"
 
+#define BLEND_WIDGET_COLOR(result, idle, idle_weight, hot, hot_weight) \
+    (result).store_color4f( \
+        (hot_weight) * (hot).r + (idle_weight) * (idle).r, \
+        (hot_weight) * (hot).g + (idle_weight) * (idle).g, \
+        (hot_weight) * (hot).b + (idle_weight) * (idle).b, \
+        (hot_weight) * (hot).a + (idle_weight) * (idle).a)
+
 void cRBorder::AI()
 {
     previous_widget_flags = widget_flags;
@@ -117,9 +124,7 @@ void cRBorder::AI()
                 {
                     cRGameInput* input = g_game->players[0].game_input;
                     if ((widget_flags & FRONTEND_WIDGET_FLAG_SECONDARY_INPUT_ENABLED) != 0
-                        && (((unsigned char*)&input->input.pressed_buttons)[1]
-                                & (INPUT_BUTTON_SECONDARY >> 8))
-                            != 0) {
+                        && (input->input.pressed_buttons & INPUT_BUTTON_SECONDARY) != 0) {
                         if ((widget_flags & FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION) != 0)
                             widget_flags |= FRONTEND_WIDGET_FLAG_SECONDARY_ACTION_TRIGGERED;
                         else
@@ -176,25 +181,15 @@ void cRBorder::AI()
     RePosition();
 
     if ((widget_flags & FRONTEND_WIDGET_FLAG_HIDDEN) == 0) {
-        current_fill_color.store_color4f(
-            hover_blend_current * hot_fill_color.r
-                + (1.0f - hover_blend_current) * idle_fill_color.r,
-            hover_blend_current * hot_fill_color.g
-                + (1.0f - hover_blend_current) * idle_fill_color.g,
-            hover_blend_current * hot_fill_color.b
-                + (1.0f - hover_blend_current) * idle_fill_color.b,
-            hover_blend_current * hot_fill_color.a
-                + (1.0f - hover_blend_current) * idle_fill_color.a);
+        BLEND_WIDGET_COLOR(
+            current_fill_color,
+            idle_fill_color, 1.0f - hover_blend_current,
+            hot_fill_color, hover_blend_current);
 
-        current_text_color.store_color4f(
-            hover_blend_current * hot_text_color.r
-                + (1.0f - hover_blend_current) * idle_text_color.r,
-            hover_blend_current * hot_text_color.g
-                + (1.0f - hover_blend_current) * idle_text_color.g,
-            hover_blend_current * hot_text_color.b
-                + (1.0f - hover_blend_current) * idle_text_color.b,
-            hover_blend_current * hot_text_color.a
-                + (1.0f - hover_blend_current) * idle_text_color.a);
+        BLEND_WIDGET_COLOR(
+            current_text_color,
+            idle_text_color, 1.0f - hover_blend_current,
+            hot_text_color, hover_blend_current);
 
         if ((widget_flags & FRONTEND_WIDGET_FLAG_DISABLED) != 0) {
             current_text_color.r *= 0.5f;
@@ -249,10 +244,9 @@ void cRBorder::AI()
         cRBorder* more = slider_more_widget;
         if ((more->widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             more->widget_flags &= ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            float current_slider_value = slider_value + 0.2f;
-            if (current_slider_value >= 0.89999998f)
-                current_slider_value = 1.0f;
-            slider_value = current_slider_value;
+            slider_value += 0.2f;
+            if (slider_value >= 0.89999998f)
+                slider_value = 1.0f;
         }
 
         cRBorder* less = slider_less_widget;
@@ -282,3 +276,5 @@ void cRBorder::AI()
             (int)(slider_value * 100.0f + 0.1f));
     }
 }
+
+#undef BLEND_WIDGET_COLOR
