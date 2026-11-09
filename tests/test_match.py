@@ -1410,6 +1410,26 @@ def test_folded_reference_aliases_preserve_both_authored_owners() -> None:
     )
 
 
+def test_relocation_resolution_uses_only_the_current_reference_manifest(tmp_path):
+    path = tmp_path / "references.json"
+    obj = parse_coff_object(build_object(bytes.fromhex("a100000000c3"), [("_read", 0), ("_slot", 0)], [(1, 1)]))
+
+    def load(owner):
+        path.write_text(json.dumps({"name": "test", "symbols": [{
+            "address": "0x402000", "kind": "global", "name": owner, "aliases": ["_slot"],
+        }]}))
+        return load_reference_symbol_manifest(path)
+
+    def key(manifest):
+        return extract_object_function(obj, "read", reference_manifest=manifest).relocation_references[0].key
+
+    first = load("first")
+    assert key(first) == "ref:first"
+    second = load("second")
+    assert key(second) == "ref:second"
+    assert key(first) == "ref:first"
+
+
 def test_extract_object_function_does_not_global_resolve_local_label_alias() -> None:
     code = bytes.fromhex("a100000000c3") + b"\x00" * 8
     obj = parse_coff_object(build_object(code, [("_foo", 0), ("$L307", 6)], [(1, 1)]))

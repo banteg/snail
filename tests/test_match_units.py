@@ -41,6 +41,28 @@ def test_unit_source_order_and_member_overlay(grouped_scratches):
     assert (second.directory / "scratch.cpp").read_text() == "int second() { return 1; }\n"
 
 
+def test_unit_epoch_uses_the_current_peer_source_and_headers(grouped_scratches):
+    root, (first, second) = grouped_scratches
+    image = root / "target.exe"
+    image.write_bytes(b"original")
+
+    def epoch():
+        return match.scratch_experiment_epoch(first, root, image_path=image)
+
+    initial = epoch()
+    header = match.include_root(root) / "peer.h"
+    header.parent.mkdir(parents=True, exist_ok=True)
+    header.write_text("#define VALUE 1\n")
+    (second.directory / "recovered.cpp").write_text('#include "peer.h"\nint second() { return VALUE; }\n')
+    (second.directory / "scratch.conf").write_text("FUNCTION=second\nSOURCE=recovered.cpp\n")
+    remapped = epoch()
+    assert remapped != initial
+    (second.directory / "scratch.cpp").write_text("int discarded;\n")
+    assert epoch() == remapped
+    header.write_text("#define VALUE 2\n")
+    assert epoch() != remapped
+
+
 def test_unit_includes_a_shared_source_once(grouped_scratches):
     root, (_, second) = grouped_scratches
     third = root / "scratches" / "third"
