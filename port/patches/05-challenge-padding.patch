@@ -12,13 +12,13 @@ other level is the shell's cRSubTracks::Init.
  void cRSubGame::BuildLevel()
  {
 @@ -389,7 +390,9 @@
-             active_segment->row_base = build_row;
          } else {
+             cRSubTracks& definition = level_definition;
              base_subgame_rate = 1.0f;
--            if (level_definition.random_enabled == 1) {
+-            if (definition.random_enabled == 1) {
 +            if (SubSegment* padding = extras_next_padding()) {
 +                active_segment = padding;
-+            } else if (level_definition.random_enabled == 1) {
++            } else if (definition.random_enabled == 1) {
                  float picked_value;
                  if (level_mode == 1) {
                      picked_value = RAND(
