@@ -1,5 +1,39 @@
 # update_subgoldy @ 0x43b120
 
+## 2026-11-09: recovered position addition on the attachment transition
+
+The case-2 movement addition now has the native x87 operand order for all
+three components. The unattached movement arm also retains all three native
+orders. The SubGame unit improved from 99.28% to **99.38%** (2,089/2,087
+instructions), with a first mismatch at instruction 1,387 rather than 548.
+All 315 references pass. The other 190 members have identical section bytes
+and relocation destinations; VC6 renumbered local COFF labels.
+
+The root objects and loads are visible before the addition. Each playback
+sample is a six-byte `ReplayRunRecord`; its flags are tested after the
+lateral decoder call. The row-event handler obtains the index from
+`source_cell->Yi()` before accessing the matching `SubRow`. Forward
+acceleration loads the rate once and squares it (Windows `0x43b120` body,
+instructions 502–507). Naming that record, row index and rate gives ordinary
+C++ for these operations and recovers the later X addition. Removing any
+one of the three changes restores the previous operand order.
+
+The frontiers now start at the two course-completion speed clamps. PC
+stores a copy of speed to the field for the in-range case and reloads
+the field at each comparison; the reconstruction uses one additional
+stack spill in each clamp. Early iPhone 1.5 ARMv6 (0x29d48 and 0x2a234)
+and iPad 1.0.6 ARMv7 Thumb (0x67f18 and 0x683d0) both compare a single
+read of forward speed to a lower bound and, when necessary, to half the
+rate. The iPhone's camera block copies the complete live position before
+adding the wobble (0x2a324..0x2a398). Thus neither a repeated speed accessor
+nor a scalar, manually scheduled XYZ copy is supported by these releases.
+
+The iPad ghost reads one signed delta at 0x68702, decodes it at 0x68704
+and conditionally adds the accumulator. iPhone and Windows have separate
+absolute and relative decoder calls. The structured Wii-style reset/advance
+still improves the structural comparison but regresses normalized matching
+to 96.15% on this input. The camera copy and ghost merge remain partial.
+
 ## 2026-11-09: Wii cross-check of the replay cursor and completion clamps
 
 The Wii `cRSubGoldy` RTTI record at `0x808f3830` identifies the vtable at

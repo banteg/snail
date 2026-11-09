@@ -17,9 +17,9 @@ one. Windows reads the snail's own row and stacks a new tip on one still showing
 @@ -284,7 +286,7 @@
      cRSubLoc* source_cell = game->LocFromPos(p_position);
      cRSubGame* event_game = game;
-     SubRow* row_record =
--        &event_game->runtime_rows[source_cell->Yi()];
-+        &event_game->runtime_rows[source_cell->Yi() + (g_port_ultimate ? 10 : 0)];
+-    int row_index = source_cell->Yi();
++    int row_index = source_cell->Yi() + (g_port_ultimate ? 10 : 0);
+     SubRow* row_record = &event_game->runtime_rows[row_index];
      int event_id = row_record->row_event_id;
      if (event_id > 0 && event_id != row_event.id
          && event_id < event_game->level_definition.segment_count + 1) {

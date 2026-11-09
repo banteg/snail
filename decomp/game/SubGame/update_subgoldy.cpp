@@ -124,11 +124,9 @@ void cRSubGoldy::AI()
                 .lateral_x,
             16.0f);
         cRSubGame* flag_game = game;
-        if (flag_game
-                ->selected_level_record
-                ->run_records[flag_game->replay_update_cursor]
-                .flags
-            & 4)
+        const ReplayRunRecord& recorded =
+            flag_game->selected_level_record->run_records[flag_game->replay_update_cursor];
+        if (recorded.flags & 4)
             flag_game->track_state_latch = 1;
         else
             flag_game->track_state_latch = 0;
@@ -268,8 +266,8 @@ steering_stored:
 
     cRSubLoc* source_cell = game->LocFromPos(p_position);
     cRSubGame* event_game = game;
-    SubRow* row_record =
-        &event_game->runtime_rows[source_cell->Yi()];
+    int row_index = source_cell->Yi();
+    SubRow* row_record = &event_game->runtime_rows[row_index];
     int event_id = row_record->row_event_id;
     if (event_id > 0 && event_id != row_event.id
         && event_id < event_game->level_definition.segment_count + 1) {
@@ -338,9 +336,10 @@ steering_stored:
             velocity.z = 0.0f;
     } else {
         cRSubGame* accel_game = game;
-        if ((float)accel_game->first_block_row_count > transform.position.z)
-            velocity.z = accel_game->subgame_rate * accel_game->subgame_rate * 0.0040000002f
-                       + velocity.z;
+        if ((float)accel_game->first_block_row_count > transform.position.z) {
+            float rate = accel_game->subgame_rate;
+            velocity.z = rate * rate * 0.0040000002f + velocity.z;
+        }
         if (velocity.z > 1.0f)
             velocity.z = 1.0f;
         if (click_start.state == CLICK_START_STATE_WAITING_FOR_START)
