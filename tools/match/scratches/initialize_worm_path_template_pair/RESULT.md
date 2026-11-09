@@ -1,8 +1,8 @@
 # initialize_worm_path_template_pair match result
 
-Current (2026-09-11): **81.17727584%**, **725/736 instructions**, **37 clean
-references**. The frame remains **0x68/0x80** and the body remains partial.
-See [the current before/after byte proof and controls](../../worm-sample-column-colour-owners-20260911.md).
+**2026-11-09.** Exact in the 43-member Path translation unit under MSVC 6 SP3.
+All 736 instructions, 37 references and 2,759 compared bytes match.
+See the [Wii evidence and encoded-body proof](NOTES.md#2026-11-09-complete-encoded-body-match).
 
 ## Historical matching snapshots
 

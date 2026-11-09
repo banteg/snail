@@ -675,3 +675,18 @@ The 2,759-byte encoded body still differs at two bytes, `+0x97` and
 register and the byte cursor as the index for both the center load and
 position address. The target reverses the registers. Both scale factors
 are one. The function remains partial.
+
+## 2026-11-09: complete encoded-body match
+
+The entrance loop reads `primary_samples` directly for the center and
+position. It borrows the secondary bank for the secondary transform.
+The exit loop likewise borrows the secondary bank across its four samples.
+This produces the target's base/index order for both entrance addresses
+while preserving the secondary Identity receivers. The source uses the
+same four position subtractions as the Wii arithmetic recovery above.
+
+The complete 43-member Path translation unit under `msvc6.3 /O2 /G5 /W3`
+now reproduces all **736 instructions, all 37 audited references and all
+2,759 compared body bytes**. The nine bytes at the end of the 2,768-byte
+curated extent are terminal padding. The encoded body proof SHA-256 is
+`4fc40bae8cdcc9b3aa876d9091c0aa850a020cab9815a7a9bec43af05d8ebc86`.

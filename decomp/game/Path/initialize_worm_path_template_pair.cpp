@@ -33,23 +33,24 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
         ((AttachmentSample *)((char *)primary_samples + entry_offset))->lateral_scale = 1.0f;
         ((AttachmentSample *)((char *)primary_samples + entry_offset))->transform.Identity();
 
-        AttachmentSample* const& bank = primary_samples;
-        ((AttachmentSample *)((char *)bank + entry_offset))->transform.position.x =
-            ((AttachmentSample *)((char *)bank + entry_offset))->center_x;
+        ((AttachmentSample *)((char *)primary_samples + entry_offset))->transform.position.x =
+            ((AttachmentSample *)((char *)primary_samples + entry_offset))->center_x;
         ((AttachmentSample *)((char *)primary_samples + entry_offset))->transform.position.y = 0.49000001f;
         ((AttachmentSample *)((char *)primary_samples + entry_offset))->transform.position.z =
             (float)sample_index * width_or_scale;
 
-        ((AttachmentSample *)((char *)secondary_samples + entry_offset))->transform.Identity();
-        ((AttachmentSample *)((char *)secondary_samples + entry_offset))->transform.position.x =
+        AttachmentSample* const& secondary_bank = secondary_samples;
+        ((AttachmentSample *)((char *)secondary_bank + entry_offset))->transform.Identity();
+        ((AttachmentSample *)((char *)secondary_bank + entry_offset))->transform.position.x =
             ((AttachmentSample *)((char *)primary_samples + entry_offset))->center_x;
-        ((AttachmentSample *)((char *)secondary_samples + entry_offset))->transform.position.y = 0.49000001f;
-        ((AttachmentSample *)((char *)secondary_samples + entry_offset))->transform.position.z =
+        ((AttachmentSample *)((char *)secondary_bank + entry_offset))->transform.position.y = 0.49000001f;
+        ((AttachmentSample *)((char *)secondary_bank + entry_offset))->transform.position.z =
             (float)sample_index * width_or_scale;
         ++sample_index;
         entry_offset += sizeof(AttachmentSample);
     } while (entry_offset < 4 * (int)sizeof(AttachmentSample));
 
+    AttachmentSample* const& exit_bank = secondary_samples;
     for (int exit_step = 0; exit_step < 4; ++exit_step) {
         int exit_index = exit_step + 20;
         primary_samples[exit_index].center_x = 0.0f;
@@ -65,11 +66,11 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
         primary_samples[exit_index].transform.position.z =
             (float)exit_index * width_or_scale;
 
-        secondary_samples[exit_index].transform.Identity();
-        secondary_samples[exit_index].transform.position.x =
+        exit_bank[exit_index].transform.Identity();
+        exit_bank[exit_index].transform.position.x =
             primary_samples[exit_index].center_x;
-        secondary_samples[exit_index].transform.position.y = 0.49000001f;
-        secondary_samples[exit_index].transform.position.z =
+        exit_bank[exit_index].transform.position.y = 0.49000001f;
+        exit_bank[exit_index].transform.position.z =
             (float)exit_index * width_or_scale;
     }
 
