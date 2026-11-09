@@ -2,6 +2,7 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_subgoldy @ 0x43b120 */
+/* export: isolated database copy with the recovered two-vector Search prototype */
 
 0043b134        if (player->game->subgame_pause_gate == 0)
 0043b18a        if (player->follow_state.active != 1)
@@ -56,7 +57,7 @@
 0043b454        player->track_z_offset = fconvert.s(x87_r7_21)
 0043b463        player->track_z_anchor = player->control_source->steering_x
 0043b472        if (player->steering_mode_selector == 1)
-0043b47d        player->track_z_offset = fconvert.s(fconvert.t(player->control_source->steering_x))
+0043b47d        player->track_z_offset = player->control_source->steering_x
 0043b394        long double x87_r7_11 = fconvert.t(player->presentation.body.transform.basis_up.x)
 0043b39c        long double x87_r7_13 = fconvert.t(player->track_z_offset) - (x87_r7_11 + x87_r7_11)
 0043b3a2        player->track_z_offset = fconvert.s(x87_r7_13)
@@ -174,8 +175,8 @@
 0043b696        unimplemented  {fcomp st0, dword [0x497420]}
 0043b6a1        struct Vec3* p_position
 0043b6a1        if ((((c0_7 ? 1 : 0) << 8 | (c2_7 ? 1 : 0) << 0xa | (c3_7 ? 1 : 0) << 0xe | (top_1 & 7) << 0xb):1.b & 1) != 0)
-0043b6a3        p_position->x = 0xc0800000
-0043b6a9        player->velocity.x = 0
+0043b6a3        p_position->x = -4f
+0043b6a9        player->velocity.x = 0f
 0043b6b3        unimplemented  {fld st0, dword [ebx]}
 0043b6b5        long double temp10_1 = fconvert.t(4f)
 0043b6b5        unimplemented  {fcomp st0, dword [0x497210]} f- temp10_1
@@ -185,8 +186,8 @@
 0043b6b5        unimplemented  {fcomp st0, dword [0x497210]}
 0043b6bb        int16_t eax_31 = (c0_8 ? 1 : 0) << 8 | (c2_8 ? 1 : 0) << 0xa | (c3_8 ? 1 : 0) << 0xe | (top_1 & 7) << 0xb
 0043b6c0        if ((eax_31:1.b & 0x41) == 0)
-0043b6c2        p_position->x = 0x40800000
-0043b6c8        player->velocity.x = 0
+0043b6c2        p_position->x = 4f
+0043b6c8        player->velocity.x = 0f
 0043b6d2        eax_31.b = player->resurrect_active.b
 0043b6da        if (eax_31.b != 0)
 0043b6de        update_subgoldy_resurrect(player)
@@ -317,8 +318,8 @@
 0043bae8        bool c3_16 = unimplemented  {fcomp st0, dword [0x497420]} f== temp16_1
 0043bae8        unimplemented  {fcomp st0, dword [0x497420]}
 0043baf3        if ((((c0_16 ? 1 : 0) << 8 | (c2_16 ? 1 : 0) << 0xa | (c3_16 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb):1.b & 1) != 0)
-0043baf5        p_position->x = 0xc0800000
-0043bafb        player->velocity.x = 0
+0043baf5        p_position->x = -4f
+0043bafb        player->velocity.x = 0f
 0043bb05        unimplemented  {fld st0, dword [ebx]}
 0043bb07        long double temp17_1 = fconvert.t(4f)
 0043bb07        unimplemented  {fcomp st0, dword [0x497210]} f- temp17_1
@@ -328,8 +329,8 @@
 0043bb07        unimplemented  {fcomp st0, dword [0x497210]}
 0043bb0d        eax_43 = (c0_17 ? 1 : 0) << 8 | (c2_17 ? 1 : 0) << 0xa | (c3_17 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb
 0043bb12        if ((eax_43:1.b & 0x41) == 0)
-0043bb14        p_position->x = 0x40800000
-0043bb1a        player->velocity.x = 0
+0043bb14        p_position->x = 4f
+0043bb1a        player->velocity.x = 0f
 0043bb24        eax_43.b = player->completion_handoff_active
 0043bb2c        if (eax_43.b == 0)
 0043bb42        if (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == SUBLOC_TILE_SLIDE_UNDERSCORE)
@@ -418,34 +419,42 @@
 0043bd4c        if ((player->game->runtime_rows[get_track_cell_row_index(cell)].flags.b & 0x40) != 0)
 0043bd52        unimplemented  {fld st0, dword [ebp+0x410]}
 0043bd58        unimplemented  {fmul st0, dword [0x4975c8]}
-0043bd60        float sweep_dx = fconvert.s(unimplemented  {fstp dword [esp+0x14], st0})
+0043bd60        float sweep = fconvert.s(unimplemented  {fstp dword [esp+0x14], st0})
 0043bd60        unimplemented  {fstp dword [esp+0x14], st0}
 0043bd64        unimplemented  {fld st0, dword [ebp+0x414]}
 0043bd6a        unimplemented  {fmul st0, dword [0x4975c8]}
-0043bd70        float sweep_dy = fconvert.s(unimplemented  {fstp dword [esp+0x18], st0})
+0043bd70        float var_38_1 = fconvert.s(unimplemented  {fstp dword [esp+0x18], st0})
 0043bd70        unimplemented  {fstp dword [esp+0x18], st0}
 0043bd74        unimplemented  {fld st0, dword [ebp+0x418]}
 0043bd7a        unimplemented  {fmul st0, dword [0x4975c8]}
-0043bd80        float sweep_dz = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
+0043bd80        float var_34_1 = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
 0043bd80        unimplemented  {fstp dword [esp+0x1c], st0}
 0043bd98        struct cRSubLoc* source_cell = (&player->game->runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]
-0043bdf0        x87control_1 = try_enter_track_attachment_from_swept_motion((&player->game->runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]->attachment_template_record, p_position->x, p_position->y, p_position->z, sweep_dx, sweep_dy, sweep_dz, source_cell)
+0043bdb6        float var_5c_4 = var_38_1
+0043bdbb        float var_58_9 = var_34_1
+0043bdca        float y = p_position->y
+0043bdcd        float z = p_position->z
+0043bdf0        x87control_1 = try_enter_track_attachment_from_swept_motion((&player->game->runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]->attachment_template_record, p_position->x, sweep, source_cell)
 0043bdfd        if (player->attachment_exit_pending != 0 && (player->game->runtime_rows[get_track_cell_row_index(cell)].flags.b & 0x80) != 0)
 0043be27        unimplemented  {fld st0, dword [ebp+0x410]}
 0043be2d        unimplemented  {fmul st0, dword [0x4975c8]}
-0043be35        float sweep_dx_1 = fconvert.s(unimplemented  {fstp dword [esp+0x14], st0})
+0043be35        float sweep_1 = fconvert.s(unimplemented  {fstp dword [esp+0x14], st0})
 0043be35        unimplemented  {fstp dword [esp+0x14], st0}
 0043be39        unimplemented  {fld st0, dword [ebp+0x414]}
 0043be3f        unimplemented  {fmul st0, dword [0x4975c8]}
-0043be45        float sweep_dy_1 = fconvert.s(unimplemented  {fstp dword [esp+0x18], st0})
+0043be45        float var_38_2 = fconvert.s(unimplemented  {fstp dword [esp+0x18], st0})
 0043be45        unimplemented  {fstp dword [esp+0x18], st0}
 0043be49        unimplemented  {fld st0, dword [ebp+0x418]}
 0043be4f        unimplemented  {fmul st0, dword [0x4975c8]}
-0043be55        float sweep_dz_1 = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
+0043be55        float var_34_2 = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
 0043be55        unimplemented  {fstp dword [esp+0x1c], st0}
 0043be6d        struct cRSubLoc* source_cell_1 = (&player->game->runtime_rows[0].secondary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]
+0043be8b        float var_5c_5 = var_38_2
+0043be90        float var_58_10 = var_34_2
+0043be9f        float y_1 = p_position->y
+0043bea2        float z_1 = p_position->z
 0043bec5        int32_t eax_85
-0043bec5        eax_85, x87control_1 = try_enter_track_attachment_from_swept_motion((&player->game->runtime_rows[0].secondary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]->attachment_template_record, p_position->x, p_position->y, p_position->z, sweep_dx_1, sweep_dy_1, sweep_dz_1, source_cell_1)
+0043bec5        eax_85, x87control_1 = try_enter_track_attachment_from_swept_motion((&player->game->runtime_rows[0].secondary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]->attachment_template_record, p_position->x, sweep_1, source_cell_1)
 0043beca        int16_t eax_86
 0043beca        eax_86.b = player->follow_state.active
 0043bed2        if (eax_86.b == 0)
@@ -773,7 +782,8 @@
 0043c34b        begin_post_follow_carryover(player)
 0043b9a6        switch (update_track_attachment_follow_state(&player->follow_state, player->velocity.z, p_position, &player->velocity))
 0043b9cc        case 0
-0043b9cc        if (player->follow_state.template_record->kind != PATH_TEMPLATE_KIND_CAGE2)
+0043b9cc        if (player->follow_state.template_record->kind == PATH_TEMPLATE_KIND_CAGE2)
+0043b9cc        goto label_43b9f1
 0043b9d4        unimplemented  {fld st0, dword [ecx+0x38]}
 0043b9d7        unimplemented  {fld st0, st0}
 0043b9d9        unimplemented  {fmul st0, st1}
@@ -838,8 +848,8 @@
 0043ba87        unimplemented  {fcomp st0, dword [0x497420]}
 0043ba92        int16_t top_38
 0043ba92        if ((((c0_14 ? 1 : 0) << 8 | (c2_14 ? 1 : 0) << 0xa | (c3_14 ? 1 : 0) << 0xe | (top_38 & 7) << 0xb):1.b & 1) != 0)
-0043ba94        p_position->x = 0xc0800000
-0043ba9a        player->velocity.x = 0
+0043ba94        p_position->x = -4f
+0043ba9a        player->velocity.x = 0f
 0043baa0        unimplemented  {fld st0, dword [ebx]}
 0043baa2        long double temp19_1 = fconvert.t(4f)
 0043baa2        unimplemented  {fcomp st0, dword [0x497210]} f- temp19_1
@@ -849,8 +859,8 @@
 0043baa2        unimplemented  {fcomp st0, dword [0x497210]}
 0043baa2        top_13 = top_38
 0043baad        if ((((c0_15 ? 1 : 0) << 8 | (c2_15 ? 1 : 0) << 0xa | (c3_15 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb):1.b & 0x41) == 0)
-0043bab3        p_position->x = 0x40800000
-0043bab9        player->velocity.x = 0
+0043bab3        p_position->x = 4f
+0043bab9        player->velocity.x = 0f
 0043c403        update_warning(&player->warning)
 0043c41e        struct Vec3 position
 0043c41e        if (player->boost_one_tick != 0 || player->follow_state.active != 0)
@@ -858,15 +868,15 @@
 0043c424        unimplemented  {fld st0, dword [ebx+0x8]}
 0043c427        unimplemented  {fadd dword [0x4973e8]}
 0043c42d        float x = p_position->x
-0043c42f        float y_1 = p_position->y
+0043c42f        float y_3 = p_position->y
 0043c432        float x_2 = x
-0043c438        float y_2 = y_1
-0043c43e        float var_34_1 = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
+0043c438        float y_4 = y_3
+0043c43e        float var_34_3 = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
 0043c43e        unimplemented  {fstp dword [esp+0x1c], st0}
 0043c446        position.x = x
-0043c44e        position.z = var_34_1
+0043c44e        position.z = var_34_3
 0043c452        struct cRSubGame* game_12 = player->game
-0043c459        position.y = y_1
+0043c459        position.y = y_3
 0043c45d        struct cRSubLoc* eax_112
 0043c45d        int16_t x87control_2
 0043c45d        eax_112, x87control_2 = get_track_grid_cell_at_world_position(game_12, &position)
@@ -1193,18 +1203,18 @@
 0043c9df        g_game_base->players[0].frontend_state = 0x1a
 0043c9ef        g_game_base->players[0].saved_frontend_state = 2
 0043ca00        return
-0043ca07        bool cond:3 = game_20->selected_level_record_persistent == 0
+0043ca07        bool cond3 = game_20->selected_level_record_persistent == 0
 0043ca09        struct GameRoot* game_base_2 = g_game_base
 0043ca14        game_base_2->players[0].saved_frontend_state = game_base_2->players[0].frontend_state
 0043ca1a        struct GameRoot* game_base_4 = g_game_base
-0043ca20        if (cond:3)
+0043ca20        if (cond3)
 0043ca34        game_base_4->players[0].frontend_state = 0x1b
 0043ca45        return
 0043ca22        game_base_4->players[0].frontend_state = 0x1a
 0043ca33        return
 0043ca9c        float x_1 = p_position->x
-0043caa5        float y = p_position->y
-0043caac        float z = p_position->z
+0043caa5        float y_2 = p_position->y
+0043caac        float z_2 = p_position->z
 0043cab8        if (player->follow_state.active == 1)
 0043cac4        p_position->x = player->follow_state.output_position.x
 0043cac9        p_position->y = player->follow_state.output_position.y
@@ -1222,9 +1232,9 @@
 0043cb36        unimplemented  {fld st0, dword [ebp+0x276c]}
 0043cb40        unimplemented  {fld st0, st0}
 0043cb42        player->cached_camera_target_world.x = p_position->x
-0043cb47        float z_1 = p_position->z
+0043cb47        float z_3 = p_position->z
 0043cb4a        player->cached_camera_target_world.y = p_position->y
-0043cb4d        player->cached_camera_target_world.z = z_1
+0043cb4d        player->cached_camera_target_world.z = z_3
 0043cb50        unimplemented  {fmul st0, dword [ebp+0x58]}
 0043cb53        float var_18_1 = fconvert.s(unimplemented  {fstp dword [esp+0x38], st0})
 0043cb53        unimplemented  {fstp dword [esp+0x38], st0}
@@ -1240,7 +1250,7 @@
 0043cb6e        unimplemented  {fstp dword [esp+0x14], st0}
 0043cb72        unimplemented  {fld st0, st0}
 0043cb74        unimplemented  {fmul st0, dword [ebp+0x4c]}
-0043cb77        float var_38_1 = fconvert.s(unimplemented  {fstp dword [esp+0x18], st0})
+0043cb77        float var_38_3 = fconvert.s(unimplemented  {fstp dword [esp+0x18], st0})
 0043cb77        unimplemented  {fstp dword [esp+0x18], st0}
 0043cb7b        unimplemented  {fmul st0, dword [ebp+0x50]}
 0043cb7e        unimplemented  {fld st0, dword [ebp+0x2764]}
