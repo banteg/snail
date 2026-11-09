@@ -1,19 +1,35 @@
 # Current projectile AI result
 
-`cRSubGolb::AI()` at `0x414820` is **93.01%**, with **693/694
-instructions**, prefix **9**, the native **0x70 frame**, and **71 clean
-references** under `msvc6.5 /O2 /G5 /W3`.
+`cRSubGolb::AI()` at `0x414820` scores **99.78%** in the whole Golb
+translation unit under `msvc6.3 /O2 /G5 /W3`. The candidate has 695
+instructions against 694 in the target, a matching prefix of 417, and
+71 clean references. The only instruction difference is the first
+garbage-state test. Windows emits `cmp dword [esi+0x84], 1`. The
+reconstructed switch loads the field into EAX and decrements it.
 
-The latest pass replaces the slug byte cursor with direct owned indexing,
-publishes the slug z delta before normalization, and names the garbage
-collision distance before comparing it with the radius. These recover native
-addresses and floating-point scheduling from the preceding 91.72% baseline.
-The owned vector Normalize API is independently byte-neutral.
+A direct C++ comparison produces 694 instructions but assigns EBX to
+constant 1 across the garbage loop. A private compiler diagnostic kept
+the comparison's 1 as an immediate at C2's constant-promotion pass.
+Changing only that decision reproduced all 694 instructions and the encoded
+body. The preserving observer rejected the changed object. The source
+remains partial under the unmodified compiler.
 
-Remaining work concerns the constant lifetime through the garbage collision
-branches, their resulting layout, and two floating-point operand orders.
-This is still a partial match. Dated notes and recorded mutation recipes
-preserve the measured source alternatives.
+The Shockwave Windows demo at `0x412480` omits the three calls to `Jet`
+and uses a smaller `0x58` stack frame. Its garbage comparison at
+`0x4129f9` and the following burst-state register choices agree with
+retail. Omitting the trail calls in a source control leaves the same
+register-allocation difference.
+
+The iPad 1.0.6 RTTI for `cRSubGolb` leads to vtable `0x808f8` and
+Thumb entry `0x317b4`. Both garbage loops compare the word at `+0x84`
+with 1 (`0x31d30` and `0x31f26`). The first loop calls a collision
+filter before computing the displacement, as in the Wii build. The skip,
+path-follow and bounce gates test bit zero of their bytes. Substituting
+C++ bool fields for these three bytes while retaining the Windows
+predicates leaves the Windows gate unresolved.
+
+The [scratch notes](NOTES.md) record the recovered Z-product ordering and
+the register allocation on the ordinary compiler.
 
 ## Historical initial recovery
 
