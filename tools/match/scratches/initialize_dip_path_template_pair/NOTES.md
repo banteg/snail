@@ -1,3 +1,30 @@
+## 2026-11-10 single curve index and secondary endpoint position
+
+Using the actual curve index for both the angle and the sample Z coordinate
+reproduces the native EBX spill when the secondary endpoint's Y and Z stores
+share their position. The signed guard precedes the initialization of the
+0xa8-byte stride. This source also emits the retail curve, delta pass, strip
+vertices and both windings.
+
+With the 37 relocation operands audited, the first 362 body bytes and the
+last 1,983 agree. The remaining retail window is `[+0x16a,+0x197)`
+(45 bytes), against `[+0x16a,+0x196)` (44 bytes) in the reconstruction.
+Retail reloads the secondary bank before storing Z and transfers Z from
+the x87 stack. The reconstruction holds the position address through both
+stores and copies Z using EDX. The different instruction offsets also move
+local branch labels elsewhere in the normalized diff.
+
+The [mutation recipe](single-index-endpoint-position.json) reproduces
+this comparison in the ordinary Path translation unit. Select all five
+changes. The committed Dip scratch retains the source with the single
+differing ModR/M byte at `+0x183`.
+
+```sh
+uv run snail match mutate initialize_dip_path_template_pair \
+  --spec tools/match/scratches/initialize_dip_path_template_pair/single-index-endpoint-position.json \
+  --min-changes 5 --max-changes 5 --max-variants 1
+```
+
 ## 2026-11-10 checkerboard materials on both strip windings
 
 Dip's retail face loop tests the low bit of row XOR column. For the upper
