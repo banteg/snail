@@ -1,5 +1,33 @@
 # `initialize_looptheloop_path_template_pair` starter
 
+## 2026-11-09 straight sample strides and terminal deltas
+
+The terminal-delta pass now uses the same `compute_terminal_deltas(this)`
+operation as Hump. Both mesh windings compute the vertex index from the full
+width and publish it to the face's 16-bit member. These changes preserve all
+43 Windows Path function and relocation fingerprints and the builder's
+optimized Wasm instructions. The remaining byte is still **+0x318**.
+
+Chromadrome 1.00's earlier 7+7 builder at `0x41bbf0` also has two live sample
+banks. For example, the approach calls `Identity` on the member at +0x54 at
+`0x41bc89`, then on +0x58 at `0x41bcbf`. Each record has stride 0x5c.
+The departure starts its logical Z at seven, reuses the saved byte offset
+of its first sample for the arc's endpoint, and terminates on `(z - 7) < 7`.
+In Snail Mail the last departure sample supplies that endpoint. Transferring
+the earlier count, Z and offset lifetimes changes the Windows body.
+
+A diagnostic retaining Snail's endpoint uses explicit 0xa8 byte cursors for
+the two straight runs. With a shared secondary-sample operation borrowing
+both bank members and receiving the row offset and Z, the approach matches.
+The arc IV becomes C2 temporary `0x7ff`, producing the target's `07` SIB at
++0x318. The departure's secondary `Identity` receiver changes by one
+instruction, and four subsequent departure addresses plus five delta-loop
+addresses reverse SIB operands. These source forms remain controls.
+The Wii counterparts divide the radius and the two straight taper factors
+at `0x80057608`, `0x800576a0` and `0x80057808`. VC6 folds the three
+divisions to the same reciprocals. The Wasm compiler retains division for
+the taper factors, so this experiment keeps the checked-in arithmetic.
+
 ## 2026-11-09 Wii circle center and departure indexing
 
 The Wii `BuildLoopTheLoop` at `0x80057500..0x800581f0` constructs a

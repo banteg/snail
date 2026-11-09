@@ -132,28 +132,7 @@ void cRPath::initialize_looptheloop_path_template_pair(float curve_source,
         } while (i < curve_count);
     }
 
-    i = 0;
-    if (segment_count - 1 > 0) {
-        do {
-            primary_samples[i].delta_dir_to_next =
-                primary_samples[i + 1].transform.position -
-                primary_samples[i].transform.position;
-            primary_samples[i].delta_length =
-                primary_samples[i].delta_dir_to_next.Normalize();
-
-            secondary_samples[i].delta_dir_to_next =
-                secondary_samples[i + 1].transform.position -
-                secondary_samples[i].transform.position;
-            secondary_samples[i].delta_length =
-                secondary_samples[i].delta_dir_to_next.Normalize();
-            ++i;
-        } while (i < segment_count - 1);
-    }
-
-    primary_samples[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    primary_samples[segment_count - 1].delta_length = 1.0f;
-    secondary_samples[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    secondary_samples[segment_count - 1].delta_length = 1.0f;
+    compute_terminal_deltas(this);
 
     strip_mesh->RequestVertices((width_cells + 1) * (segment_count + 1));
     strip_mesh->RequestFaceQuads(2 * width_cells * segment_count);
@@ -205,16 +184,16 @@ void cRPath::initialize_looptheloop_path_template_pair(float curve_source,
                     if (face_index == 0) {
                         facequads[face_array_index].header_word = 0;
                         facequads[face_array_index].vertex_0 =
-                            mesh_column + mesh_row * ((unsigned short)width_cells + 1);
+                            mesh_column + mesh_row * (width_cells + 1);
                         facequads[face_array_index].vertex_1 =
-                            mesh_row * ((unsigned short)width_cells + 1) + mesh_column +
+                            mesh_row * (width_cells + 1) + mesh_column +
                             1;
                         facequads[face_array_index].vertex_2 =
-                            (mesh_row + 1) * ((unsigned short)width_cells + 1) +
+                            (mesh_row + 1) * (width_cells + 1) +
                             mesh_column + 1;
                         facequads[face_array_index].vertex_3 =
                             mesh_column +
-                            (mesh_row + 1) * ((unsigned short)width_cells + 1);
+                            (mesh_row + 1) * (width_cells + 1);
                         if (((mesh_column ^ mesh_row) & 1) == 0)
                             facequads[face_array_index].texture_ref =
                                 g_texture_refs.Add(texture_a, 0, 0);
@@ -224,15 +203,15 @@ void cRPath::initialize_looptheloop_path_template_pair(float curve_source,
                     } else {
                         facequads[face_array_index].header_word = 0;
                         facequads[face_array_index].vertex_0 =
-                            mesh_row * ((unsigned short)width_cells + 1) + mesh_column +
+                            mesh_row * (width_cells + 1) + mesh_column +
                             1;
                         facequads[face_array_index].vertex_1 =
-                            mesh_column + mesh_row * ((unsigned short)width_cells + 1);
+                            mesh_column + mesh_row * (width_cells + 1);
                         facequads[face_array_index].vertex_2 =
                             mesh_column +
-                            (mesh_row + 1) * ((unsigned short)width_cells + 1);
+                            (mesh_row + 1) * (width_cells + 1);
                         facequads[face_array_index].vertex_3 =
-                            (mesh_row + 1) * ((unsigned short)width_cells + 1) +
+                            (mesh_row + 1) * (width_cells + 1) +
                             mesh_column + 1;
                         if (((mesh_column ^ mesh_row) & 1) == 0)
                             facequads[face_array_index].texture_ref =
