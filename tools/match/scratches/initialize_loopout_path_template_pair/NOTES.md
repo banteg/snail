@@ -1,4 +1,38 @@
-## 2026-10-16 whole-TU recheck: not closable with honest source
+## 2026-11-09 departure offset and center interpolation
+
+The Wii build corroborates a single primary bank for the interpolation. In
+`SnailMail-USA.dol` (SHA-256 `523f848f2a0b8ef8c9dfe2714744bf0479a4feec79b25f0d1f5e035a6487c096`),
+`0x80059394..0x800593a0` computes the departure offset from
+`(curve_count + 10) * sizeof(AttachmentSample)`. The load at `0x800593ec`
+supplies the bank for both the departure-center read at `0x80059400` and
+the current-center write at `0x80059448`. The latter folds the ten approach
+samples into its displacement (`0x720 = 10 * 0xa8 + 0x90`).
+
+One whole-Path MSVC 6.3 control changes the compiler's ordering without
+changing the compiled LoopOut body. Reset `i` before calculating the
+departure byte offset, start a separate byte cursor at that offset, and
+advance the cursor and logical counter through the four departure samples.
+Use the saved offset for the endpoint sample in the curve. The preserving C2
+observer gives the following sort keys for the interpolation operands:
+
+| Bank used for the interpolation | Endpoint address term | Bank | Current sample IV | Unequal SIB byte |
+| --- | ---: | ---: | ---: | ---: |
+| Snapshot of the primary pointer | `0x16e80` | `0x102c0` | `0x13000` | `+0x2e9` (load) |
+| Reference to the primary pointer | `0x101c0` | `0x16ec0` | `0x13080` | `+0x302` (store) |
+
+With the snapshot, C2 folds the field displacement into the endpoint
+temporary. With the reference, it retains the saved byte offset as local
+`0xe` and applies `+0x90` to the load. The current induction temporary
+in the snapshot control moves from `0x943` to `0x8c0` with C0 fixed at
+`0x540`. Both controls match all 718 normalized instructions and 52 references.
+Borrowing the input bank and storing through the member, as in TurnUnder,
+gives the desired two address orders but emits an extra `mov edx,eax` to
+hold both bank values. Typed entry/departure pointers and references retain
+the partial. A diagnostic hand-strided center-field view produced the target
+bytes. The native loads support indexing the sample bank and provide no
+independent evidence for that field view, so it earns no credit.
+
+## 2026-10-16 whole-TU recheck
 
 The last byte is still `+0x2e7`, the endpoint load. Native needs the
 endpoint below the bank and the bank below the iv. With the current kinds no

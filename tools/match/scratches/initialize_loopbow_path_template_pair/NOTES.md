@@ -29,6 +29,31 @@ and schedules the cursor initialization just before the spill to
 Using a byte cursor only for the seven departure samples preserves the single
 original difference.
 
+### Can the straight runs explain the remaining byte?
+
+The Wii departure loop combines the curve extent with the straight-run
+index and advances one sample each iteration (`0x8006e314..0x8006e474`).
+Rewriting the Windows departure loop to use a logical `tail_start + i`
+index lets VC6 produce the same native instruction sequence with fewer
+independent source counters. A preserving MSVC 6.3 address-order trace
+shows how this affects the sort at the middle loop's destination store.
+Each row still has exactly one byte unequal.
+
+| Source overlay | Bank slot | Curve induction slot | ID increments until induction hash exceeds bank hash |
+| --- | ---: | ---: | ---: |
+| Retained Wii circle center and right vectors | `0x619` | `0x9af` | 107 |
+| Departure `sample_index = tail_start + i`, increment `i` at loop end | `0x619` | `0x9f2` | 40 |
+| Index departure accesses directly as `[tail_start + i]` | `0x639` | `0xa1f` | 27 |
+| Give the approach loop its own zero-based index | `0x63c` | `0xa2d` | 16 |
+| Bind the approach's secondary bank by reference at its Identity and position writes | `0x61e` | `0xa10` | 15 |
+
+The rows build on one another. The last column follows the existing
+temporary hash, `(slot mod 0x400) << 6`, with the bank held fixed. It
+measures C2 operand order only. Moving the primary-bank borrow and
+endpoint load before the angle quotient as in the Wii body also leaves
+the store at `+0x327` unequal in VC6. The logical departure, separate
+indices and additional bank borrow remain diagnostic overlays.
+
 ## 2026-10-16 whole-TU recheck: not closable with honest source
 
 The last byte is still `+0x327`. Bank temp `0x5fd` (`0x17f40`) sorts ahead
