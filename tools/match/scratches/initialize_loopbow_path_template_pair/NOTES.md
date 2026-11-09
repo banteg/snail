@@ -1,6 +1,29 @@
 # Reconstruction notes
 
-## 2026-11-09 Wii circle center and curve cursor
+## 2026-11-09 complete encoded-body match
+
+The complete Windows body now matches in the 43-member Path translation unit
+with MSVC 6.3 `/O2 /G5 /W3`. All **796 instructions, 63 positional references
+and 2,939 compared bytes** agree. The final five bytes are terminal padding.
+
+Wii's LoopBow builder keeps the row, column and winding separate. At
+`0x8006ec7c..0x8006ec94` it computes their integer face index and tests the
+winding. Each arm resolves its face record, uses it to write the header and
+four vertex indices, then writes the returned texture at offset `0xc` in the
+same record (`0x8006ec98..0x8006ed14`, `0x8006ed1c..0x8006ed98`). The
+second winding test selects the UV order. The Windows source now names the
+face in each winding arm and retains its Windows texture-parity branches.
+
+The straight runs use the separate approach index, secondary-bank reference
+and logical departure origin tested below. Reverting either the approach
+index or its secondary-bank reference, restoring the separate departure
+cursor, or removing the winding-local face references restores the unequal
+SIB at `+0x329`. Hoisting the bank and endpoint reads ahead of the angle
+computation by themselves also left that difference. The accepted source
+changes exactly one nonrelocation byte, from `18` to native `03`. All 42
+other Path members retain their code and relocation fingerprints.
+
+## 2026-11-09 Wii circle center and curve cursor, before the face recovery
 
 Wii USA `0x8006e044..0x8006eeec` has LoopBow's distinctive rotation
 sequence. It rotates a temporary matrix about Y and multiplies both sample
@@ -51,8 +74,8 @@ The rows build on one another. The last column follows the existing
 temporary hash, `(slot mod 0x400) << 6`, with the bank held fixed. It
 measures C2 operand order only. Moving the primary-bank borrow and
 endpoint load before the angle quotient as in the Wii body also leaves
-the store at `+0x327` unequal in VC6. The logical departure, separate
-indices and additional bank borrow remain diagnostic overlays.
+the store at `+0x327` unequal in VC6. The last overlay became exact after the
+winding-local face change recorded above.
 
 ## 2026-10-16 whole-TU recheck: not closable with honest source
 

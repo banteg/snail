@@ -1,6 +1,10 @@
 # Result
 
-## Matcher summary
+All 796 instructions, 63 positional references and 2,939 compared bytes
+match the Windows body in the full Path unit. See the
+[Wii source evidence and Windows proof](NOTES.md#2026-11-09-complete-encoded-body-match).
+
+## Historical starter result
 
 | Metric | Starter | Final |
 |---|---:|---:|
