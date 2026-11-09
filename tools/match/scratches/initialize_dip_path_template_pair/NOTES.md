@@ -14,15 +14,23 @@ the x87 stack. The reconstruction holds the position address through both
 stores and copies Z using EDX. The different instruction offsets also move
 local branch labels elsewhere in the normalized diff.
 
+The second control binds the primary endpoint's Z field, writes the
+converted index and saves the result for the secondary sample. It
+reproduces both secondary bank reloads. The first 333 body bytes and
+last 2,039 match. Retail's `[+0x14d,+0x15f)` window is 18 bytes. The
+candidate's window is 24 bytes. Retail first saves Z to the stack and
+then writes the primary field. The candidate writes the field first and
+also computes its address in EAX. All 37 references pass in both controls.
+
 The [mutation recipe](single-index-endpoint-position.json) reproduces
-this comparison in the ordinary Path translation unit. Select all five
-changes. The committed Dip scratch retains the source with the single
-differing ModR/M byte at `+0x183`.
+both comparisons in the ordinary Path translation unit. Each combines
+four curve-index edits with one endpoint edit. The committed Dip scratch
+retains the source with the single differing ModR/M byte at `+0x183`.
 
 ```sh
 uv run snail match mutate initialize_dip_path_template_pair \
   --spec tools/match/scratches/initialize_dip_path_template_pair/single-index-endpoint-position.json \
-  --min-changes 5 --max-changes 5 --max-variants 1
+  --min-changes 5 --max-changes 5 --max-variants 2
 ```
 
 ## 2026-11-10 checkerboard materials on both strip windings
