@@ -58,9 +58,9 @@ for WebAssembly and replaces only the original's platform layer: Direct3D 8
 and the BASS audio library are emulated underneath it, so the game logic is
 the original's own.
 
-- As of November 1, 2026, 647 of 662 port-relevant functions are byte-proven.
+- As of November 9, 2026, 654 of 662 port-relevant functions are byte-proven.
   The [matching status board](tools/match/STATUS.md) lists the remaining
-  differences for all 15 partial matches.
+  differences for all eight partial matches.
 - In all 20 recorded high-score runs, the Original profile reproduces the
   snail’s forward position within the recording’s 1/32-unit precision.
   A separate lockstep check matched the recorded state fields across 10
