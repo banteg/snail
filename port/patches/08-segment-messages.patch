@@ -6,8 +6,8 @@ one. Windows reads the snail's own row and stacks a new tip on one still showing
 --- a/decomp/game/SubGame/update_subgoldy.cpp
 +++ b/decomp/game/SubGame/update_subgoldy.cpp
 @@ -75,6 +75,8 @@
- // voice id at +0x204 (0xa874); the flat 0xa874 read is
- // level_segment_count.
+ #define CLAMP_FLOAT(value, lower, upper) \
+     ((value) >= (lower) ? ((value) <= (upper) ? (value) : (upper)) : (lower))
  
 +extern bool g_port_ultimate; // shell/profile.h
 +
