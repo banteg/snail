@@ -647,3 +647,31 @@ No source change (still **92.97%**, structural 97.61%, 21/14, 729/736). Disassem
 - **Two remaining C2 paths for `B`.**
   1. *Alias kill via `0x1079961c` or `0x10799474`:* `C.x` is written through `NK_MEM` (`kind = 6`) while `B` or `A` is in an intersecting alias class (verified in diagnostic `work_m2`: `alias_classes_intersect` `C2+0x2e1c` ignores field offsets across distinct primary classes and kills `B.y`/`B.z` right after `B.x` is rewritten), or `B.y`/`B.z` are `NK_MEM` copies killed by an address-taken `NK_SYM` write `C.x`.
   2. *Asymmetric `+0` vs `+4`/`+8` destination folding before `cse1`:* `canonicalize` (`C2+0x1a701`) folds `*(&b + 0)` to `b.x` (`kind = 2`) immediately, whereas `*(&b + 4)` and `*(&b + 8)` use `t = &b + 4` (`0x16d` `ADD`), which pre-`globopt` `0x1070f349` (`0x1070b425`) refuses to fold on the destination side until `t`'s def becomes `0x15b` inside `globopt_run` (`0x107129ec`). Entering `cse1`, `b.x` is already `kind = 2` while `b.y`/`b.z` stores are still `kind = 6` (`[b.y + 0x3c] == 0`).
+
+## 2026-11-09: Wii Worm vertex arithmetic
+
+The Wii Worm builder at `0x8005d7bc` includes the mesh omitted from the
+Android and iOS versions. On every ordinary row it adds a zero vector
+twice, first to the sum of the position and right component, then to the
+sum with the up component. In the [pinned Wii DOL](../../../../analysis/wii/dtk-m2c-spike-20260910/README.md),
+`f31` holds positive zero from `r2 - 0x7170` (`0x808f56f0`). The first
+three `fadds` with `f31` are at `0x8005e0d4/dc/ec`, the next three
+at `0x8005e0fc/108/114`. Wii stores the four successive vector results
+at `sp+0x38`, `+0x44`, `+0x50`, and `+0x5c`. The sibling Slalom mesh
+at `0x8005d424` adds the position and lateral offset directly.
+
+Under VC6 the two zero additions produce the previously unexplained
+intermediate vectors and the original 0x80-byte frame. Both radius and
+cosine scales use the same scalar multiplication member as the right-hand
+component. Grouping the mesh-column fraction in one trig argument recovers
+the original scheduling of the two final field copies. The four sample
+position differences also compile through the shared vector subtraction,
+as in Cage2, and the middle sample block consistently uses its secondary
+bank reference.
+
+All 736 normalized instructions and all 37 positional references match.
+The 2,759-byte encoded body still differs at two bytes, `+0x97` and
+`+0x9e`, in the entrance loop. VC6 uses the sample bank as the base
+register and the byte cursor as the index for both the center load and
+position address. The target reverses the registers. Both scale factors
+are one. The function remains partial.
