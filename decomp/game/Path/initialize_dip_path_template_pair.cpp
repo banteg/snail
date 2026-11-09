@@ -282,12 +282,8 @@ void cRPath::initialize_dip_path_template_pair(
                             facequads[face_offset].vertex_3 =
                                 column +
                                 (row + 1) * ((unsigned short)width_cells + 1);
-                            if (((column ^ row) & 1) == 0)
-                                facequads[face_offset].texture_ref =
-                                    g_texture_refs.Add(texture_a, 0, 0);
-                            else
-                                facequads[face_offset].texture_ref =
-                                    g_texture_refs.Add(texture_a, 0, 0);
+                            set_checker_texture(
+                                facequads[face_offset], column, row, texture_a, texture_a);
                         }
                         else
                         {
@@ -302,12 +298,8 @@ void cRPath::initialize_dip_path_template_pair(
                             facequads[face_offset].vertex_3 =
                                 (row + 1) * ((unsigned short)width_cells + 1) +
                                 column + 1;
-                            if (((column ^ row) & 1) == 0)
-                                facequads[face_offset].texture_ref =
-                                    g_texture_refs.Add(texture_b, 0, 0);
-                            else
-                                facequads[face_offset].texture_ref =
-                                    g_texture_refs.Add(texture_b, 0, 0);
+                            set_checker_texture(
+                                facequads[face_offset], column, row, texture_b, texture_b);
                         }
                         if (face_index == 0)
                         {

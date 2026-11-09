@@ -197,12 +197,8 @@ void cRPath::initialize_loopout_path_template_pair(
                             (row + 1) * ((unsigned short)width_cells + 1) + column + 1;
                         facequads[face_array_index].vertex_3 =
                             column + (row + 1) * ((unsigned short)width_cells + 1);
-                        if ((column & 1) == (row & 1))
-                            facequads[face_array_index].texture_ref =
-                                g_texture_refs.Add(texture_a, 0, 0);
-                        else
-                            facequads[face_array_index].texture_ref =
-                                g_texture_refs.Add(texture_a, 0, 0);
+                        set_checker_texture(
+                            facequads[face_array_index], column, row, texture_a, texture_a);
                     } else {
                         facequads[face_array_index].header_word = 0;
                         facequads[face_array_index].vertex_0 = row * ((unsigned short)width_cells + 1) + column + 1;
@@ -211,12 +207,8 @@ void cRPath::initialize_loopout_path_template_pair(
                             column + (row + 1) * ((unsigned short)width_cells + 1);
                         facequads[face_array_index].vertex_3 =
                             (row + 1) * ((unsigned short)width_cells + 1) + column + 1;
-                        if ((column & 1) == (row & 1))
-                            facequads[face_array_index].texture_ref =
-                                g_texture_refs.Add(texture_b, 0, 0);
-                        else
-                            facequads[face_array_index].texture_ref =
-                                g_texture_refs.Add(texture_b, 0, 0);
+                        set_checker_texture(
+                            facequads[face_array_index], column, row, texture_b, texture_b);
                     }
                     if (face_index == 0) {
                         facequads[face_array_index].uv[0].u = u0;

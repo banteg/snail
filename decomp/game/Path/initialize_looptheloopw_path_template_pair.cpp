@@ -178,12 +178,8 @@ void cRPath::initialize_looptheloopw_path_template_pair(
                             (row + 1) * (width_cells + 1) + column + 1;
                         face.vertex_3 =
                             column + (row + 1) * (width_cells + 1);
-                        if (((column ^ row) & 1) == 0)
-                            face.texture_ref =
-                                g_texture_refs.Add(texture_a, 0, 0);
-                        else
-                            face.texture_ref =
-                                g_texture_refs.Add(texture_a, 0, 0);
+                        set_checker_texture(
+                            face, column, row, texture_a, texture_a);
                     } else {
                         cRFaceQuad& face = facequads[face_array_index];
                         face.header_word = 0;
@@ -193,12 +189,8 @@ void cRPath::initialize_looptheloopw_path_template_pair(
                             column + (row + 1) * (width_cells + 1);
                         face.vertex_3 =
                             (row + 1) * (width_cells + 1) + column + 1;
-                        if (((column ^ row) & 1) == 0)
-                            face.texture_ref =
-                                g_texture_refs.Add(texture_b, 0, 0);
-                        else
-                            face.texture_ref =
-                                g_texture_refs.Add(texture_b, 0, 0);
+                        set_checker_texture(
+                            face, column, row, texture_b, texture_b);
                     }
                     if (face_index == 0) {
                         facequads[face_array_index].uv[0].u = u0;

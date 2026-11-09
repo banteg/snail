@@ -1,3 +1,23 @@
+## 2026-11-10 checkerboard materials on both strip windings
+
+Dip's retail face loop tests the low bit of row XOR column. For the upper
+winding both branches read the same filename from `[esp+0x78]` at
+`0x41ec4d` and `0x41ec96`. The lower winding does the same with
+`[esp+0x7c]` at `0x41ed04` and `0x41ed8c`. All 57 such decisions
+identified in the 29 Windows path builders select a single texture per
+winding. Collapsing Dip's two tests to one lookup per winding removes 14
+instructions that are present in retail.
+
+Chromadrome 1 still uses both inputs to the same material selection. The
+builder at `0x425440`, called from `0x40c4a6` and `0x40c50d`, uses
+`Objects/World00/Slide.tga` on even cells and `Objects/World00/Track.tga`
+on odd cells in both windings. Its upper face also records a different
+color in each branch. In Snail Mail the recovered `set_checker_texture`
+operation receives the winding's filename for both inputs. Sharing it in
+Dip, the three loop builders and the Slalom mesh preserves the complete
+code and relocation fingerprints of all 43 Path functions and both
+linked release WebAssembly binaries.
+
 ## 2026-11-10 identical Windows strip vertices in three path builders
 
 The vertex loop is the same 311 bytes (92 instructions) in three places

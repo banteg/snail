@@ -110,6 +110,15 @@ static __forceinline void initialize_lead_pair(int index, int offset,
     ((AttachmentSample *)((char *)secondary + offset))->transform.position.z = z;
 }
 
+static __forceinline void set_checker_texture(
+    cRFaceQuad& face, int column, int row, char* even_texture, char* odd_texture)
+{
+    if ((column & 1) == (row & 1))
+        face.texture_ref = g_texture_refs.Add(even_texture, 0, 0);
+    else
+        face.texture_ref = g_texture_refs.Add(odd_texture, 0, 0);
+}
+
 static __forceinline void build_extrapolated_strip_mesh(
     Path *path, const int &width_cells, char *texture_a, char *texture_b)
 {
@@ -195,16 +204,8 @@ static __forceinline void build_extrapolated_strip_mesh(
                         1;
                     facequads[face_offset].vertex_3 =
                         column + (row + 1) * ((unsigned short)width_cells + 1);
-                    if (((column ^ row) & 1) == 0)
-                    {
-                        facequads[face_offset].texture_ref =
-                            g_texture_refs.Add(texture_a, 0, 0);
-                    }
-                    else
-                    {
-                        facequads[face_offset].texture_ref =
-                            g_texture_refs.Add(texture_a, 0, 0);
-                    }
+                    set_checker_texture(
+                        facequads[face_offset], column, row, texture_a, texture_a);
                 }
                 else
                 {
@@ -217,16 +218,8 @@ static __forceinline void build_extrapolated_strip_mesh(
                     facequads[face_offset].vertex_3 =
                         (row + 1) * ((unsigned short)width_cells + 1) + column +
                         1;
-                    if (((column ^ row) & 1) == 0)
-                    {
-                        facequads[face_offset].texture_ref =
-                            g_texture_refs.Add(texture_b, 0, 0);
-                    }
-                    else
-                    {
-                        facequads[face_offset].texture_ref =
-                            g_texture_refs.Add(texture_b, 0, 0);
-                    }
+                    set_checker_texture(
+                        facequads[face_offset], column, row, texture_b, texture_b);
                 }
                 float u0 = (float)column * 0.125f;
                 float u1 = (float)(column + 1) * 0.125f;

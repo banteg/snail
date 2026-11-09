@@ -50,7 +50,7 @@ void cRPath::initialize_looptheloop_path_template_pair(float curve_source,
         float center_x = (float)width_cells * 0.5f - 4.0f -
                          ((float)i * 0.14285715f) * loop_wiggle;
         initialize_straight_loop_sample(
-            primary_samples, secondary_samples, i, i, center_x);
+            primary_samples, secondary_bank, i, i, center_x);
     }
 
     int departure_index = curve_count + 7;
@@ -161,12 +161,8 @@ void cRPath::initialize_looptheloop_path_template_pair(float curve_source,
                         facequads[face_array_index].vertex_3 =
                             mesh_column +
                             (mesh_row + 1) * (width_cells + 1);
-                        if (((mesh_column ^ mesh_row) & 1) == 0)
-                            facequads[face_array_index].texture_ref =
-                                g_texture_refs.Add(texture_a, 0, 0);
-                        else
-                            facequads[face_array_index].texture_ref =
-                                g_texture_refs.Add(texture_a, 0, 0);
+                        set_checker_texture(
+                            facequads[face_array_index], mesh_column, mesh_row, texture_a, texture_a);
                     } else {
                         facequads[face_array_index].header_word = 0;
                         facequads[face_array_index].vertex_0 =
@@ -180,12 +176,8 @@ void cRPath::initialize_looptheloop_path_template_pair(float curve_source,
                         facequads[face_array_index].vertex_3 =
                             (mesh_row + 1) * (width_cells + 1) +
                             mesh_column + 1;
-                        if (((mesh_column ^ mesh_row) & 1) == 0)
-                            facequads[face_array_index].texture_ref =
-                                g_texture_refs.Add(texture_b, 0, 0);
-                        else
-                            facequads[face_array_index].texture_ref =
-                                g_texture_refs.Add(texture_b, 0, 0);
+                        set_checker_texture(
+                            facequads[face_array_index], mesh_column, mesh_row, texture_b, texture_b);
                     }
                     if (face_index == 0) {
                         facequads[face_array_index].uv[0].u = u0;
