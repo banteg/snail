@@ -3,6 +3,14 @@
 #include "smtracks.h"
 #include "tga_image_view.h"
 
+static inline unsigned char SampleTgaChannel(
+    const TgaImageView* image, int x, int y, int channel)
+{
+    int row = image->height - y - 1;
+    int offset = (row * image->width + x) * (image->bits_per_pixel >> 3);
+    return image->pixels[offset + channel];
+}
+
 void __cdecl ObjectProcLandScapeUpdate(
     Object* source,
     float base,
@@ -21,35 +29,21 @@ void __cdecl ObjectProcLandScapeUpdate(
     Vector3* sample = source->vertices;
 
     for (float row = 0.0f; row <= row_count_float; row += 1.0f) {
-        float column = 0.0f;
-        if (column <= sample_count_float) {
-            struct PixelCoordinates {
-                int x;
-                int y;
-            } coordinates;
-            coordinates.y = (int)(row * y_step);
-            do {
-                coordinates.x = (int)(column * x_step);
-                int row_base = (image->height - coordinates.y - 1) * image->width;
-                int pixel_index =
-                    (row_base + coordinates.x)
-                    * (image->bits_per_pixel >> 3);
-                unsigned char* pixel = image->pixels + pixel_index;
-                float value = (float)pixel[2];
-                float green = (float)pixel[1];
-                float blue = (float)pixel[0];
-                value += green;
-                value += blue;
-                value *= 0.00392156886f;
-                value *= 0.333333343f;
+        for (float column = 0.0f; column <= sample_count_float; column += 1.0f) {
+            int x = (int)(column * x_step);
+            int y = (int)(row * y_step);
+            float red = SampleTgaChannel(image, x, y, 2);
+            float green = SampleTgaChannel(image, x, y, 1);
+            float blue = SampleTgaChannel(image, x, y, 0);
+            float value = red + green + blue;
+            value *= (1.0f / 255.0f);
+            value *= (1.0f / 3.0f);
 
-                if (cubic)
-                    value = value * value * value;
+            if (cubic)
+                value = value * value * value;
 
-                ++sample;
-                sample[-1].y = value * scale + base;
-                column += 1.0f;
-            } while (column <= sample_count_float);
+            sample->y = value * scale + base;
+            ++sample;
         }
     }
 }

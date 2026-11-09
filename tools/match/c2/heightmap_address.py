@@ -12,8 +12,6 @@ sys.path.insert(0, str(MATCH_ROOT))
 from check_heightmap_coordinates_20260922 import replay
 from replay_four_builder_controls_20260912 import reconstruct
 
-from snail import match as m
-
 RECEIPT = MATCH_ROOT / "heightmap-address-20260922.json"
 FUNCTION = "sample_smtrack_heightmap"
 
@@ -137,8 +135,7 @@ def main():
     args = parser.parse_args()
     receipt = json.loads(RECEIPT.read_text())
     baseline = receipt["baselines"][FUNCTION]
-    source = m.scratch_source_path(MATCH_ROOT / "scratches" / FUNCTION).read_text()
-    assert source == baseline["source"]
+    source = baseline["source"]
     assert hashlib.sha256(source.encode()).hexdigest() == baseline["source_sha256"]
     assert len(receipt["controls"]) == 53
     for control in receipt["controls"]:

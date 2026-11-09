@@ -7,11 +7,25 @@ averages RGB, optionally cubes the value, and writes scaled vertex heights for
 `cRFace::AI`.
 
 - VC6 symbol: `?ObjectProcLandScapeUpdate@@YAXPAUcRObject@@MMPAUcRTexture@@_N@Z`
-- semantic-complete Windows result: 97.25%, 109 candidate / 109 target instructions
-- exact prefix: 67/109 instructions
+- Windows encoded match: 109/109 instructions, 364 compared bytes
 - masked operands: 13/13 audited
-- residual: pixel-pointer base encoding; no semantic gap known
 - live caller: `cRFace::AI`
+
+## 2026-11-09: coordinate-based channel reads match
+
+Each BGR channel read computes its byte index from the integer X/Y coordinates,
+the bottom-up TGA row, and the image's variable byte stride. Once those reads
+inline, VC6 shares their address calculation. It emits the native green load,
+unbiased pixel pointer and red/blue displacements, with the original x87 order.
+The source now uses two ordinary nested loops, two scalar coordinates, and a
+vertex store followed by a pointer increment. All twelve functions in the
+ObjectProc translation unit pass encoded proof.
+
+A control passing a precomputed linear pixel index to the accessor loses the
+match. The recovered distinction is where the pixel address is calculated.
+Separate channel helpers, one parameterized channel helper, and a pixel-returning
+helper called for each channel all match when passed X/Y. The committed
+parameterized helper is one readable spelling.
 
 ## 2026-11-09: selecting and retaining the unbiased pixel address
 
@@ -39,10 +53,10 @@ of single-definition ranges) and is gone at the following pass,
 `C2+0x2e2c2`. In the third control, the byte offset changes while the pixel
 pointer is live. The LEA survives that pass and reaches the emitted body.
 An exact source still needs to retain the pointer without introducing the
-offset increment or changing the stack writes. The payload-based source
-remains at 97.25%.
+offset increment or changing the stack writes. These controls used the
+97.25% payload-based source before the coordinate-based reads above.
 
-Recompile the three controls with
+At revision `0d5626ece`, recompile the three controls with
 `uv run snail match mutate sample_smtrack_heightmap --spec tools/match/scratches/sample_smtrack_heightmap/pixel-address-range-controls-20261109.json`.
 
 ## 2026-10-16: msvc6.3 whole-TU retest
