@@ -910,23 +910,21 @@ steering_stored:
                 cursor =
                     TIME_TRIAL_RECORD_AT(record_block)->replay_sample_count;
             int anchor = replay_start_cursor;
-            float ghost_z;
             if (!anchor
                 || (cursor =
                         TIME_TRIAL_RECORD_AT(record_block)->replay_start_cursor
                             - anchor + cursor)
-                    == 0)
-                ghost_z = MathType16to32(
-                    (unsigned short)TIME_TRIAL_RECORD_AT(record_block)
+                    == 0) {
+                GhostZ = MathType16to32(
+                    TIME_TRIAL_RECORD_AT(record_block)
                         ->run_records[0].delta_z,
                     32.0f);
-            else
-                ghost_z = MathType16to32(
-                              (unsigned short)TIME_TRIAL_RECORD_AT(record_block)
-                                  ->run_records[cursor].delta_z,
-                              32.0f)
-                        + GhostZ;
-            GhostZ = ghost_z;
+            } else {
+                GhostZ += MathType16to32(
+                    TIME_TRIAL_RECORD_AT(record_block)
+                        ->run_records[cursor].delta_z,
+                    32.0f);
+            }
             if (game->selected_level_record_active)
                 GhostZ = transform.position.z;
             float ghost_horizon = transform.position.z + 20.0f;

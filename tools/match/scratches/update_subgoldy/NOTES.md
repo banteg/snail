@@ -1,5 +1,58 @@
 # update_subgoldy @ 0x43b120
 
+## 2026-11-09: signed ghost samples and the replay cursor
+
+Both decoder arguments now use the signed `ReplayRunRecord::delta_z` directly.
+Its type is the `short` accepted by `MathType16to32`. The iPhone ARMv6 and
+Android ARMv5 builds both use a signed halfword load. The first sample sets
+the function-static `GhostZ` and each relative sample adds to it, as in both
+mobile bodies. In the Android soft-float build, the reset cases at
+`0x7451c` and `0x7453c` branch to the initial-sample decode at `0x750b0`.
+The relative path begins at `0x74540`, calls the decoder, adds through
+`__aeabi_fadd` and stores the accumulator. Windows places the store after
+the two arms join.
+
+The retained change compiles to the same 2,089 instructions and has all
+315 references clean at 99.28%. Comparing both whole SubGame COFFs found
+identical section bytes and relocation destinations. VC6 renumbered local
+`$L` labels, each in the same section and at the same offset in both objects.
+
+A structured source overlay also reproduced the native order of both decoder
+arms without a backward `goto`. First reset or advance the cursor, then use
+the corrected cursor for the initial or relative sample:
+
+```cpp
+if (!anchor)
+    cursor = 0;
+else
+    cursor += TIME_TRIAL_RECORD_AT(record_block)->replay_start_cursor - anchor;
+
+if (!cursor)
+    GhostZ = MathType16to32(
+        TIME_TRIAL_RECORD_AT(record_block)->run_records[cursor].delta_z, 32.0f);
+else
+    GhostZ += MathType16to32(
+        TIME_TRIAL_RECORD_AT(record_block)->run_records[cursor].delta_z, 32.0f);
+```
+
+VC6 folds the zero index into the initial load. The branch targets and
+instruction offsets from `+0x1c1e` through the store at `+0x1c62` now agree
+with Windows, but that load gets AX instead of CX. The whole-TU result was
+96.05% normalized and 99.55% structural, with 8/11 changed instructions.
+Using a reference directly to `sub_high_score.time_trial_route_records[route]`
+with the same control flow gives the native CX and AX in the two arms.
+It also materializes the address of the record early, replacing native's
+`[eax+0x9441c2]` with `[eax+0x72]`, and scores 96.82% normalized. Both
+overlays were rejected. Native uses the route-indexed base across all
+the ghost record's fields; the mobile builds index the activity check but
+keep the sample array at a fixed game-relative location.
+
+For the two completion speed clamps, a conventional three-argument clamp
+with by-value speed scored 91.30%, and passing speed by const reference gave
+94.02%. A lower-bound test followed by an inline by-value minimum reproduced
+the native instruction count, but emitted the opposite first comparison and
+spilled speed on the second. It scored 99.04%, below the retained 99.28%.
+
 ## 2026-10-19: completion clamp mechanism (spelling rejected) and C2 residual analysis
 
 Source unchanged at **99.28%** normalized and structural (14/16 changed). An experimental spelling of the completion clamps reached **99.52%** (**10/10** changed, **2,087/2,087** instructions, prefix 548, 315 clean references) in the whole SubGame unit under msvc6.3, but it was not adopted (below).
