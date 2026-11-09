@@ -59,7 +59,7 @@
 +                        dz = collision_delta.z;
 +                    }
                      probe = collision_delta;
-                     if (dz < 0.0f)
+                     if (probe.z < 0.0f)
                          dz = -dz;
 @@ -280,6 +304,8 @@
              return;

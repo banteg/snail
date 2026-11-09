@@ -31,8 +31,20 @@ for the magnitude test.
 Either sign-test change on its own restores the deflection Z product; using
 both follows the two mobile contact loops. The full Golb TU probe restores
 `fld [esp+0x10]; fmul [esp+0x1c]` without changing the deflection expression.
+The C2 trace of the compiled member's lines 222 and 224 now puts
+`deflect_speed` (slot `0x1ba`, cost `0x13740`) ahead of both X
+(`0x1af`, `0x135e0`) and Z (`0x1ad`, `0x135a0`).
 The full normalized diff now consists of native `cmp dword [esi+0x84], 1`
 versus candidate `mov eax, [esi+0x84]; dec eax` before the same branch.
+
+A direct `if (garbage->state == SUB_GARBAGE_STATE_ACTIVE)` yields
+694/694 instructions and 93.53%. The generated gate loads the state into
+EAX, puts 1 in EBX and compares EAX to EBX. This corrects the immediate
+comparison attributed to this form in the October 16 notes. Active-node
+iteration, a shared displacement vector as in `cRSubGoldy::Collision`,
+and a separate boolean for the broad-phase and radius tests all leave
+the state gate open. All eight other members of Golb.o retain their
+encoded-body matches.
 
 ## 2026-10-19: C2 mechanism corrections for the garbage gate and deflection Z product
 
