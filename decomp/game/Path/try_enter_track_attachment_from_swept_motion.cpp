@@ -13,22 +13,12 @@ void cRPath::try_enter_track_attachment_from_swept_motion(
     cRSubLoc* cell)
 {
     Vector3 local;
-    Vector3 probe;
-    Vector3 sample_origin;
-    Vector3 hit_origin;
-    Vector3 swept_position;
     Vector3 anchor = cell->position;
-    float v19 = anchor.x;
-    float v20 = anchor.y;
-    float v21 = anchor.z;
     int idx = segment_count - 1;
     for (; idx >= 0; --idx) {
         if (secondary_samples[idx].transform.basis_up.y > 0.0f) {
             AttachmentSample* sample = &secondary_samples[idx];
-            sample_origin = Vector3(
-                v19 + sample->transform.position.x,
-                v20 + sample->transform.position.y,
-                v21 + sample->transform.position.z);
+            Vector3 sample_origin = sample->transform.position + anchor;
             local = Vector3(px, py, pz) - sample_origin;
             local.Rotate(sample->inverse_matrix);
             if ((float)(width_cells / -2) - 0.3f < local.x
@@ -37,13 +27,10 @@ void cRPath::try_enter_track_attachment_from_swept_motion(
                 && local.z > 0.0f) {
                 if (local.z < secondary_samples[idx].delta_length) {
                     AttachmentSample* hit = &secondary_samples[idx];
-                    hit_origin = Vector3(
-                        v19 + hit->transform.position.x,
-                        v20 + hit->transform.position.y,
-                        v21 + hit->transform.position.z);
-                    swept_position =
+                    Vector3 hit_origin = hit->transform.position + anchor;
+                    Vector3 swept_position =
                         Vector3(px, py, pz) + Vector3(sweep_x, sweep_y, sweep_z);
-                    probe = swept_position - hit_origin;
+                    Vector3 probe = swept_position - hit_origin;
                     probe.Rotate(hit->inverse_matrix);
                     if (probe.y <= 0.001f)
                         goto seed;

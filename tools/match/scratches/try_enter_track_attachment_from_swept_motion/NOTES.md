@@ -1,5 +1,33 @@
 # Near match — 99.02% score, 204/204 instructions on standard flags
 
+## 2026-11-09: sample origins and whole-Path x87 trace
+
+Both reverse-scan probes now form their origin as a vector sum of the
+sample's transform position and the copied cell anchor. Wii Search uses this
+operand order for all three components at 0x8006f310, 0x8006f33c and
+0x8006f364. Wii SearchPos also adds the sample position to the anchor.
+Compiling the old and new Windows sources under the standard msvc6.3 Path
+unit produced identical code and relocation fingerprints for all 43 members.
+The search is still 99.02%, 204/204 instructions, prefix 109, 47 clean
+references. Only the X component's load/add operand order differs from native.
+
+A fresh preserving C2 trace of the two-vector-by-value prototype, in the full
+Path unit, measured the following operand slots at the swept addition:
+
+| lane | position | sweep | loaded first | native |
+| --- | ---: | ---: | --- | --- |
+| X | 0xb5 | 0x142 | sweep | sweep |
+| Y | 0x14f | 0x15a | sweep | position |
+| Z | 0x153 | 0x15c | sweep | position |
+
+The vector signature scored 98.04% with the direct vector operators, with
+both complete origin expressions fused, and with the accepted handoff
+inside the hit branch. Copying the first by-value argument into a named
+vector used in both probes reproduced the six-scalar result (99.02%,
+prefix 109). A snapshot used only for the first probe stayed at 98.04%.
+The caller and mobile symbols support vector arguments, but these results
+do not establish the extra local or an exact Windows source form.
+
 ## 2026-10-16: msvc6.3 whole-TU retest of the vector signature
 
 The lead was the authored `(tVector position, tVector sweep, cRSubLoc*)` signature,
