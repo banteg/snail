@@ -46,6 +46,18 @@ the load alone, and direct member access misses both. SP5 is independently
 represented in the older image's Rich header. These controls compare the two
 address encodings only.
 
+On November 10 the VC6 SP3 observer distinguished two 718-instruction source forms.
+Write E for the endpoint offset's sort key, B for the shared primary bank,
+and I for the current row offset. The two retail SIBs require E < B < I
+for strict ordering. The committed source yields E = `0x176c0`,
+B = `0x102a0`, I = `0x15c80` and differs at the load, `+0x2e9`.
+A full outward-arc helper receiving both bank slots and the departure
+byte offset yields E = `0x101e0`, B = `0x16740`, I = `0x12bc0`
+and differs at the store, `+0x302`. Both have 52 verified references.
+The second form establishes that E can fall below I while retaining
+every normalized instruction. Capturing the bank separately per iteration
+changes the endpoint from a local to a CSE temporary and loses that order.
+
 LoopOut now uses the same `compute_terminal_deltas(this)` helper as the
 neighboring builders. It computes the direction and length of each segment
 on both node banks and installs the last node's forward direction and unit
