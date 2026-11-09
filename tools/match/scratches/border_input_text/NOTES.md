@@ -1,5 +1,47 @@
 # cRBorder::InputText @ 0x4035b0
 
+## 2026-11-09: empty-submission policies across builds
+
+The iPad 1.0.6 executable (SHA-256
+`5960c4e4ea8a9636ae651da2e2b245c1afe100ecd957be83a87ace269536fcf4`)
+retains a third completion path. In `InputText` at `0x2e66c`, the code
+decrements the length, clears the active bit, then loads `text[0]` at
+`0x2e76e`. An empty string branches at `0x2e774` to ordinary editor
+postprocessing. Only a nonempty string sets the completion bit and calls
+layout and optional button teardown. Wii restores the saved name on its
+empty path. Both iPhone 1.9 slices publish completion unconditionally after
+clearing the active bit (ARMv6 `0x3938c..0x393b0`, ARMv7
+`0x39f8c..0x39fb0`).
+
+Two Windows games using the same editor distinguish an optional copy from the
+common completion operation. Chromadrome 1.00 tests the first character at
+`0x403af6`; on empty, it copies the saved name to the edit buffer at
+`0x403b10`. Both paths converge at `0x403b1e` to publish completion, call
+layout and tear down the button. Chromentum 1.10 copies only on the empty
+path (`0x403330..0x403343`), then converges at `0x403346`.
+
+The RealArcade Windows predecessor (SHA-256
+`4dbc39d84a00bc18dd0469cd82e29794e5e33d15c6d1b2e90fb27679faec6260`)
+also retains the first-character load at `0x403b91`. Its entire editor
+extent differs from the Reflexive target by two relocated operand bytes.
+The native execution comparison now includes the high-score callers' actual
+mode `0x10` and capacity 16. Across all 28 empty submissions in that mode,
+the target leaves the text empty, clears `ACTIVE`, sets `COMPLETE`, and
+calls layout, including 14 cases with a nonempty saved name at `+0x6cc`.
+All 43,776 editor fixtures match the reconstructed behavior
+across 117,346 callbacks.
+
+The iPad also has a cursor-removal helper at `0x2f4f0` that clears
+`ACTIVE`. An equivalent inline helper in the Windows whole-unit control
+gives 440/446 instructions and still omits the first-character load. A
+cursor-removal-only helper is neutral. Sharing the first-character read
+between submission and the ordinary numeric filter also fails to reproduce
+the native code. Specializing an optional saved-name operation with a null
+fallback removes both the copy and the load under VC6 SP3, leaving the
+canonical 443/446 instructions with the same flag stores. The platform
+evidence locates the read at the historical
+acceptance decision, but the Windows source form remains unresolved.
+
 ## 2026-11-09: numeric trim buffer and empty submission
 
 Numeric trim keeps a single pointer to the text buffer for its test, removal
