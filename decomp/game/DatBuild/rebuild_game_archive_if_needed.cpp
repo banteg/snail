@@ -1,4 +1,4 @@
-// rebuild_game_archive_if_needed @ 0x405370 (cdecl, C mode)
+// rebuild_game_archive_if_needed @ 0x405370 (cdecl)
 
 #include <stdlib.h>
 #include <string.h>
@@ -9,7 +9,7 @@
 
 typedef unsigned char u8;
 
-void __cdecl toggle_archive_high_bit_in_place(void* bytes, int byte_count);
+char* __cdecl toggle_archive_high_bit_in_place(char* data, int count);
 ArchiveEntryExtensionClass __cdecl classify_archive_entry_extension(u8* path, u8* stem_out);
 
 int __cdecl load_png_image(
@@ -54,7 +54,7 @@ void __cdecl rebuild_game_archive_if_needed(void)
     rebuilt_words = (int*)malloc(40000000);
     rebuilt = (char*)rebuilt_words;
     dam_words = (unsigned int*)load_file_bytes_allocating("SnailMail.dam", &dam_size);
-    toggle_archive_high_bit_in_place(dam_words, dam_size);
+    toggle_archive_high_bit_in_place((char*)dam_words, dam_size);
 
     source_index = (SerializedArchiveIndex*)dam_words;
     source_entries = source_index->entries;

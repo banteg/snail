@@ -183,3 +183,14 @@ entry count in `edi`, reloads the index through `esi` and zeroes through `edx`;
 the seed zeroes through `esi`. It is also one instruction short. The seed is
 still not adopted: it is shorter than native, and the canonical source keeps
 the native instruction count.
+
+## 2026-11-09: resolve the decoder call in DatBuild.o
+
+The recovered definition at `0x405350` takes a `char*` and returns the
+advanced `char*` in EAX. The caller ignores the return value. Its previous
+`void (void*, int)` declaration caused the C++ compiler to emit a relocation
+to a second overload with no definition. The caller now declares the
+callee's actual signature and passes the byte view of the archive. The
+DatBuild object's `REL32` relocation at caller offset `+0x60` resolves to
+its defined symbol `?toggle_archive_high_bit_in_place@@YAPADPADH@Z`.
+The whole-unit score is 66.38%, 232/232 instructions, 22 clean references.
