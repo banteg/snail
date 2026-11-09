@@ -50,24 +50,13 @@ void cRPath::initialize_looptheloopw_path_template_pair(
         secondary_bank[i].delta_length = 1.0f;
     }
 
-    for (i = 0; i < 7; ++i) {
-        int sample_index = curve_count + 7 + i;
-        reset_primary_sample(
-            primary_samples, sample_index * sizeof(AttachmentSample),
-            (1.0f - (float)i * 0.16666667f) * loop_wiggle
-                + (4.0f - (float)width_cells * 0.5f));
-        primary_bank[sample_index].transform.position.x =
-            primary_bank[sample_index].center_x;
-        primary_bank[sample_index].transform.position.y = 0.0f;
-        primary_bank[sample_index].transform.position.z = (float)(i + 7);
-        primary_bank[sample_index].delta_length = 1.0f;
-
-        secondary_bank[sample_index].transform.Identity();
-        secondary_bank[sample_index].transform.position.x =
-            primary_bank[sample_index].center_x;
-        secondary_bank[sample_index].transform.position.y = 0.49000001f;
-        secondary_bank[sample_index].transform.position.z = (float)(i + 7);
-        secondary_bank[sample_index].delta_length = 1.0f;
+    int departure_index = curve_count + 7;
+    for (i = 0; i < 7; ++i, ++departure_index) {
+        float center_x =
+            (1.0f - (float)i * 0.16666667f) * loop_wiggle +
+            (4.0f - (float)width_cells * 0.5f);
+        initialize_straight_loop_sample(
+            primary_samples, secondary_bank, departure_index, i + 7, center_x);
     }
 
     i = 0;
@@ -132,28 +121,7 @@ void cRPath::initialize_looptheloopw_path_template_pair(
         } while (i < curve_count);
     }
 
-    i = 0;
-    if (segment_count - 1 > 0) {
-        do {
-            primary_bank[i].delta_dir_to_next =
-                primary_bank[i + 1].transform.position -
-                primary_bank[i].transform.position;
-            primary_bank[i].delta_length =
-                primary_bank[i].delta_dir_to_next.Normalize();
-
-            secondary_bank[i].delta_dir_to_next =
-                secondary_bank[i + 1].transform.position -
-                secondary_bank[i].transform.position;
-            secondary_bank[i].delta_length =
-                secondary_bank[i].delta_dir_to_next.Normalize();
-            ++i;
-        } while (i < segment_count - 1);
-    }
-
-    primary_bank[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    primary_bank[segment_count - 1].delta_length = 1.0f;
-    secondary_bank[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    secondary_bank[segment_count - 1].delta_length = 1.0f;
+    compute_terminal_deltas(this);
 
     strip_mesh->RequestVertices((width_cells + 1) * (segment_count + 1));
     strip_mesh->RequestFaceQuads(2 * width_cells * segment_count);

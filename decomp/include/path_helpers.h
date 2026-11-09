@@ -37,6 +37,24 @@ static __forceinline void reset_primary_sample(AttachmentSample *&bank,
     ((AttachmentSample *)((char *)bank + sample_offset))[0].transform.Identity();
 }
 
+static __forceinline void initialize_straight_loop_sample(
+    AttachmentSample*& primary, AttachmentSample* const& secondary, int sample_index,
+    int z_index, float center_x)
+{
+    reset_primary_sample(
+        primary, sample_index * (int)sizeof(AttachmentSample), center_x);
+    primary[sample_index].transform.position.x = primary[sample_index].center_x;
+    primary[sample_index].transform.position.y = 0.0f;
+    primary[sample_index].transform.position.z = (float)z_index;
+    primary[sample_index].delta_length = 1.0f;
+
+    secondary[sample_index].transform.Identity();
+    secondary[sample_index].transform.position.x = primary[sample_index].center_x;
+    secondary[sample_index].transform.position.y = 0.49000001f;
+    secondary[sample_index].transform.position.z = (float)z_index;
+    secondary[sample_index].delta_length = 1.0f;
+}
+
 static __forceinline void compute_terminal_deltas(Path *path)
 {
     int i = 0;

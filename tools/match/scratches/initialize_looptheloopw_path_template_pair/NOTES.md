@@ -1,3 +1,17 @@
+## 2026-11-10 paired straight samples and terminal deltas
+
+Regular LoopTheLoop and LoopTheLoopW use the same straight-sample
+initializer. It initializes both transforms independently and copies the
+primary center X into each position. The physical sample index and the
+Z coordinate agree on approach and diverge on departure. Both functions
+carry a separate departure index. W also uses the same terminal-delta pass
+as regular LoopTheLoop and LoopOut.
+
+Comparing stock VC6 Path objects before and after the change preserved all
+43 member bodies and relocation targets. The optimized Wasm code sections
+for regular, W and LoopOut were byte-identical. Each builder retains its
+previous single-byte interpolation discrepancy.
+
 ## 2026-11-09 Wii curve and departure controls
 
 The Wii counterpart at `0x800581f0..0x80058f74` preserves a circle center

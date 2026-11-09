@@ -47,52 +47,19 @@ void cRPath::initialize_looptheloop_path_template_pair(float curve_source,
     has_entry_mesh_transition = 1;
 
     for (i = 0; i < 7; ++i) {
-        float z = (float)i;
-        float center_progress = z * 0.14285715f;
-        primary_samples[i].center_x =
-            (float)width_cells * 0.5f - 4.0f - center_progress * loop_wiggle;
-        primary_samples[i].rotation_scalar_98 = 0.0f;
-        primary_samples[i].rotation_scalar_94 = 0.0f;
-        primary_samples[i].special_scalar = 0.0f;
-        primary_samples[i].lateral_scale = 1.0f;
-        primary_samples[i].transform.Identity();
-        primary_samples[i].transform.position.x = primary_samples[i].center_x;
-        primary_samples[i].transform.position.y = 0.0f;
-        primary_samples[i].transform.position.z = z;
-        primary_samples[i].delta_length = 1.0f;
-
-        secondary_samples[i].transform.Identity();
-        secondary_samples[i].transform.position.x = primary_samples[i].center_x;
-        secondary_samples[i].transform.position.y = 0.49000001f;
-        secondary_samples[i].transform.position.z = z;
-        secondary_samples[i].delta_length = 1.0f;
+        float center_x = (float)width_cells * 0.5f - 4.0f -
+                         ((float)i * 0.14285715f) * loop_wiggle;
+        initialize_straight_loop_sample(
+            primary_samples, secondary_samples, i, i, center_x);
     }
 
-    int tail_sample_index = curve_count + 7;
-    for (i = 0; i < 7;) {
-        primary_samples[tail_sample_index].center_x =
+    int departure_index = curve_count + 7;
+    for (i = 0; i < 7; ++i, ++departure_index) {
+        float center_x =
             (1.0f - (float)i * 0.16666667f) * loop_wiggle +
             (4.0f - (float)width_cells * 0.5f);
-        primary_samples[tail_sample_index].rotation_scalar_98 = 0.0f;
-        primary_samples[tail_sample_index].rotation_scalar_94 = 0.0f;
-        primary_samples[tail_sample_index].special_scalar = 0.0f;
-        primary_samples[tail_sample_index].lateral_scale = 1.0f;
-        primary_samples[tail_sample_index].transform.Identity();
-        primary_samples[tail_sample_index].transform.position.x =
-            primary_samples[tail_sample_index].center_x;
-        primary_samples[tail_sample_index].transform.position.y = 0.0f;
-        float z = (float)(i + 7);
-        primary_samples[tail_sample_index].transform.position.z = z;
-        primary_samples[tail_sample_index].delta_length = 1.0f;
-
-        secondary_samples[tail_sample_index].transform.Identity();
-        secondary_samples[tail_sample_index].transform.position.x =
-            primary_samples[tail_sample_index].center_x;
-        secondary_samples[tail_sample_index].transform.position.y = 0.49000001f;
-        secondary_samples[tail_sample_index].transform.position.z = z;
-        ++i;
-        secondary_samples[tail_sample_index].delta_length = 1.0f;
-        ++tail_sample_index;
+        initialize_straight_loop_sample(
+            primary_samples, secondary_bank, departure_index, i + 7, center_x);
     }
 
     i = 0;
