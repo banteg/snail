@@ -1,5 +1,24 @@
 # update_subgoldy @ 0x43b120
 
+## Ghost playback cursor and the Windows predecessor
+
+The player now corrects the replay cursor before indexing the ghost sample.
+A zero anchor selects sample zero. Otherwise the player adds the difference
+between the saved and live start cursors to the capped playhead. A nonzero
+index contributes a delta to `GhostZ`, while sample zero sets it. The Wii
+body below uses this corrected index in both decoder arms.
+
+Chromadrome 1 has the same six-byte records and scale-32 decoder. At
+`0x43899f` the reset path reads sample zero, while `0x4389b7` reads the
+relative sample. Both paths write the same accumulator. Its late playback
+check overrides the accumulator with the player's Z coordinate. Snail Mail
+retains that check after the decoder calls and also guards the block on
+entry. Chromadrome 2 retains the two decoder calls with eight-byte records.
+
+The source change preserves the complete Windows player body and relocation
+destinations. The Windows ghost branch order and register assignments
+remain open.
+
 ## Completion speed bounds in the Windows games
 
 Both automatic speed limits now use a conditional three-argument clamp. At

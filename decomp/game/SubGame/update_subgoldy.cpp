@@ -885,17 +885,19 @@ steering_stored:
                 cursor =
                     TIME_TRIAL_RECORD_AT(record_block)->replay_sample_count;
             int anchor = replay_start_cursor;
-            if (!anchor
-                || (cursor =
-                        TIME_TRIAL_RECORD_AT(record_block)->replay_start_cursor
-                            - anchor + cursor)
-                    == 0) {
-                GhostZ = MathType16to32(
+            if (!anchor)
+                cursor = 0;
+            else
+                cursor = TIME_TRIAL_RECORD_AT(record_block)->replay_start_cursor
+                    - anchor + cursor;
+
+            if (cursor) {
+                GhostZ += MathType16to32(
                     TIME_TRIAL_RECORD_AT(record_block)
-                        ->run_records[0].delta_z,
+                        ->run_records[cursor].delta_z,
                     32.0f);
             } else {
-                GhostZ += MathType16to32(
+                GhostZ = MathType16to32(
                     TIME_TRIAL_RECORD_AT(record_block)
                         ->run_records[cursor].delta_z,
                     32.0f);
