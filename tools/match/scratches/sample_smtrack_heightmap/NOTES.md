@@ -13,6 +13,38 @@ averages RGB, optionally cubes the value, and writes scaled vertex heights for
 - residual: pixel-pointer base encoding; no semantic gap known
 - live caller: `cRFace::AI`
 
+## 2026-11-09: selecting and retaining the unbiased pixel address
+
+The [Shockwave build](../../../../docs/original/shockwave-web-demo.md) has the
+same 109-instruction body at `0x4153f0`. The thirteen data and call references
+move. The pixel-address sequence is identical, including the green load with
+displacement 19, the unbiased `lea eax,[ecx+esi]`, and the red and blue loads
+through EAX with displacements 20 and 18.
+
+The [three source controls](pixel-address-range-controls-20261109.json)
+separate two decisions made by the SP3 backend in the complete ObjectProc unit.
+Each preserving trace reproduced its ordinary whole object modulo the COFF
+timestamp. All three controls retain thirteen audited references.
+
+| Source control | Address selection | Final output | Instructions | Match |
+| --- | --- | --- | ---: | ---: |
+| Header pointer plus scalar byte offset | ADD | Destructive `add ecx,esi` | 109 | 88.99% |
+| Store the byte offset in the X/Y coordinate record | Unbiased LEA | The allocator substitutes the address into all three channel loads | 108 | 89.40% |
+| Advance that offset to read green, keeping the original pointer for red and blue | Unbiased LEA | Native green load and literal `8d 04 31` LEA, then an extra `inc ecx` and a different channel spill order | 110 | 93.15% |
+
+In the second control, the byte-offset assignment survives propagation. At
+entry to `C2+0x27dfb`, the backend has selected a zero-displacement LEA with
+two register candidates. It survives up to `C2+0x2df43` (forward substitution
+of single-definition ranges) and is gone at the following pass,
+`C2+0x2e2c2`. In the third control, the byte offset changes while the pixel
+pointer is live. The LEA survives that pass and reaches the emitted body.
+An exact source still needs to retain the pointer without introducing the
+offset increment or changing the stack writes. The payload-based source
+remains at 97.25%.
+
+Recompile the three controls with
+`uv run snail match mutate sample_smtrack_heightmap --spec tools/match/scratches/sample_smtrack_heightmap/pixel-address-range-controls-20261109.json`.
+
 ## 2026-10-16: msvc6.3 whole-TU retest
 
 Unchanged at **97.25%**, prefix 67, 13 clean references (ObjectProc TU). The
