@@ -1,5 +1,44 @@
 # update_subgoldy @ 0x43b120
 
+## 2026-11-09: Wii cross-check of the replay cursor and completion clamps
+
+The Wii `cRSubGoldy` RTTI record at `0x808f3830` identifies the vtable at
+`0x80167518`. Its entry at `+8` points to `0x8004cea8..0x8004fdb0`.
+The pause gate, two speed clamps, ghost decode, and final compare against
+21,000 ticks independently identify `AI`. Addresses below refer to
+the [pinned US DOL](../../../../analysis/wii/tool-comparison-20260910/README.md).
+
+- At `0x8004f5d4..0x8004f5e4`, r4 takes the smaller of the live cursor and
+  sample count. At `0x8004f5e8..0x8004f60c`, r0 takes zero for a zero
+  anchor or `cursor + (record_start - anchor)` otherwise. Both decoder
+  paths **index with r0**, including the path where r0 is known zero
+  (`slwi` at `0x8004f618` and `0x8004f644`). The former sets the static at
+  `0x808f3ed4`; the latter adds the decoded sample to it. Wii therefore
+  independently corroborates the ordinary reset/advance source overlay
+  below. Its four-byte packed records and fixed sample bank differ from the
+  six-byte route-indexed Windows records, so the layout does not carry over.
+  Replaying the in-place correction under VC6 gives 96.05% with 8/11
+  structural differences. Separating clamped and adjusted indices into two
+  C++ locals gives 93.66% and 54/57.
+- At `0x8004ec84..0x8004ecc0` and `0x8004f280..0x8004f2b8`, f2 holds
+  the single read of velocity.z and f1 holds the single read of rate.
+  f0 holds rate times 0.17, then rate times 0.5 on the upper-bound path.
+  The middle case moves f2 to f0 before the common store. This supports
+  one scalar speed sample. It gives no evidence for a per-comparison speed
+  accessor. A rate snapshot shared by both bounds in each Windows clamp
+  regressed to 90.41%.
+- Wii adds position X to velocity X in both movement arms
+  (`0x8004d968` and `0x8004da60`). It saves all three position lanes,
+  applies the follow output, and restores only X
+  (`0x8004f2bc..0x8004f2f4`, `0x8004f4a0..0x8004f4a4`).
+  Expressing the sums in that operand order gives the same Windows score.
+  Computing the camera position as a sum with the completed offset, using
+  the Wii order of stores, scores 93.46%. Windows performs its camera
+  destination copy before the offset additions.
+
+All results used the registered SubGame unit, msvc6.3, and all 315 reference
+checks. The retained source scores 99.28% and remains partial.
+
 ## 2026-11-09: signed ghost samples and the replay cursor
 
 Both decoder arguments now use the signed `ReplayRunRecord::delta_z` directly.
