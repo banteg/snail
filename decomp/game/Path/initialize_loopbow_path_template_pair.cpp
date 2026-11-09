@@ -96,11 +96,10 @@ void cRPath::initialize_loopbow_path_template_pair(
         ++sample_index;
     } while (i < 7);
 
+    Vector3 circle_center(0.0f, curve_scale, 7.0f);
     i = 0;
     if (curve_segment_count > 0) {
         float secondary_radius = curve_scale - 0.49000001f;
-        Vector3 primary_right(1.0f, 0.0f, 0.0f);
-        Vector3 secondary_right(1.0f, 0.0f, 0.0f);
 
         do {
             float fi = (float)i;
@@ -128,37 +127,37 @@ void cRPath::initialize_loopbow_path_template_pair(
             primary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             primary_samples[sample_index].transform.position.z =
-                Sin(angle) * curve_scale + 7.0f;
+                Sin(angle) * curve_scale + circle_center.z;
             primary_samples[sample_index].transform.position.y =
-                curve_scale - Cos(angle) * curve_scale;
+                circle_center.y - Cos(angle) * curve_scale;
 
             secondary_samples[sample_index].transform.Identity();
             secondary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             secondary_samples[sample_index].transform.position.z =
-                Sin(angle) * secondary_radius + 7.0f;
+                Sin(angle) * secondary_radius + circle_center.z;
             secondary_samples[sample_index].transform.position.y =
-                curve_scale - Cos(angle) * secondary_radius;
+                circle_center.y - Cos(angle) * secondary_radius;
 
-            primary_samples[sample_index].transform.basis_right = primary_right;
+            primary_samples[sample_index].transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
             primary_samples[sample_index].transform.basis_up.x = 0.0f;
             primary_samples[sample_index].transform.basis_up.y =
-                curve_scale
+                circle_center.y
                 - primary_samples[sample_index].transform.position.y;
             primary_samples[sample_index].transform.basis_up.z =
-                7.0f - primary_samples[sample_index].transform.position.z;
+                circle_center.z - primary_samples[sample_index].transform.position.z;
             primary_samples[sample_index].transform.basis_up.Normalize();
             primary_samples[sample_index].transform.basis_forward.Cross(
                 primary_samples[sample_index].transform.basis_right,
                 primary_samples[sample_index].transform.basis_up);
 
-            secondary_samples[sample_index].transform.basis_right = secondary_right;
+            secondary_samples[sample_index].transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
             secondary_samples[sample_index].transform.basis_up.x = 0.0f;
             secondary_samples[sample_index].transform.basis_up.y =
-                curve_scale
+                circle_center.y
                 - secondary_samples[sample_index].transform.position.y;
             secondary_samples[sample_index].transform.basis_up.z =
-                7.0f - secondary_samples[sample_index].transform.position.z;
+                circle_center.z - secondary_samples[sample_index].transform.position.z;
             secondary_samples[sample_index].transform.basis_up.Normalize();
             secondary_samples[sample_index].transform.basis_forward.Cross(
                 secondary_samples[sample_index].transform.basis_right,
@@ -171,13 +170,13 @@ void cRPath::initialize_loopbow_path_template_pair(
                 Sin(half_angle) * half_sine * 0.52359879f);
 
             float primary_z_pivot = primary_samples[sample_index].transform.position.z;
-            primary_z_pivot -= 7.0f;
+            primary_z_pivot -= circle_center.z;
             primary_samples[sample_index].transform.position.z = primary_z_pivot;
-            secondary_samples[sample_index].transform.position.z -= 7.0f;
+            secondary_samples[sample_index].transform.position.z -= circle_center.z;
             primary_samples[sample_index].transform.Multiply(rotation);
             secondary_samples[sample_index].transform.Multiply(rotation);
-            primary_samples[sample_index].transform.position.z += 7.0f;
-            secondary_samples[sample_index].transform.position.z += 7.0f;
+            primary_samples[sample_index].transform.position.z += circle_center.z;
+            secondary_samples[sample_index].transform.position.z += circle_center.z;
 
             secondary_samples[sample_index].transform =
                 primary_samples[sample_index].transform;

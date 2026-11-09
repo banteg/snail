@@ -1,5 +1,34 @@
 # Reconstruction notes
 
+## 2026-11-09 Wii circle center and curve cursor
+
+Wii USA `0x8006e044..0x8006eeec` has LoopBow's distinctive rotation
+sequence. It rotates a temporary matrix about Y and multiplies both sample
+transforms by it before copying the primary transform and applying the
+secondary normal offset. All 938 instruction words in the split listing were
+checked against the [pinned Wii image](../../wii-path-face-recovery-20260910.md).
+
+At `0x8006e478..0x8006e4bc` Wii converts the seven lead samples to a float
+and stores a vector containing zero, the quantized radius, and that lead
+length at stack offsets `0xa4..0xac`. The circle positions and bank normals
+use its Y and Z components. The same Z component translates both positions
+before and after the multiplies (`0x8006e760..0x8006e7c4`). Wii also builds
+the unit right vectors at the two basis assignments. The C++ now uses this
+circle center and constructs the right vectors at their assignments.
+
+Compiling the before and after sources in the complete MSVC 6.3 Path unit
+gave identical code and relocation fingerprints for all 43 members. LoopBow
+still matches 796/796 normalized instructions and 63/63 positional references.
+Its store at `+0x327` differs at byte `+0x329` (native `03`, candidate `18`).
+
+A separate overlay advances an integer byte cursor by `sizeof(AttachmentSample)`
+through the curve, as in Turnover. Windows then still emits the candidate
+store byte. It also exchanges EAX and ECX in the hoisted endpoint calculation
+and schedules the cursor initialization just before the spill to
+`[esp+0x34]`. Native initializes the cursor immediately after that spill.
+Using a byte cursor only for the seven departure samples preserves the single
+original difference.
+
 ## 2026-10-16 whole-TU recheck: not closable with honest source
 
 The last byte is still `+0x327`. Bank temp `0x5fd` (`0x17f40`) sorts ahead
