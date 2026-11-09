@@ -1,3 +1,52 @@
+## 2026-11-09 Windows family comparison of the endpoint load
+
+The older Chromadrome 1.00 builder at `0x41c4c0` uses **0x5c-byte** nodes.
+Its `GetNodes` at `0x41bbb0` allocates the tile and ball banks separately.
+The departure loop saves `(curve_count + 10) * 0x5c` at `0x41c5ec..0x41c604`
+and advances a second offset through four nodes. In the curve, one load from
+`this+0x54` supplies the primary bank. At `0x41c741`, `fld [eax+ebx+0x50]`
+reads the departure center with the bank as the SIB base. At `0x41c751`,
+`fstp [edi+eax+0x50]` writes the current center with the induction offset as
+the SIB base. The follow routine at `0x420480` independently interpolates
+this scalar, the angle at +0x54 (wrapping at ±π), and the scale at +0x58.
+The executable SHA-256 is
+`a5dc64622ac6e7dd7a563ee7850a645881a29ec88c43d2cb18110c283fdd9a74`.
+
+Chromadrome 2's `0x463060` builder repeats the same operand roles with
+**0xa8-byte** nodes and +0x90 centers. Its bank load at `0x463312` supplies
+the endpoint read `[eax+ebx+0x90]` at `0x463325` and current-node write
+`[edi+eax+0x90]` at `0x46333e`. Its RWG SHA-256 is
+`5b70c011bf5ce31014f4594eda9b29d3a359d1733eb13b489ec5d792231547e5`.
+The register holding the endpoint differs from Snail Mail's ECX. The bank
+and induction roles agree across all three Windows builds.
+
+A control using Chromadrome 1.00's node layout and its inward circle normal
+reproduces the retail tradeoff under VC6 SP3 and SP5. A pointer-value bank
+matches the older store alone, an explicit borrow of the bank field matches
+the load alone, and direct member access misses both. SP5 is independently
+represented in the older image's Rich header. These controls compare the two
+address encodings only.
+
+LoopOut now uses the same `compute_terminal_deltas(this)` helper as the
+neighboring builders. It computes the direction and length of each segment
+on both node banks and installs the last node's forward direction and unit
+length. The 43-member VC6 Path object retained every member's bytes and
+relocations, including their symbol names. The optimized wasm32-wasi port
+object before and after this change was byte-identical (3,540 bytes).
+
+The whole Snail Mail Path unit was also compiled with the recovered
+`reset_primary_sample` in the departure loop and `compute_terminal_deltas`
+after the curve. With a pointer-value bank, that pair of helpers preserves
+every candidate instruction and still differs in the endpoint SIB byte.
+Combining the shared delta helper, direct departure indexing, typed winding
+faces and a borrowed curve bank instead leaves the store SIB byte. In that
+case the preserving C2 trace puts the bank at temporary `0x5dc`
+(key `0x17700`) and the induction at `0x98b` (key `0x162c0`): the bank
+still sorts first at the store. Recovering the primary bank and the scalar
+center in the earlier games provides no independent evidence for traversing
+the node array from a pointer to the first node's float field. The canonical
+typed-index build remains partial.
+
 ## 2026-11-09 departure offset and center interpolation
 
 The Wii build corroborates a single primary bank for the interpolation. In

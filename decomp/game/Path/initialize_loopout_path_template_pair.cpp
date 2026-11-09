@@ -1,11 +1,6 @@
 // initialize_loopout_path_template_pair @ 0x41c5f0 (thiscall, ret 0x18)
 
-#include "attachment_sample.h"
-#include "rmath_random.h"
-#include "track_attachment_types.h"
-#include "object_render_types.h"
-#include "sprite.h"
-#include "transform_matrix.h"
+#include "path_helpers.h"
 
 typedef AttachmentSample PathAttachmentSample;
 
@@ -143,25 +138,7 @@ void cRPath::initialize_loopout_path_template_pair(
         } while (i < curve_count);
     }
 
-    for (i = 0; i < segment_count - 1; ++i)
-    {
-        primary_samples[i].delta_dir_to_next =
-            primary_samples[i + 1].transform.position -
-            primary_samples[i].transform.position;
-        primary_samples[i].delta_length =
-            primary_samples[i].delta_dir_to_next.Normalize();
-
-        secondary_samples[i].delta_dir_to_next =
-            secondary_samples[i + 1].transform.position -
-            secondary_samples[i].transform.position;
-        secondary_samples[i].delta_length =
-            secondary_samples[i].delta_dir_to_next.Normalize();
-    }
-
-    primary_samples[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    primary_samples[segment_count - 1].delta_length = 1.0f;
-    secondary_samples[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    secondary_samples[segment_count - 1].delta_length = 1.0f;
+    compute_terminal_deltas(this);
 
     strip_mesh->RequestVertices((width_cells + 1) * (segment_count + 1));
     strip_mesh->RequestFaceQuads(2 * width_cells * segment_count);
