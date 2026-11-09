@@ -1,20 +1,13 @@
 // initialize_dip_path_template_pair @ 0x41e440 (thiscall, ret 0x18)
 
-#include "attachment_sample.h"
-#include "rmath_random.h"
-#include "track_attachment_types.h"
-#include "object_render_types.h"
-#include "sprite.h"
-#include "transform_matrix.h"
+#include "path_helpers.h"
 
 typedef AttachmentSample PathAttachmentSample;
 
-static __forceinline void initialize_primary_curve(
+static __forceinline void position_primary_dip_sample(
     PathAttachmentSample *const &bank, int offset, int index,
     float angle, float radius, float &z)
 {
-    ((PathAttachmentSample *)((char *)bank + offset))
-        ->transform.Identity();
     ((PathAttachmentSample *)((char *)bank + offset))[0].transform.position.x =
         ((PathAttachmentSample *)((char *)bank + offset))[0].center_x;
     ((PathAttachmentSample *)((char *)bank + offset))[0].transform.position.y =
@@ -62,18 +55,7 @@ void cRPath::initialize_dip_path_template_pair(
 
     int endpoint_index = endpoint;
     endpoint *= (int)sizeof(PathAttachmentSample);
-    ((PathAttachmentSample *)((char *)primary_samples + endpoint))
-        ->center_x = 0.0f;
-    ((PathAttachmentSample *)((char *)primary_samples + endpoint))
-        ->rotation_scalar_98 = 0.0f;
-    ((PathAttachmentSample *)((char *)primary_samples + endpoint))
-        ->rotation_scalar_94 = 0.0f;
-    ((PathAttachmentSample *)((char *)primary_samples + endpoint))
-        ->special_scalar = 0.0f;
-    ((PathAttachmentSample *)((char *)primary_samples + endpoint))
-        ->lateral_scale = 1.0f;
-    ((PathAttachmentSample *)((char *)primary_samples + endpoint))
-        ->transform.Identity();
+    reset_primary_sample(primary_samples, endpoint, 0.0f);
     ((PathAttachmentSample *)((char *)primary_samples + endpoint))
         ->transform.position.x =
         ((PathAttachmentSample *)((char *)primary_samples + endpoint))
@@ -102,19 +84,10 @@ void cRPath::initialize_dip_path_template_pair(
         int sample_offset = (int)sizeof(PathAttachmentSample);
         do
         {
-            ((PathAttachmentSample *)((char *)primary_bank + sample_offset))
-                ->center_x = 0.0f;
-            ((PathAttachmentSample *)((char *)primary_bank + sample_offset))
-                ->rotation_scalar_98 = 0.0f;
-            ((PathAttachmentSample *)((char *)primary_bank + sample_offset))
-                ->rotation_scalar_94 = 0.0f;
-            ((PathAttachmentSample *)((char *)primary_bank + sample_offset))
-                ->special_scalar = 0.0f;
-            ((PathAttachmentSample *)((char *)primary_bank + sample_offset))
-                ->lateral_scale = 1.0f;
             float angle = (float)curve_phase_index * 6.2831855f / curve_count_f;
+            reset_primary_sample(primary_samples, sample_offset, 0.0f);
             float z;
-            initialize_primary_curve(primary_bank, sample_offset, i + 1,
+            position_primary_dip_sample(primary_bank, sample_offset, i + 1,
                                      angle, curve_source, z);
             ++i;
             ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))

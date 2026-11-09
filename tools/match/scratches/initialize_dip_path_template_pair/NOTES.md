@@ -30,6 +30,24 @@ references. Guarding the offset initializer restores branch order but changes
 allocation. Reusing the endpoint index, endpoint offset or following delta
 offset as the cursor leaves the same reordered pair on the unguarded form.
 
+## 2026-11-09: common primary-sample initialization
+
+The endpoint and interior samples use the same five field initializers and
+matrix Identity call as the Slalom family. Dip now uses their existing
+`reset_primary_sample` helper for both sites. The curve helper then only
+sets the sample position. Whole-Path compilation preserves the body bytes
+and relocation fingerprints of all 43 functions, including Dip's one
+remaining byte at +0x183.
+
+Two other Windows executables independently identify the stored value as
+the loop index. In Chromadrome 1.00 BuildDip, 0x41e136 clears EBP,
+0x41e143 writes it to the conversion home, 0x41e158 guards the loop, and
+0x41e15e sets the cursor to the 0x5c-byte sample stride. Chromadrome 2
+BuildDip uses the same order at 0x4678ab, 0x4678b8, 0x4678cd and
+0x4678d3 with Snail's 0xa8-byte stride. Both store EBP at the loop latch
+and use EBX for constant zero. Snail uses EBX for the index and EBP for
+constant zero.
+
 ## 2026-11-09: Dip radius scale
 
 Both the Android and iOS `BuildDip` bodies calculate the radius from the
