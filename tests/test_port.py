@@ -4,6 +4,7 @@ import json
 import re
 import shutil
 import subprocess
+import sys
 
 import pytest
 
@@ -117,6 +118,22 @@ def test_render_keeps_the_zero_tail_in_the_initialized_section():
     tail = lines.index("g_tail:")
     assert lines[tail - 2 : tail] == ["\t.skip\t8", "\t.weak\tg_tail"]
     assert lines[-1] == "\t.skip\t240"
+
+
+@pytest.mark.skipif(shutil.which("c++filt") is None, reason="needs a C++ demangler")
+def test_demangle_large_symbol_list():
+    # A full batch exceeds both stdin and stdout pipe capacity on macOS.
+    # Bound the subprocess so a pipe deadlock fails the test.
+    subprocess.run(
+        [
+            sys.executable, "-c",
+            "from snail.port_link import demangle\n"
+            "names = ['_Z3fooi', '_Z3bari'] * 8192\n"
+            "assert demangle(names) == ['foo(int)', 'bar(int)'] * 8192\n",
+        ],
+        check=True,
+        timeout=30,
+    )
 
 
 def test_forwarder_rules():

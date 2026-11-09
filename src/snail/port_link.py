@@ -25,6 +25,7 @@ port's link-progress measure.
 import json
 import re
 import subprocess
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -52,8 +53,18 @@ class Reference:
 
 
 def demangle(names: list[str]) -> list[str]:
-    completed = subprocess.run(["c++filt"], input="\n".join(names), capture_output=True, text=True, check=True)
-    return completed.stdout.split("\n")[: len(names)]
+    if not names:
+        return []
+    # c++filt streams its results. On macOS a full output pipe can block it
+    # while Python is still writing the next input batch into a full pipe.
+    with tempfile.TemporaryFile(mode="w+", encoding="utf-8") as symbols:
+        symbols.writelines(name + "\n" for name in names)
+        symbols.seek(0)
+        completed = subprocess.run(["c++filt"], stdin=symbols, capture_output=True, text=True, check=True)
+    demangled = completed.stdout.splitlines()
+    if len(demangled) != len(names):
+        raise ValueError(f"c++filt returned {len(demangled)} lines for {len(names)} symbols")
+    return demangled
 
 
 def object_symbols(root: Path, sources: list[str]):
