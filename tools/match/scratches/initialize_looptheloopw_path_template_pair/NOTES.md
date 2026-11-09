@@ -461,3 +461,44 @@ byte (`[edi+eax+0x90]` vs `[eax+edi+0x90]`) remaining.
 `0:680..732` (moving `0x55a` across the `0x800` wrap to `0x802..0x836`, i.e. `-10` / `+22` 32-id
 chunks), while `0:736..832` flip five delta-loop SIB bytes (`+0x5b8..+0x60a`) and single-slot shifts
 `122:1..40` leave `+0x359` swapped or regress at `>= 17`.
+
+## 2026-11-09: endpoint and output ownership in the curve loop
+
+Wii retains the operand order of the center interpolation. It reads the
+first center at `0x800586e8`, the last at `0x800586ec` and computes
+`first + ordinal * (last - first) / count` at `0x80058704..0x80058724`.
+Android and iOS use the same expression. Switching both commutative
+operations to this spelling produces the identical Windows function.
+
+Two MSVC 6.3 whole-Path controls separate the operand-order problem from
+the endpoint register allocation:
+
+- Reading both endpoints through a named `const AttachmentSample*` and
+  writing through the original bank reference emits the target's
+  `fstp [edi+eax+0x90]`. It hoists `21 * count` and uses
+  `fld [eax+edx*8-0x18]` for the endpoint. The original instead hoists
+  `168 * count` in EBX. The resulting function reaches 94.89%.
+- Borrowing the two pointer owners by reference preserves the full stride
+  and `fld [eax+ebx-0x18]`, but C2 enters local register allocation with
+  separate reads of the bank. Its rotating allocator assigns ECX to the
+  second read. Later value forwarding changes that load into
+  `mov ecx,eax`; the output becomes `fstp [edi+ecx+0x90]`. This reaches
+  86.33%. Introducing a separate float result or an inline interpolation
+  helper leaves the copy in place.
+
+Neither control fixes the coupled addressing constraints. The retained
+source names the face selected for each winding and expresses the roll
+amplitude as π/8, as in the Wii product. All 43 Path code and relocation
+fingerprints are unchanged, including this builder. The one unequal
+encoded byte remains `+0x35b`.
+
+A diagnostic run isolated the last dependency of the two-owner control.
+The ordinary source and this control have identical rotating-register
+decisions through selection 34, the EAX load for the half-angle argument
+to Sin. The control has one extra decision, selection 35 (IL line 81,
+temporary 2172 in this build). Starting that decision at EAX in a
+compiler intervention makes the forwarded copy disappear, restores the
+following rotation, and reproduces all 745 instructions, 55 references
+and body bytes. The unmodified compiler still selects ECX for this source.
+Only unmodified builds count. Staging the sine arguments or binding the
+departure sample's center by reference did not remove the extra decision.

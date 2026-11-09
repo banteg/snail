@@ -85,7 +85,7 @@ void cRPath::initialize_looptheloopw_path_template_pair(
             int sample_index = i + 7;
             sample_f = (float)i;
             float angle = sample_f * 6.2831855f / curve_count_f;
-            float roll = Sin(angle * 0.5f) * Sin(angle * 8.0f) * 0.39269909f;
+            float roll = Sin(angle * 0.5f) * Sin(angle * 8.0f) * (3.1415927f / 8.0f);
             interpolate_path_center(primary_samples, sample_index,
                 loop_segment_count, sample_f, curve_count_f);
             primary_bank[sample_index].center_x +=
@@ -210,32 +210,34 @@ void cRPath::initialize_looptheloopw_path_template_pair(
                         face_index
                         + 2 * (row * width_cells + column);
                     if (face_index == 0) {
-                        facequads[face_array_index].header_word = 0;
-                        facequads[face_array_index].vertex_0 = column + row * ((unsigned short)width_cells + 1);
-                        facequads[face_array_index].vertex_1 = row * ((unsigned short)width_cells + 1) + column + 1;
-                        facequads[face_array_index].vertex_2 =
-                            (row + 1) * ((unsigned short)width_cells + 1) + column + 1;
-                        facequads[face_array_index].vertex_3 =
-                            column + (row + 1) * ((unsigned short)width_cells + 1);
+                        cRFaceQuad& face = facequads[face_array_index];
+                        face.header_word = 0;
+                        face.vertex_0 = column + row * (width_cells + 1);
+                        face.vertex_1 = row * (width_cells + 1) + column + 1;
+                        face.vertex_2 =
+                            (row + 1) * (width_cells + 1) + column + 1;
+                        face.vertex_3 =
+                            column + (row + 1) * (width_cells + 1);
                         if (((column ^ row) & 1) == 0)
-                            facequads[face_array_index].texture_ref =
+                            face.texture_ref =
                                 g_texture_refs.Add(texture_a, 0, 0);
                         else
-                            facequads[face_array_index].texture_ref =
+                            face.texture_ref =
                                 g_texture_refs.Add(texture_a, 0, 0);
                     } else {
-                        facequads[face_array_index].header_word = 0;
-                        facequads[face_array_index].vertex_0 = row * ((unsigned short)width_cells + 1) + column + 1;
-                        facequads[face_array_index].vertex_1 = column + row * ((unsigned short)width_cells + 1);
-                        facequads[face_array_index].vertex_2 =
-                            column + (row + 1) * ((unsigned short)width_cells + 1);
-                        facequads[face_array_index].vertex_3 =
-                            (row + 1) * ((unsigned short)width_cells + 1) + column + 1;
+                        cRFaceQuad& face = facequads[face_array_index];
+                        face.header_word = 0;
+                        face.vertex_0 = row * (width_cells + 1) + column + 1;
+                        face.vertex_1 = column + row * (width_cells + 1);
+                        face.vertex_2 =
+                            column + (row + 1) * (width_cells + 1);
+                        face.vertex_3 =
+                            (row + 1) * (width_cells + 1) + column + 1;
                         if (((column ^ row) & 1) == 0)
-                            facequads[face_array_index].texture_ref =
+                            face.texture_ref =
                                 g_texture_refs.Add(texture_b, 0, 0);
                         else
-                            facequads[face_array_index].texture_ref =
+                            face.texture_ref =
                                 g_texture_refs.Add(texture_b, 0, 0);
                     }
                     if (face_index == 0) {
