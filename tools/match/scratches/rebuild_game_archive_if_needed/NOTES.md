@@ -220,3 +220,14 @@ events and saved bytes. Inputs exercised both early returns, an empty
 index, copied and converted entries, three- and four-channel images,
 empty dimensions, and all four address residues on either side of the
 signed 32-bit boundary. Every comparison agreed.
+
+The preserving C2 stack-packer trace of the full DatBuild source gives 14
+distinct slots. The saved output-allocation pointer has weight 4 at frame
+offset `+0x1c`. Counting static ESP-relative accesses along both control
+flow graphs, with the outstanding pushes accounted for at each instruction,
+finds four accesses to that pointer in the candidate and five in the target.
+The other 13 owners have equal access counts. Native reloads the output
+allocation from frame offset `+0x0c` at `0x405411` to form the record-array
+delta. The candidate keeps the output array base in EDX across the header
+copy and the empty-index check. This lifetime is a concrete difference to
+investigate before trying to change the PNG locals' stack placement.
