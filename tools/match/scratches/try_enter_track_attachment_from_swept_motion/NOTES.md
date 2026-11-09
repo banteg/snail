@@ -1,5 +1,56 @@
 # Near match — 99.02% score, 204/204 instructions on standard flags
 
+## Where VC6 creates the two endpoint arguments' component records
+
+The remaining two instruction differences are the commuted X `fld`/`fadd`
+pair. The native sequence at `0x42c8ef` loads sweep X before position X.
+It loads position before sweep on Y and Z. A preserving trace of the SP3
+backend now identifies each component by its formal parameter name, part
+offset, symbol slot, and creation callsite.
+
+| Source | X loaded first | Y/Z loaded first | Whole-Path match |
+| --- | --- | --- | --- |
+| Retained position copy shared by the two probes | position | position | 99.02% |
+| Use the original position independently in each probe | sweep | sweep | 98.04% |
+| Construct the motion vector from its first float after rotating the first probe | position | sweep | 97.06% |
+
+The three sources all compile to 204 instructions with 47 audited references.
+In the retained source, copy propagation through the saved world position
+creates all three position part records at `C2+0x7409`. These sorts use higher
+slots than the corresponding sweep fields. In the two controls that read the
+original position directly, both X records originate in inline formal
+substitution (`C2+0x5ac5e`). Both Y/Z pairs originate when the optimizer
+propagates address copies into individual uses (`C2+0x4203c`). The typed
+motion control reverses X relative to its other two lanes in the emitted
+object, with the opposite order from retail. Each trace checks that its
+ordinary, captured, replayed and observed whole objects agree except for the
+timestamp.
+
+The older iPad 1.0.6 Search (`0x51920`) and Wii Search rotate independently
+supplied start and end positions. Chromadrome 2 also supplies both points:
+its caller at `0x4a2510` saves the player's transform before adding velocity,
+then passes the previous and current positions into the homolog at
+`0x473940`. These versions have no corresponding parameter-plus-velocity
+addition to identify the retail operand ownership.
+
+Two exact routines in Path do produce retail Search's mixed lane order for
+an ordinary nested vector sum. The anchor and terminal sample switch operand
+order on X relative to Y/Z at `0x420fba` in
+`update_track_attachment_follow_state` and `0x42192e` in
+`traverse_path_follow_golb`. Those operands come from pointed-to fields.
+The Search traces above instead observe split records of stack arguments.
+
+To reproduce the controls and inspect the compiler's decisions from the
+repository root, choose new output directories:
+
+```sh
+scratch=tools/match/scratches/try_enter_track_attachment_from_swept_motion
+uv run "$scratch/trace_operands.py" --out /tmp/search-ordinary
+uv run snail match mutate "$scratch" --spec "$scratch/swept-argument-part-origins-20261109.json" \
+    --export-candidate endpoint/typed-motion-after-start-probe --export-dir /tmp/search-control
+uv run "$scratch/trace_operands.py" --source /tmp/search-control/candidate.cpp --out /tmp/search-typed
+```
+
 ## 2026-11-09: sample origins and whole-Path x87 trace
 
 Both reverse-scan probes now form their origin as a vector sum of the

@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "endpoint",
+      "find": "            tVector world = position;\n            Vector3 sample_origin = sample->transform.position + anchor;\n            local = world - sample_origin;\n            local.Rotate(sample->inverse_matrix);\n            if ((float)(width_cells / -2) - 0.3f < local.x\n                && (float)(width_cells / 2) + 0.3f > local.x\n                && local.y >= -0.2\n                && local.z > 0.0f) {\n                if (local.z < secondary_samples[idx].delta_length) {\n                    AttachmentSample* hit = &secondary_samples[idx];\n                    Vector3 hit_origin = hit->transform.position + anchor;\n                    world = world + sweep;\n                    Vector3 probe = world - hit_origin;",
+      "replacements": [
+        {
+          "name": "vector-arguments",
+          "text": "            Vector3 sample_origin = sample->transform.position + anchor;\n            local = position - sample_origin;\n            local.Rotate(sample->inverse_matrix);\n            if ((float)(width_cells / -2) - 0.3f < local.x\n                && (float)(width_cells / 2) + 0.3f > local.x\n                && local.y >= -0.2\n                && local.z > 0.0f) {\n                if (local.z < secondary_samples[idx].delta_length) {\n                    AttachmentSample* hit = &secondary_samples[idx];\n                    Vector3 hit_origin = hit->transform.position + anchor;\n                    tVector endpoint = position + sweep;\n                    Vector3 probe = endpoint - hit_origin;"
+        },
+        {
+          "name": "typed-motion-after-start-probe",
+          "text": "            Vector3 sample_origin = sample->transform.position + anchor;\n            local = position - sample_origin;\n            local.Rotate(sample->inverse_matrix);\n            tVector motion(&sweep.x);\n            if ((float)(width_cells / -2) - 0.3f < local.x\n                && (float)(width_cells / 2) + 0.3f > local.x\n                && local.y >= -0.2\n                && local.z > 0.0f) {\n                if (local.z < secondary_samples[idx].delta_length) {\n                    AttachmentSample* hit = &secondary_samples[idx];\n                    Vector3 hit_origin = hit->transform.position + anchor;\n                    tVector endpoint = position + motion;\n                    Vector3 probe = endpoint - hit_origin;"
+        }
+      ]
+    }
+  ]
+}
