@@ -15,6 +15,7 @@ import re
 import shutil
 import struct
 from dataclasses import replace
+from itertools import chain
 from pathlib import Path
 
 from compare_loaders_native import verify_source_link
@@ -65,25 +66,31 @@ def prepare_fixtures(path: Path) -> dict:
         (0x80000000, 0x00000000, 1),
         (0x7fc12345, 0x3e800000, 2),  # quiet NaN and a noncanonical visible value
     ]
+    inputs = ((text, cursor, mode) for text in texts for cursor in range(len(text) + 1) for mode in modes)
+    # Both high-score banks call InputTextInit with mode 0x10 and capacity 16.
+    high_score_texts = [*texts, b"A" * 15, b"A" * 16]
+    high_score_inputs = ((text, cursor, 0x10) for text in high_score_texts for cursor in range(len(text) + 1))
     rows = []
-    for text in texts:
-        for cursor in range(len(text) + 1):
-            for mode in modes:
-                for key in keys:
-                    for blink, step, visible in blinks:
-                        case_id = len(rows)
-                        capacity = [len(text), len(text) + 1, 64][case_id % 3]
-                        flags = 0xa0202012 | (0x08000000 if case_id % 5 == 0 else 0)
-                        controls = case_id % 4 | (4 if case_id % 7 == 0 else 0)
-                        rows.append(FIXTURE.pack(case_id, key, mode, cursor, capacity,
-                                                 blink, step, visible, flags, controls,
-                                                 text.ljust(64, b"\0")))
+    for text, cursor, mode in chain(inputs, high_score_inputs):
+        for key in keys:
+            for blink, step, visible in blinks:
+                case_id = len(rows)
+                capacity = 16 if mode == 0x10 else [len(text), len(text) + 1, 64][case_id % 3]
+                flags = 0xa0202012 | (0x08000000 if case_id % 5 == 0 else 0)
+                controls = case_id % 4 | (4 if case_id % 7 == 0 else 0)
+                if mode == 0x10 and case_id % 2:
+                    controls |= 8  # populate the saved name used by InputTextInit
+                rows.append(FIXTURE.pack(case_id, key, mode, cursor, capacity,
+                                         blink, step, visible, flags, controls,
+                                         text.ljust(64, b"\0")))
     path.write_bytes(struct.pack("<III", 0x31464942, len(rows), FIXTURE.size) + b"".join(rows))
     return {
         "cases": len(rows), "record_bytes": FIXTURE.size, "sha256": file_digest(path),
-        "texts_hex": [text.hex() for text in texts], "keys": keys, "input_modes": modes,
+        "texts_hex": [text.hex() for text in texts], "keys": keys, "input_modes": [*modes, 0x10],
+        "high_score": {"mode": 0x10, "capacity": 16, "texts_hex": [text.hex() for text in high_score_texts],
+                       "saved_name": "Turbo on odd case IDs, empty on even IDs"},
         "blink_bit_patterns_and_visibility": blinks,
-        "capacity_cycle": "text length; text length plus one; 64",
+        "capacity_cycle": "General modes cycle through text length, text length plus one and 64. High-score mode uses 16.",
         "submit_requested": "case_id divisible by five",
         "initial_ok_triggered": "case_id divisible by seven",
         "ai_action_cycle": ["no change", "set OK triggered", "toggle source filter bit 0", "set source submit requested"],

@@ -108,6 +108,8 @@ int main(int argc, char** argv)
         subject->input_ok_state()->source_widget = subject;
         subject->input_ok_state()->ok_widget = ok;
         memset(subject->text_buffer, 0, sizeof(subject->text_buffer));
+        if (fixture.controls & 8)
+            strcpy(subject->text_buffer + 0x400, "Turbo");
         memcpy(subject->text_buffer, fixture.text, fixture.cursor);
         subject->text_buffer[fixture.cursor] = '|';
         memcpy(subject->text_buffer + fixture.cursor + 1, fixture.text + fixture.cursor,

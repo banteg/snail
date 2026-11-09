@@ -38,6 +38,27 @@ def compare(tmp_path, left, right):
     return editor.compare_outputs(a, b)
 
 
+def test_high_score_fixtures_cover_empty_and_capacity_boundaries(tmp_path):
+    path = tmp_path / "fixtures.bin"
+    summary = editor.prepare_fixtures(path)
+    data = path.read_bytes()
+    header = struct.Struct("<III")
+    assert header.unpack_from(data) == (0x31464942, summary["cases"], editor.FIXTURE.size)
+    sizes = set()
+    empty_submit_saved_names = set()
+    for row in editor.FIXTURE.iter_unpack(data[header.size:]):
+        _, key, mode, cursor, capacity, _, _, _, flags, controls, text = row
+        if mode == 0x10:
+            assert capacity == 16
+            length = len(text.rstrip(b"\0"))
+            if cursor == length and flags & 0x08000000 == 0:
+                sizes.add((key, length))
+                if key == 5 and length == 0:
+                    empty_submit_saved_names.add(bool(controls & 8))
+    assert {(5, 0), (ord("A"), 15), (ord("A"), 16), (5, 16)} <= sizes
+    assert empty_submit_saved_names == {False, True}
+
+
 def test_complete_objects_and_events_are_compared(tmp_path):
     data = output()
     result = compare(tmp_path, data, data)
