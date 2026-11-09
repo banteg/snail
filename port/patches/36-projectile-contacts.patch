@@ -1,6 +1,6 @@
 --- a/decomp/game/Golb/update_golb_ai.cpp
 +++ b/decomp/game/Golb/update_golb_ai.cpp
-@@ -14,11 +14,24 @@
+@@ -15,11 +15,24 @@
  
  extern bool g_port_ultimate; // shell/profile.h
  
@@ -25,7 +25,7 @@
      Vec3* new_output;
      Vec3* new_direction;
      Vec3 probe;
-@@ -81,6 +94,12 @@
+@@ -82,6 +95,12 @@
              target_delta.z = homing_target.z - current_position->z;
              delta = target_delta;
              if (delta.Normalize() < 0.40000001f) {
@@ -38,7 +38,7 @@
                  Explode(&flight_transform.position);
                  goto retire;
              }
-@@ -157,9 +176,10 @@
+@@ -158,9 +177,10 @@
          tertiary_body.transform.SetZDir(direction);
          tertiary_body.transform.RotLocalZ(spin);
      }
@@ -50,18 +50,16 @@
      if (lived <= 1.0f) {
          cRSubGoldy* bounds_player = player;
          if (flight_transform.position.z >= bounds_player->active_window_min_z
-@@ -176,6 +196,10 @@
-                     float dz =
-                         garbage->transform.position.z - new_output->z;
-                     collision_delta.z = dz;
-+                    if (g_port_ultimate && kind == 1) {
-+                        collision_delta = laser_contact_delta(collision_delta, direction);
-+                        dz = collision_delta.z;
-+                    }
-                     probe = collision_delta;
-                     if (probe.z < 0.0f)
-                         dz = -dz;
-@@ -280,6 +304,8 @@
+@@ -169,6 +189,8 @@
+             while (garbage) {
+                 if (garbage->state == SUB_GARBAGE_STATE_ACTIVE) {
+                     probe = garbage->transform.position - *new_output;
++                    if (g_port_ultimate && kind == 1)
++                        probe = laser_contact_delta(probe, direction);
+                     if (ABS_FLOAT(probe.z) < 3.0f) {
+                         float collision_distance = probe.Normalize();
+                         if (collision_distance < garbage->radius + 0.49000001f) {
+@@ -253,6 +275,8 @@
              return;
  
  wall_probe:
@@ -70,7 +68,7 @@
              if (game->LocFromPos(new_output)->tile_id
                  != SUBLOC_TILE_WALL2)
                  return;
-@@ -294,5 +320,7 @@
+@@ -267,5 +291,7 @@
          }
      }
  retire:

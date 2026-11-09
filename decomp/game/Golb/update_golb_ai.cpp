@@ -4,6 +4,7 @@
 
 #include "golb.h"
 #include "player.h"
+#include "rmath_random.h"
 #include "score_buckets.h"
 #include "subgame_runtime.h"
 #include "transform_matrix.h"
@@ -160,16 +161,8 @@ void cRSubGolb::AI()
             cRSubGarbage* garbage = game->garbage_hazards.active_head;
             while (garbage) {
                 if (garbage->state == SUB_GARBAGE_STATE_ACTIVE) {
-                    Vec3 collision_delta;
-                    collision_delta.x =
-                        garbage->transform.position.x - new_output->x;
-                    collision_delta.y =
-                        garbage->transform.position.y - new_output->y;
-                    float dz =
-                        garbage->transform.position.z - new_output->z;
-                    collision_delta.z = dz;
-                    probe = collision_delta;
-                    if ((probe.z < 0.0f ? -dz : dz) < 3.0f) {
+                    probe = garbage->transform.position - *new_output;
+                    if (ABS_FLOAT(probe.z) < 3.0f) {
                         float collision_distance = probe.Normalize();
                         if (collision_distance < garbage->radius + 0.49000001f) {
                             garbage->state = SUB_GARBAGE_STATE_BURST_PENDING;
@@ -193,19 +186,8 @@ void cRSubGolb::AI()
                     int slug_state = game->slug_hazards.slots[m].state;
                     if (slug_state == SUB_SLUG_STATE_ACTIVE
                         || slug_state == SUB_SLUG_STATE_LATERAL_ACTIVE) {
-                        Vec3 slug_delta;
-                        slug_delta.x =
-                            game->slug_hazards.slots[m].transform.position.x
-                            - new_output->x;
-                        slug_delta.y =
-                            game->slug_hazards.slots[m].transform.position.y
-                            - new_output->y;
-                        float dz =
-                            game->slug_hazards.slots[m].transform.position.z
-                            - new_output->z;
-                        slug_delta.z = dz;
-                        probe = slug_delta;
-                        if ((probe.z < 0.0f ? -dz : dz) < 2.5f && probe.Normalize() < 2.5f) {
+                        probe = game->slug_hazards.slots[m].transform.position - *new_output;
+                        if (ABS_FLOAT(probe.z) < 2.5f && probe.Normalize() < 2.5f) {
                             path_follow.active = 0;
                             deflect_speed = velocity.Normalize();
                             probe.y = 0.0f;

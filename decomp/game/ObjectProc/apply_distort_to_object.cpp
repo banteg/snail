@@ -3,7 +3,6 @@
 #include "object_render_types.h"
 #include "rmath_random.h"
 
-#define ABS_FLOAT(value) ((value) < 0.0f ? -(value) : (value))
 #define MAX_FLOAT(lhs, rhs) ((lhs) < (rhs) ? (rhs) : (lhs))
 
 void cRDistort::Build(cRObject* object)

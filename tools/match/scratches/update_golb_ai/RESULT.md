@@ -6,12 +6,11 @@ The stock VC6 SP3 whole-Golb build reproduces the complete retail body of
 The other eight functions in the translation unit retain their original
 code and relocations.
 
-The garbage loop tests the active state directly. Each collision computes
-the signed Z displacement, copies it into the vector that will be normalized,
-and uses the sign of that vector component to select the absolute distance.
-Expressing the garbage selection as a conditional value also restores the
-native immediate comparison. Changing the slug selection alone leaves the
-constant in EBX. Both loops now use the same distance expression.
+The garbage loop tests the active state directly. Both collision loops
+subtract the projectile position from the target position, test the absolute
+Z component, then normalize that same signed vector. They use the existing
+`ABS_FLOAT` expression also found in the byte-proven distortion routine.
+The shared expression preserves the conditional sign test in retail.
 
 To reproduce the proof, run `uv run snail match scratch update_golb_ai`.
 

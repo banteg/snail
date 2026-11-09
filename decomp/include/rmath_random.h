@@ -1,6 +1,8 @@
 #ifndef SNAIL_RMATH_RANDOM_H
 #define SNAIL_RMATH_RANDOM_H
 
+#define ABS_FLOAT(value) ((value) < 0.0f ? -(value) : (value))
+
 short __cdecl MathType32to16(float value, float scale);
 float __cdecl MathType16to32(short value, float scale);
 void __cdecl gRMathRand2Init();
