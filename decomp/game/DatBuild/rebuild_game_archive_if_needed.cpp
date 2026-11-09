@@ -23,148 +23,82 @@ int __cdecl load_png_image(
 
 void __cdecl rebuild_game_archive_if_needed(void)
 {
-    int png_channels;
-    u8* png_pixels;
-    int* output_data_offset;
-    char* rebuilt;
-    int png_height;
-    unsigned int* dam_words;
-    SerializedArchiveIndex* source_index;
-    SerializedArchiveEntry* source_entries;
-    int png_width;
-    int x;
-    int source_to_output_delta;
-    int entry_index;
+    if (file_exists("SnailMail.dat") || !file_exists("SnailMail.dam"))
+        return;
+
+    SerializedArchiveIndex* output = (SerializedArchiveIndex*)malloc(40000000);
     int dam_size;
-    char* entry_path;
+    SerializedArchiveIndex* source =
+        (SerializedArchiveIndex*)load_file_bytes_allocating("SnailMail.dam", &dam_size);
+    toggle_archive_high_bit_in_place((char*)source, dam_size);
+
+    SerializedArchiveEntry* source_entries = source->entries;
+    SerializedArchiveEntry* output_entries = output->entries;
+    memcpy(output, source, source_entries[0].data_offset);
+
+    u8* png_pixels = 0;
+    int width, height, channels;
     int background_rgb;
-    u8 stem[512];
-    char* payload_cursor;
-    unsigned int* source_byte_count;
-    int* rebuilt_words;
+    char* payload = (char*)output + output->entries[0].data_offset;
+    for (int i = 0; i < source->count; ++i) {
+        const SerializedArchiveEntry& entry = source_entries[i];
+        char* path = (char*)output + entry.path_offset;
+        u8 stem[512];
 
-    if (file_exists("SnailMail.dat") != 0) {
-        return;
-    }
+        switch (classify_archive_entry_extension((u8*)path, stem)) {
+        default:
+            memcpy(payload, (char*)source + entry.data_offset, entry.byte_count);
+            output_entries[i].data_offset = payload - (char*)output;
+            output_entries[i].byte_count = entry.byte_count;
+            payload += entry.byte_count;
+            // The original adds the signed remainder of the end address.
+            payload += (int)payload % 4;
+            break;
 
-    if (file_exists("SnailMail.dam") == 0) {
-        return;
-    }
+        case ARCHIVE_ENTRY_EXTENSION_TGA: {
+            save_file_bytes_with_optional_archive_scramble(
+                "0.png", (char*)source + entry.data_offset, entry.byte_count, 0);
+            load_png_image("0.png", &png_pixels, &width, &height, &channels,
+                           (u8*)&background_rgb, 0);
 
-    rebuilt_words = (int*)malloc(40000000);
-    rebuilt = (char*)rebuilt_words;
-    dam_words = (unsigned int*)load_file_bytes_allocating("SnailMail.dam", &dam_size);
-    toggle_archive_high_bit_in_place((char*)dam_words, dam_size);
-
-    source_index = (SerializedArchiveIndex*)dam_words;
-    source_entries = source_index->entries;
-    memcpy(rebuilt_words, dam_words, source_entries[0].data_offset);
-
-    png_pixels = 0;
-    payload_cursor = rebuilt + rebuilt_words[2];
-    entry_index = 0;
-
-    if (source_index->count > 0) {
-        source_byte_count = (unsigned int*)&source_entries[0].byte_count;
-        source_to_output_delta = rebuilt - (char*)dam_words;
-        output_data_offset =
-            &((SerializedArchiveIndex*)rebuilt)->entries[0].data_offset;
-
-        do {
-            entry_path = rebuilt + source_byte_count[-2];
-
-            if (classify_archive_entry_extension((u8*)entry_path, stem) !=
-                ARCHIVE_ENTRY_EXTENSION_TGA) {
-                char* payload_end;
-                memcpy(payload_cursor, (char*)dam_words + source_byte_count[-1], *source_byte_count);
-                *output_data_offset = payload_cursor - rebuilt;
-                payload_end = payload_cursor + *source_byte_count;
-                *(int*)((char*)source_byte_count + source_to_output_delta) = *source_byte_count;
-                {
-                    int remainder = (int)payload_end & 0x80000003;
-                    if (remainder < 0) {
-                        remainder = ((remainder - 1) | 0xfffffffc) + 1;
-                    }
-                    payload_cursor = payload_end + remainder;
-                }
-            } else {
-                int y;
-                int converted_size;
-                char* payload_end;
-                TgaImageView* tga = (TgaImageView*)payload_cursor;
-
-                save_file_bytes_with_optional_archive_scramble(
-                    "0.png",
-                    (char*)dam_words + source_byte_count[-1],
-                    *source_byte_count,
-                    0);
-                load_png_image(
-                    "0.png",
-                    &png_pixels,
-                    &png_width,
-                    &png_height,
-                    &png_channels,
-                    (u8*)&background_rgb,
-                    0);
-
-                *output_data_offset = payload_cursor - rebuilt;
+            output_entries[i].data_offset = payload - (char*)output;
+            TgaImageView* tga = (TgaImageView*)payload;
+            tga->id_length = tga->color_map_type =
+                tga->color_map_spec[0] = tga->color_map_spec[1] =
+                tga->color_map_spec[2] = tga->color_map_spec[3] =
                 tga->color_map_spec[4] = 0;
-                tga->color_map_spec[3] = 0;
-                tga->color_map_spec[2] = 0;
-                tga->color_map_spec[1] = 0;
-                tga->color_map_spec[0] = 0;
-                tga->color_map_type = 0;
-                tga->id_length = 0;
-                tga->height = (unsigned short)png_height;
-                tga->descriptor = 8;
-                tga->image_type = 2;
-                tga->bits_per_pixel = (u8)(png_channels << 3);
-                tga->width = (unsigned short)png_width;
-                tga->x_origin = 0;
-                tga->y_origin = 0;
+            tga->height = (unsigned short)height;
+            tga->descriptor = 8;
+            tga->image_type = 2;
+            tga->bits_per_pixel = (u8)(channels * 8);
+            tga->width = (unsigned short)width;
+            tga->x_origin = 0;
+            tga->y_origin = 0;
 
-                x = 0;
-                if (png_width > 0) {
-                    do {
-                        y = 0;
-                        if (png_height > 0) {
-                            do {
-                                int source_pixel_offset = (y * png_width + x) * png_channels;
-                                int dest_pixel_offset = ((png_height - y - 1) * png_width + x) * png_channels;
-                                tga->pixels[dest_pixel_offset + 2] = png_pixels[source_pixel_offset];
-                                tga->pixels[dest_pixel_offset + 1] = png_pixels[source_pixel_offset + 1];
-                                tga->pixels[dest_pixel_offset] = png_pixels[source_pixel_offset + 2];
-                                if (png_channels == 4) {
-                                    tga->pixels[dest_pixel_offset + 3] = png_pixels[source_pixel_offset + 3];
-                                }
-                                ++y;
-                            } while (y < png_height);
-                        }
-                        ++x;
-                    } while (x < png_width);
+            for (int x = 0; x < width; ++x) {
+                for (int y = 0; y < height; ++y) {
+                    int src = (y * width + x) * channels;
+                    int dst = ((height - y - 1) * width + x) * channels;
+                    tga->pixels[dst + 2] = png_pixels[src];
+                    tga->pixels[dst + 1] = png_pixels[src + 1];
+                    tga->pixels[dst] = png_pixels[src + 2];
+                    if (channels == 4)
+                        tga->pixels[dst + 3] = png_pixels[src + 3];
                 }
-
-                converted_size = png_width * png_height * png_channels + sizeof(TgaImageView);
-                *(int*)((char*)source_byte_count + source_to_output_delta) = converted_size;
-                payload_end = payload_cursor + converted_size;
-                {
-                    int remainder = (int)payload_end & 0x80000003;
-                    if (remainder < 0) {
-                        remainder = ((remainder - 1) | 0xfffffffc) + 1;
-                    }
-                    payload_cursor = payload_end + remainder;
-                }
-                printf("extracting %s\n", entry_path);
             }
 
-            output_data_offset += sizeof(SerializedArchiveEntry) / sizeof(int);
-            source_byte_count += 3;
-            ++entry_index;
-        } while (entry_index < source_index->count);
+            int converted_size = width * height * channels + sizeof(TgaImageView);
+            output_entries[i].byte_count = converted_size;
+            payload += converted_size;
+            payload += (int)payload % 4;
+            printf("extracting %s\n", path);
+            break;
+        }
+        }
     }
 
-    save_file_bytes_with_optional_archive_scramble("SnailMail.dat", rebuilt_words, payload_cursor - rebuilt, 1);
+    save_file_bytes_with_optional_archive_scramble("SnailMail.dat", output, payload - (char*)output, 1);
     delete_file_path("SnailMail.dam");
     delete_file_path("0.png");
-    free(rebuilt_words);
+    free(output);
 }

@@ -1,6 +1,12 @@
 # `rebuild_game_archive_if_needed` match result
 
-## Score
+The current whole-DatBuild.o build scores **71.98%** with 232/232
+instructions, a `0x234` frame and 22 clean references. The two serialized
+entry arrays recover the independent output-offset cursor and the
+source-to-output displacement for length stores. Header-copy register
+allocation and spill slots remain open. See [NOTES.md](NOTES.md).
+
+## Initial recovery
 
 | Metric | Starter | Final |
 |---|---:|---:|
