@@ -21,6 +21,7 @@
 // brings sound back (both remembered).
 
 import { AudioPresenter } from "./audio.js";
+import { scheduleFrames } from "./frame-clock.js";
 import { Renderer } from "./renderer.js";
 import { Settings } from "./settings.js";
 import { openSaves } from "./storage.js";
@@ -106,14 +107,16 @@ function clamp(value, low, high) {
 function connectInput(exports, settings, cursor) {
   // The cursor in game pixels: from the pointer's position, or moved by its
   // motion while the pointer is locked.
-  let held = 0;
+  const heldByPointer = new Map();
   let lastClient = null;
-  const buttons = (next) => {
+  const buttons = (id, next, cancelled = false) => {
+    const held = heldByPointer.get(id) || 0;
     // Chorded buttons arrive as pointermove until the last button is up.
     for (const [button, bit] of [[0, 1], [1, 2]]) {
-      if ((next ^ held) & bit) exports.snail_button(button, (next & bit) !== 0);
+      if ((next ^ held) & bit) exports.snail_button(button, cancelled ? -1 : Number((next & bit) !== 0), id);
     }
-    held = next;
+    if (next) heldByPointer.set(id, next);
+    else heldByPointer.delete(id);
   };
   const locked = () => document.pointerLockElement === canvas;
   const pointer = (event) => {
@@ -136,7 +139,7 @@ function connectInput(exports, settings, cursor) {
       lastClient = at;
     }
     exports.snail_pointer(Math.floor(cursor.x), Math.floor(cursor.y));
-    buttons(event.buttons);
+    buttons(event.pointerId, event.buttons);
   };
   canvas.addEventListener("pointermove", pointer);
   canvas.addEventListener("pointerleave", () => { if (!locked()) lastClient = null; });
@@ -148,8 +151,10 @@ function connectInput(exports, settings, cursor) {
     else canvas.setPointerCapture(event.pointerId);
   });
   canvas.addEventListener("pointerup", pointer);
-  canvas.addEventListener("pointercancel", () => buttons(0));
-  window.addEventListener("pointerup", (event) => { if (held) buttons(event.buttons); });
+  canvas.addEventListener("pointercancel", (event) => buttons(event.pointerId, 0, true));
+  window.addEventListener("pointerup", (event) => {
+    if (heldByPointer.has(event.pointerId)) buttons(event.pointerId, event.buttons);
+  });
   canvas.addEventListener("contextmenu", (event) => event.preventDefault());
   canvas.addEventListener("wheel", (event) => {
     event.preventDefault();
@@ -171,11 +176,11 @@ function connectInput(exports, settings, cursor) {
   };
   // Keys held while the page loses focus would otherwise stay down.
   window.addEventListener("blur", () => {
-    held = 0;
+    heldByPointer.clear();
     syncWindowState();
   });
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) held = 0;
+    if (document.hidden) heldByPointer.clear();
   });
   window.addEventListener("focus", syncWindowState);
 }
@@ -349,7 +354,6 @@ async function main() {
     exports.snail_save();
     saves.flush(); // queue the transaction before pagehide returns
   };
-  let last = performance.now();
   document.addEventListener("visibilitychange", () => {
     const visible = document.visibilityState === "visible";
     exports.snail_window_state(visible ? 1 : 0, document.hasFocus() ? 1 : 0);
@@ -358,31 +362,28 @@ async function main() {
       exports.snail_frame(1 / 60);
       save();
     } else {
-      last = performance.now();
+      resetFrameClock();
     }
   });
   window.addEventListener("pagehide", save);
   window.snail = { exports, renderer, audio, fs, settings }; // for the console
   canvas.focus();
-  const frame = (now) => {
-    const elapsed = Math.min(1, (now - last) / 1000);
-    last = now;
+  const resetFrameClock = scheduleFrames((elapsed) => {
     let quit;
     try {
       quit = exports.snail_frame(elapsed);
     } catch (error) {
       console.error(error);
       show(`Snail Mail stopped: ${error.stack || error}`, true);
-      return;
+      return false;
     }
     if (quit) {
       save();
       show(`The game quit (code ${quit}). Reload to play again.`);
-      return;
+      return false;
     }
-    requestAnimationFrame(frame);
-  };
-  requestAnimationFrame(frame);
+    return true;
+  });
 }
 
 main().catch((error) => {

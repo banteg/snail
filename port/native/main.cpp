@@ -22,6 +22,7 @@
 #include <string.h>
 
 #include "host.h"
+#include "frame_clock.h"
 
 namespace {
 
@@ -245,7 +246,7 @@ int main(int argc, char** argv)
         if (options.trap_mouse)
             SDL_SetWindowRelativeMouseMode(window, on);
     };
-    Uint64 last = SDL_GetTicksNS();
+    FrameClock clock{SDL_GetTicksNS()};
     auto sync_window_state = [&]() {
         SDL_WindowFlags wflags = SDL_GetWindowFlags(window);
         bool visible = !(wflags & (SDL_WINDOW_MINIMIZED | SDL_WINDOW_HIDDEN));
@@ -279,11 +280,17 @@ int main(int argc, char** argv)
                 g_cursor.move(&game, window, event.button.x, event.button.y, 0, 0);
                 if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
                     w2c_game_snail_button(&game, event.button.button == SDL_BUTTON_LEFT ? 0 : 1,
-                        event.type == SDL_EVENT_MOUSE_BUTTON_DOWN);
+                        event.type == SDL_EVENT_MOUSE_BUTTON_DOWN, event.button.which);
                 break;
             case SDL_EVENT_MOUSE_WHEEL:
                 if (event.wheel.y != 0)
                     w2c_game_snail_wheel(&game, event.wheel.y > 0 ? 1u : (uint32_t)-1);
+                break;
+            case SDL_EVENT_MOUSE_REMOVED:
+                if (ultimate) {
+                    w2c_game_snail_button(&game, 0, (uint32_t)-1, event.mdevice.which);
+                    w2c_game_snail_button(&game, 1, (uint32_t)-1, event.mdevice.which);
+                }
                 break;
             case SDL_EVENT_WINDOW_FOCUS_LOST:
                 trap(false);
@@ -291,7 +298,7 @@ int main(int argc, char** argv)
                 break;
             case SDL_EVENT_WINDOW_FOCUS_GAINED:
                 sync_window_state();
-                last = SDL_GetTicksNS();
+                clock.last = SDL_GetTicksNS();
                 break;
             case SDL_EVENT_WINDOW_MINIMIZED:
                 trap(false);
@@ -301,7 +308,7 @@ int main(int argc, char** argv)
                 break;
             case SDL_EVENT_WINDOW_RESTORED:
                 sync_window_state();
-                last = SDL_GetTicksNS();
+                clock.last = SDL_GetTicksNS();
                 break;
             case SDL_EVENT_WINDOW_ENTER_FULLSCREEN:
             case SDL_EVENT_WINDOW_LEAVE_FULLSCREEN:
@@ -314,10 +321,7 @@ int main(int argc, char** argv)
                 break;
             }
         }
-        Uint64 now = SDL_GetTicksNS();
-        float elapsed = SDL_min((float)(now - last) / 1e9f, 1.0f);
-        last = now;
-        if (w2c_game_snail_frame(&game, elapsed) != 0)
+        if (w2c_game_snail_frame(&game, clock.elapsed_seconds(SDL_GetTicksNS())) != 0)
             running = false;
         if (gpu_frame_pending(host.gpu))
             gpu_end_frame(host.gpu, true);

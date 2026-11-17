@@ -1,0 +1,80 @@
+--- a/decomp/game/Golb/update_golb_ai.cpp
++++ b/decomp/game/Golb/update_golb_ai.cpp
+@@ -14,11 +14,24 @@
+ 
+ extern bool g_port_ultimate; // shell/profile.h
+ 
++// Offset from the nearest point on this tick's laser segment to the asteroid.
++static Vec3 laser_contact_delta(Vec3 from_end, const Vec3& travel)
++{
++    const float length_squared = Vec3::Dot(travel, travel);
++    if (length_squared > 0.0f) {
++        const float back = -Vec3::Dot(from_end, travel) / length_squared;
++        if (back > 0.0f)
++            from_end += travel * (back < 1.0f ? back : 1.0f);
++    }
++    return from_end;
++}
++
+ void cRSubGolb::AI()
+ {
+     float speed;
+     float deflect_speed;
+     float lived;
++    bool homing_impact = false;
+     Vec3* new_output;
+     Vec3* new_direction;
+     Vec3 probe;
+@@ -81,6 +94,12 @@
+             target_delta.z = homing_target.z - current_position->z;
+             delta = target_delta;
+             if (delta.Normalize() < 0.40000001f) {
++                if (g_port_ultimate) {
++                    // Let ordinary contact handling apply damage and splash before retiring.
++                    homing_impact = true;
++                    new_output = &flight_transform.position;
++                    goto check_flight_bounds;
++                }
+                 Explode(&flight_transform.position);
+                 goto retire;
+             }
+@@ -157,9 +176,10 @@
+         tertiary_body.transform.SetZDir(direction);
+         tertiary_body.transform.RotLocalZ(spin);
+     }
++    previous_flight_transform.position = source_matrix.position;
++check_flight_bounds:
+     lived = lifetime_step + lifetime;
+     lifetime = lived;
+-    previous_flight_transform.position = source_matrix.position;
+     if (lived <= 1.0f) {
+         cRSubGoldy* bounds_player = player;
+         if (flight_transform.position.z >= bounds_player->active_window_min_z
+@@ -176,6 +196,10 @@
+                     float dz =
+                         garbage->transform.position.z - new_output->z;
+                     collision_delta.z = dz;
++                    if (g_port_ultimate && kind == 1) {
++                        collision_delta = laser_contact_delta(collision_delta, direction);
++                        dz = collision_delta.z;
++                    }
+                     probe = collision_delta;
+                     if (dz < 0.0f)
+                         dz = -dz;
+@@ -280,6 +304,8 @@
+             return;
+ 
+ wall_probe:
++            if (homing_impact)
++                goto retire;
+             if (game->LocFromPos(new_output)->tile_id
+                 != SUBLOC_TILE_WALL2)
+                 return;
+@@ -294,5 +320,7 @@
+         }
+     }
+ retire:
++    if (homing_impact)
++        Explode(new_output); // The stored target position can outlive the target.
+     Kill();
+ }

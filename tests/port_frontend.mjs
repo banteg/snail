@@ -1,7 +1,6 @@
 // Drive the browser reactor through the front end by widget text, reading and
 // writing game state in the port's layout (tests/conftest.py PORT_LAYOUT).
-import { readFile } from 'node:fs/promises';
-import { WASI } from 'node:wasi';
+import {startGame} from './port_mobile_runtime.mjs';
 
 export const LAYOUT = JSON.parse(process.env.SNAIL_LAYOUT);
 
@@ -13,19 +12,12 @@ export const ESCAPE = 0x01;
 // WASI follows no link out of it) and saves. The saved config's last high-score
 // name, which startup copies to players[0].player_name beside front-end state
 // 12, locates the game root that g_game points at.
-export async function openGame(wasm, ultimate, playerName) {
-  const wasi = new WASI({version: 'preview1', args: [], env: {...process.env, PWD: process.cwd()}, preopens: {'/': process.cwd()}});
-  const module = await WebAssembly.compile(await readFile(wasm));
-  const imports = wasi.getImportObject();
-  imports.snail = Object.fromEntries(WebAssembly.Module.imports(module)
-    .filter(i => i.module === 'snail').map(i => [i.name, () => 0]));
+export async function openGame(wasm, ultimate, playerName, presenter = {}) {
   const fullscreenRequests = [];
-  imports.snail.set_fullscreen = enabled => fullscreenRequests.push(enabled);
-  const instance = await WebAssembly.instantiate(module, imports);
-  wasi.initialize(instance);
-  const e = instance.exports;
-  e.snail_set_profile(ultimate ? 1 : 0);
-  if (!e.snail_start(0)) throw Error('game startup failed');
+  const e = await startGame(wasm, {
+    ...presenter,
+    set_fullscreen: enabled => fullscreenRequests.push(enabled),
+  }, Number(ultimate));
   const memory = () => Buffer.from(e.memory.buffer);
   const m = memory();
   const name = Buffer.from(playerName + '\0');

@@ -1,0 +1,40 @@
+A Time Trial finish contributes the fraction of the current tick spent
+reaching the line. cRTime::Add converts ticks to seconds. The Windows
+caller first converts the fraction to seconds itself.
+
+Apply the text editor's ordinary character limit to its line-break marker
+as well. The high-score screens set the limit to 16.
+
+--- a/decomp/game/SubGame/update_subgoldy.cpp
++++ b/decomp/game/SubGame/update_subgoldy.cpp
+@@ -123,1 +123,2 @@
++    float tick_start_z = transform.position.z;
+     cRSubGame* latch_game = game;
+@@ -737,5 +738,11 @@
+             if (completion_game->level_mode == 4) {
+-                float remaining =
+-                    (1.0f - (transform.position.z - completion_start) / velocity.z)
+-                    * 0.016666668f;
+-                stopwatch.Add(remaining);
++                if (g_port_ultimate) {
++                    if (tick_start_z < completion_start)
++                        stopwatch.Add((completion_start - tick_start_z) /
++                                      (transform.position.z - tick_start_z));
++                } else {
++                    float remaining =
++                        (1.0f - (transform.position.z - completion_start) / velocity.z)
++                        * 0.016666668f;
++                    stopwatch.Add(remaining);
++                }
+--- a/decomp/game/Border/border_input_text.cpp
++++ b/decomp/game/Border/border_input_text.cpp
+@@ -7,2 +7,4 @@
+ #include "rshell.h"
+ 
++extern bool g_port_ultimate;
++
+@@ -27,3 +29,3 @@
+     if (key == 6 && (input_flags & 1) == 0) {
+-        if ((input_flags & 2) == 0) {
++        if ((input_flags & 2) == 0 && (!g_port_ultimate || input_length < input_capacity)) {
+             text_buffer[input_cursor] = '>';

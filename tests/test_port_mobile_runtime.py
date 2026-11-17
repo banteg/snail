@@ -59,6 +59,8 @@ def test_mobile_catalog_rules_swing_and_classic_save_isolation(tmp_path, port_la
     (tmp_path / "ScoreMobileA.dat").write_bytes(score)
     (tmp_path / "ScoreMobileB-v2.dat").write_bytes(score)
     (tmp_path / "ScoreMobileC-v3.dat").write_bytes(score)
+    (tmp_path / "ScoreMobileA-v4.dat").write_bytes(score)
+    (tmp_path / "ScorePro-v4.dat").write_bytes(score)
     (tmp_path / "ScorePro.dat").write_bytes(score)
     result = subprocess.run(
         ["node", str(REPO_ROOT / "tests/port_mobile_rates.mjs"), str(WASM)],
@@ -100,8 +102,10 @@ def test_mobile_catalog_rules_swing_and_classic_save_isolation(tmp_path, port_la
     assert not (tmp_path / "ScoreMobileA.dat").exists()
     assert not (tmp_path / "ScoreMobileB-v2.dat").exists()
     assert not (tmp_path / "ScoreMobileC-v3.dat").exists()
+    assert not (tmp_path / "ScoreMobileA-v4.dat").exists()
+    assert not (tmp_path / "ScorePro-v4.dat").exists()
     assert not (tmp_path / "ScorePro.dat").exists()
-    assert (tmp_path / "ScoreMobileA-v4.dat").exists()
+    assert (tmp_path / "ScoreMobileA-v5.dat").exists()
 
 
 @pytest.mark.skipif(
@@ -249,10 +253,10 @@ def test_pro_state_ends_with_its_game_or_replay(tmp_path, port_layout_env):
         (REPO_ROOT / "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat").read_bytes()
     )
     struct.pack_into("<i", scores, 0x2C, 3)
-    (tmp_path / "ScoreMobileA-v4.dat").write_bytes(scramble(scores))
+    (tmp_path / "ScoreMobileA-v5.dat").write_bytes(scramble(scores))
     pro = scores[: struct.unpack_from("<I", scores, 0)[0]]
     pro[0x5C : 0x5C + 20] = b"ProChamp".ljust(20, b"\x00")
-    (tmp_path / "ScorePro-v4.dat").write_bytes(scramble(pro))
+    (tmp_path / "ScorePro-v5.dat").write_bytes(scramble(pro))
     result = subprocess.run(
         ["node", str(REPO_ROOT / "tests/port_pro_state.mjs"), str(WASM)],
         cwd=tmp_path,
@@ -302,7 +306,7 @@ def test_ultimate_replay_caption_fade_exit_and_summary_cap(tmp_path, port_layout
         (REPO_ROOT / "tests/fixtures/replays/ScoreA.windows-2026-04-17.dat").read_bytes()
     )
     struct.pack_into("<ii", scores, 0x4C, 65, 80)
-    (tmp_path / "ScoreMobileA-v4.dat").write_bytes(scramble(scores))
+    (tmp_path / "ScoreMobileA-v5.dat").write_bytes(scramble(scores))
 
     script = f"""
 import {{ LAYOUT, openMobileGame }} from {json.dumps(str(REPO_ROOT / "tests/port_mobile_runtime.mjs"))};

@@ -47,7 +47,8 @@ Segment entry lines inside `Segments Begin:` can be:
 
 ## Practical Notes
 
-- the repo parser normalizes `Slug`, `Garbage`, and `garbage` into one `garbage` field
+- the repo parser normalizes `Slug`, `Garbage`, and `garbage` into one `garbage` field. Windows looks for `Garbage:` case-insensitively, so Postal III's `Slug:10` goes unread.
+- Windows reads segment filenames starting on the line after `Segments Begin:`. Postal VI–IX put their first filename on the header line and lose that segment. See the [Windows course reproductions](../port/original-bugs.md#other-verified-windows-bugs).
 - `Random:` and `Length:` feed the runtime track builder
 - the PC game never reads `Mode:`; Android's loader lays Padding before every
   listed segment unless it says `Mode:Challenge` (see

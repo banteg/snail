@@ -332,9 +332,9 @@ Recovered salt-slot lifecycle:
   sub-lazer vtable, not the salt vtable
 - `0x441740` is the paired sub-lazer deactivate helper
 - the salt vtable installed by `initialize_salt_hazard_runtime` points at
-  `0x441c10`; that updater computes a fade fraction at `slot + 0x8c`,
-  updates alpha, and moves the slot to `SALT_STATE_RECYCLE_PENDING` after the
-  z cutoff
+  `0x441c10`. That updater computes a fade fraction at `slot + 0x8c`,
+  sets the body's alpha to a constant 0.9, and moves the slot to
+  `SALT_STATE_RECYCLE_PENDING` after the z cutoff.
 
 The older claim that salt update integrates `slot +0x8c/+0x90/+0x94` as
 velocity came from the shifted `0x4417d0` label.

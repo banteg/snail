@@ -1,9 +1,9 @@
 # Original bugs
 
-The shipped `SnailMail.exe` has a few behaviours that read as genuine bugs once
-the recovered source shows how they arise. The
-[Ultimate profile](README.md#gameplay-profiles) fixes every one listed here;
-the Original profile keeps them, as the oracles require.
+The [Ultimate profile](README.md#gameplay-profiles) corrects the Windows
+gameplay, input and presentation bugs catalogued here. Original preserves
+their Windows behavior. Both profiles use the host's monotonic clock, which
+already avoids the Windows uptime bug (20).
 
 A fix that acts around a function wraps it (`port/wrapped.txt`) and lives in
 `port/shell/fixes.cpp` or `port/shell/extras*.cpp`; one that acts inside it
@@ -153,7 +153,7 @@ Why it's a bug:
   it with the Challenge rows one rank further down, names, scores and replays
   included, and the next save writes them to `ScoreA.dat`. The port enters a
   Pro name on the Postal bank with the Pro table swapped in, so without the fix
-  they would reach Pro's score file (`ScorePro-v4.dat`).
+  they would reach Pro's score file (`ScorePro-v5.dat`).
 - Android's `cRSubHighScore::RemoveHighScore` (`00065270`), which its Cancel
   calls with the entry's bank and rank, deletes the cancelled entry and shifts
   the rows below it up within that bank (Postal, Challenge or Pro); iOS's
@@ -166,3 +166,177 @@ Port behaviour:
 - `tests/test_port_frontend_rules.py` cancels a Postal name in each profile
   and a Pro name in Ultimate: Original fills the Postal rows with Challenge
   scores, Ultimate restores both tables.
+
+## Other verified Windows bugs
+
+The addresses below refer to `SnailMail_unwrapped.exe`. The x86 probes ran
+instructions from that executable with controlled inputs. Course and replay
+checks used the Original profile with the Windows archive. Where a control
+changed an asset or a starting position, the entry identifies the change.
+
+| Entries | Ultimate behavior | Regression in `tests/` |
+|---|---|---|
+| 5, 6 | Challenge places digit parcels relative to the new road. Postal fills shortages from unused authored rows without another random draw, and scales the quota if the course cannot fit the requested count. | `test_port_parcel_placement.py` |
+| 7, 8, 10, 11 | The level loader reads a filename after the list header and accepts `Slug:` as an alias. The segment importer recognizes `Ring=Explosive` and `No Fall`. | `test_port_course_tags.py` |
+| 9, 14 | Both bracket ramp glyphs reflect and produce opposite rolls. The heart's pickup volume reaches from its base to its bobbing sprite. | `test_port_ramps_and_hearts.py` |
+| 12, 13 | Lasers test asteroid collisions along the distance traveled each tick. Rockets resolve normal damage and splash before retiring at their target. | `test_port_projectile_contacts.py` |
+| 15, 18 | Each salt draw uses its own distance-scaled tint, including on the spawn frame. Double quotes use the quote glyph. | `test_port_salt_and_font.py` |
+| 16, 17 | The finish clock credits the fraction of the tick spent reaching the line. A line break consumes one character of the high-score name limit. | `test_port_frontend_rules.py` |
+| 19, 20 | Ultimate delivers mouse transitions across input polls. Both host clocks keep their precision past eight days and across the 32-bit millisecond boundary. | `test_port_input_clock.py` |
+
+### 5) A previous course can bury a Challenge parcel
+
+Start “Tramponus Durus” (Postal XLVII, build seed 9507), end the run, then
+start Challenge with speed and difficulty both at 50 and build seed 20219.
+At row 1291, lane 1, the parcel is at `y = -2` under a road at `y = 0`.
+A fresh process with the same Challenge seed puts it at `y = 1`.
+
+When building a `0` parcel marker, the track builder (`0x435eb0`) copies
+the old cell height before setting the new road height. The Postal course
+left a trampoline at `y = -3` in that cell. Challenge placement
+(`0x444240`) then adds one to the copied height. The Windows collision
+routine collected the fresh parcel on a centered approach and missed the
+buried one on the same approach.
+
+### 6) Loopsville sometimes starts one parcel short
+
+Postal XIII specifies 40 parcels. Its HUD opens at `0/39` with build seed
+32523 and at `0/40` with seed 9507. `PlaceParcels` (`0x4438e0`) picks
+groups, fills the remainder from individual candidates, then replaces the
+authored total with however many it placed. Some group choices exhaust the
+individual candidates early. The x86 routine also changed the internal quota
+from 20 to 78 when it placed 39. The player sees a 39-parcel total.
+Ultimate's mobile-generator seed 17673 also produced 39 parcels with quota
+78 before the fix. It now produces all 40 with the authored quota of 20.
+
+### 7) Four Postal routes lose their opening Wibble
+
+In `ARCADE006.TXT` through `ARCADE009.TXT`, the first `Wibble.txt` is on
+the same line as `Segments Begin:`, immediately after the closing comment.
+`cRSubTracks::Init` (`0x447480`) advances to the next line before reading
+the first filename, dropping all 43 rows. On Postal VI, “Keep Still!”,
+ParcelTest follows the standard Start segment and the finish is at row 712.
+Moving just `Wibble.txt` onto its own line makes it the first of 13 listed
+segments and moves the finish to row 755. Android ships that newline on Postal VI.
+
+### 8) Loopy's random garbage never spawns
+
+Postal III declares `Slug:10` where Postal I and II use `Garbage:10`.
+The Windows loader (`0x447480`) searches for `Garbage:` and uses −1 when
+it is absent. The resulting ambient spawn test requires a random number
+below one to exceed 1.002. Changing the field name alone restores the
+authored value of 10. Explicitly placed hazards use a separate spawn path.
+
+### 9) A mirrored Jump Pod ramp still rolls the same way
+
+On Postal II, row 341, the `[` ramp moves from lane 3 (seed 14895) to
+lane 4 (mirrored, seed 292). Both versions produce tile 5 and a roll
+amplitude of +1. `LevelConvert` (`0x437270`) returns `[` again when
+mirroring `[`. The player update (`0x43b120`) consequently selects the
+same roll direction on both sides of the road.
+
+### 10) The tutorial skips its authored explosive ring
+
+`TUTORIAL 11.TXT` requests `Ring=Explosive` at row 793 of the tutorial.
+The segment importer (`0x448160`) looks for `Ring=Explode`. The stock
+row creates no ring. Correcting just that spelling adds an explosive ring
+at `z = 793.5`. The preceding ramp independently produces another ring
+at `z = 805.5` in both runs, so a player can still complete the lesson.
+
+### 11) SuperTramp2 applies extra drag on 48 marked rows
+
+Postal XLVII and XLVIII both use `SUPERTRAMP2.TXT`. It spells the tag
+`No Fall` on 48 rows. The importer (`0x448160`) recognizes `NoFall`,
+so all 48 lack runtime flag `0x100`. Correcting the spelling in a copy
+sets the flag on all 48. On Postal XLVII row 1680, a snail leaving a path
+with forward speed 0.35 slowed to 0.291 in one tick. Setting just the flag
+gave 0.349 under the same conditions. The flag suppresses the extra
+post-path drag in `cRSubGoldy::AI` (`0x43b120`).
+
+### 12) A laser can pass straight through an asteroid
+
+`cRSubGolb::AI` (`0x414820`) moves a shot, then checks for garbage
+at its new position. In the Windows routine a laser sampled at `z = 16, 19,
+22` passed through a radius-0.64 asteroid centered at 20.5 without scoring.
+Moving just the asteroid to 19.5 made the shot burst it for 10 points at
+the `z = 19` sample. The test skips the space between those samples.
+
+### 13) A point-blank homing rocket can explode without hitting its target
+
+The rocket updater (`0x414820`) checks its distance to the stored target
+position before it checks for damage. Inside 0.4 units it plays the
+explosion effect and retires the rocket. In the Windows launch and impact
+routines, a rocket fired straight at an asteroid from 1.1 units away
+exploded, left the asteroid active and awarded zero. From 1.3 units away
+the same rocket hit for 10 points. Android's updater (`0x635d4`) has the
+same early return.
+
+### 14) A jumping snail can pass through the visible heart
+
+The heart sprite bobs up to 0.6 units above its base (`0x43ecc0`).
+Collection checks for a vertical separation below 0.4 from the fixed base
+(`0x444cf0`). On Loopsville's Danger Ramps, a controlled approach passed
+within 0.27 units of the drawn heart at `z = 384.5`, but the heart stayed
+active. In the x86 collision routine, placing the snail at the raised
+sprite center missed. Placing it at the base collected it.
+
+### 15) Salt calculates a distance fade that the renderer never uses
+
+`cRSalt::AI` (`0x441c10`) stored fade values of 0, 0.5 and 1 at
+distances of 46, 23 and 0 units in the Windows probe. At every distance
+the next instruction sequence set the body's alpha to 0.9. The shared salt
+mesh also lacks the per-draw tint flag. Original submitted vertex alpha 255
+at every distance tested. Ultimate submitted 0 and 229 for a distant and a
+nearby crystal sharing the mesh in the same frame. Camera fog is separate.
+
+### 16) Time Trial undercounts the finish tick
+
+The finish code (`0x43c70c`) converts the fraction of the tick spent
+reaching the line into seconds. It passes those seconds to `cRTime::Add`
+(`0x441b90`), which expects ticks and divides by 60 again. For a halfway
+crossing the x86 clock advanced 0.139 ms where it should advance 8.333 ms.
+
+The Windows recording in `tests/fixtures/replays/ScoreC.windows-2026-04-17.dat`
+makes the effect visible. “Watch Best Trial” on route VI, “Keep Still!”,
+reaches the finish 12.028 ms into the tick and credits 0.200 ms. The saved
+and replayed time reads `0:30:76`. Using the crossing fraction once gives
+`0:30:77`. Android's finish code (`0x7d7ac`) also converts twice.
+
+### 17) Ctrl+Enter bypasses the high-score name limit
+
+Enter 16 letters in a new high-score name. The Windows editor refuses
+another letter but accepts Left Ctrl+Enter as a line break. Enter then submits
+a 17-character name. `cRBorder::InputText` (`0x4035b0`) checks the length
+for ordinary characters and skips that check when inserting the game's
+`>` line-break marker. The original keyboard reader and editor reproduced
+the difference with the same full name.
+
+### 18) The “Under Construction” route card drops its quotation marks
+
+Postal XXV's route description puts double quotes around “Under
+Construction”. Windows `FontASCIIRemap` (`0x449d20`) maps a double quote
+to slot `0x35`, the blank, although the menu atlas has the quote at
+`0x40`. The font draw skips blank slots. Android (`0x31a84`) and iOS
+(`0x0e94c`) map the same character to the quote glyph.
+
+### 19) A quick click can leave “Click to Start” waiting
+
+The Windows message handler (`0x4074b0`) sets the button latch on press
+and clears it on release. If both messages arrive before one input poll,
+the press is lost. Running both messages through the original window
+procedure, button reader and game input left the start prompt in state 2
+(waiting). Moving only the release until after the poll produced pressed
+bit `0x4000` and advanced the same prompt to state 3.
+
+### 20) Windows uptime coarsens the frame clock and can freeze the game
+
+The main loop (`0x406fc7`) stores absolute system uptime in single-precision
+seconds before subtracting the previous timestamp. With clock samples one
+millisecond apart, its timestamps advanced in 62.5 ms steps at eight days
+of uptime, 125 ms at sixteen days, and 500 ms at 49 days.
+
+The underlying 32-bit millisecond clock wraps about every 49.7 days. With
+the previous sample at `0xfffffff0` and zero accumulated time, the x86
+loop waited at both `0xffffffff` and zero. Even the largest possible new
+timestamp only equaled the stored one. In that state the game never
+reaches the next message pump. The port uses its hosts' clocks.
