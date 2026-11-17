@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import sys
 import tarfile
+from urllib.error import URLError
 
 import pytest
 
@@ -125,9 +126,52 @@ def test_live_verification_checks_build_identity_and_every_file(tmp_path, monkey
     deploy.verify_site(site, "https://snail.example")
     assert len(calls) == 5
     assert all(f"?revision={'a' * 40}" in url for url in calls)
+    monkeypatch.setattr(deploy, "LIVE_RETRY_SECONDS", 0)
     monkeypatch.setattr(deploy, "download", lambda *args: b"old deployment")
     with pytest.raises(ValueError, match="live build.json"):
         deploy.verify_site(site, "https://snail.example")
+
+
+def test_live_verification_retries_stale_receipt_and_unavailable_file(tmp_path, monkeypatch):
+    site = site_receipt(tmp_path)
+    calls = []
+    delays = []
+
+    def fetch(url, size):
+        name = url.split("?")[0].rsplit("/", 1)[1]
+        calls.append(name)
+        if name == "build.json" and calls.count(name) == 1:
+            return b"old deployment"
+        if name == "snail-web.wasm" and calls.count(name) == 1:
+            raise URLError("asset unavailable")
+        return (site / name).read_bytes()
+
+    monkeypatch.setattr(deploy, "download", fetch)
+    monkeypatch.setattr(deploy, "sleep", delays.append)
+    deploy.verify_site(site, "https://snail.example")
+    assert calls[:2] == ["build.json", "build.json"]
+    assert calls.count("snail-web.wasm") == 2
+    assert len(calls) == 7
+    assert delays == [5, 5]
+
+
+def test_live_verification_shares_retry_deadline_across_files(tmp_path, monkeypatch):
+    site = site_receipt(tmp_path)
+    delays = []
+
+    def fetch(url, size):
+        name = url.split("?")[0].rsplit("/", 1)[1]
+        if not delays or name == "snail-web.wasm":
+            return b"old deployment"
+        return (site / name).read_bytes()
+
+    monkeypatch.setattr(deploy, "download", fetch)
+    monkeypatch.setattr(deploy, "LIVE_RETRY_SECONDS", 7)
+    monkeypatch.setattr(deploy, "monotonic", lambda: sum(delays))
+    monkeypatch.setattr(deploy, "sleep", delays.append)
+    with pytest.raises(ValueError, match="snail-web.wasm: size or SHA-256 mismatch"):
+        deploy.verify_site(site, "https://snail.example")
+    assert delays == [5, 2]
 
 
 def test_site_receipt_cannot_escape_output_directory(tmp_path):
