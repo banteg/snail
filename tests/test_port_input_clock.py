@@ -9,6 +9,10 @@ import pytest
 from snail.port_lockstep import layout_offsets
 from snail.symbols import REPO_ROOT
 
+WASM = REPO_ROOT / "port/zig-out/bin/snail-web.wasm"
+ASSETS = REPO_ROOT / "artifacts/bin"
+ARCHIVES = ("SnailMail.dat", "SnailMailExtras.dat")
+
 
 def test_sdl_clock_at_long_uptime(tmp_path):
     if not shutil.which("c++"):
@@ -64,19 +68,17 @@ for (const start of [8 * 86400_000, 2 ** 32 - 16]) {
     )
 
 
+@pytest.mark.skipif(
+    not shutil.which("zig")
+    or not shutil.which("node")
+    or not WASM.is_file()
+    or not all((ASSETS / archive).is_file() for archive in ARCHIVES),
+    reason="needs zig, node, the browser WASM and game archives",
+)
 @pytest.mark.parametrize("ultimate", [False, True], ids=["original", "ultimate"])
 def test_mouse_transitions_between_ticks(tmp_path, port_layout_env, ultimate):
-    wasm = REPO_ROOT / "port/zig-out/bin/snail-web.wasm"
-    assets = REPO_ROOT / "artifacts/bin"
-    archives = ("SnailMail.dat", "SnailMailExtras.dat")
-    if (
-        not shutil.which("node")
-        or not wasm.exists()
-        or not all((assets / archive).exists() for archive in archives)
-    ):
-        pytest.skip("needs node, the browser WASM and game archives")
-    for name in archives:
-        shutil.copyfile(assets / name, tmp_path / name)
+    for name in ARCHIVES:
+        shutil.copyfile(ASSETS / name, tmp_path / name)
     name = "ClickProbe"
     config = bytearray(196)
     config[0x60 : 0x60 + len(name)] = name.encode()
@@ -100,7 +102,7 @@ def test_mouse_transitions_between_ticks(tmp_path, port_layout_env, ultimate):
         [
             "node",
             REPO_ROOT / "tests/port_mouse_transitions.mjs",
-            wasm,
+            WASM,
             str(int(ultimate)),
             name,
         ],
