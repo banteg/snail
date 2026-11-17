@@ -1,5 +1,39 @@
 # cRSnail::SetWeapon @ 0x445920
 
+## 2026-10-31 lookup guard fix and variant replay
+
+VC6 schedules a `push edi` between `cmp eax, 0xbf` and `ja` on the
+uniform-channel candidate. Other candidates put a register move, a stack
+store or a `lea` there. The old matcher required adjacent `cmp` and `ja`,
+which made it disassemble the 192-byte movement lookup as code. The
+padding explanation in the earlier entries was incorrect.
+
+The replay built 568 distinct source inputs with msvc6.3 in the current
+191-function SubGame unit. It covered all 122 distinct source hashes in
+the recorded mutation sweeps, ported the applicable mutations to the
+recovered default arm, and replayed the September and October probes.
+Another 288 inputs reconstructed the documented flag, dispatch and tail
+combinations. The original 216-case generator was unavailable.
+Both scorers saw the same object for each input. The fixed matcher recognized
+the table in all 568, including 397 that the old matcher missed.
+
+| Source | Old normalized | Fixed normalized | Structural | Objdiff | Candidate / native instructions |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Committed source | 77.51% | 77.51% | 93.29% | 95.42% | 247 / 249 |
+| Uniform-channel lead, source hash `754c3506` | 53.31% | 72.58% | 91.03% | 95.69% | 245 / 249 |
+| Channel-zero reference at function entry | 55.47% | 76.31% | 93.96% | 95.67% | 247 / 249 |
+| `cmp_bitand` and `expr_bitand_accumulate` | 82.03% | 82.03% | 97.36% | 90.46% | 261 / 249 |
+
+The function-entry reference was the highest normalized score among the
+397 corrected inputs. It computes the channel address at `+0x13`, before
+the dispatch. Native first computes it at `+0xab`, inside a reverse case.
+The two 82.03% spellings compile to the same body and recover the native
+callee-saved register choices. Each channel adds comparison and `setne`/`and`
+instructions where Windows writes the immediate flag directly. All four rows
+have 24 clean references. The committed source remains the baseline.
+
+## Recovered behavior and earlier baseline
+
 Current recovery: semantic-complete (`analysis` residual). Live Windows
 analysis establishes a void `cRSnail` member with one integer argument;
 Android and iOS both retain `cRSnail::SetWeapon(int)` in `SubGame.o`.

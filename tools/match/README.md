@@ -669,9 +669,11 @@ encoded-body comparison. Real branches and table entries into alignment or
 table data prevent recognition.
 
 Byte remaps feeding an indexed jump are represented as `db.lookup 0xNN`.
-Recognition requires the adjacent unsigned `cmp`/`ja` guard, a byte load into
-the jump index (with zero extension), and the bounded jump table. The native
-lookup symbol must have exactly the guarded byte count; the candidate needs
+Recognition requires an unsigned `cmp`/`ja` guard, a byte load into
+the jump index (with zero extension), and the bounded jump table. VC6 can
+schedule register saves, moves, address calculations and stack stores between
+the compare and branch if they preserve the flags and the lookup index. The
+native lookup symbol must have exactly the guarded byte count. The candidate needs
 a complete local COFF label and literal bytes with no overlapping relocation.
 Every byte must index an existing jump-table entry. Branches into the guard's
 interior, table data, or preceding alignment reject the interpretation.

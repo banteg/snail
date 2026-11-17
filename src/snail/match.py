@@ -1632,6 +1632,31 @@ class _InlineDataTable:
     default_target: int | None = None
 
 
+def _preserves_lookup_guard(insn: capstone.CsInsn, index_register: int) -> bool:
+    """VC6 can schedule register saves, moves and stack stores before JA."""
+    x86 = capstone.x86
+    operands = insn.operands
+    if insn.mnemonic == "push":
+        return (
+            index_register != x86.X86_REG_ESP and len(operands) == 1
+            and operands[0].type == x86.X86_OP_REG and operands[0].size == 4
+        )
+    if insn.mnemonic not in {"mov", "lea"} or len(operands) != 2:
+        return False
+    dest, src = operands
+    if dest.type == x86.X86_OP_REG:
+        # Accept full GPR writes only. A partial write could alias the index.
+        return dest.reg != index_register and dest.reg in {
+            x86.X86_REG_EAX, x86.X86_REG_EBX, x86.X86_REG_ECX, x86.X86_REG_EDX,
+            x86.X86_REG_ESI, x86.X86_REG_EDI, x86.X86_REG_EBP, x86.X86_REG_ESP,
+        }
+    return (
+        insn.mnemonic == "mov" and dest.type == x86.X86_OP_MEM
+        and dest.mem.base == x86.X86_REG_ESP and not dest.mem.index
+        and not dest.mem.segment and src.type in {x86.X86_OP_IMM, x86.X86_OP_REG}
+    )
+
+
 def _inline_lookup_table(
     data: bytes,
     instructions: list[capstone.CsInsn],
@@ -1643,7 +1668,7 @@ def _inline_lookup_table(
     relocation_by_offset: dict[int, ObjectRelocationReference],
     symbols: dict[int, ReferenceSymbol],
 ) -> tuple[int, _InlineDataTable] | None:
-    """Bound a VC6 byte remap by its adjacent unsigned guard and dispatch.
+    """Bound a VC6 byte remap by its unsigned guard and dispatch.
 
     A local label or readable-looking bytes alone are not a table. Require the
     complete cmp/ja/(xor)/byte-load/jmp chain, matching index registers, a real
@@ -1697,7 +1722,10 @@ def _inline_lookup_table(
         ):
             return None
         guard_index -= 1
-    compare, branch = instructions[guard_index:guard_index + 2]
+    branch = instructions[guard_index + 1]
+    while guard_index > 0 and _preserves_lookup_guard(instructions[guard_index], index_register):
+        guard_index -= 1
+    compare = instructions[guard_index]
     if (
         compare.mnemonic != "cmp"
         or len(compare.operands) != 2

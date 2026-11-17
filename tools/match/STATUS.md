@@ -14,7 +14,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
 **15** non-exact scratch-backed functions hold **39712 target bytes** without proof-grade credit and **1210 fuzzy-gap bytes**. The top 5 by fuzzy gap hold **90.8%** of that gap; the top 10 hold **99.7%**.
 
-Current-baseline experiments cover **0 functions / 0 gap bytes**; **15 / 1210** are historical-only; **0 / 0** have no recorded experiments.
+Current-baseline experiments cover **1 functions / 212 gap bytes**; **14 / 997** are historical-only; **0 / 0** have no recorded experiments.
 
 Evidence labels are baseline-epoch aware. `historical-only` means no recorded experiment has a verified current baseline: records may have different input hashes or lack baseline identity. Unversioned records do not prove that the source or generated code changed. Inspect their hypotheses before replaying or dismissing them. Experiment counts never label a lane stalled or exhausted. Recovery and residual labels remain manual source assessments, not stopping rules.
 
@@ -36,7 +36,7 @@ Proof blockers (overlapping extents): encoding: 4 functions / 10944 bytes; instr
 | 10 | initialize_dip_path_template_pair | 2400 | 4 | 99.85% | 1/1 | instructions | semantic-complete | analysis | historical-only | 0/59 | repeated-variants,repeated-specs,metric-tradeoffs,variant-errors,historical-only,stale-dependencies |
 | 11 | border_input_text | 1584 | 16 | 99.66% | 3/0 | instructions | semantic-complete | analysis | historical-only | 0/16 | metric-tradeoffs,historical-only,stale-dependencies |
 | 12 | register_font_texture_sheet | 1040 | 139 | 92.50% | 21/20 | instructions | semantic-complete | analysis | historical-only | 0/26 | repeated-variants,metric-tradeoffs,historical-only,stale-dependencies |
-| 13 | set_snail_weapon | 944 | 212 | 93.29% | 31/29 | instructions | semantic-complete | analysis | historical-only | 0/12 | repeated-variants,historical-only,stale-dependencies |
+| 13 | set_snail_weapon | 944 | 212 | 93.29% | 31/29 | instructions | semantic-complete | analysis | current-active | 3/15 | repeated-variants,stale-dependencies |
 | 14 | try_enter_track_attachment_from_swept_motion | 800 | 8 | 99.02% | 2/2 | instructions | semantic-complete | analysis | historical-only | 0/13 | historical-only,stale-dependencies |
 | 15 | sample_smtrack_heightmap | 368 | 10 | 97.25% | 3/3 | instructions | semantic-complete | analysis | historical-only | 0/10 | repeated-variants,historical-only,stale-dependencies |
 
