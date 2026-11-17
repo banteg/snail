@@ -1,8 +1,8 @@
 {
-  "url": "https://github.com/banteg/snail/releases/download/v0.4.0/snail-port-assets-v5.tar.gz",
+  "url": "https://github.com/banteg/snail/releases/download/v0.4.0/snail-port-assets-v6.tar.gz",
   "bundle": {
-    "size": 14522725,
-    "sha256": "3752bc6ca89d12dfc5f9d26fff4e0319f2d81d5a535503e59408ab819017da82"
+    "size": 14526169,
+    "sha256": "4d0d47a30deb22f5dd415e2fc13db16fb76a8d748b008995a36f2d99becaf8c6"
   },
   "files": {
     "SnailMail.dat": {
@@ -10,8 +10,8 @@
       "sha256": "77385671c3f7513d5bdc3ca54983c58f76f3c41963a52a166f3b00af8e696576"
     },
     "SnailMailExtras.dat": {
-      "size": 4484542,
-      "sha256": "4697a4ec9cea18a669603c3edf9f94ab97ed2c76496ca51403e44d18be071793"
+      "size": 4488719,
+      "sha256": "ccdcf245e62127790c90543f5bb538b1c463f71d909f5f01524bdff5e726884c"
     }
   }
 }
