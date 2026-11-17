@@ -3,15 +3,24 @@
 import argparse
 import gzip
 import hashlib
+from http.client import HTTPException
 import io
 import json
 from pathlib import Path
+import sys
 import tarfile
+from time import monotonic, sleep
 import tomllib
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[2]
 ASSETS = {"SnailMail.dat", "SnailMailExtras.dat"}
+LIVE_RETRY_SECONDS = 90
+LIVE_RETRY_INTERVAL = 5
+
+
+class IdentityMismatch(ValueError):
+    """A downloaded or local file differs from its pinned identity."""
 
 
 def identity(data: bytes) -> dict:
@@ -20,7 +29,7 @@ def identity(data: bytes) -> dict:
 
 def checked(data: bytes, expected: dict, name: str) -> bytes:
     if identity(data) != expected:
-        raise ValueError(f"{name}: size or SHA-256 mismatch")
+        raise IdentityMismatch(f"{name}: size or SHA-256 mismatch")
     return data
 
 
@@ -95,17 +104,37 @@ def write_receipt(root: Path, site: Path, revision: str, ref: str, manifest: dic
     return receipt
 
 
+def verify_live_file(url: str, expected: dict, name: str, deadline: float) -> None:
+    while True:
+        try:
+            checked(download(url, expected["size"]), expected, name)
+            return
+        except (IdentityMismatch, OSError, HTTPException) as error:
+            remaining = deadline - monotonic()
+            if remaining <= 0:
+                raise
+            delay = min(LIVE_RETRY_INTERVAL, remaining)
+            print(f"Retrying live verification in {delay:.1f}s ({error})", file=sys.stderr, flush=True)
+            sleep(delay)
+
+
 def verify_site(site: Path, url: str | None = None) -> None:
     raw = (site / "build.json").read_bytes()
     receipt = json.loads(raw)
-    if url:
-        query = f"?revision={receipt['revision']}"
-        checked(download(f"{url.rstrip('/')}/build.json{query}", len(raw)), identity(raw), "live build.json")
-    for name, expected in receipt["files"].items():
+    files = receipt["files"]
+    for name in files:
         if Path(name).name != name or name in {".", ".."}:
             raise ValueError("invalid site file name")
-        data = download(f"{url.rstrip('/')}/{name}{query}", expected["size"]) if url else (site / name).read_bytes()
-        checked(data, expected, name)
+    if url:
+        base = url.rstrip("/")
+        query = f"?revision={receipt['revision']}"
+        deadline = monotonic() + LIVE_RETRY_SECONDS
+        verify_live_file(f"{base}/build.json{query}", identity(raw), "live build.json", deadline)
+        for name, expected in files.items():
+            verify_live_file(f"{base}/{name}{query}", expected, name, deadline)
+        return
+    for name, expected in files.items():
+        checked((site / name).read_bytes(), expected, name)
 
 
 def main() -> None:
