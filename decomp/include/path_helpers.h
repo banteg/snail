@@ -22,8 +22,8 @@ static inline void interpolate_path_center(
     float sample_f, float curve_count_f)
 {
     bank[sample_index].center_x =
-        (bank[loop_segment_count - 1].center_x - bank[0].center_x)
-        * sample_f / curve_count_f + bank[0].center_x;
+        bank[0].center_x + sample_f *
+        (bank[loop_segment_count - 1].center_x - bank[0].center_x) / curve_count_f;
 }
 
 static __forceinline void reset_primary_sample(AttachmentSample *&bank,
@@ -35,6 +35,24 @@ static __forceinline void reset_primary_sample(AttachmentSample *&bank,
     ((AttachmentSample *)((char *)bank + sample_offset))[0].special_scalar = 0.0f;
     ((AttachmentSample *)((char *)bank + sample_offset))[0].lateral_scale = 1.0f;
     ((AttachmentSample *)((char *)bank + sample_offset))[0].transform.Identity();
+}
+
+static __forceinline void initialize_straight_loop_sample(
+    AttachmentSample*& primary, AttachmentSample* const& secondary, int sample_index,
+    int z_index, float center_x)
+{
+    reset_primary_sample(
+        primary, sample_index * (int)sizeof(AttachmentSample), center_x);
+    primary[sample_index].transform.position.x = primary[sample_index].center_x;
+    primary[sample_index].transform.position.y = 0.0f;
+    primary[sample_index].transform.position.z = (float)z_index;
+    primary[sample_index].delta_length = 1.0f;
+
+    secondary[sample_index].transform.Identity();
+    secondary[sample_index].transform.position.x = primary[sample_index].center_x;
+    secondary[sample_index].transform.position.y = 0.49000001f;
+    secondary[sample_index].transform.position.z = (float)z_index;
+    secondary[sample_index].delta_length = 1.0f;
 }
 
 static __forceinline void compute_terminal_deltas(Path *path)
@@ -90,6 +108,15 @@ static __forceinline void initialize_lead_pair(int index, int offset,
     ((AttachmentSample *)((char *)secondary + offset))->transform.position.y =
         0.49000001f;
     ((AttachmentSample *)((char *)secondary + offset))->transform.position.z = z;
+}
+
+static __forceinline void set_checker_texture(
+    cRFaceQuad& face, int column, int row, char* even_texture, char* odd_texture)
+{
+    if ((column & 1) == (row & 1))
+        face.texture_ref = g_texture_refs.Add(even_texture, 0, 0);
+    else
+        face.texture_ref = g_texture_refs.Add(odd_texture, 0, 0);
 }
 
 static __forceinline void build_extrapolated_strip_mesh(
@@ -177,16 +204,8 @@ static __forceinline void build_extrapolated_strip_mesh(
                         1;
                     facequads[face_offset].vertex_3 =
                         column + (row + 1) * ((unsigned short)width_cells + 1);
-                    if (((column ^ row) & 1) == 0)
-                    {
-                        facequads[face_offset].texture_ref =
-                            g_texture_refs.Add(texture_a, 0, 0);
-                    }
-                    else
-                    {
-                        facequads[face_offset].texture_ref =
-                            g_texture_refs.Add(texture_a, 0, 0);
-                    }
+                    set_checker_texture(
+                        facequads[face_offset], column, row, texture_a, texture_a);
                 }
                 else
                 {
@@ -199,16 +218,8 @@ static __forceinline void build_extrapolated_strip_mesh(
                     facequads[face_offset].vertex_3 =
                         (row + 1) * ((unsigned short)width_cells + 1) + column +
                         1;
-                    if (((column ^ row) & 1) == 0)
-                    {
-                        facequads[face_offset].texture_ref =
-                            g_texture_refs.Add(texture_b, 0, 0);
-                    }
-                    else
-                    {
-                        facequads[face_offset].texture_ref =
-                            g_texture_refs.Add(texture_b, 0, 0);
-                    }
+                    set_checker_texture(
+                        facequads[face_offset], column, row, texture_b, texture_b);
                 }
                 float u0 = (float)column * 0.125f;
                 float u1 = (float)(column + 1) * 0.125f;

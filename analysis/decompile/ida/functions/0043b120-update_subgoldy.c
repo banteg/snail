@@ -1,4 +1,4 @@
-/* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
+/* database: private replay copy of /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
 /* function: update_subgoldy @ 0x43b120 */
 /* selector: update_subgoldy */
 
@@ -57,7 +57,7 @@ void __thiscall update_subgoldy(Player *player)
   double v52; // st7
   cRSubLoc *v53; // eax
   cRSubLoc *v54; // esi
-  float v55; // eax
+  float y; // eax
   cRSubGame *v56; // ecx
   double v57; // st7
   double v58; // st7
@@ -75,7 +75,7 @@ void __thiscall update_subgoldy(Player *player)
   cRSubGame *v70; // ecx
   cRSubGame *v71; // ebp
   bool v72; // zf
-  double v73; // st7
+  double z; // st7
   double wobble_alpha; // st7
   float v75; // edx
   double v76; // st7
@@ -110,13 +110,7 @@ void __thiscall update_subgoldy(Player *player)
   ClickStartState v105; // eax
   double v106; // st7
   cRSubGame *v107; // eax
-  float x; // [esp-14h] [ebp-6Ch]
-  float v109; // [esp-14h] [ebp-6Ch]
-  float y; // [esp-10h] [ebp-68h]
-  float v111; // [esp-10h] [ebp-68h]
-  float z; // [esp-Ch] [ebp-64h]
-  float v113; // [esp-Ch] [ebp-64h]
-  float v114; // [esp+0h] [ebp-58h]
+  float v108; // [esp+0h] [ebp-58h]
   cRSubLoc *primary_attachment_cell; // [esp+4h] [ebp-54h]
   cRSubLoc *secondary_attachment_cell; // [esp+4h] [ebp-54h]
   float value; // [esp+4h] [ebp-54h]
@@ -128,23 +122,21 @@ void __thiscall update_subgoldy(Player *player)
   float source_cella; // [esp+18h] [ebp-40h]
   float source_celld; // [esp+18h] [ebp-40h]
   float source_cellb; // [esp+18h] [ebp-40h]
-  float v126; // [esp+1Ch] [ebp-3Ch]
-  float v127; // [esp+1Ch] [ebp-3Ch]
-  float v128; // [esp+1Ch] [ebp-3Ch]
-  float v129; // [esp+20h] [ebp-38h]
-  float v130; // [esp+20h] [ebp-38h]
-  float v131; // [esp+20h] [ebp-38h]
-  float v132; // [esp+24h] [ebp-34h]
-  float v133; // [esp+24h] [ebp-34h]
-  float v134; // [esp+24h] [ebp-34h]
+  float v120; // [esp+1Ch] [ebp-3Ch]
+  float v121; // [esp+20h] [ebp-38h]
+  float v122; // [esp+24h] [ebp-34h]
   Vec3 position; // [esp+28h] [ebp-30h] BYREF
-  float v136; // [esp+34h] [ebp-24h]
-  float v137; // [esp+38h] [ebp-20h]
-  float v138; // [esp+40h] [ebp-18h]
-  float v139; // [esp+44h] [ebp-14h]
-  float v140; // [esp+4Ch] [ebp-Ch]
-  float v141; // [esp+50h] [ebp-8h]
-  float v142; // [esp+54h] [ebp-4h]
+  float v124; // [esp+34h] [ebp-24h]
+  float v125; // [esp+38h] [ebp-20h]
+  float v126; // [esp+40h] [ebp-18h]
+  float v127; // [esp+44h] [ebp-14h]
+  float x; // [esp+4Ch] [ebp-Ch]
+  float v129; // [esp+50h] [ebp-8h]
+  float v130; // [esp+54h] [ebp-4h]
+  Vec3 v131; // 0:^0.12
+  Vec3 v132; // 0:^0.12
+  Vec3 v133; // 0:^30.12
+  Vec3 v134; // 0:^30.12
 
   if ( player->game->subgame_pause_gate != 0 )
   {
@@ -401,43 +393,31 @@ LABEL_101:
               }
               if ( (player->game->runtime_rows[get_track_cell_row_index(current_cell)].flags & 0x40) != 0 )
               {
-                v126 = player->velocity.x * 1.05;
-                v129 = player->velocity.y * 1.05;
-                v132 = player->velocity.z * 1.05;
+                v133.x = player->velocity.x * 1.05;
+                v133.y = player->velocity.y * 1.05;
+                v133.z = player->velocity.z * 1.05;
                 primary_attachment_cell = player->game->runtime_rows[get_track_cell_row_index(current_cell)].primary_attachment_cell;
-                x = p_position->x;
-                y = p_position->y;
-                z = p_position->z;
+                v131 = *p_position;
                 primary_row_index = get_track_cell_row_index(current_cell);
                 try_enter_track_attachment_from_swept_motion(
                   player->game->runtime_rows[primary_row_index].primary_attachment_cell->attachment_template_record,
-                  x,
-                  y,
-                  z,
-                  v126,
-                  v129,
-                  v132,
+                  v131,
+                  v133,
                   primary_attachment_cell);
               }
               if ( player->attachment_exit_pending != 0
                 && SLOBYTE(player->game->runtime_rows[get_track_cell_row_index(current_cell)].flags) < 0 )
               {
-                v127 = player->velocity.x * 1.05;
-                v130 = player->velocity.y * 1.05;
-                v133 = player->velocity.z * 1.05;
+                v134.x = player->velocity.x * 1.05;
+                v134.y = player->velocity.y * 1.05;
+                v134.z = player->velocity.z * 1.05;
                 secondary_attachment_cell = player->game->runtime_rows[get_track_cell_row_index(current_cell)].secondary_attachment_cell;
-                v109 = p_position->x;
-                v111 = p_position->y;
-                v113 = p_position->z;
+                v132 = *p_position;
                 secondary_row_index = get_track_cell_row_index(current_cell);
                 try_enter_track_attachment_from_swept_motion(
                   player->game->runtime_rows[secondary_row_index].secondary_attachment_cell->attachment_template_record,
-                  v109,
-                  v111,
-                  v113,
-                  v127,
-                  v130,
-                  v133,
+                  v132,
+                  v134,
                   secondary_attachment_cell);
               }
             }
@@ -576,12 +556,12 @@ LABEL_98:
         update_warning(&player->warning);
         if ( player->boost_one_tick != 0
           || player->follow_state.active != 0
-          || (v55 = p_position->y,
-              v134 = p_position->z + 0.49000001,
+          || (y = p_position->y,
+              v122 = p_position->z + 0.49000001,
               position.x = p_position->x,
-              position.z = v134,
+              position.z = v122,
               v56 = player->game,
-              position.y = v55,
+              position.y = y,
               get_track_grid_cell_at_world_position(v56, &position)->tile_id != SUBLOC_TILE_WALL2)
           || player->body.transform.position.y >= 6.5 )
         {
@@ -645,14 +625,14 @@ LABEL_98:
         {
           if ( player->boost_one_tick == 0 && player->control_override_active == 0 )
           {
-            v73 = v59->subgame_rate * 0.17;
-            if ( player->velocity.z >= v73 )
+            z = v59->subgame_rate * 0.17;
+            if ( player->velocity.z >= z )
             {
-              v73 = v59->subgame_rate * 0.5;
-              if ( player->velocity.z <= v73 )
-                v73 = player->velocity.z;
+              z = v59->subgame_rate * 0.5;
+              if ( player->velocity.z <= z )
+                z = player->velocity.z;
             }
-            player->velocity.z = v73;
+            player->velocity.z = z;
           }
         }
         else
@@ -773,9 +753,9 @@ LABEL_98:
           }
         }
 LABEL_287:
-        v140 = p_position->x;
-        v141 = p_position->y;
-        v142 = p_position->z;
+        x = p_position->x;
+        v129 = p_position->y;
+        v130 = p_position->z;
         if ( player->follow_state.active == 1 )
         {
           p_position->x = player->follow_state.output_position.x;
@@ -799,21 +779,21 @@ LABEL_287:
         v75 = p_position->z;
         player->cached_camera_target_world.y = p_position->y;
         player->cached_camera_target_world.z = v75;
-        v138 = wobble_alpha * player->body.transform.basis_forward.x;
-        v139 = wobble_alpha * player->body.transform.basis_forward.y;
+        v126 = wobble_alpha * player->body.transform.basis_forward.x;
+        v127 = wobble_alpha * player->body.transform.basis_forward.y;
         v76 = wobble_alpha * player->body.transform.basis_forward.z;
         wobble_y = player->sub_hover.wobble_y;
-        v128 = wobble_y * player->body.transform.basis_up.x;
-        v131 = wobble_y * player->body.transform.basis_up.y;
+        v120 = wobble_y * player->body.transform.basis_up.x;
+        v121 = wobble_y * player->body.transform.basis_up.y;
         v78 = wobble_y * player->body.transform.basis_up.z;
         wobble_x = player->sub_hover.wobble_x;
         position.x = wobble_x * player->body.transform.basis_right.x;
         position.y = wobble_x * player->body.transform.basis_right.y;
         v80 = wobble_x * player->body.transform.basis_right.z;
-        v136 = position.x + v128;
-        v137 = position.y + v131;
-        position.x = v136 + v138;
-        position.y = v137 + v139;
+        v124 = position.x + v120;
+        v125 = position.y + v121;
+        position.x = v124 + v126;
+        position.y = v125 + v127;
         player->cached_camera_target_world.x = position.x + player->cached_camera_target_world.x;
         player->cached_camera_target_world.y = position.y + player->cached_camera_target_world.y;
         player->cached_camera_target_world.z = v76 + v78 + v80 + player->cached_camera_target_world.z;
@@ -821,7 +801,7 @@ LABEL_287:
         if ( skin_hold_ticks > 0 )
           player->damage_gauge.skin_hold_ticks = skin_hold_ticks - 1;
         if ( player->follow_state.active == 1 )
-          p_position->x = v140;
+          p_position->x = x;
         v82 = player->game->subgame_rate * 0.037037037;
         player->lane_lean_progress_step = v82;
         if ( player->lane_lean_state != 0 )
@@ -1105,9 +1085,9 @@ LABEL_40:
     v20 = player->game;
     if ( v20->replay_update_cursor != 0 )
     {
-      v114 = player->body.transform.position.z - g_replay_accum_z;
+      v108 = player->body.transform.position.z - g_replay_accum_z;
       v20->current_high_score_record.run_records[v20->replay_update_cursor].delta_z = convert_math_type32_to_16(
-                                                                                        v114,
+                                                                                        v108,
                                                                                         32.0);
       v21 = convert_math_type16_to_32(
               player->game->current_high_score_record.run_records[player->game->replay_update_cursor].delta_z,

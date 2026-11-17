@@ -21,7 +21,7 @@ from collections.abc import Callable, Collection, Iterator
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field, replace
-from functools import cache
+from functools import cache, cached_property
 from pathlib import Path
 from threading import Lock
 from typing import Any
@@ -127,10 +127,18 @@ class ReferenceSymbol:
     allowed_postbase_offsets: tuple[int, ...] = ()
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True)
 class ReferenceSymbolManifest:
     name: str
     symbols: tuple[ReferenceSymbol, ...] = ()
+
+    @cached_property
+    def _names(self) -> dict[str, ReferenceSymbol]:
+        return _reference_symbol_by_name(self)
+
+    @cached_property
+    def _local_labels(self) -> dict[str, tuple[ReferenceSymbol, ...]]:
+        return _reference_symbol_by_local_label(self)
 
 
 def _parse_hex_or_int(value: object, *, field_name: str) -> int:
@@ -819,28 +827,21 @@ def _reference_symbol_by_local_label(
     return {name: tuple(symbols) for name, symbols in by_name_lists.items()}
 
 
-def _reference_key_by_name(
-    reference_manifest: ReferenceSymbolManifest | None,
-) -> dict[str, str]:
-    return {
-        name: _format_reference_key(symbol)
-        for name, symbol in _reference_symbol_by_name(reference_manifest).items()
-    }
-
-
 def _reference_key_for_symbol_name(
     reference_manifest: ReferenceSymbolManifest | None,
     name: str,
 ) -> str | None:
-    by_name = _reference_key_by_name(reference_manifest)
-    return by_name.get(name) or by_name.get(_canonical_symbol_name(name))
+    symbol = _reference_symbol_for_symbol_name(reference_manifest, name)
+    return _format_reference_key(symbol) if symbol is not None else None
 
 
 def _reference_symbol_for_symbol_name(
     reference_manifest: ReferenceSymbolManifest | None,
     name: str,
 ) -> ReferenceSymbol | None:
-    by_name = _reference_symbol_by_name(reference_manifest)
+    if reference_manifest is None:
+        return None
+    by_name = reference_manifest._names
     return by_name.get(name) or by_name.get(_canonical_symbol_name(name))
 
 
@@ -850,7 +851,9 @@ def _reference_symbol_for_local_label(
     *,
     kind: str | None = None,
 ) -> ReferenceSymbol | None:
-    candidates = _reference_symbol_by_local_label(reference_manifest).get(name, ())
+    if reference_manifest is None:
+        return None
+    candidates = reference_manifest._local_labels.get(name, ())
     if kind is not None:
         candidates = tuple(symbol for symbol in candidates if symbol.kind == kind)
     return candidates[0] if len(candidates) == 1 else None
@@ -5261,6 +5264,7 @@ def _scratch_include_headers(
     config: ScratchConfig,
     match_root: Path,
     *,
+    sources: set[Path] | None = None,
     resolver: _ScratchIncludeResolver | None = None,
 ) -> tuple[Path, ...]:
     """Return project and compiler headers transitively included by a scratch.
@@ -5271,12 +5275,9 @@ def _scratch_include_headers(
     literal includes are conservatively tracked without preprocessing.
     """
     resolver = resolver or _ScratchIncludeResolver(match_root)
-    unit = scratch_translation_unit(config, match_root)
-    sources = (
-        {scratch_source_path(member) for member in unit.members}
-        if unit
-        else {config.source_path}
-    )
+    if sources is None:
+        unit = scratch_translation_unit(config, match_root)
+        sources = {scratch_source_path(member) for member in unit.members} if unit else {config.source_path}
     # CL resolves relative /I and /FI paths from its working directory, a
     # private directory inside build/.
     compile_dir = config.directory / "build" / ".compile"
@@ -5383,12 +5384,14 @@ def _scratch_build_dependencies(
         sorted(path for path in compiler_bin.glob("*") if path.suffix.lower() == ".dll")
     )
     unit = scratch_translation_unit(config, match_root)
-    unit_inputs = (
-        (match_root / "translation_units.json",)
-        + tuple(path for member in unit.members
-                for path in (scratch_source_path(member), member / "scratch.conf"))
-        if unit else (config.source_path,)
-    )
+    sources = tuple(scratch_source_path(member) for member in unit.members) if unit else (config.source_path,)
+    if unit:
+        unit_inputs = (match_root / "translation_units.json",) + tuple(
+            path for member, source in zip(unit.members, sources)
+            for path in (source, member / "scratch.conf")
+        )
+    else:
+        unit_inputs = sources
     runner = _scratch_wibo_path(match_root)
     return (
         *unit_inputs,
@@ -5396,7 +5399,7 @@ def _scratch_build_dependencies(
         *((runner,) if runner else ()),
         compiler_bin / "CL.EXE",
         *compiler_dlls,
-        *_scratch_include_headers(config, match_root, resolver=include_resolver),
+        *_scratch_include_headers(config, match_root, sources=set(sources), resolver=include_resolver),
     )
 
 
@@ -5454,8 +5457,8 @@ def scratch_dependency_sha256(
     return hashlib.sha256(encoded).hexdigest()
 
 
-def _experiment_epoch_path_label(path: Path, match_root: Path) -> str:
-    resolved = path.resolve()
+def _experiment_epoch_path_label(resolved: Path, match_root: Path) -> str:
+    """Label a dependency already resolved by scratch_experiment_epoch."""
     if resolved.is_relative_to(match_root):
         return f"match/{resolved.relative_to(match_root).as_posix()}"
     if resolved.is_relative_to(REPO_ROOT):
@@ -5503,15 +5506,10 @@ def scratch_experiment_epoch(
         }
     )
     dependencies.update(path.resolve() for path in _EXPERIMENT_SCORING_INPUTS)
-    for path in sorted(
-        dependencies,
-        key=lambda value: (
-            _experiment_epoch_path_label(value, match_root),
-            str(value),
-        ),
-    ):
+    labels = {path: _experiment_epoch_path_label(path, match_root) for path in dependencies}
+    for path in sorted(dependencies, key=lambda p: (labels[p], str(p))):
         digest.update(b"\0path\0")
-        digest.update(_experiment_epoch_path_label(path, match_root).encode())
+        digest.update(labels[path].encode())
         try:
             content_hash = _file_sha256(path)
         except OSError:

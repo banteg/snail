@@ -4526,6 +4526,9 @@
       "name": "bn_attachment_entry_owner_graph",
       "artifact": "analysis/decompile/binja/functions/0042c770-try_enter_track_attachment_from_swept_motion.c",
       "required_substrings": [
+        "fconvert.t(sweep.x) + fconvert.t(position.x)",
+        "fconvert.t(position.y) + fconvert.t(sweep.y)",
+        "fconvert.t(position.z) + fconvert.t(sweep.z)",
         "->segment_count",
         "->secondary_samples",
         "sample->inverse_matrix",
@@ -4551,6 +4554,8 @@
       "required_substrings": [
         "void __thiscall try_enter_track_attachment_from_swept_motion(",
         "cRPath *self,",
+        "Vec3 position,",
+        "Vec3 sweep,",
         "cRSubLoc *source_cell)",
         "PathTemplateSample *",
         "self->secondary_samples[i]",

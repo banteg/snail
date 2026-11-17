@@ -184,3 +184,27 @@ does:
 | the same, with `(pattern_char = pattern[pattern_index]) != 0` in the condition | 92.31%, byte-identical |
 
 No source change.
+
+## 2026-11-09: recover the typed archive walk in the whole RShell unit
+
+Windows reads the current index's path at offset 4 and increments its byte
+offset by 12 on each pass. The matching sibling
+`load_file_bytes_from_archive_or_fs` indexes `ArchiveIndex::entries` directly.
+Use that same field here: VC6 generates the byte offset as an induction
+variable for the single source index, and reloads the global archive pointer
+at the loop tail. The explicit byte-pointer cast, second counter, cached index
+pointer and duplicate first-character check can all be removed. The loop
+continues to read the count and entries from the current global on each pass.
+
+Compared the extracted bytes and relocation fingerprints of **all 55**
+functions before and after compiling the complete RShell unit with VC6 SP3.
+Every fingerprint is identical. The enumerator remains **92.31%**, 182/182
+instructions, prefix 9, with 26 clean references. Its code-and-relocations
+fingerprint is `d77f03b97b723ad87edd6766d419b6953f663395e97ef1be7adb22a7ba5440cb`.
+
+An alternative that directly compares `RstrASC(basename[name_index])` with
+`RstrASC(pattern[pattern_index])` in the wildcard guard recovers both native
+stack-index slots and the native spilled first call result. It preserves the
+pattern **pointer** in EBX, however, and reloads its byte after the first call.
+Windows loads the byte into BL before that call. This version scores 87.36%
+with 182/182 instructions. It was not promoted.

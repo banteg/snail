@@ -1,7 +1,8 @@
 # cRBorder::AI @ 0x402820
 
-Current recovery: semantic-complete (`compiler,references` residual). Binary
-Ninja types the Windows entry as `void __thiscall(FrontendWidget*)`; the active
+**Exact under msvc6.3 in the whole Border translation unit** (2026-11-09).
+All 647 instructions match, with encoded-body proof and 96 verified references.
+Binary Ninja types the Windows entry as `void __thiscall(FrontendWidget*)`; the active
 BOD dispatcher ignores callback results. Android and iOS independently retain
 the same complete member as `cRBorder::AI()` in `Border.o`.
 
@@ -9,6 +10,28 @@ The recovered state machine covers flag snapshots and list teardown, mouse and
 shortcut dispatch, delayed actions, tooltip/twinkle updates, text input,
 RePosition/Draw, color easing, sound feedback, cursor history, and all three
 slider children. Exact sibling methods corroborate its owner and field graph.
+
+## 2026-11-09: input mask, published slider and weighted colours
+
+The secondary-button test reads the same button word as the primary-button
+test. VC6 selects the byte test itself. Removing the hand-written byte view
+also lets VC6 keep `1.0f` in the native register when the slider stores its
+increment **before** comparing against 0.9. The Wii, Android and iOS bodies
+all publish both slider changes before clamping.
+
+Fill and text each call the four-float setter with one hot and one idle
+contribution per channel. Wii `0x8001ea28..0x8001eacc` and the iOS
+[`cRBorder::AI`](../../../../analysis/decompile/ios/functions/0003c410-_ZN8cRBorder2AIEv.c)
+show the complementary weights for each setter and the reload between them.
+The local RGBA macro expresses both setters from this same formula. Its
+parenthesized weight arguments give VC6 the native x87 multiply order for
+all eight channels. A scalar inline helper that multiplies each weight by its
+channel before summing also matches. These spellings reproduce the same code;
+the original source spelling is unknown.
+
+All 33 previously exact Border members retain their proofs in the rebuilt unit.
+
+## Earlier isolated result
 
 Focused VC6 result: **95.83%**, 649/647 candidate/target instructions, prefix
 127/647, with 96 clean relocation operands and two candidate-only unaudited

@@ -2,7 +2,7 @@
 
 Hooks each post-allocation pass called by the pass driver (`C2+0x57fc2`)
 through the preserving observer and prints, for the selected C2 line labels
-(source line minus the function's definition line), the opcode/label sequence
+(source line minus the opening body brace line, plus one), the opcode/label sequence
 entering each pass, and marks the pass that reordered it. The /G5 list
 scheduler is `C2+0x374aa` (see scheduler.md). `--registers` also prints each
 node's operands, `[dst<-src]`, with allocated registers by name and other

@@ -268,7 +268,12 @@ def observer(profile, stock_source):
     source = source.replace(
         anchors[0],
         anchors[0]
-        + "    if (phase % 100 >= GRAPH_INDEX) { sched_observe(phase % 100, registers); return; }\n",
+        + """    if (phase % 100 >= GRAPH_INDEX) {
+        if (function_ordinal == SNAPSHOT_ORDINAL)
+            sched_observe(phase % 100, registers);
+        return;
+    }
+""",
     )
     source = source.replace(
         anchors[1],
@@ -1022,17 +1027,6 @@ def field_census(windows, first_line, minimum):
             )
 
 
-def label_base(source_text, definition):
-    """C2 line labels count from the line that closes the parameter list."""
-    depth, lines = 0, source_text.splitlines()
-    for number in range(definition, len(lines) + 1):
-        text = lines[number - 1].split("//", 1)[0]
-        depth += text.count("(") - text.count(")")
-        if depth <= 0 and "(" in "".join(lines[definition - 1 : number]):
-            return number
-    return definition
-
-
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("scratch", help="scratch name or directory")
@@ -1073,15 +1067,15 @@ def main():
     windows = decode(data)
     config = m.load_scratch_config(work)
     source_text = (work / "scratch.cpp").read_text()
-    functions = list(dict.fromkeys(w["function"] for w in windows))
     target = config.symbol or config.function
-    windows = [w for w in windows if w["function"] in (target, "_" + target)] or windows
-    first_line = label_base(source_text, rot.definition_line(source_text, target))
+    first_line = t.source_line_base(
+        source_text, target, member_path=work / "member.cpp",
+    )
     tail, problems = None, []
     for k, window in enumerate(windows):
         found, tail = replay(window, tail)
         problems += [f"window {k} {p}" for p in found]
-    object_path = m.compile_scratch(config)
+    object_path = out / result["object_paths"][0]
     native_positions(
         config, object_path, windows, t.function_events(events, result["function_ordinal"])
     )
@@ -1089,7 +1083,7 @@ def main():
     if args.json:
         print(json.dumps(windows, indent=1))
         return
-    print(f"trace: {out}  functions: {', '.join(functions)}")
+    print(f"trace: {out}  function: {target}  windows: {len(windows)}")
     print(f"metrics: {json.dumps(result['metrics'])}")
     for k, window in enumerate(windows):
         if args.line:

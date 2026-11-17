@@ -43,64 +43,63 @@ void cRPath::initialize_loopbow_path_template_pair(
     GetNodes();
     has_entry_mesh_transition = 1;
 
-    int i = 0;
+    int lead_index = 0;
     do {
-        float fi = (float)i;
+        float fi = (float)lead_index;
         float center_progress = fi * 0.14285715f;
-        primary_samples[i].center_x =
+        primary_samples[lead_index].center_x =
             (float)width_cells * 0.5f - 4.0f
             - center_progress * center_offset;
-        primary_samples[i].rotation_scalar_98 = 0.0f;
-        primary_samples[i].rotation_scalar_94 = 0.0f;
-        primary_samples[i].special_scalar = 0.0f;
-        primary_samples[i].lateral_scale = 1.0f;
-        primary_samples[i].transform.Identity();
-        primary_samples[i].transform.position.x = primary_samples[i].center_x;
-        primary_samples[i].transform.position.y = 0.0f;
-        primary_samples[i].transform.position.z = fi;
-        primary_samples[i].delta_length = 1.0f;
+        primary_samples[lead_index].rotation_scalar_98 = 0.0f;
+        primary_samples[lead_index].rotation_scalar_94 = 0.0f;
+        primary_samples[lead_index].special_scalar = 0.0f;
+        primary_samples[lead_index].lateral_scale = 1.0f;
+        primary_samples[lead_index].transform.Identity();
+        primary_samples[lead_index].transform.position.x = primary_samples[lead_index].center_x;
+        primary_samples[lead_index].transform.position.y = 0.0f;
+        primary_samples[lead_index].transform.position.z = fi;
+        primary_samples[lead_index].delta_length = 1.0f;
 
-        secondary_samples[i].transform.Identity();
-        secondary_samples[i].transform.position.x = primary_samples[i].center_x;
-        secondary_samples[i].transform.position.y = 0.49000001f;
-        secondary_samples[i].transform.position.z = fi;
-        secondary_samples[i].delta_length = 1.0f;
-        ++i;
-    } while (i < 7);
+        AttachmentSample* const& secondary_bank = secondary_samples;
+        secondary_bank[lead_index].transform.Identity();
+        secondary_bank[lead_index].transform.position.x = primary_samples[lead_index].center_x;
+        secondary_bank[lead_index].transform.position.y = 0.49000001f;
+        secondary_bank[lead_index].transform.position.z = fi;
+        secondary_bank[lead_index].delta_length = 1.0f;
+        ++lead_index;
+    } while (lead_index < 7);
 
-    i = 0;
-    int sample_index = curve_segment_count + 7;
+    int i = 0;
+    const int tail_start = curve_segment_count + 7;
     do {
-        primary_samples[sample_index].center_x =
+        primary_samples[tail_start + i].center_x =
             (1.0f - (float)i * 0.16666667f) * center_offset
             + (4.0f - (float)width_cells * 0.5f);
-        primary_samples[sample_index].rotation_scalar_98 = 0.0f;
-        primary_samples[sample_index].rotation_scalar_94 = 0.0f;
-        primary_samples[sample_index].special_scalar = 0.0f;
-        primary_samples[sample_index].lateral_scale = 1.0f;
-        primary_samples[sample_index].transform.Identity();
-        primary_samples[sample_index].transform.position.x =
-            primary_samples[sample_index].center_x;
-        primary_samples[sample_index].transform.position.y = 0.0f;
+        primary_samples[tail_start + i].rotation_scalar_98 = 0.0f;
+        primary_samples[tail_start + i].rotation_scalar_94 = 0.0f;
+        primary_samples[tail_start + i].special_scalar = 0.0f;
+        primary_samples[tail_start + i].lateral_scale = 1.0f;
+        primary_samples[tail_start + i].transform.Identity();
+        primary_samples[tail_start + i].transform.position.x =
+            primary_samples[tail_start + i].center_x;
+        primary_samples[tail_start + i].transform.position.y = 0.0f;
         float z = (float)(i + 7);
-        primary_samples[sample_index].transform.position.z = z;
-        primary_samples[sample_index].delta_length = 1.0f;
+        primary_samples[tail_start + i].transform.position.z = z;
+        primary_samples[tail_start + i].delta_length = 1.0f;
 
-        secondary_samples[sample_index].transform.Identity();
+        secondary_samples[tail_start + i].transform.Identity();
+        secondary_samples[tail_start + i].transform.position.x =
+            primary_samples[tail_start + i].center_x;
+        secondary_samples[tail_start + i].transform.position.y = 0.49000001f;
+        secondary_samples[tail_start + i].transform.position.z = z;
+        secondary_samples[tail_start + i].delta_length = 1.0f;
         ++i;
-        secondary_samples[sample_index].transform.position.x =
-            primary_samples[sample_index].center_x;
-        secondary_samples[sample_index].transform.position.y = 0.49000001f;
-        secondary_samples[sample_index].transform.position.z = z;
-        secondary_samples[sample_index].delta_length = 1.0f;
-        ++sample_index;
     } while (i < 7);
 
+    Vector3 circle_center(0.0f, curve_scale, 7.0f);
     i = 0;
     if (curve_segment_count > 0) {
         float secondary_radius = curve_scale - 0.49000001f;
-        Vector3 primary_right(1.0f, 0.0f, 0.0f);
-        Vector3 secondary_right(1.0f, 0.0f, 0.0f);
 
         do {
             float fi = (float)i;
@@ -128,37 +127,37 @@ void cRPath::initialize_loopbow_path_template_pair(
             primary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             primary_samples[sample_index].transform.position.z =
-                Sin(angle) * curve_scale + 7.0f;
+                Sin(angle) * curve_scale + circle_center.z;
             primary_samples[sample_index].transform.position.y =
-                curve_scale - Cos(angle) * curve_scale;
+                circle_center.y - Cos(angle) * curve_scale;
 
             secondary_samples[sample_index].transform.Identity();
             secondary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             secondary_samples[sample_index].transform.position.z =
-                Sin(angle) * secondary_radius + 7.0f;
+                Sin(angle) * secondary_radius + circle_center.z;
             secondary_samples[sample_index].transform.position.y =
-                curve_scale - Cos(angle) * secondary_radius;
+                circle_center.y - Cos(angle) * secondary_radius;
 
-            primary_samples[sample_index].transform.basis_right = primary_right;
+            primary_samples[sample_index].transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
             primary_samples[sample_index].transform.basis_up.x = 0.0f;
             primary_samples[sample_index].transform.basis_up.y =
-                curve_scale
+                circle_center.y
                 - primary_samples[sample_index].transform.position.y;
             primary_samples[sample_index].transform.basis_up.z =
-                7.0f - primary_samples[sample_index].transform.position.z;
+                circle_center.z - primary_samples[sample_index].transform.position.z;
             primary_samples[sample_index].transform.basis_up.Normalize();
             primary_samples[sample_index].transform.basis_forward.Cross(
                 primary_samples[sample_index].transform.basis_right,
                 primary_samples[sample_index].transform.basis_up);
 
-            secondary_samples[sample_index].transform.basis_right = secondary_right;
+            secondary_samples[sample_index].transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
             secondary_samples[sample_index].transform.basis_up.x = 0.0f;
             secondary_samples[sample_index].transform.basis_up.y =
-                curve_scale
+                circle_center.y
                 - secondary_samples[sample_index].transform.position.y;
             secondary_samples[sample_index].transform.basis_up.z =
-                7.0f - secondary_samples[sample_index].transform.position.z;
+                circle_center.z - secondary_samples[sample_index].transform.position.z;
             secondary_samples[sample_index].transform.basis_up.Normalize();
             secondary_samples[sample_index].transform.basis_forward.Cross(
                 secondary_samples[sample_index].transform.basis_right,
@@ -171,13 +170,13 @@ void cRPath::initialize_loopbow_path_template_pair(
                 Sin(half_angle) * half_sine * 0.52359879f);
 
             float primary_z_pivot = primary_samples[sample_index].transform.position.z;
-            primary_z_pivot -= 7.0f;
+            primary_z_pivot -= circle_center.z;
             primary_samples[sample_index].transform.position.z = primary_z_pivot;
-            secondary_samples[sample_index].transform.position.z -= 7.0f;
+            secondary_samples[sample_index].transform.position.z -= circle_center.z;
             primary_samples[sample_index].transform.Multiply(rotation);
             secondary_samples[sample_index].transform.Multiply(rotation);
-            primary_samples[sample_index].transform.position.z += 7.0f;
-            secondary_samples[sample_index].transform.position.z += 7.0f;
+            primary_samples[sample_index].transform.position.z += circle_center.z;
+            secondary_samples[sample_index].transform.position.z += circle_center.z;
 
             secondary_samples[sample_index].transform =
                 primary_samples[sample_index].transform;
@@ -283,44 +282,46 @@ void cRPath::initialize_loopbow_path_template_pair(
                             side
                             + 2 * (i + cell_index * width_cells);
                         if (side == 0) {
-                            facequads[face_offset].header_word = 0;
-                            facequads[face_offset].vertex_0 =
+                            cRFaceQuad& face = facequads[face_offset];
+                            face.header_word = 0;
+                            face.vertex_0 =
                                 i + cell_index * (width_cells + 1);
-                            facequads[face_offset].vertex_1 =
+                            face.vertex_1 =
                                 cell_index * (width_cells + 1) + i + 1;
-                            facequads[face_offset].vertex_2 =
+                            face.vertex_2 =
                                 (cell_index + 1) * (width_cells + 1)
                                 + i + 1;
-                            facequads[face_offset].vertex_3 =
+                            face.vertex_3 =
                                 i + (cell_index + 1) * (width_cells + 1);
 
                             if (((i ^ cell_index) & 1) == 0) {
-                                facequads[face_offset].texture_ref =
+                                face.texture_ref =
                                     g_texture_refs.Add(
                                         texture_a, 0, 0);
                             } else {
-                                facequads[face_offset].texture_ref =
+                                face.texture_ref =
                                     g_texture_refs.Add(
                                         texture_a, 0, 0);
                             }
                         } else {
-                            facequads[face_offset].header_word = 0;
-                            facequads[face_offset].vertex_0 =
+                            cRFaceQuad& face = facequads[face_offset];
+                            face.header_word = 0;
+                            face.vertex_0 =
                                 cell_index * (width_cells + 1) + i + 1;
-                            facequads[face_offset].vertex_1 =
+                            face.vertex_1 =
                                 i + cell_index * (width_cells + 1);
-                            facequads[face_offset].vertex_2 =
+                            face.vertex_2 =
                                 i + (cell_index + 1) * (width_cells + 1);
-                            facequads[face_offset].vertex_3 =
+                            face.vertex_3 =
                                 (cell_index + 1) * (width_cells + 1)
                                 + i + 1;
 
                             if (((i ^ cell_index) & 1) == 0) {
-                                facequads[face_offset].texture_ref =
+                                face.texture_ref =
                                     g_texture_refs.Add(
                                         texture_b, 0, 0);
                             } else {
-                                facequads[face_offset].texture_ref =
+                                face.texture_ref =
                                     g_texture_refs.Add(
                                         texture_b, 0, 0);
                             }

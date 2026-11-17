@@ -1,5 +1,202 @@
 # update_subgoldy @ 0x43b120
 
+## Byte-proven Windows player update
+
+The stock VC6 SP3 compiler reproduces the full 8,456-byte player update:
+2,087 instructions, the 16-byte inline table and all 315 references. Run
+`uv run snail match scratch update_subgoldy` to verify the retail body.
+All 190 other SubGame functions keep their code bytes and relocation
+destinations. VC6 renumbers local labels in two neighboring switch tables;
+both pass their original encoded-body checks.
+
+The movement pass borrows the player's position at the first cell lookup.
+During free motion it adds the velocity vector to that position and clamps
+lateral movement. After the HUD callbacks, the camera takes its initial
+target directly from the player's live transform. The original schedules
+the load of position Z ahead of the store of target Y. Chronologically
+earlier and later Windows relatives, and the iPad build, independently show
+the full live-position copy, temporary follow override and subsequent X
+restore.
+
+The ghost checks the selected route's activity, caps the cursor against its
+recorded count, then borrows the six-byte sample array. A corrected cursor
+of zero resets ghost Z; a nonzero cursor advances it. Holding the samples
+as a typed array reproduces both decoder paths and their register choices
+without manually computing any record offsets.
+
+## Ghost playback cursor and the Windows predecessor
+
+The player now corrects the replay cursor before indexing the ghost sample.
+A zero anchor selects sample zero. Otherwise the player adds the difference
+between the saved and live start cursors to the capped playhead. A nonzero
+index contributes a delta to `GhostZ`, while sample zero sets it. The Wii
+body below uses this corrected index in both decoder arms.
+
+Chromadrome 1 has the same six-byte records and scale-32 decoder. At
+`0x43899f` the reset path reads sample zero, while `0x4389b7` reads the
+relative sample. Both paths write the same accumulator. Its late playback
+check overrides the accumulator with the player's Z coordinate. Snail Mail
+retains that check after the decoder calls and also guards the block on
+entry. Chromadrome 2 retains the two decoder calls with eight-byte records.
+
+The source change preserves the complete Windows player body and relocation
+destinations. At this intermediate stage the Windows ghost branch order and register
+assignments still differed.
+
+## Completion speed bounds in the Windows games
+
+Both automatic speed limits now use a conditional three-argument clamp. At
+each site the stock VC6 build reloads the live forward speed from the player,
+makes the two x87 comparisons and emits one final store to `velocity.z`.
+A by-value function materializes its upper argument before entering the
+clamp and introduces a stack spill.
+
+The Chromadrome 1 retail player at `0x43811a` has the same reload pattern.
+In Chromadrome 2, the upper speed limit is itself the smaller of a scaled
+rate and a constant. The player selects that upper limit once for the
+comparison and again when it actually clamps the speed (`0x4a5270` and
+`0x4a529a`). This distinguishes conditional evaluation in the Windows
+games from an eagerly evaluated upper-bound parameter.
+
+The complete Snail Mail SubGame unit now emits 2,087/2,087 instructions
+for the player, with the first 1,650 and all 315 references matching.
+The remaining instruction differences are the camera copy and ghost playback.
+All 190 SubGame peers keep their previous results. The two peers whose COFF
+relocations changed, `update_garbage_hazard` and `update_click_start`, still
+pass the full encoded-body check, including their inline tables and all
+22 and 24 references respectively.
+
+A preserving SP3 trace shows how the compiler obtains the original loads.
+After global optimization, three `IL_FROUND` nodes for the player's speed
+remain at each clamp. All three reload the member when lowered. Passing a
+named speed by value gives it a stack home instead.
+
+## 2026-11-09: recovered position addition on the attachment transition
+
+The case-2 movement addition now has the native x87 operand order for all
+three components. The unattached movement arm also retains all three native
+orders. The SubGame unit improved from 99.28% to **99.38%** (2,089/2,087
+instructions), with a first mismatch at instruction 1,387 rather than 548.
+All 315 references pass. The other 190 members have identical section bytes
+and relocation destinations; VC6 renumbered local COFF labels.
+
+The root objects and loads are visible before the addition. Each playback
+sample is a six-byte `ReplayRunRecord`; its flags are tested after the
+lateral decoder call. The row-event handler obtains the index from
+`source_cell->Yi()` before accessing the matching `SubRow`. Forward
+acceleration loads the rate once and squares it (Windows `0x43b120` body,
+instructions 502–507). Naming that record, row index and rate gives ordinary
+C++ for these operations and recovers the later X addition. Removing any
+one of the three changes restores the previous operand order.
+
+The frontiers now start at the two course-completion speed clamps. PC
+stores a copy of speed to the field for the in-range case and reloads
+the field at each comparison; the reconstruction uses one additional
+stack spill in each clamp. Early iPhone 1.5 ARMv6 (0x29d48 and 0x2a234)
+and iPad 1.0.6 ARMv7 Thumb (0x67f18 and 0x683d0) both compare a single
+read of forward speed to a lower bound and, when necessary, to half the
+rate. The iPhone's camera block copies the complete live position before
+adding the wobble (0x2a324..0x2a398). Thus neither a repeated speed accessor
+nor a scalar, manually scheduled XYZ copy is supported by these releases.
+
+The iPad ghost reads one signed delta at 0x68702, decodes it at 0x68704
+and conditionally adds the accumulator. iPhone and Windows have separate
+absolute and relative decoder calls. The structured Wii-style reset/advance
+still improves the structural comparison but regresses normalized matching
+to 96.15% on this input. The camera copy and ghost merge remain partial.
+
+## 2026-11-09: Wii cross-check of the replay cursor and completion clamps
+
+The Wii `cRSubGoldy` RTTI record at `0x808f3830` identifies the vtable at
+`0x80167518`. Its entry at `+8` points to `0x8004cea8..0x8004fdb0`.
+The pause gate, two speed clamps, ghost decode, and final compare against
+21,000 ticks independently identify `AI`. Addresses below refer to
+the [pinned US DOL](../../../../analysis/wii/tool-comparison-20260910/README.md).
+
+- At `0x8004f5d4..0x8004f5e4`, r4 takes the smaller of the live cursor and
+  sample count. At `0x8004f5e8..0x8004f60c`, r0 takes zero for a zero
+  anchor or `cursor + (record_start - anchor)` otherwise. Both decoder
+  paths **index with r0**, including the path where r0 is known zero
+  (`slwi` at `0x8004f618` and `0x8004f644`). The former sets the static at
+  `0x808f3ed4`; the latter adds the decoded sample to it. Wii therefore
+  independently corroborates the ordinary reset/advance source overlay
+  below. Its four-byte packed records and fixed sample bank differ from the
+  six-byte route-indexed Windows records, so the layout does not carry over.
+  Replaying the in-place correction under VC6 gives 96.05% with 8/11
+  structural differences. Separating clamped and adjusted indices into two
+  C++ locals gives 93.66% and 54/57.
+- At `0x8004ec84..0x8004ecc0` and `0x8004f280..0x8004f2b8`, f2 holds
+  the single read of velocity.z and f1 holds the single read of rate.
+  f0 holds rate times 0.17, then rate times 0.5 on the upper-bound path.
+  The middle case moves f2 to f0 before the common store. This supports
+  one scalar speed sample. It gives no evidence for a per-comparison speed
+  accessor. A rate snapshot shared by both bounds in each Windows clamp
+  regressed to 90.41%.
+- Wii adds position X to velocity X in both movement arms
+  (`0x8004d968` and `0x8004da60`). It saves all three position lanes,
+  applies the follow output, and restores only X
+  (`0x8004f2bc..0x8004f2f4`, `0x8004f4a0..0x8004f4a4`).
+  Expressing the sums in that operand order gives the same Windows score.
+  Computing the camera position as a sum with the completed offset, using
+  the Wii order of stores, scores 93.46%. Windows performs its camera
+  destination copy before the offset additions.
+
+All results used the registered SubGame unit, msvc6.3, and all 315 reference
+checks. The retained source scores 99.28% and remains partial.
+
+## 2026-11-09: signed ghost samples and the replay cursor
+
+Both decoder arguments now use the signed `ReplayRunRecord::delta_z` directly.
+Its type is the `short` accepted by `MathType16to32`. The iPhone ARMv6 and
+Android ARMv5 builds both use a signed halfword load. The first sample sets
+the function-static `GhostZ` and each relative sample adds to it, as in both
+mobile bodies. In the Android soft-float build, the reset cases at
+`0x7451c` and `0x7453c` branch to the initial-sample decode at `0x750b0`.
+The relative path begins at `0x74540`, calls the decoder, adds through
+`__aeabi_fadd` and stores the accumulator. Windows places the store after
+the two arms join.
+
+The retained change compiles to the same 2,089 instructions and has all
+315 references clean at 99.28%. Comparing both whole SubGame COFFs found
+identical section bytes and relocation destinations. VC6 renumbered local
+`$L` labels, each in the same section and at the same offset in both objects.
+
+A structured source overlay also reproduced the native order of both decoder
+arms without a backward `goto`. First reset or advance the cursor, then use
+the corrected cursor for the initial or relative sample:
+
+```cpp
+if (!anchor)
+    cursor = 0;
+else
+    cursor += TIME_TRIAL_RECORD_AT(record_block)->replay_start_cursor - anchor;
+
+if (!cursor)
+    GhostZ = MathType16to32(
+        TIME_TRIAL_RECORD_AT(record_block)->run_records[cursor].delta_z, 32.0f);
+else
+    GhostZ += MathType16to32(
+        TIME_TRIAL_RECORD_AT(record_block)->run_records[cursor].delta_z, 32.0f);
+```
+
+VC6 folds the zero index into the initial load. The branch targets and
+instruction offsets from `+0x1c1e` through the store at `+0x1c62` now agree
+with Windows, but that load gets AX instead of CX. The whole-TU result was
+96.05% normalized and 99.55% structural, with 8/11 changed instructions.
+Using a reference directly to `sub_high_score.time_trial_route_records[route]`
+with the same control flow gives the native CX and AX in the two arms.
+It also materializes the address of the record early, replacing native's
+`[eax+0x9441c2]` with `[eax+0x72]`, and scores 96.82% normalized. Both
+overlays were rejected. Native uses the route-indexed base across all
+the ghost record's fields; the mobile builds index the activity check but
+keep the sample array at a fixed game-relative location.
+
+For the two completion speed clamps, a conventional three-argument clamp
+with by-value speed scored 91.30%, and passing speed by const reference gave
+94.02%. A lower-bound test followed by an inline by-value minimum reproduced
+the native instruction count, but emitted the opposite first comparison and
+spilled speed on the second. It scored 99.04%, below the retained 99.28%.
+
 ## 2026-10-19: completion clamp mechanism (spelling rejected) and C2 residual analysis
 
 Source unchanged at **99.28%** normalized and structural (14/16 changed). An experimental spelling of the completion clamps reached **99.52%** (**10/10** changed, **2,087/2,087** instructions, prefix 548, 315 clean references) in the whole SubGame unit under msvc6.3, but it was not adopted (below).

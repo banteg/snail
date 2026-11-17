@@ -1,5 +1,39 @@
 # cRSnail::SetWeapon @ 0x445920
 
+## 2026-11-09 exact match from the Wii weapon selector
+
+The 191-function SubGame translation unit under the standard msvc6.3
+profile matches all 249 Windows instructions, all 24 references, and the
+940-byte encoded body. This includes the 192-byte remapping table and the
+seven local jump-table destinations. Four bytes of terminal padding follow.
+
+The Wii USA DOL preserves a copy of this function at
+`0x80052610..0x80052a00`. Its selector blocks at
+`0x800526a0..0x8005272c` assign the three targets in channel order
+(`r31`, `r30`, `r29`) in **nine separate arms**, ordered
+1, 2, 4, 8, 16, 32, 64, 192, 144. Cases 32, 64, and 192 each write
+(0, 0, 3). Cases 16 and 144 each write (2, 2, 0).
+The default jumps to the first transition without defining the three
+registers. The three transition blocks each publish one state and set the
+same changed flag. One final conditional at `0x800529cc` plays sound 25.
+These properties identify the function independently of any Windows score.
+The [Wii DOL tooling](../../../wii/spike.py) pins the original image hash.
+
+Writing those nine arms in the uniform-channel source closes the register
+allocation difference described below. The compiler emits the shared
+Windows jump-table destinations and duplicates the final sound exits.
+With the same channel-order assignments, grouping the three (0, 0, 3)
+cases drops the Windows result to 72.58%. Grouping the two (2, 2, 0)
+cases gives 72.18%. Keeping all nine arms but restoring the old per-case
+assignment order gives 98.80%. Each control uses the same compiler and
+translation unit.
+
+A preserving `c2/globalregs.py` trace of the exact source puts the second
+channel target at priority 38, up from 8 in the grouped switch. It now
+gets EBP ahead of the priority-36 channel-zero pointers, which take EBX.
+The constants 0 and 1 still have benefits 5 and 2. The nine-arm source
+therefore explains the native allocation under the ordinary VC6 rules.
+
 ## 2026-10-31 lookup guard fix and variant replay
 
 VC6 schedules a `push edi` between `cmp eax, 0xbf` and `ja` on the

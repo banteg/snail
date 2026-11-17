@@ -25,20 +25,7 @@ void set_input_controller_pointer_authored_xy(int slot, float authored_x, float 
 // Identical-code-folded with the empty cRSubGame::AddSpeedUp @ 0x43d880.
 void cRSubHover::Hover(Vector3&, float) {}
 
-// update_subgoldy's call views (decomp/game/SubGame/update_subgoldy.cpp): the
-// path receiver passes two vectors by value to the six-float definition, and the
-// floor sampler reads the definition's double through x87 as a float.
-struct SubgoldyPathView {
-    void try_enter_track_attachment_from_swept_motion(Vector3 position, Vector3 sweep, cRSubLoc* cell);
-};
-
-void SubgoldyPathView::try_enter_track_attachment_from_swept_motion(
-    Vector3 position, Vector3 sweep, cRSubLoc* cell)
-{
-    ((cRPath*)this)->try_enter_track_attachment_from_swept_motion(
-        position.x, position.y, position.z, sweep.x, sweep.y, sweep.z, cell);
-}
-
+// update_subgoldy reads the floor sampler's double through x87 as a float.
 struct SubgoldyFloorSamplerCallView {
     float sample_track_floor_height_at_position(Vector3* position);
 };

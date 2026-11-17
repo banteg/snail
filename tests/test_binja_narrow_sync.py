@@ -20879,14 +20879,13 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
     ) in binja_sync
     attachment_entry_prototype = (
         "void __thiscall try_enter_track_attachment_from_swept_motion("
-        "cRPath* self, float world_x, float world_y, float world_z, "
-        "float sweep_dx, float sweep_dy, float sweep_dz, "
-        "cRSubLoc* source_cell)"
+        "cRPath* self, Vec3 position, Vec3 sweep, cRSubLoc* source_cell)"
     )
     assert attachment_entry_prototype in binja_sync
     assert attachment_entry_prototype + ";" in ida_sync
-    assert "void __thiscall try_enter_track_attachment_from_swept_motion(" in analysis_header
-    assert "cRSubLoc* source_cell" in analysis_header
+    assert "".join((attachment_entry_prototype + ";").split()) in "".join(
+        analysis_header.split()
+    )
 
     attachment_search_prototype = (
         "bool __thiscall is_point_inside_track_attachment("

@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "pixel-origin",
+      "find": "                int y;\n            } coordinates;\n            coordinates.y = (int)(row * y_step);\n            do {\n                coordinates.x = (int)(column * x_step);\n                int row_base = (image->height - coordinates.y - 1) * image->width;\n                int pixel_index =\n                    (row_base + coordinates.x)\n                    * (image->bits_per_pixel >> 3);\n                unsigned char* pixel = image->pixels + pixel_index;\n                float value = (float)pixel[2];\n                float green = (float)pixel[1];\n                float blue = (float)pixel[0];",
+      "replacements": [
+        {
+          "name": "header-base",
+          "text": "                int y;\n            } coordinates;\n            coordinates.y = (int)(row * y_step);\n            do {\n                coordinates.x = (int)(column * x_step);\n                int row_base = (image->height - coordinates.y - 1) * image->width;\n                int pixel_index =\n                    (row_base + coordinates.x)\n                    * (image->bits_per_pixel >> 3);\n                unsigned char* pixel = (unsigned char*)image + pixel_index;\n                float value = (float)pixel[20];\n                float green = (float)pixel[19];\n                float blue = (float)pixel[18];"
+        },
+        {
+          "name": "coordinate-offset",
+          "text": "                int y;\n                int byte_offset;\n            } coordinates;\n            coordinates.y = (int)(row * y_step);\n            do {\n                coordinates.x = (int)(column * x_step);\n                int row_base = (image->height - coordinates.y - 1) * image->width;\n                coordinates.byte_offset =\n                    (row_base + coordinates.x)\n                    * (image->bits_per_pixel >> 3);\n                unsigned char* pixel = (unsigned char*)image + coordinates.byte_offset;\n                float value = (float)pixel[20];\n                float green = (float)pixel[19];\n                float blue = (float)pixel[18];"
+        },
+        {
+          "name": "coordinate-offset-advance-green",
+          "text": "                int y;\n                int byte_offset;\n            } coordinates;\n            coordinates.y = (int)(row * y_step);\n            do {\n                coordinates.x = (int)(column * x_step);\n                int row_base = (image->height - coordinates.y - 1) * image->width;\n                coordinates.byte_offset =\n                    (row_base + coordinates.x)\n                    * (image->bits_per_pixel >> 3);\n                unsigned char* pixel = (unsigned char*)image + coordinates.byte_offset;\n                float value = (float)pixel[20];\n                ++coordinates.byte_offset;\n                float green = (float)image->pixels[coordinates.byte_offset];\n                float blue = (float)pixel[18];"
+        }
+      ]
+    }
+  ]
+}

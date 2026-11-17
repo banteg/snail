@@ -12,12 +12,60 @@ garbage and slug collision trees, bounce, splash, wall impact, and the exact
 only by the kind-zero trail path and becomes each trail Sprite's opaque object
 reference; impact sprites deliberately retain the allocator sentinel.
 
-The scratch exports `?AI@cRSubGolb@@QAEXXZ`. Its current result is
-99.50%, 695/694 instructions, prefix 417, with all 71 references clean.
-The remaining differences are the direct active-state comparison and one
-deflection-product operand order. Their source shape is still unresolved.
-The persistent collision-side carrier previously tested is behaviorally wrong
-and is not retained.
+The scratch exports `?AI@cRSubGolb@@QAEXXZ`. The stock compiler now
+reproduces the full 2,656-byte body, including the table and all 71
+references. The [current result](RESULT.md) records the whole-unit check.
+
+## 2026-11-09: use the contact vector for both Z sign tests
+
+Both mobile exports test the sign of the contact vector's Z component before
+normalizing that same vector in the garbage and slug loops. Android reads
+`local_64` in the vector at `local_6c`, and iOS reads `local_40` in the vector
+at `local_48`. The Windows code compares the signed difference while copying
+the three components into the vector passed to Normalize. The source now
+tests `probe.z < 0.0f` at both sites and keeps the existing scalar Z distance
+for the magnitude test.
+
+Either sign-test change on its own restores the deflection Z product; using
+both follows the two mobile contact loops. The full Golb TU probe restores
+`fld [esp+0x10]; fmul [esp+0x1c]` without changing the deflection expression.
+The C2 trace of the compiled member's lines 222 and 224 now puts
+`deflect_speed` (slot `0x1ba`, cost `0x13740`) ahead of both X
+(`0x1af`, `0x135e0`) and Z (`0x1ad`, `0x135a0`).
+The full normalized diff now consists of native `cmp dword [esi+0x84], 1`
+versus candidate `mov eax, [esi+0x84]; dec eax` before the same branch.
+
+A direct `if (garbage->state == SUB_GARBAGE_STATE_ACTIVE)` yields
+694/694 instructions and 93.53%. The generated gate loads the state into
+EAX, puts 1 in EBX and compares EAX to EBX. This corrects the immediate
+comparison attributed to this form in the October 16 notes. Active-node
+iteration, a shared displacement vector as in `cRSubGoldy::Collision`,
+and a separate boolean for the broad-phase and radius tests all leave
+the state gate open. All eight other members of Golb.o retain their
+encoded-body matches.
+
+### Wii state and collision controls
+
+The Wii `cRSubGolb` RTTI record at `0x808f3820` identifies vtable
+`0x80167410`, installed by the player constructor. Its callback at
+`0x800497a0..0x8004afe4` handles the same flight, collision and retirement
+phases. The skip and path-follow bytes compare equal to 1 at `0x800497fc`
+and `0x80049820`. The projectile state and both garbage states are word
+compares with 1 at `0x80049814`, `0x8004a284` and `0x8004a4b8`. The slug
+loop accepts state 1 or 4 at `0x8004a574`; its bounce latch tests zero
+before storing byte 1 at `0x8004a900..0x8004a910`.
+
+Both garbage hits store state 2 followed by side 2 or 1 according to the
+sign of X, then call ScoreAdd with two zeros. Wii's first loop also calls
+`0x80031574` to test the high byte of the intersection of two flag words.
+The Windows active-state branch proceeds directly to vector subtraction.
+
+Using Wii's early retirement for lifetime and bounds and its 0, 1, 2 source
+order for the presentation switch, singly or together with the direct
+garbage gate, still produces 93.53% with 694 instructions. Expressing
+both projectile and garbage state gates as direct comparisons drops to
+89.27%, 693 instructions. The Wii compares corroborate the field widths and
+values; they do not distinguish an original C++ switch from an if.
 
 ## 2026-10-19: C2 mechanism corrections for the garbage gate and deflection Z product
 

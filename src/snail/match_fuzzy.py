@@ -4,15 +4,16 @@ The snapshot reference model is explicit; these are not recovered original TUs.
 Native encoded-body/reference certification is independent of this fuzzy score.
 """
 
-from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import math
 import os
-from pathlib import Path
 import platform
 import subprocess
 import tempfile
+from concurrent.futures import ProcessPoolExecutor
+from itertools import repeat
+from pathlib import Path
 
 from . import match as m
 from . import match_objdiff as snapshots
@@ -99,33 +100,46 @@ def score_objects(cli: Path, directory: Path) -> float:
     return percent / 100
 
 
+def _evaluate_snapshot(status, cli):
+    with tempfile.TemporaryDirectory(prefix="snail-fuzzy-") as temporary:
+        directory = Path(temporary) / "snapshot"
+        receipt = snapshots.export_snapshot(status.config.directory, directory)
+        native = json.loads((directory / "native-diagnostics.json").read_text())
+        if (
+            receipt["candidate_object_sha256"] != status.candidate_object_sha256
+            or native["match_ratio"] != status.ratio
+        ):
+            raise ValueError(
+                f"Fuzzy snapshot differs from native evidence: {status.config.function}"
+            )
+        return status.address, {
+            "ratio": score_objects(cli, directory),
+            "objects": receipt["objects"],
+        }
+
+
 def collect_scores(statuses, *, jobs: int):
+    statuses = tuple(statuses)
     cli = binary()
     cli_sha = hashlib.sha256(cli.read_bytes()).hexdigest()
 
-    def evaluate(status):
-        with tempfile.TemporaryDirectory(prefix="snail-fuzzy-") as temporary:
-            directory = Path(temporary) / "snapshot"
-            receipt = snapshots.export_snapshot(status.config.directory, directory)
-            native = json.loads((directory / "native-diagnostics.json").read_text())
-            if (
-                receipt["candidate_object_sha256"] != status.candidate_object_sha256
-                or native["match_ratio"] != status.ratio
-            ):
-                raise ValueError(
-                    f"Fuzzy snapshot differs from native evidence: {status.config.function}"
-                )
-            return status.address, {
-                "ratio": score_objects(cli, directory),
-                "objects": receipt["objects"],
-            }
-
-    with ThreadPoolExecutor(max_workers=jobs) as pool:
-        return dict(pool.map(evaluate, statuses)), {
-            "version": VERSION,
-            "sha256": cli_sha,
-            "config": CONFIG,
-        }
+    if jobs < 1:
+        raise ValueError("jobs must be positive")
+    if jobs > 1 and len(statuses) > 1:
+        # Snapshot export includes CPU-heavy native decoding and alignment.
+        # Each worker still builds and verifies its own snapshot before objdiff.
+        try:
+            pool = ProcessPoolExecutor(max_workers=min(jobs, len(statuses)))
+        except (NotImplementedError, PermissionError):
+            pool = None
+    else:
+        pool = None
+    if pool is None:
+        scores = dict(_evaluate_snapshot(status, cli) for status in statuses)
+    else:
+        with pool:
+            scores = dict(pool.map(_evaluate_snapshot, statuses, repeat(cli)))
+    return scores, {"version": VERSION, "sha256": cli_sha, "config": CONFIG}
 
 
 def validate_score(receipt, external):

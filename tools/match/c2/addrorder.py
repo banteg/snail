@@ -8,9 +8,10 @@ tool traces one scratch or overlay through Crimson's preserving observer. It
 captures the symbol record behind each symbol operand and every symbol-record
 allocation. It then lists each two-operand address sum with each operand's
 class, slot id and cost, and, for temporaries, their position n after the
-first CSE slot C0. Finally it lists the matcher's encoded differences and
-marks base/index swaps.
+first CSE slot C0. It reports base/index swaps in aligned normalized-equal
+instructions and retains the matcher's audited encoding differences when available.
 
+`--line` and `--nodes` use line numbers in the member source (or overlay).
 `--nodes LINE` also lists every commutative add/mul on one source line with
 its operands in sorted order. For x87 arithmetic the first operand is the
 one loaded (`fld`), the second becomes the memory or `st(i)` operand
@@ -22,7 +23,6 @@ one loaded (`fld`), the second becomes the memory or `st(i)` operand
 
 import argparse
 import json
-import re
 import struct
 import sys
 import tempfile
@@ -33,6 +33,7 @@ sys.path.insert(0, str(HERE))
 import trace as t
 
 import rotation as rot
+import sib_diff
 
 from snail import match as m
 
@@ -322,45 +323,12 @@ def line_nodes(event, label):
     return rows
 
 
-def body_line(source_text, symbol):
-    """C2 line labels count from the line before the function body's opening brace."""
-    lines = source_text.splitlines()
-    start = rot.definition_line(source_text, symbol)
-    for number in range(start, len(lines) + 1):
-        text = lines[number - 1]
-        if "{" in text:
-            return number - 1 if text.strip() == "{" else number
-    raise ValueError("Cannot find the function body")
-
-
-SIB = re.compile(r"\[(\w+) \+ (\w+)")
-
-
-def sib_differences(result):
-    rows = []
-    for difference in result.encoded_body_differences:
-        target = SIB.search(difference["target_asm"])
-        candidate = SIB.search(difference["candidate_asm"])
-        swapped = (
-            target is not None
-            and candidate is not None
-            and target.groups() == candidate.groups()[::-1]
-        )
-        rows.append(
-            dict(
-                difference,
-                swapped=swapped,
-            )
-        )
-    return rows
-
-
 def operand_text(o):
     n = f"  n={o['n']}" if o.get("n") is not None else ""
     return f"{o['class']:8} slot {o['id']:#6x}  cost {o['cost']:#x}{n}"
 
 
-def report(rows, differences, base, source_lines, only_line, c0):
+def report(rows, diagnostic, source_lines, only_line, c0):
     if c0 is not None:
         print(
             f"C0 (first CSE temporary slot): {c0:#x}; temporaries hash (slot mod 0x400) * 0x40"
@@ -369,8 +337,7 @@ def report(rows, differences, base, source_lines, only_line, c0):
         f"{'line':>5} {'node':>4}  {'access':14} first = SIB base / second = SIB index"
     )
     for row in rows:
-        line = base + row["label"]
-        row["line"] = line
+        line = row["line"]
         if only_line is not None and line != only_line:
             continue
         access = (
@@ -388,12 +355,11 @@ def report(rows, differences, base, source_lines, only_line, c0):
             f"{'':27}first  {operand_text(row['first'])}\n"
             f"{'':27}second {operand_text(row['second'])}{tie}"
         )
-    if differences:
-        print("\nencoded differences (native swaps base and index where marked):")
-    for d in differences:
+    print("\n" + sib_diff.summary(diagnostic))
+    for d in diagnostic["differences"]:
         kind = "swapped" if d["swapped"] else "other"
         print(
-            f"  +{d['offset']:#x} {kind}\n"
+            f"  {sib_diff.location(d)} {kind}\n"
             f"    target    {d['target_asm']}\n    candidate {d['candidate_asm']}"
         )
 
@@ -426,11 +392,11 @@ def main():
     c0, creation = cse_origin(allocations, function)
     event = t.function_event(events, function, address_pass)
     config = m.load_scratch_config(work)
-    source_text = (work / "scratch.cpp").read_text()
-    base = body_line(source_text, config.symbol or config.function)
-    object_path = m.compile_scratch(config)
+    source_text = (work / "member.cpp").read_text(encoding="utf-8")
+    base = t.source_line_base(source_text, config.symbol or config.function)
     rows = address_sums(event)
     for row in rows:
+        row["line"] = base + row["label"]
         for operand in (row["first"], row["second"]):
             operand["n"] = (
                 creation.get(operand["id"])
@@ -438,26 +404,14 @@ def main():
                 else None
             )
     manifest = m.load_function_symbol_manifest(m.DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH)
-    match = m.run_match(
-        obj_path=object_path,
-        function_name=config.function,
-        end_va=config.end_va,
-        symbol_name=config.symbol,
-        manifest=manifest,
-        image_path=m.REPO_ROOT / manifest.primary_target,
-    )
-    differences = sib_differences(match)
-    (out / "address-order.json").write_text(
-        json.dumps({"c0": c0, "sums": rows, "differences": differences}, indent=1)
-        + "\n"
-    )
+    _, diagnostic = sib_diff.from_object(config, out / result["object_paths"][-1], manifest)
+    payload = {"c0": c0, "sums": rows, **diagnostic}
+    (out / "address-order.json").write_text(json.dumps(payload, indent=1) + "\n")
     if args.json:
-        print(
-            json.dumps({"c0": c0, "sums": rows, "differences": differences}, indent=1)
-        )
+        print(json.dumps(payload, indent=1))
         return
     print(f"trace: {out}  metrics: {json.dumps(result['metrics'])}")
-    report(rows, differences, base, source_text.splitlines(), args.line, c0)
+    report(rows, diagnostic, source_text.splitlines(), args.line, c0)
     if args.nodes is not None:
         print(f"\ncommutative nodes on line {args.nodes} (first operand is loaded):")
         for row in line_nodes(event, args.nodes - base):

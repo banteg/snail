@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "phase-declaration",
+      "find": "    int curve_phase_index = 0;\n",
+      "replacements": [
+        {
+          "name": "single-index",
+          "text": "",
+          "requires": [
+            "angle/single-index",
+            "early-advance/single-index",
+            "curve-latch/single-index"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "angle",
+      "find": "(float)curve_phase_index * 6.2831855f",
+      "replacements": [
+        {
+          "name": "single-index",
+          "text": "(float)i * 6.2831855f",
+          "requires": [
+            "phase-declaration/single-index"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "early-advance",
+      "find": "            ++i;\n            ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))\n                ->transform.Identity();",
+      "replacements": [
+        {
+          "name": "single-index",
+          "text": "            ((PathAttachmentSample *)((char *)secondary_samples + sample_offset))\n                ->transform.Identity();",
+          "requires": [
+            "phase-declaration/single-index"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "curve-latch",
+      "find": "            curve_phase_index = i;",
+      "replacements": [
+        {
+          "name": "single-index",
+          "text": "            ++i;",
+          "requires": [
+            "phase-declaration/single-index"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "endpoint-yz",
+      "find": "    ((PathAttachmentSample *)((char *)secondary_samples + endpoint))\n        ->transform.position.y = 0.49000001f;\n    ((PathAttachmentSample *)((char *)secondary_samples + endpoint))\n        ->transform.position.z = endpoint_z;",
+      "replacements": [
+        {
+          "name": "position",
+          "text": "    Vector3& ball_position =\n        ((PathAttachmentSample *)((char *)secondary_samples + endpoint))->transform.position;\n    ball_position.y = 0.49000001f;\n    ball_position.z = endpoint_z;",
+          "conflicts": [
+            "primary-z/coordinate"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "primary-z",
+      "find": "    float endpoint_z = (float)endpoint_index;\n    ((PathAttachmentSample *)((char *)primary_samples + endpoint))\n        ->transform.position.z = endpoint_z;",
+      "replacements": [
+        {
+          "name": "coordinate",
+          "text": "    float& primary_z = primary_samples[endpoint_index].transform.position.z;\n    primary_z = (float)endpoint_index;\n    float endpoint_z = primary_z;",
+          "conflicts": [
+            "endpoint-yz/position"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,119 @@
-# Near match — 99.02% score, 204/204 instructions on standard flags
+# Byte-proven swept path search
+
+The stock VC6 SP3 Path build matches all 800 bytes of `cRPath::Search`,
+including 204 instructions and 47 resolved references. Both probes subtract
+their sample origin and rotate the result. The second probe first computes
+the endpoint as `sweep + position`.
+
+Implementing subtraction as a const member on the left-hand vector, with
+the right-hand vector passed by const reference, reproduces the native
+x87 operand order. At the endpoint Windows loads sweep X first, then
+position Y and position Z first. A private before/after build of every
+registered unit found identical code and relocation targets for all 784
+other candidates.
+
+The preserving VC6 trace identifies the ordinary compiler decision.
+Inline parameter propagation creates the sweep-X field at slot `0x142`
+and position-X at `0x131`. Copy propagation creates the Y and Z fields
+in the opposite order: position/sweep at `0x154/0x153` and
+`0x158/0x157`. Running the three alternate sources below against the
+member operator gives 99.02%, 99.02% and 98.04%, all with 47 references.
+
+Run `uv run snail match scratch try_enter_track_attachment_from_swept_motion`
+for the encoded-body and reference check.
+
+## Earlier free-operator comparison and argument-component creation
+
+Before the subtraction member was recovered, two instructions differed in the X `fld`/`fadd`
+pair. The native sequence at `0x42c8ef` loads sweep X before position X.
+It loads position before sweep on Y and Z. A preserving trace of the SP3
+backend now identifies each component by its formal parameter name, part
+offset, symbol slot, and creation callsite.
+
+| Source | X loaded first | Y/Z loaded first | Whole-Path match |
+| --- | --- | --- | --- |
+| Retained position copy shared by the two probes | position | position | 99.02% |
+| Use the original position independently in each probe | sweep | sweep | 98.04% |
+| Construct the motion vector from its first float after rotating the first probe | position | sweep | 97.06% |
+
+The three sources all compile to 204 instructions with 47 audited references.
+In the retained source, copy propagation through the saved world position
+creates all three position part records at `C2+0x7409`. These sorts use higher
+slots than the corresponding sweep fields. In the two controls that read the
+original position directly, both X records originate in inline formal
+substitution (`C2+0x5ac5e`). Both Y/Z pairs originate when the optimizer
+propagates address copies into individual uses (`C2+0x4203c`). The typed
+motion control reverses X relative to its other two lanes in the emitted
+object, with the opposite order from retail. Each trace checks that its
+ordinary, captured, replayed and observed whole objects agree except for the
+timestamp.
+
+The older iPad 1.0.6 Search (`0x51920`) and Wii Search rotate independently
+supplied start and end positions. Chromadrome 2 also supplies both points:
+its caller at `0x4a2510` saves the player's transform before adding velocity,
+then passes the previous and current positions into the homolog at
+`0x473940`. These versions have no corresponding parameter-plus-velocity
+addition to identify the retail operand ownership.
+
+Two exact routines in Path do produce retail Search's mixed lane order for
+an ordinary nested vector sum. The anchor and terminal sample switch operand
+order on X relative to Y/Z at `0x420fba` in
+`update_track_attachment_follow_state` and `0x42192e` in
+`traverse_path_follow_golb`. Those operands come from pointed-to fields.
+The Search traces above instead observe split records of stack arguments.
+
+The earlier receipts used the free subtraction operator at commit `5d6fdfbb5`.
+The recipe also runs against the current source. To inspect how the active
+compiler creates the endpoint arguments, choose new output directories:
+
+```sh
+scratch=tools/match/scratches/try_enter_track_attachment_from_swept_motion
+uv run "$scratch/trace_operands.py" --out /tmp/search-ordinary
+uv run snail match mutate "$scratch" --spec "$scratch/swept-argument-part-origins-20261109.json" \
+    --export-candidate endpoint/typed-motion-after-start-probe --export-dir /tmp/search-control
+uv run "$scratch/trace_operands.py" --source /tmp/search-control/candidate.cpp --out /tmp/search-typed
+```
+
+## 2026-11-09: sample origins and whole-Path x87 trace
+
+Both reverse-scan probes now form their origin as a vector sum of the
+sample's transform position and the copied cell anchor. Wii Search uses this
+operand order for all three components at 0x8006f310, 0x8006f33c and
+0x8006f364. Wii SearchPos also adds the sample position to the anchor.
+Compiling the old and new Windows sources under the standard msvc6.3 Path
+unit produced identical code and relocation fingerprints for all 43 members.
+The search is still 99.02%, 204/204 instructions, prefix 109, 47 clean
+references. Only the X component's load/add operand order differs from native.
+
+A fresh preserving C2 trace of the two-vector-by-value prototype, in the full
+Path unit, measured the following operand slots at the swept addition:
+
+| lane | position | sweep | loaded first | native |
+| --- | ---: | ---: | --- | --- |
+| X | 0xb5 | 0x142 | sweep | sweep |
+| Y | 0x14f | 0x15a | sweep | position |
+| Z | 0x153 | 0x15c | sweep | position |
+
+The vector signature scored 98.04% with the direct vector operators, with
+both complete origin expressions fused, and with the accepted handoff
+inside the hit branch. Copying the first by-value argument into a named
+vector used in both probes reproduced the six-scalar result (99.02%,
+prefix 109). A snapshot used only for the first probe stayed at 98.04%.
+The accepted source now gives the caller and callee one declaration,
+`cRPath::Search(tVector position, tVector sweep, cRSubLoc*)`. For each
+eligible sample it copies the start point, checks that point, advances the
+copy by the sweep, and checks the endpoint. Both Windows caller sites already
+pass two whole vectors. The adjacent exact SearchPos, the mobile Search
+symbols and the seven-dword Windows stack extent corroborate the types.
+The port calls the recovered member directly on both Windows-style search
+paths. The old caller-only class and the manual argument-unpacking shim
+are gone.
+
+A second preserving trace explains the remaining X difference with a position
+copy. VC6 assigned the position components slots 0x166, 0x167, 0x168 and the
+sweep components 0x143, 0x15b, 0x15d. This sorts position first for all lanes.
+Both spellings leave the width test, rotated endpoints and follow handoff
+intact. A fresh source-only proof still requires the native X operand order.
 
 ## 2026-10-16: msvc6.3 whole-TU retest of the vector signature
 

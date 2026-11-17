@@ -2,6 +2,7 @@
 import importlib.util
 import struct
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -35,6 +36,27 @@ def compare(tmp_path, left, right):
     a.write_bytes(left)
     b.write_bytes(right)
     return editor.compare_outputs(a, b)
+
+
+def test_high_score_fixtures_cover_empty_and_capacity_boundaries(tmp_path):
+    path = tmp_path / "fixtures.bin"
+    summary = editor.prepare_fixtures(path)
+    data = path.read_bytes()
+    header = struct.Struct("<III")
+    assert header.unpack_from(data) == (0x31464942, summary["cases"], editor.FIXTURE.size)
+    sizes = set()
+    empty_submit_saved_names = set()
+    for row in editor.FIXTURE.iter_unpack(data[header.size:]):
+        _, key, mode, cursor, capacity, _, _, _, flags, controls, text = row
+        if mode == 0x10:
+            assert capacity == 16
+            length = len(text.rstrip(b"\0"))
+            if cursor == length and flags & 0x08000000 == 0:
+                sizes.add((key, length))
+                if key == 5 and length == 0:
+                    empty_submit_saved_names.add(bool(controls & 8))
+    assert {(5, 0), (ord("A"), 15), (ord("A"), 16), (5, 16)} <= sizes
+    assert empty_submit_saved_names == {False, True}
 
 
 def test_complete_objects_and_events_are_compared(tmp_path):
@@ -103,3 +125,20 @@ def test_identically_corrupt_outputs_cannot_pass(tmp_path, damage):
 def test_unequal_headers_cannot_hide_missing_cases(tmp_path):
     with pytest.raises(ValueError, match="unequal output headers"):
         compare(tmp_path, output(2), output(1))
+
+
+def test_fixture_editor_preserves_whole_unit_call_and_float():
+    callback = "?RePosition@cRBorder@@QAEXXZ"
+    constant = "__real@4@3fff8000000000000000"
+    name = "?InputText@cRBorder@@QAEXXZ"
+    body = b"\xe8\0\0\0\0\xd9\x05\0\0\0\0\xc3"
+    data = editor.write_object(name, body, {constant: struct.pack("<f", 1.0)},
+                               [(1, callback, 0x14), (7, constant, 0x06)], {callback: 0x20})
+    bounded = editor.extract_object_function(editor.parse_coff_object(data), name)
+    call, value = bounded.relocation_references
+    whole_unit = replace(bounded, relocation_references=(replace(call, symbol_size=64), value))
+    _, extracted = editor.fixture_editor_object(whole_unit)
+    assert extracted == bounded
+    invalid = replace(whole_unit, relocation_references=(call, replace(value, constant_data=b"")))
+    with pytest.raises(ValueError, match="complete float constant"):
+        editor.fixture_editor_object(invalid)

@@ -6,7 +6,7 @@ Baseline focused matcher result: 50.54%, 227 candidate instructions versus 232
 target instructions, no common prefix, and 19 clean masked operands plus one
 mismatched call.
 
-Current focused matcher result: 66.38%, 232/232 instructions, a 5-instruction
+Current focused matcher result: 71.98%, 232/232 instructions, a 5-instruction
 prefix, and 22 clean masked operands with no unresolved or mismatched references.
 
 Recovered behavior:
@@ -183,3 +183,51 @@ entry count in `edi`, reloads the index through `esi` and zeroes through `edx`;
 the seed zeroes through `esi`. It is also one instruction short. The seed is
 still not adopted: it is shorter than native, and the canonical source keeps
 the native instruction count.
+
+## 2026-11-09: resolve the decoder call in DatBuild.o
+
+The recovered definition at `0x405350` takes a `char*` and returns the
+advanced `char*` in EAX. The caller ignores the return value. Its previous
+`void (void*, int)` declaration caused the C++ compiler to emit a relocation
+to a second overload with no definition. The caller now declares the
+callee's actual signature and passes the byte view of the archive. The
+DatBuild object's `REL32` relocation at caller offset `+0x60` resolves to
+its defined symbol `?toggle_archive_high_bit_in_place@@YAPADPADH@Z`.
+The whole-unit score is 66.38%, 232/232 instructions, 22 clean references.
+
+## 2026-11-09: recover two serialized entry arrays
+
+The Win32 loop derives the source-entry array at `0x4053d7`, reads its
+name, offset and length at a 12-byte stride, and writes the matching output
+record's offset and length. iOS `DatBuild()` independently exhibits the
+two advancing record bases. Naming both arrays lets VC6 derive the
+source-to-output displacement used for the length stores, while it keeps a
+separate cursor for the offset stores. The C++ no longer subtracts pointers
+into unrelated allocations. The extension switch recovers the native
+`dec eax; je` and the signed end-address remainder compiles to the native
+mask and correction in both branches.
+
+Both sides emit 232 instructions in a `0x234`-byte frame. The native
+header-copy count survives `rep movsd` in EDX, the candidate's in EBP.
+The output-entry base, live zero and several spill slots also differ. The
+new score is 71.98%, with 22 clean reference audits; the other nine
+functions in DatBuild.o still match exactly.
+
+A local x86 differential control compared the generated function and native
+`0x405370` on 168 synthetic runs. It ran the original classifier and DAM
+decoder, substituted file/heap/PNG callbacks, and compared the callback
+events and saved bytes. Inputs exercised both early returns, an empty
+index, copied and converted entries, three- and four-channel images,
+empty dimensions, and all four address residues on either side of the
+signed 32-bit boundary. Every comparison agreed.
+
+The preserving C2 stack-packer trace of the full DatBuild source gives 14
+distinct slots. The saved output-allocation pointer has weight 4 at frame
+offset `+0x1c`. Counting static ESP-relative accesses along both control
+flow graphs, with the outstanding pushes accounted for at each instruction,
+finds four accesses to that pointer in the candidate and five in the target.
+The other 13 owners have equal access counts. Native reloads the output
+allocation from frame offset `+0x0c` at `0x405411` to form the record-array
+delta. The candidate keeps the output array base in EDX across the header
+copy and the empty-index check. This lifetime is a concrete difference to
+investigate before trying to change the PNG locals' stack placement.

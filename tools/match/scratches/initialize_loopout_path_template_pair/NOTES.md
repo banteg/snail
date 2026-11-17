@@ -1,4 +1,118 @@
-## 2026-10-16 whole-TU recheck: not closable with honest source
+## 2026-11-10 floating-point operand order in the three loop builders
+
+The Android armeabi library calls software floating-point routines with
+both operands in registers. For LoopOut, `0x4c944` subtracts the first
+center from the departure center. At `0x4c950` the sample ordinal is
+the left operand of the multiply. At `0x4c958` the divisor is the number
+of curved samples.
+At `0x4c96c` the first center is the left operand of the addition.
+The library has SHA-256
+`96dbeaeb20c60d687301ca769656727467371489db5e3ed744a93248bc8d8136`.
+
+LoopTheLoop and LoopTheLoopW use the same arithmetic with the final
+sample as the endpoint. Both calculate the secondary radius where they
+position the secondary sample (`0x4d7a4` and `0x4d118`). Expressing
+the three interpolations in this order and scoping those two radii to
+their first use preserves all 43 Windows code and relocation fingerprints.
+The optimized WASM code sections of all three builders are identical
+before and after. Their Windows address-encoding differences remain open.
+
+## 2026-11-09 Windows family comparison of the endpoint load
+
+The older Chromadrome 1.00 builder at `0x41c4c0` uses **0x5c-byte** nodes.
+Its `GetNodes` at `0x41bbb0` allocates the tile and ball banks separately.
+The departure loop saves `(curve_count + 10) * 0x5c` at `0x41c5ec..0x41c604`
+and advances a second offset through four nodes. In the curve, one load from
+`this+0x54` supplies the primary bank. At `0x41c741`, `fld [eax+ebx+0x50]`
+reads the departure center with the bank as the SIB base. At `0x41c751`,
+`fstp [edi+eax+0x50]` writes the current center with the induction offset as
+the SIB base. The follow routine at `0x420480` independently interpolates
+this scalar, the angle at +0x54 (wrapping at ±π), and the scale at +0x58.
+The executable SHA-256 is
+`a5dc64622ac6e7dd7a563ee7850a645881a29ec88c43d2cb18110c283fdd9a74`.
+
+Chromadrome 2's `0x463060` builder repeats the same operand roles with
+**0xa8-byte** nodes and +0x90 centers. Its bank load at `0x463312` supplies
+the endpoint read `[eax+ebx+0x90]` at `0x463325` and current-node write
+`[edi+eax+0x90]` at `0x46333e`. Its RWG SHA-256 is
+`5b70c011bf5ce31014f4594eda9b29d3a359d1733eb13b489ec5d792231547e5`.
+The register holding the endpoint differs from Snail Mail's ECX. The bank
+and induction roles agree across all three Windows builds.
+
+A control using Chromadrome 1.00's node layout and its inward circle normal
+reproduces the retail tradeoff under VC6 SP3 and SP5. A pointer-value bank
+matches the older store alone, an explicit borrow of the bank field matches
+the load alone, and direct member access misses both. SP5 is independently
+represented in the older image's Rich header. These controls compare the two
+address encodings only.
+
+On November 10 the VC6 SP3 observer distinguished two 718-instruction source forms.
+Write E for the endpoint offset's sort key, B for the shared primary bank,
+and I for the current row offset. The two retail SIBs require E < B < I
+for strict ordering. The committed source yields E = `0x176c0`,
+B = `0x102a0`, I = `0x15c80` and differs at the load, `+0x2e9`.
+A full outward-arc helper receiving both bank slots and the departure
+byte offset yields E = `0x101e0`, B = `0x16740`, I = `0x12bc0`
+and differs at the store, `+0x302`. Both have 52 verified references.
+The second form establishes that E can fall below I while retaining
+every normalized instruction. Capturing the bank separately per iteration
+changes the endpoint from a local to a CSE temporary and loses that order.
+
+LoopOut now uses the same `compute_terminal_deltas(this)` helper as the
+neighboring builders. It computes the direction and length of each segment
+on both node banks and installs the last node's forward direction and unit
+length. The 43-member VC6 Path object retained every member's bytes and
+relocations, including their symbol names. The optimized wasm32-wasi port
+object before and after this change was byte-identical (3,540 bytes).
+
+The whole Snail Mail Path unit was also compiled with the recovered
+`reset_primary_sample` in the departure loop and `compute_terminal_deltas`
+after the curve. With a pointer-value bank, that pair of helpers preserves
+every candidate instruction and still differs in the endpoint SIB byte.
+Combining the shared delta helper, direct departure indexing, typed winding
+faces and a borrowed curve bank instead leaves the store SIB byte. In that
+case the preserving C2 trace puts the bank at temporary `0x5dc`
+(key `0x17700`) and the induction at `0x98b` (key `0x162c0`): the bank
+still sorts first at the store. Recovering the primary bank and the scalar
+center in the earlier games provides no independent evidence for traversing
+the node array from a pointer to the first node's float field. The canonical
+typed-index build remains partial.
+
+## 2026-11-09 departure offset and center interpolation
+
+The Wii build corroborates a single primary bank for the interpolation. In
+`SnailMail-USA.dol` (SHA-256 `523f848f2a0b8ef8c9dfe2714744bf0479a4feec79b25f0d1f5e035a6487c096`),
+`0x80059394..0x800593a0` computes the departure offset from
+`(curve_count + 10) * sizeof(AttachmentSample)`. The load at `0x800593ec`
+supplies the bank for both the departure-center read at `0x80059400` and
+the current-center write at `0x80059448`. The latter folds the ten approach
+samples into its displacement (`0x720 = 10 * 0xa8 + 0x90`).
+
+One whole-Path MSVC 6.3 control changes the compiler's ordering without
+changing the compiled LoopOut body. Reset `i` before calculating the
+departure byte offset, start a separate byte cursor at that offset, and
+advance the cursor and logical counter through the four departure samples.
+Use the saved offset for the endpoint sample in the curve. The preserving C2
+observer gives the following sort keys for the interpolation operands:
+
+| Bank used for the interpolation | Endpoint address term | Bank | Current sample IV | Unequal SIB byte |
+| --- | ---: | ---: | ---: | ---: |
+| Snapshot of the primary pointer | `0x16e80` | `0x102c0` | `0x13000` | `+0x2e9` (load) |
+| Reference to the primary pointer | `0x101c0` | `0x16ec0` | `0x13080` | `+0x302` (store) |
+
+With the snapshot, C2 folds the field displacement into the endpoint
+temporary. With the reference, it retains the saved byte offset as local
+`0xe` and applies `+0x90` to the load. The current induction temporary
+in the snapshot control moves from `0x943` to `0x8c0` with C0 fixed at
+`0x540`. Both controls match all 718 normalized instructions and 52 references.
+Borrowing the input bank and storing through the member, as in TurnUnder,
+gives the desired two address orders but emits an extra `mov edx,eax` to
+hold both bank values. Typed entry/departure pointers and references retain
+the partial. A diagnostic hand-strided center-field view produced the target
+bytes. The native loads support indexing the sample bank and provide no
+independent evidence for that field view, so it earns no credit.
+
+## 2026-10-16 whole-TU recheck
 
 The last byte is still `+0x2e7`, the endpoint load. Native needs the
 endpoint below the bank and the bank below the iv. With the current kinds no

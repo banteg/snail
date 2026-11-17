@@ -1,15 +1,15 @@
 # FontLoad
 
 `FontLoad(char*, int, float, float)` owns the Windows routine at `0x449f50`.
-The recovery is semantic-complete at 75.41%: 275 candidate versus 274 target
-instructions, with all 57 references clean.
+The reconstructed source matches all 274 Windows instructions and all 1,031
+compared body bytes in the complete Font translation unit. All 57 references
+pass the positional audit.
 
 The Windows version scans marker pixels, fills the 128 glyph lanes, handles a
 split texture page, stores scale/shadow metadata, and returns the registered
 font index. Android and iOS export the same authored `Font.o` name but use a
 metadata-driven `0xa28` sheet and a void return; Windows locally proves its
-integer result and `0x828` sheet. The remaining delta is compiler allocation
-of the glyph slot versus split coordinate, not missing behavior.
+integer result and `0x828` sheet.
 
 ## 2026-08-13 per-sample font owner snapshot
 
@@ -226,3 +226,47 @@ byte-identical, and so is `if (++slot == FONT_GLYPH_CAPACITY)`. These regress:
 direct `g_registered_font_count` indexing (42/48), a `FontSheet*` borrow
 (92/85), resetting `run_width` after the page store (22/21) or before
 `++slot` (68/65). No source change is retained.
+
+## 2026-11-09: split-page UV denominator
+
+The split-page case divides all four horizontal texture coordinates by
+`image->width / 2`. In each arm the initial width test establishes 2048,
+so VC6 folds the first division to multiplication by 1/1024. After the first
+UV store it reads width again for the second division. This single source
+expression reproduces both native instruction sequences. Comparing all 18
+functions in the Font translation unit before and after the change found
+identical code bytes and relocations for every function.
+
+Storing the font index across sampling calls changed the reference audit.
+Sharing the cursor between the horizontal and vertical scans, moving the
+slot initialization across the path-loading code, and defining the font
+globals in the translation unit did not recover the native memory-resident
+slot. FontLoad remains at 273/274 instructions, 86.65% normalized and
+92.50% structural with all 57 audited references clean.
+
+The run width resets after the completed glyph's overflow check. This
+recovers the original `mov [eax+texture_page], ebp` at function offset
+`+0x1fd`. Compared with the previous candidate, only the encoding of that
+store and internal branch displacements change. Structural differences fall
+from 21/20 target/candidate instructions to 20/19 (92.87%). The local
+normalized score moves to 86.29% because it compares jump labels by offset.
+All 57 references pass, and the other 17 Font member functions retain
+identical code and relocations.
+
+## 2026-11-09: full encoded match
+
+Publish the glyph width before computing its left edge. The direct assignment
+eliminates the width-field reference, and completing the glyph before resetting
+the run width lets VC6 keep the font index in EDX while the slot stays on the
+stack. The two integers are initialized in order: the output slot starts at
+zero, the run width at minus one, and the horizontal scan starts at x = 0.
+
+The explicit lookahead in the filename-copy loop had matched every normalized
+instruction but reversed the base and index registers of the load at
+`+0x54`. Testing `texture_path[i]` directly in the loop condition recovers
+the native scale-one SIB byte (`0x38` at `+0x56`). An ordinary indexed
+`for` loop also emits the same body.
+
+Whole-Font MSVC 6 SP3 compilation now proves 274/274 instructions, 57/57
+references and all 1,031 compared bytes. The nine trailing bytes are alignment.
+All 17 neighboring functions preserve their code and relocations.

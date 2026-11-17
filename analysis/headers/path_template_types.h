@@ -3092,12 +3092,8 @@ void __thiscall promote_track_tiles_to_fringe_variants(cRSubGame* game);
 void __thiscall harmonize_center_lane_floor_slide_variants(cRSubGame* game);
 void __thiscall try_enter_track_attachment_from_swept_motion(
     cRPath* self,
-    float world_x,
-    float world_y,
-    float world_z,
-    float sweep_dx,
-    float sweep_dy,
-    float sweep_dz,
+    Vec3 position,
+    Vec3 sweep,
     cRSubLoc* source_cell
 );
 void __thiscall get_path_position_at_node(

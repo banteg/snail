@@ -20,12 +20,11 @@ int FontLoad(
     char texture_path_0[0x100];
     char texture_path_1[0x100];
     if (image->width == 0x800) {
-        char value = *texture_path;
         int i = 0;
-        while (value != '.') {
+        while (texture_path[i] != '.') {
+            char value = texture_path[i];
             texture_path_0[i] = value;
             texture_path_1[i] = value;
-            value = texture_path[i + 1];
             ++i;
         }
         texture_path_0[i] = '0';
@@ -48,43 +47,39 @@ int FontLoad(
         texture_path_0[i] = 0;
     }
 
-    int x = 0;
-    int run_width = -1;
     int slot = 0;
+    int run_width = -1;
 
-    while (x < image->width) {
+    for (int x = 0; x < image->width; ++x) {
         int pixel = sample_tga_pixel_rgb(image, x, 0);
         int font_index = g_registered_font_count;
         if (pixel == 0xffffff) {
-            int glyph_left = x - run_width;
-            float& glyph_width = g_font_sheets[font_index].glyph_width[slot];
-            glyph_width =
-                (float)run_width;
+            g_font_sheets[font_index].glyph_width[slot] = (float)run_width;
 
+            int glyph_left = x - run_width;
             float centered_left = (float)glyph_left + 0.5f;
             g_font_sheets[font_index].glyph_u0[slot] =
                 centered_left / (float)image->width;
             float centered_last = (float)x + 0.5f;
             g_font_sheets[font_index].glyph_u1[slot] =
                 centered_last / (float)image->width;
-            run_width = 0;
             g_font_sheets[font_index].texture_page[slot] = 0;
 
             if (image->width == 0x800) {
                 if (glyph_left > split_x) {
                     g_font_sheets[font_index].glyph_u0[slot] =
                         ((float)(glyph_left - split_x) + 0.5f)
-                            * 0.0009765625f;
+                            / (float)(image->width / 2);
                     g_font_sheets[font_index].glyph_u1[slot] =
                         ((float)(x - split_x) + 0.5f)
-                            / (float)(image->width >> 1);
+                            / (float)(image->width / 2);
                     g_font_sheets[font_index].texture_page[slot] = 1;
                 } else {
                     g_font_sheets[font_index].glyph_u0[slot] =
-                        centered_left * 0.0009765625f;
+                        centered_left / (float)(image->width / 2);
                     g_font_sheets[font_index].glyph_u1[slot] =
                         centered_last
-                        / (float)(image->width >> 1);
+                        / (float)(image->width / 2);
                     g_font_sheets[font_index].texture_page[slot] = 0;
                 }
             }
@@ -92,10 +87,10 @@ int FontLoad(
             ++slot;
             if (slot == FONT_GLYPH_CAPACITY)
                 report_errorf("Too many Font letters increase RFONT_LETTERS_MAX in font.h");
+            run_width = 0;
         }
 
         ++run_width;
-        ++x;
     }
 
     for (int line_marker_y = 1; line_marker_y < image->height; ++line_marker_y) {

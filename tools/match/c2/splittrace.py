@@ -223,8 +223,11 @@ def main():
             raise ValueError(f"Split chooser rule mismatch: {row}")
     rows = [row for row in every if row["ordinal"] == result["function_ordinal"]]
     config = m.load_scratch_config(work)
-    source_lines = (work / "scratch.cpp").read_text().splitlines()
-    first_line = rot.definition_line("\n".join(source_lines), config.symbol or config.function)
+    source_text = (work / "scratch.cpp").read_text()
+    source_lines = source_text.splitlines()
+    first_line = t.source_line_base(
+        source_text, config.symbol or config.function, member_path=work / "member.cpp",
+    )
     print(f"trace: {out}  metrics: {result['metrics']}")
     print(f"rule check: all {len(every)} picks in the unit re-derived")
     print(f"{'#':>4} {'line':>5} {'op':>4} {'site':4} {'cur':>3} {'out':>3} {'reg':4} {'live':24} flagged  source")

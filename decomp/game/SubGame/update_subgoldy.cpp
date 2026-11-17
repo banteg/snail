@@ -11,7 +11,6 @@
 #include "input_polling.h"
 #include "rmath_random.h"
 #include "x87_store.h"
-#include <stddef.h>
 
 #include "attachment_sample.h"
 #include "audio_system.h"
@@ -36,30 +35,6 @@
 #include "track_parcel_runtime.h"
 #include "voice_manager.h"
 
-enum {
-    TIME_TRIAL_RECORD_BANK_FROM_SUBGAME =
-        offsetof(cRSubGame, sub_high_score)
-        + offsetof(SubHighScore, time_trial_route_records),
-};
-
-#define TIME_TRIAL_RECORD_AT(block_expr) \
-    ((SubSolution*)((block_expr) + TIME_TRIAL_RECORD_BANK_FROM_SUBGAME))
-
-// Caller-local cRPath prefix. This aggregate-argument declaration preserves
-// the native VC6 push sequence in this large caller; the shared Path owner has
-// the same fields and callee address with a scalar spelling.
-struct SubgoldyPathView {
-    char unknown_00[0x38];
-    PathTemplateKind kind; // +0x38: CAGE2 detour-follow behavior, WORM voice
-    char unknown_3c[0x44 - 0x3c];
-    int segment_count; // +0x44
-    char unknown_48[0x58 - 0x48];
-    AttachmentSample* primary_samples; // +0x58
-
-    void try_enter_track_attachment_from_swept_motion(
-        Vector3 position, Vector3 sweep, cRSubLoc* cell);
-};
-
 // The standalone helper body is exact with a double source declaration, but
 // this native caller consumes the x87 return as float arithmetic. Return type
 // is not encoded in the MSVC thiscall symbol, so retain this caller-side ABI
@@ -74,6 +49,9 @@ struct SubgoldyFloorSamplerCallView {
 // game + 16928*index + 0xa670: text at +0x00, dismiss seconds at +0x200,
 // voice id at +0x204 (0xa874); the flat 0xa874 read is
 // level_segment_count.
+
+#define CLAMP_FLOAT(value, lower, upper) \
+    ((value) >= (lower) ? ((value) <= (upper) ? (value) : (upper)) : (lower))
 
 void cRSubGoldy::AI()
 {
@@ -125,13 +103,11 @@ void cRSubGoldy::AI()
         && !latch_game->track_state_latch)
         latch_game->track_state_latch = 1;
 
-    Vector3* p_position;
     cRSubGame* replay_game = game;
     if (replay_game->selected_level_record_active
         && replay_game->replay_update_cursor
                < replay_game->selected_level_record->replay_sample_count
         && click_start.state != CLICK_START_STATE_WAITING_FOR_START) {
-        p_position = &transform.position;
         transform.position.x = MathType16to32(
             replay_game
                 ->selected_level_record
@@ -139,11 +115,9 @@ void cRSubGoldy::AI()
                 .lateral_x,
             16.0f);
         cRSubGame* flag_game = game;
-        if (flag_game
-                ->selected_level_record
-                ->run_records[flag_game->replay_update_cursor]
-                .flags
-            & 4)
+        const ReplayRunRecord& recorded =
+            flag_game->selected_level_record->run_records[flag_game->replay_update_cursor];
+        if (recorded.flags & 4)
             flag_game->track_state_latch = 1;
         else
             flag_game->track_state_latch = 0;
@@ -209,7 +183,6 @@ steering_stored:
                     + transform.position.x;
             }
         }
-        p_position = &transform.position;
         float quantized_x = MathType16to32(
             MathType32to16(transform.position.x, 16.0f), 16.0f);
         transform.position.x = quantized_x;
@@ -269,22 +242,23 @@ steering_stored:
                 .flags |= 4;
     }
 
-    if (p_position->x < -4.0f) {
-        p_position->x = -4.0f;
+    if (transform.position.x < -4.0f) {
+        transform.position.x = -4.0f;
         velocity.x = 0.0f;
     }
-    if (p_position->x > 4.0f) {
-        p_position->x = 4.0f;
+    if (transform.position.x > 4.0f) {
+        transform.position.x = 4.0f;
         velocity.x = 0.0f;
     }
 
     if (resurrect_active)
         RessurectAI();
 
+    Vector3* p_position = &transform.position;
     cRSubLoc* source_cell = game->LocFromPos(p_position);
     cRSubGame* event_game = game;
-    SubRow* row_record =
-        &event_game->runtime_rows[source_cell->Yi()];
+    int row_index = source_cell->Yi();
+    SubRow* row_record = &event_game->runtime_rows[row_index];
     int event_id = row_record->row_event_id;
     if (event_id > 0 && event_id != row_event.id
         && event_id < event_game->level_definition.segment_count + 1) {
@@ -353,9 +327,10 @@ steering_stored:
             velocity.z = 0.0f;
     } else {
         cRSubGame* accel_game = game;
-        if ((float)accel_game->first_block_row_count > transform.position.z)
-            velocity.z = accel_game->subgame_rate * accel_game->subgame_rate * 0.0040000002f
-                       + velocity.z;
+        if ((float)accel_game->first_block_row_count > transform.position.z) {
+            float rate = accel_game->subgame_rate;
+            velocity.z = rate * rate * 0.0040000002f + velocity.z;
+        }
         if (velocity.z > 1.0f)
             velocity.z = 1.0f;
         if (click_start.state == CLICK_START_STATE_WAITING_FOR_START)
@@ -406,16 +381,15 @@ steering_stored:
             break;
         }
     } else {
-        p_position->x = velocity.x + p_position->x;
-        p_position->y = velocity.y + p_position->y;
-        p_position->z = velocity.z + p_position->z;
+        tVector& motion = velocity;
+        *p_position += motion;
         if (p_position->x < -4.0f) {
             p_position->x = -4.0f;
-            velocity.x = 0.0f;
+            motion.x = 0.0f;
         }
         if (p_position->x > 4.0f) {
             p_position->x = 4.0f;
-            velocity.x = 0.0f;
+            motion.x = 0.0f;
         }
         if (!completion_handoff_active) {
             cRSubLoc* slide_cell;
@@ -478,11 +452,10 @@ steering_stored:
                     swept.x = velocity.x * 1.05f;
                     swept.y = velocity.y * 1.05f;
                     swept.z = velocity.z * 1.05f;
-                    ((SubgoldyPathView*)game
-                         ->runtime_rows[landing_cell->Yi()]
-                         .primary_attachment_cell
-                         ->attachment_template_record)
-                        ->try_enter_track_attachment_from_swept_motion(
+                    game->runtime_rows[landing_cell->Yi()]
+                        .primary_attachment_cell
+                        ->attachment_template_record
+                        ->Search(
                             *p_position, swept,
                             game
                                 ->runtime_rows[landing_cell->Yi()]
@@ -497,11 +470,10 @@ steering_stored:
                     swept.x = velocity.x * 1.05f;
                     swept.y = velocity.y * 1.05f;
                     swept.z = velocity.z * 1.05f;
-                    ((SubgoldyPathView*)game
-                         ->runtime_rows[landing_cell->Yi()]
-                         .secondary_attachment_cell
-                         ->attachment_template_record)
-                        ->try_enter_track_attachment_from_swept_motion(
+                    game->runtime_rows[landing_cell->Yi()]
+                        .secondary_attachment_cell
+                        ->attachment_template_record
+                        ->Search(
                             *p_position, swept,
                             game
                                 ->runtime_rows[landing_cell->Yi()]
@@ -723,14 +695,9 @@ steering_stored:
     float completion_start = (float)completion_game->completion_row_start;
     if (transform.position.z < completion_start || attachment_exit_pending) {
         if (!boost_one_tick && !slug_fall_active) {
-            float window = completion_game->subgame_rate * 0.17f;
-            float speed = velocity.z;
-            if (speed >= window) {
-                window = completion_game->subgame_rate * 0.5f;
-                if (speed <= window)
-                    window = speed;
-            }
-            velocity.z = window;
+            velocity.z = CLAMP_FLOAT(
+                velocity.z, completion_game->subgame_rate * 0.17f,
+                completion_game->subgame_rate * 0.5f);
         }
     } else {
         if (!completion_handoff_active) {
@@ -744,14 +711,9 @@ steering_stored:
             completion_handoff_timer = 0.0f;
             completion_handoff_timer_step = 0.016666668f;
             completion_handoff_voice_gate = 0;
-            float window = handoff_game->subgame_rate * 0.17f;
-            float speed = velocity.z;
-            if (speed >= window) {
-                window = handoff_game->subgame_rate * 0.5f;
-                if (speed <= window)
-                    window = speed;
-            }
-            velocity.z = window;
+            velocity.z = CLAMP_FLOAT(
+                velocity.z, handoff_game->subgame_rate * 0.17f,
+                handoff_game->subgame_rate * 0.5f);
             g_voice_manager.ReSet();
             sub_hover.End();
             presentation.cutscene.state = CUT_SCENE_STATE_COMPLETION_PENDING;
@@ -841,9 +803,9 @@ steering_stored:
         }
     }
 
-    Vector3 stashed_position = *p_position;
+    Vector3 stashed_position = transform.position;
     if (follow_state.active == 1)
-        *p_position = follow_state.output_position;
+        transform.position = follow_state.output_position;
     sub_hover.AI();
     if (completion_handoff_active) {
         g_game->players[0].completion_handoff_transform =
@@ -854,7 +816,7 @@ steering_stored:
     damage_gauge.AI();
     progress_bar.AI();
 
-    cached_camera_target_world = *p_position;
+    cached_camera_target_world = transform.position;
     Vector3 camera_offset =
         transform.basis_right * sub_hover.wobble_x
         + transform.basis_up * sub_hover.wobble_y
@@ -865,7 +827,7 @@ steering_stored:
     if (hold_ticks > 0)
         damage_gauge.skin_hold_ticks = hold_ticks - 1;
     if (follow_state.active == 1)
-        p_position->x = stashed_position.x;
+        transform.position.x = stashed_position.x;
 
     float lean_step = game->subgame_rate * 0.037037037f;
     lane_lean_progress_step = lean_step;
@@ -900,33 +862,27 @@ steering_stored:
 
     cRSubGame* ghost_game = game;
     if (ghost_game->level_mode == 4) {
-        char* record_block =
-            (char*)ghost_game + sizeof(SubSolution) * ghost_game->level_mode_arg;
-        if (TIME_TRIAL_RECORD_AT(record_block)->active == 1
+        int route = ghost_game->level_mode_arg;
+        if (ghost_game->sub_high_score.time_trial_route_records[route].active == 1
             && !ghost_game->selected_level_record_active) {
             int cursor = ghost_game->replay_update_cursor;
-            if (cursor
-                >= TIME_TRIAL_RECORD_AT(record_block)->replay_sample_count)
-                cursor =
-                    TIME_TRIAL_RECORD_AT(record_block)->replay_sample_count;
+            if (cursor >= ghost_game->sub_high_score
+                    .time_trial_route_records[route].replay_sample_count)
+                cursor = ghost_game->sub_high_score
+                    .time_trial_route_records[route].replay_sample_count;
+            const ReplayRunRecord* samples =
+                ghost_game->sub_high_score.time_trial_route_records[route].run_records;
             int anchor = replay_start_cursor;
-            float ghost_z;
-            if (!anchor
-                || (cursor =
-                        TIME_TRIAL_RECORD_AT(record_block)->replay_start_cursor
-                            - anchor + cursor)
-                    == 0)
-                ghost_z = MathType16to32(
-                    (unsigned short)TIME_TRIAL_RECORD_AT(record_block)
-                        ->run_records[0].delta_z,
-                    32.0f);
+            if (!anchor)
+                cursor = 0;
             else
-                ghost_z = MathType16to32(
-                              (unsigned short)TIME_TRIAL_RECORD_AT(record_block)
-                                  ->run_records[cursor].delta_z,
-                              32.0f)
-                        + GhostZ;
-            GhostZ = ghost_z;
+                cursor += ghost_game->sub_high_score
+                    .time_trial_route_records[route].replay_start_cursor - anchor;
+
+            if (!cursor)
+                GhostZ = MathType16to32(samples[cursor].delta_z, 32.0f);
+            else
+                GhostZ += MathType16to32(samples[cursor].delta_z, 32.0f);
             if (game->selected_level_record_active)
                 GhostZ = transform.position.z;
             float ghost_horizon = transform.position.z + 20.0f;
@@ -1065,4 +1021,4 @@ steering_stored:
     game->times_up.AI();
 }
 
-#undef TIME_TRIAL_RECORD_AT
+#undef CLAMP_FLOAT

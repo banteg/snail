@@ -1,6 +1,74 @@
 # `initialize_looptheloop_path_template_pair` starter
 
-## 2026-10-16 whole-TU recheck: not closable with honest source
+## 2026-11-09 straight sample strides and terminal deltas
+
+The terminal-delta pass now uses the same `compute_terminal_deltas(this)`
+operation as Hump. Both mesh windings compute the vertex index from the full
+width and publish it to the face's 16-bit member. These changes preserve all
+43 Windows Path function and relocation fingerprints and the builder's
+optimized Wasm instructions. The remaining byte is still **+0x318**.
+
+Chromadrome 1.00's earlier 7+7 builder at `0x41bbf0` also has two live sample
+banks. For example, the approach calls `Identity` on the member at +0x54 at
+`0x41bc89`, then on +0x58 at `0x41bcbf`. Each record has stride 0x5c.
+The departure starts its logical Z at seven, reuses the saved byte offset
+of its first sample for the arc's endpoint, and terminates on `(z - 7) < 7`.
+In Snail Mail the last departure sample supplies that endpoint. Transferring
+the earlier count, Z and offset lifetimes changes the Windows body.
+
+A diagnostic retaining Snail's endpoint uses explicit 0xa8 byte cursors for
+the two straight runs. With a shared secondary-sample operation borrowing
+both bank members and receiving the row offset and Z, the approach matches.
+The arc IV becomes C2 temporary `0x7ff`, producing the target's `07` SIB at
++0x318. The departure's secondary `Identity` receiver changes by one
+instruction, and four subsequent departure addresses plus five delta-loop
+addresses reverse SIB operands. These source forms remain controls.
+The Wii counterparts divide the radius and the two straight taper factors
+at `0x80057608`, `0x800576a0` and `0x80057808`. VC6 folds the three
+divisions to the same reciprocals. The Wasm compiler retains division for
+the taper factors, so this experiment keeps the checked-in arithmetic.
+
+## 2026-11-09 Wii circle center and departure indexing
+
+The Wii `BuildLoopTheLoop` at `0x80057500..0x800581f0` constructs a
+three-component circle center before the curved samples. The stores at
+`0x80057948`, `0x80057950`, and `0x80057960` put zero, the quantized
+radius, and the integer approach length (7) converted to float at
+`sp+0x98..0xa0`. The position and radial-up calculations use the latter two
+components in `f30` and `f29`. The two right vectors have their own
+temporaries at `sp+0x8c` and `sp+0x80`. All 828 instruction words in the
+disassembly agree with the pinned Wii DOL.
+
+Using `Vector3 loop_center(0.0f, curve_source, 7.0f)` for both banks' position
+and orientation under MSVC 6 SP3 changes the Windows departure loop. Its
+secondary `Identity()` receiver becomes `mov ecx,[esi+0x5c]; add ecx,edi`
+where the target starts `mov ecx,edi`, then loads the bank into EAX and adds
+it to ECX. The whole Path overlay gives 720/721 instructions (96.18%). The
+interpolation store still encodes SIB `38`. Using the Wii integer approach
+and departure lengths for the taper divisions, or casting the count and index
+independently for both curve expressions, preserves the original 721/721
+result and the same unequal byte.
+
+Wii's departure loop derives the sample index from the curve count, logical
+row, and seven lead samples (`0x800577d4..0x8005780c`). Recomputing that
+index once per pass in the Windows source gives 722/721 when the logical
+row advances between the final two stores, or 720/721 when it advances at the
+loop end. The tracked Windows source retains the loop-carried sample index.
+Its only unequal literal is at body offset `+0x318` in the store starting
+at `+0x316`: original `d9 9c 07 90 00 00 00`, candidate
+`d9 9c 38 90 00 00 00`.
+
+The [2005 Shockwave Windows build](../../../../docs/original/shockwave-web-demo.md)
+also emits `d9 9c 07 90 00 00 00` at `0x4163a6`. Its LoopTheLoop,
+LoopTheLoopW, LoopOut, and LoopBow entries are respectively `0x416090`,
+`0x416ae0`, `0x417590`, and `0x426a20`. All 2,980 instructions align with
+the retail bodies at the same relative offsets. Every differing byte is in a
+relative call operand or an absolute address mapped into the corresponding
+PE image. That comparison checks operand positions and widths, without
+claiming symbol identity. In particular, all four addressing bytes under
+investigation also occur in the later release.
+
+## 2026-10-16 whole-TU recheck of the remaining SIB
 
 The last byte is still `+0x316`. Bank temp `0x576` (key `0x15d80`) sorts
 ahead of the curve iv-temp `0x894` (`0x12500`). Native needs the endpoint

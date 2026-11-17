@@ -294,29 +294,30 @@ void cRSubGame::BuildLevel()
             first_or_last_row = 1;
             active_segment->row_base = build_row;
         } else {
+            cRSubTracks& definition = level_definition;
             base_subgame_rate = 1.0f;
-            if (level_definition.random_enabled == 1) {
+            if (definition.random_enabled == 1) {
                 float picked_value;
                 if (level_mode == 1) {
                     picked_value = RAND(
                         (challenge_difficulty_scalar * 0.89999998f + 0.100000001f)
-                            * (float)level_definition.segment_count,
+                            * (float)definition.segment_count,
                         "Segdif");
                 } else {
                     picked_value = RAND(
-                        (float)level_definition.segment_count,
+                        (float)definition.segment_count,
                         "Segtra");
                 }
                 int picked = (int)picked_value;
                 picked = (int)((float)picked * base_subgame_rate);
                 active_segment =
-                    &level_definition.segment_slots[picked];
+                    &definition.segment_slots[picked];
                 active_segment->visited = 1;
             } else {
                 int picked = segment_cursor;
                 ++segment_cursor;
                 active_segment =
-                    &level_definition.segment_slots[picked];
+                    &definition.segment_slots[picked];
             }
         }
         SwitchMirror();
@@ -410,9 +411,9 @@ void cRSubGame::BuildLevel()
                             authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE
                             + AUTHORED_ROW_OBJECT_VELOCITY_X);
                 } else {
-                    runtime_rows[build_row].row_model.velocity.x = 0;
-                    runtime_rows[build_row].row_model.velocity.y = 0;
-                    runtime_rows[build_row].row_model.velocity.z = 0;
+                    runtime_rows[build_row].row_model.velocity.x =
+                        runtime_rows[build_row].row_model.velocity.y =
+                        runtime_rows[build_row].row_model.velocity.z = 0.0f;
                 }
             }
 
@@ -477,16 +478,14 @@ void cRSubGame::BuildLevel()
                 else
                     authored_lane = lane;
 
-                unsigned int* cell_word = &runtime_cells[build_row][lane].lane_and_flags;
-                *cell_word &= 0xffffffe0;
-                *cell_word ^= lane & SUBLOC_LANE_INDEX_MASK;
+                SubLocFlags flags = runtime_cells[build_row][lane].flags;
+                flags.fields.lane_index = lane;
+                flags.fields.hazard_suppression = 0;
+                runtime_cells[build_row][lane].flags = flags;
 
                 Fringe** subobject_slot =
                     runtime_cells[build_row][lane].fringes;
-                subobject_slot[0] = 0;
-                subobject_slot[1] = 0;
-                subobject_slot[2] = 0;
-                subobject_slot[3] = 0;
+                memset(subobject_slot, 0, sizeof(runtime_cells[build_row][lane].fringes));
 
                 char edge_row = build_row < first_block_row_count || build_row >= completion_row_start;
 

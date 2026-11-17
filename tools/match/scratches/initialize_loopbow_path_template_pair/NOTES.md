@@ -1,5 +1,82 @@
 # Reconstruction notes
 
+## 2026-11-09 complete encoded-body match
+
+The complete Windows body now matches in the 43-member Path translation unit
+with MSVC 6.3 `/O2 /G5 /W3`. All **796 instructions, 63 positional references
+and 2,939 compared bytes** agree. The final five bytes are terminal padding.
+
+Wii's LoopBow builder keeps the row, column and winding separate. At
+`0x8006ec7c..0x8006ec94` it computes their integer face index and tests the
+winding. Each arm resolves its face record, uses it to write the header and
+four vertex indices, then writes the returned texture at offset `0xc` in the
+same record (`0x8006ec98..0x8006ed14`, `0x8006ed1c..0x8006ed98`). The
+second winding test selects the UV order. The Windows source now names the
+face in each winding arm and retains its Windows texture-parity branches.
+
+The straight runs use the separate approach index, secondary-bank reference
+and logical departure origin tested below. Reverting either the approach
+index or its secondary-bank reference, restoring the separate departure
+cursor, or removing the winding-local face references restores the unequal
+SIB at `+0x329`. Hoisting the bank and endpoint reads ahead of the angle
+computation by themselves also left that difference. The accepted source
+changes exactly one nonrelocation byte, from `18` to native `03`. All 42
+other Path members retain their code and relocation fingerprints.
+
+## 2026-11-09 Wii circle center and curve cursor, before the face recovery
+
+Wii USA `0x8006e044..0x8006eeec` has LoopBow's distinctive rotation
+sequence. It rotates a temporary matrix about Y and multiplies both sample
+transforms by it before copying the primary transform and applying the
+secondary normal offset. All 938 instruction words in the split listing were
+checked against the [pinned Wii image](../../wii-path-face-recovery-20260910.md).
+
+At `0x8006e478..0x8006e4bc` Wii converts the seven lead samples to a float
+and stores a vector containing zero, the quantized radius, and that lead
+length at stack offsets `0xa4..0xac`. The circle positions and bank normals
+use its Y and Z components. The same Z component translates both positions
+before and after the multiplies (`0x8006e760..0x8006e7c4`). Wii also builds
+the unit right vectors at the two basis assignments. The C++ now uses this
+circle center and constructs the right vectors at their assignments.
+
+Compiling the before and after sources in the complete MSVC 6.3 Path unit
+gave identical code and relocation fingerprints for all 43 members. LoopBow
+still matches 796/796 normalized instructions and 63/63 positional references.
+Its store at `+0x327` differs at byte `+0x329` (native `03`, candidate `18`).
+
+A separate overlay advances an integer byte cursor by `sizeof(AttachmentSample)`
+through the curve, as in Turnover. Windows then still emits the candidate
+store byte. It also exchanges EAX and ECX in the hoisted endpoint calculation
+and schedules the cursor initialization just before the spill to
+`[esp+0x34]`. Native initializes the cursor immediately after that spill.
+Using a byte cursor only for the seven departure samples preserves the single
+original difference.
+
+### Can the straight runs explain the remaining byte?
+
+The Wii departure loop combines the curve extent with the straight-run
+index and advances one sample each iteration (`0x8006e314..0x8006e474`).
+Rewriting the Windows departure loop to use a logical `tail_start + i`
+index lets VC6 produce the same native instruction sequence with fewer
+independent source counters. A preserving MSVC 6.3 address-order trace
+shows how this affects the sort at the middle loop's destination store.
+Each row still has exactly one byte unequal.
+
+| Source overlay | Bank slot | Curve induction slot | ID increments until induction hash exceeds bank hash |
+| --- | ---: | ---: | ---: |
+| Retained Wii circle center and right vectors | `0x619` | `0x9af` | 107 |
+| Departure `sample_index = tail_start + i`, increment `i` at loop end | `0x619` | `0x9f2` | 40 |
+| Index departure accesses directly as `[tail_start + i]` | `0x639` | `0xa1f` | 27 |
+| Give the approach loop its own zero-based index | `0x63c` | `0xa2d` | 16 |
+| Bind the approach's secondary bank by reference at its Identity and position writes | `0x61e` | `0xa10` | 15 |
+
+The rows build on one another. The last column follows the existing
+temporary hash, `(slot mod 0x400) << 6`, with the bank held fixed. It
+measures C2 operand order only. Moving the primary-bank borrow and
+endpoint load before the angle quotient as in the Wii body also leaves
+the store at `+0x327` unequal in VC6. The last overlay became exact after the
+winding-local face change recorded above.
+
 ## 2026-10-16 whole-TU recheck: not closable with honest source
 
 The last byte is still `+0x327`. Bank temp `0x5fd` (`0x17f40`) sorts ahead

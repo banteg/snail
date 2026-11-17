@@ -1,5 +1,115 @@
 # cRBorder::InputText @ 0x4035b0
 
+## 2026-11-10: editing and submission share end-of-frame layout
+
+The reconstructed `end_input_frame` method handles layout for both paths.
+During editing it trims leading spaces in numeric input and updates the
+cursor. On submission, the caller removes the cursor and clears the active
+bit. The method sets the completion bit and tears down the optional OK widget.
+VC6 SP3 now emits both native flag stores and the same three indexed
+address encodings in the numeric scan.
+
+The original and rebuilt functions agree through the first 425 instructions
+(0x5e1 code bytes, with five relocated operands). At 0x403b91, retail
+loads the first text character into CL. The rebuilt function omits that
+load and schedules the length decrement and flag stores differently.
+The result is still partial at 445/446 instructions, 99.21%, with eight
+verified references. All 34 other Border functions remain exact.
+
+The native execution comparison matches on all 43,776 fixtures, including
+all 117,346 callbacks. In each release WASM only the editor body changes
+(2,397 to 2,384 bytes). The web and headless high-score and menu tests pass
+in both game modes.
+
+The two CL loads at the end of cursor removal have separate origins in the
+VC6 SP3 build. Register allocation supplies the byte copied to the previous
+position at function offset `+0x5c8`. Later, C2 at `+0x31ae7` splits the
+latch's byte comparison against zero into a load and comparison, selecting
+CL again. At `+0x34d29` the comparison becomes a test. Sharing a source
+character or text cursor between removal and the numeric scan reproduced
+the existing result. The forms that retained the later first-character
+load also wrote it to the stack. These observations account for the two
+loads in the removal loop. The separate retail load at `+0x5e1` remains
+unresolved.
+
+## 2026-11-09: empty-submission policies across builds
+
+The iPad 1.0.6 executable (SHA-256
+`5960c4e4ea8a9636ae651da2e2b245c1afe100ecd957be83a87ace269536fcf4`)
+retains a third completion path. In `InputText` at `0x2e66c`, the code
+decrements the length, clears the active bit, then loads `text[0]` at
+`0x2e76e`. An empty string branches at `0x2e774` to ordinary editor
+postprocessing. Only a nonempty string sets the completion bit and calls
+layout and optional button teardown. Wii restores the saved name on its
+empty path. Both iPhone 1.9 slices publish completion unconditionally after
+clearing the active bit (ARMv6 `0x3938c..0x393b0`, ARMv7
+`0x39f8c..0x39fb0`).
+
+Two Windows games using the same editor distinguish an optional copy from the
+common completion operation. Chromadrome 1.00 tests the first character at
+`0x403af6`; on empty, it copies the saved name to the edit buffer at
+`0x403b10`. Both paths converge at `0x403b1e` to publish completion, call
+layout and tear down the button. Chromentum 1.10 copies only on the empty
+path (`0x403330..0x403343`), then converges at `0x403346`.
+
+The RealArcade Windows predecessor (SHA-256
+`4dbc39d84a00bc18dd0469cd82e29794e5e33d15c6d1b2e90fb27679faec6260`)
+also retains the first-character load at `0x403b91`. Its entire editor
+extent differs from the Reflexive target by two relocated operand bytes.
+The native execution comparison now includes the high-score callers' actual
+mode `0x10` and capacity 16. Across all 28 empty submissions in that mode,
+the target leaves the text empty, clears `ACTIVE`, sets `COMPLETE`, and
+calls layout, including 14 cases with a nonempty saved name at `+0x6cc`.
+All 43,776 editor fixtures match the reconstructed behavior
+across 117,346 callbacks.
+
+The iPad also has a cursor-removal helper at `0x2f4f0` that clears
+`ACTIVE`. An equivalent inline helper in the Windows whole-unit control
+gives 440/446 instructions and still omits the first-character load. A
+cursor-removal-only helper is neutral. Sharing the first-character read
+between submission and the ordinary numeric filter also fails to reproduce
+the native code. Specializing an optional saved-name operation with a null
+fallback removes both the copy and the load under VC6 SP3, leaving the
+canonical 443/446 instructions with the same flag stores. The platform
+evidence locates the read at the historical
+acceptance decision, but the Windows source form remains unresolved.
+
+## 2026-11-09: numeric trim buffer and empty submission
+
+Numeric trim keeps a single pointer to the text buffer for its test, removal
+and advance. On Wii, `0x80020098` forms the buffer base and the loop uses it
+for both the indexed character load and the removal pointer at
+`0x800200f0..0x800200f4`. With the same owner, VC6 SP3 emits native SIB
+`31` at offsets `+1252` and `+1259`. Those two bytes are the only changes
+to the compiled editor. All 34 other Border members retain their instruction
+bytes and scores. Two exact peers have renumbered local jump labels.
+
+The Wii completion path independently explains a use for the first character.
+After removing the cursor, it loads the first character at `0x8001f838`,
+decrements the length, clears the active bit and branches at `0x8001f858`.
+For empty text it copies the saved name back, marks input complete and jumps
+to the ordinary input postprocessing. For nonempty text it marks input
+complete and runs layout and optional OK-button teardown. Wii's initializer
+saves the fallback with the same string-copy function. This can be checked
+in the US DOL, SHA-256
+`523f848f2a0b8ef8c9dfe2714744bf0479a4feec79b25f0d1f5e035a6487c096`.
+
+The Windows initializer also saves a string, at `text_buffer + 0x400`.
+At submission the retail Windows image loads the first character at
+`0x403b91`, and the separate Shockwave demo does so at `0x403ac1`. In both
+Windows builds empty submissions retain the empty text and take the same
+layout and teardown path as nonempty submissions. Android and iOS also
+publish completion unconditionally. The Wii fallback would change Windows
+behavior. Duplicating completion in identical arms merely to retain a load
+would invent a distinction in the reconstructed program.
+
+The current whole-unit build has **443/446 instructions**, **98.99%**
+agreement, a **423-instruction prefix** and eight clean references. The
+remaining differences are in completion. The native comparison runner
+checked 35,568 editor cases with 100,930 callbacks and zero state or callback
+differences. Its one-byte corruption control identified the changed case
+and byte.
+
 ## 2026-10-18: identical-arm branch on `text_buffer[0]` reproduces the store pair
 
 Unchanged at **98.99%**, 443/446, prefix 423, in the whole Border unit.

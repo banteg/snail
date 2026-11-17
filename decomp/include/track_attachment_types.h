@@ -251,10 +251,7 @@ struct cRPath : public BodBase {
     void build_track_fringe_supertramp_mesh(char* texture_path); // @ 0x424ad0, cRPath::BuildFringeSuperTramp
     void Mirror(cRPath* source); // @ 0x421dc0
     void __fastcall CalcLengthZ(); // @ 0x42c600, cRPath::CalcLengthZ
-    void try_enter_track_attachment_from_swept_motion(
-        float px, float py, float pz,
-        float sweep_x, float sweep_y, float sweep_z,
-        cRSubLoc* cell); // @ 0x42c770, cRPath::Search
+    void Search(tVector position, tVector sweep, cRSubLoc* cell); // @ 0x42c770
     void compute_kind42_attachment_transform(
         float radius, float x, float y, TransformMatrix* transform, float* out_angle);
     bool SearchPos(
@@ -315,9 +312,7 @@ enum SubLocOpenEdgeFlag {
     SUBLOC_OPEN_EDGE_MASK = 0x0f,
 };
 
-// Packed runtime state at cRSubLoc +0x40. Keep the owning field as a dword:
-// these masks have independent producers and consumers rather than a stable
-// compiler bitfield layout.
+// Masks for the Windows and port layout of the cRSubLoc +0x40 word.
 enum SubLocFlag {
     SUBLOC_LANE_INDEX_MASK = 0x0007,
     SUBLOC_FLAG_SUPPRESS_SALT_SPAWN = 0x0008,
@@ -334,6 +329,17 @@ enum SubLocFlag {
     SUBLOC_FLAG_AI_ENABLED = 0x2000,
     SUBLOC_FLAG_UNCACHED_BODY = 0x4000,
     SUBLOC_FLAG_CORNER_OBJECT = 0x8000,
+};
+
+// BuildLevel sets the lane and clears both random-hazard blockers. DeSaltTrack
+// sets the two-bit hazard field. Other producers own the remaining bits.
+union SubLocFlags {
+    unsigned int word;
+    struct {
+        unsigned int lane_index : 3;
+        unsigned int hazard_suppression : 2;
+        unsigned int other_flags : 27;
+    } fields;
 };
 
 // Authored runtime-grid cell owner. iOS preserves this class as cRSubLoc;
@@ -355,7 +361,10 @@ struct cRSubLoc : public BodBase {
     SubLocTileId tile_id;                // +0x3c, SubLocTileIdValue
     unsigned char open_edge_mask;       // +0x3d, SubLocOpenEdgeFlag bits
     char _pad_3e[0x40 - 0x3e];
-    unsigned int lane_and_flags;        // +0x40, lane index plus SubLocFlag bits
+    union {                             // +0x40
+        unsigned int lane_and_flags;    // masks from SubLocFlag
+        SubLocFlags flags;
+    };
     union {
         struct {
             Fringe* fringe_front; // +0x44, borrowed from FringeManager

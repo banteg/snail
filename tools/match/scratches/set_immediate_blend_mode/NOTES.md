@@ -1,5 +1,26 @@
 # set_immediate_blend_mode
 
+## 2026-11-09: renderer ownership and the second Windows build
+
+Every device load goes through the global renderer's device field at
+`+0xbb94`. The source borrows that member by reference so that each call
+reads the current device. The GL object now carries relocations against
+the renderer with the field addend. All peer instruction bytes are
+unchanged; VC6 renumbered private jump labels in two peers.
+
+The Shockwave executable's function at `0x410ab0` reproduces the retail
+instruction sequence and all 16 function-relative table entries. In both
+executables modes 1 and 4 enter distinct blocks at `+0x27` and `+0x7e`,
+and mode 6 joins the destination-2 tail. The Wii renderer at
+`0x8007d9f0` likewise keeps separate presets with identical effects, but
+uses a different ten-entry mode table.
+
+The complete GL build still scores 88.00%, with 136/137 instructions,
+21 clean references, one table mismatch and one unaudited operand.
+Sharing a source/destination variable across the additive or alpha presets
+and factoring the Direct3D calls into macros did not reproduce retail's
+block sharing.
+
 Immediate 2D quad blend-state helper at `0x412e50`, called by
 `draw_textured_quad_immediate` for its authored `blend_mode` argument.
 

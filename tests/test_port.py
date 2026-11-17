@@ -4,6 +4,7 @@ import json
 import re
 import shutil
 import subprocess
+import sys
 
 import pytest
 
@@ -16,6 +17,28 @@ from snail.wasm_debug import LineTable, annotate
 from snail.wasm_object import SYMBOL_FUNCTION, Signature, read_symbols
 
 I32 = ("i32",)
+
+
+@pytest.mark.skipif(not shutil.which("zig") or not shutil.which("node"), reason="needs zig and node")
+def test_headless_runner_preserves_piped_output(tmp_path):
+    source = tmp_path / "burst.c"
+    source.write_text("""\
+#include <stdio.h>
+#include <string.h>
+static char data[256 * 1024];
+int main(void) {
+    fwrite(data, 1, sizeof data, stdout);
+    memset(data, 'e', sizeof data);
+    fwrite(data, 1, sizeof data, stderr);
+    return 7;
+}
+""")
+    program = tmp_path / "burst.wasm"
+    subprocess.run(["zig", "cc", "-target", "wasm32-wasi", source, "-o", program], check=True)
+    run = subprocess.run(["node", "--no-warnings", REPO_ROOT / "port/shell/run.mjs", program], capture_output=True)
+    assert run.returncode == 7
+    assert run.stdout == bytes(256 * 1024)
+    assert run.stderr == b"e" * (256 * 1024)
 
 
 def test_committed_sources_are_current():
@@ -117,6 +140,22 @@ def test_render_keeps_the_zero_tail_in_the_initialized_section():
     tail = lines.index("g_tail:")
     assert lines[tail - 2 : tail] == ["\t.skip\t8", "\t.weak\tg_tail"]
     assert lines[-1] == "\t.skip\t240"
+
+
+@pytest.mark.skipif(shutil.which("c++filt") is None, reason="needs a C++ demangler")
+def test_demangle_large_symbol_list():
+    # A full batch exceeds both stdin and stdout pipe capacity on macOS.
+    # Bound the subprocess so a pipe deadlock fails the test.
+    subprocess.run(
+        [
+            sys.executable, "-c",
+            "from snail.port_link import demangle\n"
+            "names = ['_Z3fooi', '_Z3bari'] * 8192\n"
+            "assert demangle(names) == ['foo(int)', 'bar(int)'] * 8192\n",
+        ],
+        check=True,
+        timeout=30,
+    )
 
 
 def test_forwarder_rules():

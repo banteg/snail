@@ -5584,7 +5584,7 @@ CORE_SUBGAME_PROTO_UPDATES = (
     ),
     (
         "try_enter_track_attachment_from_swept_motion",
-        "void __thiscall try_enter_track_attachment_from_swept_motion(cRPath* self, float world_x, float world_y, float world_z, float sweep_dx, float sweep_dy, float sweep_dz, cRSubLoc* source_cell)",
+        "void __thiscall try_enter_track_attachment_from_swept_motion(cRPath* self, Vec3 position, Vec3 sweep, cRSubLoc* source_cell)",
     ),
     (
         "get_path_position_at_node",

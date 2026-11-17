@@ -1,6 +1,65 @@
-## 2026-10-16 whole-TU recheck: not closable with honest source
+## 2026-11-10 departure X copy and curve argument registers
 
-The last byte is still `+0x359`. Bank temp `0x55a` (`0x15680`) sorts ahead
+A typed reconstruction using a named `float x` for the secondary
+departure position produced both retail interpolation address bytes, at
+`+0x343` and `+0x35b`. It also retained the full body length and all
+55 references. Its remaining differences were in the departure stores at
+`+0x23c..+0x26e` and in the register used for the second sine argument at
+`+0x31f` and `+0x327`.
+
+In that reconstruction VC6 copies X using the x87 stack. Retail uses an
+integer register to copy the float's bits. Tracing the unmodified compiler
+shows the effect on the following argument. With the integer copy the
+selector reaches EAX at selection 34. With the floating-point copy it
+reaches EDX at selection 33. An additional bank selection for interpolation
+then restores the register sequence in the remainder of the function.
+Matching the two address bytes in isolation leaves these differences.
+
+## 2026-11-10 paired straight samples and terminal deltas
+
+Regular LoopTheLoop and LoopTheLoopW use the same straight-sample
+initializer. It initializes both transforms independently and copies the
+primary center X into each position. The physical sample index and the
+Z coordinate agree on approach and diverge on departure. Both functions
+carry a separate departure index. W also uses the same terminal-delta pass
+as regular LoopTheLoop and LoopOut.
+
+Comparing stock VC6 Path objects before and after the change preserved all
+43 member bodies and relocation targets. The optimized Wasm code sections
+for regular, W and LoopOut were byte-identical. Each builder retains its
+previous single-byte interpolation discrepancy.
+
+## 2026-11-09 Wii curve and departure controls
+
+The Wii counterpart at `0x800581f0..0x80058f74` preserves a circle center
+that the Windows optimizer could have eliminated. At `0x80058630..0x80058674`
+it converts the integer approach length (7) to float and writes the three
+components `(0, curve_source, 7)` to `sp+0x98..0xa0`. The primary and
+secondary positions and up vectors use the center's Y and Z in `f30` and
+`f29`. The rotation calculation multiplies the two sine results by π and
+then ⅛ (`0x800586d4..0x8005870c`). Windows consumes the same two sines and
+multiplies by the single constant `0.39269909262657166` at `+0x337`.
+
+Source overlays compiled with `msvc6.3` against all 43 Path members at
+`64d8ae884` give the following results:
+
+| Source shape | Windows result |
+| --- | --- |
+| Set `Vector3 center(0.0f, curve_source, 7.0f)` before the curve and use its Y/Z in both positions and up vectors | 96.04%. Departure's secondary `Identity()` receiver loses `mov ecx,edi` at `+0x21f`, and the two operands of the face-row multiply change at `+0x8da`. The interpolation store still encodes SIB `38`. |
+| Name the two seven-sample spans and use the integer counts in the float divisions and indices | 96.31%. Combining the spans with the circle center gives the same 96.04% score as the center alone. |
+| Spell the roll factor as `* 3.1415927f / 8.0f` after the sine product | Identical function bytes and relocations to the current source. |
+| Departure index `i + curve_count + 7`, or `z = i + 7; sample_index = curve_count + z` with `z` also used for longitudinal position | Both compile identically to the current source. Carrying the sample index between iterations instead gives 95.83%. |
+| Share a straight-sample initializer for the two banks, taking the index, center and Z | 90.27%, whether used for departure alone or both straight sections. |
+
+The current body matches all 745 normalized instructions and 55 references.
+The unequal instruction starts at `+0x359`; its SIB is **byte `+0x35b`**, native
+`07` and candidate `38`. The Wii evidence distinguishes a real geometric
+temporary from an invented local, but adding it to this Windows source loses
+more native code than it recovers.
+
+## 2026-10-16 whole-TU recheck
+
+The store at `+0x359` still differs in one byte. Bank temp `0x55a` (`0x15680`) sorts ahead
 of iv-temp `0x8ad` (`0x12b40`). Native's curve preheader ends in
 `mov edi, 0x498` after the hoisted endpoint and constant stores. That is the
 strength-reduction init, so a source byte cursor (the HalfPipe/Turnover fix)
@@ -433,3 +492,63 @@ byte (`[edi+eax+0x90]` vs `[eax+edi+0x90]`) remaining.
 `0:680..732` (moving `0x55a` across the `0x800` wrap to `0x802..0x836`, i.e. `-10` / `+22` 32-id
 chunks), while `0:736..832` flip five delta-loop SIB bytes (`+0x5b8..+0x60a`) and single-slot shifts
 `122:1..40` leave `+0x359` swapped or regress at `>= 17`.
+
+## 2026-11-09: endpoint and output ownership in the curve loop
+
+Wii retains the operand order of the center interpolation. It reads the
+first center at `0x800586e8`, the last at `0x800586ec` and computes
+`first + ordinal * (last - first) / count` at `0x80058704..0x80058724`.
+Android and iOS use the same expression. Switching both commutative
+operations to this spelling produces the identical Windows function.
+
+Two MSVC 6.3 whole-Path controls separate the operand-order problem from
+the endpoint register allocation:
+
+- Reading both endpoints through a named `const AttachmentSample*` and
+  writing through the original bank reference emits the target's
+  `fstp [edi+eax+0x90]`. It hoists `21 * count` and uses
+  `fld [eax+edx*8-0x18]` for the endpoint. The original instead hoists
+  `168 * count` in EBX. The resulting function reaches 94.89%.
+- Borrowing the two pointer owners by reference preserves the full stride
+  and `fld [eax+ebx-0x18]`, but C2 enters local register allocation with
+  separate reads of the bank. Its rotating allocator assigns ECX to the
+  second read. Later value forwarding changes that load into
+  `mov ecx,eax`; the output becomes `fstp [edi+ecx+0x90]`. This reaches
+  86.33%. Introducing a separate float result or an inline interpolation
+  helper leaves the copy in place.
+
+Neither control fixes the coupled addressing constraints. The retained
+source names the face selected for each winding and expresses the roll
+amplitude as π/8, as in the Wii product. All 43 Path code and relocation
+fingerprints are unchanged, including this builder. The one unequal
+encoded byte remains `+0x35b`.
+
+A diagnostic run isolated the last dependency of the two-owner control.
+The ordinary source and this control have identical rotating-register
+decisions through selection 34, the EAX load for the half-angle argument
+to Sin. The control has one extra decision, selection 35 (IL line 81,
+temporary 2172 in this build). Starting that decision at EAX in a
+compiler intervention makes the forwarded copy disappear, restores the
+following rotation, and reproduces all 745 instructions, 55 references
+and body bytes. The unmodified compiler still selects ECX for this source.
+Only unmodified builds count. Staging the sine arguments or binding the
+departure sample's center by reference did not remove the extra decision.
+
+## Straight samples and the last vertex (2026-11-09)
+
+The approach and departure primary nodes use the same reset as Dip and
+Slalom: store the center, clear the three control fields, set unit lateral
+scale and call Identity. Both sections now call the existing
+`reset_primary_sample`. After the secondary Identity, Windows copies
+one float from the primary center at +0x90 to the secondary X at +0x30
+(`0x41bc6d..0x41bc74` in the approach). It writes the secondary Y and
+Z separately. The corresponding straight sections in Chromadrome 2 at
+`0x461522..0x461529` and `0x462882..0x462889` retain this scalar copy.
+
+The terminal mesh row computes its vertex from the previous sample's
+position, unit Z and lateral offset. Its only output copy covers three
+four-byte coordinates at `0x41c354`, `0x41c356` and `0x41c361`.
+Combining a named source sample with a full vector assignment in the
+straight sections loses native bank reloads. The shared reset with
+scalar coordinate writes preserves every code and relocation fingerprint
+across all 43 Path functions. The SIB at `+0x35b` remains open.

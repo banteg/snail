@@ -2446,6 +2446,7 @@
       "address": "0x42c770",
       "name": "try_enter_track_attachment_from_swept_motion",
       "aliases": [
+        "cRPath_Search",
         "SubgoldyPathView_try_enter_track_attachment_from_swept_motion"
       ],
       "description": "Scans `cRPath::secondary_samples` against the player's swept motion, using real vector subtraction in each sample-local frame. On acceptance it clears `cRSubGoldy::attachment_exit_pending`, seeds the cRSubGoldy-embedded `cRPathFollowGoldy`, copies the runtime row's installed heading into the cRPath, and immediately validates the candidate through one follow update. The caller rechecks the cleared byte before its secondary-slot probe, so a successful primary entry suppresses that fallback. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe play reaches this entry family; Android and iOS name the broader owner `cRPath::Search(cRSubGoldy*, tVector, tVector, tVector, cRSubLoc*)` and independently confirm that the accepted tail hands off to `cRPathFollowGoldy`."

@@ -736,8 +736,8 @@ trap; sanitizers and the stack protector off, as the original had neither.
 
 1. **Organise the source.** Done: `decomp/` holds all 785 functions in 51
    link-order units, every scratch points at its file with `SOURCE=`, and every
-   match is unchanged. Left over: fold the 11 scratch-local compatibility
-   types (such as `SubgoldyPathView`) into shared headers; meanwhile
+   match is unchanged. Left over: fold the remaining scratch-local compatibility
+   types (such as `SubgoldyFloorSamplerCallView`) into shared headers; meanwhile
    `port/shell/abi_shims.cpp` bridges the calls made through them.
 2. **Headless link.** Done: 682 recovered files compile unchanged and link
    with the shell. The program constructs the 19.8 MB `cRGame`, loads every

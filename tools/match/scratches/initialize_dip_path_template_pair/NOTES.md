@@ -1,3 +1,160 @@
+## 2026-11-10 single curve index and secondary endpoint position
+
+Using the actual curve index for both the angle and the sample Z coordinate
+reproduces the native EBX spill when the secondary endpoint's Y and Z stores
+share their position. The signed guard precedes the initialization of the
+0xa8-byte stride. This source also emits the retail curve, delta pass, strip
+vertices and both windings.
+
+With the 37 relocation operands audited, the first 362 body bytes and the
+last 1,983 agree. The remaining retail window is `[+0x16a,+0x197)`
+(45 bytes), against `[+0x16a,+0x196)` (44 bytes) in the reconstruction.
+Retail reloads the secondary bank before storing Z and transfers Z from
+the x87 stack. The reconstruction holds the position address through both
+stores and copies Z using EDX. The different instruction offsets also move
+local branch labels elsewhere in the normalized diff.
+
+The second control binds the primary endpoint's Z field, writes the
+converted index and saves the result for the secondary sample. It
+reproduces both secondary bank reloads. The first 333 body bytes and
+last 2,039 match. Retail's `[+0x14d,+0x15f)` window is 18 bytes. The
+candidate's window is 24 bytes. Retail first saves Z to the stack and
+then writes the primary field. The candidate writes the field first and
+also computes its address in EAX. All 37 references pass in both controls.
+
+The [mutation recipe](single-index-endpoint-position.json) reproduces
+both comparisons in the ordinary Path translation unit. Each combines
+four curve-index edits with one endpoint edit. The committed Dip scratch
+retains the source with the single differing ModR/M byte at `+0x183`.
+
+```sh
+uv run snail match mutate initialize_dip_path_template_pair \
+  --spec tools/match/scratches/initialize_dip_path_template_pair/single-index-endpoint-position.json \
+  --min-changes 5 --max-changes 5 --max-variants 2
+```
+
+## 2026-11-10 checkerboard materials on both strip windings
+
+Dip's retail face loop tests the low bit of row XOR column. For the upper
+winding both branches read the same filename from `[esp+0x78]` at
+`0x41ec4d` and `0x41ec96`. The lower winding does the same with
+`[esp+0x7c]` at `0x41ed04` and `0x41ed8c`. All 57 such decisions
+identified in the 29 Windows path builders select a single texture per
+winding. Collapsing Dip's two tests to one lookup per winding removes 14
+instructions that are present in retail.
+
+Chromadrome 1 still uses both inputs to the same material selection. The
+builder at `0x425440`, called from `0x40c4a6` and `0x40c50d`, uses
+`Objects/World00/Slide.tga` on even cells and `Objects/World00/Track.tga`
+on odd cells in both windings. Its upper face also records a different
+color in each branch. In Snail Mail the recovered `set_checker_texture`
+operation receives the winding's filename for both inputs. Sharing it in
+Dip, the three loop builders and the Slalom mesh preserves the complete
+code and relocation fingerprints of all 43 Path functions and both
+linked release WebAssembly binaries.
+
+## 2026-11-10 identical Windows strip vertices in three path builders
+
+BuildP at `0x425bf5` and HillValley at `0x42d74e` provide independent
+examples of the curved sample loop. Each spills the actual zero-based
+index for the first x87 integer conversion, initializes a nonzero record
+stride after a signed guard, and spills the updated index on the back edge.
+They assign EBX and EBP the opposite roles from Dip.
+
+In a single-index Dip reconstruction, capturing `width_cells + 1` once
+per vertex row reproduces the native index spill, guard and stride. All
+235 differing bytes of that build fall in the vertex loop. Both loops
+occupy 311 bytes and 92 instructions, including the same 39 x87 operations
+with identical operands. The generated loop keeps the derived stride in
+EDI and uses ECX for the column. Retail and the exact Slalom vertex loop
+keep the raw width in ECX, row in EDX and column in EDI. They form the
+stride separately at each vertex store. This localizes the remaining
+difference in that control to addressing, register allocation and the
+integer stores.
+
+The vertex loop is the same 311 bytes (92 instructions) in three places
+in the retail PE. The ranges below start at the signed row guard and end
+immediately after the loop latch. The end addresses are exclusive.
+
+| Builder | Start VA | End VA |
+| --- | --- | --- |
+| Dip | `0x41ea1a` | `0x41eb51` |
+| Slalom | `0x41fe03` | `0x41ff3a` |
+| SlalomBig | `0x422893` | `0x4229ca` |
+
+Each range hashes to
+`ed8a9d35b37f684bd2b24a7d473786cb48146856dc33bc97ab7ddfa9a3a7b031`.
+Both paths through the loop use the same position and right-vector
+geometry. The terminal row adds one unit of Z to the preceding node.
+SlalomDouble uses that geometry too, with 304 bytes and 89 instructions
+at `0x4256dc..0x42580c`.
+
+Calling the existing `build_extrapolated_strip_mesh` from a single-index
+Dip control reproduced all 311 bytes at their original body offsets while
+preserving the full Slalom and SlalomBig matches. The rest of that Dip
+control differed, including its common face-header write. Native Dip
+writes the header in each winding arm. This gives separate controls for
+the vertex and face portions of subsequent reconstructions.
+
+## 2026-11-09: primary sample bank and secondary position
+
+Dip now reproduces every non-relocation byte in its 2,390-byte body except the
+ModR/M byte at **+0x183**. A reference to the primary bank member spans the
+curve and delta passes. Each access still reloads the bank when needed across
+Identity, Cos, Normalize and Cross. The curve loop writes the secondary position
+directly after secondary Identity, using the same primary bank for its X
+coordinate. HillValley's matching curve also keeps a reference to a live bank
+member. Wii Dip reloads the primary member around Identity and Cos
+(`0x8005b7f8..0x8005b84c`) and reads it again for the secondary X
+(`0x8005b860..0x8005b878`).
+
+Compiled in the complete msvc6.3 Path translation unit, the old and new
+objects differ at exactly 17 Dip bytes. Each was a scale-one SIB with reversed
+base/index roles. All 42 peer function bodies and relocation fingerprints agree.
+The local matcher still gives 655/655 instructions, 99.85%, with 37 clean
+references and a prefix of 100 instructions. The surviving difference at
+`0x41e5c2` is `mov [esp+0x14],ebp` versus native `mov [esp+0x14],ebx`.
+Dip remains partial.
+
+With the recovered bank, the single-index control now differs only in the
+order of two instructions. Remove `curve_phase_index`, compute the angle from
+`i`, increment `i` at the latch, and initialize `sample_offset` to
+`sizeof(PathAttachmentSample)` before `while (i < width_cells_)`. At +0x197
+the candidate emits `mov edi,0xa8` followed by `jle` to body offset +0x417.
+The target puts the branch first. All non-relocation bytes outside
+`[+0x197,+0x1a2)` agree, including both stores of the integer counter and the
+entire mesh. Whole-Path msvc6.3 gives 655/655, prefix 105 and 37 clean
+references. Guarding the offset initializer restores branch order but changes
+allocation. Reusing the endpoint index, endpoint offset or following delta
+offset as the cursor leaves the same reordered pair on the unguarded form.
+
+## 2026-11-09: common primary-sample initialization
+
+The endpoint and interior samples use the same five field initializers and
+matrix Identity call as the Slalom family. Dip now uses their existing
+`reset_primary_sample` helper for both sites. The curve helper then only
+sets the sample position. Whole-Path compilation preserves the body bytes
+and relocation fingerprints of all 43 functions, including Dip's one
+remaining byte at +0x183.
+
+Two other Windows executables independently identify the stored value as
+the loop index. In Chromadrome 1.00 BuildDip, 0x41e136 clears EBP,
+0x41e143 writes it to the conversion home, 0x41e158 guards the loop, and
+0x41e15e sets the cursor to the 0x5c-byte sample stride. Chromadrome 2
+BuildDip uses the same order at 0x4678ab, 0x4678b8, 0x4678cd and
+0x4678d3 with Snail's 0xa8-byte stride. Both store EBP at the loop latch
+and use EBX for constant zero. Snail uses EBX for the index and EBP for
+constant zero.
+
+## 2026-11-09: Dip radius scale
+
+Both the Android and iOS `BuildDip` bodies calculate the radius from the
+curve count divided by a full turn, then multiply by 0.6 and 0.5. Windows
+uses one float multiply. Grouping those constants at compile time gives
+the native coefficient `0x3d4391d1`. With that expression MSVC 6 SP3
+keeps all 43 Path function bodies and their relocation fingerprints
+identical.
+
 ## 2026-10-19: `STOREREG` mechanism of `[esp+0x14]` and single-index `i`
 
 No source change (still **99.85%**, 655/655, prefix 100). C2 trace of `build_live_ranges` (`C2+0x2cac2`) and `score_live_ranges` (`C2+0x22463`) explains the pre-loop `mov dword [esp+0x14], ebx` and 3 of the 17 SIB bytes:

@@ -29,6 +29,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import cse_slot_trace as cst
+import sib_diff
 
 m, ao = cst.m, cst.ao
 CRIMSON = Path(m.__file__).resolve().parents[3] / "crimson"
@@ -146,22 +147,14 @@ def phantom_match(out: Path, config, manifest, spec: str) -> str:
     replay.compile_driver(work, "observer.c", "observer.obj")
     replay.link(work, "observer.exe", "observer.obj")
     replay.run([replay.WIBO, "observer.exe"], work)
-    match = m.run_match(
-        obj_path=work / "replay.obj",
-        function_name=config.function,
-        end_va=config.end_va,
-        symbol_name=config.symbol,
-        manifest=manifest,
-        image_path=m.REPO_ROOT / manifest.primary_target,
-    )
+    match, diagnostic = sib_diff.from_object(config, work / "replay.obj", manifest)
     shutil.rmtree(work)
-    text = f"{spec:28} {match.ratio:9.4%}"
-    if match.ratio == 1.0:
-        rows = ao.sib_differences(match)
-        swaps = [f"+{d['offset']:#x}" for d in rows if d["swapped"]]
-        other = len(rows) - len(swaps)
-        text += "  exact" if not rows else f"  swaps {' '.join(swaps)}" + (f" other {other}" if other else "")
-    return text
+    positions = [sib_diff.location(row) for row in diagnostic["differences"] if row["swapped"]]
+    other = len(diagnostic["differences"]) - len(positions)
+    return "  ".join([
+        f"{spec:28} {match.ratio:9.4%} exact={match.exact}", sib_diff.summary(diagnostic),
+        *positions, *([f"other {other}"] if other else []),
+    ])
 
 
 def main() -> None:
@@ -188,11 +181,16 @@ def main() -> None:
     print(f"C0 (first CSE slot): {slots[0]['id']:#x}, {len(slots)} CSE slots")
     if args.chunks:
         chunk_report(table, records, function)
+    config = m.load_scratch_config(work)
+    manifest = m.load_function_symbol_manifest(m.DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH)
+    _, diagnostic = sib_diff.from_object(config, args.out / result["object_paths"][-1], manifest)
+    print(sib_diff.summary(diagnostic))
+    for row in diagnostic["differences"]:
+        if row["swapped"]:
+            print("  " + sib_diff.location(row))
     specs = expand(args.specs)
     if not specs:
         return
-    config = m.load_scratch_config(work)
-    manifest = m.load_function_symbol_manifest(m.DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH)
     with ao.c2.compiler_environment(), ThreadPoolExecutor(args.jobs) as pool:
         for text in pool.map(lambda spec: phantom_match(args.out, config, manifest, spec), specs):
             print(text, flush=True)

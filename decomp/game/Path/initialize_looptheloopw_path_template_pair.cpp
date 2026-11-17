@@ -35,13 +35,9 @@ void cRPath::initialize_looptheloopw_path_template_pair(
 
     for (i = 0; i < 7; ++i) {
         sample_f = (float)i;
-        primary_bank[i].center_x = (float)width_cells * 0.5f - 4.0f
-            - loop_wiggle * (sample_f / 7.0f);
-        primary_bank[i].rotation_scalar_98 = 0.0f;
-        primary_bank[i].rotation_scalar_94 = 0.0f;
-        primary_bank[i].special_scalar = 0.0f;
-        primary_bank[i].lateral_scale = 1.0f;
-        primary_bank[i].transform.Identity();
+        reset_primary_sample(
+            primary_samples, i * sizeof(AttachmentSample),
+            (float)width_cells * 0.5f - 4.0f - loop_wiggle * (sample_f / 7.0f));
         primary_bank[i].transform.position.x = primary_bank[i].center_x;
         primary_bank[i].transform.position.y = 0.0f;
         primary_bank[i].transform.position.z = sample_f;
@@ -54,38 +50,22 @@ void cRPath::initialize_looptheloopw_path_template_pair(
         secondary_bank[i].delta_length = 1.0f;
     }
 
-    for (i = 0; i < 7; ++i) {
-        int sample_index = curve_count + 7 + i;
-        primary_bank[sample_index].center_x =
-            (1.0f - (float)i * 0.16666667f) * loop_wiggle
-            + (4.0f - (float)width_cells * 0.5f);
-        primary_bank[sample_index].rotation_scalar_98 = 0.0f;
-        primary_bank[sample_index].rotation_scalar_94 = 0.0f;
-        primary_bank[sample_index].special_scalar = 0.0f;
-        primary_bank[sample_index].lateral_scale = 1.0f;
-        primary_bank[sample_index].transform.Identity();
-        primary_bank[sample_index].transform.position.x =
-            primary_bank[sample_index].center_x;
-        primary_bank[sample_index].transform.position.y = 0.0f;
-        primary_bank[sample_index].transform.position.z = (float)(i + 7);
-        primary_bank[sample_index].delta_length = 1.0f;
-
-        secondary_bank[sample_index].transform.Identity();
-        secondary_bank[sample_index].transform.position.x =
-            primary_bank[sample_index].center_x;
-        secondary_bank[sample_index].transform.position.y = 0.49000001f;
-        secondary_bank[sample_index].transform.position.z = (float)(i + 7);
-        secondary_bank[sample_index].delta_length = 1.0f;
+    int departure_index = curve_count + 7;
+    for (i = 0; i < 7; ++i, ++departure_index) {
+        float center_x =
+            (1.0f - (float)i * 0.16666667f) * loop_wiggle +
+            (4.0f - (float)width_cells * 0.5f);
+        initialize_straight_loop_sample(
+            primary_samples, secondary_bank, departure_index, i + 7, center_x);
     }
 
     i = 0;
     if (curve_count > 0) {
-        float secondary_radius = curve_source - 0.49000001f;
         do {
             int sample_index = i + 7;
             sample_f = (float)i;
             float angle = sample_f * 6.2831855f / curve_count_f;
-            float roll = Sin(angle * 0.5f) * Sin(angle * 8.0f) * 0.39269909f;
+            float roll = Sin(angle * 0.5f) * Sin(angle * 8.0f) * (3.1415927f / 8.0f);
             interpolate_path_center(primary_samples, sample_index,
                 loop_segment_count, sample_f, curve_count_f);
             primary_bank[sample_index].center_x +=
@@ -105,6 +85,7 @@ void cRPath::initialize_looptheloopw_path_template_pair(
             secondary_bank[sample_index].transform.Identity();
             secondary_bank[sample_index].transform.position.x =
                 primary_bank[sample_index].center_x;
+            float secondary_radius = curve_source - 0.49000001f;
             secondary_bank[sample_index].transform.position.z =
                 Sin(angle) * secondary_radius + 7.0f;
             secondary_bank[sample_index].transform.position.y =
@@ -140,28 +121,7 @@ void cRPath::initialize_looptheloopw_path_template_pair(
         } while (i < curve_count);
     }
 
-    i = 0;
-    if (segment_count - 1 > 0) {
-        do {
-            primary_bank[i].delta_dir_to_next =
-                primary_bank[i + 1].transform.position -
-                primary_bank[i].transform.position;
-            primary_bank[i].delta_length =
-                primary_bank[i].delta_dir_to_next.Normalize();
-
-            secondary_bank[i].delta_dir_to_next =
-                secondary_bank[i + 1].transform.position -
-                secondary_bank[i].transform.position;
-            secondary_bank[i].delta_length =
-                secondary_bank[i].delta_dir_to_next.Normalize();
-            ++i;
-        } while (i < segment_count - 1);
-    }
-
-    primary_bank[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    primary_bank[segment_count - 1].delta_length = 1.0f;
-    secondary_bank[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
-    secondary_bank[segment_count - 1].delta_length = 1.0f;
+    compute_terminal_deltas(this);
 
     strip_mesh->RequestVertices((width_cells + 1) * (segment_count + 1));
     strip_mesh->RequestFaceQuads(2 * width_cells * segment_count);
@@ -210,33 +170,27 @@ void cRPath::initialize_looptheloopw_path_template_pair(
                         face_index
                         + 2 * (row * width_cells + column);
                     if (face_index == 0) {
-                        facequads[face_array_index].header_word = 0;
-                        facequads[face_array_index].vertex_0 = column + row * ((unsigned short)width_cells + 1);
-                        facequads[face_array_index].vertex_1 = row * ((unsigned short)width_cells + 1) + column + 1;
-                        facequads[face_array_index].vertex_2 =
-                            (row + 1) * ((unsigned short)width_cells + 1) + column + 1;
-                        facequads[face_array_index].vertex_3 =
-                            column + (row + 1) * ((unsigned short)width_cells + 1);
-                        if (((column ^ row) & 1) == 0)
-                            facequads[face_array_index].texture_ref =
-                                g_texture_refs.Add(texture_a, 0, 0);
-                        else
-                            facequads[face_array_index].texture_ref =
-                                g_texture_refs.Add(texture_a, 0, 0);
+                        cRFaceQuad& face = facequads[face_array_index];
+                        face.header_word = 0;
+                        face.vertex_0 = column + row * (width_cells + 1);
+                        face.vertex_1 = row * (width_cells + 1) + column + 1;
+                        face.vertex_2 =
+                            (row + 1) * (width_cells + 1) + column + 1;
+                        face.vertex_3 =
+                            column + (row + 1) * (width_cells + 1);
+                        set_checker_texture(
+                            face, column, row, texture_a, texture_a);
                     } else {
-                        facequads[face_array_index].header_word = 0;
-                        facequads[face_array_index].vertex_0 = row * ((unsigned short)width_cells + 1) + column + 1;
-                        facequads[face_array_index].vertex_1 = column + row * ((unsigned short)width_cells + 1);
-                        facequads[face_array_index].vertex_2 =
-                            column + (row + 1) * ((unsigned short)width_cells + 1);
-                        facequads[face_array_index].vertex_3 =
-                            (row + 1) * ((unsigned short)width_cells + 1) + column + 1;
-                        if (((column ^ row) & 1) == 0)
-                            facequads[face_array_index].texture_ref =
-                                g_texture_refs.Add(texture_b, 0, 0);
-                        else
-                            facequads[face_array_index].texture_ref =
-                                g_texture_refs.Add(texture_b, 0, 0);
+                        cRFaceQuad& face = facequads[face_array_index];
+                        face.header_word = 0;
+                        face.vertex_0 = row * (width_cells + 1) + column + 1;
+                        face.vertex_1 = column + row * (width_cells + 1);
+                        face.vertex_2 =
+                            column + (row + 1) * (width_cells + 1);
+                        face.vertex_3 =
+                            (row + 1) * (width_cells + 1) + column + 1;
+                        set_checker_texture(
+                            face, column, row, texture_b, texture_b);
                     }
                     if (face_index == 0) {
                         facequads[face_array_index].uv[0].u = u0;

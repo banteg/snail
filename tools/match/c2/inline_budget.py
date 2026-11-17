@@ -41,7 +41,6 @@ sys.path.insert(0, str(HERE))
 import trace as t
 
 import rotation as rot
-import schedtrace as sched
 
 from snail import match as m
 
@@ -230,7 +229,10 @@ def main():
     if not rows:
         names = sorted({r["function"] for r in decode(data)})
         raise SystemExit(f"{target} not traced; functions: {', '.join(names)}")
-    first_line = sched.label_base(source_text, rot.definition_line(source_text, target))
+    first_line = t.source_line_base(
+        source_text, target,
+        member_path=work / "member.cpp" if target == config.function else None,
+    )
     classes = sorted({r["total"] for r in rows if r["kind"] == "classes"})
     rows = [r for r in rows if r["kind"] != "classes"]
     top = next(r for r in rows if r["kind"] == "top")

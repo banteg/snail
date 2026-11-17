@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -12,6 +13,38 @@ import c2_replay as replay
 from snail import match as m
 
 STOCK_LOADER = c2.load_profile
+
+
+# Mask C++98 comments and literals so punctuation in them cannot introduce a
+# definition. Keep newlines to preserve the compiler input's physical lines.
+NON_CODE = re.compile(r"""//[^\n]*|/\*[\s\S]*?\*/|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'""")
+
+
+def source_line_base(source_text, symbol, *, member_path=None):
+    """Map a VC6 C2 label to a source line by adding this zero-based brace line."""
+    # In a concatenated unit, an overloaded method may have the same C++
+    # name in another member. Keep the physical line offset of the selected
+    # member, whose exact text was frozen by rotation.prepare.
+    line_offset = 0
+    if member_path is not None:
+        member = member_path.read_text(encoding="utf-8")
+        line_offset = source_text.count("\n", 0, source_text.index(member))
+        source_text = member
+    name = symbol
+    if symbol.startswith("?"):
+        parts = symbol[1:].split("@@")[0].split("@")
+        name = "::".join(reversed(parts))
+    code = NON_CODE.sub(lambda match: " " + "\n" * match[0].count("\n"), source_text)
+    # The recovered definitions start at file scope. Skip prototypes (including
+    # any repeated later in a whole unit) when locating the opening body brace.
+    pattern = re.compile(
+        rf"^(?=[^\s#])[^;{{}}\n]*?\b{re.escape(name)}\s*\([^;{{}}]*(?P<brace>\{{)",
+        re.MULTILINE,
+    )
+    definitions = list(pattern.finditer(code))
+    if len(definitions) != 1:
+        raise ValueError(f"Expected one definition of {name}, found {len(definitions)}")
+    return line_offset + code.count("\n", 0, definitions[0].start("brace"))
 
 
 def trace(scratch, out, *, passes_only=False, early_addresses=False, target_only=False):
