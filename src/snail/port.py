@@ -107,7 +107,10 @@ def compile_objects(root: Path, sources: list[str], *, jobs: int = 10) -> dict[s
     wrapped_defines = {src: f"-D{sym}={sym}_recovered" for src, sym in wrapped_list(root).values()}
 
     def build(source: str) -> tuple[str, str]:
-        extra = [wrapped_defines[source]] if source in wrapped_defines else []
+        # build.zig compiles shell shims as C++17 and recovered sources as C++98.
+        extra = ["-std=c++17"] if source.startswith("shell/") else []
+        if source in wrapped_defines:
+            extra.append(wrapped_defines[source])
         command = ["zig", "c++", "-target", "wasm32-wasi", "-c", *flags, *extra, port_patch.compile_path(source)]
         completed = subprocess.run(
             [*command, "-o", str(object_path(root, source))],

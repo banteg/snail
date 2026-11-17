@@ -8,6 +8,7 @@ enum InputMouseButton {
 };
 
 void install_input_devices();
+void input_reset_buttons_and_keys();
 void input_set_key(int scan_code, bool down);  // DirectInput scan code (DIK_*)
 void input_set_pointer(int x, int y);          // 640x480 client coordinates
 void input_set_button(int button, bool down);  // InputMouseButton

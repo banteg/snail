@@ -9,6 +9,7 @@ from pathlib import Path
 from PIL import Image, ImageMath
 
 from .archive import parse_archive_index, read_archive_entry, write_archive
+from .formats import parse_level_text
 
 ANDROID_ROOT = Path("artifacts/android/asm_extracted")
 # The APK's loose assets, beside the asm.mp3 archive that asm_extracted unpacks.
@@ -18,6 +19,35 @@ OUTPUT = Path("artifacts/bin/SnailMailExtras.dat")
 PC_ARCHIVE = Path("artifacts/bin/SnailMail.dat")
 TUTORIAL = "LEVELS/TUTORIAL.TXT"
 VOICED_MESSAGE = re.compile(r'Sample="([^"]+)" Message="([^"]*)"(?: SampleB="[^"]*" MessageB="[^"]*")?')
+
+
+def validate_mobile_catalog(files: dict[str, bytes]) -> None:
+    levels = {
+        TUTORIAL, "LEVELS/CHALLENGE000.TXT", "LEVELS/DEFAULT.TXT",
+        *(f"LEVELS/ARCADE{i:03}.TXT" for i in range(51)),
+        *(f"LEVELS/ARCADEPRO{i:03}.TXT" for i in range(11)),
+    }
+    if missing := levels - files.keys():
+        raise ValueError(f"missing mobile levels: {', '.join(sorted(missing))}")
+    segments = {name for name in files if name.startswith("SEGMENTS/")}
+    # These catalog entries have no level-file reference. Challenge inserts
+    # PADDING itself. Other references come from the levels' three pools.
+    required = {f"SEGMENTS/{name}.TXT" for name in (
+        "BASIC", "CRADLE", "EASY GAP", "OUTER LOOP BIG", "PADDING", "RICHTEST",
+        "SENTRYE", "TUTORIAL 12", "TUTORIAL 5", "TWISTER4", "UNDER OVER2", "WARP",
+    )}
+    for name in levels:
+        level = parse_level_text(files[name].decode("latin-1"))
+        if not (level.segments and level.first_segments and level.last_segments):
+            raise ValueError(f"incomplete mobile level: {name}")
+        paths = [entry.path for entry in level.segments]
+        paths.extend(level.first_segments)
+        paths.extend(level.last_segments)
+        required.update(f"SEGMENTS/{path.upper()}" for path in paths)
+    if missing := required - segments:
+        raise ValueError(f"missing mobile segments: {', '.join(sorted(missing))}")
+    if len(segments) != 176:
+        raise ValueError(f"expected all 176 mobile segment definitions, found {len(segments)}")
 
 def swap_tga32_rb(raw: bytes) -> bytes:
     """Swap OpenGL ES RGBA 32-bit TGA pixels to PC D3D BGRA layout."""
@@ -128,54 +158,56 @@ def build_extras_files(
         )
         files[f"OBJECTS/WORLD00/TRACK{index}.TGA"] = track_tga
         files[f"OBJECTS/WORLD00/SLIDE{index}.TGA"] = slide_tga
+    # The tunnel repeats this RGBA rainbow twice per tile on Android.
+    worm = io.BytesIO()
+    with Image.open(android_root / "OBJECTS/WORLD00/WORM.PNG") as source:
+        source.convert("RGBA").save(worm, format="TGA", compression=None)
+    files["OBJECTS/WORLD00/WORM.TGA"] = worm.getvalue()
     fringe_path = android_root / "SPRITES/FRINGECOLOURS.TGA"
     files["SPRITES/FRINGECOLOURS.TGA"] = fringe_path.read_bytes()
     for rel in ("OBJECTS/TRAMPRING/_OBJECT.TXT", "GALAXY/_GALAXYPRO.TXT", "INTRO/CREDITS.TXT", "X/_ANIMATION.TXT"):
-        p = android_root / rel
-        if p.exists():
-            files[rel] = p.read_bytes()
+        files[rel] = (android_root / rel).read_bytes()
     for rel in (
         "OBJECTS/TRAMPRING/TRAMPRING.TGA",
         "GALAXY/BORDERSPACEMAPPRO.TGA",
         "GALAXY/LEVELSELECTPRO.TGA",
         "GALAXY/LINEPRO.TGA",
     ):
-        p = android_root / rel
-        if p.exists():
-            files[rel] = swap_tga32_rb(p.read_bytes())
+        files[rel] = swap_tga32_rb((android_root / rel).read_bytes())
     for folder in ("LEVELS", "SEGMENTS"):
         for path in sorted((android_root / folder).glob("*.TXT")):
-            files[f"{folder}/{path.name}"] = path.read_bytes()
+            contents = path.read_bytes()
+            if not contents.strip():
+                raise ValueError(f"empty mobile definition: {path}")
+            files[f"{folder}/{path.name}"] = contents
+    validate_mobile_catalog(files)
     pc_index = parse_archive_index(pc_archive)
     pc_tutorial = read_archive_entry(pc_archive, pc_index.entry_by_path(TUTORIAL))
     files[TUTORIAL] = tutorial_with_pc_messages(files[TUTORIAL], pc_tutorial)
     for stem in ("SPACEPRO", "SPACEPRO2"):
         txt_p = android_root / f"BACKGROUNDS/{stem}.TXT"
         jpg_p = android_root / f"BACKGROUNDS/{stem}.JPG"
-        if txt_p.exists() and jpg_p.exists():
-            files[f"BACKGROUNDS/{stem}.TXT"] = txt_p.read_bytes()
-            # These skies use full-image normalized UVs: keep every source row.
-            im = Image.open(io.BytesIO(jpg_p.read_bytes())).convert("RGB")
-            files[f"BACKGROUNDS/{stem}.TGA"] = tga_rgb24(im)
+        files[f"BACKGROUNDS/{stem}.TXT"] = txt_p.read_bytes()
+        # These skies use full-image normalized UVs: keep every source row.
+        im = Image.open(io.BytesIO(jpg_p.read_bytes())).convert("RGB")
+        files[f"BACKGROUNDS/{stem}.TGA"] = tga_rgb24(im)
     starmap_txt = android_root / "BACKGROUNDS/STARMAPPRO.TXT"
     starmap_jpg = android_root / "BACKGROUNDS/STARMAPPROBG.JPG"
-    if starmap_txt.exists() and starmap_jpg.exists():
-        files["BACKGROUNDS/STARMAPPRO.TXT"] = starmap_txt.read_bytes()
-        src = Image.open(io.BytesIO(starmap_jpg.read_bytes())).convert("RGB").crop((0, 0, 480, 320))
-        tile = src.resize((320, 240), Image.Resampling.BILINEAR)
-        canvas = src.resize((512, 256), Image.Resampling.BILINEAR)
-        canvas.paste(tile, (0, 0))
-        files["BACKGROUNDS/STARMAPPROBG.TGA"] = tga_rgb24(canvas)
+    files["BACKGROUNDS/STARMAPPRO.TXT"] = starmap_txt.read_bytes()
+    src = Image.open(io.BytesIO(starmap_jpg.read_bytes())).convert("RGB").crop((0, 0, 480, 320))
+    tile = src.resize((320, 240), Image.Resampling.BILINEAR)
+    canvas = src.resize((512, 256), Image.Resampling.BILINEAR)
+    canvas.paste(tile, (0, 0))
+    files["BACKGROUNDS/STARMAPPROBG.TGA"] = tga_rgb24(canvas)
     splash_txt = android_root / "BACKGROUNDS/SPLASHPRO.TXT"
     splash_png = android_root / "BACKGROUNDS/SPLASHPRO.PNG"
-    if splash_txt.exists() and splash_png.exists():
-        files["BACKGROUNDS/SPLASHPRO.TXT"] = splash_txt.read_bytes()
-        src = Image.open(io.BytesIO(splash_png.read_bytes())).convert("RGB").crop((0, 0, 480, 320))
-        scaled = src.resize((640, 480), Image.Resampling.BILINEAR)
-        canvas = Image.new("RGB", (640, 512))
-        canvas.paste(scaled, (0, 0))
-        files["BACKGROUNDS/SPLASHPRO_A.TGA"] = tga_rgb24(canvas.crop((0, 0, 512, 512)))
-        files["BACKGROUNDS/SPLASHPRO_B.TGA"] = tga_rgb24(canvas.crop((512, 0, 640, 512)))
+    files["BACKGROUNDS/SPLASHPRO.TXT"] = splash_txt.read_bytes()
+    src = Image.open(io.BytesIO(splash_png.read_bytes())).convert("RGB").crop((0, 0, 480, 320))
+    scaled = src.resize((640, 480), Image.Resampling.BILINEAR)
+    canvas = Image.new("RGB", (640, 512))
+    canvas.paste(scaled, (0, 0))
+    files["BACKGROUNDS/SPLASHPRO_A.TGA"] = tga_rgb24(canvas.crop((0, 0, 512, 512)))
+    files["BACKGROUNDS/SPLASHPRO_B.TGA"] = tga_rgb24(canvas.crop((512, 0, 640, 512)))
     # Android's ramp sound (gSFXBank 42), a mono Vorbis file like the PC SFX2 ones.
     files["SFX2/UPRAMP.OGG"] = (apk_assets / "upramp.ogg").read_bytes()
     return files

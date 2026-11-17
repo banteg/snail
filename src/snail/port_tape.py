@@ -119,9 +119,16 @@ def tape_bytes(session: Session) -> bytes:
 def stage(root: Path, session: Session, workdir: Path) -> None:
     (workdir / "SnailMail.dat").symlink_to((root / ARCHIVE).resolve())
     start = session.path / "start"
-    if start.is_dir():
-        for saved in start.iterdir():
-            shutil.copy(saved, workdir / saved.name)
+    if start.is_symlink():
+        raise ValueError(f"{start}: expected a capture directory")
+    for name in ("SnailMail.cfg", "ScoreA.dat", "ScoreB.dat", "ScoreC.dat"):
+        saved = start / name
+        if not saved.exists(follow_symlinks=False):
+            continue
+        if not saved.is_file(follow_symlinks=False):
+            raise ValueError(f"{saved}: expected a regular save file")
+        with saved.open("rb") as source, (workdir / name).open("xb") as destination:
+            shutil.copyfileobj(source, destination)
 
 
 def as_float32(value: float) -> float:

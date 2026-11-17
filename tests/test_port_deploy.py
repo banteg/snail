@@ -2,6 +2,7 @@ import importlib.util
 import io
 import json
 from pathlib import Path
+import sys
 import tarfile
 
 import pytest
@@ -99,6 +100,17 @@ def test_site_receipt_requires_extras_and_detects_replaced_files(tmp_path):
     (site / "SnailMailExtras.dat.gz").unlink()
     with pytest.raises(ValueError, match="incomplete"):
         deploy.write_receipt(tmp_path, site, "a" * 40, "master", {})
+
+
+def test_receipt_reads_manifest_from_the_selected_checkout(tmp_path, monkeypatch):
+    site = site_receipt(tmp_path)
+    pin = tmp_path / "port/deploy-assets.json"
+    pin.parent.mkdir()
+    pin.write_text(json.dumps({"bundle": {"sha256": "c" * 64}}))
+    monkeypatch.setattr(sys, "argv", ["deploy.py", "receipt", "--root", str(tmp_path),
+                        "--site", str(site), "--revision", "a" * 40, "--ref", "v0.4.0"])
+    deploy.main()
+    assert json.loads((site / "build.json").read_bytes())["assets"] == "c" * 64
 
 
 def test_live_verification_checks_build_identity_and_every_file(tmp_path, monkeypatch):

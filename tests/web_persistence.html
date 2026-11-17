@@ -1,0 +1,76 @@
+<!doctype html>
+<title>Browser save regression tests</title>
+<script type="module">
+import { openSaves } from "./storage.js";
+
+const check = (value, message) => { if (!value) throw new Error(message); };
+async function test() {
+  const errors = [];
+  const open = (reset = false, profile = "original") => openSaves(profile, reset, (error) => errors.push(error.message));
+  // The original database contained only a string-keyed files store.
+  const legacy = indexedDB.open("snail-mail", 1);
+  await new Promise((resolve, reject) => {
+    legacy.onupgradeneeded = () => legacy.result.createObjectStore("files").put(Uint8Array.of(7), "SnailMail.cfg");
+    legacy.onsuccess = resolve;
+    legacy.onerror = reject;
+  });
+  legacy.result.close();
+  check((await open()).files.get("SnailMail.cfg")[0] === 7, "lost pre-upgrade progress");
+  const seed = await open(true);
+  seed.write("SnailMail.cfg", Uint8Array.of(1));
+  const a = await open();
+  const b = await open();
+  a.write("SnailMail.cfg", Uint8Array.of(17));
+  a.write("ScoreA.dat", Uint8Array.of(9));
+  // A stale tab writing its unchanged config on pagehide must preserve route 17.
+  b.write("SnailMail.cfg", Uint8Array.of(1));
+  let disk = (await open()).files;
+  check(disk.get("SnailMail.cfg")[0] === 17 && disk.get("ScoreA.dat")[0] === 9, "stale tab rolled back progress");
+  check(errors.length === 0, "unchanged tab reported a conflict");
+
+  // A conflicting change must leave both the newer progress and the rest of
+  // this save intact. Another profile can still save its own files.
+  b.write("ScoreC.dat", Uint8Array.of(5));
+  b.write("SnailMail.cfg", Uint8Array.of(2));
+  const other = await open(false, "ultimate");
+  other.write("SnailMailMobile.cfg", Uint8Array.of(3));
+  disk = (await open()).files;
+  check(errors.length === 1 && !disk.has("ScoreC.dat") && disk.get("SnailMail.cfg")[0] === 17, "partial conflict");
+  check(disk.get("SnailMailMobile.cfg")[0] === 3, "unrelated save lost");
+
+  // Consecutive writes in separate tasks use this tab's last committed state.
+  a.write("ScoreA.dat", Uint8Array.of(11));
+  await Promise.resolve();
+  a.write("ScoreA.dat", Uint8Array.of(12));
+  check((await open()).files.get("ScoreA.dat")[0] === 12, "consecutive writes conflict with each other");
+  await open(true);
+  a.write("ScoreA.dat", Uint8Array.of(13));
+  check((await open()).files.size === 0 && errors.length === 2, "a reset was undone by an old tab");
+
+  // The real unload path must queue its writes before the child document is
+  // discarded. Its IndexedDB success handlers may never get to run.
+  const frame = document.createElement("iframe");
+  const ready = new Promise(resolve => window.addEventListener("message", resolve, { once: true }));
+  frame.srcdoc = `<script type="module">
+    import { openSaves } from "./storage.js";
+    const saves = await openSaves("original", false, console.error);
+    addEventListener("pagehide", () => {
+      saves.write("SnailMail.cfg", Uint8Array.of(19));
+      saves.flush();
+    });
+    parent.postMessage("ready", location.origin === "null" ? "*" : location.origin);
+  <\/script>`;
+  document.body.append(frame);
+  await ready;
+  const navigated = new Promise(resolve => frame.addEventListener("load", resolve, { once: true }));
+  frame.srcdoc = "";
+  await navigated;
+  check((await open()).files.get("SnailMail.cfg")?.[0] === 19, "pagehide save did not survive navigation");
+}
+try {
+  await test();
+  await fetch("/result", { method: "POST", body: "PASS" });
+} catch (error) {
+  await fetch("/result", { method: "POST", body: String(error.stack || error) });
+}
+</script>

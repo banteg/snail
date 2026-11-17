@@ -10,6 +10,46 @@ from snail.symbols import REPO_ROOT
 
 
 @pytest.mark.skipif(
+    not shutil.which("zig") or not shutil.which("node"),
+    reason="needs the WASI toolchain",
+)
+def test_tga_decoder_requires_complete_rle_packets(tmp_path):
+    source = tmp_path / "tga.cpp"
+    source.write_text("""
+#include "d3dx_texture.cpp"
+#include <assert.h>
+
+Direct3DTexture8* create_emulated_texture(int, int, const unsigned char*) { return nullptr; }
+
+int main() {
+    // Top-first 2x2 image: one red pixel followed by a three-pixel blue run.
+    unsigned char tga[26] = {};
+    tga[2] = 10; tga[12] = 2; tga[14] = 2; tga[16] = 24; tga[17] = 0x20;
+    tga[18] = 0; tga[21] = 255;
+    tga[22] = 0x82; tga[23] = 255;
+    Image image;
+    for (unsigned int n = 18; n < sizeof(tga); ++n)
+        assert(!decode_tga(tga, n, 0, &image));
+    assert(decode_tga(tga, sizeof(tga), 0, &image));
+    assert(image.rgba[0] == 255 && image.rgba[2] == 0);
+    assert(image.rgba[12] == 0 && image.rgba[14] == 255);
+    free(image.rgba);
+    tga[22] = 0x83;
+    assert(!decode_tga(tga, sizeof(tga), 0, &image));
+}
+""")
+    program = tmp_path / "tga.wasm"
+    subprocess.run(
+        ["zig", "c++", "-target", "wasm32-wasi", "-fms-extensions", "-Wno-ignored-attributes",
+         f"-I{REPO_ROOT / 'port/shell'}", f"-I{REPO_ROOT / 'decomp/include'}", str(source), "-o", str(program)],
+        check=True,
+    )  # fmt: skip
+    subprocess.run(
+        ["node", str(REPO_ROOT / "port/shell/run.mjs"), str(program)], check=True
+    )
+
+
+@pytest.mark.skipif(
     shutil.which("node") is None
     or not (REPO_ROOT / "port/zig-out/bin/snail.wasm").exists()
     or not (REPO_ROOT / "artifacts/bin/SnailMail.dat").exists()

@@ -36,7 +36,7 @@ uint32_t wasi_errno(int error)
 {
     switch (error) {
     case ENOENT: return ERRNO_NOENT;
-    case EACCES: case EPERM: return ERRNO_ACCES;
+    case EACCES: case EPERM: case ELOOP: return ERRNO_ACCES;
     case EEXIST: return ERRNO_EXIST;
     case EISDIR: return ERRNO_ISDIR;
     case ENOTDIR: return ERRNO_NOTDIR;
@@ -56,6 +56,7 @@ struct Descriptor {
 
 struct WasiState {
     std::string root;
+    int root_fd;
     std::unordered_map<uint32_t, Descriptor> descriptors;
     uint32_t next = ROOT_FD + 1;
 };
@@ -82,6 +83,8 @@ void store(w2c_wasi__snapshot__preview1* wasi, uint32_t pointer, T value)
 // stay inside the root, and each component matches case-insensitively.
 bool resolve(WasiState* state, uint32_t fd, const std::string& guest, std::string* out)
 {
+    if (guest.find('\0') != std::string::npos)
+        return false;
     std::string base;
     if (fd == ROOT_FD) {
         base = state->root;
@@ -129,9 +132,47 @@ bool resolve(WasiState* state, uint32_t fd, const std::string& guest, std::strin
     return true;
 }
 
+// Keep the parent open across the mutation. Each directory is opened beneath
+// the preceding handle without following links; save files also use O_NOFOLLOW.
+// Read-only archive links remain usable.
+template <typename Action>
+int mutate_path(WasiState* state, const std::string& path, Action action)
+{
+    int directory = dup(state->root_fd);
+    if (directory < 0)
+        return -1;
+    std::string relative = path == state->root ? "." : path.substr(state->root.size() + 1);
+    size_t start = 0;
+    for (;;) {
+        size_t slash = relative.find('/', start);
+        std::string component = relative.substr(start, slash - start);
+        bool last = slash == std::string::npos;
+        int result = last ? action(directory, component.c_str())
+                          : openat(directory, component.c_str(), O_RDONLY | O_DIRECTORY | O_NOFOLLOW);
+        int error = errno;
+        close(directory);
+        errno = error;
+        if (last || result < 0)
+            return result;
+        directory = result;
+        start = slash + 1;
+    }
+}
+
 std::string guest_string(w2c_wasi__snapshot__preview1* wasi, uint32_t pointer, uint32_t length)
 {
     return std::string((const char*)memory(wasi) + pointer, length);
+}
+
+uint32_t remove_path(w2c_wasi__snapshot__preview1* wasi, uint32_t fd, uint32_t pointer, uint32_t length, int flags)
+{
+    std::string path;
+    if (!resolve(wasi->state, fd, guest_string(wasi, pointer, length), &path))
+        return ERRNO_BADF;
+    int result = mutate_path(wasi->state, path, [flags](int dir, const char* name) {
+        return unlinkat(dir, name, flags);
+    });
+    return result < 0 ? wasi_errno(errno) : ERRNO_SUCCESS;
 }
 
 uint8_t filetype(mode_t mode)
@@ -164,6 +205,7 @@ WasiState* wasi_create(const char* root)
     WasiState* state = new WasiState;
     char absolute[4096];
     state->root = realpath(root, absolute) ? absolute : root;
+    state->root_fd = open(state->root.c_str(), O_RDONLY | O_DIRECTORY);
     return state;
 }
 
@@ -289,7 +331,14 @@ uint32_t w2c_wasi__snapshot__preview1_path_open(w2c_wasi__snapshot__preview1* wa
         if (oflags & OFLAGS_TRUNC) flags |= O_TRUNC;
         if (fdflags & FDFLAGS_APPEND) flags |= O_APPEND;
     }
-    int host = open(path.c_str(), flags, 0644);
+    int host;
+    if (flags & O_RDWR) {
+        host = mutate_path(wasi->state, path, [flags](int dir, const char* name) {
+            return openat(dir, name, flags | O_NOFOLLOW, 0644);
+        });
+    } else {
+        host = open(path.c_str(), flags);
+    }
     if (host < 0)
         return wasi_errno(errno);
     uint32_t opened = wasi->state->next++;
@@ -317,23 +366,13 @@ uint32_t w2c_wasi__snapshot__preview1_path_filestat_get(w2c_wasi__snapshot__prev
 uint32_t w2c_wasi__snapshot__preview1_path_unlink_file(w2c_wasi__snapshot__preview1* wasi, uint32_t fd,
     uint32_t path_pointer, uint32_t path_length)
 {
-    std::string path;
-    if (!resolve(wasi->state, fd, guest_string(wasi, path_pointer, path_length), &path))
-        return ERRNO_BADF;
-    if (unlink(path.c_str()) != 0)
-        return wasi_errno(errno);
-    return ERRNO_SUCCESS;
+    return remove_path(wasi, fd, path_pointer, path_length, 0);
 }
 
 uint32_t w2c_wasi__snapshot__preview1_path_remove_directory(w2c_wasi__snapshot__preview1* wasi, uint32_t fd,
     uint32_t path_pointer, uint32_t path_length)
 {
-    std::string path;
-    if (!resolve(wasi->state, fd, guest_string(wasi, path_pointer, path_length), &path))
-        return ERRNO_BADF;
-    if (rmdir(path.c_str()) != 0)
-        return wasi_errno(errno);
-    return ERRNO_SUCCESS;
+    return remove_path(wasi, fd, path_pointer, path_length, AT_REMOVEDIR);
 }
 
 uint32_t w2c_wasi__snapshot__preview1_fd_readdir(w2c_wasi__snapshot__preview1* wasi, uint32_t fd, uint32_t buffer,

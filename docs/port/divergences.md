@@ -50,6 +50,15 @@ recovered code.
 | `22-challenge-finish` | a `Random:` level's finish is laid in pieces as long as the random picks (and their Padding) that carry on past the finish line in Ultimate, each from the Finish segment's first row and each with its pick and mirror draws; Original lays it whole | Android's BuildLevel (0007e88c), measured with `snail android trace` |
 | `23-replay-overlay` | in Ultimate, high-score replays replace the PC's top-centre Play icon with Android's bottom-left fading caption (replay mode, player name, difficulty and speed in 240-tick phases; Time Trial alternates mode and player), fade out before exiting on click or latch, and end 2 s (120 ticks) after the delivery summary appears | Android's `cRSubGame::AI` (00082214), `StartLevel` (000817ac), `Init` (0007de9c) and `cRCompletion::AI` (00060c0c) |
 | `24-ultimate-path-search` | in Ultimate, mid-air path re-entry tests whether a gravity-adjusted swept segment crosses the attachment sample's plane from above and lands inside the sample quad of half-width `width_cells * 0.5` in XZ, then seeds progress and height from the pre-move position | Android's `cRPath::Search` (0004e318), `PointTriangle` (0004c13c) and `cRSubGoldy::AI` (0007ac54) |
+| `25-score-capacity` | Bound replay cursors and size the save buffer for the largest table | The port retains the complete recorded run in either profile |
+| `26-android-course-math` | Divide level percentages by 100 and use Android’s 32,768-entry sine and cosine tables for gameplay | Challenge segment selection and path edges depend on the rounded values |
+| `27-mobile-actor-effects` | Match the order and number of RNG draws for stars, twinkles, slug blinks and explosions, ring stars and projectile trails | The mobile actor constructors and update methods consume a separate shared RNG |
+| `28-mobile-backdrop` | Distort sky texture coordinates on a fixed grid and ease the zoom requested by Goldy and the WORM camera | Android’s `cRBackdrop::SetDistort`, `AI` and `Render` |
+| `29-completion-panel` | Reveal Continue at the summary, ignore it during replay and aim delivered parcels four camera-forward units away | Android’s `cRCompletion::AI` |
+| `30-firework-and-fade` | Consume the guarded firework lifetime roll and release the fade at the Android render boundary | Slug impacts and death transitions can be compared tick by tick |
+| `31-replay-fired-shots` | Record and play the actual shot event in flag 0x40 | Android’s `cRSubGoldy::AI` emits the shot recorded on that tick |
+| `32-mobile-path-meshes` | Build the two Ultimate WORM hands independently, bound Original’s mirror reads, and use the mobile road materials and SuperTramp stripe coordinates | The closed WORM mesh has no extra seam vertex. Android’s baked meshes identify the visible materials and UVs |
+| `33-positional-audio-and-fringe` | Send a floating positional gain to both audio channels and pack the fringe alpha as 127 | Android’s `cRSound::Play` and `cRSubGame::GetSkirtColour` |
 
 Narrow seams wrap a matched function in the shell instead (`port/wrapped.txt`,
 its body renamed `*_recovered`): the mobile content and rules in

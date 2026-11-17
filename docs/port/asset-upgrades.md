@@ -33,9 +33,10 @@ It is a derived colour match, not a claim that an exact Android HD master exists
 Reduced back to Android size, mean absolute error per channel is below 0.5/255
 for the track and 1.4/255 for the slide.
 
-The Pro skies already use full-image normalized UVs, so retaining 512 source rows
-needs no rendering or framing change. The other Pro background conversions keep
-their existing PC menu/split-image UV layouts.
+Ultimate animates gameplay sky UVs on Android’s 20×20 grid (8×8 for a
+320-pixel device). The Pro skies use the whole source texture before zoom.
+The four shared postal skies map the same UVs into their existing PC atlas
+rectangles. The Pro map and splash keep their PC menu layouts.
 
 ### Source identities
 
@@ -71,11 +72,12 @@ evidence of a usable higher-detail replacement.
 orientation, crop boundaries, retention of sub-reference-resolution detail,
 PC/HD pixel identity, the derived red palette, and lossless Pro sky conversion.
 `tests/test_port_mobile_backgrounds.py` checks the dimensions received by the
-browser reactor's texture upload and its full-image/flip UVs.
+browser reactor's texture upload, grid, zoom, random draws and distorted UVs
+at both resolutions. Its reference values come from the ARM renderer.
 
-The rebuilt archive has the same 266 entries; only the eight textures above
-change. Level scripts, segments, audio and all other assets remain byte-identical.
-Original's assets and gameplay code are untouched.
+The rebuilt archive has 267 entries. In addition to the HD upgrades above,
+`Objects/World00/Worm.tga` carries Android’s WORM texture and its alpha
+channel, converted from `OBJECTS/WORLD00/WORM.PNG`.
 
 The published asset bundle remains pinned by `port/deploy-assets.json`. To ship
 the upgrade, package and upload a new versioned bundle and update that manifest

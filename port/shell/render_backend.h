@@ -57,5 +57,6 @@ void backend_present();
 // to enter or leave fullscreen. The host reports changes it makes itself
 // through snail_fullscreen_changed (web_main.cpp).
 void backend_set_fullscreen(int enabled);
+void backend_warp_pointer(int x, int y);  // game-requested position in 640x480 coordinates
 
 #endif

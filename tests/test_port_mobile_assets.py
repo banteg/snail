@@ -11,6 +11,7 @@ from snail.port_extras import (
     APK_ASSETS,
     IOS_ROOT,
     build_extras_files,
+    generate,
     hd_surface_tiles,
     match_surface_palette,
 )
@@ -20,6 +21,22 @@ ANDROID = REPO_ROOT / "artifacts/android/asm_extracted"
 APK = REPO_ROOT / APK_ASSETS
 PC_ARCHIVE = REPO_ROOT / "artifacts/bin/SnailMail.dat"
 IOS = REPO_ROOT / IOS_ROOT
+
+
+@pytest.mark.skipif(
+    not (IOS / "objects_world00_hi_surface6.tga").exists() or not ANDROID.is_dir(),
+    reason="needs Android/iPhone inputs",
+)
+def test_missing_mobile_catalog_does_not_replace_existing_pack(tmp_path):
+    extracted = tmp_path / "android"
+    extracted.mkdir()
+    for directory in ("OBJECTS", "SPRITES", "GALAXY", "INTRO", "X", "LEVELS"):
+        (extracted / directory).symlink_to(ANDROID / directory, target_is_directory=True)
+    output = tmp_path / "extras.dat"
+    output.write_bytes(b"existing pack")
+    with pytest.raises(ValueError, match="missing mobile segments"):
+        generate(REPO_ROOT, android_root=extracted, out=output)
+    assert output.read_bytes() == b"existing pack"
 
 
 def image_bytes(image, format="TGA"):
@@ -146,6 +163,7 @@ def test_deployable_extras_include_mobile_shared_dependencies():
         "LEVELS/TUTORIAL.TXT",
         "INTRO/CREDITS.TXT",
         "X/_ANIMATION.TXT",
+        "OBJECTS/WORLD00/WORM.TGA",
         "SFX2/UPRAMP.OGG",
     ):
         assert read_archive_entry(archive, index.entry_by_path(name))
@@ -212,6 +230,19 @@ def test_mobile_credits_and_fall_animation_replace_the_pc_scripts():
     assert {name for name in pc if pc[name] != mobile[name]} == {b"turbo-fall-000.x"}
     assert pc[b"turbo-fall-000.x"] == ([b"6"], [b"once"])
     assert mobile[b"turbo-fall-000.x"] == ([b"1"], [b"pingpong"])
+
+
+@pytest.mark.skipif(
+    not (ANDROID / "OBJECTS/WORLD00/WORM.PNG").exists() or not PC_ARCHIVE.exists()
+    or not (IOS / "objects_world00_hi_surface6.tga").exists(),
+    reason="needs extracted mobile assets and SnailMail.dat",
+)
+def test_ultimate_worm_retains_mobile_colours_and_alpha():
+    files = build_extras_files(ANDROID, PC_ARCHIVE, APK, IOS)
+    encoded = Image.open(io.BytesIO(files["OBJECTS/WORLD00/WORM.TGA"]))
+    original = Image.open(ANDROID / "OBJECTS/WORLD00/WORM.PNG").convert("RGBA")
+    assert encoded.mode == "RGBA" and encoded.size == original.size
+    assert encoded.tobytes() == original.tobytes()
 
 
 @pytest.mark.skipif(

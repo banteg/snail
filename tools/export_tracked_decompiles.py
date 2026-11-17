@@ -315,6 +315,8 @@ def main() -> int:
     if not args.skip_health_check:
         health_result = _run_python(
             REPO_ROOT / "tools/check_decompile_health.py",
+            "--root", str(root),
+            "--manifest", str(manifest_path),
         )
 
     bn_mismatches = _truncate_list(bn_result.get("mismatches"))

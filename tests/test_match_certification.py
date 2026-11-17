@@ -373,6 +373,28 @@ def test_wide_constant_identity_covers_every_read_byte():
     assert not result.exact, summarize(result)
 
 
+@pytest.mark.parametrize("opcode, width", [("0fb605", 1), ("0fb705", 2), ("a1", 4)])
+def test_memory_reference_compares_the_access_width_even_after_nul(opcode, width):
+    opcode = bytes.fromhex(opcode)
+    obj = m.CoffObject(
+        (
+            m.CoffSection(".text", opcode + bytes(4) + b"\xc3", 0x20,
+                          (m.CoffRelocation(len(opcode), 1, 0x06),)),
+            m.CoffSection(".rdata", b"A\0\0\0", 0x40, ()),
+        ),
+        (m.CoffSymbol(0, "_foo", 0, 1, 0x20, 2), m.CoffSymbol(1, "_value", 0, 2, 0, 3)),
+    )
+    native = b"A\0\x34\x12"
+    image = m.LoadedImage(native, 0x402000, len(native),
+                          sections=(m.ImageSection(".rdata", 0x402000, 0x402004, 0x40),))
+    result = m.match_function(
+        opcode + struct.pack("<I", image.image_base) + b"\xc3",
+        m.extract_object_function(obj, "foo"), image=image, target_va=0x401000,
+    )
+    assert result.body_byte_exact == (width <= 2)
+    assert result.masked_operand_audit.problem_count == (width == 4)
+
+
 def string_literal_reference(literal):
     obj = m.CoffObject(
         (

@@ -1347,8 +1347,7 @@ def _resolve_image_reference(
     image: LoadedImage | None = None,
     manifest: FunctionSymbolManifest | None = None,
     reference_manifest: ReferenceSymbolManifest | None = None,
-    prefer_rdata_constant: bool = False,
-    constant_size: int = 4,
+    access_size: int | None = None,
     function_base: int = 0,
     alias_depth: int = 0,
 ) -> MaskedReference:
@@ -1499,20 +1498,12 @@ def _resolve_image_reference(
             and section.name == ".rdata"
             and _u32_points_into_range(image.mapped, offset, address_range)
         )
-        if (
-            prefer_rdata_constant
-            and section is not None
-            and section.name == ".rdata"
-            and not looks_like_rdata_pointer
-            and (
-                constant := _format_rdata_constant(
-                    image.mapped, offset, value, size=constant_size,
-                )
-            ) is not None
-        ):
-            text, key = constant
-            return MaskedReference(0, "", "image", value, text, key, True)
-        string = None if looks_like_rdata_pointer else _read_printable_c_string(image.mapped, offset)
+        # An address can identify a C string. A memory access consumes its
+        # complete operand, including any bytes after an embedded NUL.
+        string = (
+            _read_printable_c_string(image.mapped, offset)
+            if access_size is None and not looks_like_rdata_pointer else None
+        )
         if string is not None:
             return MaskedReference(
                 0,
@@ -1527,9 +1518,10 @@ def _resolve_image_reference(
             section is not None
             and section.name == ".rdata"
             and not looks_like_rdata_pointer
+            and value + (access_size or 4) <= section.end
             and (
                 constant := _format_rdata_constant(
-                    image.mapped, offset, value, size=constant_size,
+                    image.mapped, offset, value, size=access_size or 4,
                 )
             ) is not None
         ):
@@ -1548,21 +1540,6 @@ def _resolve_image_reference(
 
 
 _OPERAND_SIZE_NAMES = {1: "byte", 2: "word", 4: "dword", 8: "qword", 10: "tword"}
-_X87_FLOAT_MEMORY_MNEMONICS = frozenset(
-    (
-        "fadd",
-        "fcom",
-        "fcomp",
-        "fdiv",
-        "fdivr",
-        "fld",
-        "fmul",
-        "fst",
-        "fstp",
-        "fsub",
-        "fsubr",
-    )
-)
 
 
 def _format_memory_operand(insn, operand, masked_disp: bool) -> str:
@@ -1593,18 +1570,6 @@ def _format_memory_operand(insn, operand, masked_disp: bool) -> str:
     size = _OPERAND_SIZE_NAMES.get(operand.size, str(operand.size))
     segment = f"{insn.reg_name(mem.segment)}:" if mem.segment != 0 else ""
     return f"{size} {segment}[{'+'.join(parts)}]"
-
-
-def _prefers_rdata_constant(insn) -> bool:
-    """Whether a memory operand reads floating-point data, never a C string."""
-    return insn.mnemonic in _X87_FLOAT_MEMORY_MNEMONICS
-
-
-def _rdata_constant_size(insn, operand) -> int:
-    """Width of the datum a memory operand reads; addresses taken keep a dword."""
-    if insn.mnemonic == "lea" or operand.size <= 4:
-        return 4
-    return min(operand.size, RDATA_CONSTANT_MAX_SIZE)
 
 
 def _is_inline_table_alignment(insn: capstone.CsInsn) -> bool:
@@ -2044,8 +2009,7 @@ def disassemble_normalized_function(
         *,
         operand_index: int,
         kind: str,
-        prefer_rdata_constant: bool = False,
-        constant_size: int = 4,
+        access_size: int | None = None,
     ) -> MaskedReference:
         jump_table_entries = None
         alternate_jump_table_entries: tuple[tuple[int, ...], ...] = ()
@@ -2201,15 +2165,14 @@ def disassemble_normalized_function(
         text, key, explained = reference.text, reference.key, reference.explained
         if (
             reference.constant_data is not None
-            and (prefer_rdata_constant or (key or "").startswith("const:"))
-            and (
-                constant := _format_rdata_constant(
-                    reference.constant_data, 0, size=constant_size,
-                )
-            ) is not None
+            and access_size is not None
         ):
-            text, key = constant
-            explained = True
+            constant = _format_rdata_constant(reference.constant_data, 0, size=access_size)
+            if constant is None:
+                key, explained = None, False
+            else:
+                text, key = constant
+                explained = True
         return MaskedReference(
             operand_index=operand_index,
             kind=kind,
@@ -2231,16 +2194,14 @@ def disassemble_normalized_function(
         *,
         operand_index: int,
         kind: str,
-        prefer_rdata_constant: bool = False,
-        constant_size: int = 4,
+        access_size: int | None = None,
     ) -> MaskedReference:
         resolved = _resolve_image_reference(
             value,
             image=image,
             manifest=manifest,
             reference_manifest=reference_manifest,
-            prefer_rdata_constant=prefer_rdata_constant,
-            constant_size=constant_size,
+            access_size=access_size,
             function_base=base_address,
             alias_depth=_alias_depth,
         )
@@ -2352,6 +2313,7 @@ def disassemble_normalized_function(
                 else:
                     operands.append(f"0x{value:x}" if value >= 0 else f"-0x{-value:x}")
             elif operand.type == capstone.x86.X86_OP_MEM:
+                access_size = None if insn.mnemonic == "lea" else operand.size
                 masked = disp_masked or is_masked_value(operand.mem.disp)
                 operands.append(_format_memory_operand(insn, operand, masked))
                 if disp_masked:
@@ -2360,8 +2322,7 @@ def disassemble_normalized_function(
                             disp_relocation,
                             operand_index=operand_index,
                             kind="disp",
-                            prefer_rdata_constant=_prefers_rdata_constant(insn),
-                            constant_size=_rdata_constant_size(insn, operand),
+                            access_size=access_size,
                         )
                     )
                 elif is_masked_value(operand.mem.disp):
@@ -2370,8 +2331,7 @@ def disassemble_normalized_function(
                             operand.mem.disp,
                             operand_index=operand_index,
                             kind="disp",
-                            prefer_rdata_constant=_prefers_rdata_constant(insn),
-                            constant_size=_rdata_constant_size(insn, operand),
+                            access_size=access_size,
                         )
                     )
             else:
@@ -5320,7 +5280,8 @@ def _scratch_include_headers(
     # CL resolves relative /I and /FI paths from its working directory, a
     # private directory inside build/.
     compile_dir = config.directory / "build" / ".compile"
-    raw_dirs, forced_names = _cflags_include_options(config.cflags)
+    options = " ".join((os.environ.get("CL", ""), config.cflags, os.environ.get("_CL_", "")))
+    raw_dirs, forced_names = _cflags_include_options(options)
     include_dirs = tuple(
         Path(os.path.normpath(compile_dir / name.replace("\\", "/"))) for name in raw_dirs
     )
@@ -5404,6 +5365,11 @@ def cl_environment(compiler: str) -> dict[str, str]:
     return environment
 
 
+def cl_option_environment() -> dict[str, str]:
+    """Implicit options VC6 adds before and after the explicit command line."""
+    return {name: os.environ[name] for name in ("CL", "_CL_") if os.environ.get(name)}
+
+
 def _scratch_build_dependencies(
     config: ScratchConfig,
     match_root: Path,
@@ -5443,8 +5409,7 @@ def _scratch_build_key(
     return {
         "compiler": config.compiler,
         "runner_command": os.environ.get("WIBO") or "auto",
-        # CL prepends these to its command line, so they change the object.
-        "cl_env": {name: os.environ.get(name) for name in ("CL", "_CL_")},
+        "cl_env": cl_option_environment(),
         "argv": list(_scratch_compile_argv(config, match_root)),
         "dependencies": [
             [str(path.relative_to(match_root) if path.is_relative_to(match_root) else path), _file_sha256(path)]
@@ -5482,6 +5447,7 @@ def scratch_dependency_sha256(
     payload = {
         "compiler": config.compiler,
         "argv": list(_scratch_compile_argv(config, match_root)[1:]),
+        "cl_env": cl_option_environment(),
         "dependencies": dependencies,
     }
     encoded = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode()
@@ -5513,6 +5479,7 @@ def scratch_experiment_epoch(
         image_path = REPO_ROOT / manifest.primary_target
     profile = {
         "cflags": config.cflags,
+        "cl_env": cl_option_environment(),
         "compiler": config.compiler,
         "end_va": config.end_va,
         "function": config.function,

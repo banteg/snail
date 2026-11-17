@@ -22,7 +22,7 @@
 
 import { AudioPresenter } from "./audio.js";
 import { Renderer } from "./renderer.js";
-import { PROFILES, Settings } from "./settings.js";
+import { Settings } from "./settings.js";
 import { openSaves } from "./storage.js";
 import { createWasi, ExitStatus, MemoryFileSystem } from "./wasi.js";
 
@@ -103,37 +103,53 @@ function clamp(value, low, high) {
   return Math.max(low, Math.min(high, value));
 }
 
-function connectInput(exports, settings) {
+function connectInput(exports, settings, cursor) {
   // The cursor in game pixels: from the pointer's position, or moved by its
   // motion while the pointer is locked.
-  let x = 320, y = 240;
+  let held = 0;
+  let lastClient = null;
+  const buttons = (next) => {
+    // Chorded buttons arrive as pointermove until the last button is up.
+    for (const [button, bit] of [[0, 1], [1, 2]]) {
+      if ((next ^ held) & bit) exports.snail_button(button, (next & bit) !== 0);
+    }
+    held = next;
+  };
   const locked = () => document.pointerLockElement === canvas;
   const pointer = (event) => {
     const box = canvas.getBoundingClientRect();
     if (locked()) {
-      x = clamp(x + (event.movementX * 640) / box.width, 0, 639);
-      y = clamp(y + (event.movementY * 480) / box.height, 0, 479);
+      cursor.x = clamp(cursor.x + (event.movementX * 640) / box.width, 0, 639);
+      cursor.y = clamp(cursor.y + (event.movementY * 480) / box.height, 0, 479);
     } else {
-      x = clamp(((event.clientX - box.left) / box.width) * 640, 0, 639);
-      y = clamp(((event.clientY - box.top) / box.height) * 480, 0, 479);
+      const at = { x: ((event.clientX - box.left) / box.width) * 640, y: ((event.clientY - box.top) / box.height) * 480 };
+      // The browser cannot warp the system pointer. After the game recenters
+      // it, use the physical displacement until it leaves and re-enters.
+      if (cursor.warped && lastClient) {
+        cursor.x = clamp(cursor.x + at.x - lastClient.x, 0, 639);
+        cursor.y = clamp(cursor.y + at.y - lastClient.y, 0, 479);
+      } else {
+        cursor.x = clamp(at.x, 0, 639);
+        cursor.y = clamp(at.y, 0, 479);
+        cursor.warped = false;
+      }
+      lastClient = at;
     }
-    exports.snail_pointer(Math.floor(x), Math.floor(y));
-  };
-  const button = (event, down) => {
-    if (event.button === 0 || event.button === 2) exports.snail_button(event.button === 0 ? 0 : 1, down);
+    exports.snail_pointer(Math.floor(cursor.x), Math.floor(cursor.y));
+    buttons(event.buttons);
   };
   canvas.addEventListener("pointermove", pointer);
+  canvas.addEventListener("pointerleave", () => { if (!locked()) lastClient = null; });
   canvas.addEventListener("pointerdown", (event) => {
     canvas.focus();
-    if (settings.get("trapMouse") && !locked()) lockPointer();
-    if (!locked()) canvas.setPointerCapture(event.pointerId);
     pointer(event);
-    button(event, 1);
+    if (locked()) return;
+    if (settings.get("trapMouse") && canvas.requestPointerLock) lockPointer();
+    else canvas.setPointerCapture(event.pointerId);
   });
-  canvas.addEventListener("pointerup", (event) => {
-    pointer(event);
-    button(event, 0);
-  });
+  canvas.addEventListener("pointerup", pointer);
+  canvas.addEventListener("pointercancel", () => buttons(0));
+  window.addEventListener("pointerup", (event) => { if (held) buttons(event.buttons); });
   canvas.addEventListener("contextmenu", (event) => event.preventDefault());
   canvas.addEventListener("wheel", (event) => {
     event.preventDefault();
@@ -141,8 +157,8 @@ function connectInput(exports, settings) {
   }, { passive: false });
   const key = (event, down) => {
     const code = SCAN_CODES[event.code];
-    if (code === undefined || event.metaKey || settings.open) return;
-    event.preventDefault();
+    if (code === undefined || (down && (event.metaKey || settings.open))) return;
+    if (!event.metaKey && !settings.open) event.preventDefault();
     exports.snail_key(code, down);
   };
   window.addEventListener("keydown", (event) => key(event, 1));
@@ -155,8 +171,11 @@ function connectInput(exports, settings) {
   };
   // Keys held while the page loses focus would otherwise stay down.
   window.addEventListener("blur", () => {
-    for (const code of Object.values(SCAN_CODES)) exports.snail_key(code, 0);
+    held = 0;
     syncWindowState();
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) held = 0;
   });
   window.addEventListener("focus", syncWindowState);
 }
@@ -185,7 +204,7 @@ function forwardEscapeOnRelease(exports) {
 
 function lockPointer() {
   // Safari returns nothing; others a promise that rejects when the page may not lock yet.
-  canvas.requestPointerLock()?.catch?.(() => {});
+  canvas.requestPointerLock?.()?.catch?.(() => {});
 }
 
 // The game's Fullscreen option (set_fullscreen_mode) with the page as the
@@ -213,8 +232,10 @@ class Fullscreen {
   }
 
   apply() {
+    if (!this.exports) return; // the startup preference waits for the splash gesture
     const want = this.wanted && this.settings.get("fullscreen");
-    if (want && !document.fullscreenElement && (navigator.userActivation?.isActive ?? true)) {
+    if (want && !document.fullscreenElement && document.documentElement.requestFullscreen
+        && (navigator.userActivation?.isActive ?? true)) {
       document.documentElement
         .requestFullscreen({ navigationUI: "hide" })
         // Escape belongs to the game; holding it still leaves fullscreen.
@@ -260,9 +281,15 @@ async function main() {
     if ("hidpi" in changes) updateResolution();
     if ("fullscreen" in changes) fullscreen.apply();
     if (changes.trapMouse === false) releasePointer();
-    if ("profile" in changes) location.reload();
-  }, releasePointer);
-  if (PROFILES.some((profile) => profile.id === params.get("profile"))) settings.values.profile = params.get("profile");
+    if ("profile" in changes) {
+      const url = new URL(location.href);
+      if (url.searchParams.has("profile")) {
+        url.searchParams.set("profile", changes.profile);
+        history.replaceState(history.state, "", url);
+      }
+      location.reload();
+    }
+  }, releasePointer, params.get("profile"));
   const fullscreen = new Fullscreen(settings);
   const updateResolution = connectResolution(renderer, settings);
   const fs = new MemoryFileSystem();
@@ -273,23 +300,32 @@ async function main() {
   fs.write("SnailMail.dat", archive);
   const ultimate = settings.get("profile") === "ultimate";
   if (ultimate) fs.write("SnailMailExtras.dat", await fetchArchive("SnailMailExtras.dat.gz", () => {}));
-  const saves = await openSaves();
-  if (new URLSearchParams(location.search).has("reset")) await saves.clear();
-  for (const [name, bytes] of await saves.load()) fs.write(name, bytes);
+  const saves = await openSaves(settings.get("profile"), params.has("reset"), (error) => show(`Game could not save: ${error.message}`, true));
+  for (const [name, bytes] of saves.files) fs.write(name, bytes.slice());
+  if (params.has("reset")) {
+    const url = new URL(location.href);
+    url.searchParams.delete("reset");
+    history.replaceState(history.state, "", url);
+  }
 
   const wasi = createWasi(fs, {
     log: (line, fd) => (fd === 2 ? console.warn : console.log)(line),
     onClose: (path, data) => {
       // The extracted BASS library is a temporary file, deleted on a clean quit.
-      if (!/(^|\/)tbass\.dll$/i.test(path)) saves.save(path, data.slice());
+      if (!/(^|\/)tbass\.dll$/i.test(path)) saves.write(path, data);
     },
     onUnlink: (path) => {
-      if (!/(^|\/)tbass\.dll$/i.test(path)) saves.remove(path);
+      if (!/(^|\/)tbass\.dll$/i.test(path)) saves.write(path);
     },
   });
+  const cursor = { x: 320, y: 240, warped: false };
   const instance = await WebAssembly.instantiate(module, {
     wasi_snapshot_preview1: wasi.imports,
-    snail: { ...renderer.imports(), ...audio.imports(), set_fullscreen: (enabled) => fullscreen.request(enabled !== 0) },
+    snail: {
+      ...renderer.imports(), ...audio.imports(),
+      set_fullscreen: (enabled) => fullscreen.request(enabled !== 0),
+      pointer_warp: (x, y) => { cursor.x = x; cursor.y = y; cursor.warped = true; },
+    },
   });
   const exports = instance.exports;
   wasi.bind(exports.memory);
@@ -302,14 +338,17 @@ async function main() {
   if (!exports.snail_start(warmup === null ? Date.now() % 1000 : Number(warmup))) {
     throw new Error("startup failed (see the console)");
   }
-  fullscreen.exports = exports;
   await waitForGesture();
   audio.unlock();
+  fullscreen.exports = exports;
   fullscreen.apply(); // a fullscreen request at startup waited for this gesture
   splash.classList.add("gone");
-  connectInput(exports, settings);
+  connectInput(exports, settings, cursor);
   forwardEscapeOnRelease(exports);
-  const save = () => exports.snail_save();
+  const save = () => {
+    exports.snail_save();
+    saves.flush(); // queue the transaction before pagehide returns
+  };
   let last = performance.now();
   document.addEventListener("visibilitychange", () => {
     const visible = document.visibilityState === "visible";

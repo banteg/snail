@@ -12,6 +12,7 @@
 #include "frontend_fade.h"
 #include "game_root.h"
 #include "game_session.h"
+#include "gl.h"
 #include "input_polling.h"
 #include "input_state.h"
 #include "loading_bar.h"
@@ -30,15 +31,12 @@ extern StaticInitializer g_cpp_initializer_table_end[];
 void* load_config_file(char* file_name, void* buffer);  // @ 0x42f470
 char validate_config_tail_stub(char* config_tail);       // @ 0x42f5b0
 char initialize_game_data_archive();                     // shell/files.cpp
-char initialize_direct3d_renderer();                     // @ 0x4129c0
 int set_cull_mode(int cull_front);                       // @ 0x4129f0
 void initialize_main_loop_display_state();               // @ 0x406d70
 int construct_game_runtime();                            // @ 0x407b60
 void set_tracked_allocation_mark();                      // @ 0x431cb0
-void load_registered_texture_refs(int debug_fallback);   // @ 0x412a00
 void render_game_frame_scene();                          // @ 0x4134c0
 char* save_config_file(char* file_name, void* bytes, int byte_count);  // @ 0x42f540
-int present_backbuffer();                                // @ 0x413520
 unsigned int msvc_rand_seed();                           // shell/runtime.cpp
 
 bool g_port_ultimate = false;
@@ -77,6 +75,7 @@ bool start_game(int warmup)
     initialize_direct3d_renderer();
     install_input_devices();
     set_cull_mode(1);
+    set_fullscreen_mode(g_runtime_config.fullscreen_enabled);
 
     initialize_main_loop_display_state();
     g_loading_bar.Init();

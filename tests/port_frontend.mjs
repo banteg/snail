@@ -19,6 +19,8 @@ export async function openGame(wasm, ultimate, playerName) {
   const imports = wasi.getImportObject();
   imports.snail = Object.fromEntries(WebAssembly.Module.imports(module)
     .filter(i => i.module === 'snail').map(i => [i.name, () => 0]));
+  const fullscreenRequests = [];
+  imports.snail.set_fullscreen = enabled => fullscreenRequests.push(enabled);
   const instance = await WebAssembly.instantiate(module, imports);
   wasi.initialize(instance);
   const e = instance.exports;
@@ -36,7 +38,9 @@ export async function openGame(wasm, ultimate, playerName) {
       root = candidate;
   }
   if (!root) throw Error('game root not found');
-  return new Game(e, memory, root, ultimate);
+  const game = new Game(e, memory, root, ultimate);
+  game.fullscreenRequests = fullscreenRequests;
+  return game;
 }
 
 // Ultimate names two front-end entries as Android does

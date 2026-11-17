@@ -43,11 +43,12 @@ the setup in [tools/match/README.md](tools/match/README.md); the compiler and
 scratch build outputs are local tooling artifacts and should stay untracked.
 
 A new `git worktree` starts without those untracked inputs. Run
-`tools/link_worktree.sh` inside it to symlink them from the main checkout:
-the reference binaries and mobile builds under `artifacts/`, the compilers, the
-DirectX 8.1 SDK, `wibo` and `objdiff-cli`. Artifact directories that tools
-write to by default (reports, web packs, screenshots) stay local to the
-worktree.
+`tools/link_worktree.sh` inside it to link the mobile builds, compilers, DirectX
+8.1 SDK, `wibo` and `objdiff-cli` from the main checkout. It copies
+`artifacts/bin/` and `artifacts/extracted/` into the worktree so rebuilding an
+asset pack or extracting the archive there preserves the main checkout's
+files. Rerun the script to migrate these two links in older worktrees. Reports,
+web packs and screenshots also stay local.
 
 Docs can be previewed locally with:
 

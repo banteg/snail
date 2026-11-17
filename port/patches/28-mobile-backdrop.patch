@@ -1,0 +1,149 @@
+Android cRBackdrop::SetDistort, AI and Render (0003e46c, 0003e988, 0003e194),
+cRSubGoldy::AI (0007ade0) and the WORM camera (000718c4). Ultimate uses
+the mobile grid and zoom while keeping each desktop texture's atlas layout.
+
+--- a/decomp/include/backdrop.h
++++ b/decomp/include/backdrop.h
+@@ -81,4 +81,10 @@
+ };
+ 
++// Android uses 8 quads at a device width of 320 and 20 otherwise.
++enum { MOBILE_BACKDROP_MAX_QUADS = 20 };
++void seed_mobile_backdrop(cRBackdrop* backdrop, float distort);
++void advance_mobile_backdrop(cRBackdrop* backdrop);
++void draw_mobile_backdrop(int texture_id);
++
+ typedef cRBackdrop Backdrop;
+ typedef char Backdrop_must_cover_0x6cc[
+--- a/decomp/include/font_system.h
++++ b/decomp/include/font_system.h
+@@ -10,4 +10,6 @@
+     FONT_TEXT_BUFFER_CAPACITY = 0x800,
+     FONT_QUEUE_CAPACITY = 1024,
++    // Queued at the same depth as the PC backdrop; the mobile grid has per-vertex UVs.
++    FONT_QUEUE_MOBILE_BACKDROP = RENDER_SCENE_OVERLAY_2 | 4,
+ };
+ 
+--- a/decomp/engine/Font/draw_font_text_queue.cpp
++++ b/decomp/engine/Font/draw_font_text_queue.cpp
+@@ -1,4 +1,5 @@
+ // FontPrintRender @ 0x44a730 (cdecl)
+ 
++#include "backdrop.h"
+ #include "font_system.h"
+ #include "render_scene.h"
+@@ -16,4 +17,6 @@
+                 if ((flags & 1) != 0)
+                     FontPrintReal(entry);
++                else if (flags == FONT_QUEUE_MOBILE_BACKDROP)
++                    draw_mobile_backdrop(entry->texture_id);
+                 else
+                     OSDPrintReal(entry);
+--- a/decomp/game/Game/set_backdrop_distort.cpp
++++ b/decomp/game/Game/set_backdrop_distort.cpp
+@@ -5,6 +5,13 @@
+ #include "rmath_random.h"
+ 
++extern bool g_port_ultimate;
++
+ void cRBackdrop::SetDistort(float distort)
+ {
++    if (g_port_ultimate) {
++        seed_mobile_backdrop(this, distort);
++        return;
++    }
++
+     enum {
+         GRID_ROW_COUNT = sizeof(distort_grid) / sizeof(distort_grid[0]),
+--- a/decomp/game/Game/run_frame_update.cpp
++++ b/decomp/game/Game/run_frame_update.cpp
+@@ -8,4 +8,6 @@
+ #include "sprite.h"
+ #include "voice_manager.h"
++
++extern bool g_port_ultimate;
+ 
+ int cRGame::AI()
+@@ -48,4 +50,6 @@
+             fixed_update_accumulator = fixed_update_accumulator - 1.0f;
+             players[0].frontend_overlay.AI();
++            if (g_port_ultimate)
++                advance_mobile_backdrop(&backdrop);
+ 
+             BodNode* bod = active_bod_list.first;
+--- a/decomp/game/Game/update_backdrop.cpp
++++ b/decomp/game/Game/update_backdrop.cpp
+@@ -3,4 +3,6 @@
+ #include "backdrop.h"
+ #include "rmath_random.h"
++
++extern bool g_port_ultimate;
+ 
+ int cRBackdrop::update_backdrop()
+@@ -11,5 +13,5 @@
+     };
+ 
+-    if (backdrop_change_queued != 0) {
++    if (!g_port_ultimate && backdrop_change_queued != 0) {
+         ChangeReal();
+         backdrop_change_queued = 0;
+--- a/decomp/game/Game/change_backdrop_real.cpp
++++ b/decomp/game/Game/change_backdrop_real.cpp
+@@ -3,4 +3,6 @@
+ 
+ #include "backdrop.h"
++
++extern bool g_port_ultimate;
+ 
+ void cRBackdrop::ChangeReal()
+@@ -14,5 +16,6 @@
+         }
+ 
+-        zoom = 0.0f;
++        if (!g_port_ultimate)
++            zoom = 0.0f;
+         SetDistort(pending_distort);
+         backdrop_render_enabled = 1;
+--- a/decomp/game/SubGame/update_subgoldy.cpp
++++ b/decomp/game/SubGame/update_subgoldy.cpp
+@@ -119,4 +119,7 @@
+         return;
+     }
++
++    if (g_port_ultimate)
++        g_game->backdrop.SetZoom(transform.position.z / 36000.0f);
+ 
+     if (follow_state.active == 1) {
+@@ -1003,6 +1006,6 @@
+     }
+ 
+-    float backdrop_zoom = transform.position.z / (float)game->runtime_row_count;
+-    g_game->backdrop.SetZoom(backdrop_zoom);
++    if (!g_port_ultimate)
++        g_game->backdrop.SetZoom(transform.position.z / (float)game->runtime_row_count);
+ 
+     cRSubGame* horizon_game = game;
+--- a/decomp/game/SubGame/update_cameraman.cpp
++++ b/decomp/game/SubGame/update_cameraman.cpp
+@@ -4,4 +4,5 @@
+ // subgame_rate * 0.3. No game-base reads: everything hangs off `this`.
+ #include "cameraman.h"
++#include "game_root.h"
+ #include "player.h"
+ #include "rdebug.h"
+@@ -138,4 +139,6 @@
+             phase = 1.0f;
+         float envelope = 0.5f - Cos(phase * 6.2831855f) * 0.5f;
++        if (g_port_ultimate)
++            g_game->backdrop.SetZoom(envelope * 0.1f);
+         debug_report_stub(g_worm_fov_report_format, (double)envelope);
+         desired_fov = envelope * 50.0f + 110.0f;
+--- a/decomp/game/SubGame/destroy_subgame.cpp
++++ b/decomp/game/SubGame/destroy_subgame.cpp
+@@ -67,4 +67,6 @@
+ {
+     debug_report_stub("-SubGame::UnInit()\n");
++    if (g_port_ultimate)
++        g_game->backdrop.SetZoom(0.0f);
+     g_game->backdrop.corner_index_buffer_handle = 1;
+ 

@@ -14,11 +14,13 @@ from snail.symbols import REPO_ROOT
 WASM = REPO_ROOT / "port/zig-out/bin/snail-web.wasm"
 ASSETS = REPO_ROOT / "artifacts/bin"
 # Pro 1 opens with ParcelTest after Start. Level ground for the warning and
-# invincibility, then a raised ramp ('>' twice), a plain ramp far enough on
-# that the snail lands before it, and a SuperTramp.
+# invincibility, turrets in alternating outer lanes, then a raised ramp ('>'
+# twice), a plain ramp far enough on that the snail lands before it, and a SuperTramp.
 # A segment holds at most 256 rows (cRSubSegment::rows).
 PROBE_COURSE = (
-    ["@........@"] * 136
+    ["@........@"] * 74
+    + ["@.......|@", "@|.......@"] * 9
+    + ["@........@"] * 44
     + ["@>>>>>>>>@"] * 2
     + ["@........@"] * 24
     + ["@<<<<<<<<@"]
@@ -57,6 +59,7 @@ def test_warning_invincibility_and_ramp_sounds_follow_the_profile(tmp_path, port
     pc = ASSETS / "SnailMail.dat"
     pc_index = parse_archive_index(pc)
     samples = {
+        "enemyfire": read_archive_entry(pc, pc_index.entry_by_path("SFX2/ENEMYFIRE.OGG")),
         "postalloop": read_archive_entry(pc, pc_index.entry_by_path("SFX2/POSTALLOOP.OGG")),
         "invincible": read_archive_entry(pc, pc_index.entry_by_path("SFX2/INVINCIBLE.OGG")),
         "upramp": files["SFX2/UPRAMP.OGG"],
@@ -95,6 +98,14 @@ def test_warning_invincibility_and_ramp_sounds_follow_the_profile(tmp_path, port
     # before tick 0 and empties it before tick 170; the warning shows from
     # tick 1.
     original, ultimate = data["original"], data["ultimate"]
+    pc_shots = plays(original, "enemyfire")
+    mobile_shots = plays(ultimate, "enemyfire")
+    assert min(shot["pan"] for shot in pc_shots) < 0 < max(shot["pan"] for shot in pc_shots)
+    assert {shot["pan"] for shot in mobile_shots} == {0}
+    assert all(0 < shot["volume"] <= 0.4 for shot in mobile_shots)
+    # SoundPool retains the distance-based gain between whole percentage points.
+    assert any(abs(shot["volume"] * 100 - round(shot["volume"] * 100)) > 0.1 for shot in mobile_shots)
+
     # Windows restarts postalloop at every 26-tick blink and cuts it off when
     # the warning stops (StopSample plays it looped, then stops the sample).
     assert ticks(plays(original, "postalloop")) == list(range(1, 170, 26))

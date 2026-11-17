@@ -85,6 +85,8 @@ WEB_EXPORT("snail_window_state") void snail_window_state(int visible, int focuse
 {
     bool vis = visible != 0;
     bool foc = focused != 0;
+    if (!vis || !foc)
+        input_reset_buttons_and_keys();
     g_window_deactivated = (unsigned char)(
         !vis || (!foc && (g_port_ultimate || g_runtime_config.fullscreen_enabled != 0)));
     g_frozen = !g_port_ultimate && vis && !foc && g_runtime_config.fullscreen_enabled == 0;

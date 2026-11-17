@@ -177,6 +177,8 @@ uv run tools/match/fetch_objdiff.py
 uv run snail match report --refresh -j 8
 ```
 
+Public refreshes require `CL` and `_CL_` to be unset or empty. Put compiler
+options in the tracked scratch configuration so another checkout can reproduce them.
 Refresh verifies the original SHA-256, recomputes the native inventory, freshly
 compiles every scratch, rejects failures, and stores
 `analysis/progress/win32-reflexive.json`. The evidence includes source/config/

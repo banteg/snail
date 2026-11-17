@@ -64,13 +64,13 @@ struct VertexOut {
 };
 
 struct VertexUniforms {
-    float2 half_pixel;  // Direct3D's pixel centres sit half a pixel up and left
+    float2 half_pixel;  // align D3D's integer samples with modern half-integer centres
 };
 
 vertex VertexOut vertex_main(VertexIn in [[stage_in]], constant VertexUniforms& u [[buffer(0)]]) {
     VertexOut out;
     float4 p = in.position;
-    out.position = float4(p.x - u.half_pixel.x * p.w, p.y + u.half_pixel.y * p.w, p.z, p.w);
+    out.position = float4(p.x + u.half_pixel.x * p.w, p.y - u.half_pixel.y * p.w, p.z, p.w);
     out.color = in.color.zyxw;
     out.uv = in.uv;
     out.fog = in.fog;

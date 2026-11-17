@@ -5,6 +5,7 @@
 // The file-path variants read the file system only, as D3DX did; the game
 // itself reads archived textures and passes them in memory.
 
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,52 +44,55 @@ bool decode_tga(const unsigned char* data, unsigned int size, unsigned int color
         return false;
     if ((true_color && bits != 24 && bits != 32) || (grey && bits != 8))
         return false;
+    if ((unsigned int)id_length > size - 18 || width > INT_MAX / 4 / height)
+        return false;
     int stride = bits / 8;
     const unsigned char* cursor = data + 18 + id_length;
     const unsigned char* end = data + size;
 
     int count = width * height;
-    unsigned int* pixels = (unsigned int*)malloc(count * sizeof(unsigned int));
+    // Even an all-repeat image needs one header and one pixel per 128 pixels.
+    size_t minimum = rle ? (size_t)((count + 127) / 128) * (1 + stride) : (size_t)count * stride;
+    if ((size_t)(end - cursor) < minimum)
+        return false;
+    unsigned char* rgba = (unsigned char*)malloc((size_t)count * 4);
+    if (!rgba)
+        return false;
+    bool top_first = (descriptor & 0x20) != 0, right_first = (descriptor & 0x10) != 0;
     for (int i = 0; i < count;) {
         int run = 1;
         bool repeat = false;
         if (rle) {
-            if (cursor >= end)
-                break;
+            if (cursor == end) {
+                free(rgba);
+                return false;
+            }
             int header = *cursor++;
             run = (header & 0x7f) + 1;
             repeat = (header & 0x80) != 0;
         }
-        for (int k = 0; k < run && i < count; ++k, ++i) {
-            if (cursor + stride > end) {
-                free(pixels);
-                return false;
-            }
-            pixels[i] = read_pixel(cursor, bits);
+        if (run > count - i || end - cursor < (repeat ? 1 : run) * stride) {
+            free(rgba);
+            return false;
+        }
+        for (int k = 0; k < run; ++k, ++i) {
+            int x = right_first ? width - 1 - i % width : i % width;
+            int y = top_first ? i / width : height - 1 - i / width;
+            unsigned int argb = read_pixel(cursor, bits);
             if (!repeat || k == run - 1)
                 cursor += stride;
-        }
-    }
-
-    bool top_first = (descriptor & 0x20) != 0, right_first = (descriptor & 0x10) != 0;
-    image->width = width;
-    image->height = height;
-    image->rgba = (unsigned char*)malloc(count * 4);
-    for (int y = 0; y < height; ++y) {
-        int source_y = top_first ? y : height - 1 - y;
-        for (int x = 0; x < width; ++x) {
-            int source_x = right_first ? width - 1 - x : x;
-            unsigned int argb = pixels[source_y * width + source_x];
             if (color_key != 0 && argb == color_key)
                 argb = 0;
-            unsigned char* out = image->rgba + (y * width + x) * 4;
+            unsigned char* out = rgba + (y * width + x) * 4;
             out[0] = (unsigned char)(argb >> 16);
             out[1] = (unsigned char)(argb >> 8);
             out[2] = (unsigned char)argb;
             out[3] = (unsigned char)(argb >> 24);
         }
     }
-    free(pixels);
+    image->width = width;
+    image->height = height;
+    image->rgba = rgba;
     return true;
 }
 
@@ -109,11 +113,15 @@ int create_from_file(const char* path, unsigned int color_key, Direct3DTexture8*
         return kD3DXErrInvalidData;
     fseek(file, 0, SEEK_END);
     long size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-    unsigned char* data = (unsigned char*)malloc(size > 0 ? size : 1);
-    size_t read = fread(data, 1, size, file);
+    if (size < 18 || fseek(file, 0, SEEK_SET) != 0) {
+        fclose(file);
+        return kD3DXErrInvalidData;
+    }
+    unsigned char* data = (unsigned char*)malloc(size);
+    size_t read = data ? fread(data, 1, size, file) : 0;
     fclose(file);
-    int result = create_from_memory(data, (unsigned int)read, color_key, texture);
+    int result = read == (size_t)size ? create_from_memory(data, (unsigned int)read, color_key, texture)
+                                      : kD3DXErrInvalidData;
     free(data);
     return result;
 }

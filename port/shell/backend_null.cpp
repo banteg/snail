@@ -8,6 +8,7 @@ void backend_clear(int, unsigned int, float, const RenderState*) {}
 void backend_draw(int, const RenderVertex*, int, const RenderState*) {}
 void backend_present() {}
 void backend_set_fullscreen(int) {}
+void backend_warp_pointer(int, int) {}
 
 // Headless audio: nothing plays, so no channel is ever active.
 #include "audio_backend.h"

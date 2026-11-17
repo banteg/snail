@@ -32,6 +32,34 @@ def test_record_matches_the_replayer():
     assert RECORD.size == 152  # static_assert in port/shell/lockstep_tape.cpp
 
 
+def test_stage_only_copies_captured_save_names(tmp_path):
+    session = Session(tmp_path / "capture", 0, (0, 0), [])
+    archive = tmp_path / port_tape.ARCHIVE
+    archive.parent.mkdir(parents=True)
+    archive.write_bytes(b"original game assets")
+    start = session.path / "start"
+    start.mkdir(parents=True)
+    (start / "SnailMail.dat").write_bytes(b"unrelated file")
+    (start / "SnailMail.cfg").write_bytes(b"recorded settings")
+    workdir = tmp_path / "staged"
+    workdir.mkdir()
+    port_tape.stage(tmp_path, session, workdir)
+    assert archive.read_bytes() == b"original game assets"
+    assert (workdir / "SnailMail.dat").samefile(archive)
+    assert (workdir / "SnailMail.cfg").read_bytes() == b"recorded settings"
+
+
+def test_stage_rejects_a_symlink_as_a_save(tmp_path):
+    session = Session(tmp_path / "capture", 0, (0, 0), [])
+    start = session.path / "start"
+    start.mkdir(parents=True)
+    (start / "ScoreA.dat").symlink_to(tmp_path / "outside")
+    workdir = tmp_path / "staged"
+    workdir.mkdir()
+    with pytest.raises(ValueError, match="expected a regular save file"):
+        port_tape.stage(tmp_path, session, workdir)
+
+
 def test_tape_layout():
     data = tape_bytes(make_session())
     assert data[:4] == b"SNTP"

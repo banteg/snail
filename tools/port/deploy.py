@@ -11,7 +11,6 @@ import tomllib
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[2]
-MANIFEST = ROOT / "port/deploy-assets.json"
 ASSETS = {"SnailMail.dat", "SnailMailExtras.dat"}
 
 
@@ -114,23 +113,24 @@ def main() -> None:
     parser.add_argument("command", choices=("package-assets", "fetch-assets", "receipt", "verify"))
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--site", type=Path, default=ROOT / "artifacts/web")
-    parser.add_argument("--manifest", type=Path, default=MANIFEST)
+    parser.add_argument("--manifest", type=Path, help="Defaults to port/deploy-assets.json in the selected root.")
     parser.add_argument("--out", type=Path)
     parser.add_argument("--url")
     parser.add_argument("--revision")
     parser.add_argument("--ref")
     args = parser.parse_args()
+    manifest_path = args.manifest or args.root / "port/deploy-assets.json"
     if args.command == "package-assets":
         if not args.out or not args.url:
             parser.error("package-assets requires --out and --url")
         manifest = package_assets(args.root, args.out, args.url)
-        args.manifest.write_text(json.dumps(manifest, indent=2) + "\n")
+        manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
     elif args.command == "fetch-assets":
-        fetch_assets(args.root, json.loads(args.manifest.read_text()))
+        fetch_assets(args.root, json.loads(manifest_path.read_text()))
     elif args.command == "receipt":
         if not args.revision or not args.ref:
             parser.error("receipt requires --revision and --ref")
-        write_receipt(args.root, args.site, args.revision, args.ref, json.loads(args.manifest.read_text()))
+        write_receipt(args.root, args.site, args.revision, args.ref, json.loads(manifest_path.read_text()))
     else:
         verify_site(args.site, args.url)
     print(f"{args.command}: verified")

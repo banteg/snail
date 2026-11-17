@@ -23,9 +23,9 @@ out vec2 v_uv;
 out float v_fog;
 void main() {
   vec4 p = a_position;
-  // Direct3D clip z runs from 0 to w, and its pixel centres sit half a pixel
-  // up and left of OpenGL's.
-  gl_Position = vec4(p.x - u_pixel.x * p.w, p.y + u_pixel.y * p.w, 2.0 * p.z - p.w, p.w);
+  // D3D samples integer screen coordinates. Move its vertices half a pixel
+  // right and down to hit the same samples on OpenGL's half-integer grid.
+  gl_Position = vec4(p.x + u_pixel.x * p.w, p.y - u_pixel.y * p.w, 2.0 * p.z - p.w, p.w);
   v_color = a_color.bgra;
   v_uv = a_uv;
   v_fog = a_fog;

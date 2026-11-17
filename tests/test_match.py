@@ -5413,8 +5413,9 @@ def test_load_scratch_config_rejects_loose_end_forms(tmp_path: Path, end: str) -
         load_scratch_config(tmp_path)
 
 
-def test_build_key_tracks_cl_option_environment(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+@pytest.mark.parametrize("option", ["CL", "_CL_"])
+def test_build_and_experiment_identity_track_cl_option_environment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, option: str,
 ) -> None:
     from snail.match import ScratchConfig, _scratch_build_key
 
@@ -5422,10 +5423,12 @@ def test_build_key_tracks_cl_option_environment(
     scratch.mkdir(parents=True)
     (scratch / "scratch.cpp").write_text("int foo;\n")
     config = ScratchConfig(scratch, "foo", "msvc6.5", "/O2 /G5 /W3", None, None)
-    monkeypatch.delenv("CL", raising=False)
+    monkeypatch.delenv(option, raising=False)
     before = _scratch_build_key(config, tmp_path)
-    monkeypatch.setenv("CL", "/Ox")
+    epoch = scratch_experiment_epoch(config, tmp_path, image_path=tmp_path / "image")
+    monkeypatch.setenv(option, "/Ox")
     assert _scratch_build_key(config, tmp_path) != before
+    assert scratch_experiment_epoch(config, tmp_path, image_path=tmp_path / "image") != epoch
 
 
 def test_stand_in_context_headers_are_reported(tmp_path: Path) -> None:

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import replace
 import json
 from pathlib import Path
 import sys
@@ -15,6 +16,7 @@ if str(SRC_ROOT) not in sys.path:
 from snail.symbols import (  # noqa: E402
     DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
     FunctionSymbol,
+    FunctionSymbolManifest,
     build_function_symbol_manifest,
     is_curated_function_name,
     load_function_symbol_manifest,
@@ -40,8 +42,8 @@ def _load_binary_view(binary_path: Path | None):
     return view
 
 
-def _export_curated_function_symbols(view) -> list[FunctionSymbol]:
-    symbols: list[FunctionSymbol] = []
+def _export_curated_function_symbols(view, template: FunctionSymbolManifest) -> list[FunctionSymbol]:
+    symbols = {symbol.address: symbol for symbol in template.functions}
     for function in sorted(view.functions, key=lambda current: int(current.start)):
         name = function.name
         if not is_curated_function_name(name):
@@ -51,14 +53,22 @@ def _export_curated_function_symbols(view) -> list[FunctionSymbol]:
             description = description.strip() or None
         else:
             description = None
-        symbols.append(
-            FunctionSymbol(
-                address=int(function.start),
-                name=name,
-                description=description,
-            )
-        )
-    return symbols
+        address = int(function.start)
+        existing = symbols.get(address)
+        if existing is None:
+            symbols[address] = FunctionSymbol(address=address, name=name, description=description)
+        else:
+            aliases = existing.aliases
+            if name != existing.name:
+                aliases = tuple(alias for alias in (*aliases, existing.name) if alias != name)
+            symbols[address] = replace(existing, name=name, description=description, aliases=aliases)
+    seen = set()
+    for symbol in symbols.values():
+        for name in (symbol.name, *symbol.aliases):
+            if name in seen:
+                raise ValueError(f"duplicate exported function name or alias: {name}")
+            seen.add(name)
+    return list(symbols.values())
 
 
 def _export_manifest(args: argparse.Namespace) -> int:
@@ -66,11 +76,12 @@ def _export_manifest(args: argparse.Namespace) -> int:
     template = load_function_symbol_manifest(args.manifest)
     manifest = build_function_symbol_manifest(
         template,
-        _export_curated_function_symbols(view),
+        _export_curated_function_symbols(view, template),
     )
 
     output_path = args.output or args.manifest
-    write_function_symbol_manifest(manifest, output_path)
+    if manifest != template or output_path.resolve() != args.manifest.resolve():
+        write_function_symbol_manifest(manifest, output_path)
 
     print(
         json.dumps(

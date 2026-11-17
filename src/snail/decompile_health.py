@@ -91,12 +91,17 @@ def evaluate_decompile_health_checks(
     *,
     repo_root: Path,
     checks: tuple[DecompileHealthCheck, ...],
+    decompile_root: Path | None = None,
 ) -> dict[str, object]:
     check_results: list[dict[str, object]] = []
     failing = 0
 
     for check in checks:
-        artifact_path = (repo_root / check.artifact).resolve()
+        artifact = Path(check.artifact)
+        if decompile_root is not None and artifact.is_relative_to("analysis/decompile"):
+            artifact_path = decompile_root / artifact.relative_to("analysis/decompile")
+        else:
+            artifact_path = repo_root / artifact
         if not artifact_path.is_file():
             check_results.append(
                 {

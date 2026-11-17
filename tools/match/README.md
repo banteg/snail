@@ -585,8 +585,9 @@ Useful analysis helpers:
 - `analysis/symbols/gameplay-references.json` is the curated escape hatch for
   recovered globals, offsets, and helper symbols that are not in the function
   manifest. Add entries only when a scratch note, decompiler label, or matched
-  callsite explains the target address. `.rdata` float constants are compared
-  by their four bytes, not by MSVC's generated `real@...` symbol spelling.
+  callsite explains the target address. A memory access to an anonymous
+  `.rdata` constant compares every byte the operand reads, including bytes
+  after an embedded NUL. Taking a string's address uses its literal identity.
   Add `"size"` only for recovered object extents; the audit uses it to keep
   `symbol+offset` and end-pointer operands distinct from the next global at the
   same address. An `"allowed_prebase_offsets"` list may name exact byte

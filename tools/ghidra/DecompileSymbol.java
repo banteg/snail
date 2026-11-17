@@ -39,8 +39,14 @@ public class DecompileSymbol extends GhidraScript {
             for (Function function :
                     currentProgram.getFunctionManager().getFunctions(true)) {
                 if (function.getName(true).equals(selector)) {
+                    if (selected != null) {
+                        throw new IllegalStateException(
+                            "ambiguous function name: " + selector
+                            + " at " + selected.getEntryPoint()
+                            + " and " + function.getEntryPoint()
+                            + "; select an entry address");
+                    }
                     selected = function;
-                    break;
                 }
             }
             if (selected == null) {

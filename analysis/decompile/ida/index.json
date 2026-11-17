@@ -3,8 +3,8 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 732,
-  "function_count": 732,
+  "selected_count": 785,
+  "function_count": 785,
   "exported": [
     {
       "selector": "initialize_array_with_constructor",
@@ -420,6 +420,13 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "initialize_global_noop_renderable_bods_thunk",
+      "address": "0x406bc0",
+      "name": "initialize_global_noop_renderable_bods_thunk",
+      "artifact": "analysis/decompile/ida/functions/00406bc0-initialize_global_noop_renderable_bods_thunk.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "initialize_global_noop_renderable_bods",
       "address": "0x406bd0",
       "name": "initialize_global_noop_renderable_bods",
@@ -441,6 +448,20 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "initialize_global_trivial_object_thunk",
+      "address": "0x406d10",
+      "name": "initialize_global_trivial_object_thunk",
+      "artifact": "analysis/decompile/ida/functions/00406d10-initialize_global_trivial_object_thunk.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_global_trivial_object",
+      "address": "0x406d20",
+      "name": "initialize_global_trivial_object",
+      "artifact": "analysis/decompile/ida/functions/00406d20-initialize_global_trivial_object.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "log_startup_timestamp",
       "address": "0x406d30",
       "name": "log_startup_timestamp",
@@ -452,6 +473,13 @@
       "address": "0x406d70",
       "name": "initialize_main_loop_display_state",
       "artifact": "analysis/decompile/ida/functions/00406d70-initialize_main_loop_display_state.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_main_loop_timing_state",
+      "address": "0x406da0",
+      "name": "initialize_main_loop_timing_state",
+      "artifact": "analysis/decompile/ida/functions/00406da0-initialize_main_loop_timing_state.c",
       "removed_stale_artifacts": []
     },
     {
@@ -480,6 +508,13 @@
       "address": "0x407440",
       "name": "handle_game_window_deactivate",
       "artifact": "analysis/decompile/ida/functions/00407440-handle_game_window_deactivate.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "minimize_game_window",
+      "address": "0x407490",
+      "name": "minimize_game_window",
+      "artifact": "analysis/decompile/ida/functions/00407490-minimize_game_window.c",
       "removed_stale_artifacts": []
     },
     {
@@ -557,6 +592,13 @@
       "address": "0x407930",
       "name": "read_next_display_mode_view_sample",
       "artifact": "analysis/decompile/ida/functions/00407930-read_next_display_mode_view_sample.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "bass_audio_window_proc",
+      "address": "0x4079e0",
+      "name": "bass_audio_window_proc",
+      "artifact": "analysis/decompile/ida/functions/004079e0-bass_audio_window_proc.c",
       "removed_stale_artifacts": []
     },
     {
@@ -760,6 +802,13 @@
       "address": "0x408860",
       "name": "initialize_track_parcel_runtime",
       "artifact": "analysis/decompile/ida/functions/00408860-initialize_track_parcel_runtime.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_galaxy_route_name_record",
+      "address": "0x408880",
+      "name": "initialize_galaxy_route_name_record",
+      "artifact": "analysis/decompile/ida/functions/00408880-initialize_galaxy_route_name_record.c",
       "removed_stale_artifacts": []
     },
     {
@@ -968,6 +1017,20 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "initialize_global_color4f_bank_32_thunk",
+      "address": "0x410c00",
+      "name": "initialize_global_color4f_bank_32_thunk",
+      "artifact": "analysis/decompile/ida/functions/00410c00-initialize_global_color4f_bank_32_thunk.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_global_color4f_bank_32",
+      "address": "0x410c10",
+      "name": "initialize_global_color4f_bank_32",
+      "artifact": "analysis/decompile/ida/functions/00410c10-initialize_global_color4f_bank_32.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "set_backdrop_zoom",
       "address": "0x410c30",
       "name": "set_backdrop_zoom",
@@ -1073,10 +1136,38 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "direct3d_renderer_set_cull_mode",
+      "address": "0x411700",
+      "name": "direct3d_renderer_set_cull_mode",
+      "artifact": "analysis/decompile/ida/functions/00411700-direct3d_renderer_set_cull_mode.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "initialize_d3d8_device",
       "address": "0x411730",
       "name": "initialize_d3d8_device",
       "artifact": "analysis/decompile/ida/functions/00411730-initialize_d3d8_device.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "reset_direct3d_render_state",
+      "address": "0x4118b0",
+      "name": "reset_direct3d_render_state",
+      "artifact": "analysis/decompile/ida/functions/004118b0-reset_direct3d_render_state.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "release_direct3d_device_interfaces",
+      "address": "0x411960",
+      "name": "release_direct3d_device_interfaces",
+      "artifact": "analysis/decompile/ida/functions/00411960-release_direct3d_device_interfaces.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_game_window_and_input_wrapper",
+      "address": "0x4119c0",
+      "name": "initialize_game_window_and_input_wrapper",
+      "artifact": "analysis/decompile/ida/functions/004119c0-initialize_game_window_and_input_wrapper.c",
       "removed_stale_artifacts": []
     },
     {
@@ -1087,10 +1178,31 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "release_global_direct3d_renderer_resources",
+      "address": "0x411d70",
+      "name": "release_global_direct3d_renderer_resources",
+      "artifact": "analysis/decompile/ida/functions/00411d70-release_global_direct3d_renderer_resources.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "uninitialize_input_devices",
       "address": "0x411d80",
       "name": "uninitialize_input_devices",
       "artifact": "analysis/decompile/ida/functions/00411d80-uninitialize_input_devices.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "end_overlay_render_state",
+      "address": "0x411de0",
+      "name": "end_overlay_render_state",
+      "artifact": "analysis/decompile/ida/functions/00411de0-end_overlay_render_state.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "begin_overlay_render_state",
+      "address": "0x411e10",
+      "name": "begin_overlay_render_state",
+      "artifact": "analysis/decompile/ida/functions/00411e10-begin_overlay_render_state.c",
       "removed_stale_artifacts": []
     },
     {
@@ -1143,10 +1255,31 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "load_registered_texture_refs",
+      "address": "0x412a00",
+      "name": "load_registered_texture_refs",
+      "artifact": "analysis/decompile/ida/functions/00412a00-load_registered_texture_refs.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "load_registered_texture_ref",
+      "address": "0x412a70",
+      "name": "load_registered_texture_ref",
+      "artifact": "analysis/decompile/ida/functions/00412a70-load_registered_texture_ref.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "set_blend_mode",
       "address": "0x412d00",
       "name": "set_blend_mode",
       "artifact": "analysis/decompile/ida/functions/00412d00-set_blend_mode.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "set_immediate_blend_mode",
+      "address": "0x412e50",
+      "name": "set_immediate_blend_mode",
+      "artifact": "analysis/decompile/ida/functions/00412e50-set_immediate_blend_mode.c",
       "removed_stale_artifacts": []
     },
     {
@@ -1161,6 +1294,27 @@
       "address": "0x4134c0",
       "name": "render_game_frame_scene",
       "artifact": "analysis/decompile/ida/functions/004134c0-render_game_frame_scene.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "present_backbuffer",
+      "address": "0x413520",
+      "name": "present_backbuffer",
+      "artifact": "analysis/decompile/ida/functions/00413520-present_backbuffer.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "begin_sprite_depth_render_state",
+      "address": "0x413540",
+      "name": "begin_sprite_depth_render_state",
+      "artifact": "analysis/decompile/ida/functions/00413540-begin_sprite_depth_render_state.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "end_sprite_depth_render_state",
+      "address": "0x413650",
+      "name": "end_sprite_depth_render_state",
+      "artifact": "analysis/decompile/ida/functions/00413650-end_sprite_depth_render_state.c",
       "removed_stale_artifacts": []
     },
     {
@@ -1213,6 +1367,13 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "restore_texture_ref_stage_states",
+      "address": "0x4143c0",
+      "name": "restore_texture_ref_stage_states",
+      "artifact": "analysis/decompile/ida/functions/004143c0-restore_texture_ref_stage_states.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "bind_texture_ref",
       "address": "0x414500",
       "name": "bind_texture_ref",
@@ -1224,6 +1385,20 @@
       "address": "0x4145c0",
       "name": "replace_object_group_texture_refs",
       "artifact": "analysis/decompile/ida/functions/004145c0-replace_object_group_texture_refs.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "query_direct3d_device_caps",
+      "address": "0x414600",
+      "name": "query_direct3d_device_caps",
+      "artifact": "analysis/decompile/ida/functions/00414600-query_direct3d_device_caps.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "reset_render_counters",
+      "address": "0x414650",
+      "name": "reset_render_counters",
+      "artifact": "analysis/decompile/ida/functions/00414650-reset_render_counters.c",
       "removed_stale_artifacts": []
     },
     {
@@ -1560,6 +1735,13 @@
       "address": "0x419fd0",
       "name": "sort_object_faces_by_texture_group",
       "artifact": "analysis/decompile/ida/functions/00419fd0-sort_object_faces_by_texture_group.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "disable_object_rendering",
+      "address": "0x41a0a0",
+      "name": "disable_object_rendering",
+      "artifact": "analysis/decompile/ida/functions/0041a0a0-disable_object_rendering.c",
       "removed_stale_artifacts": []
     },
     {
@@ -1948,6 +2130,13 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "load_png_image",
+      "address": "0x42f0a0",
+      "name": "load_png_image",
+      "artifact": "analysis/decompile/ida/functions/0042f0a0-load_png_image.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "load_config_file",
       "address": "0x42f470",
       "name": "load_config_file",
@@ -2057,6 +2246,20 @@
       "address": "0x42f850",
       "name": "request_object_vertex_colours",
       "artifact": "analysis/decompile/ida/functions/0042f850-request_object_vertex_colours.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_global_temp_colour_thunk",
+      "address": "0x42f8a0",
+      "name": "initialize_global_temp_colour_thunk",
+      "artifact": "analysis/decompile/ida/functions/0042f8a0-initialize_global_temp_colour_thunk.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_global_temp_colour",
+      "address": "0x42f8b0",
+      "name": "initialize_global_temp_colour",
+      "artifact": "analysis/decompile/ida/functions/0042f8b0-initialize_global_temp_colour.c",
       "removed_stale_artifacts": []
     },
     {
@@ -2176,6 +2379,20 @@
       "address": "0x430d90",
       "name": "replace_object_list_texture_refs",
       "artifact": "analysis/decompile/ida/functions/00430d90-replace_object_list_texture_refs.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_tracked_allocation_depth_thunk",
+      "address": "0x430e20",
+      "name": "initialize_tracked_allocation_depth_thunk",
+      "artifact": "analysis/decompile/ida/functions/00430e20-initialize_tracked_allocation_depth_thunk.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_tracked_allocation_depth",
+      "address": "0x430e30",
+      "name": "initialize_tracked_allocation_depth",
+      "artifact": "analysis/decompile/ida/functions/00430e30-initialize_tracked_allocation_depth.c",
       "removed_stale_artifacts": []
     },
     {
@@ -2543,6 +2760,13 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "launch_alpha72_url",
+      "address": "0x433050",
+      "name": "launch_alpha72_url",
+      "artifact": "analysis/decompile/ida/functions/00433050-launch_alpha72_url.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "initialize_track_render_cache_manager",
       "address": "0x433060",
       "name": "initialize_track_render_cache_manager",
@@ -2669,10 +2893,24 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "initialize_track_colour_bank_a_thunk",
+      "address": "0x434980",
+      "name": "initialize_track_colour_bank_a_thunk",
+      "artifact": "analysis/decompile/ida/functions/00434980-initialize_track_colour_bank_a_thunk.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "initialize_track_colour_bank_a",
       "address": "0x434990",
       "name": "initialize_track_colour_bank_a",
       "artifact": "analysis/decompile/ida/functions/00434990-initialize_track_colour_bank_a.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_track_colour_banks_b_c_thunk",
+      "address": "0x4349b0",
+      "name": "initialize_track_colour_banks_b_c_thunk",
+      "artifact": "analysis/decompile/ida/functions/004349b0-initialize_track_colour_banks_b_c_thunk.c",
       "removed_stale_artifacts": []
     },
     {
@@ -2683,10 +2921,24 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "initialize_track_colour_bank_d_thunk",
+      "address": "0x4349e0",
+      "name": "initialize_track_colour_bank_d_thunk",
+      "artifact": "analysis/decompile/ida/functions/004349e0-initialize_track_colour_bank_d_thunk.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "initialize_track_colour_bank_d",
       "address": "0x4349f0",
       "name": "initialize_track_colour_bank_d",
       "artifact": "analysis/decompile/ida/functions/004349f0-initialize_track_colour_bank_d.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_track_colour_bank_e_thunk",
+      "address": "0x434a10",
+      "name": "initialize_track_colour_bank_e_thunk",
+      "artifact": "analysis/decompile/ida/functions/00434a10-initialize_track_colour_bank_e_thunk.c",
       "removed_stale_artifacts": []
     },
     {
@@ -2697,10 +2949,24 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "initialize_track_colour_bank_f_thunk",
+      "address": "0x434a40",
+      "name": "initialize_track_colour_bank_f_thunk",
+      "artifact": "analysis/decompile/ida/functions/00434a40-initialize_track_colour_bank_f_thunk.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "initialize_track_colour_bank_f",
       "address": "0x434a50",
       "name": "initialize_track_colour_bank_f",
       "artifact": "analysis/decompile/ida/functions/00434a50-initialize_track_colour_bank_f.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_track_colour_bank_g_thunk",
+      "address": "0x434a70",
+      "name": "initialize_track_colour_bank_g_thunk",
+      "artifact": "analysis/decompile/ida/functions/00434a70-initialize_track_colour_bank_g_thunk.c",
       "removed_stale_artifacts": []
     },
     {
@@ -2711,10 +2977,24 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "initialize_track_colour_bank_h_thunk",
+      "address": "0x434aa0",
+      "name": "initialize_track_colour_bank_h_thunk",
+      "artifact": "analysis/decompile/ida/functions/00434aa0-initialize_track_colour_bank_h_thunk.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "initialize_track_colour_bank_h",
       "address": "0x434ab0",
       "name": "initialize_track_colour_bank_h",
       "artifact": "analysis/decompile/ida/functions/00434ab0-initialize_track_colour_bank_h.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_track_colour_bank_i_thunk",
+      "address": "0x434ad0",
+      "name": "initialize_track_colour_bank_i_thunk",
+      "artifact": "analysis/decompile/ida/functions/00434ad0-initialize_track_colour_bank_i_thunk.c",
       "removed_stale_artifacts": []
     },
     {
@@ -2725,10 +3005,24 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "initialize_track_colour_bank_j_thunk",
+      "address": "0x434b00",
+      "name": "initialize_track_colour_bank_j_thunk",
+      "artifact": "analysis/decompile/ida/functions/00434b00-initialize_track_colour_bank_j_thunk.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "initialize_track_colour_bank_j",
       "address": "0x434b10",
       "name": "initialize_track_colour_bank_j",
       "artifact": "analysis/decompile/ida/functions/00434b10-initialize_track_colour_bank_j.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_track_colour_bank_k_thunk",
+      "address": "0x434b30",
+      "name": "initialize_track_colour_bank_k_thunk",
+      "artifact": "analysis/decompile/ida/functions/00434b30-initialize_track_colour_bank_k_thunk.c",
       "removed_stale_artifacts": []
     },
     {
@@ -3583,10 +3877,24 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "initialize_parcel_set_bucket_pool_thunk",
+      "address": "0x443860",
+      "name": "initialize_parcel_set_bucket_pool_thunk",
+      "artifact": "analysis/decompile/ida/functions/00443860-initialize_parcel_set_bucket_pool_thunk.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "initialize_parcel_set_bucket_pool",
       "address": "0x443870",
       "name": "initialize_parcel_set_bucket_pool",
       "artifact": "analysis/decompile/ida/functions/00443870-initialize_parcel_set_bucket_pool.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_zero_parcel_bucket_pool_thunk",
+      "address": "0x4438a0",
+      "name": "initialize_zero_parcel_bucket_pool_thunk",
+      "artifact": "analysis/decompile/ida/functions/004438a0-initialize_zero_parcel_bucket_pool_thunk.c",
       "removed_stale_artifacts": []
     },
     {
@@ -4381,6 +4689,13 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "query_directx_runtime_version",
+      "address": "0x44afc0",
+      "name": "query_directx_runtime_version",
+      "artifact": "analysis/decompile/ida/functions/0044afc0-query_directx_runtime_version.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "enumerate_input_controllers",
       "address": "0x44b3c0",
       "name": "enumerate_input_controllers",
@@ -4542,6 +4857,13 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "initialize_global_identity_matrix_thunk",
+      "address": "0x44c870",
+      "name": "initialize_global_identity_matrix_thunk",
+      "artifact": "analysis/decompile/ida/functions/0044c870-initialize_global_identity_matrix_thunk.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "initialize_global_identity_matrix",
       "address": "0x44c880",
       "name": "initialize_global_identity_matrix",
@@ -4574,6 +4896,13 @@
       "address": "0x44c900",
       "name": "next_math_random_value",
       "artifact": "analysis/decompile/ida/functions/0044c900-next_math_random_value.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "j_rand",
+      "address": "0x44c920",
+      "name": "j_rand",
+      "artifact": "analysis/decompile/ida/functions/0044c920-j_rand.c",
       "removed_stale_artifacts": []
     },
     {
@@ -4853,6 +5182,13 @@
       "removed_stale_artifacts": []
     },
     {
+      "selector": "noop_this_constructor",
+      "address": "0x44db50",
+      "name": "noop_this_constructor",
+      "artifact": "analysis/decompile/ida/functions/0044db50-noop_this_constructor.c",
+      "removed_stale_artifacts": []
+    },
+    {
       "selector": "set_color_rgba",
       "address": "0x44db60",
       "name": "set_color_rgba",
@@ -4962,6 +5298,34 @@
       "address": "0x44de30",
       "name": "stop_warning_sample_handle",
       "artifact": "analysis/decompile/ida/functions/0044de30-stop_warning_sample_handle.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_global_sprite_pool_colors_thunk",
+      "address": "0x44de40",
+      "name": "initialize_global_sprite_pool_colors_thunk",
+      "artifact": "analysis/decompile/ida/functions/0044de40-initialize_global_sprite_pool_colors_thunk.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_global_sprite_pool_colors",
+      "address": "0x44de50",
+      "name": "initialize_global_sprite_pool_colors",
+      "artifact": "analysis/decompile/ida/functions/0044de50-initialize_global_sprite_pool_colors.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_global_sprite_sentinel_color_thunk",
+      "address": "0x44de70",
+      "name": "initialize_global_sprite_sentinel_color_thunk",
+      "artifact": "analysis/decompile/ida/functions/0044de70-initialize_global_sprite_sentinel_color_thunk.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_global_sprite_sentinel_color",
+      "address": "0x44de80",
+      "name": "initialize_global_sprite_sentinel_color",
+      "artifact": "analysis/decompile/ida/functions/0044de80-initialize_global_sprite_sentinel_color.c",
       "removed_stale_artifacts": []
     },
     {
@@ -5088,6 +5452,13 @@
       "address": "0x44e710",
       "name": "parse_next_signed_int",
       "artifact": "analysis/decompile/ida/functions/0044e710-parse_next_signed_int.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "sample_tga_pixel_rgb",
+      "address": "0x44e780",
+      "name": "sample_tga_pixel_rgb",
+      "artifact": "analysis/decompile/ida/functions/0044e780-sample_tga_pixel_rgb.c",
       "removed_stale_artifacts": []
     },
     {

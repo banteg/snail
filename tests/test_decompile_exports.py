@@ -3,10 +3,12 @@ from __future__ import annotations
 import importlib.util
 import json
 from pathlib import Path
+import subprocess
 import sys
 import types
 
 import pytest
+from snail.symbols import DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH, load_function_symbol_manifest
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -22,6 +24,73 @@ def _load_script(monkeypatch: pytest.MonkeyPatch, relative_path: str, module_nam
     sys.modules[module_name] = module
     spec.loader.exec_module(module)
     return module
+
+
+def test_binja_manifest_export_preserves_curated_evidence(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+) -> None:
+    module = _load_script(monkeypatch, "tools/binja/sync_symbols.py", "test_binja_symbol_export")
+    path = tmp_path / "manifest.json"
+    original = DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH.read_bytes()
+    path.write_bytes(original)
+    manifest = load_function_symbol_manifest(path)
+    functions = [
+        types.SimpleNamespace(start=f.address, name=f.name, comment=f.description)
+        for f in manifest.functions
+    ]
+    monkeypatch.setattr(module, "_load_binary_view", lambda path: types.SimpleNamespace(functions=functions))
+    args = ["export", "--manifest", str(path)]
+    assert module.main(args) == 0
+    assert path.read_bytes() == original
+
+    position, symbol = next((i, f) for i, f in enumerate(manifest.functions) if f.aliases)
+    functions[position].name = symbol.aliases[0]
+    assert module.main(args) == 0
+    renamed = load_function_symbol_manifest(path).functions[position]
+    assert renamed.name == symbol.aliases[0]
+    assert renamed.aliases == (*symbol.aliases[1:], symbol.name)
+    assert renamed.port_scope == symbol.port_scope
+
+
+def test_strict_export_checks_selected_corpus_and_manifest(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture,
+) -> None:
+    module = _load_script(monkeypatch, "tools/export_tracked_decompiles.py", "test_alternate_export")
+    root = tmp_path / "corpus"
+    manifest = json.loads(DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH.read_text())
+    function = next(f for f in manifest["functions"] if f["name"] == "health_collect_particles")
+    manifest["functions"] = [function]
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(json.dumps(manifest))
+    name = f"{int(function['address'], 16):08x}-{function['name']}.c"
+    for lane in ("binja", "ida"):
+        directory = root / lane / "functions"
+        directory.mkdir(parents=True)
+        (directory / name).write_text("")
+    (root / "ida/index.json").write_text('{"mismatch_count": 0}')
+
+    health_config = tmp_path / "health.json"
+    health_config.write_text(json.dumps({"checks": [{
+        "name": "player_health", "artifact": f"analysis/decompile/binja/functions/{name}",
+        "required_substrings": ["g_runtime_config.render_flags"],
+    }]}))
+
+    def run_child(script, *args):
+        if script.parent.name == "binja":
+            return {"mismatch_count": 0}
+        output = subprocess.check_output(
+            [sys.executable, str(script), *args, "--config", str(health_config)], text=True,
+        )
+        report = json.loads(output)
+        assert report["missing_exports"] == {}
+        return report
+
+    monkeypatch.setattr(module, "_run_python", run_child)
+    monkeypatch.setattr(sys, "argv", [
+        "export", "--strict", "--skip-ida", "--root", str(root), "--manifest", str(manifest_path),
+    ])
+    assert module.main() == 1
+    assert json.loads(capsys.readouterr().out)["health_failing_check_count"] == 1
 
 
 def test_binja_focused_summary_reports_only_refreshed_exports(
